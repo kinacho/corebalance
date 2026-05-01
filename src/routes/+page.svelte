@@ -6,7 +6,7 @@
 	import HistoryChart from '$lib/components/HistoryChart.svelte';
 	import RebalancePanel from '$lib/components/RebalancePanel.svelte';
 	import { portfolio } from '$lib/stores/portfolio.svelte';
-	import { PORTFOLIO_ASSETS } from '$lib/constants';
+	import { PORTFOLIO_ASSETS, SATELLITE_ASSETS } from '$lib/constants';
 	import { formatEUR, formatPercent } from '$lib/utils';
 
 	// --- Constants & Config ---
@@ -72,21 +72,28 @@
 		{#if !portfolio.loading || Object.keys(portfolio.prices).length > 0}
 			<section class="hero-summary glass" aria-label="Resumen de capital">
 				<div class="hero-primary">
-					<span class="summary-label">Capital Total</span>
-					<div class="summary-value privacy-blur">{formatEUR(portfolio.portfolioState.totalCapital)}</div>
+					<span class="summary-label">Capital Global</span>
+					<div class="summary-value privacy-blur">{formatEUR(portfolio.globalCapital)}</div>
+					{#if portfolio.satelliteState.totalCapital > 0}
+						<div class="capital-breakdown privacy-blur">
+							<span>90/5/5: <strong style="color: #fff">{formatEUR(portfolio.portfolioState.totalCapital)}</strong></span>
+							<span class="breakdown-divider">•</span>
+							<span>Cons: <strong style="color: #fff">{formatEUR(portfolio.satelliteState.totalCapital)}</strong></span>
+						</div>
+					{/if}
 				</div>
 
 				<div class="hero-metrics">
 					<div class="metric-card">
 						<span class="metric-label">Invertido</span>
-						<span class="metric-value privacy-blur">{formatEUR(portfolio.portfolioState.totalInvested)}</span>
+						<span class="metric-value privacy-blur">{formatEUR(portfolio.globalInvested)}</span>
 					</div>
 					
-					<div class="metric-card" class:positive={portfolio.portfolioState.totalProfit > 0} class:negative={portfolio.portfolioState.totalProfit < 0}>
+					<div class="metric-card" class:positive={portfolio.globalProfit > 0} class:negative={portfolio.globalProfit < 0}>
 						<span class="metric-label">Rentabilidad</span>
 						<div class="metric-row">
-							<span class="metric-value privacy-blur">{formatEUR(portfolio.portfolioState.totalProfit)}</span>
-							<span class="metric-badge">{formatPercent(portfolio.portfolioState.totalProfitPercent)}</span>
+							<span class="metric-value privacy-blur">{formatEUR(portfolio.globalProfit)}</span>
+							<span class="metric-badge">{formatPercent(portfolio.globalProfitPercent)}</span>
 						</div>
 					</div>
 
@@ -101,8 +108,8 @@
 					<div class="metric-card efficiency">
 						<span class="metric-label">Eficiencia (TER)</span>
 						<div class="metric-row">
-							<span class="metric-value">{formatPercent(portfolio.portfolioState.weightedAverageTer)}</span>
-							<span class="metric-badge neutral">{formatEUR(portfolio.portfolioState.totalAnnualCost)}/año</span>
+							<span class="metric-value">{formatPercent(portfolio.globalWeightedAverageTer)}</span>
+							<span class="metric-badge neutral">{formatEUR(portfolio.globalAnnualCost)}/año</span>
 						</div>
 					</div>
 				</div>
@@ -153,23 +160,56 @@
 		<div class="dashboard-grid">
 			<!-- Assets Column -->
 			<section class="assets-section" class:tab-hidden={activeTab !== 'assets'}>
+				<div class="section-header">
+					<h3 class="section-title">Cartera Principal (90/5/5)</h3>
+				</div>
 				{#if portfolio.loading && Object.keys(portfolio.prices).length === 0}
-					{#each Array(3) as _}
-						<div class="skeleton-card"></div>
-					{/each}
+					<div class="cards-grid">
+						{#each Array(3) as _}
+							<div class="skeleton-card"></div>
+						{/each}
+					</div>
 				{:else}
-					{#each portfolio.portfolioState.positions as position (position.asset.ticker)}
-						<AssetCard 
-							{position} 
-							onUpdateHolding={(ticker, data) => portfolio.updateHolding(ticker, data)} 
-							onUpdatePrice={(ticker, price) => {
-								portfolio.prices = {
-									...portfolio.prices,
-									[ticker]: { ...portfolio.prices[ticker], price }
-								};
-							}} 
-						/>
-					{/each}
+					<div class="cards-grid">
+						{#each portfolio.portfolioState.positions as position (position.asset.ticker)}
+							<AssetCard 
+								{position} 
+								onUpdateHolding={(ticker, data) => portfolio.updateHolding(ticker, data)} 
+								onUpdatePrice={(ticker, price) => {
+									portfolio.prices = {
+										...portfolio.prices,
+										[ticker]: { ...portfolio.prices[ticker], price }
+									};
+								}} 
+							/>
+						{/each}
+					</div>
+				{/if}
+
+				<div class="section-header" style="margin-top: 1rem;">
+					<h3 class="section-title">Cartera Conservadora</h3>
+				</div>
+				{#if portfolio.loading && Object.keys(portfolio.prices).length === 0}
+					<div class="cards-grid">
+						{#each Array(2) as _}
+							<div class="skeleton-card"></div>
+						{/each}
+					</div>
+				{:else}
+					<div class="cards-grid">
+						{#each portfolio.satelliteState.positions as position (position.asset.ticker)}
+							<AssetCard 
+								{position} 
+								onUpdateHolding={(ticker, data) => portfolio.updateHolding(ticker, data)} 
+								onUpdatePrice={(ticker, price) => {
+									portfolio.prices = {
+										...portfolio.prices,
+										[ticker]: { ...portfolio.prices[ticker], price }
+									};
+								}} 
+							/>
+						{/each}
+					</div>
 				{/if}
 			</section>
 
@@ -462,8 +502,26 @@
 	/* --- Layout Grid --- */
 	.dashboard-grid { display: flex; flex-direction: column; gap: 1rem; }
 	.assets-section { display: flex; flex-direction: column; gap: 1rem; }
+	.cards-grid { display: flex; flex-direction: column; gap: 1rem; }
 	.sidebar { display: flex; flex-direction: column; gap: 1rem; }
 	.tab-hidden { display: none; }
+
+	.capital-breakdown {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin-top: 0.5rem;
+		font-size: 0.8rem;
+		color: rgba(255, 255, 255, 0.6);
+		background: rgba(0, 0, 0, 0.2);
+		padding: 0.4rem 0.8rem;
+		border-radius: 20px;
+		border: 1px solid rgba(255, 255, 255, 0.05);
+	}
+
+	.breakdown-divider {
+		color: rgba(255, 255, 255, 0.2);
+	}
 
 	.history-section {
 		padding: 1.5rem;
@@ -575,6 +633,11 @@
 		}
 		
 		.assets-section { 
+			display: flex; 
+			flex-direction: column;
+		}
+
+		.cards-grid {
 			display: grid; 
 			grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
 			gap: 1.5rem; 

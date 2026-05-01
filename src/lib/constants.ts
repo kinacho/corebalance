@@ -31,6 +31,28 @@ export const PORTFOLIO_ASSETS: Asset[] = [
 	}
 ];
 
+/** Activos de la cartera satélite (Renta Fija y Mixta) */
+export const SATELLITE_ASSETS: Asset[] = [
+	{
+		ticker: '0P0001QKUD.F',
+		name: 'Groupama Trésorerie',
+		isin: 'FR001400CFA4',
+		targetWeight: 0, // No participan en rebalanceo
+		color: '#64748b',
+		icon: '🛡️',
+		ter: 0.0009 // Estimado, se puede ajustar
+	},
+	{
+		ticker: '0P0001MYMU.F',
+		name: 'Avantage Fund B FI',
+		isin: 'ES0112231016',
+		targetWeight: 0,
+		color: '#8b5cf6',
+		icon: '⚖️',
+		ter: 0.0075 // Estimado, se puede ajustar
+	}
+];
+
 /** Claves de localStorage */
 export const STORAGE_KEY_HOLDINGS = 'balanceador_holdings_v2';
 export const STORAGE_KEY_CONTRIBUTION = 'balanceador_contribution';

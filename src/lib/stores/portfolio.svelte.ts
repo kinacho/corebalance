@@ -1,4 +1,4 @@
-import { PORTFOLIO_ASSETS, STORAGE_KEY_HOLDINGS, STORAGE_KEY_CONTRIBUTION } from '$lib/constants';
+import { PORTFOLIO_ASSETS, SATELLITE_ASSETS, STORAGE_KEY_HOLDINGS, STORAGE_KEY_CONTRIBUTION } from '$lib/constants';
 import type { HoldingData, HoldingsMap, PortfolioState, PriceData, RebalanceResult } from '$lib/types';
 import { calculatePortfolioState, calculateRebalance } from '$lib/rebalance';
 import { auth, db, googleProvider } from '$lib/firebase';
@@ -24,6 +24,17 @@ export class PortfolioStore {
 	portfolioState: PortfolioState = $derived(
 		calculatePortfolioState(PORTFOLIO_ASSETS, this.holdings, this.prices)
 	);
+
+	satelliteState: PortfolioState = $derived(
+		calculatePortfolioState(SATELLITE_ASSETS, this.holdings, this.prices)
+	);
+
+	globalCapital = $derived(this.portfolioState.totalCapital + this.satelliteState.totalCapital);
+	globalProfit = $derived(this.portfolioState.totalProfit + this.satelliteState.totalProfit);
+	globalInvested = $derived(this.portfolioState.totalInvested + this.satelliteState.totalInvested);
+	globalProfitPercent = $derived(this.globalInvested > 0 ? this.globalProfit / this.globalInvested : 0);
+	globalAnnualCost = $derived(this.portfolioState.totalAnnualCost + this.satelliteState.totalAnnualCost);
+	globalWeightedAverageTer = $derived(this.globalCapital > 0 ? this.globalAnnualCost / this.globalCapital : 0);
 
 	rebalanceResult: RebalanceResult | null = $derived(
 		this.contribution > 0 && Object.keys(this.prices).length > 0
@@ -106,7 +117,7 @@ export class PortfolioStore {
 	}
 
 	private async saveDailySnapshot() {
-		if (!this.user || !db || this.portfolioState.totalCapital === 0) return;
+		if (!this.user || !db || this.globalCapital === 0) return;
 
 		const today = new Date().toISOString().split('T')[0];
 		const docId = `${this.user.uid}_${today}`;
@@ -116,8 +127,8 @@ export class PortfolioStore {
 			await setDoc(snapshotRef, {
 				userId: this.user.uid,
 				date: today,
-				totalCapital: this.portfolioState.totalCapital,
-				totalProfit: this.portfolioState.totalProfit,
+				totalCapital: this.globalCapital,
+				totalProfit: this.globalProfit,
 				timestamp: new Date().toISOString()
 			}, { merge: true });
 			
@@ -147,10 +158,10 @@ export class PortfolioStore {
 	}
 
 	private async updateHistoryPoints() {
-		if (!this.user || !db || this.portfolioState.totalCapital === 0) return;
+		if (!this.user || !db || this.globalCapital === 0) return;
 		
 		const today = new Date().toISOString().split('T')[0];
-		const currentPoint = { date: today, value: this.portfolioState.totalCapital };
+		const currentPoint = { date: today, value: this.globalCapital };
 		
 		let newHistory = [...this.history];
 		const index = newHistory.findIndex(p => p.date === today);

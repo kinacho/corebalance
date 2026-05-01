@@ -1,13 +1,13 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import YahooFinance from 'yahoo-finance2';
-import { PORTFOLIO_ASSETS } from '$lib/constants';
+import { PORTFOLIO_ASSETS, SATELLITE_ASSETS } from '$lib/constants';
 import type { PricesResponse, PriceData } from '$lib/types';
 
 const yahooFinance = new YahooFinance({ suppressNotices: ['yahooSurvey'] });
 
 export const GET: RequestHandler = async () => {
-	const tickers = [...PORTFOLIO_ASSETS.map((a) => a.ticker), 'BTC-EUR'];
+	const tickers = [...PORTFOLIO_ASSETS.map((a) => a.ticker), ...SATELLITE_ASSETS.map((a) => a.ticker), 'BTC-EUR'];
 	const errors: string[] = [];
 	const prices: Record<string, PriceData> = {};
 
