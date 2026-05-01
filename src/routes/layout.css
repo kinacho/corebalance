@@ -1,0 +1,74 @@
+@import 'tailwindcss';
+
+/* ===== Custom Base Styles for Balanceador ===== */
+
+@layer base {
+	:root {
+		--bg-primary: #05050a;
+		--bg-card: rgba(255, 255, 255, 0.03);
+		--text-primary: #ffffff;
+		--text-muted: rgba(160, 160, 200, 0.5);
+		--border-subtle: rgba(255, 255, 255, 0.08);
+		--accent-blue: #3b82f6;
+		--accent-green: #10b981;
+		--accent-orange: #f59e0b;
+	}
+
+	* {
+		box-sizing: border-box;
+		-webkit-tap-highlight-color: transparent;
+	}
+
+	html {
+		font-family: 'Inter', system-ui, -apple-system, sans-serif;
+		-webkit-font-smoothing: antialiased;
+		background: var(--bg-primary);
+		overflow-x: hidden;
+	}
+
+	body {
+		margin: 0;
+		padding: 0;
+		color: var(--text-primary);
+		min-height: 100dvh;
+		padding-top: env(safe-area-inset-top);
+		padding-bottom: env(safe-area-inset-bottom);
+		padding-left: env(safe-area-inset-left);
+		padding-right: env(safe-area-inset-right);
+	}
+
+	body::before {
+		content: '';
+		position: fixed;
+		top: -50%;
+		left: -50%;
+		width: 200%;
+		height: 200%;
+		background: 
+			radial-gradient(circle at 15% 15%, rgba(59, 130, 246, 0.15) 0%, transparent 40%),
+			radial-gradient(circle at 85% 85%, rgba(245, 158, 11, 0.1) 0%, transparent 40%),
+			radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.05) 0%, transparent 60%);
+		filter: blur(80px);
+		z-index: -1;
+		animation: backgroundFlow 30s ease-in-out infinite alternate;
+	}
+
+	@keyframes backgroundFlow {
+		0% { transform: rotate(0deg) scale(1); }
+		100% { transform: rotate(10deg) scale(1.1); }
+	}
+
+	.privacy-mode .privacy-blur {
+		filter: blur(18px) grayscale(0.5);
+		transition: filter 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+		opacity: 0.6;
+		user-select: none;
+		pointer-events: none;
+	}
+
+	.privacy-mode input:not(:focus):not(.no-privacy-blur) {
+		filter: blur(18px) grayscale(0.5);
+		transition: filter 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+		opacity: 0.6;
+	}
+}
