@@ -77,6 +77,30 @@ export function calculatePortfolioState(
 
 	const dailyChangePercent = totalCapital > 0 ? (dailyChangeValue / totalCapital) : 0;
 
+	// Calcular sparkline de la sección
+	const MAX_DAYS = 7;
+	const sectionSparkline: number[] = Array(MAX_DAYS).fill(0);
+	let sparklineValid = false;
+
+	for (let i = 0; i < MAX_DAYS; i++) {
+		let dayValue = 0;
+		let hasData = false;
+		rawPositions.forEach(pos => {
+			const sp = prices[pos.asset.ticker]?.sparkline;
+			if (sp && sp.length > 0) {
+				const index = sp.length - MAX_DAYS + i;
+				const price = index >= 0 ? sp[index] : sp[0]; 
+				dayValue += pos.holdings * price;
+				hasData = true;
+			}
+		});
+		if (hasData) {
+			sectionSparkline[i] = dayValue;
+			sparklineValid = true;
+		}
+	}
+	const sparkline = sparklineValid ? sectionSparkline.filter(v => v > 0) : undefined;
+
 	return { 
 		positions, 
 		totalCapital, 
@@ -86,7 +110,8 @@ export function calculatePortfolioState(
 		totalAnnualCost,
 		weightedAverageTer,
 		dailyChangeValue,
-		dailyChangePercent
+		dailyChangePercent,
+		sparkline
 	};
 }
 

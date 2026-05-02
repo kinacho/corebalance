@@ -1,5 +1,7 @@
 <script lang="ts">
 	import AssetCard from './AssetCard.svelte';
+	import CompactAssetRow from './CompactAssetRow.svelte';
+	import Sparkline from './Sparkline.svelte';
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import type { PortfolioState } from '$lib/types';
 	import { formatEUR, formatPercent } from '$lib/utils';
@@ -23,6 +25,7 @@
 	}: Props = $props();
 
 	let isOpen = $state(false);
+	let isCompactView = $state(false);
 
 	$effect.pre(() => {
 		isOpen = defaultOpen;
@@ -37,13 +40,26 @@
 >
 	<div class="header-left-group">
 		<h3 class="section-title">{title}</h3>
+		{#if portfolioState.sparkline}
+			<div class="header-sparkline" title="Tendencia últimos 7 días">
+				<Sparkline data={portfolioState.sparkline} />
+			</div>
+		{/if}
 		{#if portfolioState.totalCapital > 0}
-			<div class="header-daily-badge" class:positive={portfolioState.dailyChangeValue > 0} class:negative={portfolioState.dailyChangeValue < 0}>
-				<span class="daily-arrow">
-					{portfolioState.dailyChangeValue > 0 ? '▲' : portfolioState.dailyChangeValue < 0 ? '▼' : '•'}
-				</span>
-				<span class="daily-percent">{formatPercent(Math.abs(portfolioState.dailyChangePercent))}</span>
-				<span class="daily-value privacy-blur">({formatEUR(portfolioState.dailyChangeValue)})</span>
+			<div class="header-badges">
+				<div class="header-badge daily" class:positive={portfolioState.dailyChangeValue > 0} class:negative={portfolioState.dailyChangeValue < 0} title="Cambio Hoy">
+					<span class="badge-label">Hoy</span>
+					<span class="daily-arrow">
+						{portfolioState.dailyChangeValue > 0 ? '▲' : portfolioState.dailyChangeValue < 0 ? '▼' : '•'}
+					</span>
+					<span class="daily-percent">{formatPercent(Math.abs(portfolioState.dailyChangePercent))}</span>
+					<span class="daily-value privacy-blur">({formatEUR(portfolioState.dailyChangeValue)})</span>
+				</div>
+				<div class="header-badge total" class:positive={portfolioState.totalProfit > 0} class:negative={portfolioState.totalProfit < 0} title="Rentabilidad Total">
+					<span class="badge-label">Total</span>
+					<span class="daily-percent">{portfolioState.totalProfit > 0 ? '+' : ''}{formatPercent(portfolioState.totalProfitPercent)}</span>
+					<span class="daily-value privacy-blur">({portfolioState.totalProfit > 0 ? '+' : ''}{formatEUR(portfolioState.totalProfit)})</span>
+				</div>
 			</div>
 		{/if}
 	</div>
@@ -63,20 +79,49 @@
 				{/each}
 			</div>
 		{:else}
-			<div class="cards-grid">
-				{#each portfolioState.positions as position (position.asset.ticker)}
-					<AssetCard 
-						{position} 
-						onUpdateHolding={(ticker, data) => portfolio.updateHolding(ticker, data)} 
-						onUpdatePrice={(ticker, price) => {
-							portfolio.prices = {
-								...portfolio.prices,
-								[ticker]: { ...portfolio.prices[ticker], price }
-							};
-						}} 
-					/>
-				{/each}
+			<div class="section-controls">
+				<button class="view-toggle-btn" onclick={(e) => { e.stopPropagation(); isCompactView = !isCompactView; }} title="Cambiar vista">
+					{#if isCompactView}
+						<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+							<rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect>
+						</svg>
+						Vista Tarjetas
+					{:else}
+						<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+							<line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line>
+						</svg>
+						Vista Compacta
+					{/if}
+				</button>
 			</div>
+			
+			{#if isCompactView}
+				<div class="compact-list">
+					<div class="compact-list-inner">
+						{#each portfolioState.positions as position (position.asset.ticker)}
+							<CompactAssetRow 
+								{position} 
+								onUpdateHolding={(ticker, data) => portfolio.updateHolding(ticker, data)} 
+							/>
+						{/each}
+					</div>
+				</div>
+			{:else}
+				<div class="cards-grid">
+					{#each portfolioState.positions as position (position.asset.ticker)}
+						<AssetCard 
+							{position} 
+							onUpdateHolding={(ticker, data) => portfolio.updateHolding(ticker, data)} 
+							onUpdatePrice={(ticker, price) => {
+								portfolio.prices = {
+									...portfolio.prices,
+									[ticker]: { ...portfolio.prices[ticker], price }
+								};
+							}} 
+						/>
+					{/each}
+				</div>
+			{/if}
 		{/if}
 	</div>
 </div>
@@ -128,7 +173,13 @@
 		overflow: hidden;
 	}
 
-	.header-daily-badge {
+	.header-badges {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.header-badge {
 		display: flex;
 		align-items: center;
 		gap: 0.3rem;
@@ -140,14 +191,36 @@
 		color: rgba(160, 160, 200, 0.6);
 	}
 
-	.header-daily-badge.positive {
+	.badge-label {
+		font-size: 0.6rem;
+		text-transform: uppercase;
+		opacity: 0.5;
+		margin-right: 0.2rem;
+	}
+
+	.header-badge.positive {
 		background: rgba(16, 185, 129, 0.1);
 		color: #10b981;
 	}
 
-	.header-daily-badge.negative {
+	.header-badge.negative {
 		background: rgba(239, 68, 68, 0.1);
 		color: #fca5a5;
+	}
+
+	.header-badge.total {
+		background: rgba(255, 255, 255, 0.05);
+		color: #fff;
+	}
+
+	.header-badge.total.positive {
+		color: #10b981;
+		border: 1px solid rgba(16, 185, 129, 0.2);
+	}
+
+	.header-badge.total.negative {
+		color: #fca5a5;
+		border: 1px solid rgba(239, 68, 68, 0.2);
 	}
 
 	.daily-arrow {
@@ -171,16 +244,35 @@
 			gap: 0.25rem;
 		}
 
-		.header-daily-badge {
+		.header-badges {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 0.2rem;
+		}
+
+		.header-badge {
 			padding: 0;
 			background: transparent !important;
+			border: none !important;
 		}
+
+		.header-sparkline {
+			display: none; /* Hide on small screens to save space */
+		}
+	}
+
+	.header-sparkline {
+		display: flex;
+		align-items: center;
+		padding: 0 0.5rem;
+		opacity: 0.8;
 	}
 
 	.chevron-icon {
 		display: flex;
 		color: rgba(255, 255, 255, 0.4);
 		transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+		margin-left: 0.5rem;
 	}
 
 	.chevron-icon.rotated {
@@ -204,6 +296,44 @@
 
 	.collapsible-inner {
 		overflow: hidden;
+	}
+
+	.section-controls {
+		display: flex;
+		justify-content: flex-end;
+		margin-bottom: 1rem;
+	}
+
+	.view-toggle-btn {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+		padding: 0.4rem 0.8rem;
+		background: rgba(255, 255, 255, 0.05);
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		border-radius: 8px;
+		color: rgba(255, 255, 255, 0.7);
+		font-size: 0.7rem;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.view-toggle-btn:hover {
+		background: rgba(255, 255, 255, 0.1);
+		color: #fff;
+	}
+
+	.compact-list {
+		background: rgba(0, 0, 0, 0.2);
+		border-radius: 16px;
+		border: 1px solid rgba(255, 255, 255, 0.05);
+		overflow: hidden;
+	}
+
+	.compact-list-inner {
+		display: flex;
+		flex-direction: column;
 	}
 
 	.cards-grid {

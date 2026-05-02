@@ -15,6 +15,7 @@ export interface PriceData {
 	currency: string;
 	name: string;
 	change: number;      // Cambio porcentual diario
+	sparkline?: number[]; // Precios de los últimos 7 días
 }
 
 /** Respuesta del endpoint /api/prices */
@@ -51,6 +52,7 @@ export interface PortfolioState {
 	weightedAverageTer: number;
 	dailyChangeValue: number;
 	dailyChangePercent: number;
+	sparkline?: number[];
 }
 
 /** Resultado del cálculo de rebalanceo */
