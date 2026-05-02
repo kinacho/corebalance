@@ -49,6 +49,8 @@ export interface PortfolioState {
 	totalProfitPercent: number;
 	totalAnnualCost: number;
 	weightedAverageTer: number;
+	dailyChangeValue: number;
+	dailyChangePercent: number;
 }
 
 /** Resultado del cálculo de rebalanceo */

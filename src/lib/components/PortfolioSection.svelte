@@ -2,6 +2,7 @@
 	import AssetCard from './AssetCard.svelte';
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import type { PortfolioState } from '$lib/types';
+	import { formatEUR, formatPercent } from '$lib/utils';
 
 	interface Props {
 		title: string;
@@ -15,13 +16,17 @@
 	let { 
 		title, 
 		portfolioState, 
-		defaultOpen = true, 
+		defaultOpen = false, 
 		loading = false, 
 		skeletonCount = 3,
 		marginTop = false
 	}: Props = $props();
 
-	let isOpen = $state(defaultOpen);
+	let isOpen = $state(false);
+
+	$effect.pre(() => {
+		isOpen = defaultOpen;
+	});
 </script>
 
 <button 
@@ -30,7 +35,18 @@
 	onclick={() => isOpen = !isOpen} 
 	aria-expanded={isOpen}
 >
-	<h3 class="section-title">{title}</h3>
+	<div class="header-left-group">
+		<h3 class="section-title">{title}</h3>
+		{#if portfolioState.totalCapital > 0}
+			<div class="header-daily-badge" class:positive={portfolioState.dailyChangeValue > 0} class:negative={portfolioState.dailyChangeValue < 0}>
+				<span class="daily-arrow">
+					{portfolioState.dailyChangeValue > 0 ? '▲' : portfolioState.dailyChangeValue < 0 ? '▼' : '•'}
+				</span>
+				<span class="daily-percent">{formatPercent(Math.abs(portfolioState.dailyChangePercent))}</span>
+				<span class="daily-value privacy-blur">({formatEUR(portfolioState.dailyChangeValue)})</span>
+			</div>
+		{/if}
+	</div>
 	<span class="chevron-icon" class:rotated={!isOpen}>
 		<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
 			<path d="M6 9l6 6 6-6" />
@@ -71,13 +87,20 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		padding: 0.5rem 1rem;
-		background: rgba(255, 255, 255, 0.02);
-		border: 1px solid rgba(255, 255, 255, 0.05);
-		border-radius: 12px;
+		padding: 0.65rem 1.25rem;
+		background: rgba(255, 255, 255, 0.03);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 16px;
 		cursor: pointer;
-		transition: all 0.2s ease;
+		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 		text-align: left;
+	}
+
+	@media (max-width: 768px) {
+		.section-header-btn {
+			padding: 1rem 1.25rem;
+			border-radius: 18px;
+		}
 	}
 
 	.section-header-btn.mt-1rem {
@@ -90,10 +113,68 @@
 	}
 
 	.section-title { 
-		font-size: 0.9rem; 
+		font-size: 0.95rem; 
 		font-weight: 700; 
 		color: #fff; 
 		margin: 0; 
+		white-space: nowrap;
+	}
+
+	.header-left-group {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		min-width: 0;
+		overflow: hidden;
+	}
+
+	.header-daily-badge {
+		display: flex;
+		align-items: center;
+		gap: 0.3rem;
+		padding: 0.2rem 0.5rem;
+		background: rgba(255, 255, 255, 0.03);
+		border-radius: 8px;
+		font-size: 0.75rem;
+		font-weight: 700;
+		color: rgba(160, 160, 200, 0.6);
+	}
+
+	.header-daily-badge.positive {
+		background: rgba(16, 185, 129, 0.1);
+		color: #10b981;
+	}
+
+	.header-daily-badge.negative {
+		background: rgba(239, 68, 68, 0.1);
+		color: #fca5a5;
+	}
+
+	.daily-arrow {
+		font-size: 0.6rem;
+	}
+
+	.daily-value {
+		font-size: 0.65rem;
+		opacity: 0.7;
+		font-weight: 500;
+	}
+
+	@media (max-width: 768px) {
+		.section-title {
+			font-size: 1.05rem;
+		}
+		
+		.header-left-group {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 0.25rem;
+		}
+
+		.header-daily-badge {
+			padding: 0;
+			background: transparent !important;
+		}
 	}
 
 	.chevron-icon {

@@ -8,11 +8,17 @@
 		<div class="hero-primary">
 			<span class="summary-label">Capital Global</span>
 			<div class="summary-value privacy-blur">{formatEUR(portfolio.globalCapital)}</div>
-			{#if portfolio.satelliteState.totalCapital > 0}
+			{#if portfolio.satelliteState.totalCapital > 0 || portfolio.stockState.totalCapital > 0}
 				<div class="capital-breakdown privacy-blur">
 					<span>90/5/5: <strong style="color: #fff">{formatEUR(portfolio.portfolioState.totalCapital)}</strong></span>
-					<span class="breakdown-divider">•</span>
-					<span>Cons: <strong style="color: #fff">{formatEUR(portfolio.satelliteState.totalCapital)}</strong></span>
+					{#if portfolio.stockState.totalCapital > 0}
+						<span class="breakdown-divider">•</span>
+						<span>Acc: <strong style="color: #fff">{formatEUR(portfolio.stockState.totalCapital)}</strong></span>
+					{/if}
+					{#if portfolio.satelliteState.totalCapital > 0}
+						<span class="breakdown-divider">•</span>
+						<span>Cons: <strong style="color: #fff">{formatEUR(portfolio.satelliteState.totalCapital)}</strong></span>
+					{/if}
 				</div>
 			{/if}
 		</div>
@@ -58,11 +64,6 @@
 						</div>
 					{/each}
 				</div>
-				<button class="reset-action-btn" onclick={() => portfolio.reset()} title="Borrar Cartera">
-					<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
-						<path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-					</svg>
-				</button>
 			{/if}
 		</div>
 	</section>
@@ -212,25 +213,6 @@
 		font-size: 0.75rem;
 		font-weight: 700;
 		color: rgba(255, 255, 255, 0.9);
-	}
-
-	.reset-action-btn {
-		width: 40px;
-		height: 40px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		border-radius: 12px;
-		background: rgba(244, 63, 94, 0.1);
-		border: 1px solid rgba(244, 63, 94, 0.2);
-		color: #f43f5e;
-		cursor: pointer;
-		transition: all 0.2s ease;
-	}
-
-	.reset-action-btn:hover {
-		background: rgba(244, 63, 94, 0.2);
-		transform: scale(1.05) rotate(-5deg);
 	}
 
 	.capital-breakdown {

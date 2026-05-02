@@ -212,8 +212,8 @@
 	.mobile-tabs {
 		display: flex;
 		gap: 0.5rem;
-		background: rgba(10, 10, 20, 0.8);
-		backdrop-filter: blur(20px);
+		background: rgba(10, 10, 20, 0.95);
+		backdrop-filter: blur(24px);
 		padding: 0.5rem;
 		border: 1px solid rgba(255, 255, 255, 0.06);
 		border-radius: 18px;

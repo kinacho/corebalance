@@ -69,6 +69,14 @@ export function calculatePortfolioState(
 		};
 	});
 
+	// Calcular cambios diarios agregados
+	const dailyChangeValue = rawPositions.reduce((sum, pos) => {
+		const changePercent = prices[pos.asset.ticker]?.change || 0;
+		return sum + (pos.totalValue * (changePercent / 100));
+	}, 0);
+
+	const dailyChangePercent = totalCapital > 0 ? (dailyChangeValue / totalCapital) : 0;
+
 	return { 
 		positions, 
 		totalCapital, 
@@ -76,7 +84,9 @@ export function calculatePortfolioState(
 		totalProfit, 
 		totalProfitPercent,
 		totalAnnualCost,
-		weightedAverageTer
+		weightedAverageTer,
+		dailyChangeValue,
+		dailyChangePercent
 	};
 }
 

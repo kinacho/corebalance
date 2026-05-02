@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { TARGET_LABEL } from '$lib/constants';
 	import { portfolio } from '$lib/stores/portfolio.svelte';
+	import { onMount } from 'svelte';
 
 	interface Props {
 		timestamp: string | null;
@@ -13,6 +14,16 @@
 	let { timestamp, loading, onRefresh, isPrivate, onTogglePrivacy }: Props = $props();
 
 	let showUserMenu = $state(false);
+	let scrolled = $state(false);
+
+	onMount(() => {
+		const handleScroll = () => {
+			scrolled = window.scrollY > 10;
+		};
+		window.addEventListener('scroll', handleScroll, { passive: true });
+		handleScroll();
+		return () => window.removeEventListener('scroll', handleScroll);
+	});
 
 	const formattedTime = $derived(
 		timestamp ? new Date(timestamp).toLocaleString('es-ES', {
@@ -31,7 +42,7 @@
 	}
 </script>
 
-<header class="dashboard-header">
+<header class="dashboard-header" class:scrolled={scrolled}>
 	<div class="header-left">
 		<div class="logo-group">
 			<div class="logo-icon">⚖️</div>
@@ -172,6 +183,15 @@
 		position: sticky;
 		top: 0;
 		z-index: 50;
+		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	.dashboard-header.scrolled {
+		background: rgba(10, 10, 20, 0.98);
+		padding-top: 0.75rem;
+		padding-bottom: 0.75rem;
+		border-bottom-color: rgba(255, 255, 255, 0.15);
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 	}
 
 	.header-left {
