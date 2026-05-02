@@ -149,7 +149,7 @@
 		</nav>
 
 		<!-- History Chart Section -->
-		<section class="history-section card">
+		<section class="history-section card" class:tab-hidden={activeTab !== 'charts'}>
 			<div class="section-header">
 				<h3 class="section-title">Evolución del Patrimonio</h3>
 			</div>

@@ -33,7 +33,7 @@
 					backgroundColor: (context) => {
 						const chart = context.chart;
 						const {ctx, chartArea} = chart;
-						if (!chartArea) return null;
+						if (!chartArea) return 'transparent';
 						const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
 						gradient.addColorStop(0, 'rgba(59, 130, 246, 0.2)');
 						gradient.addColorStop(1, 'rgba(59, 130, 246, 0)');
@@ -65,7 +65,7 @@
 						displayColors: false,
 						callbacks: {
 							label: (context) => {
-								return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(context.parsed.y);
+								return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(context.parsed.y ?? 0);
 							}
 						}
 					}

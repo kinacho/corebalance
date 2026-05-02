@@ -194,10 +194,12 @@
 				<span class="current-weight" data-level={deviationLevel}>
 					{formatPercent(position.currentWeight)}
 				</span>
-				<span class="deviation-tag" data-level={deviationLevel}>
-					{position.deviation > 0.001 ? '▴' : position.deviation < -0.001 ? '▾' : ''}
-					{deviationSign}{formatPercent(position.deviation)}
-				</span>
+				{#if position.asset.targetWeight > 0}
+					<span class="deviation-tag" data-level={deviationLevel}>
+						{position.deviation > 0.001 ? '▴' : position.deviation < -0.001 ? '▾' : ''}
+						{deviationSign}{formatPercent(position.deviation)}
+					</span>
+				{/if}
 			</div>
 			<div class="progress-container">
 				<div class="progress-bg">
@@ -207,8 +209,8 @@
 					></div>
 					<div
 						class="target-marker"
-						style="left: {position.asset.targetWeight * 100}%"
-						title="Objetivo: {formatPercent(position.asset.targetWeight)}"
+						style="left: {(position.asset.targetWeight > 0 ? position.asset.targetWeight : position.currentWeight) * 100}%"
+						title={position.asset.targetWeight > 0 ? `Objetivo: ${formatPercent(position.asset.targetWeight)}` : 'Sin objetivo'}
 					></div>
 				</div>
 			</div>

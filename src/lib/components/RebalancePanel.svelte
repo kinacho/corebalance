@@ -207,10 +207,12 @@
 	.contribution-input::-webkit-outer-spin-button,
 	.contribution-input::-webkit-inner-spin-button {
 		-webkit-appearance: none;
+		appearance: none;
 		margin: 0;
 	}
 	.contribution-input[type='number'] {
 		-moz-appearance: textfield;
+		appearance: textfield;
 	}
 
 	.input-currency {
