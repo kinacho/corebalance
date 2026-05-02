@@ -21,11 +21,25 @@ export const GET: RequestHandler = async () => {
 	const errors: string[] = [];
 	const prices: Record<string, PriceData> = {};
 
+	// 1. Obtener todas las cotizaciones de golpe (Bulk fetch) para mejorar rendimiento
+	let quotesResult: any[] = [];
+	try {
+		quotesResult = await yahooFinance.quote(tickers);
+	} catch (error: any) {
+		console.error("Error en bulk quote:", error);
+		errors.push("Error general obteniendo cotizaciones: " + error.message);
+		return json({ prices, timestamp: new Date().toISOString(), errors }, { status: 500 });
+	}
+
+	// Crear un mapa de cotizaciones para acceso rápido
+	const quoteMap = new Map(quotesResult.map(q => [q.symbol, q]));
+
+	// 2. Obtener los históricos (sparklines) usando caché individual
 	const results = await Promise.allSettled(
 		tickers.map(async (ticker) => {
-			const quote = await yahooFinance.quote(ticker);
-			
-			// Cache de 4 horas para el histórico
+			const quote = quoteMap.get(ticker);
+			if (!quote) throw new Error(`No se encontró cotización para ${ticker}`);
+
 			let sparkline: number[] = [];
 			const now = Date.now();
 			if (historyCache[ticker] && (now - historyCache[ticker].timestamp < CACHE_TTL)) {
@@ -34,7 +48,6 @@ export const GET: RequestHandler = async () => {
 				try {
 					const queryOptions = { period1: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), interval: '1d' as const };
 					const chart = await yahooFinance.chart(ticker, queryOptions);
-					// Coger los últimos 7 días de mercado
 					sparkline = chart.quotes.slice(-7).map(q => q.close).filter(v => v !== null) as number[];
 					historyCache[ticker] = { timestamp: now, data: sparkline };
 				} catch (e) {
@@ -58,8 +71,7 @@ export const GET: RequestHandler = async () => {
 				sparkline
 			};
 		} else {
-			const errorMsg = result.reason?.message ?? 'Error desconocido';
-			errors.push(errorMsg);
+			errors.push(result.reason?.message ?? 'Error desconocido');
 		}
 	}
 

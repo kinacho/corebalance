@@ -94,12 +94,12 @@ export class PortfolioStore {
 		// Fetch inicial
 		this.fetchPrices();
 
-		// Polling cada 30 segundos si la pestaña está activa
+		// Polling cada 60 segundos si la pestaña está activa
 		setInterval(() => {
 			if (document.visibilityState === 'visible' && !this.loading) {
 				this.fetchPrices();
 			}
-		}, 30000);
+		}, 60000);
 	}
 
 	private async saveToCloud() {

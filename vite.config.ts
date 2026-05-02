@@ -40,5 +40,19 @@ export default defineConfig({
 				]
 			}
 		})
-	]
+	],
+	build: {
+		chunkSizeWarningLimit: 1000,
+		rollupOptions: {
+			output: {
+				manualChunks: (id) => {
+					if (id.includes('node_modules')) {
+						if (id.includes('firebase')) return 'firebase';
+						if (id.includes('svelte')) return 'vendor';
+						return 'dependencies';
+					}
+				}
+			}
+		}
+	}
 });
