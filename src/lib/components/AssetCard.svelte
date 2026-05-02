@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import type { PortfolioPosition } from '$lib/types';
-	import { formatEUR, formatPercent } from '$lib/utils';
+	import { formatCurrency, formatPercent } from '$lib/utils';
 
 	interface Props {
 		position: PortfolioPosition;
@@ -33,6 +33,9 @@
 	const deviationSign = $derived(
 		position.deviation > 0.001 ? '+' : ''
 	);
+
+	const assetCurrency = $derived(portfolio.prices[position.asset.ticker]?.currency || 'EUR');
+	const currencySymbol = $derived(assetCurrency === 'USD' ? '$' : '€');
 
 	function handleHoldingsInput(e: Event) {
 		const target = e.target as HTMLInputElement;
@@ -91,7 +94,7 @@
 				<div class="btc-spot-price">
 					<span class="live-dot"></span>
 					<span class="btc-label">BTC Spot:</span>
-					<span class="btc-value">{formatEUR(portfolio.btcPrice)}</span>
+					<span class="btc-value">{formatCurrency(portfolio.btcPrice, 'EUR')}</span>
 				</div>
 			{/if}
 			<div class="target-badge">
@@ -137,7 +140,7 @@
 						placeholder="0.00"
 						inputmode="decimal"
 					/>
-					<span class="input-suffix">€</span>
+					<span class="input-suffix">{currencySymbol}</span>
 				</div>
 			</div>
 		</div>
@@ -148,12 +151,12 @@
 				<span class="metric-label">Precio</span>
 				<div class="metric-content">
 					{#if position.unitPrice > 0}
-						<span class="metric-value">{formatEUR(position.unitPrice)}</span>
+						<span class="metric-value">{formatCurrency(portfolio.prices[position.asset.ticker]?.price || 0, assetCurrency)}</span>
 					{:else}
 						<input 
 							type="number" 
 							class="price-ghost-input" 
-							placeholder="0.00 €" 
+							placeholder={`0.00 ${currencySymbol}`} 
 							oninput={(e) => {
 								const val = parseFloat((e.target as HTMLInputElement).value);
 								if (!isNaN(val)) onUpdatePrice(position.asset.ticker, val);
@@ -165,14 +168,14 @@
 			<div class="metric">
 				<span class="metric-label">Valor Total</span>
 				<div class="metric-content">
-					<span class="metric-value highlight privacy-blur">{formatEUR(position.totalValue)}</span>
+					<span class="metric-value highlight privacy-blur">{formatCurrency(position.totalValue, 'EUR')}</span>
 				</div>
 			</div>
 			<div class="metric pnl-metric" class:positive={position.profit > 0} class:negative={position.profit < 0}>
 				<span class="metric-label">Beneficio</span>
 				<div class="metric-content">
 					<span class="metric-value privacy-blur">
-						{position.profit > 0 ? '+' : ''}{formatEUR(position.profit)}
+						{position.profit > 0 ? '+' : ''}{formatCurrency(position.profit, 'EUR')}
 					</span>
 					<span class="profit-tag">
 						{position.profit > 0 ? '+' : ''}{formatPercent(position.profitPercent)}
@@ -182,7 +185,7 @@
 			<div class="metric cost-metric">
 				<span class="metric-label">Coste Est.</span>
 				<div class="metric-content">
-					<span class="metric-value privacy-blur">{formatEUR(position.totalValue * position.asset.ter)}</span>
+					<span class="metric-value privacy-blur">{formatCurrency(position.totalValue * position.asset.ter, 'EUR')}</span>
 					<span class="cost-period">/año</span>
 				</div>
 			</div>

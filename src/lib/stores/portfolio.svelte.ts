@@ -1,4 +1,4 @@
-import { PORTFOLIO_ASSETS, SATELLITE_ASSETS, STORAGE_KEY_HOLDINGS, STORAGE_KEY_CONTRIBUTION } from '$lib/constants';
+import { PORTFOLIO_ASSETS, SATELLITE_ASSETS, STOCK_ASSETS, STORAGE_KEY_HOLDINGS, STORAGE_KEY_CONTRIBUTION } from '$lib/constants';
 import type { HoldingData, HoldingsMap, PortfolioState, PriceData, RebalanceResult } from '$lib/types';
 import { calculatePortfolioState, calculateRebalance } from '$lib/rebalance';
 import { auth, db, googleProvider } from '$lib/firebase';
@@ -21,24 +21,42 @@ export class PortfolioStore {
 	dailyChange = $state({ value: 0, percent: 0 });
 
 	// --- Derived State ---
+	eurUsdRate = $derived(this.prices['EURUSD=X']?.price || 1.1);
+	eurCadRate = $derived(this.prices['EURCAD=X']?.price || 1.5);
+
+	convertedPrices: Record<string, PriceData> = $derived.by(() => {
+		const res: Record<string, PriceData> = {};
+		for (const [ticker, data] of Object.entries(this.prices)) {
+			let price = data.price;
+			if (data.currency === 'USD') price /= this.eurUsdRate;
+			if (data.currency === 'CAD') price /= this.eurCadRate;
+			res[ticker] = { ...data, price };
+		}
+		return res;
+	});
+
 	portfolioState: PortfolioState = $derived(
-		calculatePortfolioState(PORTFOLIO_ASSETS, this.holdings, this.prices)
+		calculatePortfolioState(PORTFOLIO_ASSETS, this.holdings, this.convertedPrices)
 	);
 
 	satelliteState: PortfolioState = $derived(
-		calculatePortfolioState(SATELLITE_ASSETS, this.holdings, this.prices)
+		calculatePortfolioState(SATELLITE_ASSETS, this.holdings, this.convertedPrices)
 	);
 
-	globalCapital = $derived(this.portfolioState.totalCapital + this.satelliteState.totalCapital);
-	globalProfit = $derived(this.portfolioState.totalProfit + this.satelliteState.totalProfit);
-	globalInvested = $derived(this.portfolioState.totalInvested + this.satelliteState.totalInvested);
+	stockState: PortfolioState = $derived(
+		calculatePortfolioState(STOCK_ASSETS, this.holdings, this.convertedPrices)
+	);
+
+	globalCapital = $derived(this.portfolioState.totalCapital + this.satelliteState.totalCapital + this.stockState.totalCapital);
+	globalProfit = $derived(this.portfolioState.totalProfit + this.satelliteState.totalProfit + this.stockState.totalProfit);
+	globalInvested = $derived(this.portfolioState.totalInvested + this.satelliteState.totalInvested + this.stockState.totalInvested);
 	globalProfitPercent = $derived(this.globalInvested > 0 ? this.globalProfit / this.globalInvested : 0);
-	globalAnnualCost = $derived(this.portfolioState.totalAnnualCost + this.satelliteState.totalAnnualCost);
+	globalAnnualCost = $derived(this.portfolioState.totalAnnualCost + this.satelliteState.totalAnnualCost + this.stockState.totalAnnualCost);
 	globalWeightedAverageTer = $derived(this.globalCapital > 0 ? this.globalAnnualCost / this.globalCapital : 0);
 
 	rebalanceResult: RebalanceResult | null = $derived(
 		this.contribution > 0 && Object.keys(this.prices).length > 0
-			? calculateRebalance(PORTFOLIO_ASSETS, this.holdings, this.prices, this.contribution)
+			? calculateRebalance(PORTFOLIO_ASSETS, this.holdings, this.convertedPrices, this.contribution)
 			: null
 	);
 
@@ -111,32 +129,15 @@ export class PortfolioStore {
 			} else if (Object.keys(this.holdings).length > 0) {
 				await this.saveToCloud();
 			}
+			
+			// Cargar historial después de los datos de la cartera
+			await this.loadHistory();
 		} catch (e) {
 			console.error('Firestore load error:', e);
 		}
 	}
 
-	private async saveDailySnapshot() {
-		if (!this.user || !db || this.globalCapital === 0) return;
 
-		const today = new Date().toISOString().split('T')[0];
-		const docId = `${this.user.uid}_${today}`;
-		const snapshotRef = doc(db, 'portfolio_history', docId);
-
-		try {
-			await setDoc(snapshotRef, {
-				userId: this.user.uid,
-				date: today,
-				totalCapital: this.globalCapital,
-				totalProfit: this.globalProfit,
-				timestamp: new Date().toISOString()
-			}, { merge: true });
-			
-			await this.loadHistory();
-		} catch (e) {
-			console.error('Snapshot save error:', e);
-		}
-	}
 
 	private async loadHistory() {
 		if (!this.user || !db) return;
@@ -160,13 +161,23 @@ export class PortfolioStore {
 	private async updateHistoryPoints() {
 		if (!this.user || !db || this.globalCapital === 0) return;
 		
-		const today = new Date().toISOString().split('T')[0];
+		// Evitar race conditions: si el historial está vacío, intentamos cargarlo 
+		// antes de añadir el punto de hoy para no sobreescribir datos antiguos.
+		if (this.history.length === 0) {
+			await this.loadHistory();
+		}
+
+		const d = new Date();
+		const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 		const currentPoint = { date: today, value: this.globalCapital };
 		
 		let newHistory = [...this.history];
 		const index = newHistory.findIndex(p => p.date === today);
 		
 		if (index >= 0) {
+			// Si ya existe el punto de hoy, lo actualizamos si ha cambiado significativamente
+			// (o simplemente lo actualizamos siempre para tener el último valor del día)
+			if (Math.abs(newHistory[index].value - currentPoint.value) < 0.01) return;
 			newHistory[index] = currentPoint;
 		} else {
 			newHistory.push(currentPoint);

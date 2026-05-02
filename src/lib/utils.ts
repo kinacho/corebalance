@@ -1,11 +1,17 @@
-/** Formatea un número como moneda Euro */
-export function formatEUR(value: number): string {
-	return new Intl.NumberFormat('es-ES', {
+/** Formatea un número según la moneda especificada */
+export function formatCurrency(value: number, currency: string = 'EUR'): string {
+	const locale = currency === 'USD' ? 'en-US' : 'es-ES';
+	return new Intl.NumberFormat(locale, {
 		style: 'currency',
-		currency: 'EUR',
+		currency: currency,
 		minimumFractionDigits: 2,
 		maximumFractionDigits: 2
 	}).format(value);
+}
+
+/** Formatea un número como moneda Euro */
+export function formatEUR(value: number): string {
+	return formatCurrency(value, 'EUR');
 }
 
 /** Formatea un número como porcentaje */

@@ -53,6 +53,28 @@ export const SATELLITE_ASSETS: Asset[] = [
 	}
 ];
 
+/** Acciones individuales */
+export const STOCK_ASSETS: Asset[] = [
+	{
+		ticker: 'ATCH',
+		name: 'AtlasClear Holdings',
+		isin: 'US1287452056',
+		targetWeight: 0,
+		color: '#6366f1',
+		icon: '📈',
+		ter: 0
+	},
+	{
+		ticker: '34Q0.SG',
+		name: 'Quantum eMotion',
+		isin: 'CA74767K1030',
+		targetWeight: 0,
+		color: '#ec4899',
+		icon: '⚛️',
+		ter: 0
+	}
+];
+
 /** Claves de localStorage */
 export const STORAGE_KEY_HOLDINGS = 'balanceador_holdings_v2';
 export const STORAGE_KEY_CONTRIBUTION = 'balanceador_contribution';
