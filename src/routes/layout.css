@@ -37,25 +37,96 @@
 		padding-right: env(safe-area-inset-right);
 	}
 
-	body::before {
-		content: '';
+	.background-mesh {
 		position: fixed;
-		top: -50%;
-		left: -50%;
-		width: 200%;
-		height: 200%;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
 		background: 
-			radial-gradient(circle at 15% 15%, rgba(59, 130, 246, 0.15) 0%, transparent 40%),
-			radial-gradient(circle at 85% 85%, rgba(245, 158, 11, 0.1) 0%, transparent 40%),
-			radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.05) 0%, transparent 60%);
+			radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0, transparent 50%), 
+			radial-gradient(at 50% 0%, rgba(139, 92, 246, 0.12) 0, transparent 50%), 
+			radial-gradient(at 100% 0%, rgba(16, 185, 129, 0.1) 0, transparent 50%), 
+			radial-gradient(at 0% 100%, rgba(59, 130, 246, 0.1) 0, transparent 50%), 
+			radial-gradient(at 50% 100%, rgba(139, 92, 246, 0.12) 0, transparent 50%), 
+			radial-gradient(at 100% 100%, rgba(245, 158, 11, 0.1) 0, transparent 50%);
 		filter: blur(80px);
 		z-index: -1;
-		animation: backgroundFlow 30s ease-in-out infinite alternate;
+		animation: meshFlow 25s ease-in-out infinite alternate;
+		pointer-events: none;
 	}
 
-	@keyframes backgroundFlow {
-		0% { transform: rotate(0deg) scale(1); }
-		100% { transform: rotate(10deg) scale(1.1); }
+	@keyframes meshFlow {
+		0% { transform: scale(1) translate(0, 0); }
+		33% { transform: scale(1.1) translate(2%, 3%); }
+		66% { transform: scale(1.05) translate(-2%, 2%); }
+		100% { transform: scale(1.1) translate(0, 0); }
+	}
+
+	/* Shimmer Pro Effect */
+	.shimmer {
+		position: relative;
+		overflow: hidden;
+		background: rgba(255, 255, 255, 0.03);
+	}
+
+	.shimmer::after {
+		content: '';
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		transform: translateX(-100%);
+		background: linear-gradient(
+			90deg,
+			transparent 0,
+			rgba(255, 255, 255, 0.03) 20%,
+			rgba(255, 255, 255, 0.08) 50%,
+			rgba(255, 255, 255, 0.03) 80%,
+			transparent 100%
+		);
+		animation: shimmer-flow 2s infinite;
+	}
+
+	@keyframes shimmer-flow {
+		100% { transform: translateX(100%); }
+	}
+
+	/* Market Status Dot Animation */
+	.market-dot {
+		display: inline-block;
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		margin-right: 6px;
+		position: relative;
+	}
+
+	.market-dot.open {
+		background: #10b981;
+		box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+	}
+
+	.market-dot.open::after {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		border-radius: 50%;
+		background: #10b981;
+		animation: pulse-dot 2s infinite;
+	}
+
+	@keyframes pulse-dot {
+		0% { transform: scale(1); opacity: 0.8; }
+		100% { transform: scale(2.5); opacity: 0; }
+	}
+
+	.market-dot.closed {
+		background: rgba(160, 160, 200, 0.4);
 	}
 
 	.privacy-mode .privacy-blur {

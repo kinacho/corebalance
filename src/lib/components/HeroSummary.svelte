@@ -37,11 +37,11 @@
 				</div>
 			</div>
 
-			<div class="metric-card" class:positive={portfolio.dailyChange.value > 0} class:negative={portfolio.dailyChange.value < 0}>
+			<div class="metric-card" class:positive={portfolio.globalDailyChangeValue > 0} class:negative={portfolio.globalDailyChangeValue < 0}>
 				<span class="metric-label">Cambio Hoy</span>
 				<div class="metric-row">
-					<span class="metric-value privacy-blur">{formatEUR(portfolio.dailyChange.value)}</span>
-					<span class="metric-badge">{formatPercent(portfolio.dailyChange.percent)}</span>
+					<span class="metric-value privacy-blur">{portfolio.globalDailyChangeValue > 0 ? '+' : ''}{formatEUR(portfolio.globalDailyChangeValue)}</span>
+					<span class="metric-badge">{portfolio.globalDailyChangeValue > 0 ? '+' : ''}{formatPercent(portfolio.globalDailyChangePercent)}</span>
 				</div>
 			</div>
 
@@ -145,24 +145,25 @@
 
 	.metric-row {
 		display: flex;
-		align-items: center;
-		justify-content: space-between;
+		align-items: baseline;
+		justify-content: flex-start;
 		gap: 0.5rem;
-		flex-wrap: wrap;
 	}
 
 	.metric-value {
-		font-size: 1.15rem;
+		font-size: 1.1rem;
 		font-weight: 700;
 		color: #ffffff;
+		white-space: nowrap;
 	}
 
 	.metric-badge {
 		font-size: 0.7rem;
 		font-weight: 800;
-		padding: 0.2rem 0.5rem;
-		border-radius: 8px;
+		padding: 0.15rem 0.4rem;
+		border-radius: 6px;
 		background: rgba(255, 255, 255, 0.05);
+		white-space: nowrap;
 	}
 
 	.metric-card.positive .metric-value { color: #10b981; }

@@ -39,6 +39,8 @@ export interface PortfolioPosition {
 	targetHoldings: number; // targetValue / unitPrice
 	profit: number;         // totalValue - totalCost
 	profitPercent: number;  // profit / totalCost
+	dailyChangeValue: number; // Cambio diario en valor absoluto
+	dailyChangePercent: number; // Cambio diario porcentual
 }
 
 /** Estado completo de la cartera */

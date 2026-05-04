@@ -24,3 +24,27 @@ export function formatShares(value: number): string {
 	if (value === 0) return '0';
 	return value.toFixed(3).replace(/\.?0+$/, '');
 }
+
+/** Determina si el mercado para un ticker está abierto actualmente */
+export function isMarketOpen(ticker: string): boolean {
+	// Cripto siempre abierto
+	if (ticker.includes('BTC') || ticker.includes('ETH')) return true;
+
+	const now = new Date();
+	const day = now.getDay();
+	const hours = now.getHours();
+	const minutes = now.getMinutes();
+	const currentTime = hours * 60 + minutes;
+
+	// Fines de semana cerrado (Sáb=6, Dom=0)
+	if (day === 0 || day === 6) return false;
+
+	// Horarios aproximados (España/CET)
+	// Europa (XETRA, Frankfurt, etc): 09:00 - 17:30 (aprox hasta 20:00-22:00 en algunos)
+	if (ticker.endsWith('.F') || ticker.endsWith('.SG') || ticker.startsWith('0P')) {
+		return currentTime >= 540 && currentTime <= 1050; // 09:00 - 17:30
+	}
+
+	// USA (NASDAQ, NYSE): 15:30 - 22:00
+	return currentTime >= 930 && currentTime <= 1320; // 15:30 - 22:00
+}

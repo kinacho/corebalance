@@ -54,6 +54,15 @@ export class PortfolioStore {
 	globalAnnualCost = $derived(this.portfolioState.totalAnnualCost + this.satelliteState.totalAnnualCost + this.stockState.totalAnnualCost);
 	globalWeightedAverageTer = $derived(this.globalCapital > 0 ? this.globalAnnualCost / this.globalCapital : 0);
 
+	globalDailyChangeValue = $derived(
+		this.portfolioState.dailyChangeValue + 
+		this.satelliteState.dailyChangeValue + 
+		this.stockState.dailyChangeValue
+	);
+	globalDailyChangePercent = $derived(
+		this.globalCapital > 0 ? this.globalDailyChangeValue / this.globalCapital : 0
+	);
+
 	rebalanceResult: RebalanceResult | null = $derived(
 		this.contribution > 0 && Object.keys(this.prices).length > 0
 			? calculateRebalance(PORTFOLIO_ASSETS, this.holdings, this.convertedPrices, this.contribution)
@@ -142,9 +151,6 @@ export class PortfolioStore {
 	private async loadHistory() {
 		if (!this.user || !db) return;
 		try {
-			// Nota: En una app real usaríamos una query con limit, pero para MVP leemos los docs
-			// Como Firestore no tiene auto-increment ni listado fácil sin index, 
-			// asumimos que el usuario tiene pocos días registrados aún.
 			const historyRef = doc(db, 'user_history', this.user.uid);
 			const snap = await getDoc(historyRef);
 			
@@ -271,7 +277,7 @@ export class PortfolioStore {
 		
 		this.error = null;
 		try {
-			const response = await fetch('/api/prices');
+			const response = await fetch(`/api/prices?t=${Date.now()}`, { cache: 'no-store' });
 			if (!response.ok) throw new Error(`HTTP ${response.status}`);
 			const data = await response.json();
 			this.prices = data.prices;

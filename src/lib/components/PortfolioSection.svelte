@@ -75,7 +75,7 @@
 		{#if loading && Object.keys(portfolio.prices).length === 0}
 			<div class="cards-grid">
 				{#each Array(skeletonCount) as _}
-					<div class="skeleton-card"></div>
+					<div class="skeleton-card shimmer"></div>
 				{/each}
 			</div>
 		{:else}
@@ -345,12 +345,6 @@
 		background: rgba(255, 255, 255, 0.03); 
 		border-radius: 20px; 
 		min-height: 200px; 
-		animation: pulse 2s infinite; 
-	}
-
-	@keyframes pulse { 
-		0%, 100% { opacity: 0.5; } 
-		50% { opacity: 0.8; } 
 	}
 
 	@media (min-width: 1024px) {

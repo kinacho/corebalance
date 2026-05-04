@@ -63,11 +63,21 @@ export const GET: RequestHandler = async () => {
 	for (const result of results) {
 		if (result.status === 'fulfilled') {
 			const { ticker, quote, sparkline } = result.value;
+			// Calcular cambio diario: usar el proporcionado por Yahoo o calcularlo manualmente si falta
+			let change = quote.regularMarketChangePercent;
+			const p = quote.regularMarketPrice;
+			const pc = quote.regularMarketPreviousClose;
+
+			// Si Yahoo dice 0 o no lo da, pero tenemos precio actual y anterior, lo calculamos nosotros
+			if ((change === undefined || Math.abs(change) < 0.0001) && p && pc && Math.abs(p - pc) > 0.000001) {
+				change = ((p - pc) / pc) * 100;
+			}
+
 			prices[ticker] = {
-				price: quote.regularMarketPrice ?? 0,
+				price: p ?? 0,
 				currency: quote.currency ?? 'EUR',
 				name: quote.shortName ?? quote.longName ?? ticker,
-				change: quote.regularMarketChangePercent ?? 0,
+				change: change ?? 0,
 				sparkline
 			};
 		} else {

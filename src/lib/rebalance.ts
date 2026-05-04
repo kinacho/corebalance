@@ -28,6 +28,10 @@ export function calculatePortfolioState(
 		const totalCost = h * avg;
 		const profit = totalValue - totalCost;
 		const profitPercent = totalCost > 0 ? profit / totalCost : 0;
+		
+		const changePercent = prices[asset.ticker]?.change ?? 0;
+		const dailyChangeValue = totalValue * (changePercent / 100);
+		const dailyChangePercent = changePercent / 100;
 
 		return { 
 			asset, 
@@ -37,7 +41,9 @@ export function calculatePortfolioState(
 			unitPrice: p, 
 			totalValue,
 			profit,
-			profitPercent
+			profitPercent,
+			dailyChangeValue,
+			dailyChangePercent
 		};
 	});
 

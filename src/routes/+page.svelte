@@ -161,7 +161,6 @@
 
 <style>
 	:global(body) {
-		background: #0a0a16;
 		color: #f0f0ff;
 	}
 

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import type { PortfolioPosition } from '$lib/types';
-	import { formatCurrency, formatPercent } from '$lib/utils';
+	import { formatCurrency, formatPercent, isMarketOpen } from '$lib/utils';
 
 	interface Props {
 		position: PortfolioPosition;
@@ -63,7 +63,10 @@
 	<div class="cell-identity">
 		<span class="asset-icon">{position.asset.icon}</span>
 		<div class="asset-names">
-			<span class="asset-ticker">{position.asset.ticker.split('.')[0]}</span>
+			<span class="asset-ticker">
+				<span class="market-dot" class:open={isMarketOpen(position.asset.ticker)} class:closed={!isMarketOpen(position.asset.ticker)} title={isMarketOpen(position.asset.ticker) ? 'Mercado abierto' : 'Mercado cerrado'}></span>
+				{position.asset.ticker.split('.')[0]}
+			</span>
 			<span class="asset-name" title={position.asset.name}>{position.asset.name}</span>
 		</div>
 	</div>
@@ -108,9 +111,21 @@
 		</div>
 	</div>
 
-	<div class="cell-profit" class:positive={position.profit > 0} class:negative={position.profit < 0}>
-		<span class="profit-val privacy-blur">{position.profit > 0 ? '+' : ''}{formatCurrency(position.profit, 'EUR')}</span>
-		<span class="profit-pct">{position.profit > 0 ? '+' : ''}{formatPercent(position.profitPercent)}</span>
+	<div class="cell-performance">
+		<div class="perf-row daily" class:positive={position.dailyChangePercent > 0} class:negative={position.dailyChangePercent < 0}>
+			<span class="perf-label">Hoy</span>
+			<div class="perf-values">
+				<span class="perf-val privacy-blur">{position.dailyChangeValue > 0 ? '+' : ''}{formatCurrency(position.dailyChangeValue, 'EUR')}</span>
+				<span class="perf-pct">({position.dailyChangePercent > 0 ? '+' : ''}{formatPercent(position.dailyChangePercent)})</span>
+			</div>
+		</div>
+		<div class="perf-row total" class:positive={position.profit > 0} class:negative={position.profit < 0}>
+			<span class="perf-label">Total</span>
+			<div class="perf-values">
+				<span class="perf-val privacy-blur">{position.profit > 0 ? '+' : ''}{formatCurrency(position.profit, 'EUR')}</span>
+				<span class="perf-pct">({position.profit > 0 ? '+' : ''}{formatPercent(position.profitPercent)})</span>
+			</div>
+		</div>
 	</div>
 
 	<div class="cell-weight">
@@ -124,7 +139,7 @@
 <style>
 	.compact-row {
 		display: grid;
-		grid-template-columns: 2fr 2fr 1.5fr 1fr 1fr;
+		grid-template-columns: 2fr 1.8fr 1.2fr 1.8fr 1fr;
 		gap: 0.75rem;
 		padding: 0.75rem 1rem;
 		background: rgba(255, 255, 255, 0.02);
@@ -238,18 +253,40 @@
 		color: #fff;
 	}
 
-	.cell-profit {
+	.cell-performance {
 		display: flex;
 		flex-direction: column;
+		gap: 0.3rem;
 		align-items: flex-end;
-		font-size: 0.8rem;
+	}
+
+	.perf-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		width: 100%;
+		font-size: 0.75rem;
 		font-weight: 700;
 	}
 
-	.cell-profit.positive { color: #10b981; }
-	.cell-profit.negative { color: #fca5a5; }
+	.perf-label {
+		font-size: 0.6rem;
+		text-transform: uppercase;
+		opacity: 0.5;
+		margin-right: 0.5rem;
+	}
 
-	.profit-pct {
+	.perf-values {
+		display: flex;
+		align-items: baseline;
+		gap: 0.4rem;
+	}
+
+	.perf-row.positive { color: #10b981; }
+	.perf-row.negative { color: #fca5a5; }
+	.perf-row:not(.positive):not(.negative) { color: rgba(255, 255, 255, 0.6); }
+
+	.perf-pct {
 		font-size: 0.65rem;
 		opacity: 0.8;
 	}
@@ -282,15 +319,16 @@
 			margin-bottom: 0.5rem;
 		}
 
-		.cell-metrics, .cell-profit, .cell-weight {
+		.cell-metrics, .cell-performance, .cell-weight {
 			flex-direction: row;
 			justify-content: space-between;
 			align-items: center;
 		}
 
-		.cell-profit {
-			flex-direction: row;
-			gap: 0.5rem;
+		.cell-performance {
+			flex-direction: column;
+			gap: 0.3rem;
+			align-items: stretch;
 		}
 
 		.cell-weight {

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import type { PortfolioPosition } from '$lib/types';
-	import { formatCurrency, formatPercent } from '$lib/utils';
+	import { formatCurrency, formatPercent, isMarketOpen } from '$lib/utils';
 
 	interface Props {
 		position: PortfolioPosition;
@@ -81,7 +81,13 @@
 				<span class="asset-icon">{position.asset.icon}</span>
 			</div>
 			<div class="asset-info">
-				<h3 class="asset-name">{position.asset.name}</h3>
+				<div class="header-main">
+					<span class="ticker">
+						<span class="market-dot" class:open={isMarketOpen(position.asset.ticker)} class:closed={!isMarketOpen(position.asset.ticker)} title={isMarketOpen(position.asset.ticker) ? 'Mercado abierto' : 'Mercado cerrado'}></span>
+						{position.asset.ticker}
+					</span>
+					<h3 class="asset-name">{position.asset.name}</h3>
+				</div>
 				<div class="asset-meta">
 					<span class="asset-isin">{position.asset.isin}</span>
 					<span class="asset-divider">•</span>
@@ -171,8 +177,19 @@
 					<span class="metric-value highlight privacy-blur">{formatCurrency(position.totalValue, 'EUR')}</span>
 				</div>
 			</div>
+			<div class="metric pnl-metric" class:positive={position.dailyChangePercent > 0} class:negative={position.dailyChangePercent < 0}>
+				<span class="metric-label">Hoy</span>
+				<div class="metric-content">
+					<span class="metric-value privacy-blur">
+						{position.dailyChangeValue > 0 ? '+' : ''}{formatCurrency(position.dailyChangeValue, 'EUR')}
+					</span>
+					<span class="profit-tag">
+						{position.dailyChangePercent > 0 ? '+' : ''}{formatPercent(position.dailyChangePercent)}
+					</span>
+				</div>
+			</div>
 			<div class="metric pnl-metric" class:positive={position.profit > 0} class:negative={position.profit < 0}>
-				<span class="metric-label">Beneficio</span>
+				<span class="metric-label">Total</span>
 				<div class="metric-content">
 					<span class="metric-value privacy-blur">
 						{position.profit > 0 ? '+' : ''}{formatCurrency(position.profit, 'EUR')}
@@ -182,13 +199,15 @@
 					</span>
 				</div>
 			</div>
-			<div class="metric cost-metric">
-				<span class="metric-label">Coste Est.</span>
-				<div class="metric-content">
-					<span class="metric-value privacy-blur">{formatCurrency(position.totalValue * position.asset.ter, 'EUR')}</span>
-					<span class="cost-period">/año</span>
+			{#if position.asset.ter > 0}
+				<div class="metric cost-metric">
+					<span class="metric-label">Coste Est.</span>
+					<div class="metric-content">
+						<span class="metric-value privacy-blur">{formatCurrency(position.totalValue * position.asset.ter, 'EUR')}</span>
+						<span class="cost-period">/año</span>
+					</div>
 				</div>
-			</div>
+			{/if}
 		</div>
 
 		<!-- Weight progress -->
@@ -450,8 +469,8 @@
 
 	.metric-content {
 		display: flex;
-		align-items: center;
-		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 0.4rem;
 	}
 
 	.metric-label {
