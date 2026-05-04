@@ -113,18 +113,19 @@
 	.hero-metrics {
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
-		gap: 0.75rem;
+		gap: 0.5rem;
 	}
 
 	.metric-card {
 		background: rgba(255, 255, 255, 0.02);
 		border: 1px solid rgba(255, 255, 255, 0.04);
 		border-radius: 16px;
-		padding: 1rem;
+		padding: 0.75rem;
 		display: flex;
 		flex-direction: column;
-		gap: 0.4rem;
+		gap: 0.25rem;
 		transition: transform 0.2s ease, background 0.2s ease;
+		min-width: 0;
 	}
 
 	.metric-card:hover {
@@ -147,11 +148,12 @@
 		display: flex;
 		align-items: baseline;
 		justify-content: flex-start;
-		gap: 0.5rem;
+		gap: 0.4rem;
+		flex-wrap: wrap;
 	}
 
 	.metric-value {
-		font-size: 1.1rem;
+		font-size: 1rem;
 		font-weight: 700;
 		color: #ffffff;
 		white-space: nowrap;
@@ -219,14 +221,17 @@
 	.capital-breakdown {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
+		justify-content: center;
+		flex-wrap: wrap;
+		gap: 0.4rem 0.6rem;
 		margin-top: 0.5rem;
-		font-size: 0.8rem;
+		font-size: 0.7rem;
 		color: rgba(255, 255, 255, 0.6);
 		background: rgba(0, 0, 0, 0.2);
-		padding: 0.4rem 0.8rem;
-		border-radius: 20px;
+		padding: 0.5rem 0.75rem;
+		border-radius: 16px;
 		border: 1px solid rgba(255, 255, 255, 0.05);
+		width: 100%;
 	}
 
 	.breakdown-divider {
