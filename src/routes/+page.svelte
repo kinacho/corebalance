@@ -210,39 +210,54 @@
 	/* --- Navigation (Mobile) --- */
 	.mobile-tabs {
 		display: flex;
-		gap: 0.5rem;
-		background: rgba(10, 10, 20, 0.95);
-		backdrop-filter: blur(24px);
-		padding: 0.5rem;
-		border: 1px solid rgba(255, 255, 255, 0.06);
-		border-radius: 18px;
+		gap: 0.35rem;
+		background: rgba(20, 20, 35, 0.7);
+		backdrop-filter: blur(20px) saturate(180%);
+		-webkit-backdrop-filter: blur(20px) saturate(180%);
+		padding: 0.4rem;
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		border-radius: 20px;
 		position: sticky;
-		top: 64px;
-		z-index: 40;
-		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+		top: 0.75rem;
+		z-index: 100;
+		box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
 		margin-bottom: 1.5rem;
 	}
 
 	.tab-btn {
 		flex: 1;
 		display: flex;
+		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		gap: 0.5rem;
-		padding: 0.75rem;
+		gap: 0.25rem;
+		padding: 0.6rem 0.25rem;
 		border: none;
 		border-radius: 14px;
 		background: transparent;
-		color: rgba(255, 255, 255, 0.4);
-		font-size: 0.8rem;
-		font-weight: 600;
+		color: rgba(255, 255, 255, 0.3);
+		font-size: 0.65rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.02em;
 		cursor: pointer;
-		transition: all 0.2s;
+		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	.tab-icon {
+		font-size: 1.2rem;
+		margin-bottom: 2px;
+		transition: transform 0.3s ease;
 	}
 
 	.tab-btn.active { 
 		background: rgba(59, 130, 246, 0.15); 
-		color: #3b82f6; 
+		color: #60a5fa;
+		box-shadow: 0 0 20px rgba(59, 130, 246, 0.1);
+	}
+
+	.tab-btn.active .tab-icon {
+		transform: translateY(-2px) scale(1.1);
 	}
 
 	/* --- Layout Grid --- */
@@ -255,23 +270,23 @@
 
 	.history-section {
 		padding: 1.5rem;
-		background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%);
-		backdrop-filter: blur(24px) saturate(180%);
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		border-radius: 24px;
+		background: rgba(255, 255, 255, 0.03);
+		backdrop-filter: blur(24px) saturate(200%);
+		-webkit-backdrop-filter: blur(24px) saturate(200%);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 28px;
 		margin-bottom: 2rem;
+		box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
 	}
-
-
 
 	.charts-card { 
 		padding: 1.5rem; 
-		background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%);
-		backdrop-filter: blur(24px) saturate(180%);
-		-webkit-backdrop-filter: blur(24px) saturate(180%);
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		border-radius: 24px;
-		box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+		background: rgba(255, 255, 255, 0.03);
+		backdrop-filter: blur(24px) saturate(200%);
+		-webkit-backdrop-filter: blur(24px) saturate(200%);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 28px;
+		box-shadow: 0 12px 48px 0 rgba(0, 0, 0, 0.5);
 	}
 	.sidebar-title { font-size: 0.9rem; font-weight: 700; color: #fff; margin-bottom: 1.5rem; }
 	.charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }

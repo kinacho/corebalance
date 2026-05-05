@@ -44,30 +44,37 @@
 		width: 100%;
 		height: 100%;
 		background: 
-			radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0, transparent 50%), 
-			radial-gradient(at 50% 0%, rgba(139, 92, 246, 0.12) 0, transparent 50%), 
-			radial-gradient(at 100% 0%, rgba(16, 185, 129, 0.1) 0, transparent 50%), 
-			radial-gradient(at 0% 100%, rgba(59, 130, 246, 0.1) 0, transparent 50%), 
-			radial-gradient(at 50% 100%, rgba(139, 92, 246, 0.12) 0, transparent 50%), 
-			radial-gradient(at 100% 100%, rgba(245, 158, 11, 0.1) 0, transparent 50%);
+			radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.22) 0, transparent 50%), 
+			radial-gradient(at 50% 0%, rgba(139, 92, 246, 0.18) 0, transparent 50%), 
+			radial-gradient(at 100% 0%, rgba(16, 185, 129, 0.15) 0, transparent 50%), 
+			radial-gradient(at 0% 100%, rgba(59, 130, 246, 0.15) 0, transparent 50%), 
+			radial-gradient(at 50% 100%, rgba(139, 92, 246, 0.18) 0, transparent 50%), 
+			radial-gradient(at 100% 100%, rgba(245, 158, 11, 0.15) 0, transparent 50%);
 		filter: blur(80px);
 		z-index: -1;
 		animation: meshFlow 25s ease-in-out infinite alternate;
 		pointer-events: none;
 	}
 
+	@media (max-width: 768px) {
+		.background-mesh {
+			filter: blur(40px);
+			opacity: 0.8;
+		}
+	}
+
 	@keyframes meshFlow {
 		0% { transform: scale(1) translate(0, 0); }
-		33% { transform: scale(1.1) translate(2%, 3%); }
-		66% { transform: scale(1.05) translate(-2%, 2%); }
-		100% { transform: scale(1.1) translate(0, 0); }
+		33% { transform: scale(1.15) translate(3%, 5%); }
+		66% { transform: scale(1.1) translate(-3%, 3%); }
+		100% { transform: scale(1.15) translate(0, 0); }
 	}
 
 	/* Shimmer Pro Effect */
 	.shimmer {
 		position: relative;
 		overflow: hidden;
-		background: rgba(255, 255, 255, 0.03);
+		background: rgba(255, 255, 255, 0.04);
 	}
 
 	.shimmer::after {
@@ -81,12 +88,12 @@
 		background: linear-gradient(
 			90deg,
 			transparent 0,
-			rgba(255, 255, 255, 0.03) 20%,
-			rgba(255, 255, 255, 0.08) 50%,
-			rgba(255, 255, 255, 0.03) 80%,
+			rgba(255, 255, 255, 0.05) 20%,
+			rgba(255, 255, 255, 0.12) 50%,
+			rgba(255, 255, 255, 0.05) 80%,
 			transparent 100%
 		);
-		animation: shimmer-flow 2s infinite;
+		animation: shimmer-flow 1.5s infinite;
 	}
 
 	@keyframes shimmer-flow {
@@ -96,16 +103,16 @@
 	/* Market Status Dot Animation */
 	.market-dot {
 		display: inline-block;
-		width: 8px;
-		height: 8px;
+		width: 10px;
+		height: 10px;
 		border-radius: 50%;
-		margin-right: 6px;
+		margin-right: 8px;
 		position: relative;
 	}
 
 	.market-dot.open {
 		background: #10b981;
-		box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+		box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
 	}
 
 	.market-dot.open::after {
@@ -117,16 +124,16 @@
 		height: 100%;
 		border-radius: 50%;
 		background: #10b981;
-		animation: pulse-dot 2s infinite;
+		animation: pulse-dot 2.5s infinite;
 	}
 
 	@keyframes pulse-dot {
 		0% { transform: scale(1); opacity: 0.8; }
-		100% { transform: scale(2.5); opacity: 0; }
+		100% { transform: scale(3.5); opacity: 0; }
 	}
 
 	.market-dot.closed {
-		background: rgba(160, 160, 200, 0.4);
+		background: rgba(160, 160, 200, 0.5);
 	}
 
 	.privacy-mode .privacy-blur {

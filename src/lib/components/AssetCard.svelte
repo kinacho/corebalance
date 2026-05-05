@@ -242,40 +242,36 @@
 
 <style>
 	.asset-card {
-		background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
-		backdrop-filter: blur(24px) saturate(180%);
-		-webkit-backdrop-filter: blur(24px) saturate(180%);
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		border-radius: 24px;
-		padding: 1.25rem;
-		transition: transform 0.2s cubic-bezier(0.2, 0, 0.2, 1), background 0.3s ease;
+		background: rgba(255, 255, 255, 0.04);
+		backdrop-filter: blur(24px) saturate(200%);
+		-webkit-backdrop-filter: blur(24px) saturate(200%);
+		border: 1px solid rgba(255, 255, 255, 0.12);
+		border-radius: 28px;
+		padding: 1.5rem 1.25rem;
+		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 		position: relative;
 		display: flex;
 		flex-direction: column;
 		gap: 1.25rem;
-		box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+		box-shadow: 
+			0 12px 40px rgba(0, 0, 0, 0.4),
+			inset 0 1px 0 rgba(255, 255, 255, 0.05);
 	}
 
 	.asset-card:hover {
-		background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+		background: rgba(255, 255, 255, 0.06);
 		border-color: rgba(255, 255, 255, 0.2);
 		transform: translateY(-4px);
-	}
-
-	.asset-card:active {
-		transform: scale(0.98) !important;
+		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 	}
 
 	.asset-card::before {
 		content: '';
 		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		border-radius: 24px;
+		inset: 0;
+		border-radius: 28px;
 		padding: 1px;
-		background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent 40%, transparent 60%, rgba(255,255,255,0.1));
+		background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent 50%, rgba(255,255,255,0.05));
 		-webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
 		mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
 		-webkit-mask-composite: xor;

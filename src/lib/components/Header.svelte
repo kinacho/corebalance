@@ -175,11 +175,11 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		padding: 1rem 1.5rem;
-		background: rgba(10, 10, 20, 0.4);
-		backdrop-filter: blur(30px) saturate(180%);
-		-webkit-backdrop-filter: blur(30px) saturate(180%);
-		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+		padding: 1rem 1.25rem;
+		background: rgba(10, 10, 20, 0.15);
+		backdrop-filter: blur(24px) saturate(200%);
+		-webkit-backdrop-filter: blur(24px) saturate(200%);
+		border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 		position: sticky;
 		top: 0;
 		z-index: 50;
