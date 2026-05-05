@@ -137,9 +137,11 @@
 	}
 
 	.privacy-mode .privacy-blur {
-		filter: blur(18px) grayscale(0.5);
-		transition: filter 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-		opacity: 0.6;
+		filter: blur(22px) grayscale(1) !important;
+		color: transparent !important;
+		text-shadow: 0 0 22px rgba(255, 255, 255, 0.6) !important;
+		transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+		opacity: 0.5;
 		user-select: none;
 		pointer-events: none;
 	}
