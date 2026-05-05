@@ -1,3 +1,4 @@
+<script lang="ts">
 	import './layout.css';
 	import SplashScreen from '$lib/components/SplashScreen.svelte';
 	import { portfolio } from '$lib/stores/portfolio.svelte';
