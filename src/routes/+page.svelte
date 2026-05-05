@@ -11,6 +11,20 @@
 	import { PORTFOLIO_ASSETS, SATELLITE_ASSETS } from '$lib/constants';
 	import { formatEUR, formatPercent } from '$lib/utils';
 
+	// Efecto para el tema dinámico
+	$effect(() => {
+		const mood = portfolio.moodColor;
+		const root = document.documentElement;
+		
+		// Generar variantes del color de humor para el degradado
+		root.style.setProperty('--bg-mesh-1', `${mood}33`); // 20% opacidad
+		root.style.setProperty('--bg-mesh-2', '#6366f122');
+		root.style.setProperty('--bg-mesh-3', `${mood}22`);
+		root.style.setProperty('--bg-mesh-4', '#3b82f622');
+		root.style.setProperty('--bg-mesh-5', `${mood}22`);
+		root.style.setProperty('--bg-mesh-6', '#f59e0b11');
+	});
+
 	// --- Constants & Config ---
 	const TABS = [
 		{ id: 'assets', label: 'Activos', icon: '📊' },

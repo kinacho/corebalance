@@ -7,15 +7,20 @@ export class SecurityStore {
 
 	constructor() {
 		if (typeof window !== 'undefined') {
-			this.checkSupport();
-			this.loadSettings();
+			this.checkSupport().then(() => {
+				this.loadSettings();
+			});
 		}
 	}
 
 	private async checkSupport() {
-		// Verificar si el navegador soporta WebAuthn y autenticación de plataforma (biometría)
+		// Verificar si el navegador soporta WebAuthn y biometría de plataforma
 		if (window.PublicKeyCredential) {
-			this.isSupported = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+			try {
+				this.isSupported = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+			} catch (e) {
+				this.isSupported = false;
+			}
 		}
 	}
 
@@ -30,12 +35,11 @@ export class SecurityStore {
 
 	async toggle() {
 		if (this.isEnabled) {
-			// Desactivar es fácil
 			this.isEnabled = false;
 			this.isLocked = false;
 			localStorage.setItem('balanceador_security_enabled', 'false');
 		} else {
-			// Activar requiere una prueba de biometría inicial para asegurar que funciona
+			// Activar requiere una prueba inicial
 			const success = await this.authenticate();
 			if (success) {
 				this.isEnabled = true;
@@ -46,44 +50,57 @@ export class SecurityStore {
 	}
 
 	async authenticate(): Promise<boolean> {
-		if (!this.isSupported) return true; // Si no está soportado, no bloqueamos
+		if (!this.isSupported) {
+			console.warn('Biometría no soportada en este dispositivo.');
+			return true; // No bloqueamos si no hay soporte
+		}
 
 		try {
-			// Creamos un desafío simple para disparar el sensor biométrico
-			// Nota: En una implementación real de servidor usaríamos credenciales reales,
-			// pero para un bloqueo local de PWA, el hecho de que el navegador resuelva
-			// el 'get' con éxito tras la verificación del usuario es suficiente.
-			
+			// Creamos un desafío para disparar el UI nativo (FaceID/Huella)
 			const challenge = new Uint8Array(32);
 			window.crypto.getRandomValues(challenge);
 
-			const options: CredentialRequestOptions = {
+			// En una app real sin backend, podemos usar un flujo de "Silent Auth" 
+			// simplemente intentando crear una credencial ficticia o pidiendo verificación.
+			// Para esta demo PWA, usaremos la verificación de usuario requerida.
+			
+			const options: any = {
 				publicKey: {
 					challenge,
 					timeout: 60000,
 					userVerification: 'required',
-					allowCredentials: [] // Permitir cualquier credencial local
+					rp: { name: 'Balanceador 90/5/5' },
+					user: {
+						id: new Uint8Array(16),
+						name: 'usuario@balanceador.app',
+						displayName: 'Usuario Balanceador'
+					},
+					pubKeyCredParams: [{ alg: -7, type: 'public-key' }]
 				}
 			};
 
-			// Nota: Esto disparará el UI nativo (FaceID/Huella)
-			// En modo local sin servidor, esto a veces falla si no hay credenciales previas.
-			// Como alternativa para "Bloqueo Local", podemos usar una técnica de "Silent Auth" 
-			// o simplemente confiar en que el dispositivo está protegido.
-			
-			// Para esta implementación, usaremos un flujo de 'creación' la primera vez
-			// y 'validación' después.
+			// Disparar el diálogo del sistema (esto pedirá FaceID/TouchID/PIN)
+			// Nota: Usamos 'create' como "falsa" validación si no tenemos DB de llaves.
+			// Si el usuario cancela o falla, lanza error.
+			await navigator.credentials.create(options);
 			
 			this.isLocked = false;
 			return true;
 		} catch (e) {
-			console.error('Biometric auth error:', e);
+			console.error('Error de autenticación biométrica:', e);
+			// Si es un error de "NotAllowedError", el usuario canceló
 			return false;
 		}
 	}
 
 	unlock() {
 		this.isLocked = false;
+	}
+
+	lock() {
+		if (this.isEnabled) {
+			this.isLocked = true;
+		}
 	}
 }
 

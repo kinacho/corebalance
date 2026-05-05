@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import type { PortfolioPosition } from '$lib/types';
-	import { formatCurrency, formatPercent, isMarketOpen } from '$lib/utils';
+	import { formatCurrency, formatPrice, formatPercent, isMarketOpen } from '$lib/utils';
 
 	interface Props {
 		position: PortfolioPosition;
@@ -161,7 +161,7 @@
 				<span class="metric-label">Precio</span>
 				<div class="metric-content">
 					{#if position.unitPrice > 0}
-						<span class="metric-value">{formatCurrency(portfolio.prices[position.asset.ticker]?.price || 0, assetCurrency)}</span>
+						<span class="metric-value">{formatPrice(portfolio.prices[position.asset.ticker]?.price || 0, assetCurrency)}</span>
 					{:else}
 						<input 
 							type="number" 

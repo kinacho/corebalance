@@ -65,7 +65,7 @@ export const STOCK_ASSETS: Asset[] = [
 		ter: 0
 	},
 	{
-		ticker: '34Q0.F',
+		ticker: '34Q0.SG',
 		name: 'Quantum eMotion',
 		isin: 'CA74767K1030',
 		targetWeight: 0,

@@ -63,6 +63,49 @@ export class PortfolioStore {
 		this.globalCapital > 0 ? this.globalDailyChangeValue / this.globalCapital : 0
 	);
 
+	// Reconstruir historia de los últimos 7 días usando los sparklines de los activos
+	// (Fallback si la historia de Firebase está vacía o es insuficiente)
+	reconstructedHistory = $derived.by(() => {
+		const days = 7;
+		const historyPoints: { date: string, value: number }[] = [];
+		
+		// Inicializar puntos
+		for (let i = 0; i < days; i++) {
+			historyPoints.push({ date: '', value: 0 });
+		}
+
+		let hasData = false;
+		const allAssets = [...this.portfolioState.positions, ...this.satelliteState.positions, ...this.stockState.positions];
+
+		allAssets.forEach(pos => {
+			const spark = pos.sparkline || [];
+			if (spark.length > 0) hasData = true;
+			
+			// Sumar la contribución de este activo a cada uno de los 7 días
+			for (let i = 0; i < days; i++) {
+				const priceAtDay = spark[spark.length - days + i] || pos.unitPrice;
+				historyPoints[i].value += pos.holdings * priceAtDay;
+			}
+		});
+
+		// Si no hay datos de sparklines, devolvemos lo que tengamos en Firebase
+		if (!hasData) return this.history;
+
+		// Si tenemos datos en Firebase que son más largos, priorizamos Firebase
+		if (this.history.length >= days) return this.history;
+
+		// Si no, devolvemos la reconstrucción
+		return historyPoints;
+	});
+
+	moodColor = $derived.by(() => {
+		if (this.globalDailyChangePercent > 0.005) return '#10b981'; // Esmeralda (muy positivo)
+		if (this.globalDailyChangePercent > 0) return '#34d399';    // Verde (positivo)
+		if (this.globalDailyChangePercent < -0.005) return '#f43f5e'; // Rosa/Rojo (muy negativo)
+		if (this.globalDailyChangePercent < 0) return '#f59e0b';    // Ámbar (negativo)
+		return '#6366f1'; // Índigo (neutral)
+	});
+
 	rebalanceResult: RebalanceResult | null = $derived(
 		this.contribution > 0 && Object.keys(this.prices).length > 0
 			? calculateRebalance(PORTFOLIO_ASSETS, this.holdings, this.convertedPrices, this.contribution)

@@ -8,13 +8,18 @@
 
 	// Sincronizar el gráfico con los datos de la historia
 	$effect(() => {
-		if (chart && portfolio.history.length > 0) {
-			chart.data.labels = portfolio.history.map(p => {
-				const date = new Date(p.date);
-				return date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+		const history = portfolio.reconstructedHistory;
+		if (chart && history.length > 0) {
+			chart.data.labels = history.map((p, i) => {
+				if (p.date) {
+					const date = new Date(p.date);
+					return date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+				}
+				// Si es historia reconstruida sin fechas, usamos "hace X días"
+				return `D-${history.length - 1 - i}`;
 			});
-			chart.data.datasets[0].data = portfolio.history.map(p => p.value);
-			chart.update();
+			chart.data.datasets[0].data = history.map(p => p.value);
+			chart.update('none'); // Update sin animación para suavidad
 		}
 	});
 
@@ -51,6 +56,10 @@
 			options: {
 				responsive: true,
 				maintainAspectRatio: false,
+				animation: {
+					duration: 750,
+					easing: 'easeInOutQuart'
+				},
 				plugins: {
 					legend: { display: false },
 					tooltip: {
@@ -98,19 +107,27 @@
 	});
 </script>
 
-<div class="chart-container privacy-blur">
-	{#if portfolio.history.length < 2}
-		<div class="empty-chart">
-			<p>Se necesitan al menos 2 días de datos para mostrar la evolución.</p>
-		</div>
-	{/if}
-	<canvas bind:this={canvas}></canvas>
+<div class="chart-wrapper">
+	<div class="chart-container">
+		{#if portfolio.reconstructedHistory.length < 2 && !portfolio.loading}
+			<div class="empty-chart">
+				<div class="empty-icon">⏳</div>
+				<p>Obteniendo datos históricos para generar la gráfica...</p>
+			</div>
+		{/if}
+		<canvas bind:this={canvas}></canvas>
+	</div>
 </div>
 
 <style>
+	.chart-wrapper {
+		width: 100%;
+		padding: 0.5rem 0;
+	}
+
 	.chart-container {
 		width: 100%;
-		height: 200px;
+		height: 240px;
 		position: relative;
 	}
 
@@ -121,19 +138,33 @@
 		width: 100%;
 		height: 100%;
 		display: flex;
+		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		background: rgba(0, 0, 0, 0.2);
-		border-radius: 12px;
+		background: rgba(10, 10, 20, 0.4);
+		backdrop-filter: blur(8px);
+		border-radius: 20px;
 		z-index: 10;
-		backdrop-filter: blur(4px);
+		gap: 0.75rem;
+	}
+
+	.empty-icon {
+		font-size: 2rem;
+		animation: pulse-slow 2s infinite ease-in-out;
+	}
+
+	@keyframes pulse-slow {
+		0%, 100% { opacity: 0.5; transform: scale(1); }
+		50% { opacity: 1; transform: scale(1.1); }
 	}
 
 	.empty-chart p {
-		font-size: 0.75rem;
-		color: rgba(160, 160, 200, 0.6);
-		max-width: 200px;
+		font-size: 0.85rem;
+		color: rgba(160, 160, 200, 0.8);
+		max-width: 250px;
 		text-align: center;
+		margin: 0;
+		font-weight: 500;
 	}
 
 	canvas {
