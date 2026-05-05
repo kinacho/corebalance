@@ -1,5 +1,6 @@
-<script lang="ts">
 	import './layout.css';
+	import SplashScreen from '$lib/components/SplashScreen.svelte';
+	import { portfolio } from '$lib/stores/portfolio.svelte';
 
 	let { children } = $props();
 </script>
@@ -11,4 +12,9 @@
 </svelte:head>
 
 <div class="background-mesh"></div>
+
+{#if !portfolio.isInitialized}
+	<SplashScreen loading={portfolio.loading} />
+{/if}
+
 {@render children()}

@@ -228,7 +228,7 @@
 	}
 
 	.daily-value {
-		font-size: 0.65rem;
+		font-size: clamp(0.55rem, 2.5vw, 0.65rem);
 		opacity: 0.7;
 		font-weight: 500;
 	}
@@ -247,7 +247,7 @@
 		.header-badges {
 			flex-direction: column;
 			align-items: flex-start;
-			gap: 0.2rem;
+			gap: 0.15rem;
 		}
 
 		.header-badge {

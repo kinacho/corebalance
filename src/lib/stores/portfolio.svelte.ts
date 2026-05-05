@@ -17,6 +17,7 @@ export class PortfolioStore {
 	timestamp = $state<string | null>(null);
 	user = $state<User | null>(null);
 	isPrivate = $state(false);
+	isInitialized = $state(false);
 	history = $state<{ date: string; value: number }[]>([]);
 	dailyChange = $state({ value: 0, percent: 0 });
 
@@ -333,7 +334,13 @@ export class PortfolioStore {
 		} catch (e) {
 			this.error = e instanceof Error ? e.message : 'Error desconocido';
 		} finally {
-			if (isInitial) this.loading = false;
+			if (isInitial) {
+				this.loading = false;
+				// Pequeño retardo para asegurar que el contenido esté renderizado antes de quitar el splash
+				setTimeout(() => {
+					this.isInitialized = true;
+				}, 800);
+			}
 		}
 	}
 

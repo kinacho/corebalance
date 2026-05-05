@@ -120,7 +120,7 @@
 	}
 
 	.summary-value {
-		font-size: 2.75rem;
+		font-size: clamp(1.75rem, 8vw, 2.75rem);
 		font-weight: 900;
 		color: #ffffff;
 		line-height: 1;
@@ -242,15 +242,16 @@
 		align-items: center;
 		justify-content: center;
 		flex-wrap: wrap;
-		gap: 0.4rem 0.6rem;
+		gap: 0.25rem 0.5rem;
 		margin-top: 0.5rem;
-		font-size: 0.7rem;
+		font-size: clamp(0.6rem, 3vw, 0.7rem);
 		color: rgba(255, 255, 255, 0.6);
 		background: rgba(0, 0, 0, 0.2);
 		padding: 0.5rem 0.75rem;
 		border-radius: 16px;
 		border: 1px solid rgba(255, 255, 255, 0.05);
 		width: 100%;
+		max-width: 100%;
 	}
 
 	.breakdown-divider {

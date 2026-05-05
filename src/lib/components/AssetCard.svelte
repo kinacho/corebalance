@@ -251,12 +251,12 @@
 		-webkit-backdrop-filter: blur(24px) saturate(200%);
 		border: 1px solid rgba(255, 255, 255, 0.12);
 		border-radius: 28px;
-		padding: 1.5rem 1.25rem;
+		padding: 1.25rem 1rem;
 		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 		position: relative;
 		display: flex;
 		flex-direction: column;
-		gap: 1.25rem;
+		gap: 1rem;
 		box-shadow: 
 			0 12px 40px rgba(0, 0, 0, 0.4),
 			inset 0 1px 0 rgba(255, 255, 255, 0.05);
@@ -317,7 +317,7 @@
 	}
 
 	.asset-isin, .asset-ter, .asset-time {
-		font-size: 0.65rem;
+		font-size: clamp(0.55rem, 2.5vw, 0.65rem);
 		color: rgba(160, 160, 200, 0.5);
 		font-family: 'Monaco', 'Menlo', monospace;
 	}
@@ -459,8 +459,8 @@
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
 		grid-template-rows: auto auto;
-		gap: 0.75rem;
-		padding: 1rem;
+		gap: 0.5rem;
+		padding: 0.75rem;
 		background: rgba(0, 0, 0, 0.15);
 		border-radius: 14px;
 	}
@@ -485,7 +485,7 @@
 	}
 
 	.metric-value {
-		font-size: 0.85rem;
+		font-size: clamp(0.75rem, 3.5vw, 0.85rem);
 		font-weight: 700;
 		color: rgba(255, 255, 255, 0.9);
 	}

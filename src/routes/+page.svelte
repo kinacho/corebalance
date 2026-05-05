@@ -185,11 +185,18 @@
 	.main-content {
 		max-width: 1140px;
 		margin: 0 auto;
-		padding: 1rem;
+		padding: 0.75rem;
 		padding-bottom: 6rem;
 		display: flex;
 		flex-direction: column;
-		gap: 1.25rem;
+		gap: 1rem;
+	}
+
+	@media (min-width: 768px) {
+		.main-content {
+			padding: 1.5rem;
+			gap: 1.25rem;
+		}
 	}
 
 	/* --- Error Banner --- */
