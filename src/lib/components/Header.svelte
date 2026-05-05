@@ -182,7 +182,7 @@
 		border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 		position: sticky;
 		top: 0;
-		z-index: 50;
+		z-index: 100;
 		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 	}
 

@@ -232,15 +232,15 @@
 	.mobile-tabs {
 		display: flex;
 		gap: 0.35rem;
-		background: rgba(20, 20, 35, 0.7);
+		background: rgba(15, 15, 25, 0.9);
 		backdrop-filter: blur(20px) saturate(180%);
 		-webkit-backdrop-filter: blur(20px) saturate(180%);
-		padding: 0.4rem;
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		border-radius: 20px;
+		padding: 0.45rem;
+		border: 1px solid rgba(255, 255, 255, 0.12);
+		border-radius: 22px;
 		position: sticky;
-		top: 0.75rem;
-		z-index: 100;
+		top: 3.8rem;
+		z-index: 90;
 		box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
 		margin-bottom: 1.5rem;
 	}
