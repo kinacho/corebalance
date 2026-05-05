@@ -43,7 +43,9 @@ export function calculatePortfolioState(
 			profit,
 			profitPercent,
 			dailyChangeValue,
-			dailyChangePercent
+			dailyChangePercent,
+			marketState: prices[asset.ticker]?.marketState,
+			lastUpdate: prices[asset.ticker]?.lastUpdate
 		};
 	});
 

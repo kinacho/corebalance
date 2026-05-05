@@ -78,7 +78,9 @@ export const GET: RequestHandler = async () => {
 				currency: quote.currency ?? 'EUR',
 				name: quote.shortName ?? quote.longName ?? ticker,
 				change: change ?? 0,
-				sparkline
+				sparkline,
+				marketState: quote.marketState,
+				lastUpdate: quote.regularMarketTime ? new Date(quote.regularMarketTime).getTime() : undefined
 			};
 		} else {
 			errors.push(result.reason?.message ?? 'Error desconocido');

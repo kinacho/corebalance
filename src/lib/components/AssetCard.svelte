@@ -83,7 +83,7 @@
 			<div class="asset-info">
 				<div class="header-main">
 					<span class="ticker">
-						<span class="market-dot" class:open={isMarketOpen(position.asset.ticker)} class:closed={!isMarketOpen(position.asset.ticker)} title={isMarketOpen(position.asset.ticker) ? 'Mercado abierto' : 'Mercado cerrado'}></span>
+						<span class="market-dot" class:open={isMarketOpen(position.asset.ticker, position.marketState)} class:closed={!isMarketOpen(position.asset.ticker, position.marketState)} title={position.marketState || 'Estado desconocido'}></span>
 						{position.asset.ticker}
 					</span>
 					<h3 class="asset-name">{position.asset.name}</h3>
@@ -92,6 +92,10 @@
 					<span class="asset-isin">{position.asset.isin}</span>
 					<span class="asset-divider">•</span>
 					<span class="asset-ter" title="Total Expense Ratio">{formatPercent(position.asset.ter)} TER</span>
+					{#if position.lastUpdate}
+						<span class="asset-divider">•</span>
+						<span class="asset-time">{new Date(position.lastUpdate).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</span>
+					{/if}
 				</div>
 			</div>
 		</div>
@@ -312,10 +316,14 @@
 		letter-spacing: -0.01em;
 	}
 
-	.asset-isin, .asset-ter {
+	.asset-isin, .asset-ter, .asset-time {
 		font-size: 0.65rem;
 		color: rgba(160, 160, 200, 0.5);
 		font-family: 'Monaco', 'Menlo', monospace;
+	}
+
+	.asset-time {
+		color: color-mix(in srgb, var(--accent) 40%, rgba(160, 160, 200, 0.5));
 	}
 
 	.asset-meta {

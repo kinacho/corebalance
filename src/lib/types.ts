@@ -16,6 +16,8 @@ export interface PriceData {
 	name: string;
 	change: number;      // Cambio porcentual diario
 	sparkline?: number[]; // Precios de los últimos 7 días
+	marketState?: string; // REGULAR, CLOSED, PRE, POST, etc.
+	lastUpdate?: number;  // Unix timestamp de la última cotización
 }
 
 /** Respuesta del endpoint /api/prices */
@@ -41,6 +43,8 @@ export interface PortfolioPosition {
 	profitPercent: number;  // profit / totalCost
 	dailyChangeValue: number; // Cambio diario en valor absoluto
 	dailyChangePercent: number; // Cambio diario porcentual
+	marketState?: string;
+	lastUpdate?: number;
 }
 
 /** Estado completo de la cartera */
