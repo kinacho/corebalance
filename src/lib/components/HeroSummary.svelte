@@ -69,7 +69,8 @@
 	</section>
 {/if}
 
-<st	.hero-summary {
+<style>
+	.hero-summary {
 		display: flex;
 		flex-direction: column;
 		gap: 1.25rem;
