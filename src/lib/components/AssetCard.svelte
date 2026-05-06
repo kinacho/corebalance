@@ -103,7 +103,7 @@
 			{#if isBitcoin && portfolio.btcPrice > 0}
 				<div class="btc-spot-price">
 					<span class="live-dot"></span>
-					<span class="btc-label">BTC Spot:</span>
+					<span class="btc-label">BTC:</span>
 					<span class="btc-value">{formatCurrency(portfolio.btcPrice, 'EUR')}</span>
 				</div>
 			{/if}
@@ -361,8 +361,8 @@
 	.btc-spot-price {
 		display: flex;
 		align-items: center;
-		gap: 0.4rem;
-		padding: 0.2rem 0.5rem;
+		gap: 0.25rem;
+		padding: 0.15rem 0.4rem;
 		background: rgba(245, 158, 11, 0.1);
 		border-radius: 6px;
 		border: 1px solid rgba(245, 158, 11, 0.2);
