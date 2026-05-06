@@ -186,7 +186,7 @@
 		max-width: 1140px;
 		margin: 0 auto;
 		padding: 0.75rem;
-		padding-bottom: 6rem;
+		padding-bottom: 8rem;
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
