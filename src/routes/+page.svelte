@@ -186,7 +186,7 @@
 		max-width: 1140px;
 		margin: 0 auto;
 		padding: 0.75rem;
-		padding-bottom: 6rem;
+		padding-bottom: 2rem;
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
@@ -231,21 +231,18 @@
 	/* --- Navigation (Mobile) --- */
 	.mobile-tabs {
 		display: flex;
-		gap: 0.25rem;
-		background: rgba(10, 10, 20, 0.85);
-		backdrop-filter: blur(24px) saturate(200%);
-		-webkit-backdrop-filter: blur(24px) saturate(200%);
-		padding: 0.65rem 0.5rem;
-		padding-bottom: calc(0.65rem + env(safe-area-inset-bottom));
-		border-top: 1px solid rgba(255, 255, 255, 0.1);
-		border-radius: 28px 28px 0 0;
-		position: fixed;
-		bottom: 0;
-		left: 0;
-		right: 0;
-		z-index: 1000;
-		box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.6);
-		margin-bottom: 0;
+		gap: 0.35rem;
+		background: rgba(15, 15, 25, 0.9);
+		backdrop-filter: blur(20px) saturate(180%);
+		-webkit-backdrop-filter: blur(20px) saturate(180%);
+		padding: 0.45rem;
+		border: 1px solid rgba(255, 255, 255, 0.12);
+		border-radius: 22px;
+		position: sticky;
+		top: 4.5rem;
+		z-index: 90;
+		box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+		margin-bottom: 1.5rem;
 	}
 
 	.tab-btn {
@@ -254,33 +251,34 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		gap: 0.2rem;
-		padding: 0.5rem 0.25rem;
+		gap: 0.25rem;
+		padding: 0.6rem 0.25rem;
 		border: none;
-		border-radius: 16px;
+		border-radius: 14px;
 		background: transparent;
-		color: rgba(255, 255, 255, 0.35);
-		font-size: 0.6rem;
+		color: rgba(255, 255, 255, 0.3);
+		font-size: 0.65rem;
 		font-weight: 700;
 		text-transform: uppercase;
-		letter-spacing: 0.04em;
+		letter-spacing: 0.02em;
 		cursor: pointer;
-		transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-		-webkit-tap-highlight-color: transparent;
+		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 	}
 
 	.tab-icon {
-		font-size: 1.1rem;
-		transition: transform 0.2s ease;
+		font-size: 1.2rem;
+		margin-bottom: 2px;
+		transition: transform 0.3s ease;
 	}
 
 	.tab-btn.active { 
-		background: rgba(59, 130, 246, 0.12); 
+		background: rgba(59, 130, 246, 0.15); 
 		color: #60a5fa;
+		box-shadow: 0 0 20px rgba(59, 130, 246, 0.1);
 	}
 
 	.tab-btn.active .tab-icon {
-		transform: scale(1.1);
+		transform: translateY(-2px) scale(1.1);
 	}
 
 	/* --- Layout Grid --- */

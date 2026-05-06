@@ -235,41 +235,36 @@
 
 	@media (max-width: 768px) {
 		.section-header-btn {
-			padding: 0.85rem 1rem;
+			padding: 0.75rem 1rem;
 		}
 
 		.section-title {
-			font-size: 1rem;
+			font-size: 0.9rem;
 		}
 		
 		.header-left-group {
-			flex-direction: row;
-			align-items: center;
-			justify-content: flex-start;
-			gap: 0.75rem;
-			flex-wrap: wrap;
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 0.35rem;
+			width: 100%;
 		}
 
 		.header-badges {
-			flex-direction: row;
-			align-items: center;
-			gap: 0.5rem;
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.4rem;
 			width: 100%;
-			margin-top: 0.25rem;
 		}
 
 		.header-badge {
-			padding: 0.15rem 0.4rem;
+			padding: 0.1rem 0.4rem;
 			background: rgba(255, 255, 255, 0.05) !important;
 			border-radius: 6px;
+			font-size: 0.65rem;
 		}
 
 		.header-sparkline {
-			display: flex;
-			padding: 0;
-			opacity: 0.9;
-			transform: scale(0.9);
-			transform-origin: left center;
+			display: none; /* Hide sparkline on small mobile to avoid 'se corta' feel */
 		}
 	}
 

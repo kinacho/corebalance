@@ -9,15 +9,24 @@
 			<span class="summary-label">Capital Global</span>
 			<div class="summary-value privacy-blur">{formatEUR(portfolio.globalCapital)}</div>
 			{#if portfolio.satelliteState.totalCapital > 0 || portfolio.stockState.totalCapital > 0}
-				<div class="capital-breakdown privacy-blur">
-					<span>90/5/5: <strong style="color: #fff">{formatEUR(portfolio.portfolioState.totalCapital)}</strong></span>
+				<div class="capital-breakdown">
+					<div class="breakdown-item">
+						<span>90/5/5:</span>
+						<strong style="color: #fff">{formatEUR(portfolio.portfolioState.totalCapital)}</strong>
+					</div>
 					{#if portfolio.stockState.totalCapital > 0}
-						<span class="breakdown-divider">•</span>
-						<span>Acc: <strong style="color: #fff">{formatEUR(portfolio.stockState.totalCapital)}</strong></span>
+						<span class="breakdown-divider">|</span>
+						<div class="breakdown-item">
+							<span>Acc:</span>
+							<strong style="color: #fff">{formatEUR(portfolio.stockState.totalCapital)}</strong>
+						</div>
 					{/if}
 					{#if portfolio.satelliteState.totalCapital > 0}
-						<span class="breakdown-divider">•</span>
-						<span>Cons: <strong style="color: #fff">{formatEUR(portfolio.satelliteState.totalCapital)}</strong></span>
+						<span class="breakdown-divider">|</span>
+						<div class="breakdown-item">
+							<span>Cons:</span>
+							<strong style="color: #fff">{formatEUR(portfolio.satelliteState.totalCapital)}</strong>
+						</div>
 					{/if}
 				</div>
 			{/if}
@@ -240,21 +249,29 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		flex-wrap: wrap;
-		gap: 0.5rem 1rem;
-		margin-top: 0.4rem;
-		font-size: 0.75rem;
+		flex-wrap: nowrap;
+		gap: 0.5rem;
+		margin-top: 0.5rem;
+		font-size: 0.7rem;
 		color: rgba(255, 255, 255, 0.4);
-		padding: 0.25rem 0;
-		width: 100%;
+		padding: 0.35rem 0.6rem;
+		background: rgba(255, 255, 255, 0.03);
+		border-radius: 12px;
+		width: auto;
+		max-width: 100%;
+		border: 1px solid rgba(255, 255, 255, 0.05);
+	}
+
+	.breakdown-item {
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+		white-space: nowrap;
 	}
 
 	.breakdown-divider {
-		display: inline-block;
-		width: 3px;
-		height: 3px;
-		border-radius: 50%;
-		background: rgba(255, 255, 255, 0.15);
+		color: rgba(255, 255, 255, 0.1);
+		font-weight: 300;
 	}
 
 	/* Tablet / Small Desktop */
