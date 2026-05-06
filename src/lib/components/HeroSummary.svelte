@@ -69,22 +69,18 @@
 	</section>
 {/if}
 
-<style>
-	.hero-summary {
+<st	.hero-summary {
 		display: flex;
 		flex-direction: column;
-		gap: 1.5rem;
-		padding: 1.75rem 1.25rem;
-		margin-bottom: 2rem;
-		border-radius: 32px;
-		background: rgba(255, 255, 255, 0.04);
+		gap: 1.25rem;
+		padding: 1.5rem 1rem;
+		margin-bottom: 1.5rem;
+		border-radius: 28px;
+		background: linear-gradient(165deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
 		backdrop-filter: blur(32px) saturate(200%);
 		-webkit-backdrop-filter: blur(32px) saturate(200%);
-		border: 1px solid rgba(255, 255, 255, 0.12);
-		box-shadow: 
-			0 20px 50px rgba(0, 0, 0, 0.4), 
-			inset 0 1px 0 rgba(255, 255, 255, 0.1),
-			inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
 		overflow: hidden;
 		position: relative;
 	}
@@ -92,11 +88,12 @@
 	.hero-summary::before {
 		content: '';
 		position: absolute;
-		top: -50%;
-		left: -50%;
-		width: 200%;
-		height: 200%;
-		background: radial-gradient(circle at center, rgba(59, 130, 246, 0.08) 0%, transparent 50%);
+		top: -20%;
+		right: -10%;
+		width: 60%;
+		height: 60%;
+		background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+		filter: blur(40px);
 		pointer-events: none;
 	}
 
@@ -104,60 +101,60 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: 0.5rem;
-		padding: 0.5rem 0;
+		gap: 0.4rem;
+		padding: 0.25rem 0;
 		position: relative;
 		z-index: 1;
 	}
 
 	.summary-label {
-		font-size: 0.85rem;
+		font-size: 0.7rem;
 		font-weight: 800;
 		text-transform: uppercase;
-		letter-spacing: 0.2em;
-		color: rgba(255, 255, 255, 0.4);
-		text-shadow: 0 0 20px rgba(0,0,0,0.5);
+		letter-spacing: 0.15em;
+		color: rgba(255, 255, 255, 0.35);
 	}
 
 	.summary-value {
-		font-size: clamp(1.75rem, 8vw, 2.75rem);
+		font-size: clamp(2rem, 9vw, 2.75rem);
 		font-weight: 900;
 		color: #ffffff;
-		line-height: 1;
-		letter-spacing: -0.04em;
-		text-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-		filter: drop-shadow(0 0 30px rgba(255,255,255,0.1));
+		line-height: 1.1;
+		letter-spacing: -0.03em;
+		text-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 	}
 
 	.hero-metrics {
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
-		gap: 0.5rem;
+		gap: 0.6rem;
+		position: relative;
+		z-index: 1;
 	}
 
 	.metric-card {
-		background: rgba(255, 255, 255, 0.02);
-		border: 1px solid rgba(255, 255, 255, 0.04);
-		border-radius: 16px;
-		padding: 0.75rem;
+		background: rgba(255, 255, 255, 0.03);
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		border-radius: 18px;
+		padding: 0.85rem;
 		display: flex;
 		flex-direction: column;
-		gap: 0.25rem;
-		transition: transform 0.2s ease, background 0.2s ease;
+		gap: 0.35rem;
+		transition: all 0.2s ease;
 		min-width: 0;
 	}
 
 	.metric-card:hover {
-		background: rgba(255, 255, 255, 0.04);
-		transform: translateY(-2px);
+		background: rgba(255, 255, 255, 0.05);
+		border-color: rgba(255, 255, 255, 0.1);
 	}
 
 	.metric-label {
-		font-size: 0.65rem;
+		font-size: 0.6rem;
 		font-weight: 700;
 		text-transform: uppercase;
-		letter-spacing: 0.08em;
-		color: rgba(255, 255, 255, 0.5);
+		letter-spacing: 0.05em;
+		color: rgba(255, 255, 255, 0.4);
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -165,7 +162,7 @@
 
 	.metric-row {
 		display: flex;
-		align-items: baseline;
+		align-items: center;
 		justify-content: flex-start;
 		gap: 0.4rem;
 		flex-wrap: wrap;
@@ -179,62 +176,63 @@
 	}
 
 	.metric-badge {
-		font-size: 0.7rem;
+		font-size: 0.65rem;
 		font-weight: 800;
-		padding: 0.15rem 0.4rem;
+		padding: 0.1rem 0.35rem;
 		border-radius: 6px;
 		background: rgba(255, 255, 255, 0.05);
 		white-space: nowrap;
 	}
 
-	.metric-card.positive .metric-value { color: #10b981; }
-	.metric-card.positive .metric-badge { color: #10b981; background: rgba(16, 185, 129, 0.15); }
+	.metric-card.positive .metric-value { color: #34d399; }
+	.metric-card.positive .metric-badge { color: #34d399; background: rgba(52, 211, 153, 0.12); }
 	
-	.metric-card.negative .metric-value { color: #f43f5e; }
-	.metric-card.negative .metric-badge { color: #f43f5e; background: rgba(244, 63, 94, 0.15); }
+	.metric-card.negative .metric-value { color: #f87171; }
+	.metric-card.negative .metric-badge { color: #f87171; background: rgba(248, 113, 113, 0.12); }
 
 	.metric-card.efficiency .metric-badge.neutral {
-		color: rgba(255, 255, 255, 0.7);
-		background: rgba(255, 255, 255, 0.1);
-		border: 1px solid rgba(255, 255, 255, 0.05);
+		color: rgba(255, 255, 255, 0.6);
+		background: rgba(255, 255, 255, 0.08);
+		font-weight: 600;
 	}
 
 	.hero-actions {
 		display: flex;
 		align-items: center;
-		justify-content: space-between;
-		padding-top: 1.25rem;
+		justify-content: center;
+		padding-top: 1rem;
 		border-top: 1px solid rgba(255, 255, 255, 0.06);
 	}
 
 	.asset-pills {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0.5rem;
+		justify-content: center;
+		gap: 0.4rem;
 	}
 
 	.asset-pill {
 		display: flex;
 		align-items: center;
-		gap: 0.4rem;
-		padding: 0.4rem 0.75rem;
-		background: rgba(0, 0, 0, 0.2);
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		border-radius: 12px;
+		gap: 0.35rem;
+		padding: 0.3rem 0.6rem;
+		background: rgba(0, 0, 0, 0.25);
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		border-radius: 10px;
 	}
 
 	.pill-dot {
-		width: 8px;
-		height: 8px;
+		width: 6px;
+		height: 6px;
 		border-radius: 50%;
 		background: var(--accent);
-		box-shadow: 0 0 8px var(--accent);
+		box-shadow: 0 0 10px var(--accent);
 	}
 
 	.pill-text {
-		font-size: 0.75rem;
+		font-size: 0.65rem;
 		font-weight: 700;
-		color: rgba(255, 255, 255, 0.9);
+		color: rgba(255, 255, 255, 0.8);
 	}
 
 	.capital-breakdown {
@@ -242,20 +240,20 @@
 		align-items: center;
 		justify-content: center;
 		flex-wrap: wrap;
-		gap: 0.25rem 0.5rem;
-		margin-top: 0.5rem;
-		font-size: clamp(0.6rem, 3vw, 0.7rem);
-		color: rgba(255, 255, 255, 0.6);
-		background: rgba(0, 0, 0, 0.2);
-		padding: 0.5rem 0.75rem;
-		border-radius: 16px;
-		border: 1px solid rgba(255, 255, 255, 0.05);
+		gap: 0.5rem 1rem;
+		margin-top: 0.4rem;
+		font-size: 0.75rem;
+		color: rgba(255, 255, 255, 0.4);
+		padding: 0.25rem 0;
 		width: 100%;
-		max-width: 100%;
 	}
 
 	.breakdown-divider {
-		color: rgba(255, 255, 255, 0.2);
+		display: inline-block;
+		width: 3px;
+		height: 3px;
+		border-radius: 50%;
+		background: rgba(255, 255, 255, 0.15);
 	}
 
 	/* Tablet / Small Desktop */

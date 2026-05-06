@@ -17,9 +17,14 @@ export default defineConfig({
 				name: 'Balanceador 90/5/5',
 				short_name: 'Balanceador',
 				description: 'Calculadora de rebalanceo de cartera 90/5/5',
+				id: '/',
+				start_url: '/',
+				scope: '/',
+				display: 'standalone',
+				orientation: 'portrait',
+				categories: ['finance'],
 				theme_color: '#0a0a16',
 				background_color: '#0a0a16',
-				display: 'standalone',
 				icons: [
 					{
 						src: 'pwa-192x192.png',

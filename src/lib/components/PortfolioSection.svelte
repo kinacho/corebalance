@@ -234,30 +234,42 @@
 	}
 
 	@media (max-width: 768px) {
+		.section-header-btn {
+			padding: 0.85rem 1rem;
+		}
+
 		.section-title {
-			font-size: 1.05rem;
+			font-size: 1rem;
 		}
 		
 		.header-left-group {
-			flex-direction: column;
-			align-items: flex-start;
-			gap: 0.25rem;
+			flex-direction: row;
+			align-items: center;
+			justify-content: flex-start;
+			gap: 0.75rem;
+			flex-wrap: wrap;
 		}
 
 		.header-badges {
-			flex-direction: column;
-			align-items: flex-start;
-			gap: 0.15rem;
+			flex-direction: row;
+			align-items: center;
+			gap: 0.5rem;
+			width: 100%;
+			margin-top: 0.25rem;
 		}
 
 		.header-badge {
-			padding: 0;
-			background: transparent !important;
-			border: none !important;
+			padding: 0.15rem 0.4rem;
+			background: rgba(255, 255, 255, 0.05) !important;
+			border-radius: 6px;
 		}
 
 		.header-sparkline {
-			display: none; /* Hide on small screens to save space */
+			display: flex;
+			padding: 0;
+			opacity: 0.9;
+			transform: scale(0.9);
+			transform-origin: left center;
 		}
 	}
 
