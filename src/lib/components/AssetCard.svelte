@@ -293,12 +293,6 @@
 		display: flex;
 		align-items: center;
 		gap: 0.85rem;
-		min-width: 0;
-	}
-
-	.asset-info {
-		flex: 1;
-		min-width: 0;
 	}
 
 	.asset-icon-wrapper {
@@ -320,9 +314,6 @@
 		color: #fff;
 		margin: 0;
 		letter-spacing: -0.01em;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
 	}
 
 	.asset-isin, .asset-ter, .asset-time {
@@ -339,7 +330,6 @@
 		display: flex;
 		align-items: center;
 		gap: 0.4rem;
-		flex-wrap: wrap;
 	}
 
 	.asset-divider {
