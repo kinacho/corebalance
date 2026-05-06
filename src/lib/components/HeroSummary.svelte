@@ -249,8 +249,8 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		flex-wrap: nowrap;
-		gap: 0.5rem;
+		flex-wrap: wrap;
+		gap: 0.5rem 0.8rem;
 		margin-top: 0.5rem;
 		font-size: 0.7rem;
 		color: rgba(255, 255, 255, 0.4);

@@ -80,9 +80,9 @@
 			<div class="asset-icon-wrapper">
 				<span class="asset-icon">{position.asset.icon}</span>
 			</div>
-			<div class="asset-info">
-				<div class="header-main">
-					<span class="ticker">
+			<div class="asset-info" style="min-width: 0; flex: 1;">
+				<div class="header-main" style="min-width: 0;">
+					<span class="ticker" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; max-width: 100%;">
 						<span class="market-dot" class:open={isMarketOpen(position.asset.ticker, position.marketState)} class:closed={!isMarketOpen(position.asset.ticker, position.marketState)} title={position.marketState || 'Estado desconocido'}></span>
 						{position.asset.ticker}
 					</span>
@@ -250,16 +250,23 @@
 		backdrop-filter: blur(24px) saturate(200%);
 		-webkit-backdrop-filter: blur(24px) saturate(200%);
 		border: 1px solid rgba(255, 255, 255, 0.12);
-		border-radius: 28px;
-		padding: 1.25rem 1rem;
+		border-radius: 24px;
+		padding: 1rem;
 		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 		position: relative;
 		display: flex;
 		flex-direction: column;
-		gap: 1rem;
-		box-shadow: 
-			0 12px 40px rgba(0, 0, 0, 0.4),
-			inset 0 1px 0 rgba(255, 255, 255, 0.05);
+		gap: 0.75rem;
+		box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+		overflow: hidden; /* Added to prevent overflow */
+	}
+
+	@media (min-width: 768px) {
+		.asset-card {
+			padding: 1.25rem;
+			gap: 1rem;
+			border-radius: 28px;
+		}
 	}
 
 	.asset-card:hover {
@@ -314,6 +321,9 @@
 		color: #fff;
 		margin: 0;
 		letter-spacing: -0.01em;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
 	.asset-isin, .asset-ter, .asset-time {
@@ -458,11 +468,16 @@
 	.metrics-row {
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
-		grid-template-rows: auto auto;
-		gap: 0.5rem;
-		padding: 0.75rem;
-		background: rgba(0, 0, 0, 0.15);
-		border-radius: 14px;
+		gap: 0.4rem;
+		padding: 0.6rem;
+		background: rgba(0, 0, 0, 0.2);
+		border-radius: 12px;
+	}
+
+	@media (max-width: 380px) {
+		.metrics-row {
+			grid-template-columns: 1fr;
+		}
 	}
 
 	.metric {
@@ -485,9 +500,12 @@
 	}
 
 	.metric-value {
-		font-size: clamp(0.75rem, 3.5vw, 0.85rem);
+		font-size: 0.8rem;
 		font-weight: 700;
 		color: rgba(255, 255, 255, 0.9);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
 	.metric-value.highlight {
