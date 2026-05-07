@@ -33,6 +33,8 @@ export function calculatePortfolioState(
 		const dailyChangeValue = totalValue * (changePercent / 100);
 		const dailyChangePercent = changePercent / 100;
 
+		const pData = prices[asset.ticker];
+		
 		return { 
 			asset, 
 			holdings: h, 
@@ -44,10 +46,10 @@ export function calculatePortfolioState(
 			profitPercent,
 			dailyChangeValue,
 			dailyChangePercent,
-			marketState: prices[asset.ticker]?.marketState,
-			lastUpdate: prices[asset.ticker]?.lastUpdate,
-			ytdChangePercent: prices[asset.ticker]?.ytdChangePercent !== undefined ? (prices[asset.ticker].ytdChangePercent / 100) : undefined,
-			sparkline: prices[asset.ticker]?.sparkline
+			marketState: pData?.marketState,
+			lastUpdate: pData?.lastUpdate,
+			ytdChangePercent: pData?.ytdChangePercent !== undefined ? (pData.ytdChangePercent / 100) : undefined,
+			sparkline: pData?.sparkline
 		};
 	});
 
@@ -214,29 +216,3 @@ export function calculateRebalance(
 	};
 }
 
-/**
- * Formatea un número como moneda EUR
- */
-export function formatEUR(value: number): string {
-	return new Intl.NumberFormat('es-ES', {
-		style: 'currency',
-		currency: 'EUR',
-		minimumFractionDigits: 2,
-		maximumFractionDigits: 2
-	}).format(value);
-}
-
-/**
- * Formatea un porcentaje
- */
-export function formatPercent(value: number, decimals = 2): string {
-	return (value * 100).toFixed(decimals) + '%';
-}
-
-/**
- * Formatea participaciones con la precisión adecuada
- */
-export function formatShares(value: number): string {
-	if (value === 0) return '0';
-	return value.toFixed(3).replace(/\.?0+$/, '');
-}

@@ -36,7 +36,9 @@ export const GET: RequestHandler = async () => {
 
 	// 2. Obtener los históricos (sparklines y YTD) usando caché individual
 	const now = Date.now();
-	const startOfYear = new Date(new Date().getFullYear(), 0, 1);
+	const currentYear = new Date().getFullYear();
+	const startOfCurrentYear = new Date(Date.UTC(currentYear, 0, 1));
+	const dec20PrevYear = new Date(Date.UTC(currentYear - 1, 11, 20));
 
 	const results = await Promise.allSettled(
 		tickers.map(async (ticker) => {
@@ -51,31 +53,44 @@ export const GET: RequestHandler = async () => {
 				if (ytd === undefined) ytd = historyCache[ticker].ytd;
 			} else {
 				try {
-					// Pedir desde el inicio del año para calcular YTD
-					const queryOptions = { period1: startOfYear, interval: '1d' as const };
+					// Pedir desde el 20 de Dic del año anterior para asegurar que cogemos el último cierre
+					const queryOptions = { period1: dec20PrevYear, interval: '1d' as const };
 					const chart = await yahooFinance.chart(ticker, queryOptions);
 					
 					const validQuotes = chart.quotes.filter(q => q.close !== null);
 					sparkline = validQuotes.slice(-7).map(q => q.close) as number[];
 					
-					// Calcular YTD si Yahoo no lo da (común en acciones)
-					if (ytd === undefined && validQuotes.length > 0) {
-						const firstPrice = validQuotes[0].close as number;
-						const lastPrice = quote.regularMarketPrice || (validQuotes[validQuotes.length - 1].close as number);
-						if (firstPrice > 0) {
-							ytd = ((lastPrice - firstPrice) / firstPrice) * 100;
+					// Calcular YTD encontrando el último cierre del año anterior
+					if (validQuotes.length > 0) {
+						const prevYearQuotes = validQuotes.filter(q => new Date(q.date) < startOfCurrentYear);
+						const currentPrice = quote.regularMarketPrice || (validQuotes[validQuotes.length - 1].close as number);
+						
+						if (prevYearQuotes.length > 0) {
+							const lastYearClose = prevYearQuotes[prevYearQuotes.length - 1].close as number;
+							if (lastYearClose > 0) {
+								ytd = ((currentPrice - lastYearClose) / lastYearClose) * 100;
+							}
+						} else {
+							// Si es un activo nuevo este año, usar el primer precio disponible
+							const firstThisYear = validQuotes[0].close as number;
+							if (firstThisYear > 0) {
+								ytd = ((currentPrice - firstThisYear) / firstThisYear) * 100;
+							}
 						}
 					}
 
 					// Fallback especial para Bitcoin ETPs que no tienen histórico en Yahoo
 					if (ytd === undefined && (ticker.includes('XS2940466316') || ticker.includes('BTC'))) {
 						try {
-							const btcChart = await yahooFinance.chart('BTC-EUR', { period1: startOfYear, interval: '1d' });
+							const btcChart = await yahooFinance.chart('BTC-EUR', { period1: dec20PrevYear, interval: '1d' });
 							const btcQuotes = btcChart.quotes.filter(q => q.close !== null);
-							if (btcQuotes.length > 0) {
-								const first = btcQuotes[0].close as number;
-								const last = btcQuotes[btcQuotes.length - 1].close as number;
-								ytd = ((last - first) / first) * 100;
+							const btcPrevYearQuotes = btcQuotes.filter(q => new Date(q.date) < startOfCurrentYear);
+							if (btcPrevYearQuotes.length > 0) {
+								const lastYearClose = btcPrevYearQuotes[btcPrevYearQuotes.length - 1].close as number;
+								const currentPrice = btcQuotes[btcQuotes.length - 1].close as number;
+								if (lastYearClose > 0) {
+									ytd = ((currentPrice - lastYearClose) / lastYearClose) * 100;
+								}
 							}
 						} catch (btcError) {
 							console.error("Error fetching BTC fallback YTD:", btcError);

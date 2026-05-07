@@ -5,11 +5,15 @@ Dashboard profesional, premium y responsivo (PWA) para el seguimiento, rebalance
 ## 🚀 Características Principales
 
 - **Diseño Premium & Glassmorphism**: Interfaz moderna, elegante y fluida con transiciones suaves, diseño adaptativo (mobile-first a large-desktop) y secciones plegables inteligentes.
+- **Progressive Web App (PWA)**: Instalable como una aplicación nativa en iOS y Android, con soporte offline básico y sin barra de navegador.
 - **Soporte Multi-Cartera**: 
   - **Cartera Principal**: Estrategia 90/5/5 optimizada (MSCI World, Emergentes y Bitcoin ETP).
   - **Acciones Individuales**: Soporte para stock picking (ej. *AtlasClear Holdings*, *Quantum eMotion*).
   - **Cartera Conservadora**: Espacio para activos satélite o de renta fija.
-- **Seguimiento en Tiempo Real**: Cotizaciones exactas y automáticas a través de una API propia conectada a Yahoo Finance.
+- **Seguimiento en Tiempo Real y Métricas Avanzadas**: 
+  - Cotizaciones exactas a través de nuestra API propia (`yahoo-finance2`).
+  - Cálculo de YTD (Year-To-Date) de alta precisión sincronizando el último cierre histórico anual.
+  - Indicadores *Sparkline* de los últimos 7 días integrados directamente en las tarjetas de los activos y agregados a nivel de sección.
 - **Inteligencia Multi-Divisa**: Gestión nativa de **Euros (EUR)**, **Dólares (USD)** y **Dólares Canadienses (CAD)**. El sistema mantiene los precios nominales para referencia de mercado, pero unifica el capital global y los cálculos de rentabilidad a la moneda base (Euros) con tipos de cambio reales.
 - **Gráficos Avanzados**:
   - Gráfico *Donut* para distribución actual vs objetivo.
