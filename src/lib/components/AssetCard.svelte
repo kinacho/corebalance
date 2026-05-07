@@ -246,19 +246,39 @@
 
 <style>
 	.asset-card {
-		background: rgba(255, 255, 255, 0.04);
-		backdrop-filter: blur(24px) saturate(200%);
-		-webkit-backdrop-filter: blur(24px) saturate(200%);
-		border: 1px solid rgba(255, 255, 255, 0.12);
+		background: rgba(255, 255, 255, 0.025);
+		backdrop-filter: blur(20px) saturate(160%);
+		-webkit-backdrop-filter: blur(20px) saturate(160%);
+		border: 1px solid rgba(255, 255, 255, 0.08);
 		border-radius: 24px;
-		padding: 1rem;
-		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-		position: relative;
+		padding: 1.25rem;
 		display: flex;
 		flex-direction: column;
-		gap: 0.75rem;
-		box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-		overflow: hidden; /* Added to prevent overflow */
+		gap: 1.25rem;
+		position: relative;
+		overflow: hidden;
+		transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.2s, box-shadow 0.2s;
+	}
+
+	.asset-card::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 2px;
+		background: linear-gradient(90deg, transparent, var(--accent), transparent);
+		opacity: 0.4;
+	}
+
+	.asset-card:hover {
+		border-color: rgba(255, 255, 255, 0.15);
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+		background: rgba(255, 255, 255, 0.04);
+	}
+
+	.asset-card:active {
+		transform: scale(0.985);
 	}
 
 	@media (min-width: 768px) {

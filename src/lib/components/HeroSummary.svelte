@@ -1,13 +1,28 @@
 <script lang="ts">
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { formatEUR, formatPercent } from '$lib/utils';
+	import { tweened } from 'svelte/motion';
+	import { cubicOut } from 'svelte/easing';
+
+	// Tweened values for smooth counting
+	const tweenedGlobalCapital = tweened(0, { duration: 1000, easing: cubicOut });
+	const tweenedGlobalProfit = tweened(0, { duration: 1000, easing: cubicOut });
+	const tweenedGlobalInvested = tweened(0, { duration: 1000, easing: cubicOut });
+	const tweenedDailyChange = tweened(0, { duration: 1000, easing: cubicOut });
+
+	$effect(() => {
+		tweenedGlobalCapital.set(portfolio.globalCapital);
+		tweenedGlobalProfit.set(portfolio.globalProfit);
+		tweenedGlobalInvested.set(portfolio.globalInvested);
+		tweenedDailyChange.set(portfolio.globalDailyChangeValue);
+	});
 </script>
 
 {#if !portfolio.loading || Object.keys(portfolio.prices).length > 0}
 	<section class="hero-summary glass" aria-label="Resumen de capital">
 		<div class="hero-primary">
 			<span class="summary-label">Capital Global</span>
-			<div class="summary-value privacy-blur">{formatEUR(portfolio.globalCapital)}</div>
+			<div class="summary-value privacy-blur">{formatEUR($tweenedGlobalCapital)}</div>
 			{#if portfolio.satelliteState.totalCapital > 0 || portfolio.stockState.totalCapital > 0}
 				<div class="capital-breakdown">
 					<div class="breakdown-item">
@@ -35,13 +50,13 @@
 		<div class="hero-metrics">
 			<div class="metric-card">
 				<span class="metric-label">Invertido</span>
-				<span class="metric-value privacy-blur">{formatEUR(portfolio.globalInvested)}</span>
+				<span class="metric-value privacy-blur">{formatEUR($tweenedGlobalInvested)}</span>
 			</div>
 			
 			<div class="metric-card" class:positive={portfolio.globalProfit > 0} class:negative={portfolio.globalProfit < 0}>
 				<span class="metric-label">Rentabilidad</span>
 				<div class="metric-row">
-					<span class="metric-value privacy-blur">{formatEUR(portfolio.globalProfit)}</span>
+					<span class="metric-value privacy-blur">{formatEUR($tweenedGlobalProfit)}</span>
 					<span class="metric-badge">{formatPercent(portfolio.globalProfitPercent)}</span>
 				</div>
 			</div>
@@ -49,7 +64,7 @@
 			<div class="metric-card" class:positive={portfolio.globalDailyChangeValue > 0} class:negative={portfolio.globalDailyChangeValue < 0}>
 				<span class="metric-label">Cambio Hoy</span>
 				<div class="metric-row">
-					<span class="metric-value privacy-blur">{portfolio.globalDailyChangeValue > 0 ? '+' : ''}{formatEUR(portfolio.globalDailyChangeValue)}</span>
+					<span class="metric-value privacy-blur">{$tweenedDailyChange > 0 ? '+' : ''}{formatEUR($tweenedDailyChange)}</span>
 					<span class="metric-badge">{portfolio.globalDailyChangeValue > 0 ? '+' : ''}{formatPercent(portfolio.globalDailyChangePercent)}</span>
 				</div>
 			</div>

@@ -35,24 +35,39 @@
 					label: 'Capital Total',
 					data: [],
 					borderColor: '#3b82f6',
+					borderWidth: 3,
 					backgroundColor: (context) => {
 						const chart = context.chart;
 						const {ctx, chartArea} = chart;
 						if (!chartArea) return 'transparent';
 						const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
-						gradient.addColorStop(0, 'rgba(59, 130, 246, 0.2)');
+						gradient.addColorStop(0, 'rgba(59, 130, 246, 0.25)');
 						gradient.addColorStop(1, 'rgba(59, 130, 246, 0)');
 						return gradient;
 					},
 					fill: true,
 					tension: 0.4,
-					pointRadius: 4,
+					pointRadius: 0, // Ocultar puntos por defecto para un look más limpio
+					pointHoverRadius: 6,
 					pointBackgroundColor: '#3b82f6',
-					pointBorderColor: '#0a0a16',
+					pointBorderColor: '#fff',
 					pointBorderWidth: 2,
-					pointHoverRadius: 6
 				}]
 			},
+			plugins: [{
+				id: 'glow',
+				beforeDatasetsDraw: (chart) => {
+					const ctx = chart.ctx;
+					ctx.save();
+					ctx.shadowBlur = 15;
+					ctx.shadowColor = 'rgba(59, 130, 246, 0.6)';
+					ctx.shadowOffsetX = 0;
+					ctx.shadowOffsetY = 4;
+				},
+				afterDatasetsDraw: (chart) => {
+					chart.ctx.restore();
+				}
+			}],
 			options: {
 				responsive: true,
 				maintainAspectRatio: false,
