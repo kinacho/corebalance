@@ -66,7 +66,9 @@ export const GET: RequestHandler = async () => {
 				} else {
 					try {
 						// Pedir desde el 20 de Dic del año anterior para asegurar que cogemos el último cierre
-						const queryOptions = { period1: dec20PrevYear, interval: '1d' as const };
+						// Usamos period2: new Date() para forzar que la URL sea única y evitar que Vercel devuelva
+						// una respuesta cacheada antigua (ej. cuando antes pedíamos solo 7 días)
+						const queryOptions = { period1: dec20PrevYear, period2: new Date(), interval: '1d' as const };
 						const chart = await yahooFinance.chart(ticker, queryOptions);
 						
 						const validQuotes = chart.quotes.filter(q => q.close !== null);
@@ -94,7 +96,7 @@ export const GET: RequestHandler = async () => {
 						// Fallback especial para Bitcoin ETPs que no tienen histórico en Yahoo
 						if (ytd === undefined && (ticker.includes('XS2940466316') || ticker.includes('BTC'))) {
 							try {
-								const btcChart = await yahooFinance.chart('BTC-EUR', { period1: dec20PrevYear, interval: '1d' });
+								const btcChart = await yahooFinance.chart('BTC-EUR', { period1: dec20PrevYear, period2: new Date(), interval: '1d' });
 								const btcQuotes = btcChart.quotes.filter(q => q.close !== null);
 								const btcPrevYearQuotes = btcQuotes.filter(q => new Date(q.date) < startOfCurrentYear);
 								if (btcPrevYearQuotes.length > 0) {
