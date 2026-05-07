@@ -40,74 +40,94 @@ export const GET: RequestHandler = async () => {
 	const startOfCurrentYear = new Date(Date.UTC(currentYear, 0, 1));
 	const dec20PrevYear = new Date(Date.UTC(currentYear - 1, 11, 20));
 
-	const results = await Promise.allSettled(
-		tickers.map(async (ticker) => {
-			const quote = quoteMap.get(ticker);
-			if (!quote) throw new Error(`No se encontró cotización para ${ticker}`);
+	// Crear función auxiliar para procesar en lotes y evitar Rate Limits en Vercel
+	const chunkArray = <T,>(arr: T[], size: number): T[][] => {
+		return Array.from({ length: Math.ceil(arr.length / size) }, (_, i) =>
+			arr.slice(i * size, i * size + size)
+		);
+	};
 
-			let sparkline: number[] = [];
-			let ytd: number | undefined = quote.ytdReturn;
+	const chunks = chunkArray(tickers, 3);
+	const results: PromiseSettledResult<{ ticker: string, quote: any, sparkline: number[], ytd: number | undefined }>[] = [];
 
-			if (historyCache[ticker] && (now - historyCache[ticker].timestamp < CACHE_TTL)) {
-				sparkline = historyCache[ticker].sparkline;
-				if (ytd === undefined) ytd = historyCache[ticker].ytd;
-			} else {
-				try {
-					// Pedir desde el 20 de Dic del año anterior para asegurar que cogemos el último cierre
-					const queryOptions = { period1: dec20PrevYear, interval: '1d' as const };
-					const chart = await yahooFinance.chart(ticker, queryOptions);
-					
-					const validQuotes = chart.quotes.filter(q => q.close !== null);
-					sparkline = validQuotes.slice(-7).map(q => q.close) as number[];
-					
-					// Calcular YTD encontrando el último cierre del año anterior
-					if (validQuotes.length > 0) {
-						const prevYearQuotes = validQuotes.filter(q => new Date(q.date) < startOfCurrentYear);
-						const currentPrice = quote.regularMarketPrice || (validQuotes[validQuotes.length - 1].close as number);
+	for (let i = 0; i < chunks.length; i++) {
+		const chunk = chunks[i];
+		const chunkResults = await Promise.allSettled(
+			chunk.map(async (ticker) => {
+				const quote = quoteMap.get(ticker);
+				if (!quote) throw new Error(`No se encontró cotización para ${ticker}`);
+
+				let sparkline: number[] = [];
+				let ytd: number | undefined = quote.ytdReturn;
+
+				if (historyCache[ticker] && (now - historyCache[ticker].timestamp < CACHE_TTL)) {
+					sparkline = historyCache[ticker].sparkline;
+					if (ytd === undefined) ytd = historyCache[ticker].ytd;
+				} else {
+					try {
+						// Pedir desde el 20 de Dic del año anterior para asegurar que cogemos el último cierre
+						const queryOptions = { period1: dec20PrevYear, interval: '1d' as const };
+						const chart = await yahooFinance.chart(ticker, queryOptions);
 						
-						if (prevYearQuotes.length > 0) {
-							const lastYearClose = prevYearQuotes[prevYearQuotes.length - 1].close as number;
-							if (lastYearClose > 0) {
-								ytd = ((currentPrice - lastYearClose) / lastYearClose) * 100;
-							}
-						} else {
-							// Si es un activo nuevo este año, usar el primer precio disponible
-							const firstThisYear = validQuotes[0].close as number;
-							if (firstThisYear > 0) {
-								ytd = ((currentPrice - firstThisYear) / firstThisYear) * 100;
-							}
-						}
-					}
-
-					// Fallback especial para Bitcoin ETPs que no tienen histórico en Yahoo
-					if (ytd === undefined && (ticker.includes('XS2940466316') || ticker.includes('BTC'))) {
-						try {
-							const btcChart = await yahooFinance.chart('BTC-EUR', { period1: dec20PrevYear, interval: '1d' });
-							const btcQuotes = btcChart.quotes.filter(q => q.close !== null);
-							const btcPrevYearQuotes = btcQuotes.filter(q => new Date(q.date) < startOfCurrentYear);
-							if (btcPrevYearQuotes.length > 0) {
-								const lastYearClose = btcPrevYearQuotes[btcPrevYearQuotes.length - 1].close as number;
-								const currentPrice = btcQuotes[btcQuotes.length - 1].close as number;
+						const validQuotes = chart.quotes.filter(q => q.close !== null);
+						sparkline = validQuotes.slice(-7).map(q => q.close) as number[];
+						
+						// Calcular YTD encontrando el último cierre del año anterior
+						if (validQuotes.length > 0) {
+							const prevYearQuotes = validQuotes.filter(q => new Date(q.date) < startOfCurrentYear);
+							const currentPrice = quote.regularMarketPrice || (validQuotes[validQuotes.length - 1].close as number);
+							
+							if (prevYearQuotes.length > 0) {
+								const lastYearClose = prevYearQuotes[prevYearQuotes.length - 1].close as number;
 								if (lastYearClose > 0) {
 									ytd = ((currentPrice - lastYearClose) / lastYearClose) * 100;
 								}
+							} else {
+								// Si es un activo nuevo este año, usar el primer precio disponible
+								const firstThisYear = validQuotes[0].close as number;
+								if (firstThisYear > 0) {
+									ytd = ((currentPrice - firstThisYear) / firstThisYear) * 100;
+								}
 							}
-						} catch (btcError) {
-							console.error("Error fetching BTC fallback YTD:", btcError);
 						}
-					}
-					
-					historyCache[ticker] = { timestamp: now, sparkline, ytd };
-				} catch (e) {
-					console.error(`Error fetching history for ${ticker}:`, e);
-					sparkline = historyCache[ticker]?.sparkline || [];
-					ytd = ytd ?? historyCache[ticker]?.ytd;
-				}
-			}
 
-			return { ticker, quote, sparkline, ytd };
-		})
-	);
+						// Fallback especial para Bitcoin ETPs que no tienen histórico en Yahoo
+						if (ytd === undefined && (ticker.includes('XS2940466316') || ticker.includes('BTC'))) {
+							try {
+								const btcChart = await yahooFinance.chart('BTC-EUR', { period1: dec20PrevYear, interval: '1d' });
+								const btcQuotes = btcChart.quotes.filter(q => q.close !== null);
+								const btcPrevYearQuotes = btcQuotes.filter(q => new Date(q.date) < startOfCurrentYear);
+								if (btcPrevYearQuotes.length > 0) {
+									const lastYearClose = btcPrevYearQuotes[btcPrevYearQuotes.length - 1].close as number;
+									const currentPrice = btcQuotes[btcQuotes.length - 1].close as number;
+									if (lastYearClose > 0) {
+										ytd = ((currentPrice - lastYearClose) / lastYearClose) * 100;
+									}
+								}
+							} catch (btcError) {
+								console.error("Error fetching BTC fallback YTD:", btcError);
+							}
+						}
+						
+						historyCache[ticker] = { timestamp: now, sparkline, ytd };
+					} catch (e) {
+						console.error(`Error fetching history for ${ticker}:`, e);
+						sparkline = historyCache[ticker]?.sparkline || [];
+						ytd = ytd ?? historyCache[ticker]?.ytd;
+					}
+				}
+
+				return { ticker, quote, sparkline, ytd };
+			})
+		);
+		
+		results.push(...chunkResults);
+		
+		// Añadir un pequeño retraso entre lotes (excepto el último) para evitar rate limits
+		if (i < chunks.length - 1) {
+			await new Promise(resolve => setTimeout(resolve, 250));
+		}
+	}
 
 	for (const result of results) {
 		if (result.status === 'fulfilled') {
