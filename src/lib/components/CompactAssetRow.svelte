@@ -121,6 +121,12 @@
 				<span class="perf-pct">({position.dailyChangePercent > 0 ? '+' : ''}{formatPercent(position.dailyChangePercent)})</span>
 			</div>
 		</div>
+		<div class="perf-row ytd" class:positive={(position.ytdChangePercent ?? 0) > 0} class:negative={(position.ytdChangePercent ?? 0) < 0}>
+			<span class="perf-label">YTD</span>
+			<div class="perf-values">
+				<span class="perf-pct">{position.ytdChangePercent !== undefined ? (position.ytdChangePercent > 0 ? '+' : '') + formatPercent(position.ytdChangePercent) : '--'}</span>
+			</div>
+		</div>
 		<div class="perf-row total" class:positive={position.profit > 0} class:negative={position.profit < 0}>
 			<span class="perf-label">Total</span>
 			<div class="perf-values">

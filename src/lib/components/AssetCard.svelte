@@ -192,6 +192,14 @@
 					</span>
 				</div>
 			</div>
+			<div class="metric pnl-metric" class:positive={(position.ytdChangePercent ?? 0) > 0} class:negative={(position.ytdChangePercent ?? 0) < 0}>
+				<span class="metric-label">YTD</span>
+				<div class="metric-content">
+					<span class="profit-tag" style="margin-left: 0;">
+						{position.ytdChangePercent !== undefined ? (position.ytdChangePercent > 0 ? '+' : '') + formatPercent(position.ytdChangePercent) : '--'}
+					</span>
+				</div>
+			</div>
 			<div class="metric pnl-metric" class:positive={position.profit > 0} class:negative={position.profit < 0}>
 				<span class="metric-label">Total</span>
 				<div class="metric-content">

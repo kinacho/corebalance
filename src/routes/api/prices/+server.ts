@@ -80,7 +80,8 @@ export const GET: RequestHandler = async () => {
 				change: change ?? 0,
 				sparkline,
 				marketState: quote.marketState,
-				lastUpdate: quote.regularMarketTime ? new Date(quote.regularMarketTime).getTime() : undefined
+				lastUpdate: quote.regularMarketTime ? new Date(quote.regularMarketTime).getTime() : undefined,
+				ytdChangePercent: quote.ytdReturn
 			};
 		} else {
 			errors.push(result.reason?.message ?? 'Error desconocido');
