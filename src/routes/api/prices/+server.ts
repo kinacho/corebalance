@@ -66,6 +66,21 @@ export const GET: RequestHandler = async () => {
 							ytd = ((lastPrice - firstPrice) / firstPrice) * 100;
 						}
 					}
+
+					// Fallback especial para Bitcoin ETPs que no tienen histórico en Yahoo
+					if (ytd === undefined && (ticker.includes('XS2940466316') || ticker.includes('BTC'))) {
+						try {
+							const btcChart = await yahooFinance.chart('BTC-EUR', { period1: startOfYear, interval: '1d' });
+							const btcQuotes = btcChart.quotes.filter(q => q.close !== null);
+							if (btcQuotes.length > 0) {
+								const first = btcQuotes[0].close as number;
+								const last = btcQuotes[btcQuotes.length - 1].close as number;
+								ytd = ((last - first) / first) * 100;
+							}
+						} catch (btcError) {
+							console.error("Error fetching BTC fallback YTD:", btcError);
+						}
+					}
 					
 					historyCache[ticker] = { timestamp: now, sparkline, ytd };
 				} catch (e) {
