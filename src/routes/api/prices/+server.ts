@@ -6,7 +6,7 @@ import type { PricesResponse, PriceData } from '$lib/types';
 
 const yahooFinance = new YahooFinance({ suppressNotices: ['yahooSurvey', 'ripHistorical'] });
 
-const historyCache: Record<string, { timestamp: number, data: number[] }> = {};
+const historyCache: Record<string, { timestamp: number, sparkline: number[], ytd?: number }> = {};
 const CACHE_TTL = 1000 * 60 * 60 * 4; // 4 horas
 
 export const GET: RequestHandler = async () => {
@@ -34,35 +34,54 @@ export const GET: RequestHandler = async () => {
 	// Crear un mapa de cotizaciones para acceso rápido
 	const quoteMap = new Map(quotesResult.map(q => [q.symbol, q]));
 
-	// 2. Obtener los históricos (sparklines) usando caché individual
+	// 2. Obtener los históricos (sparklines y YTD) usando caché individual
+	const now = Date.now();
+	const startOfYear = new Date(new Date().getFullYear(), 0, 1);
+
 	const results = await Promise.allSettled(
 		tickers.map(async (ticker) => {
 			const quote = quoteMap.get(ticker);
 			if (!quote) throw new Error(`No se encontró cotización para ${ticker}`);
 
 			let sparkline: number[] = [];
-			const now = Date.now();
+			let ytd: number | undefined = quote.ytdReturn;
+
 			if (historyCache[ticker] && (now - historyCache[ticker].timestamp < CACHE_TTL)) {
-				sparkline = historyCache[ticker].data;
+				sparkline = historyCache[ticker].sparkline;
+				if (ytd === undefined) ytd = historyCache[ticker].ytd;
 			} else {
 				try {
-					const queryOptions = { period1: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), interval: '1d' as const };
+					// Pedir desde el inicio del año para calcular YTD
+					const queryOptions = { period1: startOfYear, interval: '1d' as const };
 					const chart = await yahooFinance.chart(ticker, queryOptions);
-					sparkline = chart.quotes.slice(-7).map(q => q.close).filter(v => v !== null) as number[];
-					historyCache[ticker] = { timestamp: now, data: sparkline };
+					
+					const validQuotes = chart.quotes.filter(q => q.close !== null);
+					sparkline = validQuotes.slice(-7).map(q => q.close) as number[];
+					
+					// Calcular YTD si Yahoo no lo da (común en acciones)
+					if (ytd === undefined && validQuotes.length > 0) {
+						const firstPrice = validQuotes[0].close as number;
+						const lastPrice = quote.regularMarketPrice || (validQuotes[validQuotes.length - 1].close as number);
+						if (firstPrice > 0) {
+							ytd = ((lastPrice - firstPrice) / firstPrice) * 100;
+						}
+					}
+					
+					historyCache[ticker] = { timestamp: now, sparkline, ytd };
 				} catch (e) {
 					console.error(`Error fetching history for ${ticker}:`, e);
-					sparkline = historyCache[ticker]?.data || [];
+					sparkline = historyCache[ticker]?.sparkline || [];
+					ytd = ytd ?? historyCache[ticker]?.ytd;
 				}
 			}
 
-			return { ticker, quote, sparkline };
+			return { ticker, quote, sparkline, ytd };
 		})
 	);
 
 	for (const result of results) {
 		if (result.status === 'fulfilled') {
-			const { ticker, quote, sparkline } = result.value;
+			const { ticker, quote, sparkline, ytd } = result.value;
 			// Calcular cambio diario: usar el proporcionado por Yahoo o calcularlo manualmente si falta
 			let change = quote.regularMarketChangePercent;
 			const p = quote.regularMarketPrice;
@@ -81,7 +100,7 @@ export const GET: RequestHandler = async () => {
 				sparkline,
 				marketState: quote.marketState,
 				lastUpdate: quote.regularMarketTime ? new Date(quote.regularMarketTime).getTime() : undefined,
-				ytdChangePercent: quote.ytdReturn
+				ytdChangePercent: ytd
 			};
 		} else {
 			errors.push(result.reason?.message ?? 'Error desconocido');
