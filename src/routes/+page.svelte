@@ -38,16 +38,43 @@
 	let activeTab = $state<TabId>('assets');
 
 	// --- Derived Data for Charts ---
-	const actualChartData = $derived({
-		labels: PORTFOLIO_ASSETS.map(a => a.name),
-		values: portfolio.portfolioState.positions.map(p => parseFloat((p.currentWeight * 100).toFixed(2))),
-		colors: PORTFOLIO_ASSETS.map(a => a.color)
+	const categoryChartData = $derived.by(() => {
+		const categories = [
+			{ name: 'Core (90/5/5)', value: portfolio.portfolioState.totalCapital, color: '#3b82f6' },
+			{ name: 'Acciones', value: portfolio.stockState.totalCapital, color: '#10b981' },
+			{ name: 'Conservadora', value: portfolio.satelliteState.totalCapital, color: '#f59e0b' }
+		];
+		const filtered = categories.filter(c => c.value > 0);
+		return {
+			labels: filtered.map(c => c.name),
+			values: filtered.map(c => (c.value / portfolio.globalCapital) * 100),
+			colors: filtered.map(c => c.color)
+		};
 	});
 
-	const targetChartData = $derived({
-		labels: PORTFOLIO_ASSETS.map(a => a.name),
-		values: PORTFOLIO_ASSETS.map(a => a.targetWeight * 100),
-		colors: PORTFOLIO_ASSETS.map(a => a.color)
+	const detailedChartData = $derived.by(() => {
+		const allPositions = [
+			...portfolio.portfolioState.positions,
+			...portfolio.stockState.positions,
+			...portfolio.satelliteState.positions
+		];
+		return {
+			labels: allPositions.map(p => p.asset.name),
+			values: allPositions.map(p => (p.totalValue / portfolio.globalCapital) * 100),
+			colors: allPositions.map(p => p.asset.color)
+		};
+	});
+
+
+
+	const coreActualChartData = $derived.by(() => {
+		const positions = portfolio.portfolioState.positions;
+		const total = portfolio.portfolioState.totalCapital;
+		return {
+			labels: positions.map(p => p.asset.name),
+			values: positions.map(p => total > 0 ? (p.totalValue / total) * 100 : 0),
+			colors: positions.map(p => p.asset.color)
+		};
 	});
 
 	// --- Lifecycle ---
@@ -154,12 +181,16 @@
 						</div>
 						<div class="charts-grid">
 							<div class="chart-box">
-								<h4 class="chart-label">Estado Actual</h4>
-								<DonutChart data={actualChartData} />
+								<h4 class="chart-label">Estrategia actual</h4>
+								<DonutChart data={coreActualChartData} />
 							</div>
 							<div class="chart-box">
-								<h4 class="chart-label">Objetivo 90/5/5</h4>
-								<DonutChart data={targetChartData} />
+								<h4 class="chart-label">Peso Global (Categorías)</h4>
+								<DonutChart data={categoryChartData} />
+							</div>
+							<div class="chart-box">
+								<h4 class="chart-label">Detalle Global</h4>
+								<DonutChart data={detailedChartData} />
 							</div>
 						</div>
 					</div>
@@ -310,7 +341,7 @@
 		box-shadow: 0 12px 48px 0 rgba(0, 0, 0, 0.5);
 	}
 	.sidebar-title { font-size: 0.9rem; font-weight: 700; color: #fff; margin-bottom: 1.5rem; }
-	.charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+	.charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1.5rem; }
 	.chart-box { display: flex; flex-direction: column; gap: 0.75rem; align-items: center; }
 	.chart-label { font-size: 0.7rem; color: rgba(255, 255, 255, 0.4); text-transform: uppercase; margin: 0; font-weight: 700; letter-spacing: 0.05em; }
 

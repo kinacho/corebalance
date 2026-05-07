@@ -98,7 +98,7 @@
 			<div class="legend-item">
 				<span class="legend-dot" style="background: {data.colors[i]}"></span>
 				<span class="legend-label">{label}</span>
-				<span class="legend-value">{data.values[i].toFixed(1)}%</span>
+				<span class="legend-value">{data.values[i].toFixed(2)}%</span>
 			</div>
 		{/each}
 	</div>
