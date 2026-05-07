@@ -45,7 +45,8 @@ export function calculatePortfolioState(
 			dailyChangeValue,
 			dailyChangePercent,
 			marketState: prices[asset.ticker]?.marketState,
-			lastUpdate: prices[asset.ticker]?.lastUpdate
+			lastUpdate: prices[asset.ticker]?.lastUpdate,
+			sparkline: prices[asset.ticker]?.sparkline
 		};
 	});
 

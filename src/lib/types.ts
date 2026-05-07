@@ -45,6 +45,7 @@ export interface PortfolioPosition {
 	dailyChangePercent: number; // Cambio diario porcentual
 	marketState?: string;
 	lastUpdate?: number;
+	sparkline?: number[];
 }
 
 /** Estado completo de la cartera */

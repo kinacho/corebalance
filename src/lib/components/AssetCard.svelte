@@ -79,11 +79,11 @@
 		<div class="asset-identity">
 			<div class="asset-icon-wrapper">
 				<span class="asset-icon">{position.asset.icon}</span>
+				<span class="market-dot" class:open={isMarketOpen(position.asset.ticker, position.marketState)} class:closed={!isMarketOpen(position.asset.ticker, position.marketState)} title={position.marketState || 'Estado desconocido'}></span>
 			</div>
 			<div class="asset-info" style="min-width: 0; flex: 1;">
 				<div class="header-main" style="min-width: 0;">
 					<span class="ticker" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; max-width: 100%;">
-						<span class="market-dot" class:open={isMarketOpen(position.asset.ticker, position.marketState)} class:closed={!isMarketOpen(position.asset.ticker, position.marketState)} title={position.marketState || 'Estado desconocido'}></span>
 						{position.asset.ticker}
 					</span>
 					<h3 class="asset-name">{position.asset.name}</h3>
@@ -313,6 +313,17 @@
 		justify-content: center;
 		font-size: 1.5rem;
 		box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);
+		position: relative;
+	}
+
+	.asset-icon-wrapper :global(.market-dot) {
+		position: absolute;
+		bottom: -2px;
+		right: -2px;
+		margin: 0;
+		border: 2px solid #1a1a2e; /* Fondo de la tarjeta aproximado para contraste */
+		width: 12px;
+		height: 12px;
 	}
 
 	.asset-name {

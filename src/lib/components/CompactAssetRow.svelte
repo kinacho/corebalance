@@ -61,10 +61,12 @@
 
 <div class="compact-row">
 	<div class="cell-identity">
-		<span class="asset-icon">{position.asset.icon}</span>
+		<div class="asset-icon">
+			{position.asset.icon}
+			<span class="market-dot" class:open={isMarketOpen(position.asset.ticker)} class:closed={!isMarketOpen(position.asset.ticker)} title={isMarketOpen(position.asset.ticker) ? 'Mercado abierto' : 'Mercado cerrado'}></span>
+		</div>
 		<div class="asset-names">
 			<span class="asset-ticker">
-				<span class="market-dot" class:open={isMarketOpen(position.asset.ticker)} class:closed={!isMarketOpen(position.asset.ticker)} title={isMarketOpen(position.asset.ticker) ? 'Mercado abierto' : 'Mercado cerrado'}></span>
 				{position.asset.ticker.split('.')[0]}
 			</span>
 			<span class="asset-name" title={position.asset.name}>{position.asset.name}</span>
@@ -173,6 +175,17 @@
 		align-items: center;
 		justify-content: center;
 		flex-shrink: 0;
+		position: relative;
+	}
+
+	.asset-icon :global(.market-dot) {
+		position: absolute;
+		bottom: -2px;
+		right: -2px;
+		margin: 0;
+		border: 1.5px solid #0f0f19; /* Fondo de la fila aproximado */
+		width: 10px;
+		height: 10px;
 	}
 
 	.asset-names {

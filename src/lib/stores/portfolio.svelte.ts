@@ -70,9 +70,12 @@ export class PortfolioStore {
 		const days = 7;
 		const historyPoints: { date: string, value: number }[] = [];
 		
-		// Inicializar puntos
+		// Inicializar puntos con fechas reales (hace 7 días hasta hoy)
 		for (let i = 0; i < days; i++) {
-			historyPoints.push({ date: '', value: 0 });
+			const d = new Date();
+			d.setDate(d.getDate() - (days - 1 - i));
+			const dateStr = d.toISOString().split('T')[0];
+			historyPoints.push({ date: dateStr, value: 0 });
 		}
 
 		let hasData = false;

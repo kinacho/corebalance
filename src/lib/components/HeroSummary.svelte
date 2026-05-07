@@ -12,20 +12,20 @@
 				<div class="capital-breakdown">
 					<div class="breakdown-item">
 						<span>90/5/5:</span>
-						<strong style="color: #fff">{formatEUR(portfolio.portfolioState.totalCapital)}</strong>
+						<strong style="color: #fff" class="privacy-blur">{formatEUR(portfolio.portfolioState.totalCapital)}</strong>
 					</div>
 					{#if portfolio.stockState.totalCapital > 0}
 						<span class="breakdown-divider">|</span>
 						<div class="breakdown-item">
 							<span>Acc:</span>
-							<strong style="color: #fff">{formatEUR(portfolio.stockState.totalCapital)}</strong>
+							<strong style="color: #fff" class="privacy-blur">{formatEUR(portfolio.stockState.totalCapital)}</strong>
 						</div>
 					{/if}
 					{#if portfolio.satelliteState.totalCapital > 0}
 						<span class="breakdown-divider">|</span>
 						<div class="breakdown-item">
 							<span>Cons:</span>
-							<strong style="color: #fff">{formatEUR(portfolio.satelliteState.totalCapital)}</strong>
+							<strong style="color: #fff" class="privacy-blur">{formatEUR(portfolio.satelliteState.totalCapital)}</strong>
 						</div>
 					{/if}
 				</div>
@@ -58,7 +58,7 @@
 				<span class="metric-label">Eficiencia (TER)</span>
 				<div class="metric-row">
 					<span class="metric-value">{formatPercent(portfolio.globalWeightedAverageTer)}</span>
-					<span class="metric-badge neutral">{formatEUR(portfolio.globalAnnualCost)}/año</span>
+					<span class="metric-badge neutral privacy-blur">{formatEUR(portfolio.globalAnnualCost)}/año</span>
 				</div>
 			</div>
 		</div>

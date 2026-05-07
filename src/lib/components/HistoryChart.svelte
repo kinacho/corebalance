@@ -13,10 +13,10 @@
 			chart.data.labels = history.map((p, i) => {
 				if (p.date) {
 					const date = new Date(p.date);
-					return date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+					// Formato: "07 may"
+					return date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }).replace('.', '');
 				}
-				// Si es historia reconstruida sin fechas, usamos "hace X días"
-				return `D-${history.length - 1 - i}`;
+				return `Día ${i + 1}`;
 			});
 			chart.data.datasets[0].data = history.map(p => p.value);
 			chart.update('none'); // Update sin animación para suavidad
@@ -82,7 +82,13 @@
 				scales: {
 					x: {
 						grid: { display: false },
-						ticks: { color: 'rgba(160, 160, 200, 0.5)', font: { size: 10 } }
+						ticks: { 
+							color: 'rgba(255, 255, 255, 0.5)', 
+							font: { size: 11, weight: 500 },
+							maxRotation: 0,
+							autoSkip: true,
+							maxTicksLimit: 7
+						}
 					},
 					y: {
 						grid: { color: 'rgba(255, 255, 255, 0.05)' },
