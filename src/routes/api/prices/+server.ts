@@ -1,7 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import YahooFinance from 'yahoo-finance2';
-import { PORTFOLIO_ASSETS, SATELLITE_ASSETS, STOCK_ASSETS } from '$lib/constants';
 import type { PricesResponse, PriceData } from '$lib/types';
 
 const yahooFinance = new YahooFinance({ suppressNotices: ['yahooSurvey', 'ripHistorical'] });
@@ -24,14 +23,15 @@ async function fetchFTPrice(isin: string): Promise<{ price: number, change: numb
 		const html = await res.text();
 		
 		// Búsqueda del precio: aparece después de "Price (EUR)"
-		const priceMatch = html.match(/Price \(EUR\).*?mod-ui-data-list__value">([\d,.]+)/s);
+		const priceMatch = html.match(/Price \(EUR\).*?mod-ui-data-list__value">[\d,.]+/s);
 		// Búsqueda del cambio porcentual: aparece después de la barra "/"
 		const changeMatch = html.match(/\/ ([\d,.-]+)%/);
 		
 		if (priceMatch) {
-			const price = parseFloat(priceMatch[1].replace(/,/g, ''));
+			const valueMatch = priceMatch[0].match(/([\d,.]+)$/);
+			const price = valueMatch ? parseFloat(valueMatch[1].replace(/,/g, '')) : 0;
 			const change = changeMatch ? parseFloat(changeMatch[1]) : 0;
-			return { price, change };
+			if (price > 0) return { price, change };
 		}
 	} catch (e) {
 		console.error(`Error fetching FT price for ${isin}:`, e);
@@ -39,15 +39,25 @@ async function fetchFTPrice(isin: string): Promise<{ price: number, change: numb
 	return null;
 }
 
-export const GET: RequestHandler = async () => {
-	const tickers = [
-		...PORTFOLIO_ASSETS.map((a) => a.ticker), 
-		...SATELLITE_ASSETS.map((a) => a.ticker), 
-		...STOCK_ASSETS.map((a) => a.ticker),
-		'BTC-EUR',
-		'EURUSD=X',
-		'EURCAD=X'
-	];
+export const GET: RequestHandler = async ({ url }) => {
+	// Aceptar tickers dinámicos del usuario, o usar los de pares de divisas como mínimo
+	const tickersParam = url.searchParams.get('tickers');
+	
+	// Siempre incluir pares de divisas para conversión
+	const currencyPairs = ['BTC-EUR', 'EURUSD=X', 'EURCAD=X'];
+	
+	let userTickers: string[] = [];
+	if (tickersParam) {
+		userTickers = tickersParam.split(',').map(t => t.trim()).filter(Boolean);
+	}
+	
+	// Combinar tickers del usuario con pares de divisas (sin duplicados)
+	const tickers = [...new Set([...userTickers, ...currencyPairs])];
+	
+	if (tickers.length === 0) {
+		return json({ prices: {}, timestamp: new Date().toISOString(), errors: [] });
+	}
+
 	const errors: string[] = [];
 	const prices: Record<string, PriceData> = {};
 

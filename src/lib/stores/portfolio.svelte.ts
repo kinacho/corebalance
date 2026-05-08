@@ -1,11 +1,9 @@
-import { PORTFOLIO_ASSETS, SATELLITE_ASSETS, STOCK_ASSETS, STORAGE_KEY_HOLDINGS, STORAGE_KEY_CONTRIBUTION } from '$lib/constants';
-import type { HoldingData, HoldingsMap, PortfolioState, PriceData, RebalanceResult } from '$lib/types';
+import { DEFAULT_CORE_ASSETS, DEFAULT_SATELLITE_ASSETS, DEFAULT_STOCK_ASSETS, STORAGE_KEY_HOLDINGS, STORAGE_KEY_CONTRIBUTION, STORAGE_KEY_ASSETS } from '$lib/constants';
+import type { Asset, HoldingData, HoldingsMap, PortfolioState, PriceData, RebalanceResult } from '$lib/types';
 import { calculatePortfolioState, calculateRebalance } from '$lib/rebalance';
 import { auth, db, googleProvider } from '$lib/firebase';
 import { onAuthStateChanged, signInWithPopup, signOut, type User } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-
-const AUTHORIZED_EMAIL = import.meta.env.VITE_AUTHORIZED_EMAIL;
 
 export class PortfolioStore {
 	// --- State (Runes) ---
@@ -21,9 +19,29 @@ export class PortfolioStore {
 	history = $state<{ date: string; value: number }[]>([]);
 	dailyChange = $state({ value: 0, percent: 0 });
 
+	// --- User-Configurable Assets ---
+	coreAssets = $state<Asset[]>([...DEFAULT_CORE_ASSETS]);
+	satelliteAssets = $state<Asset[]>([...DEFAULT_SATELLITE_ASSETS]);
+	stockAssets = $state<Asset[]>([...DEFAULT_STOCK_ASSETS]);
+
 	// --- Derived State ---
 	eurUsdRate = $derived(this.prices['EURUSD=X']?.price || 1.1);
 	eurCadRate = $derived(this.prices['EURCAD=X']?.price || 1.5);
+
+	/** Label dinámico basado en los pesos reales del Core */
+	targetLabel = $derived.by(() => {
+		const weights = this.coreAssets.map(a => Math.round(a.targetWeight * 100));
+		return weights.join(' / ') || 'Custom';
+	});
+
+	/** Todos los tickers del usuario (para enviar al API) */
+	allUserTickers = $derived.by(() => {
+		const tickers = new Set<string>();
+		for (const a of this.coreAssets) tickers.add(a.ticker);
+		for (const a of this.satelliteAssets) tickers.add(a.ticker);
+		for (const a of this.stockAssets) tickers.add(a.ticker);
+		return [...tickers];
+	});
 
 	convertedPrices: Record<string, PriceData> = $derived.by(() => {
 		const res: Record<string, PriceData> = {};
@@ -37,15 +55,15 @@ export class PortfolioStore {
 	});
 
 	portfolioState: PortfolioState = $derived(
-		calculatePortfolioState(PORTFOLIO_ASSETS, this.holdings, this.convertedPrices)
+		calculatePortfolioState(this.coreAssets, this.holdings, this.convertedPrices)
 	);
 
 	satelliteState: PortfolioState = $derived(
-		calculatePortfolioState(SATELLITE_ASSETS, this.holdings, this.convertedPrices)
+		calculatePortfolioState(this.satelliteAssets, this.holdings, this.convertedPrices)
 	);
 
 	stockState: PortfolioState = $derived(
-		calculatePortfolioState(STOCK_ASSETS, this.holdings, this.convertedPrices)
+		calculatePortfolioState(this.stockAssets, this.holdings, this.convertedPrices)
 	);
 
 	globalCapital = $derived(this.portfolioState.totalCapital + this.satelliteState.totalCapital + this.stockState.totalCapital);
@@ -112,7 +130,7 @@ export class PortfolioStore {
 
 	rebalanceResult: RebalanceResult | null = $derived(
 		this.contribution > 0 && Object.keys(this.prices).length > 0
-			? calculateRebalance(PORTFOLIO_ASSETS, this.holdings, this.convertedPrices, this.contribution)
+			? calculateRebalance(this.coreAssets, this.holdings, this.convertedPrices, this.contribution)
 			: null
 	);
 
@@ -132,13 +150,6 @@ export class PortfolioStore {
 	private initAuth() {
 		if (typeof window === 'undefined' || !auth) return;
 		onAuthStateChanged(auth, async (user) => {
-			if (user && user.email !== AUTHORIZED_EMAIL) {
-				console.warn('Unauthorized user:', user.email);
-				alert('Acceso denegado. Solo el administrador puede iniciar sesión.');
-				await signOut(auth);
-				this.user = null;
-				return;
-			}
 			this.user = user;
 			if (user) await this.loadFromCloud();
 		});
@@ -165,6 +176,10 @@ export class PortfolioStore {
 				holdings: this.holdings,
 				contribution: this.contribution,
 				isPrivate: this.isPrivate,
+				// Guardar la configuración de activos del usuario
+				coreAssets: this.coreAssets,
+				satelliteAssets: this.satelliteAssets,
+				stockAssets: this.stockAssets,
 				updatedAt: new Date().toISOString()
 			};
 			await setDoc(doc(db, 'user_data', this.user.uid), dataToSave);
@@ -182,12 +197,25 @@ export class PortfolioStore {
 				this.holdings = data.holdings || {};
 				this.contribution = data.contribution || 0;
 				this.isPrivate = data.isPrivate ?? this.isPrivate;
+				// Cargar activos personalizados si existen
+				if (data.coreAssets && Array.isArray(data.coreAssets)) {
+					this.coreAssets = data.coreAssets;
+				}
+				if (data.satelliteAssets && Array.isArray(data.satelliteAssets)) {
+					this.satelliteAssets = data.satelliteAssets;
+				}
+				if (data.stockAssets && Array.isArray(data.stockAssets)) {
+					this.stockAssets = data.stockAssets;
+				}
 			} else if (Object.keys(this.holdings).length > 0) {
 				await this.saveToCloud();
 			}
 			
 			// Cargar historial después de los datos de la cartera
 			await this.loadHistory();
+			
+			// Re-fetch precios con los nuevos tickers del usuario
+			this.fetchPrices();
 		} catch (e) {
 			console.error('Firestore load error:', e);
 		}
@@ -267,12 +295,37 @@ export class PortfolioStore {
 		localStorage.setItem(STORAGE_KEY_HOLDINGS, JSON.stringify(this.holdings));
 		localStorage.setItem(STORAGE_KEY_CONTRIBUTION, this.contribution.toString());
 		localStorage.setItem('balanceador_privacy', this.isPrivate.toString());
+		// Guardar configuración de activos en localStorage
+		localStorage.setItem(STORAGE_KEY_ASSETS, JSON.stringify({
+			coreAssets: this.coreAssets,
+			satelliteAssets: this.satelliteAssets,
+			stockAssets: this.stockAssets
+		}));
 		this.saveToCloud();
 	}
 
 	private loadFromStorage() {
 		if (typeof localStorage === 'undefined') return;
 		
+		// Cargar configuración de activos guardada
+		const savedAssets = localStorage.getItem(STORAGE_KEY_ASSETS);
+		if (savedAssets) {
+			try {
+				const parsed = JSON.parse(savedAssets);
+				if (parsed.coreAssets && Array.isArray(parsed.coreAssets)) {
+					this.coreAssets = parsed.coreAssets;
+				}
+				if (parsed.satelliteAssets && Array.isArray(parsed.satelliteAssets)) {
+					this.satelliteAssets = parsed.satelliteAssets;
+				}
+				if (parsed.stockAssets && Array.isArray(parsed.stockAssets)) {
+					this.stockAssets = parsed.stockAssets;
+				}
+			} catch (e) {
+				console.error('Asset config parse error:', e);
+			}
+		}
+
 		const savedHoldings = localStorage.getItem(STORAGE_KEY_HOLDINGS);
 		if (savedHoldings) {
 			try {
@@ -316,9 +369,14 @@ export class PortfolioStore {
 			this.holdings = {};
 			this.contribution = 0;
 			this.isPrivate = false;
+			// Resetear activos a defaults
+			this.coreAssets = [...DEFAULT_CORE_ASSETS];
+			this.satelliteAssets = [...DEFAULT_SATELLITE_ASSETS];
+			this.stockAssets = [...DEFAULT_STOCK_ASSETS];
 			localStorage.removeItem(STORAGE_KEY_HOLDINGS);
 			localStorage.removeItem(STORAGE_KEY_CONTRIBUTION);
 			localStorage.removeItem('balanceador_privacy');
+			localStorage.removeItem(STORAGE_KEY_ASSETS);
 			this.setDemoData();
 		} catch (e) {
 			console.error('Logout error:', e);
@@ -333,7 +391,8 @@ export class PortfolioStore {
 		
 		this.error = null;
 		try {
-			const response = await fetch(`/api/prices?t=${Date.now()}`, { cache: 'no-store' });
+			const tickerList = this.allUserTickers.join(',');
+			const response = await fetch(`/api/prices?tickers=${encodeURIComponent(tickerList)}&t=${Date.now()}`, { cache: 'no-store' });
 			if (!response.ok) throw new Error(`HTTP ${response.status}`);
 			const data = await response.json();
 			this.prices = data.prices;
@@ -381,6 +440,53 @@ export class PortfolioStore {
 			this.contribution = 0;
 			this.saveToStorage();
 		}
+	}
+
+	// --- Asset Management ---
+
+	/** Añadir un nuevo activo a una categoría */
+	addAsset(asset: Asset) {
+		const category = asset.category;
+		if (category === 'core') {
+			if (this.coreAssets.some(a => a.ticker === asset.ticker)) return;
+			this.coreAssets = [...this.coreAssets, asset];
+		} else if (category === 'satellite') {
+			if (this.satelliteAssets.some(a => a.ticker === asset.ticker)) return;
+			this.satelliteAssets = [...this.satelliteAssets, asset];
+		} else {
+			if (this.stockAssets.some(a => a.ticker === asset.ticker)) return;
+			this.stockAssets = [...this.stockAssets, asset];
+		}
+		this.saveToStorage();
+		// Refrescar precios para incluir el nuevo ticker
+		this.fetchPrices();
+	}
+
+	/** Eliminar un activo de la cartera */
+	removeAsset(ticker: string) {
+		this.coreAssets = this.coreAssets.filter(a => a.ticker !== ticker);
+		this.satelliteAssets = this.satelliteAssets.filter(a => a.ticker !== ticker);
+		this.stockAssets = this.stockAssets.filter(a => a.ticker !== ticker);
+		// Eliminar holdings del activo
+		const { [ticker]: _, ...rest } = this.holdings;
+		this.holdings = rest;
+		this.saveToStorage();
+	}
+
+	/** Actualizar un activo (peso, TER, nombre, color, etc.) */
+	updateAsset(ticker: string, updates: Partial<Asset>) {
+		const updateInList = (list: Asset[]) =>
+			list.map(a => a.ticker === ticker ? { ...a, ...updates } : a);
+
+		this.coreAssets = updateInList(this.coreAssets);
+		this.satelliteAssets = updateInList(this.satelliteAssets);
+		this.stockAssets = updateInList(this.stockAssets);
+		this.saveToStorage();
+	}
+
+	/** Comprobar si un ticker ya existe en alguna categoría */
+	hasAsset(ticker: string): boolean {
+		return this.allUserTickers.includes(ticker);
 	}
 
 	setDemoData() {

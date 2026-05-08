@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { TARGET_LABEL } from '$lib/constants';
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { onMount } from 'svelte';
 
@@ -9,9 +8,10 @@
 		onRefresh: () => void;
 		isPrivate: boolean;
 		onTogglePrivacy: () => void;
+		onManageAssets: () => void;
 	}
 
-	let { timestamp, loading, onRefresh, isPrivate, onTogglePrivacy }: Props = $props();
+	let { timestamp, loading, onRefresh, isPrivate, onTogglePrivacy, onManageAssets }: Props = $props();
 
 	let showUserMenu = $state(false);
 	let scrolled = $state(false);
@@ -48,7 +48,7 @@
 			<div class="logo-icon">⚖️</div>
 			<div>
 				<h1 class="logo-title">Balanceador</h1>
-				<p class="logo-subtitle">{TARGET_LABEL}</p>
+				<p class="logo-subtitle">{portfolio.targetLabel}</p>
 			</div>
 		</div>
 	</div>
@@ -63,6 +63,18 @@
 			</div>
 		{/if}
 		
+		<button
+			class="action-btn"
+			onclick={onManageAssets}
+			title="Gestionar activos"
+			aria-label="Gestionar activos"
+		>
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<circle cx="12" cy="12" r="3" />
+				<path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+			</svg>
+		</button>
+
 		<button
 			class="action-btn"
 			onclick={onTogglePrivacy}

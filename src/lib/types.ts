@@ -1,3 +1,6 @@
+/** Categoría de un activo dentro de la cartera del usuario */
+export type AssetCategory = 'core' | 'satellite' | 'stocks';
+
 /** Definición de un activo de la cartera */
 export interface Asset {
 	ticker: string;
@@ -7,6 +10,14 @@ export interface Asset {
 	color: string; // Color para gráficos
 	icon: string; // Emoji del activo
 	ter: number; // Total Expense Ratio (0.01 = 1%)
+	category: AssetCategory; // Categoría a la que pertenece
+}
+
+/** Configuración completa de la cartera de un usuario */
+export interface UserPortfolioConfig {
+	coreAssets: Asset[];
+	satelliteAssets: Asset[];
+	stockAssets: Asset[];
 }
 
 /** Datos de precio obtenidos de la API */
@@ -86,3 +97,12 @@ export interface HoldingData {
 
 /** Holdings almacenados en localStorage */
 export type HoldingsMap = Record<string, HoldingData>;
+
+/** Resultado de búsqueda de Yahoo Finance */
+export interface SearchResult {
+	ticker: string;
+	name: string;
+	type: string;
+	exchange: string;
+	currency?: string;
+}

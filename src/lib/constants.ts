@@ -1,7 +1,26 @@
 import type { Asset } from './types';
 
-/** Los tres activos de la cartera con sus pesos objetivo */
-export const PORTFOLIO_ASSETS: Asset[] = [
+/** Paleta de colores predefinida para asignar a nuevos activos */
+export const ASSET_COLORS = [
+	'#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899',
+	'#6366f1', '#14b8a6', '#f97316', '#06b6d4', '#ef4444',
+	'#84cc16', '#a855f7', '#0ea5e9', '#d946ef', '#22c55e'
+];
+
+/** Iconos predefinidos para asignar a nuevos activos según tipo */
+export const ASSET_ICONS: Record<string, string> = {
+	'ETF': '📊',
+	'Acción': '📈',
+	'Fondo': '🛡️',
+	'Crypto': '₿',
+	'Futuro': '⚡',
+	'Índice': '🌐',
+	'Divisa': '💱',
+	'Otro': '💎'
+};
+
+/** Los tres activos por defecto de la cartera Core (plantilla para nuevos usuarios) */
+export const DEFAULT_CORE_ASSETS: Asset[] = [
 	{
 		ticker: '0P0001XF40.F',
 		name: 'iShares Dev World',
@@ -9,7 +28,8 @@ export const PORTFOLIO_ASSETS: Asset[] = [
 		targetWeight: 0.90,
 		color: '#3b82f6',
 		icon: '🌍',
-		ter: 0.0006 // 0.06%
+		ter: 0.0006, // 0.06%
+		category: 'core'
 	},
 	{
 		ticker: '0P0001XF3Z.F',
@@ -18,7 +38,8 @@ export const PORTFOLIO_ASSETS: Asset[] = [
 		targetWeight: 0.05,
 		color: '#10b981',
 		icon: '🌱',
-		ter: 0.0016 // 0.16%
+		ter: 0.0016, // 0.16%
+		category: 'core'
 	},
 	{
 		ticker: 'XS2940466316.SG',
@@ -27,20 +48,22 @@ export const PORTFOLIO_ASSETS: Asset[] = [
 		targetWeight: 0.05,
 		color: '#f59e0b',
 		icon: '₿',
-		ter: 0.0015 // 0.15%
+		ter: 0.0015, // 0.15%
+		category: 'core'
 	}
 ];
 
-/** Activos de la cartera satélite (Renta Fija y Mixta) */
-export const SATELLITE_ASSETS: Asset[] = [
+/** Activos por defecto de la cartera satélite (Renta Fija y Mixta) */
+export const DEFAULT_SATELLITE_ASSETS: Asset[] = [
 	{
 		ticker: '0P0001QKUD.F',
 		name: 'Groupama Trésorerie',
 		isin: 'FR001400CFA4',
-		targetWeight: 0, // No participan en rebalanceo
+		targetWeight: 0,
 		color: '#64748b',
 		icon: '🛡️',
-		ter: 0.0009 // Estimado, se puede ajustar
+		ter: 0.0009,
+		category: 'satellite'
 	},
 	{
 		ticker: '0P0001MYMU.F',
@@ -49,12 +72,13 @@ export const SATELLITE_ASSETS: Asset[] = [
 		targetWeight: 0,
 		color: '#8b5cf6',
 		icon: '⚖️',
-		ter: 0.0075 // Estimado, se puede ajustar
+		ter: 0.0075,
+		category: 'satellite'
 	}
 ];
 
-/** Acciones individuales */
-export const STOCK_ASSETS: Asset[] = [
+/** Acciones individuales por defecto */
+export const DEFAULT_STOCK_ASSETS: Asset[] = [
 	{
 		ticker: 'ATCH',
 		name: 'AtlasClear Holdings',
@@ -62,7 +86,8 @@ export const STOCK_ASSETS: Asset[] = [
 		targetWeight: 0,
 		color: '#6366f1',
 		icon: '📈',
-		ter: 0
+		ter: 0,
+		category: 'stocks'
 	},
 	{
 		ticker: '34Q0.SG',
@@ -71,13 +96,20 @@ export const STOCK_ASSETS: Asset[] = [
 		targetWeight: 0,
 		color: '#ec4899',
 		icon: '⚛️',
-		ter: 0
+		ter: 0,
+		category: 'stocks'
 	}
 ];
+
+// Aliases para compatibilidad durante la transición
+export const PORTFOLIO_ASSETS = DEFAULT_CORE_ASSETS;
+export const SATELLITE_ASSETS = DEFAULT_SATELLITE_ASSETS;
+export const STOCK_ASSETS = DEFAULT_STOCK_ASSETS;
 
 /** Claves de localStorage */
 export const STORAGE_KEY_HOLDINGS = 'balanceador_holdings_v2';
 export const STORAGE_KEY_CONTRIBUTION = 'balanceador_contribution';
+export const STORAGE_KEY_ASSETS = 'balanceador_user_assets';
 
-/** Distribución objetivo como texto legible */
+/** Distribución objetivo como texto legible (generada dinámicamente ahora) */
 export const TARGET_LABEL = '90 / 5 / 5';

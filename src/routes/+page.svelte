@@ -7,8 +7,8 @@
 	import DonutChart from '$lib/components/DonutChart.svelte';
 	import HistoryChart from '$lib/components/HistoryChart.svelte';
 	import RebalancePanel from '$lib/components/RebalancePanel.svelte';
+	import ManageAssets from '$lib/components/ManageAssets.svelte';
 	import { portfolio } from '$lib/stores/portfolio.svelte';
-	import { PORTFOLIO_ASSETS, SATELLITE_ASSETS } from '$lib/constants';
 	import { formatEUR, formatPercent } from '$lib/utils';
 
 	// Efecto para el tema dinámico
@@ -36,6 +36,7 @@
 
 	// --- State ---
 	let activeTab = $state<TabId>('assets');
+	let showManageAssets = $state(false);
 
 	// --- Derived Data for Charts ---
 	const categoryChartData = $derived.by(() => {
@@ -84,10 +85,14 @@
 </script>
 
 <svelte:head>
-	<title>Balanceador 90/5/5 — Dashboard</title>
-	<meta name="description" content="Dashboard de inversión para el Balanceador 90/5/5" />
+	<title>Balanceador — Dashboard de Inversión</title>
+	<meta name="description" content="Dashboard de inversión personalizable con rebalanceo automático" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 </svelte:head>
+
+{#if showManageAssets}
+	<ManageAssets onClose={() => showManageAssets = false} />
+{/if}
 
 <div class="app-container" class:privacy-mode={portfolio.isPrivate}>
 	<Header 
@@ -95,7 +100,8 @@
 		loading={portfolio.loading} 
 		isPrivate={portfolio.isPrivate}
 		onRefresh={() => portfolio.fetchPrices()} 
-		onTogglePrivacy={() => portfolio.togglePrivacy()} 
+		onTogglePrivacy={() => portfolio.togglePrivacy()}
+		onManageAssets={() => showManageAssets = true}
 	/>
 
 	<main class="main-content">
