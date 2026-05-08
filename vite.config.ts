@@ -11,15 +11,15 @@ export default defineConfig({
 			registerType: 'autoUpdate',
 			injectRegister: 'auto',
 			devOptions: {
-				enabled: true
+				enabled: false
 			},
 			workbox: {
 				globPatterns: ['**/*.{js,css,html,ico,png,svg,webp}']
 			},
 			manifest: {
-				name: 'Balanceador 90/5/5',
+				name: 'Balanceador — Portfolio Dashboard',
 				short_name: 'Balanceador',
-				description: 'Calculadora de rebalanceo de cartera 90/5/5',
+				description: 'Dashboard de inversión personalizable con rebalanceo automático',
 				id: '/',
 				start_url: '/',
 				scope: '/',
