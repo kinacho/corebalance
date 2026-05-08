@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { ASSET_COLORS, ASSET_ICONS } from '$lib/constants';
 	import type { Asset, AssetCategory, SearchResult } from '$lib/types';
@@ -15,6 +16,11 @@
 	let searching = $state(false);
 	let searchError = $state<string | null>(null);
 	let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+	let searchInputEl: HTMLInputElement;
+
+	onMount(() => {
+		if (searchInputEl) searchInputEl.focus();
+	});
 
 	const categoryLabels: Record<AssetCategory, string> = {
 		core: 'Cartera Principal',
@@ -119,7 +125,7 @@
 				placeholder="Buscar por nombre, ticker o ISIN..."
 				value={query}
 				oninput={handleInput}
-				autofocus
+				bind:this={searchInputEl}
 			/>
 			{#if searching}
 				<div class="search-spinner"></div>
