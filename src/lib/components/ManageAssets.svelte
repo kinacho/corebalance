@@ -13,13 +13,12 @@
 	let showSearch = $state(false);
 	let searchCategory = $state<AssetCategory>('core');
 	let editingAsset = $state<string | null>(null);
-	let editWeight = $state('');
 	let editTer = $state('');
 
 	const sections = $derived([
-		{ id: 'core' as AssetCategory, label: 'Cartera Principal', assets: portfolio.coreAssets, description: 'Activos con peso objetivo para rebalanceo' },
-		{ id: 'satellite' as AssetCategory, label: 'Cartera Conservadora', assets: portfolio.satelliteAssets, description: 'Renta fija, monetarios, mixtos' },
-		{ id: 'stocks' as AssetCategory, label: 'Acciones Individuales', assets: portfolio.stockAssets, description: 'Acciones y posiciones especulativas' }
+		{ id: 'core' as AssetCategory, label: 'Cartera Principal', assets: portfolio.coreAssets, description: 'Activos con peso objetivo para rebalanceo', showWeights: true },
+		{ id: 'satellite' as AssetCategory, label: 'Cartera Conservadora', assets: portfolio.satelliteAssets, description: 'Renta fija, monetarios, mixtos', showWeights: false },
+		{ id: 'stocks' as AssetCategory, label: 'Acciones Individuales', assets: portfolio.stockAssets, description: 'Acciones y posiciones especulativas', showWeights: false }
 	]);
 
 	/** Peso total del Core (debe sumar 100%) */
@@ -28,7 +27,7 @@
 	);
 
 	const coreWeightValid = $derived(
-		Math.abs(coreWeightTotal - 1) < 0.001
+		Math.abs(coreWeightTotal - 1) < 0.005
 	);
 
 	function openSearch(cat: AssetCategory) {
@@ -36,25 +35,21 @@
 		showSearch = true;
 	}
 
-	function startEditAsset(asset: Asset) {
-		editingAsset = asset.ticker;
-		editWeight = (asset.targetWeight * 100).toString();
-		editTer = (asset.ter * 100).toString();
+	function handleWeightChange(ticker: string, newPercent: number) {
+		const clamped = Math.max(0, Math.min(100, newPercent));
+		portfolio.updateAsset(ticker, { targetWeight: clamped / 100 });
 	}
 
-	function saveAssetEdit(ticker: string) {
-		const weight = parseFloat(editWeight);
+	function startEditTer(asset: Asset) {
+		editingAsset = asset.ticker;
+		editTer = (asset.ter * 100).toFixed(2);
+	}
+
+	function saveTerEdit(ticker: string) {
 		const ter = parseFloat(editTer);
-		const updates: Partial<Asset> = {};
-
-		if (!isNaN(weight) && weight >= 0 && weight <= 100) {
-			updates.targetWeight = weight / 100;
-		}
 		if (!isNaN(ter) && ter >= 0) {
-			updates.ter = ter / 100;
+			portfolio.updateAsset(ticker, { ter: ter / 100 });
 		}
-
-		portfolio.updateAsset(ticker, updates);
 		editingAsset = null;
 	}
 
@@ -62,6 +57,18 @@
 		if (confirm(`¿Eliminar "${asset.name}" (${asset.ticker}) de tu cartera?`)) {
 			portfolio.removeAsset(asset.ticker);
 		}
+	}
+
+	/** Distribuir pesos equitativamente entre activos del core */
+	function equalizeWeights() {
+		const count = portfolio.coreAssets.length;
+		if (count === 0) return;
+		const baseWeight = Math.floor(100 / count);
+		const remainder = 100 - (baseWeight * count);
+		portfolio.coreAssets.forEach((asset, i) => {
+			const w = i === 0 ? baseWeight + remainder : baseWeight;
+			portfolio.updateAsset(asset.ticker, { targetWeight: w / 100 });
+		});
 	}
 
 	function handleKeydown(e: KeyboardEvent) {
@@ -98,93 +105,118 @@
 							<h3 class="section-label">{section.label}</h3>
 							<p class="section-desc">{section.description}</p>
 						</div>
-						{#if section.id === 'core'}
-							<div class="weight-indicator" class:valid={coreWeightValid} class:invalid={!coreWeightValid && coreWeightTotal > 0}>
-								<span class="weight-sum">{formatPercent(coreWeightTotal, 0)}</span>
-								{#if coreWeightValid}
-									<span class="weight-check">✓</span>
-								{:else}
-									<span class="weight-warn">≠ 100%</span>
-								{/if}
+						{#if section.showWeights}
+							<div class="weight-controls">
+								<button class="equalize-btn" onclick={equalizeWeights} title="Repartir equitativamente">
+									<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+										<line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="18" x2="21" y2="18" />
+									</svg>
+									Igualar
+								</button>
+								<div class="weight-indicator" class:valid={coreWeightValid} class:invalid={!coreWeightValid && coreWeightTotal > 0}>
+									<span class="weight-sum">{Math.round(coreWeightTotal * 100)}%</span>
+									{#if coreWeightValid}
+										<span class="weight-check">✓</span>
+									{:else}
+										<span class="weight-warn">≠ 100%</span>
+									{/if}
+								</div>
 							</div>
 						{/if}
 					</div>
 
+					<!-- Visual weight bar for Core -->
+					{#if section.showWeights && section.assets.length > 0}
+						<div class="weight-bar-container">
+							<div class="weight-bar">
+								{#each section.assets as asset (asset.ticker)}
+									{@const pct = Math.round(asset.targetWeight * 100)}
+									{#if pct > 0}
+										<div
+											class="weight-bar-segment"
+											style="width: {pct}%; background: {asset.color};"
+											title="{asset.name}: {pct}%"
+										>
+											{#if pct >= 8}
+												<span class="bar-label">{pct}%</span>
+											{/if}
+										</div>
+									{/if}
+								{/each}
+							</div>
+						</div>
+					{/if}
+
 					<div class="asset-list">
 						{#each section.assets as asset (asset.ticker)}
 							<div class="asset-item" style="--accent: {asset.color}">
-								{#if editingAsset === asset.ticker}
-									<!-- Edit Mode -->
-									<div class="asset-edit">
-										<div class="edit-header">
-											<span class="edit-icon">{asset.icon}</span>
-											<span class="edit-name">{asset.name}</span>
-											<span class="edit-ticker">{asset.ticker}</span>
+								<div class="asset-view">
+									<div class="asset-left">
+										<span class="asset-icon">{asset.icon}</span>
+										<div class="asset-info">
+											<span class="asset-name">{asset.name}</span>
+											<span class="asset-ticker-meta">
+												{asset.ticker}
+												{#if asset.ter > 0}
+													<span class="asset-ter-badge">{formatPercent(asset.ter)} TER</span>
+												{/if}
+											</span>
 										</div>
-										<div class="edit-fields">
-											{#if section.id === 'core'}
-												<div class="edit-field">
-													<label class="edit-label" for="weight-{asset.ticker}">Peso Objetivo (%)</label>
-													<input
-														id="weight-{asset.ticker}"
-														type="number"
-														class="edit-input"
-														bind:value={editWeight}
-														min="0"
-														max="100"
-														step="1"
-														inputmode="decimal"
-													/>
-												</div>
-											{/if}
-											<div class="edit-field">
-												<label class="edit-label" for="ter-{asset.ticker}">TER (%)</label>
+									</div>
+									<div class="asset-actions-mini">
+										{#if editingAsset === asset.ticker}
+											<div class="ter-edit-inline">
+												<label class="ter-label" for="ter-{asset.ticker}">TER %</label>
 												<input
 													id="ter-{asset.ticker}"
 													type="number"
-													class="edit-input"
+													class="ter-input"
 													bind:value={editTer}
 													min="0"
 													step="0.01"
 													inputmode="decimal"
 												/>
+												<button class="ter-save" onclick={() => saveTerEdit(asset.ticker)}>✓</button>
+												<button class="ter-cancel" onclick={() => editingAsset = null}>✕</button>
 											</div>
-										</div>
-										<div class="edit-actions">
-											<button class="edit-save" onclick={() => saveAssetEdit(asset.ticker)}>Guardar</button>
-											<button class="edit-cancel" onclick={() => editingAsset = null}>Cancelar</button>
-										</div>
+										{:else}
+											<button class="action-ter" onclick={() => startEditTer(asset)} title="Editar TER">
+												TER
+											</button>
+										{/if}
+										<button class="action-delete" onclick={() => confirmRemove(asset)} title="Eliminar">
+											<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+												<polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+											</svg>
+										</button>
 									</div>
-								{:else}
-									<!-- View Mode -->
-									<div class="asset-view">
-										<div class="asset-left">
-											<span class="asset-icon">{asset.icon}</span>
-											<div class="asset-info">
-												<span class="asset-name">{asset.name}</span>
-												<span class="asset-ticker-meta">
-													{asset.ticker}
-													{#if asset.targetWeight > 0}
-														<span class="asset-weight-badge">{formatPercent(asset.targetWeight, 0)}</span>
-													{/if}
-													{#if asset.ter > 0}
-														<span class="asset-ter-badge">{formatPercent(asset.ter)} TER</span>
-													{/if}
-												</span>
-											</div>
-										</div>
-										<div class="asset-actions">
-											<button class="action-edit" onclick={() => startEditAsset(asset)} title="Editar">
-												<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
-													<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-													<path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-												</svg>
-											</button>
-											<button class="action-delete" onclick={() => confirmRemove(asset)} title="Eliminar">
-												<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
-													<polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-												</svg>
-											</button>
+								</div>
+
+								<!-- Weight slider (only for Core) -->
+								{#if section.showWeights}
+									<div class="weight-slider-row">
+										<div class="slider-color-dot" style="background: {asset.color};"></div>
+										<input
+											type="range"
+											class="weight-slider"
+											style="--slider-color: {asset.color};"
+											min="0"
+											max="100"
+											step="1"
+											value={Math.round(asset.targetWeight * 100)}
+											oninput={(e) => handleWeightChange(asset.ticker, parseInt((e.target as HTMLInputElement).value))}
+										/>
+										<div class="weight-value-box">
+											<input
+												type="number"
+												class="weight-number-input"
+												min="0"
+												max="100"
+												step="1"
+												value={Math.round(asset.targetWeight * 100)}
+												oninput={(e) => handleWeightChange(asset.ticker, parseInt((e.target as HTMLInputElement).value) || 0)}
+											/>
+											<span class="weight-percent-sign">%</span>
 										</div>
 									</div>
 								{/if}
@@ -299,7 +331,7 @@
 		padding: 1rem 1.5rem 1.5rem;
 		display: flex;
 		flex-direction: column;
-		gap: 1.5rem;
+		gap: 1.75rem;
 	}
 
 	.section-block {
@@ -310,8 +342,9 @@
 
 	.section-head {
 		display: flex;
-		align-items: center;
+		align-items: flex-start;
 		justify-content: space-between;
+		gap: 0.5rem;
 	}
 
 	.section-label {
@@ -327,11 +360,40 @@
 		margin: 0;
 	}
 
+	.weight-controls {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		flex-shrink: 0;
+	}
+
+	.equalize-btn {
+		display: flex;
+		align-items: center;
+		gap: 0.3rem;
+		padding: 0.25rem 0.55rem;
+		background: rgba(255, 255, 255, 0.04);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 6px;
+		color: rgba(160, 160, 200, 0.6);
+		font-size: 0.62rem;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.15s;
+		white-space: nowrap;
+	}
+
+	.equalize-btn:hover {
+		background: rgba(59, 130, 246, 0.1);
+		color: #60a5fa;
+		border-color: rgba(59, 130, 246, 0.2);
+	}
+
 	.weight-indicator {
 		display: flex;
 		align-items: center;
-		gap: 0.35rem;
-		padding: 0.25rem 0.6rem;
+		gap: 0.3rem;
+		padding: 0.25rem 0.55rem;
 		border-radius: 8px;
 		font-size: 0.72rem;
 		font-weight: 700;
@@ -351,6 +413,39 @@
 		font-size: 0.65rem;
 	}
 
+	/* Weight distribution bar */
+	.weight-bar-container {
+		padding: 0 0.25rem;
+	}
+
+	.weight-bar {
+		display: flex;
+		height: 10px;
+		border-radius: 6px;
+		overflow: hidden;
+		background: rgba(255, 255, 255, 0.05);
+		gap: 2px;
+	}
+
+	.weight-bar-segment {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 4px;
+		transition: width 0.3s ease;
+		position: relative;
+		min-width: 4px;
+	}
+
+	.bar-label {
+		font-size: 0.5rem;
+		font-weight: 800;
+		color: rgba(255, 255, 255, 0.9);
+		text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+		line-height: 1;
+	}
+
+	/* Asset list */
 	.asset-list {
 		display: flex;
 		flex-direction: column;
@@ -376,18 +471,19 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		padding: 0.65rem 0.85rem;
+		padding: 0.6rem 0.85rem;
 	}
 
 	.asset-left {
 		display: flex;
 		align-items: center;
-		gap: 0.65rem;
+		gap: 0.6rem;
 		min-width: 0;
+		flex: 1;
 	}
 
 	.asset-icon {
-		font-size: 1.15rem;
+		font-size: 1.1rem;
 		flex-shrink: 0;
 	}
 
@@ -397,7 +493,7 @@
 
 	.asset-name {
 		display: block;
-		font-size: 0.82rem;
+		font-size: 0.8rem;
 		font-weight: 600;
 		color: #fff;
 		white-space: nowrap;
@@ -409,19 +505,10 @@
 		display: flex;
 		align-items: center;
 		gap: 0.4rem;
-		font-size: 0.62rem;
+		font-size: 0.6rem;
 		color: rgba(160, 160, 200, 0.4);
 		font-family: 'Monaco', 'Menlo', monospace;
 		margin-top: 0.1rem;
-	}
-
-	.asset-weight-badge {
-		padding: 0.05rem 0.3rem;
-		background: rgba(59, 130, 246, 0.15);
-		border-radius: 4px;
-		color: #60a5fa;
-		font-weight: 700;
-		font-family: inherit;
 	}
 
 	.asset-ter-badge {
@@ -432,29 +519,45 @@
 		font-weight: 600;
 	}
 
-	.asset-actions {
+	.asset-actions-mini {
 		display: flex;
+		align-items: center;
 		gap: 0.25rem;
+		flex-shrink: 0;
 	}
 
-	.action-edit, .action-delete {
-		width: 30px;
-		height: 30px;
-		border-radius: 8px;
+	.action-ter {
+		padding: 0.2rem 0.45rem;
+		border-radius: 6px;
 		border: 1px solid rgba(255, 255, 255, 0.06);
 		background: rgba(255, 255, 255, 0.03);
 		color: rgba(160, 160, 200, 0.5);
+		font-size: 0.58rem;
+		font-weight: 700;
+		cursor: pointer;
+		transition: all 0.15s;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
+	}
+
+	.action-ter:hover {
+		background: rgba(59, 130, 246, 0.1);
+		color: #60a5fa;
+		border-color: rgba(59, 130, 246, 0.2);
+	}
+
+	.action-delete {
+		width: 28px;
+		height: 28px;
+		border-radius: 7px;
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		background: rgba(255, 255, 255, 0.03);
+		color: rgba(160, 160, 200, 0.4);
 		cursor: pointer;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		transition: all 0.15s;
-	}
-
-	.action-edit:hover {
-		background: rgba(59, 130, 246, 0.1);
-		color: #60a5fa;
-		border-color: rgba(59, 130, 246, 0.2);
 	}
 
 	.action-delete:hover {
@@ -463,104 +566,150 @@
 		border-color: rgba(239, 68, 68, 0.2);
 	}
 
-	/* Edit mode */
-	.asset-edit {
-		padding: 1rem;
-		display: flex;
-		flex-direction: column;
-		gap: 0.75rem;
-	}
-
-	.edit-header {
+	/* TER inline edit */
+	.ter-edit-inline {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
-	}
-
-	.edit-icon { font-size: 1.1rem; }
-
-	.edit-name {
-		font-size: 0.85rem;
-		font-weight: 600;
-		color: #fff;
-	}
-
-	.edit-ticker {
-		font-size: 0.65rem;
-		color: rgba(160, 160, 200, 0.4);
-		font-family: 'Monaco', monospace;
-	}
-
-	.edit-fields {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 0.75rem;
-	}
-
-	.edit-field {
-		display: flex;
-		flex-direction: column;
 		gap: 0.3rem;
 	}
 
-	.edit-label {
-		font-size: 0.62rem;
-		font-weight: 600;
+	.ter-label {
+		font-size: 0.58rem;
 		color: rgba(160, 160, 200, 0.5);
+		font-weight: 600;
 		text-transform: uppercase;
-		letter-spacing: 0.04em;
 	}
 
-	.edit-input {
-		padding: 0.5rem 0.65rem;
+	.ter-input {
+		width: 55px;
+		padding: 0.2rem 0.35rem;
 		background: rgba(0, 0, 0, 0.4);
-		border: 1.5px solid rgba(255, 255, 255, 0.08);
-		border-radius: 10px;
+		border: 1px solid rgba(59, 130, 246, 0.3);
+		border-radius: 6px;
 		color: #fff;
-		font-size: 0.9rem;
+		font-size: 0.75rem;
 		font-weight: 600;
 		outline: none;
-		transition: all 0.2s;
 	}
 
-	.edit-input:focus {
-		border-color: #3b82f6;
-		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
-	}
-
-	.edit-actions {
-		display: flex;
-		gap: 0.5rem;
-		justify-content: flex-end;
-	}
-
-	.edit-save, .edit-cancel {
-		padding: 0.4rem 1rem;
-		border-radius: 8px;
-		font-size: 0.75rem;
-		font-weight: 700;
-		cursor: pointer;
+	.ter-save, .ter-cancel {
+		width: 24px;
+		height: 24px;
+		border-radius: 6px;
 		border: none;
-		transition: all 0.15s;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 0.7rem;
+		font-weight: 700;
+		transition: all 0.1s;
 	}
 
-	.edit-save {
-		background: rgba(59, 130, 246, 0.2);
-		color: #60a5fa;
+	.ter-save {
+		background: rgba(16, 185, 129, 0.15);
+		color: #10b981;
 	}
 
-	.edit-save:hover {
-		background: rgba(59, 130, 246, 0.3);
+	.ter-cancel {
+		background: rgba(239, 68, 68, 0.1);
+		color: #fca5a5;
 	}
 
-	.edit-cancel {
-		background: rgba(255, 255, 255, 0.05);
-		color: rgba(160, 160, 200, 0.6);
+	/* ====== Weight Slider Row ====== */
+	.weight-slider-row {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		padding: 0.3rem 0.85rem 0.65rem;
 	}
 
-	.edit-cancel:hover {
+	.slider-color-dot {
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		flex-shrink: 0;
+		box-shadow: 0 0 6px currentColor;
+	}
+
+	.weight-slider {
+		flex: 1;
+		height: 6px;
+		-webkit-appearance: none;
+		appearance: none;
 		background: rgba(255, 255, 255, 0.08);
+		border-radius: 3px;
+		outline: none;
+		cursor: pointer;
+	}
+
+	.weight-slider::-webkit-slider-thumb {
+		-webkit-appearance: none;
+		appearance: none;
+		width: 18px;
+		height: 18px;
+		border-radius: 50%;
+		background: var(--slider-color, #3b82f6);
+		border: 2px solid rgba(255, 255, 255, 0.3);
+		cursor: grab;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+		transition: transform 0.15s;
+	}
+
+	.weight-slider::-webkit-slider-thumb:hover {
+		transform: scale(1.15);
+	}
+
+	.weight-slider::-webkit-slider-thumb:active {
+		cursor: grabbing;
+		transform: scale(1.2);
+	}
+
+	.weight-slider::-moz-range-thumb {
+		width: 18px;
+		height: 18px;
+		border-radius: 50%;
+		background: var(--slider-color, #3b82f6);
+		border: 2px solid rgba(255, 255, 255, 0.3);
+		cursor: grab;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+	}
+
+	.weight-value-box {
+		display: flex;
+		align-items: center;
+		gap: 0.1rem;
+		background: rgba(0, 0, 0, 0.35);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 8px;
+		padding: 0.25rem 0.15rem 0.25rem 0.35rem;
+		min-width: 52px;
+	}
+
+	.weight-number-input {
+		width: 28px;
+		background: transparent;
+		border: none;
 		color: #fff;
+		font-size: 0.82rem;
+		font-weight: 700;
+		outline: none;
+		text-align: right;
+		-moz-appearance: textfield;
+		appearance: textfield;
+	}
+
+	.weight-number-input::-webkit-outer-spin-button,
+	.weight-number-input::-webkit-inner-spin-button {
+		-webkit-appearance: none;
+		appearance: none;
+		margin: 0;
+	}
+
+	.weight-percent-sign {
+		font-size: 0.72rem;
+		font-weight: 700;
+		color: rgba(160, 160, 200, 0.5);
 	}
 
 	/* Add button */
@@ -569,7 +718,7 @@
 		align-items: center;
 		justify-content: center;
 		gap: 0.5rem;
-		padding: 0.7rem;
+		padding: 0.65rem;
 		background: rgba(59, 130, 246, 0.05);
 		border: 1.5px dashed rgba(59, 130, 246, 0.2);
 		border-radius: 12px;
