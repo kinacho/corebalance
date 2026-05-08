@@ -276,10 +276,18 @@ export class PortfolioStore {
 		const savedHoldings = localStorage.getItem(STORAGE_KEY_HOLDINGS);
 		if (savedHoldings) {
 			try {
-				this.holdings = JSON.parse(savedHoldings);
+				const parsed = JSON.parse(savedHoldings);
+				if (Object.keys(parsed).length > 0) {
+					this.holdings = parsed;
+				} else {
+					this.setDemoData();
+				}
 			} catch (e) {
 				console.error('Local storage parse error:', e);
+				this.setDemoData();
 			}
+		} else {
+			this.setDemoData();
 		}
 
 		const savedContribution = localStorage.getItem(STORAGE_KEY_CONTRIBUTION);
@@ -311,6 +319,7 @@ export class PortfolioStore {
 			localStorage.removeItem(STORAGE_KEY_HOLDINGS);
 			localStorage.removeItem(STORAGE_KEY_CONTRIBUTION);
 			localStorage.removeItem('balanceador_privacy');
+			this.setDemoData();
 		} catch (e) {
 			console.error('Logout error:', e);
 		}
@@ -372,6 +381,23 @@ export class PortfolioStore {
 			this.contribution = 0;
 			this.saveToStorage();
 		}
+	}
+
+	setDemoData() {
+		// Solo ponemos datos demo si no hay usuario logueado
+		// para no pisar datos reales accidentalmente durante la inicialización
+		if (this.user) return;
+
+		this.holdings = {
+			'0P0001XF40.F': { shares: 850.5, avgCost: 10.25 },
+			'0P0001XF3Z.F': { shares: 120.3, avgCost: 9.80 },
+			'XS2940466316.SG': { shares: 1540.0, avgCost: 5.45 },
+			'0P0001QKUD.F': { shares: 1.2, avgCost: 1005.30 },
+			'0P0001MYMU.F': { shares: 180.0, avgCost: 12.15 },
+			'ATCH': { shares: 2500, avgCost: 0.45 },
+			'34Q0.SG': { shares: 15000, avgCost: 0.025 }
+		};
+		this.contribution = 500;
 	}
 }
 
