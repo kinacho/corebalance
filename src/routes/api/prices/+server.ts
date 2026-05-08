@@ -9,6 +9,36 @@ const yahooFinance = new YahooFinance({ suppressNotices: ['yahooSurvey', 'ripHis
 const historyCache: Record<string, { timestamp: number, sparkline: number[], ytd?: number }> = {};
 const CACHE_TTL = 1000 * 60 * 60 * 4; // 4 horas
 
+// Mapeo de tickers a ISINs para fondos de BlackRock que queremos obtener de FT
+const BLACKROCK_FUNDS_MAP: Record<string, string> = {
+	'0P0001XF40.F': 'IE000ZYRH0Q7',
+	'0P0001XF3Z.F': 'IE000QAZP7L2',
+	'XS2940466316.SG': 'IB1T:FRA'
+};
+
+async function fetchFTPrice(isin: string): Promise<{ price: number, change: number } | null> {
+	try {
+		const url = `https://markets.ft.com/data/funds/tearsheet/summary?s=${isin}:EUR`;
+		const res = await fetch(url);
+		if (!res.ok) return null;
+		const html = await res.text();
+		
+		// Búsqueda del precio: aparece después de "Price (EUR)"
+		const priceMatch = html.match(/Price \(EUR\).*?mod-ui-data-list__value">([\d,.]+)/s);
+		// Búsqueda del cambio porcentual: aparece después de la barra "/"
+		const changeMatch = html.match(/\/ ([\d,.-]+)%/);
+		
+		if (priceMatch) {
+			const price = parseFloat(priceMatch[1].replace(/,/g, ''));
+			const change = changeMatch ? parseFloat(changeMatch[1]) : 0;
+			return { price, change };
+		}
+	} catch (e) {
+		console.error(`Error fetching FT price for ${isin}:`, e);
+	}
+	return null;
+}
+
 export const GET: RequestHandler = async () => {
 	const tickers = [
 		...PORTFOLIO_ASSETS.map((a) => a.ticker), 
@@ -138,12 +168,21 @@ export const GET: RequestHandler = async () => {
 	for (const result of results) {
 		if (result.status === 'fulfilled') {
 			const { ticker, quote, sparkline, ytd } = result.value;
-			// Calcular cambio diario: usar el proporcionado por Yahoo o calcularlo manualmente si falta
+			let p = quote.regularMarketPrice;
 			let change = quote.regularMarketChangePercent;
-			const p = quote.regularMarketPrice;
+
+			// Intentar obtener precio más actualizado de Financial Times para fondos de BlackRock
+			if (BLACKROCK_FUNDS_MAP[ticker]) {
+				const ftData = await fetchFTPrice(BLACKROCK_FUNDS_MAP[ticker]);
+				if (ftData) {
+					p = ftData.price;
+					change = ftData.change;
+				}
+			}
+
 			const pc = quote.regularMarketPreviousClose;
 
-			// Si Yahoo dice 0 o no lo da, pero tenemos precio actual y anterior, lo calculamos nosotros
+			// Si Yahoo dice 0 o no lo da (y no lo hemos obtenido de FT), pero tenemos precio actual y anterior, lo calculamos nosotros
 			if ((change === undefined || Math.abs(change) < 0.0001) && p && pc && Math.abs(p - pc) > 0.000001) {
 				change = ((p - pc) / pc) * 100;
 			}
