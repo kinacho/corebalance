@@ -62,7 +62,11 @@ export const GET: RequestHandler = async () => {
 
 				if (historyCache[ticker] && (now - historyCache[ticker].timestamp < CACHE_TTL)) {
 					sparkline = historyCache[ticker].sparkline;
-					if (ytd === undefined) ytd = historyCache[ticker].ytd;
+					if (historyCache[ticker].ytd !== undefined) {
+						ytd = historyCache[ticker].ytd;
+					} else if (ytd === undefined) {
+						ytd = historyCache[ticker].ytd; // fallback
+					}
 				} else {
 					try {
 						// Pedir desde el 20 de Dic del año anterior para asegurar que cogemos el último cierre
@@ -115,7 +119,7 @@ export const GET: RequestHandler = async () => {
 					} catch (e) {
 						console.error(`Error fetching history for ${ticker}:`, e);
 						sparkline = historyCache[ticker]?.sparkline || [];
-						ytd = ytd ?? historyCache[ticker]?.ytd;
+						ytd = historyCache[ticker]?.ytd ?? ytd;
 					}
 				}
 
