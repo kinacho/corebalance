@@ -113,6 +113,15 @@
 		width: 100%;
 	}
 
+	@media (min-width: 1024px) {
+		.donut-wrapper {
+			flex-direction: row;
+			justify-content: center;
+			gap: 1.5rem;
+			align-items: flex-start; /* Alinear arriba para que todos los donuts empiecen a la misma altura */
+		}
+	}
+
 	.chart-container {
 		position: relative;
 		width: 100%;

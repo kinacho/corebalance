@@ -150,6 +150,13 @@
 		width: 100%;
 		height: 240px;
 		position: relative;
+		transition: height 0.3s ease;
+	}
+
+	@media (min-width: 1024px) {
+		.chart-container {
+			height: 380px;
+		}
 	}
 
 	.empty-chart {

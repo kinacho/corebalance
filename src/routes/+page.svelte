@@ -142,6 +142,29 @@
 			<HistoryChart />
 		</section>
 
+		<!-- Charts Row (Desktop: Horizontal, Mobile: Swipe Carousel) -->
+		<section class="desktop-charts-section" class:tab-hidden={activeTab !== 'charts'}>
+			<div class="charts-row-card card">
+				<div class="charts-mobile-hint">
+					<span>← Desliza para ver más →</span>
+				</div>
+				<div class="charts-grid">
+					<div class="chart-box">
+						<h4 class="chart-label">Estrategia actual</h4>
+						<DonutChart data={coreActualChartData} />
+					</div>
+					<div class="chart-box">
+						<h4 class="chart-label">Peso Global (Categorías)</h4>
+						<DonutChart data={categoryChartData} />
+					</div>
+					<div class="chart-box">
+						<h4 class="chart-label">Detalle Global</h4>
+						<DonutChart data={detailedChartData} />
+					</div>
+				</div>
+			</div>
+		</section>
+
 		<!-- Content Grid -->
 		<div class="dashboard-grid">
 			<!-- Assets Column -->
@@ -178,28 +201,6 @@
 						contribution={portfolio.contribution} 
 						onContributionChange={(val) => portfolio.updateContribution(val)} 
 					/>
-				</div>
-
-				<div class="sidebar-item" class:tab-hidden={activeTab !== 'charts'}>
-					<div class="charts-card card">
-						<div class="charts-header">
-							<h3 class="sidebar-title">Distribución de Cartera</h3>
-						</div>
-						<div class="charts-grid">
-							<div class="chart-box">
-								<h4 class="chart-label">Estrategia actual</h4>
-								<DonutChart data={coreActualChartData} />
-							</div>
-							<div class="chart-box">
-								<h4 class="chart-label">Peso Global (Categorías)</h4>
-								<DonutChart data={categoryChartData} />
-							</div>
-							<div class="chart-box">
-								<h4 class="chart-label">Detalle Global</h4>
-								<DonutChart data={detailedChartData} />
-							</div>
-						</div>
-					</div>
 				</div>
 			</aside>
 		</div>
@@ -337,7 +338,7 @@
 		box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
 	}
 
-	.charts-card { 
+	.charts-row-card { 
 		padding: 1.5rem; 
 		background: rgba(255, 255, 255, 0.03);
 		backdrop-filter: blur(24px) saturate(200%);
@@ -345,11 +346,58 @@
 		border: 1px solid rgba(255, 255, 255, 0.08);
 		border-radius: 28px;
 		box-shadow: 0 12px 48px 0 rgba(0, 0, 0, 0.5);
+		margin-bottom: 1.5rem;
+		overflow: hidden;
 	}
-	.sidebar-title { font-size: 0.9rem; font-weight: 700; color: #fff; margin-bottom: 1.5rem; }
-	.charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1.5rem; }
-	.chart-box { display: flex; flex-direction: column; gap: 0.75rem; align-items: center; }
-	.chart-label { font-size: 0.7rem; color: rgba(255, 255, 255, 0.4); text-transform: uppercase; margin: 0; font-weight: 700; letter-spacing: 0.05em; }
+
+	.charts-grid { 
+		display: grid; 
+		grid-template-columns: repeat(3, 100%); 
+		gap: 0; 
+		overflow-x: auto;
+		scroll-snap-type: x mandatory;
+		scrollbar-width: none;
+		-ms-overflow-style: none;
+	}
+	.charts-grid::-webkit-scrollbar { display: none; }
+	
+	.chart-box { 
+		display: flex; 
+		flex-direction: column; 
+		gap: 1rem; 
+		align-items: center; 
+		scroll-snap-align: center;
+		padding: 0 1rem;
+	}
+	
+	.chart-label { font-size: 0.75rem; color: rgba(255, 255, 255, 0.4); text-transform: uppercase; margin: 0; font-weight: 700; letter-spacing: 0.05em; }
+
+	.charts-mobile-hint {
+		display: flex;
+		justify-content: center;
+		margin-bottom: 1rem;
+		opacity: 0.5;
+		font-size: 0.65rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
+
+	@media (min-width: 1024px) {
+		.charts-mobile-hint { display: none; }
+		.charts-row-card { margin-bottom: 2rem; padding: 2rem; }
+		.charts-grid { 
+			grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+			gap: 2rem; 
+			overflow: visible;
+			scroll-snap-type: none;
+		}
+		.chart-box { 
+			padding: 0;
+			align-items: flex-start;
+		}
+		.desktop-charts-section { display: block !important; }
+	}
 
 	/* --- Footer --- */
 	.app-footer { padding: 3rem 0; text-align: center; opacity: 0.4; }
