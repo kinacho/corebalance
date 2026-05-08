@@ -8,11 +8,11 @@ const yahooFinance = new YahooFinance({ suppressNotices: ['yahooSurvey', 'ripHis
 const historyCache: Record<string, { timestamp: number, sparkline: number[], ytd?: number }> = {};
 const CACHE_TTL = 1000 * 60 * 60 * 4; // 4 horas
 
-// Mapeo de tickers a ISINs para fondos de BlackRock que queremos obtener de FT
-const BLACKROCK_FUNDS_MAP: Record<string, string> = {
-	'0P0001XF40.F': 'IE000ZYRH0Q7',
-	'0P0001XF3Z.F': 'IE000QAZP7L2',
-	'XS2940466316.SG': 'IB1T:FRA'
+// Mapeo de tickers problemáticos en Yahoo a ISINs/Symbols de Financial Times para mayor fiabilidad
+const RELIABLE_FT_MAPPINGS: Record<string, string> = {
+	'0P0001XF40.F': 'IE000ZYRH0Q7', // BlackRock World
+	'0P0001XF3Z.F': 'IE000QAZP7L2', // BlackRock EM
+	'XS2940466316.SG': 'IB1T:FRA'   // BlackRock Bitcoin ETP (Frankfurt)
 };
 
 async function fetchFTPrice(isin: string): Promise<{ price: number, change: number } | null> {
@@ -137,21 +137,23 @@ export const GET: RequestHandler = async ({ url }) => {
 							}
 						}
 
-						// Fallback especial para Bitcoin ETPs que no tienen histórico en Yahoo
-						if (ytd === undefined && (ticker.includes('XS2940466316') || ticker.includes('BTC'))) {
+						// Fallback especial para Cripto ETPs que suelen no tener histórico en Yahoo
+						if (ytd === undefined && (ticker.includes('BTC') || ticker.includes('ETH'))) {
 							try {
-								const btcChart = await yahooFinance.chart('BTC-EUR', { period1: dec20PrevYear, period2: new Date(), interval: '1d' });
-								const btcQuotes = btcChart.quotes.filter(q => q.close !== null);
-								const btcPrevYearQuotes = btcQuotes.filter(q => new Date(q.date) < startOfCurrentYear);
-								if (btcPrevYearQuotes.length > 0) {
-									const lastYearClose = btcPrevYearQuotes[btcPrevYearQuotes.length - 1].close as number;
-									const currentPrice = btcQuotes[btcQuotes.length - 1].close as number;
+								const baseSymbol = ticker.includes('ETH') ? 'ETH-EUR' : 'BTC-EUR';
+								const cryptoChart = await yahooFinance.chart(baseSymbol, { period1: dec20PrevYear, period2: new Date(), interval: '1d' });
+								const cryptoQuotes = cryptoChart.quotes.filter(q => q.close !== null);
+								const cryptoPrevYearQuotes = cryptoQuotes.filter(q => new Date(q.date) < startOfCurrentYear);
+								
+								if (cryptoPrevYearQuotes.length > 0) {
+									const lastYearClose = cryptoPrevYearQuotes[cryptoPrevYearQuotes.length - 1].close as number;
+									const currentPrice = cryptoQuotes[cryptoQuotes.length - 1].close as number;
 									if (lastYearClose > 0) {
 										ytd = ((currentPrice - lastYearClose) / lastYearClose) * 100;
 									}
 								}
-							} catch (btcError) {
-								console.error("Error fetching BTC fallback YTD:", btcError);
+							} catch (cryptoError) {
+								console.error(`Error fetching crypto fallback YTD for ${ticker}:`, cryptoError);
 							}
 						}
 						
@@ -181,9 +183,9 @@ export const GET: RequestHandler = async ({ url }) => {
 			let p = quote.regularMarketPrice;
 			let change = quote.regularMarketChangePercent;
 
-			// Intentar obtener precio más actualizado de Financial Times para fondos de BlackRock
-			if (BLACKROCK_FUNDS_MAP[ticker]) {
-				const ftData = await fetchFTPrice(BLACKROCK_FUNDS_MAP[ticker]);
+			// Intentar obtener precio más actualizado de Financial Times para tickers problemáticos
+			if (RELIABLE_FT_MAPPINGS[ticker]) {
+				const ftData = await fetchFTPrice(RELIABLE_FT_MAPPINGS[ticker]);
 				if (ftData) {
 					p = ftData.price;
 					change = ftData.change;

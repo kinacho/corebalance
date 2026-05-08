@@ -101,15 +101,10 @@ export const DEFAULT_STOCK_ASSETS: Asset[] = [
 	}
 ];
 
-// Aliases para compatibilidad durante la transición
-export const PORTFOLIO_ASSETS = DEFAULT_CORE_ASSETS;
-export const SATELLITE_ASSETS = DEFAULT_SATELLITE_ASSETS;
-export const STOCK_ASSETS = DEFAULT_STOCK_ASSETS;
+
 
 /** Claves de localStorage */
 export const STORAGE_KEY_HOLDINGS = 'balanceador_holdings_v2';
 export const STORAGE_KEY_CONTRIBUTION = 'balanceador_contribution';
 export const STORAGE_KEY_ASSETS = 'balanceador_user_assets';
 
-/** Distribución objetivo como texto legible (generada dinámicamente ahora) */
-export const TARGET_LABEL = '90 / 5 / 5';

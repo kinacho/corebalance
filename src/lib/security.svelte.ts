@@ -69,7 +69,7 @@ export class SecurityStore {
 					challenge,
 					timeout: 60000,
 					userVerification: 'required',
-					rp: { name: 'Balanceador 90/5/5' },
+					rp: { name: 'Balanceador' },
 					user: {
 						id: new Uint8Array(16),
 						name: 'usuario@balanceador.app',

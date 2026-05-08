@@ -41,7 +41,7 @@
 	// --- Derived Data for Charts ---
 	const categoryChartData = $derived.by(() => {
 		const categories = [
-			{ name: 'Core (90/5/5)', value: portfolio.portfolioState.totalCapital, color: '#3b82f6' },
+			{ name: `Core (${portfolio.targetLabel})`, value: portfolio.portfolioState.totalCapital, color: '#3b82f6' },
 			{ name: 'Acciones', value: portfolio.stockState.totalCapital, color: '#10b981' },
 			{ name: 'Conservadora', value: portfolio.satelliteState.totalCapital, color: '#f59e0b' }
 		];
@@ -147,17 +147,17 @@
 			<!-- Assets Column -->
 			<section class="assets-section" class:tab-hidden={activeTab !== 'assets'}>
 				<PortfolioSection 
-					title="Cartera Principal (90/5/5)" 
+					title={`Cartera Principal (${portfolio.targetLabel})`} 
 					portfolioState={portfolio.portfolioState} 
 					loading={portfolio.loading} 
-					skeletonCount={3} 
+					skeletonCount={portfolio.coreAssets.length || 3} 
 				/>
 				
 				<PortfolioSection 
 					title="Acciones Individuales" 
 					portfolioState={portfolio.stockState} 
 					loading={portfolio.loading} 
-					skeletonCount={2} 
+					skeletonCount={portfolio.stockAssets.length || 2} 
 					marginTop={true} 
 				/>
 
@@ -165,7 +165,7 @@
 					title="Cartera Conservadora" 
 					portfolioState={portfolio.satelliteState} 
 					loading={portfolio.loading} 
-					skeletonCount={2} 
+					skeletonCount={portfolio.satelliteAssets.length || 2} 
 					marginTop={true} 
 				/>
 			</section>
@@ -205,7 +205,7 @@
 		</div>
 
 		<footer class="app-footer">
-			<p>Balanceador 90/5/5 · {new Date().getFullYear()}</p>
+			<p>Balanceador · {new Date().getFullYear()}</p>
 		</footer>
 	</main>
 </div>

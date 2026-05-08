@@ -21,7 +21,13 @@
 	const displayAvgCost = $derived(position.avgCost.toString());
 
 	// Identificar si esta es la tarjeta de Bitcoin
-	const isBitcoin = $derived(position.asset.ticker.includes('XS2940466316'));
+	// Identificar si esta es una posición de cripto (para mostrar precio spot si lo tenemos)
+	const isCrypto = $derived(
+		position.asset.ticker.toLowerCase().includes('btc') || 
+		position.asset.ticker.toLowerCase().includes('eth') ||
+		position.asset.name.toLowerCase().includes('bitcoin') ||
+		position.asset.name.toLowerCase().includes('ethereum')
+	);
 
 	// Determinar el nivel de desviación para el color de estado
 	const deviationLevel = $derived(
@@ -100,11 +106,13 @@
 			</div>
 		</div>
 		<div class="header-right-info">
-			{#if isBitcoin && portfolio.btcPrice > 0}
-				<div class="btc-spot-price">
+			{#if isCrypto && portfolio.btcPrice > 0}
+				<div class="btc-spot-price" class:eth={position.asset.ticker.includes('ETH')}>
 					<span class="live-dot"></span>
-					<span class="btc-label">BTC:</span>
-					<span class="btc-value">{formatCurrency(portfolio.btcPrice, 'EUR')}</span>
+					<span class="btc-label">{position.asset.ticker.includes('ETH') ? 'ETH' : 'BTC'}:</span>
+					<span class="btc-value">
+						{formatCurrency(position.asset.ticker.includes('ETH') ? portfolio.prices['ETH-EUR']?.price || 0 : portfolio.btcPrice, 'EUR')}
+					</span>
 				</div>
 			{/if}
 			<div class="target-badge">

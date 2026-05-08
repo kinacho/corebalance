@@ -26,7 +26,7 @@
 			{#if portfolio.satelliteState.totalCapital > 0 || portfolio.stockState.totalCapital > 0}
 				<div class="capital-breakdown">
 					<div class="breakdown-item">
-						<span>90/5/5:</span>
+						<span>{portfolio.targetLabel}:</span>
 						<strong style="color: #fff" class="privacy-blur">{formatEUR(portfolio.portfolioState.totalCapital)}</strong>
 					</div>
 					{#if portfolio.stockState.totalCapital > 0}

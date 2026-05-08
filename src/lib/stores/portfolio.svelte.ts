@@ -25,8 +25,7 @@ export class PortfolioStore {
 	stockAssets = $state<Asset[]>([...DEFAULT_STOCK_ASSETS]);
 
 	// --- Derived State ---
-	eurUsdRate = $derived(this.prices['EURUSD=X']?.price || 1.1);
-	eurCadRate = $derived(this.prices['EURCAD=X']?.price || 1.5);
+
 
 	/** Label dinámico basado en los pesos reales del Core */
 	targetLabel = $derived.by(() => {
@@ -47,8 +46,8 @@ export class PortfolioStore {
 		const res: Record<string, PriceData> = {};
 		for (const [ticker, data] of Object.entries(this.prices)) {
 			let price = data.price;
-			if (data.currency === 'USD') price /= this.eurUsdRate;
-			if (data.currency === 'CAD') price /= this.eurCadRate;
+			if (data.currency === 'USD') price /= this.eurUsd;
+			if (data.currency === 'CAD') price /= this.eurCad;
 			res[ticker] = { ...data, price };
 		}
 		return res;
@@ -138,7 +137,11 @@ export class PortfolioStore {
 		Object.values(this.holdings).some((h) => h.shares > 0)
 	);
 
-	btcPrice = $derived(this.prices['BTC-EUR']?.price || 0);
+	// Precios live para referencias rápidas en UI
+	get btcPrice() { return this.prices['BTC-EUR']?.price || 0; }
+	get ethPrice() { return this.prices['ETH-EUR']?.price || 0; }
+	get eurUsd() { return this.prices['EURUSD=X']?.price || 1.10; }
+	get eurCad() { return this.prices['EURCAD=X']?.price || 1.50; }
 
 	constructor() {
 		this.loadFromStorage();
@@ -494,15 +497,18 @@ export class PortfolioStore {
 		// para no pisar datos reales accidentalmente durante la inicialización
 		if (this.user) return;
 
-		this.holdings = {
-			'0P0001XF40.F': { shares: 850.5, avgCost: 10.25 },
-			'0P0001XF3Z.F': { shares: 120.3, avgCost: 9.80 },
-			'XS2940466316.SG': { shares: 1540.0, avgCost: 5.45 },
-			'0P0001QKUD.F': { shares: 1.2, avgCost: 1005.30 },
-			'0P0001MYMU.F': { shares: 180.0, avgCost: 12.15 },
-			'ATCH': { shares: 2500, avgCost: 0.45 },
-			'34Q0.SG': { shares: 15000, avgCost: 0.025 }
+		// Cargamos holdings demo para los activos por defecto
+		const defaultHoldings: Record<string, { shares: number, avgCost: number }> = {
+			[DEFAULT_CORE_ASSETS[0].ticker]: { shares: 850.5, avgCost: 10.25 },
+			[DEFAULT_CORE_ASSETS[1].ticker]: { shares: 120.3, avgCost: 9.80 },
+			[DEFAULT_CORE_ASSETS[2].ticker]: { shares: 1540.0, avgCost: 5.45 },
+			[DEFAULT_SATELLITE_ASSETS[0].ticker]: { shares: 1.2, avgCost: 1005.30 },
+			[DEFAULT_SATELLITE_ASSETS[1].ticker]: { shares: 180.0, avgCost: 12.15 },
+			[DEFAULT_STOCK_ASSETS[0].ticker]: { shares: 2500, avgCost: 0.45 },
+			[DEFAULT_STOCK_ASSETS[1].ticker]: { shares: 15000, avgCost: 0.025 }
 		};
+
+		this.holdings = defaultHoldings;
 		this.contribution = 500;
 	}
 }

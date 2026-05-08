@@ -8,7 +8,7 @@
 		subtitle?: string;
 	}
 
-	let { loading = true, title = 'Balanceador', subtitle = '90/5/5 — Inteligencia Financiera' }: Props = $props();
+	let { loading = true, title = 'Balanceador', subtitle = 'Portfolio Dashboard' }: Props = $props();
 	
 	let show = $state(true);
 	let progress = $state(0);
