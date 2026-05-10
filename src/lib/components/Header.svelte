@@ -39,7 +39,7 @@
 <header class="dashboard-header" class:scrolled={scrolled}>
 	<div class="header-left">
 		<div class="logo-group">
-			<div class="logo-icon">⚖️</div>
+			<img src="/favicon.png" alt="CoreBalance Logo" class="logo-img" />
 			<div>
 				<h1 class="logo-title">CoreBalance</h1>
 				<p class="logo-subtitle">{portfolio.targetLabel}</p>
@@ -174,9 +174,10 @@
 		gap: 0.6rem;
 	}
 
-	.logo-icon {
-		font-size: 1.5rem;
-		line-height: 1;
+	.logo-img {
+		width: 32px;
+		height: 32px;
+		object-fit: contain;
 	}
 
 	.logo-title {
@@ -306,7 +307,7 @@
 			padding: 1.25rem 2rem;
 		}
 
-		.logo-icon { font-size: 2rem; }
+		.logo-img { width: 40px; height: 40px; }
 		.logo-title { font-size: 1.5rem; }
 
 		.header-right { gap: 0.75rem; }

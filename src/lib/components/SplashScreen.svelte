@@ -44,7 +44,7 @@
 		<div class="splash-content">
 			<div class="logo-container">
 				<div class="logo-glow"></div>
-				<div class="logo-icon">⚖️</div>
+				<img src="/pwa-512x512.png" alt="CoreBalance Logo" class="logo-img" />
 			</div>
 			
 			<div class="text-container">
@@ -137,9 +137,11 @@
 		50% { transform: scale(1.3); opacity: 0.6; }
 	}
 
-	.logo-icon {
-		font-size: 4rem;
-		filter: drop-shadow(0 0 20px rgba(0, 0, 0, 0.5));
+	.logo-img {
+		width: 80px;
+		height: 80px;
+		object-fit: contain;
+		filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.3));
 	}
 
 	.text-container {
