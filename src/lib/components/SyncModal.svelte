@@ -55,18 +55,26 @@
 			});
 
 			peer.on('connection', (conn: any) => {
+				console.log('P2P: Conexión entrante desde otro dispositivo');
 				peerStatus = '¡Dispositivo conectado! Preparando datos...';
 				
 				conn.on('data', async (data: any) => {
+					console.log('P2P: Mensaje recibido:', data.type);
 					if (data.type === 'REQUEST_DATA') {
 						peerStatus = 'Enviando datos al dispositivo...';
-						if (storageProvider.getAllData) {
-							const allData = await storageProvider.getAllData();
-							conn.send({ type: 'SYNC_DATA', payload: allData });
-							peerStatus = '¡Datos enviados con éxito!';
-							setTimeout(() => {
-								peerStatus = 'Sincronización finalizada. Puedes cerrar esto.';
-							}, 2000);
+						try {
+							if (storageProvider.getAllData) {
+								const allData = await storageProvider.getAllData();
+								conn.send({ type: 'SYNC_DATA', payload: allData });
+								console.log('P2P: Datos enviados correctamente');
+								peerStatus = '¡Datos enviados con éxito!';
+								setTimeout(() => {
+									peerStatus = 'Sincronización finalizada. Puedes cerrar esto.';
+								}, 2000);
+							}
+						} catch (e: any) {
+							console.error('P2P: Error al enviar datos:', e);
+							peerStatus = `Error al enviar datos: ${e.message}`;
 						}
 					}
 				});

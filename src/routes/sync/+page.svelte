@@ -9,9 +9,13 @@
 	let error = $state<string | null>(null);
 	let success = $state(false);
 	let isScanning = $state(false);
+	let isSyncing = $state(false);
 	let html5QrCode: any = null;
 
 	async function startSync(targetPeerId: string) {
+		if (isSyncing) return;
+		isSyncing = true;
+		
 		status = 'Conectando al servidor de señalización P2P...';
 		error = null;
 
@@ -21,14 +25,21 @@
 
 			peer.on('open', () => {
 				status = `Conectando con el otro dispositivo...`;
-				const conn = peer.connect(targetPeerId);
+				const conn = peer.connect(targetPeerId, {
+					reliable: true
+				});
 
 				conn.on('open', () => {
 					status = '¡Conectado! Solicitando datos...';
-					conn.send({ type: 'REQUEST_DATA' });
+					console.log('P2P: Conexión abierta, solicitando datos');
+					// Un pequeño retraso ayuda a la estabilidad en PeerJS
+					setTimeout(() => {
+						conn.send({ type: 'REQUEST_DATA' });
+					}, 500);
 				});
 
 				conn.on('data', async (data: any) => {
+					console.log('P2P: Datos recibidos:', data.type);
 					if (data.type === 'SYNC_DATA') {
 						status = 'Recibiendo datos...';
 						try {
@@ -48,13 +59,24 @@
 					}
 				});
 
+				conn.on('close', () => {
+					if (!success) {
+						error = 'La conexión se cerró inesperadamente.';
+						isSyncing = false;
+					}
+				});
+
 				conn.on('error', (err: any) => {
+					console.error('Connection error:', err);
 					error = `Error en la conexión: ${err.message}`;
+					isSyncing = false;
 				});
 			});
 
 			peer.on('error', (err: any) => {
+				console.error('PeerJS error:', err);
 				error = `Error P2P: ${err.message}`;
+				isSyncing = false;
 			});
 
 		} catch (e: any) {
@@ -72,11 +94,15 @@
 			html5QrCode = new Html5Qrcode("reader");
 			
 			const qrCodeSuccessCallback = (decodedText: string) => {
+				if (!isScanning) return;
+				
 				// El QR contiene una URL como: .../sync?peer=ID
 				try {
 					const url = new URL(decodedText);
 					const peerId = url.searchParams.get('peer');
 					if (peerId) {
+						console.log('P2P: QR detectado con éxito:', peerId);
+						isScanning = false;
 						stopScanner();
 						startSync(peerId);
 					} else {
