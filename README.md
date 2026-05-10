@@ -1,4 +1,4 @@
-# ⚖️ Balanceador Portfolio Dashboard
+# ⚖️ CoreBalance Portfolio Dashboard
 
 Dashboard profesional, premium y responsivo (PWA) para el seguimiento, rebalanceo y control histórico de carteras de inversión complejas.
 
@@ -36,7 +36,7 @@ Dashboard profesional, premium y responsivo (PWA) para el seguimiento, rebalance
 1. **Clonar el repositorio**:
    ```bash
    git clone <tu-repositorio>
-   cd Balanceador
+   cd CoreBalance
    ```
 
 2. **Instalar dependencias**:

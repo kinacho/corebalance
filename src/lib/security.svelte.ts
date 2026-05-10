@@ -25,7 +25,7 @@ export class SecurityStore {
 	}
 
 	private loadSettings() {
-		const saved = localStorage.getItem('balanceador_security_enabled');
+		const saved = localStorage.getItem('corebalance_security_enabled');
 		this.isEnabled = saved === 'true';
 		// Si está activado, empezamos bloqueados
 		if (this.isEnabled) {
@@ -37,14 +37,14 @@ export class SecurityStore {
 		if (this.isEnabled) {
 			this.isEnabled = false;
 			this.isLocked = false;
-			localStorage.setItem('balanceador_security_enabled', 'false');
+			localStorage.setItem('corebalance_security_enabled', 'false');
 		} else {
 			// Activar requiere una prueba inicial
 			const success = await this.authenticate();
 			if (success) {
 				this.isEnabled = true;
 				this.isLocked = false;
-				localStorage.setItem('balanceador_security_enabled', 'true');
+				localStorage.setItem('corebalance_security_enabled', 'true');
 			}
 		}
 	}
@@ -69,11 +69,11 @@ export class SecurityStore {
 					challenge,
 					timeout: 60000,
 					userVerification: 'required',
-					rp: { name: 'Balanceador' },
+					rp: { name: 'CoreBalance' },
 					user: {
 						id: new Uint8Array(16),
-						name: 'usuario@balanceador.app',
-						displayName: 'Usuario Balanceador'
+						name: 'usuario@corebalance.app',
+						displayName: 'Usuario CoreBalance'
 					},
 					pubKeyCredParams: [{ alg: -7, type: 'public-key' }]
 				}

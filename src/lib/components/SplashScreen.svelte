@@ -8,7 +8,7 @@
 		subtitle?: string;
 	}
 
-	let { loading = true, title = 'Balanceador', subtitle = 'Portfolio Dashboard' }: Props = $props();
+	let { loading = true, title = 'CoreBalance', subtitle = 'Portfolio Dashboard' }: Props = $props();
 	
 	let show = $state(true);
 	let progress = $state(0);
@@ -61,7 +61,7 @@
 		</div>
 
 		<div class="splash-footer">
-			<p>&copy; {new Date().getFullYear()} Balanceador Pro</p>
+			<p>&copy; {new Date().getFullYear()} CoreBalance Pro</p>
 		</div>
 	</div>
 {/if}

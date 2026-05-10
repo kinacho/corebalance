@@ -17,8 +17,8 @@ export default defineConfig({
 				globPatterns: ['**/*.{js,css,html,ico,png,svg,webp}']
 			},
 			manifest: {
-				name: 'Balanceador — Portfolio Dashboard',
-				short_name: 'Balanceador',
+				name: 'CoreBalance — Portfolio Dashboard',
+				short_name: 'CoreBalance',
 				description: 'Dashboard de inversión personalizable con rebalanceo automático',
 				id: '/',
 				start_url: '/',

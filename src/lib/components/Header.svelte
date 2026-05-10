@@ -41,7 +41,7 @@
 		<div class="logo-group">
 			<div class="logo-icon">⚖️</div>
 			<div>
-				<h1 class="logo-title">Balanceador</h1>
+				<h1 class="logo-title">CoreBalance</h1>
 				<p class="logo-subtitle">{portfolio.targetLabel}</p>
 			</div>
 		</div>

@@ -289,7 +289,7 @@ export class PortfolioStore {
 		if (typeof localStorage === 'undefined') return;
 		localStorage.setItem(STORAGE_KEY_HOLDINGS, JSON.stringify(this.holdings));
 		localStorage.setItem(STORAGE_KEY_CONTRIBUTION, this.contribution.toString());
-		localStorage.setItem('balanceador_privacy', this.isPrivate.toString());
+		localStorage.setItem('corebalance_privacy', this.isPrivate.toString());
 		// Guardar configuración de activos en localStorage
 		localStorage.setItem(STORAGE_KEY_ASSETS, JSON.stringify({
 			coreAssets: this.coreAssets,
@@ -343,7 +343,7 @@ export class PortfolioStore {
 			this.contribution = parseFloat(savedContribution) || 0;
 		}
 
-		this.isPrivate = localStorage.getItem('balanceador_privacy') === 'true';
+		this.isPrivate = localStorage.getItem('corebalance_privacy') === 'true';
 	}
 
 	// --- Public Actions ---
@@ -372,7 +372,7 @@ export class PortfolioStore {
 			this.stockAssets = [...DEFAULT_STOCK_ASSETS];
 			localStorage.removeItem(STORAGE_KEY_HOLDINGS);
 			localStorage.removeItem(STORAGE_KEY_CONTRIBUTION);
-			localStorage.removeItem('balanceador_privacy');
+			localStorage.removeItem('corebalance_privacy');
 			localStorage.removeItem(STORAGE_KEY_ASSETS);
 			this.setDemoData();
 		} catch (e) {

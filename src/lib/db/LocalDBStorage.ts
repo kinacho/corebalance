@@ -2,12 +2,12 @@ import Dexie, { type Table } from 'dexie';
 import type { StorageProvider, UserData, HistoryPoint } from './types';
 import { browser } from '$app/environment';
 
-export class BalanceadorDB extends Dexie {
+export class CoreBalanceDB extends Dexie {
 	userData!: Table<UserData & { id: string }>;
 	history!: Table<{ id: string; points: HistoryPoint[] }>;
 
 	constructor() {
-		super('BalanceadorDB');
+		super('CoreBalanceDB');
 		this.version(1).stores({
 			userData: 'id', // Primary key and indexed props
 			history: 'id'
@@ -15,7 +15,7 @@ export class BalanceadorDB extends Dexie {
 	}
 }
 
-export const localDB = browser ? new BalanceadorDB() : null;
+export const localDB = browser ? new CoreBalanceDB() : null;
 
 export class LocalDBStorage implements StorageProvider {
 	isLocal = true;

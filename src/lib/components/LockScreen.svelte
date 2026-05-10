@@ -13,7 +13,7 @@
 		<div class="lock-content">
 			<div class="lock-icon">🔒</div>
 			<h1>App Bloqueada</h1>
-			<p>Usa tu huella o cara para acceder al Balanceador</p>
+			<p>Usa tu huella o cara para acceder al CoreBalance</p>
 			<button class="unlock-btn" onclick={handleUnlock}>
 				Desbloquear con Biometría
 			</button>

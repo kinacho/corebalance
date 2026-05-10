@@ -70,7 +70,7 @@
 </script>
 
 <svelte:head>
-	<title>Sincronizando... | Balanceador</title>
+	<title>Sincronizando... | CoreBalance</title>
 </svelte:head>
 
 <div class="sync-container">

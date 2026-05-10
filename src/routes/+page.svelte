@@ -85,7 +85,7 @@
 </script>
 
 <svelte:head>
-	<title>Balanceador — Dashboard de Inversión</title>
+	<title>CoreBalance — Dashboard de Inversión</title>
 	<meta name="description" content="Dashboard de inversión personalizable con rebalanceo automático" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 </svelte:head>
@@ -206,7 +206,7 @@
 		</div>
 
 		<footer class="app-footer">
-			<p>Balanceador · {new Date().getFullYear()}</p>
+			<p>CoreBalance · {new Date().getFullYear()}</p>
 		</footer>
 	</main>
 </div>
