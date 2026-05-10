@@ -1,9 +1,9 @@
 import { DEFAULT_CORE_ASSETS, DEFAULT_SATELLITE_ASSETS, DEFAULT_STOCK_ASSETS, STORAGE_KEY_HOLDINGS, STORAGE_KEY_CONTRIBUTION, STORAGE_KEY_ASSETS } from '$lib/constants';
 import type { Asset, HoldingData, HoldingsMap, PortfolioState, PriceData, RebalanceResult } from '$lib/types';
 import { calculatePortfolioState, calculateRebalance } from '$lib/rebalance';
-import { auth, db, googleProvider } from '$lib/firebase';
-import { onAuthStateChanged, signInWithPopup, signOut, type User } from 'firebase/auth';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { storageProvider } from '$lib/db';
+
+export interface User { uid: string; displayName?: string | null; photoURL?: string | null; email?: string | null; }
 
 export class PortfolioStore {
 	// --- State (Runes) ---
@@ -151,8 +151,8 @@ export class PortfolioStore {
 
 	// --- Private Methods ---
 	private initAuth() {
-		if (typeof window === 'undefined' || !auth) return;
-		onAuthStateChanged(auth, async (user) => {
+		if (typeof window === 'undefined' || !storageProvider.onAuthStateChanged) return;
+		storageProvider.onAuthStateChanged(async (user) => {
 			this.user = user;
 			if (user) await this.loadFromCloud();
 		});
@@ -173,34 +173,32 @@ export class PortfolioStore {
 	}
 
 	private async saveToCloud() {
-		if (!this.user || !db) return;
+		if (!this.user) return;
 		try {
 			const dataToSave = {
-				holdings: this.holdings,
+				holdings: $state.snapshot(this.holdings),
 				contribution: this.contribution,
 				isPrivate: this.isPrivate,
-				// Guardar la configuración de activos del usuario
-				coreAssets: this.coreAssets,
-				satelliteAssets: this.satelliteAssets,
-				stockAssets: this.stockAssets,
+				coreAssets: $state.snapshot(this.coreAssets),
+				satelliteAssets: $state.snapshot(this.satelliteAssets),
+				stockAssets: $state.snapshot(this.stockAssets),
 				updatedAt: new Date().toISOString()
 			};
-			await setDoc(doc(db, 'user_data', this.user.uid), dataToSave);
+			await storageProvider.saveUserData(this.user.uid, dataToSave);
 		} catch (e) {
-			console.error('Firestore save error:', e);
+			console.error('Storage save error:', e);
 		}
 	}
 
 	private async loadFromCloud() {
-		if (!this.user || !db) return;
+		if (!this.user) return;
 		try {
-			const docSnap = await getDoc(doc(db, 'user_data', this.user.uid));
-			if (docSnap.exists()) {
-				const data = docSnap.data();
+			const data = await storageProvider.loadUserData(this.user.uid);
+			if (data) {
 				this.holdings = data.holdings || {};
 				this.contribution = data.contribution || 0;
 				this.isPrivate = data.isPrivate ?? this.isPrivate;
-				// Cargar activos personalizados si existen
+				
 				if (data.coreAssets && Array.isArray(data.coreAssets)) {
 					this.coreAssets = data.coreAssets;
 				}
@@ -220,21 +218,18 @@ export class PortfolioStore {
 			// Re-fetch precios con los nuevos tickers del usuario
 			this.fetchPrices();
 		} catch (e) {
-			console.error('Firestore load error:', e);
+			console.error('Storage load error:', e);
 		}
 	}
 
 
 
 	private async loadHistory() {
-		if (!this.user || !db) return;
+		if (!this.user) return;
 		try {
-			const historyRef = doc(db, 'user_history', this.user.uid);
-			const snap = await getDoc(historyRef);
-			
-			if (snap.exists()) {
-				const data = snap.data();
-				this.history = data.points || [];
+			const points = await storageProvider.loadHistory(this.user.uid);
+			if (points.length > 0) {
+				this.history = points;
 				this.calculateDailyChange();
 			}
 		} catch (e) {
@@ -243,7 +238,7 @@ export class PortfolioStore {
 	}
 
 	private async updateHistoryPoints() {
-		if (!this.user || !db || this.globalCapital === 0) return;
+		if (!this.user || this.globalCapital === 0) return;
 		
 		// Evitar race conditions: si el historial está vacío, intentamos cargarlo 
 		// antes de añadir el punto de hoy para no sobreescribir datos antiguos.
@@ -255,26 +250,23 @@ export class PortfolioStore {
 		const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 		const currentPoint = { date: today, value: this.globalCapital };
 		
-		let newHistory = [...this.history];
+		let newHistory = [...$state.snapshot(this.history)];
 		const index = newHistory.findIndex(p => p.date === today);
 		
 		if (index >= 0) {
-			// Si ya existe el punto de hoy, lo actualizamos si ha cambiado significativamente
-			// (o simplemente lo actualizamos siempre para tener el último valor del día)
 			if (Math.abs(newHistory[index].value - currentPoint.value) < 0.01) return;
 			newHistory[index] = currentPoint;
 		} else {
 			newHistory.push(currentPoint);
 		}
 
-		// Ordenar por fecha y limitar a los últimos 30 días
 		newHistory.sort((a, b) => a.date.localeCompare(b.date));
 		if (newHistory.length > 30) newHistory = newHistory.slice(-30);
 
 		this.history = newHistory;
 		
 		try {
-			await setDoc(doc(db, 'user_history', this.user.uid), { points: newHistory }, { merge: true });
+			await storageProvider.saveHistory(this.user.uid, newHistory);
 			this.calculateDailyChange();
 		} catch (e) {
 			console.error('Update history error:', e);
@@ -356,18 +348,20 @@ export class PortfolioStore {
 
 	// --- Public Actions ---
 	async login() {
-		if (!auth) return;
-		try {
-			await signInWithPopup(auth, googleProvider);
-		} catch (e) {
-			console.error('Login error:', e);
+		if (storageProvider.login) {
+			try {
+				await storageProvider.login();
+			} catch (e) {
+				console.error('Login error:', e);
+			}
 		}
 	}
 
 	async logout() {
-		if (!auth) return;
 		try {
-			await signOut(auth);
+			if (storageProvider.logout) {
+				await storageProvider.logout();
+			}
 			this.user = null;
 			this.holdings = {};
 			this.contribution = 0;
