@@ -21,15 +21,32 @@
 
 		try {
 			const { Peer } = await import('peerjs');
-			const peer = new Peer();
+			const peer = new Peer({
+				debug: 2,
+				config: {
+					iceServers: [
+						{ urls: 'stun:stun.l.google.com:19302' },
+						{ urls: 'stun:stun1.l.google.com:19302' },
+						{ urls: 'stun:stun2.l.google.com:19302' }
+					]
+				}
+			});
 
 			peer.on('open', () => {
 				status = `Conectando con el otro dispositivo...`;
-				const conn = peer.connect(targetPeerId, {
-					reliable: true
-				});
+				let connectionTimeout = setTimeout(() => {
+					if (status.includes('Conectando')) {
+						error = 'La conexión está tardando demasiado. Reintentando...';
+						isSyncing = false;
+						peer.destroy();
+						setTimeout(() => startSync(targetPeerId), 1000);
+					}
+				}, 8000);
+
+				const conn = peer.connect(targetPeerId);
 
 				conn.on('open', () => {
+					clearTimeout(connectionTimeout);
 					status = '¡Conectado! Solicitando datos...';
 					console.log('P2P: Conexión abierta, solicitando datos');
 					// Un pequeño retraso ayuda a la estabilidad en PeerJS

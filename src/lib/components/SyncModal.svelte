@@ -36,7 +36,16 @@
 		
 		try {
 			const { Peer } = await import('peerjs');
-			peer = new Peer();
+			peer = new Peer({
+				debug: 2,
+				config: {
+					iceServers: [
+						{ urls: 'stun:stun.l.google.com:19302' },
+						{ urls: 'stun:stun1.l.google.com:19302' },
+						{ urls: 'stun:stun2.l.google.com:19302' }
+					]
+				}
+			});
 
 			peer.on('open', async (id: string) => {
 				peerId = id;
@@ -56,8 +65,13 @@
 
 			peer.on('connection', (conn: any) => {
 				console.log('P2P: Conexión entrante desde otro dispositivo');
-				peerStatus = '¡Dispositivo conectado! Preparando datos...';
+				peerStatus = '¡Dispositivo conectado! Estableciendo canal...';
 				
+				conn.on('open', () => {
+					console.log('P2P: Canal de datos ABIERTO');
+					peerStatus = '¡Canal abierto! Esperando solicitud...';
+				});
+
 				conn.on('data', async (data: any) => {
 					console.log('P2P: Mensaje recibido:', data.type);
 					if (data.type === 'REQUEST_DATA') {
