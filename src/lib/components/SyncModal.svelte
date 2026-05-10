@@ -47,8 +47,8 @@
 					width: 250,
 					margin: 2,
 					color: {
-						dark: '#ffffff',
-						light: '#0a0a1400'
+						dark: '#000000',
+						light: '#ffffff00'
 					}
 				});
 			});
