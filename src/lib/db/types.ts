@@ -30,4 +30,8 @@ export interface StorageProvider {
 	login?(): Promise<any>;
 	logout?(): Promise<void>;
 	onAuthStateChanged?(callback: (user: any | null) => void): void;
+	
+	// Export/Import (Local DB mostly)
+	getAllData?(): Promise<any>;
+	importAllData?(data: any): Promise<void>;
 }

@@ -74,4 +74,21 @@ export class LocalDBStorage implements StorageProvider {
 			}, 0);
 		}
 	}
+
+	async getAllData(): Promise<any> {
+		if (!localDB) return null;
+		const userData = await localDB.userData.toArray();
+		const history = await localDB.history.toArray();
+		return { userData, history };
+	}
+
+	async importAllData(data: any): Promise<void> {
+		if (!localDB || !data) return;
+		await localDB.transaction('rw', localDB.userData, localDB.history, async () => {
+			await localDB.userData.clear();
+			await localDB.history.clear();
+			if (data.userData?.length) await localDB.userData.bulkPut(data.userData);
+			if (data.history?.length) await localDB.history.bulkPut(data.history);
+		});
+	}
 }
