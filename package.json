@@ -29,6 +29,7 @@
 		"chart.js": "^4.5.1",
 		"dexie": "^4.4.2",
 		"firebase": "^12.12.1",
+		"html5-qrcode": "^2.3.8",
 		"peerjs": "^1.5.5",
 		"qrcode": "^1.5.4",
 		"yahoo-finance2": "^3.14.0"

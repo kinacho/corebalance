@@ -142,7 +142,12 @@
 
 <div class="modal-backdrop" transition:fade={{ duration: 200 }}>
 	<div class="modal-content">
-		<button class="close-btn" onclick={onClose} aria-label="Cerrar">×</button>
+		<button class="close-btn" onclick={onClose} aria-label="Cerrar">
+			<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+				<line x1="18" y1="6" x2="6" y2="18"></line>
+				<line x1="6" y1="6" x2="18" y2="18"></line>
+			</svg>
+		</button>
 		
 		<h2 class="modal-title">Sincronización Local</h2>
 		<p class="modal-subtitle">Tus datos viven en este navegador. Elige cómo sincronizarlos.</p>
@@ -194,7 +199,7 @@
 						<div class="status-msg" transition:fade>{fileStatus}</div>
 					{/if}
 				</div>
-			{:else}
+			{:else if activeTab === 'p2p'}
 				<div class="p2p-section" in:slide={{ duration: 200 }}>
 					<p class="section-desc">Escanea este código con la cámara de tu móvil para enviar los datos de forma segura, encriptada y directa, sin servidores intermedios.</p>
 					
@@ -209,6 +214,17 @@
 					<div class="p2p-status" class:success={peerStatus.includes('éxito')}>
 						<span class="pulse-dot"></span>
 						{peerStatus}
+					</div>
+
+					<div class="p2p-receive-action">
+						<div class="divider"><span>o también</span></div>
+						<button class="action-btn receive-btn" onclick={() => window.location.href = '/sync'}>
+							<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
+								<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+								<circle cx="12" cy="13" r="4"></circle>
+							</svg>
+							Escanear de otro dispositivo
+						</button>
 					</div>
 				</div>
 			{:else if activeTab === 'security'}
@@ -238,6 +254,7 @@
 							class:disabled={!security.isSupported}
 							onclick={() => security.toggle()}
 							disabled={!security.isSupported}
+							aria-label="Alternar bloqueo biométrico"
 						>
 							<div class="switch-handle"></div>
 						</button>
@@ -292,12 +309,18 @@
 		height: 32px;
 		border-radius: 50%;
 		font-size: 1.5rem;
-		line-height: 1;
+		line-height: 0;
 		cursor: pointer;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		transition: all 0.2s;
+	}
+
+	.close-btn svg {
+		width: 18px;
+		height: 18px;
+		display: block;
 	}
 
 	.close-btn:hover {
@@ -445,6 +468,43 @@
 		background: rgba(59, 130, 246, 0.1);
 		padding: 0.75rem;
 		border-radius: 8px;
+		margin-bottom: 1rem;
+	}
+
+	.p2p-receive-action {
+		margin-top: 1.5rem;
+	}
+
+	.divider {
+		display: flex;
+		align-items: center;
+		text-align: center;
+		margin-bottom: 1.5rem;
+		color: rgba(160, 160, 200, 0.4);
+		font-size: 0.75rem;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+	}
+
+	.divider::before, .divider::after {
+		content: '';
+		flex: 1;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+	}
+
+	.divider:not(:empty)::before { margin-right: 1rem; }
+	.divider:not(:empty)::after { margin-left: 1rem; }
+
+	.receive-btn {
+		background: rgba(255, 255, 255, 0.03);
+		color: rgba(255, 255, 255, 0.8);
+		border: 1px dashed rgba(255, 255, 255, 0.15);
+	}
+
+	.receive-btn:hover {
+		background: rgba(255, 255, 255, 0.08);
+		border-style: solid;
+		color: white;
 	}
 
 	.p2p-status.success {
