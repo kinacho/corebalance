@@ -3,6 +3,7 @@
 	import { storageProvider } from '$lib/db';
 	import { onMount } from 'svelte';
 	import QRCode from 'qrcode';
+	import { security } from '$lib/security.svelte';
 
 	interface Props {
 		onClose: () => void;
@@ -10,7 +11,7 @@
 
 	let { onClose }: Props = $props();
 
-	let activeTab = $state<'file' | 'p2p'>('file');
+	let activeTab = $state<'file' | 'p2p' | 'security'>('file');
 	
 	// File Export/Import
 	let fileInput = $state<HTMLInputElement | null>(null);
@@ -153,6 +154,9 @@
 			<button class="tab-btn" class:active={activeTab === 'p2p'} onclick={() => activeTab = 'p2p'}>
 				Código QR (P2P)
 			</button>
+			<button class="tab-btn" class:active={activeTab === 'security'} onclick={() => activeTab = 'security'}>
+				Seguridad
+			</button>
 		</div>
 
 		<div class="tab-content">
@@ -206,6 +210,44 @@
 						<span class="pulse-dot"></span>
 						{peerStatus}
 					</div>
+				</div>
+			{:else if activeTab === 'security'}
+				<div class="security-section" in:slide={{ duration: 200 }}>
+					<p class="section-desc">Protege el acceso a tus datos financieros usando la biometría nativa de tu dispositivo (FaceID, Huella o PIN).</p>
+					
+					<div class="security-card">
+						<div class="security-info">
+							<div class="security-icon-large">{security.isEnabled ? '🔒' : '🔓'}</div>
+							<div>
+								<div class="security-label">Bloqueo Biométrico</div>
+								<div class="security-status-text">
+									{#if !security.isSupported}
+										No soportado en este navegador
+									{:else if security.isEnabled}
+										Activado y Protegido
+									{:else}
+										Desactivado
+									{/if}
+								</div>
+							</div>
+						</div>
+						
+						<button 
+							class="toggle-switch" 
+							class:active={security.isEnabled}
+							class:disabled={!security.isSupported}
+							onclick={() => security.toggle()}
+							disabled={!security.isSupported}
+						>
+							<div class="switch-handle"></div>
+						</button>
+					</div>
+
+					{#if security.isEnabled}
+						<div class="security-hint" transition:fade>
+							La aplicación se bloqueará automáticamente cada vez que la cierres o refresques.
+						</div>
+					{/if}
 				</div>
 			{/if}
 		</div>
@@ -421,5 +463,91 @@
 	@keyframes pulse-dot {
 		0%, 100% { transform: scale(1); opacity: 1; }
 		50% { transform: scale(1.5); opacity: 0.5; }
+	}
+
+	/* Security Styles */
+	.security-section {
+		display: flex;
+		flex-direction: column;
+		gap: 1.5rem;
+	}
+
+	.security-card {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		background: rgba(255, 255, 255, 0.03);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		padding: 1.25rem;
+		border-radius: 16px;
+	}
+
+	.security-info {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	.security-icon-large {
+		font-size: 1.5rem;
+	}
+
+	.security-label {
+		font-weight: 600;
+		color: white;
+		font-size: 1rem;
+	}
+
+	.security-status-text {
+		font-size: 0.8rem;
+		color: rgba(160, 160, 200, 0.6);
+	}
+
+	.security-hint {
+		font-size: 0.8rem;
+		color: #3b82f6;
+		background: rgba(59, 130, 246, 0.1);
+		padding: 0.75rem;
+		border-radius: 10px;
+		text-align: center;
+	}
+
+	/* Toggle Switch */
+	.toggle-switch {
+		width: 50px;
+		height: 26px;
+		background: rgba(255, 255, 255, 0.1);
+		border-radius: 20px;
+		position: relative;
+		cursor: pointer;
+		border: none;
+		transition: all 0.3s;
+		padding: 0;
+	}
+
+	.toggle-switch.active {
+		background: #3b82f6;
+		box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+	}
+
+	.toggle-switch.disabled {
+		opacity: 0.3;
+		cursor: not-allowed;
+	}
+
+	.switch-handle {
+		width: 20px;
+		height: 20px;
+		background: white;
+		border-radius: 50%;
+		position: absolute;
+		top: 3px;
+		left: 3px;
+		transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+	}
+
+	.toggle-switch.active .switch-handle {
+		transform: translateX(24px);
 	}
 </style>
