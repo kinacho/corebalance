@@ -34,9 +34,12 @@
 		if (peer) peer.destroy();
 		peerStatus = 'Generando identificador único...';
 		
+		const customId = 'cb-' + Math.random().toString(36).substring(2, 8);
+		console.log('P2P: Iniciando host con ID:', customId);
+		
 		try {
 			const { Peer } = await import('peerjs');
-			peer = new Peer({
+			peer = new Peer(customId, {
 				debug: 2,
 				config: {
 					iceServers: [
@@ -69,7 +72,13 @@
 				
 				conn.on('open', () => {
 					console.log('P2P: Canal de datos ABIERTO');
-					peerStatus = '¡Canal abierto! Esperando solicitud...';
+					peerStatus = '¡Canal abierto! Sincronizando...';
+					
+					// Heartbeat para mantener la conexión activa en móviles
+					const pingInterval = setInterval(() => {
+						if (conn.open) conn.send({ type: 'PING' });
+						else clearInterval(pingInterval);
+					}, 2000);
 				});
 
 				conn.on('data', async (data: any) => {
@@ -79,7 +88,9 @@
 						try {
 							if (storageProvider.getAllData) {
 								const allData = await storageProvider.getAllData();
-								conn.send({ type: 'SYNC_DATA', payload: allData });
+								// Limpiar datos para asegurar serialización limpia
+								const cleanData = JSON.parse(JSON.stringify(allData));
+								conn.send({ type: 'SYNC_DATA', payload: cleanData });
 								console.log('P2P: Datos enviados correctamente');
 								peerStatus = '¡Datos enviados con éxito!';
 								setTimeout(() => {

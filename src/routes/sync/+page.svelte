@@ -56,6 +56,7 @@
 				});
 
 				conn.on('data', async (data: any) => {
+					if (data.type === 'PING') return;
 					console.log('P2P: Datos recibidos:', data.type);
 					if (data.type === 'SYNC_DATA') {
 						status = 'Recibiendo datos...';
@@ -110,23 +111,22 @@
 			const { Html5Qrcode } = await import('html5-qrcode');
 			html5QrCode = new Html5Qrcode("reader");
 			
-			const qrCodeSuccessCallback = (decodedText: string) => {
+			const qrCodeSuccessCallback = async (decodedText: string) => {
 				if (!isScanning) return;
 				
-				// El QR contiene una URL como: .../sync?peer=ID
 				try {
 					const url = new URL(decodedText);
-					const peerId = url.searchParams.get('peer');
+					const peerId = url.searchParams.get('peer')?.trim();
 					if (peerId) {
-						console.log('P2P: QR detectado con éxito:', peerId);
+						console.log('P2P: QR detectado:', peerId);
 						isScanning = false;
-						stopScanner();
-						startSync(peerId);
-					} else {
-						error = 'El código QR no parece ser un identificador válido.';
+						status = 'Deteniendo escáner...';
+						await stopScanner();
+						// Esperar un momento para liberar recursos de red/cámara
+						setTimeout(() => startSync(peerId), 800);
 					}
 				} catch (e) {
-					error = 'El código escaneado no es una URL válida.';
+					console.error('Error al procesar QR:', e);
 				}
 			};
 
@@ -139,20 +139,26 @@
 		}
 	}
 
-	function stopScanner() {
+	async function stopScanner() {
 		if (html5QrCode && html5QrCode.isScanning) {
-			html5QrCode.stop().then(() => {
-				html5QrCode.clear();
+			try {
+				await html5QrCode.stop();
+				await html5QrCode.clear();
 				isScanning = false;
-			});
+				console.log('P2P: Escáner detenido correctamente');
+			} catch (e) {
+				console.error('Error al detener escáner:', e);
+				isScanning = false;
+			}
 		} else {
 			isScanning = false;
 		}
 	}
 
 	onMount(async () => {
-		const targetPeerId = $page.url.searchParams.get('peer');
+		const targetPeerId = $page.url.searchParams.get('peer')?.trim();
 		if (targetPeerId) {
+			console.log('P2P: Iniciando sync desde URL con ID:', targetPeerId);
 			startSync(targetPeerId);
 		} else {
 			// Si no hay ID en la URL, asumimos que el usuario quiere escanear
