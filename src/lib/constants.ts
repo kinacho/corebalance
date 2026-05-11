@@ -126,4 +126,4 @@ export const DASHBOARD_TABS = [
 	{ id: 'charts', label: 'Gráficos', icon: '🍩' }
 ] as const;
 
-export type TabId = (typeof DASHBOARD_TABS)[number]['id'];
+export type TabId = 'assets' | 'rebalance' | 'charts';
