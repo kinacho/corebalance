@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import type { PortfolioPosition } from '$lib/types';
-	import { formatCurrency, formatPrice, formatPercent, isMarketOpen } from '$lib/utils';
+	import { formatCurrency, formatPrice, formatPercent, isMarketOpen, formatDateTime } from '$lib/utils';
 
 	interface Props {
 		position: PortfolioPosition;
@@ -99,7 +99,7 @@
 					<span class="asset-ter" title="Total Expense Ratio">{formatPercent(position.asset.ter)} TER</span>
 					{#if position.lastUpdate}
 						<span class="asset-divider">•</span>
-						<span class="asset-time">{new Date(position.lastUpdate).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false })}</span>
+						<span class="asset-time">{formatDateTime(position.lastUpdate)}</span>
 					{/if}
 				</div>
 			</div>

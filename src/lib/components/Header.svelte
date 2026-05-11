@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { onMount } from 'svelte';
+	import { formatDateTime } from '$lib/utils';
 	import SyncModal from './SyncModal.svelte';
 
 	interface Props {
@@ -27,12 +28,7 @@
 	});
 
 	const formattedTime = $derived(
-		timestamp ? new Date(timestamp).toLocaleString('es-ES', {
-			day: '2-digit',
-			month: '2-digit',
-			hour: '2-digit',
-			minute: '2-digit'
-		}) : ''
+		timestamp ? formatDateTime(timestamp) : ''
 	);
 </script>
 

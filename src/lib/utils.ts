@@ -81,3 +81,14 @@ export function isMarketOpen(ticker: string, marketState?: string): boolean {
 export function formatDate(date: Date = new Date()): string {
 	return date.toISOString().split('T')[0];
 }
+
+/** Formatea una fecha y hora como DD/MM HH:mm */
+export function formatDateTime(date: Date | number | string): string {
+	const d = new Date(date);
+	return d.toLocaleString('es-ES', {
+		day: '2-digit',
+		month: '2-digit',
+		hour: '2-digit',
+		minute: '2-digit'
+	});
+}
