@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { storageProvider } from '$lib/db';
 	import { browser } from '$app/environment';
@@ -9,158 +8,65 @@
 	let error = $state<string | null>(null);
 	let success = $state(false);
 	let isScanning = $state(false);
-	let isSyncing = $state(false);
-	let syncState = $state<'idle' | 'connecting' | 'negotiating' | 'requesting' | 'receiving' | 'saving' | 'done'>('idle');
 	let html5QrCode: any = null;
-	let peer: any = null;
 
-	async function startSync(targetPeerId: string) {
-		if (isSyncing) return;
-		isSyncing = true;
-		syncState = 'connecting';
-		status = 'Conectando con el servidor P2P...';
-		error = null;
+	async function decodeAndDecompress(encoded: string): Promise<string> {
+		// Restore standard base64 from URL-safe
+		let base64 = encoded.replace(/-/g, '+').replace(/_/g, '/');
+		const pad = (4 - base64.length % 4) % 4;
+		base64 += '='.repeat(pad);
 
-		try {
-			const { Peer } = await import('peerjs');
-			console.log('[P2P] Librería cargada. Creando peer...');
+		const binary = atob(base64);
+		const bytes = new Uint8Array(binary.length);
+		for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
 
-			peer = new Peer({
-				debug: 2,
-				host: '0.peerjs.com',
-				port: 443,
-				secure: true,
-				path: '/',
-				config: {
-					iceServers: [
-						{ urls: 'stun:stun.l.google.com:19302' },
-						{ urls: 'stun:stun1.l.google.com:19302' },
-						{ urls: 'stun:stun2.l.google.com:19302' },
-						{ urls: 'stun:stun3.l.google.com:19302' }
-					]
-				}
-			});
-
-			// Timeout for signaling server
-			const signalTimeout = setTimeout(() => {
-				if (syncState === 'connecting') {
-					error = 'No se pudo conectar al servidor P2P. Comprueba tu conexión a internet.';
-					isSyncing = false;
-					if (peer) peer.destroy();
-				}
-			}, 12000);
-
-			peer.on('open', () => {
-				clearTimeout(signalTimeout);
-				console.log('[P2P] Registrado en servidor. Conectando con PC...');
-				status = 'Conectando con el PC...';
-				syncState = 'negotiating';
-
-				// Timeout for peer connection
-				const connectTimeout = setTimeout(() => {
-					if (syncState === 'negotiating') {
-						error = 'No se pudo conectar con el PC. ¿Está el QR abierto?';
-						isSyncing = false;
-						if (peer) peer.destroy();
-					}
-				}, 15000);
-
-				const conn = peer.connect(targetPeerId, { reliable: true });
-
-				conn.on('open', () => {
-					console.log('[P2P] Canal abierto. Esperando HOST_READY...');
-				});
-
-				conn.on('data', async (data: any) => {
-					if (!data || !data.type) return;
-					if (data.type === 'PING') { conn.send({ type: 'PONG' }); return; }
-
-					console.log('[P2P] ←', data.type);
-
-					if (data.type === 'HOST_READY') {
-						clearTimeout(connectTimeout);
-						status = 'PC listo. Solicitando datos...';
-						syncState = 'requesting';
-						setTimeout(() => conn.send({ type: 'REQUEST_DATA' }), 300);
-					}
-
-					if (data.type === 'SYNC_DATA') {
-						syncState = 'receiving';
-						status = 'Datos recibidos. Guardando...';
-						try {
-							if (!storageProvider.importAllData) {
-								throw new Error('Importación no disponible.');
-							}
-							syncState = 'saving';
-							status = 'Guardando en base de datos local...';
-							await storageProvider.importAllData(data.payload);
-
-							// Confirm reception to host
-							conn.send({ type: 'ACK' });
-
-							success = true;
-							syncState = 'done';
-							status = '¡Sincronización exitosa!';
-
-							setTimeout(() => {
-								if (peer) peer.destroy();
-								goto('/');
-							}, 2000);
-						} catch (e: any) {
-							error = `Error al guardar: ${e.message}`;
-							isSyncing = false;
-						}
-					}
-				});
-
-				conn.on('close', () => {
-					if (!success) {
-						error = 'La conexión se cerró inesperadamente.';
-						isSyncing = false;
-					}
-				});
-
-				conn.on('error', (err: any) => {
-					error = `Error de conexión: ${err.message}`;
-					isSyncing = false;
-				});
-			});
-
-			peer.on('error', (err: any) => {
-				clearTimeout(signalTimeout);
-				error = `Error P2P: ${err.message}`;
-				isSyncing = false;
-			});
-
-		} catch (e: any) {
-			error = `Error: ${e.message}`;
-			isSyncing = false;
-		}
+		const blob = new Blob([bytes]);
+		const ds = new DecompressionStream('deflate');
+		const decompressed = await new Response(blob.stream().pipeThrough(ds)).blob();
+		return await decompressed.text();
 	}
 
+	async function importFromHash(hash: string) {
+		status = 'Decodificando datos...';
+		try {
+			const json = await decodeAndDecompress(hash);
+			const data = JSON.parse(json);
+
+			if (!storageProvider.importAllData) {
+				throw new Error('Importación no disponible.');
+			}
+
+			status = 'Guardando en base de datos local...';
+			await storageProvider.importAllData(data);
+
+			success = true;
+			status = '¡Sincronización exitosa!';
+			setTimeout(() => goto('/'), 2000);
+		} catch (e: any) {
+			error = `Error al importar: ${e.message}`;
+		}
+	}
 
 	async function startScanner() {
 		if (!browser) return;
 		isScanning = true;
 		status = 'Iniciando cámara...';
-		
+
 		try {
 			const { Html5Qrcode } = await import('html5-qrcode');
 			html5QrCode = new Html5Qrcode("reader");
-			
+
 			const qrCodeSuccessCallback = async (decodedText: string) => {
 				if (!isScanning) return;
-				
+
 				try {
 					const url = new URL(decodedText);
-					const peerId = url.searchParams.get('peer')?.trim();
-					if (peerId) {
-						console.log('P2P: QR detectado:', peerId);
+					const hash = url.hash.substring(1);
+					if (hash && hash.length > 10) {
 						isScanning = false;
-						status = 'Deteniendo escáner...';
+						status = 'QR detectado. Procesando...';
 						await stopScanner();
-						// Esperar un momento para liberar recursos de red/cámara
-						setTimeout(() => startSync(peerId), 800);
+						await importFromHash(hash);
 					}
 				} catch (e) {
 					console.error('Error al procesar QR:', e);
@@ -182,9 +88,7 @@
 				await html5QrCode.stop();
 				await html5QrCode.clear();
 				isScanning = false;
-				console.log('P2P: Escáner detenido correctamente');
 			} catch (e) {
-				console.error('Error al detener escáner:', e);
 				isScanning = false;
 			}
 		} else {
@@ -193,12 +97,11 @@
 	}
 
 	onMount(async () => {
-		const targetPeerId = $page.url.searchParams.get('peer')?.trim();
-		if (targetPeerId) {
-			console.log('P2P: Iniciando sync desde URL con ID:', targetPeerId);
-			startSync(targetPeerId);
+		// Check for compressed data in URL hash
+		const hash = window.location.hash.substring(1);
+		if (hash && hash.length > 10) {
+			await importFromHash(hash);
 		} else {
-			// Si no hay ID en la URL, asumimos que el usuario quiere escanear
 			startScanner();
 		}
 	});
@@ -228,7 +131,7 @@
 			{/if}
 		</div>
 		
-		<h1>Sincronización P2P</h1>
+		<h1>Sincronización</h1>
 		
 		{#if error}
 			<div class="error-msg">{error}</div>
@@ -243,23 +146,8 @@
 				<div id="reader" class="scanner-viewport"></div>
 				<button class="btn secondary" onclick={() => goto('/')}>Cancelar</button>
 			{:else}
-				<div class="sync-steps">
-					<div class="step" class:active={syncState === 'connecting' || syncState === 'negotiating'} class:done={syncState !== 'idle' && syncState !== 'connecting' && syncState !== 'negotiating'}>
-						<span class="step-icon">🤝</span>
-						Conexión
-					</div>
-					<div class="step" class:active={syncState === 'requesting' || syncState === 'receiving'} class:done={syncState === 'saving' || syncState === 'done'}>
-						<span class="step-icon">📥</span>
-						Transferencia
-					</div>
-					<div class="step" class:active={syncState === 'saving'} class:done={syncState === 'done'}>
-						<span class="step-icon">💾</span>
-						Persistencia
-					</div>
-				</div>
-
 				<div class="progress">
-					<div class="progress-bar" class:done={success} class:error={!!error}></div>
+					<div class="progress-bar" class:done={success}></div>
 				</div>
 			{/if}
 		{/if}
@@ -383,56 +271,6 @@
 	@keyframes loading {
 		0% { width: 10%; transform: translateX(-100%); }
 		100% { width: 100%; transform: translateX(100%); }
-	}
-
-	.sync-steps {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 1rem;
-		margin-bottom: 2rem;
-	}
-
-	.step {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 0.5rem;
-		font-size: 0.75rem;
-		color: rgba(255, 255, 255, 0.3);
-		transition: all 0.3s;
-	}
-
-	.step-icon {
-		font-size: 1.5rem;
-		opacity: 0.3;
-		filter: grayscale(1);
-		transition: all 0.3s;
-	}
-
-	.step.active {
-		color: #3b82f6;
-		transform: scale(1.1);
-	}
-
-	.step.active .step-icon {
-		opacity: 1;
-		filter: grayscale(0);
-		filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.5));
-	}
-
-	.step.done {
-		color: #10b981;
-	}
-
-	.step.done .step-icon {
-		opacity: 1;
-		filter: grayscale(0);
-	}
-
-	.progress-bar.error {
-		background: #ef4444;
-		width: 100%;
-		animation: none;
 	}
 
 	.btn-group {

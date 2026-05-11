@@ -17,213 +17,61 @@
 	let fileInput = $state<HTMLInputElement | null>(null);
 	let fileStatus = $state('');
 
-	// P2P State
-	let peerId = $state<string | null>(null);
-	let peerStatus = $state('');
-	let p2pLogs = $state<string[]>([]);
-	let p2pState = $state<'idle' | 'initializing' | 'waiting' | 'connected' | 'syncing' | 'done' | 'error'>('idle');
+	// QR Sync State
+	let qrStatus = $state('');
 	let qrCodeUrl = $state<string | null>(null);
-	let peer: any = null;
-	let p2pStarted = false;
-
-	function log(msg: string) {
-		const t = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-		p2pLogs = [...p2pLogs.slice(-9), `[${t}] ${msg}`];
-		console.log(`[P2P] ${msg}`);
-	}
-
-	onMount(() => {
-		return () => {
-			if (peer) { peer.destroy(); peer = null; }
-		};
-	});
+	let qrState = $state<'idle' | 'generating' | 'ready' | 'error'>('idle');
 
 	function switchTab(tab: 'file' | 'p2p' | 'security') {
 		activeTab = tab;
-		if (tab === 'p2p' && !p2pStarted) {
-			startP2P();
+		if (tab === 'p2p' && qrState === 'idle') {
+			generateSyncQR();
 		}
 	}
 
-	let retryCount = 0;
-	const MAX_RETRIES = 3;
+	async function compressAndEncode(json: string): Promise<string> {
+		const blob = new Blob([json]);
+		const cs = new CompressionStream('deflate');
+		const compressed = await new Response(blob.stream().pipeThrough(cs)).blob();
+		const buffer = await compressed.arrayBuffer();
+		const bytes = new Uint8Array(buffer);
+		let binary = '';
+		for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+		return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+	}
 
-	async function startP2P() {
-		if (p2pStarted && p2pState !== 'error') return;
-
-		if (peer) { peer.destroy(); peer = null; }
-
-		p2pStarted = true;
-		p2pState = 'initializing';
-		peerId = null;
+	async function generateSyncQR() {
+		qrState = 'generating';
+		qrStatus = 'Preparando datos...';
 		qrCodeUrl = null;
-		peerStatus = retryCount > 0
-			? `Reintentando conexión (${retryCount}/${MAX_RETRIES})...`
-			: 'Conectando con servidor de señalización...';
-		log(retryCount > 0 ? `Reintento ${retryCount}...` : 'Iniciando...');
-
-		const id = `cb-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
 
 		try {
-			const { Peer } = await import('peerjs');
-			log('Librería PeerJS cargada.');
+			if (!storageProvider.getAllData) throw new Error('Exportación no soportada.');
 
-			peer = new Peer(id, {
-				debug: 2,
-				host: '0.peerjs.com',
-				port: 443,
-				secure: true,
-				path: '/',
-				config: {
-					iceServers: [
-						{ urls: 'stun:stun.l.google.com:19302' },
-						{ urls: 'stun:stun1.l.google.com:19302' },
-						{ urls: 'stun:stun2.l.google.com:19302' },
-						{ urls: 'stun:stun3.l.google.com:19302' }
-					]
-				}
+			const data = await storageProvider.getAllData();
+			const json = JSON.stringify(data);
+			const encoded = await compressAndEncode(json);
+			const syncUrl = `${window.location.origin}/sync#${encoded}`;
+
+			if (syncUrl.length > 2500) {
+				qrState = 'error';
+				qrStatus = `Datos muy grandes (${(json.length / 1024).toFixed(1)} KB). Usa "Archivo JSON" en su lugar.`;
+				return;
+			}
+
+			qrCodeUrl = await QRCode.toDataURL(syncUrl, {
+				width: 280,
+				margin: 2,
+				color: { dark: '#000000', light: '#ffffff' }
 			});
 
-			const signalTimeout = setTimeout(() => {
-				if (p2pState === 'initializing') {
-					handleConnectionFailure('Timeout: servidor no responde.');
-				}
-			}, 10000);
-
-			peer.on('open', async (openId: string) => {
-				clearTimeout(signalTimeout);
-				retryCount = 0; // Reset on success
-				peerId = openId;
-				p2pState = 'waiting';
-				peerStatus = 'Listo. Escanea el QR con tu móvil.';
-				log(`Registrado: ${openId}`);
-
-				const syncUrl = `${window.location.origin}/sync?peer=${openId}`;
-				log('URL generada.');
-
-				try {
-					qrCodeUrl = await QRCode.toDataURL(syncUrl, {
-						width: 280,
-						margin: 2,
-						color: { dark: '#000000', light: '#ffffff' }
-					});
-					log('QR listo.');
-				} catch (qrErr: any) {
-					log(`Error QR: ${qrErr.message}`);
-					p2pState = 'error';
-					peerStatus = 'Error generando código QR.';
-				}
-			});
-
-			peer.on('connection', (conn: any) => {
-				log('¡Dispositivo conectado!');
-				p2pState = 'connected';
-				peerStatus = 'Estableciendo canal de datos...';
-
-				conn.on('open', () => {
-					log('Canal abierto → HOST_READY');
-					conn.send({ type: 'HOST_READY' });
-
-					const keepalive = setInterval(() => {
-						if (conn.open) conn.send({ type: 'PING' });
-						else clearInterval(keepalive);
-					}, 5000);
-				});
-
-				conn.on('data', async (data: any) => {
-					if (!data || !data.type) return;
-					if (data.type === 'PING' || data.type === 'PONG') return;
-
-					log(`← ${data.type}`);
-
-					if (data.type === 'REQUEST_DATA') {
-						p2pState = 'syncing';
-						peerStatus = 'Leyendo y enviando datos...';
-						try {
-							if (!storageProvider.getAllData) throw new Error('Exportación no disponible.');
-							const allData = await storageProvider.getAllData();
-							const payload = JSON.parse(JSON.stringify(allData));
-							log(`Enviando ${(JSON.stringify(payload).length / 1024).toFixed(1)} KB...`);
-							conn.send({ type: 'SYNC_DATA', payload });
-							log('Paquete enviado. Esperando ACK...');
-						} catch (e: any) {
-							log(`Error: ${e.message}`);
-							p2pState = 'error';
-							peerStatus = `Error: ${e.message}`;
-						}
-					}
-
-					if (data.type === 'ACK') {
-						log('✓ Móvil confirmó recepción.');
-						p2pState = 'done';
-						peerStatus = '¡Sincronización completada!';
-					}
-				});
-
-				conn.on('error', (err: any) => {
-					log(`Error canal: ${err.message || err}`);
-					if (p2pState !== 'done') {
-						p2pState = 'error';
-						peerStatus = 'Error en la conexión.';
-					}
-				});
-
-				conn.on('close', () => {
-					log('Canal cerrado.');
-					if (p2pState !== 'done') {
-						p2pState = 'error';
-						peerStatus = 'Se perdió la conexión.';
-					}
-				});
-			});
-
-			peer.on('error', (err: any) => {
-				clearTimeout(signalTimeout);
-				log(`Error PeerJS: ${err.type} - ${err.message}`);
-				if (err.type === 'network' || err.type === 'server-error' || err.type === 'socket-error') {
-					handleConnectionFailure(`Red: ${err.message}`);
-				} else {
-					p2pState = 'error';
-					peerStatus = `Error: ${err.message}`;
-					p2pStarted = false;
-				}
-			});
-
-			peer.on('disconnected', () => {
-				log('Desconectado del servidor.');
-				if (p2pState === 'waiting' || p2pState === 'connected' || p2pState === 'syncing') {
-					log('Reconectando...');
-					peer.reconnect();
-				}
-			});
-
+			qrState = 'ready';
+			qrStatus = 'Escanea este QR con la cámara de tu móvil.';
 		} catch (e: any) {
-			log(`Error fatal: ${e.message}`);
-			p2pState = 'error';
-			peerStatus = `Error: ${e.message}`;
-			p2pStarted = false;
+			qrState = 'error';
+			qrStatus = `Error: ${e.message}`;
 		}
 	}
-
-	function handleConnectionFailure(reason: string) {
-		log(reason);
-		if (peer) { peer.destroy(); peer = null; }
-
-		if (retryCount < MAX_RETRIES) {
-			retryCount++;
-			p2pStarted = false;
-			const delay = retryCount * 2000; // 2s, 4s, 6s
-			log(`Reintentando en ${delay / 1000}s...`);
-			peerStatus = `Servidor no disponible. Reintentando (${retryCount}/${MAX_RETRIES})...`;
-			setTimeout(() => startP2P(), delay);
-		} else {
-			p2pState = 'error';
-			peerStatus = 'No se pudo conectar al servidor P2P. Usa "Archivo JSON" para sincronizar manualmente.';
-			p2pStarted = false;
-			retryCount = 0;
-		}
-	}
-
 
 	// File Handling
 	async function handleExport() {
@@ -338,52 +186,58 @@
 				</div>
 			{:else if activeTab === 'p2p'}
 				<div class="p2p-section" in:slide={{ duration: 200 }}>
-					<p class="section-desc">Escanea este código con la cámara de tu móvil para enviar los datos de forma segura, encriptada y directa.</p>
+					<p class="section-desc">Transfiere tus datos a otro dispositivo al instante. Sin servidores, sin esperas.</p>
 					
 					<div class="qr-container">
 						{#if qrCodeUrl}
-							<div class="qr-wrapper" class:dim={p2pState === 'syncing' || p2pState === 'done'}>
-								<img src={qrCodeUrl} alt="QR Code" class="qr-image" transition:fade />
-								{#if p2pState === 'syncing'}
-									<div class="qr-overlay">Transfiriendo...</div>
-								{:else if p2pState === 'done'}
-									<div class="qr-overlay success">¡Completado!</div>
-								{/if}
-							</div>
+							<img src={qrCodeUrl} alt="QR Code" class="qr-image" transition:fade />
+						{:else if qrState === 'error'}
+							<div class="qr-skeleton">⚠️</div>
 						{:else}
-							<div class="qr-skeleton">Iniciando P2P...</div>
+							<div class="qr-skeleton">Generando...</div>
 						{/if}
 					</div>
 
-					<div class="p2p-status" class:success={p2pState === 'done'} class:error={p2pState === 'error'}>
-						{#if p2pState !== 'error' && p2pState !== 'done'}
+					{#if qrState === 'ready'}
+						<div class="qr-instructions">
+							<div class="qr-step">
+								<span class="step-num">1</span>
+								<span>Abre la <strong>cámara</strong> de tu móvil</span>
+							</div>
+							<div class="qr-step">
+								<span class="step-num">2</span>
+								<span>Apunta al código QR de arriba</span>
+							</div>
+							<div class="qr-step">
+								<span class="step-num">3</span>
+								<span>Toca el enlace — se abrirá la app y se importará solo</span>
+							</div>
+						</div>
+					{/if}
+
+					<div class="p2p-status" class:success={qrState === 'ready'} class:error={qrState === 'error'}>
+						{#if qrState === 'generating'}
 							<span class="pulse-dot"></span>
 						{/if}
-						{peerStatus}
+						{qrStatus}
 					</div>
 
-					{#if p2pLogs.length > 0}
-						<div class="p2p-debug-logs">
-							{#each p2pLogs as log}
-								<div class="log-line">{log}</div>
-							{/each}
+					{#if qrState === 'error'}
+						<div class="p2p-actions">
+							<button class="action-btn retry-btn" onclick={generateSyncQR}>
+								Reintentar
+							</button>
 						</div>
 					{/if}
 
 					<div class="p2p-actions">
-						{#if p2pState === 'error'}
-							<button class="action-btn retry-btn" onclick={startP2P}>
-								Reintentar Conexión
-							</button>
-						{/if}
-						
 						<div class="divider"><span>o también</span></div>
 						<button class="action-btn receive-btn" onclick={() => window.location.href = '/sync'}>
 							<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
 								<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
 								<circle cx="12" cy="13" r="4"></circle>
 							</svg>
-							Escanear de otro dispositivo
+							Escanear desde este dispositivo
 						</button>
 					</div>
 				</div>
@@ -691,6 +545,43 @@
 		color: white;
 	}
 
+	.qr-instructions {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+		margin-bottom: 1.5rem;
+		padding: 1rem;
+		background: rgba(0, 0, 0, 0.2);
+		border-radius: 16px;
+		border: 1px solid rgba(255, 255, 255, 0.05);
+	}
+
+	.qr-step {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		font-size: 0.85rem;
+		color: rgba(255, 255, 255, 0.7);
+		text-align: left;
+	}
+
+	.qr-step strong {
+		color: #3b82f6;
+	}
+
+	.step-num {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 20px;
+		height: 20px;
+		background: #3b82f6;
+		color: white;
+		border-radius: 50%;
+		font-size: 0.7rem;
+		font-weight: 800;
+	}
+
 	.p2p-status.success {
 		color: #10b981;
 		background: rgba(16, 185, 129, 0.1);
@@ -699,54 +590,6 @@
 	.p2p-status.error {
 		color: #ef4444;
 		background: rgba(239, 68, 68, 0.1);
-	}
-
-	.p2p-debug-logs {
-		background: rgba(0, 0, 0, 0.3);
-		padding: 0.75rem;
-		border-radius: 8px;
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.7rem;
-		color: rgba(255, 255, 255, 0.4);
-		margin-bottom: 1rem;
-		border: 1px solid rgba(255, 255, 255, 0.05);
-	}
-
-	.log-line {
-		margin-bottom: 2px;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-
-	.qr-wrapper {
-		position: relative;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
-
-	.qr-wrapper.dim .qr-image {
-		opacity: 0.2;
-		filter: blur(4px);
-	}
-
-	.qr-overlay {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		font-weight: 800;
-		color: #3b82f6;
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-		font-size: 1.2rem;
-		text-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
-	}
-
-	.qr-overlay.success {
-		color: #10b981;
-		text-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
 	}
 
 	.retry-btn {
@@ -759,6 +602,7 @@
 	.retry-btn:hover {
 		background: rgba(239, 68, 68, 0.2);
 	}
+
 
 	/* Security Styles */
 	.security-section {
