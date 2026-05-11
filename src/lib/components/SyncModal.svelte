@@ -45,21 +45,23 @@
 		}
 	}
 
+	let retryCount = 0;
+	const MAX_RETRIES = 3;
+
 	async function startP2P() {
-		// Prevent concurrent inits — allow retry from error state
 		if (p2pStarted && p2pState !== 'error') return;
 
-		// Clean up any previous peer
 		if (peer) { peer.destroy(); peer = null; }
 
 		p2pStarted = true;
 		p2pState = 'initializing';
 		peerId = null;
 		qrCodeUrl = null;
-		peerStatus = 'Conectando con servidor de señalización...';
-		log('Iniciando...');
+		peerStatus = retryCount > 0
+			? `Reintentando conexión (${retryCount}/${MAX_RETRIES})...`
+			: 'Conectando con servidor de señalización...';
+		log(retryCount > 0 ? `Reintento ${retryCount}...` : 'Iniciando...');
 
-		// Unique ID using timestamp + random to avoid collisions
 		const id = `cb-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
 
 		try {
@@ -68,7 +70,10 @@
 
 			peer = new Peer(id, {
 				debug: 2,
-				serialization: 'json',  // CRITICAL: binary serialization fails silently on mobile
+				host: '0.peerjs.com',
+				port: 443,
+				secure: true,
+				path: '/',
 				config: {
 					iceServers: [
 						{ urls: 'stun:stun.l.google.com:19302' },
@@ -77,27 +82,24 @@
 						{ urls: 'stun:stun3.l.google.com:19302' }
 					]
 				}
-			} as any);
+			});
 
-			// Timeout: if signaling server never responds
 			const signalTimeout = setTimeout(() => {
 				if (p2pState === 'initializing') {
-					log('Timeout: el servidor no responde.');
-					p2pState = 'error';
-					peerStatus = 'No se pudo conectar al servidor P2P. Comprueba tu conexión.';
-					p2pStarted = false;
+					handleConnectionFailure('Timeout: servidor no responde.');
 				}
-			}, 12000);
+			}, 10000);
 
 			peer.on('open', async (openId: string) => {
 				clearTimeout(signalTimeout);
+				retryCount = 0; // Reset on success
 				peerId = openId;
 				p2pState = 'waiting';
 				peerStatus = 'Listo. Escanea el QR con tu móvil.';
 				log(`Registrado: ${openId}`);
 
 				const syncUrl = `${window.location.origin}/sync?peer=${openId}`;
-				log(`URL generada.`);
+				log('URL generada.');
 
 				try {
 					qrCodeUrl = await QRCode.toDataURL(syncUrl, {
@@ -122,7 +124,6 @@
 					log('Canal abierto → HOST_READY');
 					conn.send({ type: 'HOST_READY' });
 
-					// Keepalive for mobile browsers
 					const keepalive = setInterval(() => {
 						if (conn.open) conn.send({ type: 'PING' });
 						else clearInterval(keepalive);
@@ -179,14 +180,18 @@
 			peer.on('error', (err: any) => {
 				clearTimeout(signalTimeout);
 				log(`Error PeerJS: ${err.type} - ${err.message}`);
-				p2pState = 'error';
-				peerStatus = `Error: ${err.message}`;
-				p2pStarted = false;
+				if (err.type === 'network' || err.type === 'server-error' || err.type === 'socket-error') {
+					handleConnectionFailure(`Red: ${err.message}`);
+				} else {
+					p2pState = 'error';
+					peerStatus = `Error: ${err.message}`;
+					p2pStarted = false;
+				}
 			});
 
 			peer.on('disconnected', () => {
 				log('Desconectado del servidor.');
-				if (p2pState !== 'done' && p2pState !== 'error') {
+				if (p2pState === 'waiting' || p2pState === 'connected' || p2pState === 'syncing') {
 					log('Reconectando...');
 					peer.reconnect();
 				}
@@ -199,6 +204,26 @@
 			p2pStarted = false;
 		}
 	}
+
+	function handleConnectionFailure(reason: string) {
+		log(reason);
+		if (peer) { peer.destroy(); peer = null; }
+
+		if (retryCount < MAX_RETRIES) {
+			retryCount++;
+			p2pStarted = false;
+			const delay = retryCount * 2000; // 2s, 4s, 6s
+			log(`Reintentando en ${delay / 1000}s...`);
+			peerStatus = `Servidor no disponible. Reintentando (${retryCount}/${MAX_RETRIES})...`;
+			setTimeout(() => startP2P(), delay);
+		} else {
+			p2pState = 'error';
+			peerStatus = 'No se pudo conectar al servidor P2P. Usa "Archivo JSON" para sincronizar manualmente.';
+			p2pStarted = false;
+			retryCount = 0;
+		}
+	}
+
 
 	// File Handling
 	async function handleExport() {

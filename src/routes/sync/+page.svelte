@@ -27,7 +27,10 @@
 
 			peer = new Peer({
 				debug: 2,
-				serialization: 'json',  // Must match host
+				host: '0.peerjs.com',
+				port: 443,
+				secure: true,
+				path: '/',
 				config: {
 					iceServers: [
 						{ urls: 'stun:stun.l.google.com:19302' },
@@ -36,7 +39,7 @@
 						{ urls: 'stun:stun3.l.google.com:19302' }
 					]
 				}
-			} as any);
+			});
 
 			// Timeout for signaling server
 			const signalTimeout = setTimeout(() => {
