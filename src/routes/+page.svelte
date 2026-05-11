@@ -9,6 +9,7 @@
 	import RebalancePanel from '$lib/components/RebalancePanel.svelte';
 	import ManageAssets from '$lib/components/ManageAssets.svelte';
 	import Projections from '$lib/components/Projections.svelte';
+	import PaypalDonation from '$lib/components/PaypalDonation.svelte';
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { formatEUR, formatPercent } from '$lib/utils';
 	import { DASHBOARD_TABS, type TabId } from '$lib/constants';
@@ -203,6 +204,7 @@
 		</div>
 
 		<footer class="app-footer">
+			<PaypalDonation />
 			<p>CoreBalance · {new Date().getFullYear()}</p>
 		</footer>
 	</main>
@@ -397,8 +399,15 @@
 	}
 
 	/* --- Footer --- */
-	.app-footer { padding: 3rem 0; text-align: center; opacity: 0.4; }
-	.app-footer p { font-size: 0.75rem; font-weight: 600; }
+	.app-footer { 
+		padding: 3rem 0 5rem; 
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 1.5rem;
+		opacity: 0.8; 
+	}
+	.app-footer p { font-size: 0.75rem; font-weight: 600; opacity: 0.4; margin: 0; }
 
 	/* --- Responsive Magic --- */
 	
