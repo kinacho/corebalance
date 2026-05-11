@@ -15,7 +15,7 @@ const RELIABLE_FT_MAPPINGS: Record<string, string> = {
 	'XS2940466316.SG': 'IB1T:FRA'   // BlackRock Bitcoin ETP (Frankfurt)
 };
 
-async function fetchFTPrice(isin: string): Promise<{ price: number, change: number } | null> {
+async function fetchFTPrice(isin: string): Promise<{ price: number, change: number, ytd?: number } | null> {
 	try {
 		const url = `https://markets.ft.com/data/funds/tearsheet/summary?s=${isin}:EUR`;
 		const res = await fetch(url, { cache: 'no-store' });
@@ -23,15 +23,17 @@ async function fetchFTPrice(isin: string): Promise<{ price: number, change: numb
 		const html = await res.text();
 		
 		// Búsqueda del precio: aparece después de "Price (EUR)"
-		const priceMatch = html.match(/Price \(EUR\).*?mod-ui-data-list__value">[\d,.]+/s);
+		const priceMatch = html.match(/Price \(EUR\).*?mod-ui-data-list__value">([\d,.]+)/s);
 		// Búsqueda del cambio porcentual: aparece después de la barra "/"
 		const changeMatch = html.match(/\/ ([\d,.-]+)%/);
+		// Búsqueda del YTD: aparece en "Year to date"
+		const ytdMatch = html.match(/Year to date.*?([\d,.-]+)%/s);
 		
 		if (priceMatch) {
-			const valueMatch = priceMatch[0].match(/([\d,.]+)$/);
-			const price = valueMatch ? parseFloat(valueMatch[1].replace(/,/g, '')) : 0;
+			const price = parseFloat(priceMatch[1].replace(/,/g, ''));
 			const change = changeMatch ? parseFloat(changeMatch[1]) : 0;
-			if (price > 0) return { price, change };
+			const ytd = ytdMatch ? parseFloat(ytdMatch[1]) : undefined;
+			if (price > 0) return { price, change, ytd };
 		}
 	} catch (e) {
 		console.error(`Error fetching FT price for ${isin}:`, e);
@@ -155,9 +157,10 @@ export const GET: RequestHandler = async ({ url }) => {
 						}
 
 						// Fallback especial para Cripto ETPs que suelen no tener histórico en Yahoo
-						if (ytd === undefined && (ticker.includes('BTC') || ticker.includes('ETH'))) {
+						const isCryptoETP = ticker.includes('BTC') || ticker.includes('ETH') || ticker.includes('XS2940466316');
+						if (ytd === undefined && isCryptoETP) {
 							try {
-								const baseSymbol = ticker.includes('ETH') ? 'ETH-EUR' : 'BTC-EUR';
+								const baseSymbol = (ticker.includes('ETH')) ? 'ETH-EUR' : 'BTC-EUR';
 								const cryptoChart = await yahooFinance.chart(baseSymbol, { period1: dec20PrevYear, period2: new Date(), interval: '1d' });
 								const cryptoQuotes = cryptoChart.quotes.filter(q => q.close !== null);
 								const cryptoPrevYearQuotes = cryptoQuotes.filter(q => new Date(q.date) < startOfCurrentYear);
@@ -198,9 +201,10 @@ export const GET: RequestHandler = async ({ url }) => {
 
 	for (const result of results) {
 		if (result.status === 'fulfilled') {
-			const { ticker, quote, sparkline, ytd, mtd, oneMonth } = result.value;
+			const { ticker, quote, sparkline, ytd: yahooYtd, mtd, oneMonth } = result.value;
 			let p = quote.regularMarketPrice;
 			let change = quote.regularMarketChangePercent;
+			let ytd = yahooYtd;
 
 			// Intentar obtener precio más actualizado de Financial Times para tickers problemáticos
 			if (RELIABLE_FT_MAPPINGS[ticker]) {
@@ -208,6 +212,10 @@ export const GET: RequestHandler = async ({ url }) => {
 				if (ftData) {
 					p = ftData.price;
 					change = ftData.change;
+					// Si FT tiene YTD y Yahoo no, lo usamos
+					if (ftData.ytd !== undefined && (ytd === undefined || isNaN(ytd))) {
+						ytd = ftData.ytd;
+					}
 				}
 			}
 

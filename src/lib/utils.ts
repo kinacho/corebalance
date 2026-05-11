@@ -32,25 +32,48 @@ export function formatShares(value: number): string {
 
 /** Determina si el mercado para un activo está abierto actualmente */
 export function isMarketOpen(ticker: string, marketState?: string): boolean {
+	// 1. Prioridad absoluta: Estado oficial de la API
 	if (marketState) {
-		const openStates = ['REGULAR', 'PRE', 'POST', 'PREPRE', 'POSTPOST'];
-		return openStates.includes(marketState);
+		const openStates = ['REGULAR'];
+		return openStates.includes(marketState.toUpperCase());
 	}
 
-	if (ticker.includes('BTC') || ticker.includes('ETH')) return true;
+	// 2. Criptoactivos (siempre abiertos)
+	const cryptoKeywords = ['BTC', 'ETH', 'BNB', 'SOL', 'USDT', 'XS2940466316'];
+	if (cryptoKeywords.some(k => ticker.toUpperCase().includes(k))) return true;
 
 	const now = new Date();
 	const day = now.getDay();
+	if (day === 0 || day === 6) return false; // Fines de semana cerrado
+
 	const hours = now.getHours();
 	const minutes = now.getMinutes();
-	const currentTime = hours * 60 + minutes;
+	const currentTime = hours * 60 + minutes; // Minutos totales desde las 00:00
 
-	if (day === 0 || day === 6) return false;
+	const t = ticker.toUpperCase();
 
-	if (ticker.endsWith('.F') || ticker.endsWith('.SG') || ticker.startsWith('0P')) {
+	// 3. Europa (Xetra, Frankfurt, Madrid, Paris, Amsterdam, Milan, London)
+	// Suffixes: .F (Frankfurt), .SG (Stuttgart), .MC (Madrid), .PA (Paris), .AS (Amsterdam), .MI (Milan), .L (London), .DE (Xetra)
+	const isEuropean = t.endsWith('.F') || t.endsWith('.SG') || t.endsWith('.MC') || 
+	                   t.endsWith('.PA') || t.endsWith('.AS') || t.endsWith('.MI') || 
+	                   t.endsWith('.L') || t.endsWith('.DE') || t.startsWith('0P') ||
+	                   t.startsWith('ES') || t.startsWith('IE') || t.startsWith('LU');
+
+	if (isEuropean) {
+		// Londres abre un poco antes/después pero 9:00-17:30 es una buena media para Europa
 		return currentTime >= 540 && currentTime <= 1050; // 09:00 - 17:30
 	}
 
+	// 4. USA (NYSE, NASDAQ, AMEX)
+	// ISINs que empiezan por US o tickers sin punto (NVDA, AAPL) o terminados en .US
+	const isUSA = t.startsWith('US') || !t.includes('.') || t.endsWith('.US');
+	
+	if (isUSA) {
+		// Mercado USA: 15:30 - 22:00 (Hora España CEST)
+		return currentTime >= 930 && currentTime <= 1320; 
+	}
+
+	// 5. Fallback por defecto (USA)
 	return currentTime >= 930 && currentTime <= 1320; 
 }
 

@@ -66,7 +66,7 @@
 	<div class="cell-identity">
 		<div class="asset-icon">
 			{position.asset.icon}
-			<span class="market-dot" class:open={isMarketOpen(position.asset.ticker)} class:closed={!isMarketOpen(position.asset.ticker)} title={isMarketOpen(position.asset.ticker) ? 'Mercado abierto' : 'Mercado cerrado'}></span>
+			<span class="market-dot" class:open={isMarketOpen(position.asset.ticker, position.marketState)} class:closed={!isMarketOpen(position.asset.ticker, position.marketState)} title={position.marketState || 'Estado desconocido'}></span>
 		</div>
 		<div class="asset-names">
 			<span class="asset-ticker">
