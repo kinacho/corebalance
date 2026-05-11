@@ -24,6 +24,7 @@
 	let p2pState = $state<'idle' | 'initializing' | 'waiting' | 'connected' | 'syncing' | 'done' | 'error'>('idle');
 	let qrCodeUrl = $state<string | null>(null);
 	let peer: any = null;
+	let isInitializing = false;
 
 	function addLog(msg: string) {
 		const time = new Date().toLocaleTimeString();
@@ -41,22 +42,23 @@
 	});
 
 	async function startP2PHost() {
+		if (isInitializing) return;
 		if (peer) {
 			peer.destroy();
 			peer = null;
 		}
 		
+		isInitializing = true;
 		p2pState = 'initializing';
 		peerStatus = 'Conectando con el servidor de señalización...';
 		addLog('Iniciando sistema P2P...');
 		
-		// ID más robusto para evitar colisiones en el servidor público de PeerJS
 		const customId = `corebalance-${Math.random().toString(36).substring(2, 10)}`;
 		
 		try {
 			const { Peer } = await import('peerjs');
 			peer = new Peer(customId, {
-				debug: 2, // Aumentamos log para ver qué pasa en consola
+				debug: 3, // Máximo nivel de debug
 				config: {
 					iceServers: [
 						{ urls: 'stun:stun.l.google.com:19302' },
@@ -68,11 +70,23 @@
 				}
 			});
 
+			// Timeout para la conexión inicial
+			const initTimeout = setTimeout(() => {
+				if (p2pState === 'initializing') {
+					p2pState = 'error';
+					peerStatus = 'Tiempo de espera agotado al conectar con el servidor.';
+					addLog('Error: Timeout en señalización.');
+					isInitializing = false;
+				}
+			}, 15000);
+
 			peer.on('open', async (id: string) => {
+				clearTimeout(initTimeout);
+				isInitializing = false;
 				peerId = id;
 				p2pState = 'waiting';
 				peerStatus = 'Esperando conexión desde el móvil...';
-				addLog(`ID registrado: ${id}`);
+				addLog(`ID registrado con éxito.`);
 				
 				const syncUrl = `${window.location.origin}/sync?peer=${id}`;
 				qrCodeUrl = await QRCode.toDataURL(syncUrl, {
@@ -83,14 +97,12 @@
 			});
 
 			peer.on('connection', (conn: any) => {
-				addLog('¡Conexión entrante detectada!');
+				addLog('¡Dispositivo móvil detectado!');
 				p2pState = 'connected';
 				peerStatus = '¡Dispositivo conectado! Estableciendo canal...';
 				
 				conn.on('open', () => {
-					addLog('Canal de datos establecido y seguro.');
-					
-					// Handshake: El host confirma que está listo
+					addLog('Canal de datos abierto.');
 					conn.send({ type: 'HOST_READY' });
 
 					const pingInterval = setInterval(() => {
@@ -101,69 +113,58 @@
 
 				conn.on('data', async (data: any) => {
 					if (data.type === 'PING') return;
-					
-					addLog(`Mensaje recibido: ${data.type}`);
+					addLog(`Evento: ${data.type}`);
 					
 					if (data.type === 'REQUEST_DATA') {
 						p2pState = 'syncing';
-						peerStatus = 'Transfiriendo datos al móvil...';
+						peerStatus = 'Transfiriendo datos...';
 						try {
 							if (storageProvider.getAllData) {
 								const allData = await storageProvider.getAllData();
 								const cleanData = JSON.parse(JSON.stringify(allData));
-								
 								addLog('Enviando paquete de datos...');
 								conn.send({ type: 'SYNC_DATA', payload: cleanData });
 							}
 						} catch (e: any) {
 							p2pState = 'error';
-							peerStatus = `Error al leer datos: ${e.message}`;
-							addLog(`Error: ${e.message}`);
+							peerStatus = `Error: ${e.message}`;
+							addLog(`Error datos: ${e.message}`);
 						}
 					}
 
 					if (data.type === 'SYNC_COMPLETE') {
-						addLog('¡El móvil confirma recepción correcta!');
+						addLog('¡Sincronización confirmada!');
 						p2pState = 'done';
-						peerStatus = '¡Sincronización completada con éxito!';
+						peerStatus = '¡Éxito! Datos transferidos.';
 					}
 				});
 
 				conn.on('close', () => {
 					if (p2pState !== 'done') {
-						addLog('La conexión se cerró inesperadamente.');
+						addLog('Conexión cerrada.');
 						p2pState = 'error';
-						peerStatus = 'Conexión perdida. Inténtalo de nuevo.';
+						peerStatus = 'Se ha perdido la conexión.';
 					}
-				});
-				
-				conn.on('error', (err: any) => {
-					addLog(`Error en conexión: ${err.message}`);
-					p2pState = 'error';
-					peerStatus = `Error: ${err.message}`;
 				});
 			});
 
 			peer.on('error', (err: any) => {
-				addLog(`Error de PeerJS: ${err.type}`);
+				isInitializing = false;
+				addLog(`Error P2P: ${err.type}`);
 				p2pState = 'error';
-				if (err.type === 'unavailable-id') {
-					peerStatus = 'El ID ya está en uso. Reintentando...';
-					setTimeout(startP2PHost, 1000);
-				} else {
-					peerStatus = `Error: ${err.message}`;
-				}
+				peerStatus = `Error: ${err.message}`;
 			});
 
 			peer.on('disconnected', () => {
-				addLog('Desconectado del servidor de señalización.');
+				addLog('Desconectado del servidor.');
 				if (p2pState !== 'done') peer.reconnect();
 			});
 
 		} catch (e: any) {
+			isInitializing = false;
 			p2pState = 'error';
-			peerStatus = `Error al iniciar P2P: ${e.message}`;
-			addLog(`Error fatal: ${e.message}`);
+			peerStatus = `Error fatal: ${e.message}`;
+			addLog(`Crash: ${e.message}`);
 		}
 	}
 
@@ -579,7 +580,7 @@
 		margin-bottom: 1rem;
 	}
 
-	.p2p-receive-action {
+	.p2p-actions {
 		margin-top: 1.5rem;
 	}
 
