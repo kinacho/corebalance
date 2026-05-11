@@ -20,98 +20,150 @@
 	// P2P State
 	let peerId = $state<string | null>(null);
 	let peerStatus = $state('Inicializando sistema P2P...');
+	let p2pLogs = $state<string[]>([]);
+	let p2pState = $state<'idle' | 'initializing' | 'waiting' | 'connected' | 'syncing' | 'done' | 'error'>('idle');
 	let qrCodeUrl = $state<string | null>(null);
 	let peer: any = null;
 
+	function addLog(msg: string) {
+		const time = new Date().toLocaleTimeString();
+		p2pLogs = [...p2pLogs.slice(-4), `[${time}] ${msg}`];
+		console.log(`P2P: ${msg}`);
+	}
+
 	onMount(() => {
-		// Initialize PeerJS only when p2p tab is selected or eagerly
 		return () => {
-			if (peer) peer.destroy();
+			if (peer) {
+				addLog('Destruyendo instancia Peer...');
+				peer.destroy();
+			}
 		};
 	});
 
 	async function startP2PHost() {
-		if (peer) peer.destroy();
-		peerStatus = 'Generando identificador único...';
+		if (peer) {
+			peer.destroy();
+			peer = null;
+		}
 		
-		const customId = 'cb-' + Math.random().toString(36).substring(2, 8);
-		console.log('P2P: Iniciando host con ID:', customId);
+		p2pState = 'initializing';
+		peerStatus = 'Conectando con el servidor de señalización...';
+		addLog('Iniciando sistema P2P...');
+		
+		// ID más robusto para evitar colisiones en el servidor público de PeerJS
+		const customId = `corebalance-${Math.random().toString(36).substring(2, 10)}`;
 		
 		try {
 			const { Peer } = await import('peerjs');
 			peer = new Peer(customId, {
-				debug: 2,
+				debug: 2, // Aumentamos log para ver qué pasa en consola
 				config: {
 					iceServers: [
 						{ urls: 'stun:stun.l.google.com:19302' },
 						{ urls: 'stun:stun1.l.google.com:19302' },
-						{ urls: 'stun:stun2.l.google.com:19302' }
+						{ urls: 'stun:stun2.l.google.com:19302' },
+						{ urls: 'stun:stun3.l.google.com:19302' },
+						{ urls: 'stun:stun4.l.google.com:19302' }
 					]
 				}
 			});
 
 			peer.on('open', async (id: string) => {
 				peerId = id;
+				p2pState = 'waiting';
 				peerStatus = 'Esperando conexión desde el móvil...';
+				addLog(`ID registrado: ${id}`);
 				
-				// Generar QR de la URL con el ID
 				const syncUrl = `${window.location.origin}/sync?peer=${id}`;
 				qrCodeUrl = await QRCode.toDataURL(syncUrl, {
 					width: 250,
 					margin: 2,
-					color: {
-						dark: '#000000',
-						light: '#ffffff00'
-					}
+					color: { dark: '#000000', light: '#ffffff' }
 				});
 			});
 
 			peer.on('connection', (conn: any) => {
-				console.log('P2P: Conexión entrante desde otro dispositivo');
+				addLog('¡Conexión entrante detectada!');
+				p2pState = 'connected';
 				peerStatus = '¡Dispositivo conectado! Estableciendo canal...';
 				
 				conn.on('open', () => {
-					console.log('P2P: Canal de datos ABIERTO');
-					peerStatus = '¡Canal abierto! Sincronizando...';
+					addLog('Canal de datos establecido y seguro.');
 					
-					// Heartbeat para mantener la conexión activa en móviles
+					// Handshake: El host confirma que está listo
+					conn.send({ type: 'HOST_READY' });
+
 					const pingInterval = setInterval(() => {
 						if (conn.open) conn.send({ type: 'PING' });
 						else clearInterval(pingInterval);
-					}, 2000);
+					}, 3000);
 				});
 
 				conn.on('data', async (data: any) => {
-					console.log('P2P: Mensaje recibido:', data.type);
+					if (data.type === 'PING') return;
+					
+					addLog(`Mensaje recibido: ${data.type}`);
+					
 					if (data.type === 'REQUEST_DATA') {
-						peerStatus = 'Enviando datos al dispositivo...';
+						p2pState = 'syncing';
+						peerStatus = 'Transfiriendo datos al móvil...';
 						try {
 							if (storageProvider.getAllData) {
 								const allData = await storageProvider.getAllData();
-								// Limpiar datos para asegurar serialización limpia
 								const cleanData = JSON.parse(JSON.stringify(allData));
+								
+								addLog('Enviando paquete de datos...');
 								conn.send({ type: 'SYNC_DATA', payload: cleanData });
-								console.log('P2P: Datos enviados correctamente');
-								peerStatus = '¡Datos enviados con éxito!';
-								setTimeout(() => {
-									peerStatus = 'Sincronización finalizada. Puedes cerrar esto.';
-								}, 2000);
 							}
 						} catch (e: any) {
-							console.error('P2P: Error al enviar datos:', e);
-							peerStatus = `Error al enviar datos: ${e.message}`;
+							p2pState = 'error';
+							peerStatus = `Error al leer datos: ${e.message}`;
+							addLog(`Error: ${e.message}`);
 						}
 					}
+
+					if (data.type === 'SYNC_COMPLETE') {
+						addLog('¡El móvil confirma recepción correcta!');
+						p2pState = 'done';
+						peerStatus = '¡Sincronización completada con éxito!';
+					}
+				});
+
+				conn.on('close', () => {
+					if (p2pState !== 'done') {
+						addLog('La conexión se cerró inesperadamente.');
+						p2pState = 'error';
+						peerStatus = 'Conexión perdida. Inténtalo de nuevo.';
+					}
+				});
+				
+				conn.on('error', (err: any) => {
+					addLog(`Error en conexión: ${err.message}`);
+					p2pState = 'error';
+					peerStatus = `Error: ${err.message}`;
 				});
 			});
 
 			peer.on('error', (err: any) => {
-				peerStatus = `Error P2P: ${err.message}`;
-				console.error('PeerJS error:', err);
+				addLog(`Error de PeerJS: ${err.type}`);
+				p2pState = 'error';
+				if (err.type === 'unavailable-id') {
+					peerStatus = 'El ID ya está en uso. Reintentando...';
+					setTimeout(startP2PHost, 1000);
+				} else {
+					peerStatus = `Error: ${err.message}`;
+				}
+			});
+
+			peer.on('disconnected', () => {
+				addLog('Desconectado del servidor de señalización.');
+				if (p2pState !== 'done') peer.reconnect();
 			});
 
 		} catch (e: any) {
-			peerStatus = `Error al cargar P2P: ${e.message}`;
+			p2pState = 'error';
+			peerStatus = `Error al iniciar P2P: ${e.message}`;
+			addLog(`Error fatal: ${e.message}`);
 		}
 	}
 
@@ -234,22 +286,45 @@
 				</div>
 			{:else if activeTab === 'p2p'}
 				<div class="p2p-section" in:slide={{ duration: 200 }}>
-					<p class="section-desc">Escanea este código con la cámara de tu móvil para enviar los datos de forma segura, encriptada y directa, sin servidores intermedios.</p>
+					<p class="section-desc">Escanea este código con la cámara de tu móvil para enviar los datos de forma segura, encriptada y directa.</p>
 					
 					<div class="qr-container">
 						{#if qrCodeUrl}
-							<img src={qrCodeUrl} alt="QR Code" class="qr-image" transition:fade />
+							<div class="qr-wrapper" class:dim={p2pState === 'syncing' || p2pState === 'done'}>
+								<img src={qrCodeUrl} alt="QR Code" class="qr-image" transition:fade />
+								{#if p2pState === 'syncing'}
+									<div class="qr-overlay">Transfiriendo...</div>
+								{:else if p2pState === 'done'}
+									<div class="qr-overlay success">¡Completado!</div>
+								{/if}
+							</div>
 						{:else}
-							<div class="qr-skeleton">Cargando...</div>
+							<div class="qr-skeleton">Iniciando P2P...</div>
 						{/if}
 					</div>
 
-					<div class="p2p-status" class:success={peerStatus.includes('éxito')}>
-						<span class="pulse-dot"></span>
+					<div class="p2p-status" class:success={p2pState === 'done'} class:error={p2pState === 'error'}>
+						{#if p2pState !== 'error' && p2pState !== 'done'}
+							<span class="pulse-dot"></span>
+						{/if}
 						{peerStatus}
 					</div>
 
-					<div class="p2p-receive-action">
+					{#if p2pLogs.length > 0}
+						<div class="p2p-debug-logs">
+							{#each p2pLogs as log}
+								<div class="log-line">{log}</div>
+							{/each}
+						</div>
+					{/if}
+
+					<div class="p2p-actions">
+						{#if p2pState === 'error'}
+							<button class="action-btn retry-btn" onclick={startP2PHost}>
+								Reintentar Conexión
+							</button>
+						{/if}
+						
 						<div class="divider"><span>o también</span></div>
 						<button class="action-btn receive-btn" onclick={() => window.location.href = '/sync'}>
 							<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
@@ -545,17 +620,68 @@
 		background: rgba(16, 185, 129, 0.1);
 	}
 
-	.pulse-dot {
-		width: 8px;
-		height: 8px;
-		border-radius: 50%;
-		background: currentColor;
-		animation: pulse-dot 1s infinite;
+	.p2p-status.error {
+		color: #ef4444;
+		background: rgba(239, 68, 68, 0.1);
 	}
 
-	@keyframes pulse-dot {
-		0%, 100% { transform: scale(1); opacity: 1; }
-		50% { transform: scale(1.5); opacity: 0.5; }
+	.p2p-debug-logs {
+		background: rgba(0, 0, 0, 0.3);
+		padding: 0.75rem;
+		border-radius: 8px;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.7rem;
+		color: rgba(255, 255, 255, 0.4);
+		margin-bottom: 1rem;
+		border: 1px solid rgba(255, 255, 255, 0.05);
+	}
+
+	.log-line {
+		margin-bottom: 2px;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.qr-wrapper {
+		position: relative;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.qr-wrapper.dim .qr-image {
+		opacity: 0.2;
+		filter: blur(4px);
+	}
+
+	.qr-overlay {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		font-weight: 800;
+		color: #3b82f6;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		font-size: 1.2rem;
+		text-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+	}
+
+	.qr-overlay.success {
+		color: #10b981;
+		text-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
+	}
+
+	.retry-btn {
+		background: rgba(239, 68, 68, 0.1);
+		color: #ef4444;
+		border: 1px solid rgba(239, 68, 68, 0.2);
+		margin-bottom: 1rem;
+	}
+
+	.retry-btn:hover {
+		background: rgba(239, 68, 68, 0.2);
 	}
 
 	/* Security Styles */

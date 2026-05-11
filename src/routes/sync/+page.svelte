@@ -10,95 +10,117 @@
 	let success = $state(false);
 	let isScanning = $state(false);
 	let isSyncing = $state(false);
+	let syncState = $state<'idle' | 'connecting' | 'negotiating' | 'requesting' | 'receiving' | 'saving' | 'done'>('idle');
 	let html5QrCode: any = null;
+	let peer: any = null;
 
 	async function startSync(targetPeerId: string) {
 		if (isSyncing) return;
 		isSyncing = true;
-		
-		status = 'Conectando al servidor de señalización P2P...';
+		syncState = 'connecting';
+		status = 'Conectando con el PC...';
 		error = null;
 
 		try {
 			const { Peer } = await import('peerjs');
-			const peer = new Peer({
+			peer = new Peer({
 				debug: 2,
 				config: {
 					iceServers: [
 						{ urls: 'stun:stun.l.google.com:19302' },
 						{ urls: 'stun:stun1.l.google.com:19302' },
-						{ urls: 'stun:stun2.l.google.com:19302' }
+						{ urls: 'stun:stun2.l.google.com:19302' },
+						{ urls: 'stun:stun3.l.google.com:19302' },
+						{ urls: 'stun:stun4.l.google.com:19302' }
 					]
 				}
 			});
 
 			peer.on('open', () => {
-				status = `Conectando con el otro dispositivo...`;
+				status = `Negociando canal seguro...`;
+				syncState = 'negotiating';
+				
 				let connectionTimeout = setTimeout(() => {
-					if (status.includes('Conectando')) {
-						error = 'La conexión está tardando demasiado. Reintentando...';
+					if (syncState !== 'done' && !error) {
+						error = 'La conexión está tardando demasiado. Asegúrate de que el PC tiene el QR abierto.';
 						isSyncing = false;
-						peer.destroy();
-						setTimeout(() => startSync(targetPeerId), 1000);
+						if (peer) peer.destroy();
 					}
-				}, 8000);
+				}, 15000); // Aumentamos a 15s para redes lentas
 
-				const conn = peer.connect(targetPeerId);
+				const conn = peer.connect(targetPeerId, {
+					reliable: true // Forzamos modo fiable
+				});
 
 				conn.on('open', () => {
-					clearTimeout(connectionTimeout);
-					status = '¡Conectado! Solicitando datos...';
-					console.log('P2P: Conexión abierta, solicitando datos');
-					// Un pequeño retraso ayuda a la estabilidad en PeerJS
-					setTimeout(() => {
-						conn.send({ type: 'REQUEST_DATA' });
-					}, 500);
+					console.log('P2P: Conexión abierta. Esperando confirmación del Host...');
 				});
 
 				conn.on('data', async (data: any) => {
 					if (data.type === 'PING') return;
-					console.log('P2P: Datos recibidos:', data.type);
+					
+					console.log('P2P: Recibido:', data.type);
+
+					if (data.type === 'HOST_READY') {
+						clearTimeout(connectionTimeout);
+						status = 'PC listo. Solicitando datos...';
+						syncState = 'requesting';
+						setTimeout(() => {
+							conn.send({ type: 'REQUEST_DATA' });
+						}, 500);
+					}
+
 					if (data.type === 'SYNC_DATA') {
-						status = 'Recibiendo datos...';
+						syncState = 'receiving';
+						status = 'Recibiendo datos financieros...';
 						try {
 							if (!storageProvider.importAllData) {
-								throw new Error('El almacenamiento actual no soporta importación local.');
+								throw new Error('Almacenamiento no compatible.');
 							}
+							
+							syncState = 'saving';
+							status = 'Guardando en base de datos local...';
 							await storageProvider.importAllData(data.payload);
+							
+							// Confirmamos al PC que todo ha ido bien
+							conn.send({ type: 'SYNC_COMPLETE' });
+							
 							success = true;
-							status = '¡Datos sincronizados con éxito!';
+							syncState = 'done';
+							status = '¡Sincronización exitosa!';
+							
 							setTimeout(() => {
-								peer.destroy();
+								if (peer) peer.destroy();
 								goto('/');
-							}, 1500);
+							}, 2000);
 						} catch (e: any) {
-							error = `Error al guardar datos: ${e.message}`;
+							error = `Error al procesar: ${e.message}`;
+							isSyncing = false;
 						}
 					}
 				});
 
 				conn.on('close', () => {
 					if (!success) {
-						error = 'La conexión se cerró inesperadamente.';
+						error = 'La conexión se cerró antes de completar la transferencia.';
 						isSyncing = false;
 					}
 				});
 
 				conn.on('error', (err: any) => {
-					console.error('Connection error:', err);
-					error = `Error en la conexión: ${err.message}`;
+					error = `Error de conexión: ${err.message}`;
 					isSyncing = false;
 				});
 			});
 
 			peer.on('error', (err: any) => {
-				console.error('PeerJS error:', err);
 				error = `Error P2P: ${err.message}`;
 				isSyncing = false;
 			});
 
 		} catch (e: any) {
-			error = `Error al cargar librería: ${e.message}`;
+			error = `Error fatal: ${e.message}`;
+			isSyncing = false;
 		}
 	}
 
@@ -196,7 +218,7 @@
 		{#if error}
 			<div class="error-msg">{error}</div>
 			<div class="btn-group">
-				<button class="btn primary" onclick={startScanner}>Reintentar Escaneo</button>
+				<button class="btn primary" onclick={() => window.location.reload()}>Reintentar</button>
 				<button class="btn secondary" onclick={() => goto('/')}>Cancelar</button>
 			</div>
 		{:else}
@@ -206,8 +228,23 @@
 				<div id="reader" class="scanner-viewport"></div>
 				<button class="btn secondary" onclick={() => goto('/')}>Cancelar</button>
 			{:else}
+				<div class="sync-steps">
+					<div class="step" class:active={syncState === 'connecting' || syncState === 'negotiating'} class:done={syncState !== 'idle' && syncState !== 'connecting' && syncState !== 'negotiating'}>
+						<span class="step-icon">🤝</span>
+						Conexión
+					</div>
+					<div class="step" class:active={syncState === 'requesting' || syncState === 'receiving'} class:done={syncState === 'saving' || syncState === 'done'}>
+						<span class="step-icon">📥</span>
+						Transferencia
+					</div>
+					<div class="step" class:active={syncState === 'saving'} class:done={syncState === 'done'}>
+						<span class="step-icon">💾</span>
+						Persistencia
+					</div>
+				</div>
+
 				<div class="progress">
-					<div class="progress-bar" class:done={success}></div>
+					<div class="progress-bar" class:done={success} class:error={!!error}></div>
 				</div>
 			{/if}
 		{/if}
@@ -329,8 +366,58 @@
 	}
 
 	@keyframes loading {
-		0% { width: 10%; transform: translateX(0); }
-		100% { width: 50%; transform: translateX(100%); }
+		0% { width: 10%; transform: translateX(-100%); }
+		100% { width: 100%; transform: translateX(100%); }
+	}
+
+	.sync-steps {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 1rem;
+		margin-bottom: 2rem;
+	}
+
+	.step {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.75rem;
+		color: rgba(255, 255, 255, 0.3);
+		transition: all 0.3s;
+	}
+
+	.step-icon {
+		font-size: 1.5rem;
+		opacity: 0.3;
+		filter: grayscale(1);
+		transition: all 0.3s;
+	}
+
+	.step.active {
+		color: #3b82f6;
+		transform: scale(1.1);
+	}
+
+	.step.active .step-icon {
+		opacity: 1;
+		filter: grayscale(0);
+		filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.5));
+	}
+
+	.step.done {
+		color: #10b981;
+	}
+
+	.step.done .step-icon {
+		opacity: 1;
+		filter: grayscale(0);
+	}
+
+	.progress-bar.error {
+		background: #ef4444;
+		width: 100%;
+		animation: none;
 	}
 
 	.btn-group {
