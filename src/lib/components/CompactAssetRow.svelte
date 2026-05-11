@@ -16,6 +16,9 @@
 	let isEditingAvgCost = $state(false);
 	let editAvgCostValue = $state('');
 
+	// Filtro de rendimiento seleccionado
+	let perfFilter = $state<'YTD' | 'MTD' | '1M'>('YTD');
+
 	const displayHoldings = $derived(position.holdings.toString());
 	const displayAvgCost = $derived(position.avgCost.toString());
 
@@ -121,12 +124,30 @@
 				<span class="perf-pct">({position.dailyChangePercent > 0 ? '+' : ''}{formatPercent(position.dailyChangePercent)})</span>
 			</div>
 		</div>
-		<div class="perf-row ytd" class:positive={(position.ytdChangePercent ?? 0) > 0} class:negative={(position.ytdChangePercent ?? 0) < 0}>
-			<span class="perf-label">YTD</span>
+		<button 
+			class="perf-row clickable-perf" 
+			class:positive={((perfFilter === 'YTD' ? position.ytdChangePercent : perfFilter === 'MTD' ? position.mtdChangePercent : position.oneMonthChangePercent) ?? 0) > 0} 
+			class:negative={((perfFilter === 'YTD' ? position.ytdChangePercent : perfFilter === 'MTD' ? position.mtdChangePercent : position.oneMonthChangePercent) ?? 0) < 0}
+			onclick={() => {
+				if (perfFilter === 'YTD') perfFilter = 'MTD';
+				else if (perfFilter === 'MTD') perfFilter = '1M';
+				else perfFilter = 'YTD';
+			}}
+		>
+			<span class="perf-label">
+				{perfFilter}
+				<svg class="perf-icon" viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="3">
+					<path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+				</svg>
+			</span>
 			<div class="perf-values">
-				<span class="perf-pct">{position.ytdChangePercent !== undefined ? (position.ytdChangePercent > 0 ? '+' : '') + formatPercent(position.ytdChangePercent) : '--'}</span>
+				<span class="perf-pct">
+					{((perfFilter === 'YTD' ? position.ytdChangePercent : perfFilter === 'MTD' ? position.mtdChangePercent : position.oneMonthChangePercent) !== undefined) 
+						? (((perfFilter === 'YTD' ? position.ytdChangePercent : perfFilter === 'MTD' ? position.mtdChangePercent : position.oneMonthChangePercent) ?? 0) > 0 ? '+' : '') + formatPercent((perfFilter === 'YTD' ? position.ytdChangePercent : perfFilter === 'MTD' ? position.mtdChangePercent : position.oneMonthChangePercent) ?? 0) 
+						: '--'}
+				</span>
 			</div>
-		</div>
+		</button>
 		<div class="perf-row total" class:positive={position.profit > 0} class:negative={position.profit < 0}>
 			<span class="perf-label">Total</span>
 			<div class="perf-values">
@@ -304,6 +325,33 @@
 	.perf-row.positive { color: #10b981; }
 	.perf-row.negative { color: #fca5a5; }
 	.perf-row:not(.positive):not(.negative) { color: rgba(255, 255, 255, 0.6); }
+
+	.clickable-perf {
+		background: transparent;
+		border: none;
+		cursor: pointer;
+		padding: 0;
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+		text-align: right;
+		transition: opacity 0.2s;
+		color: inherit;
+		font-family: inherit;
+	}
+
+	.clickable-perf:hover .perf-icon {
+		transform: rotate(180deg);
+		color: #fff;
+	}
+
+	.perf-icon {
+		margin-left: 0.25rem;
+		opacity: 0.4;
+		transition: all 0.4s ease;
+		vertical-align: middle;
+	}
 
 	.perf-pct {
 		font-size: 0.65rem;

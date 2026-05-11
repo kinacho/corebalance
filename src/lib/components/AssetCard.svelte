@@ -17,6 +17,9 @@
 	let isEditingAvgCost = $state(false);
 	let editAvgCostValue = $state('');
 
+	// Filtro de rendimiento seleccionado
+	let perfFilter = $state<'YTD' | 'MTD' | '1M'>('YTD');
+
 	const displayHoldings = $derived(position.holdings.toString());
 	const displayAvgCost = $derived(position.avgCost.toString());
 
@@ -196,14 +199,31 @@
 					</span>
 				</div>
 			</div>
-			<div class="metric pnl-metric" class:positive={(position.ytdChangePercent ?? 0) > 0} class:negative={(position.ytdChangePercent ?? 0) < 0}>
-				<span class="metric-label">YTD</span>
+			<button 
+				class="metric pnl-metric clickable-metric" 
+				class:positive={((perfFilter === 'YTD' ? position.ytdChangePercent : perfFilter === 'MTD' ? position.mtdChangePercent : position.oneMonthChangePercent) ?? 0) > 0} 
+				class:negative={((perfFilter === 'YTD' ? position.ytdChangePercent : perfFilter === 'MTD' ? position.mtdChangePercent : position.oneMonthChangePercent) ?? 0) < 0}
+				onclick={() => {
+					if (perfFilter === 'YTD') perfFilter = 'MTD';
+					else if (perfFilter === 'MTD') perfFilter = '1M';
+					else perfFilter = 'YTD';
+				}}
+				title="Haz clic para cambiar entre YTD, MTD y 1M"
+			>
+				<span class="metric-label">
+					{perfFilter}
+					<svg class="perf-icon" viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="3">
+						<path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+					</svg>
+				</span>
 				<div class="metric-content">
 					<span class="profit-tag" style="margin-left: 0;">
-						{position.ytdChangePercent !== undefined ? (position.ytdChangePercent > 0 ? '+' : '') + formatPercent(position.ytdChangePercent) : '--'}
+						{((perfFilter === 'YTD' ? position.ytdChangePercent : perfFilter === 'MTD' ? position.mtdChangePercent : position.oneMonthChangePercent) !== undefined) 
+							? (((perfFilter === 'YTD' ? position.ytdChangePercent : perfFilter === 'MTD' ? position.mtdChangePercent : position.oneMonthChangePercent) ?? 0) > 0 ? '+' : '') + formatPercent((perfFilter === 'YTD' ? position.ytdChangePercent : perfFilter === 'MTD' ? position.mtdChangePercent : position.oneMonthChangePercent) ?? 0) 
+							: '--'}
 					</span>
 				</div>
-			</div>
+			</button>
 			<div class="metric pnl-metric" class:positive={position.profit > 0} class:negative={position.profit < 0}>
 				<span class="metric-label">Total</span>
 				<div class="metric-content">
@@ -536,10 +556,42 @@
 	}
 
 	.metric-label {
-		font-size: 0.6rem;
-		color: rgba(160, 160, 200, 0.5);
+		display: block;
+		font-size: 0.65rem;
+		font-weight: 700;
 		text-transform: uppercase;
-		font-weight: 600;
+		letter-spacing: 0.02em;
+		color: rgba(255, 255, 255, 0.4);
+		margin-bottom: 0.25rem;
+	}
+
+	.clickable-metric {
+		background: transparent;
+		border: 1px solid transparent;
+		cursor: pointer;
+		padding: 0.25rem;
+		margin: -0.25rem;
+		border-radius: 8px;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		text-align: left;
+		width: 100%;
+		transition: all 0.2s;
+		color: inherit;
+		font-family: inherit;
+	}
+
+	.clickable-metric:hover .perf-icon {
+		transform: rotate(180deg);
+		color: #fff;
+	}
+
+	.perf-icon {
+		margin-left: 0.25rem;
+		opacity: 0.4;
+		transition: all 0.4s ease;
+		vertical-align: middle;
 	}
 
 	.metric-value {

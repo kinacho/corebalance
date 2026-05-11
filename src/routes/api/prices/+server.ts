@@ -5,7 +5,7 @@ import type { PricesResponse, PriceData } from '$lib/types';
 
 const yahooFinance = new YahooFinance({ suppressNotices: ['yahooSurvey', 'ripHistorical'] });
 
-const historyCache: Record<string, { timestamp: number, sparkline: number[], ytd?: number }> = {};
+const historyCache: Record<string, { timestamp: number, sparkline: number[], ytd?: number, mtd?: number, oneMonth?: number }> = {};
 const CACHE_TTL = 1000 * 60 * 60 * 4; // 4 horas
 
 // Mapeo de tickers problemáticos en Yahoo a ISINs/Symbols de Financial Times para mayor fiabilidad
@@ -88,7 +88,7 @@ export const GET: RequestHandler = async ({ url }) => {
 	};
 
 	const chunks = chunkArray(tickers, 3);
-	const results: PromiseSettledResult<{ ticker: string, quote: any, sparkline: number[], ytd: number | undefined }>[] = [];
+	const results: PromiseSettledResult<{ ticker: string, quote: any, sparkline: number[], ytd: number | undefined, mtd: number | undefined, oneMonth: number | undefined }>[] = [];
 
 	for (let i = 0; i < chunks.length; i++) {
 		const chunk = chunks[i];
@@ -99,14 +99,14 @@ export const GET: RequestHandler = async ({ url }) => {
 
 				let sparkline: number[] = [];
 				let ytd: number | undefined = quote.ytdReturn;
+				let mtd: number | undefined = undefined;
+				let oneMonth: number | undefined = undefined;
 
 				if (historyCache[ticker] && (now - historyCache[ticker].timestamp < CACHE_TTL)) {
 					sparkline = historyCache[ticker].sparkline;
-					if (historyCache[ticker].ytd !== undefined) {
-						ytd = historyCache[ticker].ytd;
-					} else if (ytd === undefined) {
-						ytd = historyCache[ticker].ytd; // fallback
-					}
+					if (historyCache[ticker].ytd !== undefined) ytd = historyCache[ticker].ytd;
+					mtd = historyCache[ticker].mtd;
+					oneMonth = historyCache[ticker].oneMonth;
 				} else {
 					try {
 						// Pedir desde el 20 de Dic del año anterior para asegurar que cogemos el último cierre
@@ -118,22 +118,39 @@ export const GET: RequestHandler = async ({ url }) => {
 						const validQuotes = chart.quotes.filter(q => q.close !== null);
 						sparkline = validQuotes.slice(-30).map(q => q.close) as number[];
 						
-						// Calcular YTD encontrando el último cierre del año anterior
+						// Calcular métricas
 						if (validQuotes.length > 0) {
-							const prevYearQuotes = validQuotes.filter(q => new Date(q.date) < startOfCurrentYear);
 							const currentPrice = quote.regularMarketPrice || (validQuotes[validQuotes.length - 1].close as number);
 							
+							// 1. YTD
+							const prevYearQuotes = validQuotes.filter(q => new Date(q.date) < startOfCurrentYear);
 							if (prevYearQuotes.length > 0) {
 								const lastYearClose = prevYearQuotes[prevYearQuotes.length - 1].close as number;
-								if (lastYearClose > 0) {
-									ytd = ((currentPrice - lastYearClose) / lastYearClose) * 100;
-								}
+								if (lastYearClose > 0) ytd = ((currentPrice - lastYearClose) / lastYearClose) * 100;
 							} else {
-								// Si es un activo nuevo este año, usar el primer precio disponible
 								const firstThisYear = validQuotes[0].close as number;
-								if (firstThisYear > 0) {
-									ytd = ((currentPrice - firstThisYear) / firstThisYear) * 100;
-								}
+								if (firstThisYear > 0) ytd = ((currentPrice - firstThisYear) / firstThisYear) * 100;
+							}
+
+							// 2. MTD (Month To Date)
+							const startOfCurrentMonth = new Date(Date.UTC(new Date().getFullYear(), new Date().getMonth(), 1));
+							const prevMonthQuotes = validQuotes.filter(q => new Date(q.date) < startOfCurrentMonth);
+							if (prevMonthQuotes.length > 0) {
+								const lastMonthClose = prevMonthQuotes[prevMonthQuotes.length - 1].close as number;
+								if (lastMonthClose > 0) mtd = ((currentPrice - lastMonthClose) / lastMonthClose) * 100;
+							}
+
+							// 3. 1M (Últimos 30 días naturales)
+							const oneMonthAgo = new Date();
+							oneMonthAgo.setDate(oneMonthAgo.getDate() - 30);
+							const oneMonthQuotes = validQuotes.filter(q => new Date(q.date) < oneMonthAgo);
+							if (oneMonthQuotes.length > 0) {
+								const oneMonthClose = oneMonthQuotes[oneMonthQuotes.length - 1].close as number;
+								if (oneMonthClose > 0) oneMonth = ((currentPrice - oneMonthClose) / oneMonthClose) * 100;
+							} else if (validQuotes.length > 0) {
+								// Fallback si no hay 30 días: usar el primer dato disponible
+								const firstClose = validQuotes[0].close as number;
+								if (firstClose > 0) oneMonth = ((currentPrice - firstClose) / firstClose) * 100;
 							}
 						}
 
@@ -157,15 +174,17 @@ export const GET: RequestHandler = async ({ url }) => {
 							}
 						}
 						
-						historyCache[ticker] = { timestamp: now, sparkline, ytd };
+						historyCache[ticker] = { timestamp: now, sparkline, ytd, mtd, oneMonth };
 					} catch (e) {
 						console.error(`Error fetching history for ${ticker}:`, e);
 						sparkline = historyCache[ticker]?.sparkline || [];
 						ytd = historyCache[ticker]?.ytd ?? ytd;
+						mtd = historyCache[ticker]?.mtd;
+						oneMonth = historyCache[ticker]?.oneMonth;
 					}
 				}
 
-				return { ticker, quote, sparkline, ytd };
+				return { ticker, quote, sparkline, ytd, mtd, oneMonth };
 			})
 		);
 		
@@ -179,7 +198,7 @@ export const GET: RequestHandler = async ({ url }) => {
 
 	for (const result of results) {
 		if (result.status === 'fulfilled') {
-			const { ticker, quote, sparkline, ytd } = result.value;
+			const { ticker, quote, sparkline, ytd, mtd, oneMonth } = result.value;
 			let p = quote.regularMarketPrice;
 			let change = quote.regularMarketChangePercent;
 
@@ -207,7 +226,9 @@ export const GET: RequestHandler = async ({ url }) => {
 				sparkline,
 				marketState: quote.marketState,
 				lastUpdate: quote.regularMarketTime ? new Date(quote.regularMarketTime).getTime() : undefined,
-				ytdChangePercent: ytd
+				ytdChangePercent: ytd,
+				mtdChangePercent: mtd,
+				oneMonthChangePercent: oneMonth
 			};
 		} else {
 			errors.push(result.reason?.message ?? 'Error desconocido');

@@ -24,6 +24,8 @@ export interface PriceData {
 	marketState?: string; // REGULAR, CLOSED, PRE, POST, etc.
 	lastUpdate?: number;  // Unix timestamp de la última cotización
 	ytdChangePercent?: number; // Cambio Year-To-Date
+	mtdChangePercent?: number; // Cambio Month-To-Date
+	oneMonthChangePercent?: number; // Cambio últimos 30 días
 }
 
 /** Respuesta del endpoint /api/prices */
@@ -52,6 +54,8 @@ export interface PortfolioPosition {
 	marketState?: string;
 	lastUpdate?: number;
 	ytdChangePercent?: number;
+	mtdChangePercent?: number;
+	oneMonthChangePercent?: number;
 	sparkline?: number[];
 }
 

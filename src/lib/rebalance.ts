@@ -49,6 +49,8 @@ export function calculatePortfolioState(
 			marketState: pData?.marketState,
 			lastUpdate: pData?.lastUpdate,
 			ytdChangePercent: pData?.ytdChangePercent !== undefined ? (pData.ytdChangePercent / 100) : undefined,
+			mtdChangePercent: pData?.mtdChangePercent !== undefined ? (pData.mtdChangePercent / 100) : undefined,
+			oneMonthChangePercent: pData?.oneMonthChangePercent !== undefined ? (pData.oneMonthChangePercent / 100) : undefined,
 			sparkline: pData?.sparkline
 		};
 	});

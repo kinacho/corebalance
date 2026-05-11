@@ -8,6 +8,7 @@
 	import HistoryChart from '$lib/components/HistoryChart.svelte';
 	import RebalancePanel from '$lib/components/RebalancePanel.svelte';
 	import ManageAssets from '$lib/components/ManageAssets.svelte';
+	import Projections from '$lib/components/Projections.svelte';
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { formatEUR, formatPercent } from '$lib/utils';
 	import { DASHBOARD_TABS, type TabId } from '$lib/constants';
@@ -193,6 +194,10 @@
 						contribution={portfolio.contribution} 
 						onContributionChange={(val) => portfolio.updateContribution(val)} 
 					/>
+				</div>
+				
+				<div class="sidebar-item" class:tab-hidden={activeTab !== 'rebalance'}>
+					<Projections />
 				</div>
 			</aside>
 		</div>
