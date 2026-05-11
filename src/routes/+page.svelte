@@ -10,6 +10,7 @@
 	import ManageAssets from '$lib/components/ManageAssets.svelte';
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { formatEUR, formatPercent } from '$lib/utils';
+	import { DASHBOARD_TABS, type TabId } from '$lib/constants';
 
 	// Efecto para el tema dinámico
 	$effect(() => {
@@ -24,15 +25,6 @@
 		root.style.setProperty('--bg-mesh-5', `${mood}22`);
 		root.style.setProperty('--bg-mesh-6', '#f59e0b11');
 	});
-
-	// --- Constants & Config ---
-	const TABS = [
-		{ id: 'assets', label: 'Activos', icon: '📊' },
-		{ id: 'rebalance', label: 'Rebalanceo', icon: '💰' },
-		{ id: 'charts', label: 'Gráficos', icon: '🍩' }
-	] as const;
-
-	type TabId = (typeof TABS)[number]['id'];
 
 	// --- State ---
 	let activeTab = $state<TabId>('assets');
@@ -122,7 +114,7 @@
 
 		<!-- Navigation (Mobile Only) -->
 		<nav class="mobile-tabs">
-			{#each TABS as tab}
+			{#each DASHBOARD_TABS as tab}
 				<button 
 					class="tab-btn" 
 					class:active={activeTab === tab.id} 

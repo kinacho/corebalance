@@ -53,3 +53,8 @@ export function isMarketOpen(ticker: string, marketState?: string): boolean {
 
 	return currentTime >= 930 && currentTime <= 1320; 
 }
+
+/** Formatea una fecha como YYYY-MM-DD */
+export function formatDate(date: Date = new Date()): string {
+	return date.toISOString().split('T')[0];
+}

@@ -18,7 +18,7 @@ const RELIABLE_FT_MAPPINGS: Record<string, string> = {
 async function fetchFTPrice(isin: string): Promise<{ price: number, change: number } | null> {
 	try {
 		const url = `https://markets.ft.com/data/funds/tearsheet/summary?s=${isin}:EUR`;
-		const res = await fetch(url);
+		const res = await fetch(url, { cache: 'no-store' });
 		if (!res.ok) return null;
 		const html = await res.text();
 		
@@ -116,7 +116,7 @@ export const GET: RequestHandler = async ({ url }) => {
 						const chart = await yahooFinance.chart(ticker, queryOptions);
 						
 						const validQuotes = chart.quotes.filter(q => q.close !== null);
-						sparkline = validQuotes.slice(-7).map(q => q.close) as number[];
+						sparkline = validQuotes.slice(-30).map(q => q.close) as number[];
 						
 						// Calcular YTD encontrando el último cierre del año anterior
 						if (validQuotes.length > 0) {
@@ -222,7 +222,9 @@ export const GET: RequestHandler = async ({ url }) => {
 
 	return json(response, {
 		headers: {
-			'Cache-Control': 'public, max-age=60'
+			'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+			'Pragma': 'no-cache',
+			'Expires': '0'
 		}
 	});
 };

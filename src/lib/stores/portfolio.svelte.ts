@@ -2,6 +2,7 @@ import { DEFAULT_CORE_ASSETS, DEFAULT_SATELLITE_ASSETS, DEFAULT_STOCK_ASSETS, ST
 import type { Asset, HoldingData, HoldingsMap, PortfolioState, PriceData, RebalanceResult } from '$lib/types';
 import { calculatePortfolioState, calculateRebalance } from '$lib/rebalance';
 import { storageProvider } from '$lib/db';
+import { formatDate } from '$lib/utils';
 
 export interface User { uid: string; displayName?: string | null; photoURL?: string | null; email?: string | null; }
 
@@ -84,15 +85,14 @@ export class PortfolioStore {
 	// Reconstruir historia de los últimos 7 días usando los sparklines de los activos
 	// (Fallback si la historia de Firebase está vacía o es insuficiente)
 	reconstructedHistory = $derived.by(() => {
-		const days = 7;
+		const days = 30; // Mostrar hasta 30 días reconstruidos
 		const historyPoints: { date: string, value: number }[] = [];
 		
-		// Inicializar puntos con fechas reales (hace 7 días hasta hoy)
+		// Inicializar puntos con fechas reales (hace 30 días hasta hoy)
 		for (let i = 0; i < days; i++) {
 			const d = new Date();
 			d.setDate(d.getDate() - (days - 1 - i));
-			const dateStr = d.toISOString().split('T')[0];
-			historyPoints.push({ date: dateStr, value: 0 });
+			historyPoints.push({ date: formatDate(d), value: 0 });
 		}
 
 		let hasData = false;
@@ -102,20 +102,16 @@ export class PortfolioStore {
 			const spark = pos.sparkline || [];
 			if (spark.length > 0) hasData = true;
 			
-			// Sumar la contribución de este activo a cada uno de los 7 días
 			for (let i = 0; i < days; i++) {
 				const priceAtDay = spark[spark.length - days + i] || pos.unitPrice;
 				historyPoints[i].value += pos.holdings * priceAtDay;
 			}
 		});
 
-		// Si no hay datos de sparklines, devolvemos lo que tengamos en Firebase
-		if (!hasData) return this.history;
+		// Si no hay datos de sparklines o la historia real es más larga, devolvemos historia real
+		if (!hasData || this.history.length >= days) return this.history;
 
-		// Si tenemos datos en Firebase que son más largos, priorizamos Firebase
-		if (this.history.length >= days) return this.history;
-
-		// Si no, devolvemos la reconstrucción
+		// Si la historia real es muy corta, devolvemos la reconstrucción de 30 días
 		return historyPoints;
 	});
 
@@ -164,12 +160,19 @@ export class PortfolioStore {
 		// Fetch inicial
 		this.fetchPrices();
 
-		// Polling cada 60 segundos si la pestaña está activa
+		// Polling cada 30 segundos si la pestaña está activa
 		setInterval(() => {
 			if (document.visibilityState === 'visible' && !this.loading) {
 				this.fetchPrices();
 			}
-		}, 60000);
+		}, 30000);
+
+		// Refresco inmediato al volver a la pestaña
+		document.addEventListener('visibilitychange', () => {
+			if (document.visibilityState === 'visible' && !this.loading) {
+				this.fetchPrices();
+			}
+		});
 	}
 
 	private async saveToCloud() {
@@ -240,14 +243,11 @@ export class PortfolioStore {
 	private async updateHistoryPoints() {
 		if (!this.user || this.globalCapital === 0) return;
 		
-		// Evitar race conditions: si el historial está vacío, intentamos cargarlo 
-		// antes de añadir el punto de hoy para no sobreescribir datos antiguos.
 		if (this.history.length === 0) {
 			await this.loadHistory();
 		}
 
-		const d = new Date();
-		const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+		const today = formatDate();
 		const currentPoint = { date: today, value: this.globalCapital };
 		
 		let newHistory = [...$state.snapshot(this.history)];
@@ -261,7 +261,9 @@ export class PortfolioStore {
 		}
 
 		newHistory.sort((a, b) => a.date.localeCompare(b.date));
-		if (newHistory.length > 30) newHistory = newHistory.slice(-30);
+		
+		// Mantener hasta un año de historia diaria (365 puntos)
+		if (newHistory.length > 365) newHistory = newHistory.slice(-365);
 
 		this.history = newHistory;
 		
@@ -402,8 +404,8 @@ export class PortfolioStore {
 		} catch (e) {
 			this.error = e instanceof Error ? e.message : 'Error desconocido';
 		} finally {
+			this.loading = false;
 			if (isInitial) {
-				this.loading = false;
 				// Pequeño retardo para asegurar que el contenido esté renderizado antes de quitar el splash
 				setTimeout(() => {
 					this.isInitialized = true;

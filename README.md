@@ -5,8 +5,8 @@ Dashboard profesional, premium y responsivo (PWA) para el seguimiento, rebalance
 ## 🚀 Características Principales
 
 - **Privacidad Total (Local-First)**: Tus datos no se envían a ningún servidor por defecto. Se almacenan de forma segura en tu propio navegador usando IndexedDB.
-- **Sincronización P2P por QR**: Sincroniza tus datos entre el PC y el móvil de forma directa y encriptada (Peer-to-Peer) escaneando un código QR. Sin necesidad de cuentas ni nubes.
-- **Backups Manuales**: Exporta e importa tu configuración y datos históricos en archivos JSON con un solo clic.
+- **Sincronización Instantánea por QR**: Transfiere tus datos entre dispositivos de forma directa y 100% offline. Los datos se comprimen y viajan directamente en el código QR. Sin servidores de terceros, sin nubes, sin esperas.
+- **Backups Manuales**: Exporta e importa tu configuración y datos históricos en archivos JSON con un solo clic para tener siempre una copia de seguridad física.
 - **Diseño Premium & Glassmorphism**: Interfaz moderna, elegante y fluida con transiciones suaves, diseño adaptativo (mobile-first a large-desktop) y secciones plegables inteligentes.
 - **Progressive Web App (PWA)**: Instalable como una aplicación nativa en iOS y Android, con soporte offline y funcionamiento a pantalla completa.
 - **Soporte Multi-Cartera & Multi-Divisa**: 
@@ -22,7 +22,7 @@ Dashboard profesional, premium y responsivo (PWA) para el seguimiento, rebalance
 
 - **Framework**: [SvelteKit](https://svelte.dev/) (Svelte 5 con Runes)
 - **Base de Datos Local**: [Dexie.js](https://dexie.org/) (IndexedDB)
-- **Comunicación P2P**: [PeerJS](https://peerjs.com/) (WebRTC)
+- **Compresión de Datos**: Native Compression Streams API (Deflate)
 - **Gráficos**: [Chart.js](https://www.chartjs.org/)
 - **API de Mercados**: Yahoo Finance
 
@@ -55,15 +55,16 @@ Dashboard profesional, premium y responsivo (PWA) para el seguimiento, rebalance
 ## 🔄 Cómo sincronizar dispositivos
 
 1. En tu ordenador, pulsa el icono de **Sincronización** (Monitor + Móvil) en la cabecera.
-2. Ve a la pestaña **Código QR**.
-3. Abre la cámara de tu móvil y escanea el código generado.
-4. El móvil se conectará directamente a tu ordenador y descargará tus datos de forma segura.
+2. Ve a la pestaña **Código QR (P2P)**.
+3. El sistema comprimirá tus datos y generará un QR único.
+4. Abre la cámara de tu móvil y escanea el código.
+5. El navegador se abrirá, detectará los datos y los importará automáticamente en tu móvil.
 
 ## 🛡️ Seguridad y Privacidad
 
-- **Modo Privado**: Oculta los valores de tu cartera con un clic para poder usar la app en lugares públicos.
-- **Bloqueo Biométrico**: (Opcional) Activa el acceso mediante FaceID o Huella dactilar si tu dispositivo lo soporta.
-- **Cero Rastreadores**: No hay analíticas ni telemetría. Tus datos son tuyos.
+- **Modo Privado**: Oculta los valores monetarios de tu cartera con un clic para poder usar la app en lugares públicos de forma discreta.
+- **Sin Dependencias de Red**: La sincronización no requiere servidores externos (excepto para cotizaciones de precios), garantizando que tus datos financieros nunca viajen por internet si no lo deseas.
+- **Cero Rastreadores**: No hay analíticas, telemetría ni cookies de terceros. Tus datos financieros son 100% tuyos.
 
 ---
 *Desarrollado para uso personal. Este software no proporciona asesoramiento financiero. Úsalo bajo tu propia responsabilidad.*

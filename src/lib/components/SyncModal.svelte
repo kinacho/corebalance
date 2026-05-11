@@ -3,7 +3,8 @@
 	import { storageProvider } from '$lib/db';
 	import { onMount } from 'svelte';
 	import QRCode from 'qrcode';
-	import { security } from '$lib/security.svelte';
+	import { formatDate } from '$lib/utils';
+
 
 	interface Props {
 		onClose: () => void;
@@ -11,7 +12,7 @@
 
 	let { onClose }: Props = $props();
 
-	let activeTab = $state<'file' | 'p2p' | 'security'>('file');
+	let activeTab = $state<'file' | 'p2p'>('file');
 	
 	// File Export/Import
 	let fileInput = $state<HTMLInputElement | null>(null);
@@ -22,7 +23,7 @@
 	let qrCodeUrl = $state<string | null>(null);
 	let qrState = $state<'idle' | 'generating' | 'ready' | 'error'>('idle');
 
-	function switchTab(tab: 'file' | 'p2p' | 'security') {
+	function switchTab(tab: 'file' | 'p2p') {
 		activeTab = tab;
 		if (tab === 'p2p' && qrState === 'idle') {
 			generateSyncQR();
@@ -53,15 +54,17 @@
 			const encoded = await compressAndEncode(json);
 			const syncUrl = `${window.location.origin}/sync#${encoded}`;
 
-			if (syncUrl.length > 2500) {
+			// Max length for reliable scanning on screens is ~2000 chars
+			if (syncUrl.length > 2000) {
 				qrState = 'error';
-				qrStatus = `Datos muy grandes (${(json.length / 1024).toFixed(1)} KB). Usa "Archivo JSON" en su lugar.`;
+				qrStatus = `Datos muy extensos (${(json.length / 1024).toFixed(1)} KB). La cámara no podrá leer un QR tan denso. Usa "Archivo JSON".`;
 				return;
 			}
 
 			qrCodeUrl = await QRCode.toDataURL(syncUrl, {
-				width: 280,
-				margin: 2,
+				width: 400, // Higher resolution for better clarity
+				margin: 4,  // More quiet zone
+				errorCorrectionLevel: 'L', // Lower density dots
 				color: { dark: '#000000', light: '#ffffff' }
 			});
 
@@ -85,7 +88,7 @@
 			const url = URL.createObjectURL(blob);
 			const a = document.createElement('a');
 			a.href = url;
-			a.download = `corebalance_backup_${new Date().toISOString().split('T')[0]}.json`;
+			a.download = `corebalance_backup_${formatDate()}.json`;
 			document.body.appendChild(a);
 			a.click();
 			document.body.removeChild(a);
@@ -143,9 +146,6 @@
 			</button>
 			<button class="tab-btn" class:active={activeTab === 'p2p'} onclick={() => switchTab('p2p')}>
 				Código QR (P2P)
-			</button>
-			<button class="tab-btn" class:active={activeTab === 'security'} onclick={() => switchTab('security')}>
-				Seguridad
 			</button>
 		</div>
 
@@ -240,45 +240,6 @@
 							Escanear desde este dispositivo
 						</button>
 					</div>
-				</div>
-			{:else if activeTab === 'security'}
-				<div class="security-section" in:slide={{ duration: 200 }}>
-					<p class="section-desc">Protege el acceso a tus datos financieros usando la biometría nativa de tu dispositivo (FaceID, Huella o PIN).</p>
-					
-					<div class="security-card">
-						<div class="security-info">
-							<div class="security-icon-large">{security.isEnabled ? '🔒' : '🔓'}</div>
-							<div>
-								<div class="security-label">Bloqueo Biométrico</div>
-								<div class="security-status-text">
-									{#if !security.isSupported}
-										No soportado en este navegador
-									{:else if security.isEnabled}
-										Activado y Protegido
-									{:else}
-										Desactivado
-									{/if}
-								</div>
-							</div>
-						</div>
-						
-						<button 
-							class="toggle-switch" 
-							class:active={security.isEnabled}
-							class:disabled={!security.isSupported}
-							onclick={() => security.toggle()}
-							disabled={!security.isSupported}
-							aria-label="Alternar bloqueo biométrico"
-						>
-							<div class="switch-handle"></div>
-						</button>
-					</div>
-
-					{#if security.isEnabled}
-						<div class="security-hint" transition:fade>
-							La aplicación se bloqueará automáticamente cada vez que la cierres o refresques.
-						</div>
-					{/if}
 				</div>
 			{/if}
 		</div>
@@ -450,15 +411,17 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		min-height: 250px;
+		min-height: 320px;
 		margin-bottom: 1.5rem;
 	}
 
 	.qr-image {
 		width: 100%;
-		max-width: 250px;
+		max-width: 320px;
 		height: auto;
-		border-radius: 8px;
+		border-radius: 4px;
+		image-rendering: pixelated;
+		display: block;
 	}
 
 	.qr-skeleton {
@@ -604,89 +567,4 @@
 	}
 
 
-	/* Security Styles */
-	.security-section {
-		display: flex;
-		flex-direction: column;
-		gap: 1.5rem;
-	}
-
-	.security-card {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		background: rgba(255, 255, 255, 0.03);
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		padding: 1.25rem;
-		border-radius: 16px;
-	}
-
-	.security-info {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-	}
-
-	.security-icon-large {
-		font-size: 1.5rem;
-	}
-
-	.security-label {
-		font-weight: 600;
-		color: white;
-		font-size: 1rem;
-	}
-
-	.security-status-text {
-		font-size: 0.8rem;
-		color: rgba(160, 160, 200, 0.6);
-	}
-
-	.security-hint {
-		font-size: 0.8rem;
-		color: #3b82f6;
-		background: rgba(59, 130, 246, 0.1);
-		padding: 0.75rem;
-		border-radius: 10px;
-		text-align: center;
-	}
-
-	/* Toggle Switch */
-	.toggle-switch {
-		width: 50px;
-		height: 26px;
-		background: rgba(255, 255, 255, 0.1);
-		border-radius: 20px;
-		position: relative;
-		cursor: pointer;
-		border: none;
-		transition: all 0.3s;
-		padding: 0;
-	}
-
-	.toggle-switch.active {
-		background: #3b82f6;
-		box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
-	}
-
-	.toggle-switch.disabled {
-		opacity: 0.3;
-		cursor: not-allowed;
-	}
-
-	.switch-handle {
-		width: 20px;
-		height: 20px;
-		background: white;
-		border-radius: 50%;
-		position: absolute;
-		top: 3px;
-		left: 3px;
-		transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-	}
-
-	.toggle-switch.active .switch-handle {
-		transform: translateX(24px);
-	}
 </style>

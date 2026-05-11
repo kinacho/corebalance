@@ -20,13 +20,9 @@
 	const displayHoldings = $derived(position.holdings.toString());
 	const displayAvgCost = $derived(position.avgCost.toString());
 
-	// Identificar si esta es la tarjeta de Bitcoin
-	// Identificar si esta es una posición de cripto (para mostrar precio spot si lo tenemos)
 	const isCrypto = $derived(
-		position.asset.ticker.toLowerCase().includes('btc') || 
-		position.asset.ticker.toLowerCase().includes('eth') ||
-		position.asset.name.toLowerCase().includes('bitcoin') ||
-		position.asset.name.toLowerCase().includes('ethereum')
+		['btc', 'eth'].some(t => position.asset.ticker.toLowerCase().includes(t)) || 
+		['bitcoin', 'ethereum'].some(n => position.asset.name.toLowerCase().includes(n))
 	);
 
 	// Determinar el nivel de desviación para el color de estado
@@ -100,7 +96,7 @@
 					<span class="asset-ter" title="Total Expense Ratio">{formatPercent(position.asset.ter)} TER</span>
 					{#if position.lastUpdate}
 						<span class="asset-divider">•</span>
-						<span class="asset-time">{new Date(position.lastUpdate).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</span>
+						<span class="asset-time">{new Date(position.lastUpdate).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false })}</span>
 					{/if}
 				</div>
 			</div>

@@ -13,12 +13,6 @@ export interface Asset {
 	category: AssetCategory; // Categoría a la que pertenece
 }
 
-/** Configuración completa de la cartera de un usuario */
-export interface UserPortfolioConfig {
-	coreAssets: Asset[];
-	satelliteAssets: Asset[];
-	stockAssets: Asset[];
-}
 
 /** Datos de precio obtenidos de la API */
 export interface PriceData {

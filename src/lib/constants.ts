@@ -108,3 +108,12 @@ export const STORAGE_KEY_HOLDINGS = 'corebalance_holdings_v2';
 export const STORAGE_KEY_CONTRIBUTION = 'corebalance_contribution';
 export const STORAGE_KEY_ASSETS = 'corebalance_user_assets';
 
+
+/** Tabs del dashboard */
+export const DASHBOARD_TABS = [
+	{ id: 'assets', label: 'Activos', icon: '📊' },
+	{ id: 'rebalance', label: 'Rebalanceo', icon: '💰' },
+	{ id: 'charts', label: 'Gráficos', icon: '🍩' }
+] as const;
+
+export type TabId = (typeof DASHBOARD_TABS)[number]['id'];

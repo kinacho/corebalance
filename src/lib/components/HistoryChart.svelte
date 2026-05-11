@@ -102,7 +102,7 @@
 							font: { size: 11, weight: 500 },
 							maxRotation: 0,
 							autoSkip: true,
-							maxTicksLimit: 7
+							maxTicksLimit: 10
 						}
 					},
 					y: {

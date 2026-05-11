@@ -40,8 +40,10 @@
 			await storageProvider.importAllData(data);
 
 			success = true;
-			status = '¡Sincronización exitosa!';
-			setTimeout(() => goto('/'), 2000);
+			status = '¡Sincronización exitosa! Redirigiendo...';
+			setTimeout(() => {
+				window.location.href = '/';
+			}, 2000);
 		} catch (e: any) {
 			error = `Error al importar: ${e.message}`;
 		}

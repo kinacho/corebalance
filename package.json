@@ -21,7 +21,6 @@
 		"svelte": "^5.55.2",
 		"svelte-check": "^4.4.6",
 		"tailwindcss": "^4.2.2",
-		"ts-node": "^10.9.2",
 		"typescript": "^6.0.2",
 		"vite": "^8.0.7"
 	},
@@ -30,7 +29,6 @@
 		"dexie": "^4.4.2",
 		"firebase": "^12.12.1",
 		"html5-qrcode": "^2.3.8",
-		"peerjs": "^1.5.5",
 		"qrcode": "^1.5.4",
 		"yahoo-finance2": "^3.14.0"
 	}
