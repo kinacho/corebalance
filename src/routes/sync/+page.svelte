@@ -18,83 +18,93 @@
 		if (isSyncing) return;
 		isSyncing = true;
 		syncState = 'connecting';
-		status = 'Conectando con el PC...';
+		status = 'Conectando con el servidor P2P...';
 		error = null;
 
 		try {
 			const { Peer } = await import('peerjs');
+			console.log('[P2P] Librería cargada. Creando peer...');
+
 			peer = new Peer({
 				debug: 2,
+				serialization: 'json',  // Must match host
 				config: {
 					iceServers: [
 						{ urls: 'stun:stun.l.google.com:19302' },
 						{ urls: 'stun:stun1.l.google.com:19302' },
 						{ urls: 'stun:stun2.l.google.com:19302' },
-						{ urls: 'stun:stun3.l.google.com:19302' },
-						{ urls: 'stun:stun4.l.google.com:19302' }
+						{ urls: 'stun:stun3.l.google.com:19302' }
 					]
 				}
-			});
+			} as any);
+
+			// Timeout for signaling server
+			const signalTimeout = setTimeout(() => {
+				if (syncState === 'connecting') {
+					error = 'No se pudo conectar al servidor P2P. Comprueba tu conexión a internet.';
+					isSyncing = false;
+					if (peer) peer.destroy();
+				}
+			}, 12000);
 
 			peer.on('open', () => {
-				status = `Negociando canal seguro...`;
+				clearTimeout(signalTimeout);
+				console.log('[P2P] Registrado en servidor. Conectando con PC...');
+				status = 'Conectando con el PC...';
 				syncState = 'negotiating';
-				
-				let connectionTimeout = setTimeout(() => {
-					if (syncState !== 'done' && !error) {
-						error = 'La conexión está tardando demasiado. Asegúrate de que el PC tiene el QR abierto.';
+
+				// Timeout for peer connection
+				const connectTimeout = setTimeout(() => {
+					if (syncState === 'negotiating') {
+						error = 'No se pudo conectar con el PC. ¿Está el QR abierto?';
 						isSyncing = false;
 						if (peer) peer.destroy();
 					}
-				}, 15000); // Aumentamos a 15s para redes lentas
+				}, 15000);
 
-				const conn = peer.connect(targetPeerId, {
-					reliable: true // Forzamos modo fiable
-				});
+				const conn = peer.connect(targetPeerId, { reliable: true });
 
 				conn.on('open', () => {
-					console.log('P2P: Conexión abierta. Esperando confirmación del Host...');
+					console.log('[P2P] Canal abierto. Esperando HOST_READY...');
 				});
 
 				conn.on('data', async (data: any) => {
-					if (data.type === 'PING') return;
-					
-					console.log('P2P: Recibido:', data.type);
+					if (!data || !data.type) return;
+					if (data.type === 'PING') { conn.send({ type: 'PONG' }); return; }
+
+					console.log('[P2P] ←', data.type);
 
 					if (data.type === 'HOST_READY') {
-						clearTimeout(connectionTimeout);
+						clearTimeout(connectTimeout);
 						status = 'PC listo. Solicitando datos...';
 						syncState = 'requesting';
-						setTimeout(() => {
-							conn.send({ type: 'REQUEST_DATA' });
-						}, 500);
+						setTimeout(() => conn.send({ type: 'REQUEST_DATA' }), 300);
 					}
 
 					if (data.type === 'SYNC_DATA') {
 						syncState = 'receiving';
-						status = 'Recibiendo datos financieros...';
+						status = 'Datos recibidos. Guardando...';
 						try {
 							if (!storageProvider.importAllData) {
-								throw new Error('Almacenamiento no compatible.');
+								throw new Error('Importación no disponible.');
 							}
-							
 							syncState = 'saving';
 							status = 'Guardando en base de datos local...';
 							await storageProvider.importAllData(data.payload);
-							
-							// Confirmamos al PC que todo ha ido bien
-							conn.send({ type: 'SYNC_COMPLETE' });
-							
+
+							// Confirm reception to host
+							conn.send({ type: 'ACK' });
+
 							success = true;
 							syncState = 'done';
 							status = '¡Sincronización exitosa!';
-							
+
 							setTimeout(() => {
 								if (peer) peer.destroy();
 								goto('/');
 							}, 2000);
 						} catch (e: any) {
-							error = `Error al procesar: ${e.message}`;
+							error = `Error al guardar: ${e.message}`;
 							isSyncing = false;
 						}
 					}
@@ -102,7 +112,7 @@
 
 				conn.on('close', () => {
 					if (!success) {
-						error = 'La conexión se cerró antes de completar la transferencia.';
+						error = 'La conexión se cerró inesperadamente.';
 						isSyncing = false;
 					}
 				});
@@ -114,15 +124,17 @@
 			});
 
 			peer.on('error', (err: any) => {
+				clearTimeout(signalTimeout);
 				error = `Error P2P: ${err.message}`;
 				isSyncing = false;
 			});
 
 		} catch (e: any) {
-			error = `Error fatal: ${e.message}`;
+			error = `Error: ${e.message}`;
 			isSyncing = false;
 		}
 	}
+
 
 	async function startScanner() {
 		if (!browser) return;
