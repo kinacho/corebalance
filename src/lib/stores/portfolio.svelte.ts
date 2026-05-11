@@ -11,7 +11,7 @@ export class PortfolioStore {
 	holdings = $state<HoldingsMap>({});
 	prices = $state<Record<string, PriceData>>({});
 	contribution = $state(0);
-	loading = $state(false);
+	loading = $state(true);
 	error = $state<string | null>(null);
 	timestamp = $state<string | null>(null);
 	user = $state<User | null>(null);
@@ -143,6 +143,18 @@ export class PortfolioStore {
 		this.loadFromStorage();
 		this.initAuth();
 		this.initPolling();
+
+		// Safety timeout: si en 3 segundos no se ha inicializado (por lentitud de la API), 
+		// forzamos la inicialización para mostrar el dashboard con lo que tengamos.
+		if (typeof window !== 'undefined') {
+			setTimeout(() => {
+				if (!this.isInitialized) {
+					console.warn('Initialization timeout - forcing display');
+					this.loading = false;
+					this.isInitialized = true;
+				}
+			}, 3000);
+		}
 	}
 
 	// --- Private Methods ---
@@ -289,25 +301,29 @@ export class PortfolioStore {
 
 	private saveToStorage() {
 		if (typeof localStorage === 'undefined') return;
-		localStorage.setItem(STORAGE_KEY_HOLDINGS, JSON.stringify(this.holdings));
-		localStorage.setItem(STORAGE_KEY_CONTRIBUTION, this.contribution.toString());
-		localStorage.setItem('corebalance_privacy', this.isPrivate.toString());
-		// Guardar configuración de activos en localStorage
-		localStorage.setItem(STORAGE_KEY_ASSETS, JSON.stringify({
-			coreAssets: this.coreAssets,
-			satelliteAssets: this.satelliteAssets,
-			stockAssets: this.stockAssets
-		}));
+		try {
+			localStorage.setItem(STORAGE_KEY_HOLDINGS, JSON.stringify(this.holdings));
+			localStorage.setItem(STORAGE_KEY_CONTRIBUTION, this.contribution.toString());
+			localStorage.setItem('corebalance_privacy', this.isPrivate.toString());
+			// Guardar configuración de activos en localStorage
+			localStorage.setItem(STORAGE_KEY_ASSETS, JSON.stringify({
+				coreAssets: this.coreAssets,
+				satelliteAssets: this.satelliteAssets,
+				stockAssets: this.stockAssets
+			}));
+		} catch (e) {
+			console.warn('Storage save failed (possibly incognito or quota full):', e);
+		}
 		this.saveToCloud();
 	}
 
 	private loadFromStorage() {
 		if (typeof localStorage === 'undefined') return;
 		
-		// Cargar configuración de activos guardada
-		const savedAssets = localStorage.getItem(STORAGE_KEY_ASSETS);
-		if (savedAssets) {
-			try {
+		try {
+			// Cargar configuración de activos guardada
+			const savedAssets = localStorage.getItem(STORAGE_KEY_ASSETS);
+			if (savedAssets) {
 				const parsed = JSON.parse(savedAssets);
 				if (parsed.coreAssets && Array.isArray(parsed.coreAssets)) {
 					this.coreAssets = parsed.coreAssets;
@@ -318,34 +334,30 @@ export class PortfolioStore {
 				if (parsed.stockAssets && Array.isArray(parsed.stockAssets)) {
 					this.stockAssets = parsed.stockAssets;
 				}
-			} catch (e) {
-				console.error('Asset config parse error:', e);
 			}
-		}
 
-		const savedHoldings = localStorage.getItem(STORAGE_KEY_HOLDINGS);
-		if (savedHoldings) {
-			try {
+			const savedHoldings = localStorage.getItem(STORAGE_KEY_HOLDINGS);
+			if (savedHoldings) {
 				const parsed = JSON.parse(savedHoldings);
 				if (Object.keys(parsed).length > 0) {
 					this.holdings = parsed;
 				} else {
 					this.setDemoData();
 				}
-			} catch (e) {
-				console.error('Local storage parse error:', e);
+			} else {
 				this.setDemoData();
 			}
-		} else {
-			this.setDemoData();
-		}
 
-		const savedContribution = localStorage.getItem(STORAGE_KEY_CONTRIBUTION);
-		if (savedContribution) {
-			this.contribution = parseFloat(savedContribution) || 0;
-		}
+			const savedContribution = localStorage.getItem(STORAGE_KEY_CONTRIBUTION);
+			if (savedContribution) {
+				this.contribution = parseFloat(savedContribution) || 0;
+			}
 
-		this.isPrivate = localStorage.getItem('corebalance_privacy') === 'true';
+			this.isPrivate = localStorage.getItem('corebalance_privacy') === 'true';
+		} catch (e) {
+			console.error('Storage access error (possibly incognito):', e);
+			this.setDemoData(); // Fallback a datos demo si falla el storage
+		}
 	}
 
 	// --- Public Actions ---
@@ -383,33 +395,40 @@ export class PortfolioStore {
 	}
 
 	async fetchPrices() {
-		// No mostramos el spinner de "loading" global para refrescos automáticos
-		// para no molestar al usuario mientras edita, a menos que sea el primer fetch
+		// Evitar fetches múltiples simultáneos durante la inicialización
+		if (this.loading && Object.keys(this.prices).length === 0 && this.isInitialized) return;
+
 		const isInitial = Object.keys(this.prices).length === 0;
 		if (isInitial) this.loading = true;
 		
 		this.error = null;
 		try {
 			const tickerList = this.allUserTickers.join(',');
+			if (!tickerList) {
+				// Si no hay tickers, terminamos rápido
+				this.loading = false;
+				this.isInitialized = true;
+				return;
+			}
+			
 			const response = await fetch(`/api/prices?tickers=${encodeURIComponent(tickerList)}&t=${Date.now()}`, { cache: 'no-store' });
 			if (!response.ok) throw new Error(`HTTP ${response.status}`);
 			const data = await response.json();
-			this.prices = data.prices;
-			this.timestamp = data.timestamp;
+			
+			// Asegurar que prices no sea null
+			this.prices = data.prices || {};
+			this.timestamp = data.timestamp || new Date().toISOString();
 
-			// Una vez tenemos precios, actualizamos historia si el usuario está logueado
 			if (this.user) {
 				await this.updateHistoryPoints();
 			}
 		} catch (e) {
-			this.error = e instanceof Error ? e.message : 'Error desconocido';
+			console.error('Fetch prices error:', e);
+			this.error = e instanceof Error ? e.message : 'Error de conexión';
 		} finally {
 			this.loading = false;
 			if (isInitial) {
-				// Pequeño retardo para asegurar que el contenido esté renderizado antes de quitar el splash
-				setTimeout(() => {
-					this.isInitialized = true;
-				}, 800);
+				this.isInitialized = true;
 			}
 		}
 	}
@@ -494,15 +513,19 @@ export class PortfolioStore {
 		if (this.user) return;
 
 		// Cargamos holdings demo para los activos por defecto
-		const defaultHoldings: Record<string, { shares: number, avgCost: number }> = {
-			[DEFAULT_CORE_ASSETS[0].ticker]: { shares: 850.5, avgCost: 10.25 },
-			[DEFAULT_CORE_ASSETS[1].ticker]: { shares: 120.3, avgCost: 9.80 },
-			[DEFAULT_CORE_ASSETS[2].ticker]: { shares: 1540.0, avgCost: 5.45 },
-			[DEFAULT_SATELLITE_ASSETS[0].ticker]: { shares: 1.2, avgCost: 1005.30 },
-			[DEFAULT_SATELLITE_ASSETS[1].ticker]: { shares: 180.0, avgCost: 12.15 },
-			[DEFAULT_STOCK_ASSETS[0].ticker]: { shares: 2500, avgCost: 0.45 },
-			[DEFAULT_STOCK_ASSETS[1].ticker]: { shares: 15000, avgCost: 0.025 }
-		};
+		const defaultHoldings: Record<string, { shares: number, avgCost: number }> = {};
+		
+		// Llenar dinámicamente para evitar errores si cambian las listas por defecto
+		if (DEFAULT_CORE_ASSETS[0]) defaultHoldings[DEFAULT_CORE_ASSETS[0].ticker] = { shares: 10.5, avgCost: 100.25 };
+		if (DEFAULT_CORE_ASSETS[1]) defaultHoldings[DEFAULT_CORE_ASSETS[1].ticker] = { shares: 5.2, avgCost: 80.80 };
+		if (DEFAULT_CORE_ASSETS[2]) defaultHoldings[DEFAULT_CORE_ASSETS[2].ticker] = { shares: 20.0, avgCost: 50.45 };
+		
+		if (DEFAULT_SATELLITE_ASSETS[0]) defaultHoldings[DEFAULT_SATELLITE_ASSETS[0].ticker] = { shares: 100, avgCost: 10.30 };
+		
+		if (DEFAULT_STOCK_ASSETS[0]) defaultHoldings[DEFAULT_STOCK_ASSETS[0].ticker] = { shares: 5, avgCost: 400.45 };
+		if (DEFAULT_STOCK_ASSETS[1]) defaultHoldings[DEFAULT_STOCK_ASSETS[1].ticker] = { shares: 10, avgCost: 180.025 };
+		if (DEFAULT_STOCK_ASSETS[2]) defaultHoldings[DEFAULT_STOCK_ASSETS[2].ticker] = { shares: 2, avgCost: 2500.00 };
+		if (DEFAULT_STOCK_ASSETS[3]) defaultHoldings[DEFAULT_STOCK_ASSETS[3].ticker] = { shares: 15, avgCost: 160.00 };
 
 		this.holdings = defaultHoldings;
 		this.contribution = 500;

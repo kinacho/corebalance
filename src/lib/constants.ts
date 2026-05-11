@@ -22,33 +22,33 @@ export const ASSET_ICONS: Record<string, string> = {
 /** Los tres activos por defecto de la cartera Core (plantilla para nuevos usuarios) */
 export const DEFAULT_CORE_ASSETS: Asset[] = [
 	{
-		ticker: '0P0001XF40.F',
-		name: 'iShares Dev World',
-		isin: 'IE000ZYRH0Q7',
-		targetWeight: 0.90,
+		ticker: 'VHVG.L',
+		name: 'Vanguard FTSE Dev World',
+		isin: 'IE00BK5BQV03',
+		targetWeight: 0.80,
 		color: '#3b82f6',
 		icon: '🌍',
-		ter: 0.0006, // 0.06%
+		ter: 0.0012,
 		category: 'core'
 	},
 	{
-		ticker: '0P0001XF3Z.F',
-		name: 'iShares Emerging',
-		isin: 'IE000QAZP7L2',
-		targetWeight: 0.05,
+		ticker: 'VFEG.L',
+		name: 'Vanguard FTSE Emerging',
+		isin: 'IE00BK5BR733',
+		targetWeight: 0.15,
 		color: '#10b981',
 		icon: '🌱',
-		ter: 0.0016, // 0.16%
+		ter: 0.0022,
 		category: 'core'
 	},
 	{
-		ticker: 'XS2940466316.SG',
-		name: 'iShares Bitcoin',
-		isin: 'XS2940466316',
+		ticker: 'VUSA.L',
+		name: 'Vanguard S&P 500',
+		isin: 'IE00B3XXRP09',
 		targetWeight: 0.05,
 		color: '#f59e0b',
-		icon: '₿',
-		ter: 0.0015, // 0.15%
+		icon: '🇺🇸',
+		ter: 0.0007,
 		category: 'core'
 	}
 ];
@@ -56,23 +56,13 @@ export const DEFAULT_CORE_ASSETS: Asset[] = [
 /** Activos por defecto de la cartera satélite (Renta Fija y Mixta) */
 export const DEFAULT_SATELLITE_ASSETS: Asset[] = [
 	{
-		ticker: '0P0001QKUD.F',
-		name: 'Groupama Trésorerie',
-		isin: 'FR001400CFA4',
+		ticker: 'VAGF.DE',
+		name: 'Vanguard Global Bond',
+		isin: 'IE00BG47KH54',
 		targetWeight: 0,
 		color: '#64748b',
 		icon: '🛡️',
-		ter: 0.0009,
-		category: 'satellite'
-	},
-	{
-		ticker: '0P0001MYMU.F',
-		name: 'Avantage Fund B FI',
-		isin: 'ES0112231016',
-		targetWeight: 0,
-		color: '#8b5cf6',
-		icon: '⚖️',
-		ter: 0.0075,
+		ter: 0.0010,
 		category: 'satellite'
 	}
 ];
@@ -80,22 +70,42 @@ export const DEFAULT_SATELLITE_ASSETS: Asset[] = [
 /** Acciones individuales por defecto */
 export const DEFAULT_STOCK_ASSETS: Asset[] = [
 	{
-		ticker: 'ATCH',
-		name: 'AtlasClear Holdings',
-		isin: 'US1287452056',
+		ticker: 'NVDA',
+		name: 'NVIDIA Corporation',
+		isin: 'US67066G1040',
 		targetWeight: 0,
-		color: '#6366f1',
-		icon: '📈',
+		color: '#76b900',
+		icon: '🤖',
 		ter: 0,
 		category: 'stocks'
 	},
 	{
-		ticker: '34Q0.SG',
-		name: 'Quantum eMotion',
-		isin: 'CA74767K1030',
+		ticker: 'AAPL',
+		name: 'Apple Inc.',
+		isin: 'US0378331005',
 		targetWeight: 0,
-		color: '#ec4899',
-		icon: '⚛️',
+		color: '#a2aaad',
+		icon: '🍎',
+		ter: 0,
+		category: 'stocks'
+	},
+	{
+		ticker: 'GOOGL',
+		name: 'Alphabet Inc.',
+		isin: 'US02079K3059',
+		targetWeight: 0,
+		color: '#4285f4',
+		icon: '🔍',
+		ter: 0,
+		category: 'stocks'
+	},
+	{
+		ticker: 'TSLA',
+		name: 'Tesla, Inc.',
+		isin: 'US88160R1014',
+		targetWeight: 0,
+		color: '#cc0000',
+		icon: '⚡',
 		ter: 0,
 		category: 'stocks'
 	}

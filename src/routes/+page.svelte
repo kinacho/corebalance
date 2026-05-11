@@ -42,7 +42,7 @@
 		const filtered = categories.filter(c => c.value > 0);
 		return {
 			labels: filtered.map(c => c.name),
-			values: filtered.map(c => (c.value / portfolio.globalCapital) * 100),
+			values: filtered.map(c => portfolio.globalCapital > 0 ? (c.value / portfolio.globalCapital) * 100 : 0),
 			colors: filtered.map(c => c.color)
 		};
 	});
@@ -55,7 +55,7 @@
 		];
 		return {
 			labels: allPositions.map(p => p.asset.name),
-			values: allPositions.map(p => (p.totalValue / portfolio.globalCapital) * 100),
+			values: allPositions.map(p => portfolio.globalCapital > 0 ? (p.totalValue / portfolio.globalCapital) * 100 : 0),
 			colors: allPositions.map(p => p.asset.color)
 		};
 	});
