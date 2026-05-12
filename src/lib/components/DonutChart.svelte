@@ -41,6 +41,9 @@
 				responsive: true,
 				maintainAspectRatio: true,
 				cutout: '72%',
+				layout: {
+					padding: 15
+				},
 				plugins: {
 					legend: { display: false },
 					tooltip: {

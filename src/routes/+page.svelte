@@ -437,7 +437,7 @@
     border-radius: 28px;
     box-shadow: 0 12px 48px 0 rgba(0, 0, 0, 0.5);
     margin-bottom: 1.5rem;
-    overflow: hidden;
+    overflow: visible;
   }
 
   .charts-grid {

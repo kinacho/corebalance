@@ -15,6 +15,34 @@
 		{ label: '30D', days: 30 }
 	];
 
+	// Estado para la visibilidad de los datasets
+	let hiddenDatasets = $state<string[]>([]);
+
+	// Cargar preferencias guardadas
+	onMount(() => {
+		const saved = localStorage.getItem('corebalance_hidden_history_lines');
+		if (saved) {
+			try {
+				hiddenDatasets = JSON.parse(saved);
+			} catch (e) {
+				console.error('Error loading hidden lines', e);
+			}
+		}
+	});
+
+	// Guardar preferencias cuando cambian
+	$effect(() => {
+		localStorage.setItem('corebalance_hidden_history_lines', JSON.stringify(hiddenDatasets));
+	});
+
+	function toggleDataset(label: string) {
+		if (hiddenDatasets.includes(label)) {
+			hiddenDatasets = hiddenDatasets.filter(l => l !== label);
+		} else {
+			hiddenDatasets = [...hiddenDatasets, label];
+		}
+	}
+
 	// Sincronizar el gráfico con los datos de la historia
 	$effect(() => {
 		const fullHistory = portfolio.reconstructedHistory;
@@ -37,16 +65,24 @@
 
 			// Dataset 0: Total
 			chart.data.datasets[0].data = history.map(p => transform(p.total, first.total));
+			chart.data.datasets[0].hidden = hiddenDatasets.includes('Total');
+
 			// Dataset 1: Principal
 			chart.data.datasets[1].data = history.map(p => transform(p.core, first.core));
+			chart.data.datasets[1].hidden = hiddenDatasets.includes('Principal');
+
 			// Dataset 2: Acciones
 			chart.data.datasets[2].data = history.map(p => transform(p.stocks, first.stocks));
+			chart.data.datasets[2].hidden = hiddenDatasets.includes('Acciones');
+
 			// Dataset 3: Conservadora
 			chart.data.datasets[3].data = history.map(p => transform(p.satellite, first.satellite));
+			chart.data.datasets[3].hidden = hiddenDatasets.includes('Conservadora');
+
 			// Dataset 4: Invertido
 			if (viewMode === 'value') {
 				chart.data.datasets[4].data = history.map(() => portfolio.globalInvested);
-				chart.data.datasets[4].hidden = false;
+				chart.data.datasets[4].hidden = hiddenDatasets.includes('Invertido');
 			} else {
 				chart.data.datasets[4].hidden = true;
 			}
@@ -200,27 +236,47 @@
 <div class="chart-container">
 	<div class="chart-header">
 		<div class="legend">
-			<div class="legend-item">
+			<button 
+				class="legend-item" 
+				class:is-hidden={hiddenDatasets.includes('Total')}
+				onclick={() => toggleDataset('Total')}
+			>
 				<span class="dot total"></span>
 				<span class="label">Total</span>
-			</div>
-			<div class="legend-item">
+			</button>
+			<button 
+				class="legend-item" 
+				class:is-hidden={hiddenDatasets.includes('Principal')}
+				onclick={() => toggleDataset('Principal')}
+			>
 				<span class="dot core"></span>
 				<span class="label">Principal</span>
-			</div>
-			<div class="legend-item">
+			</button>
+			<button 
+				class="legend-item" 
+				class:is-hidden={hiddenDatasets.includes('Acciones')}
+				onclick={() => toggleDataset('Acciones')}
+			>
 				<span class="dot stocks"></span>
 				<span class="label">Acciones</span>
-			</div>
-			<div class="legend-item">
+			</button>
+			<button 
+				class="legend-item" 
+				class:is-hidden={hiddenDatasets.includes('Conservadora')}
+				onclick={() => toggleDataset('Conservadora')}
+			>
 				<span class="dot satellite"></span>
 				<span class="label">Conservadora</span>
-			</div>
+			</button>
 			{#if viewMode === 'value'}
-				<div class="legend-item">
+				<button 
+					class="legend-item" 
+					class:is-hidden={hiddenDatasets.includes('Invertido')}
+					onclick={() => toggleDataset('Invertido')}
+				>
 					<span class="line invested"></span>
 					<span class="label">Invertido</span>
-				</div>
+				</button>
 			{/if}
 		</div>
 
@@ -320,6 +376,25 @@
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
+		background: transparent;
+		border: none;
+		cursor: pointer;
+		padding: 0.2rem 0.4rem;
+		border-radius: 6px;
+		transition: all 0.2s ease;
+	}
+
+	.legend-item:hover {
+		background: rgba(255, 255, 255, 0.05);
+	}
+
+	.legend-item.is-hidden {
+		opacity: 0.3;
+		filter: grayscale(1);
+	}
+
+	.legend-item.is-hidden .label {
+		text-decoration: line-through;
 	}
 
 	.dot {
