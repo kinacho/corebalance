@@ -164,6 +164,7 @@ export class PortfolioStore {
 	get ethPrice() { return this.prices['ETH-EUR']?.price || 0; }
 	get eurUsd() { return this.prices['EURUSD=X']?.price || 1.10; }
 	get eurCad() { return this.prices['EURCAD=X']?.price || 1.50; }
+	get isLocal() { return storageProvider.isLocal; }
 
 	constructor() {
 		this.loadFromStorage();
@@ -195,6 +196,7 @@ export class PortfolioStore {
 	private pollingIntervalId: ReturnType<typeof setInterval> | undefined;
 	private visibilityHandler: (() => void) | undefined;
 	private authUnsubscribe: (() => void) | undefined;
+	private isFetching = false;
 
 	private initPolling() {
 		if (typeof window === 'undefined') return;
@@ -444,9 +446,10 @@ export class PortfolioStore {
 	}
 
 	async fetchPrices() {
-		// Evitar fetches múltiples simultáneos durante la inicialización
-		if (this.loading && Object.keys(this.prices).length === 0 && this.isInitialized) return;
+		// Bloquear si ya hay una petición en curso o estamos inicializando
+		if (this.isFetching || (this.loading && Object.keys(this.prices).length === 0 && this.isInitialized)) return;
 
+		this.isFetching = true;
 		const isInitial = Object.keys(this.prices).length === 0;
 		if (isInitial) this.loading = true;
 		
@@ -457,6 +460,7 @@ export class PortfolioStore {
 				// Si no hay tickers, terminamos rápido
 				this.loading = false;
 				this.isInitialized = true;
+				this.isFetching = false;
 				return;
 			}
 			
@@ -476,6 +480,7 @@ export class PortfolioStore {
 			this.error = e instanceof Error ? e.message : 'Error de conexión';
 		} finally {
 			this.loading = false;
+			this.isFetching = false;
 			if (isInitial) {
 				this.isInitialized = true;
 			}

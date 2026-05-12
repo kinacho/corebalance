@@ -122,6 +122,33 @@
 			</svg>
 		</button>
 
+		{#if !portfolio.isLocal}
+			<div class="user-zone">
+				{#if portfolio.user}
+					<button 
+						class="action-btn user-btn" 
+						onclick={() => portfolio.logout()}
+						title="Cerrar sesión ({portfolio.user.email})"
+					>
+						{#if portfolio.user.photoURL}
+							<img src={portfolio.user.photoURL} alt="User" class="user-avatar" />
+						{:else}
+							<span class="user-initial">{portfolio.user.email?.[0].toUpperCase()}</span>
+						{/if}
+					</button>
+				{:else}
+					<button 
+						class="login-pill" 
+						onclick={() => portfolio.login()}
+					>
+						<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2.5">
+							<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M13.8 12H3" />
+						</svg>
+						<span>Entrar</span>
+					</button>
+				{/if}
+			</div>
+		{/if}
 	</div>
 
 	<!-- Loading Bar -->
@@ -277,6 +304,56 @@
 	@keyframes spin {
 		from { transform: rotate(0deg); }
 		to { transform: rotate(360deg); }
+	}
+
+	/* User Zone */
+	.user-zone {
+		margin-left: 0.25rem;
+	}
+
+	.login-pill {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.5rem 1rem;
+		background: #3b82f6;
+		color: white;
+		border: none;
+		border-radius: 100px;
+		font-weight: 700;
+		font-size: 0.85rem;
+		cursor: pointer;
+		transition: all 0.2s;
+		box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+	}
+
+	.login-pill:hover {
+		background: #2563eb;
+		transform: translateY(-1px);
+		box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+	}
+
+	.login-pill:active {
+		transform: translateY(0);
+	}
+
+	.user-btn {
+		overflow: hidden;
+		padding: 0;
+		border-color: rgba(59, 130, 246, 0.3);
+		background: rgba(59, 130, 246, 0.1);
+	}
+
+	.user-avatar {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.user-initial {
+		font-weight: 800;
+		color: #3b82f6;
+		font-size: 1rem;
 	}
 
 	/* Loading Bar */
