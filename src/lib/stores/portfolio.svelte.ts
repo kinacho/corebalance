@@ -273,6 +273,8 @@ export class PortfolioStore {
 					this.stockAssets = data.stockAssets;
 				}
 			} else if (Object.keys(this.holdings).length > 0) {
+				// MIGRACIÓN SILENCIOSA: La nube está vacía pero hay datos en local
+				console.log('CoreBalance: Migrando datos locales a la nube...');
 				await this.saveToCloud();
 			}
 			
@@ -295,6 +297,18 @@ export class PortfolioStore {
 			if (points.length > 0) {
 				this.history = points;
 				this.calculateDailyChange();
+			} else {
+				// MIGRACIÓN DE HISTORIAL: Si no hay en la nube, mirar en la DB local
+				const { localDB } = await import('$lib/db/LocalDBStorage');
+				if (localDB) {
+					const localHistory = await localDB.history.get('local_user');
+					if (localHistory && localHistory.points.length > 0) {
+						console.log('CoreBalance: Migrando historial local a la nube...');
+						this.history = localHistory.points;
+						this.calculateDailyChange();
+						await storageProvider.saveHistory(this.user.uid, this.history);
+					}
+				}
 			}
 		} catch (e) {
 			console.error('History load error:', e);

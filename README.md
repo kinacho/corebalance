@@ -1,30 +1,38 @@
-# ⚖️ CoreBalance Portfolio Dashboard
+# 💎 CoreBalance — Portfolio Dashboard & Rebalance
 
-Dashboard profesional, premium y responsivo (PWA) para el seguimiento, rebalanceo y control histórico de carteras de inversión complejas. **Privado por defecto y local-first.**
+[![Svelte 5](https://img.shields.io/badge/Svelte-5_Runes-FF3E00?logo=svelte)](https://svelte.dev/)
+[![PWA](https://img.shields.io/badge/PWA-Ready-00a8cc?logo=pwa)](https://vite-pwa-org.netlify.app/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## 🚀 Características Principales
+**CoreBalance** es una herramienta avanzada de gestión de carteras de inversión diseñada bajo la filosofía *local-first*. Permite visualizar, analizar y rebalancear tu patrimonio con una estética de terminal financiera premium, manteniendo el control total de tus datos.
 
-- **Privacidad Total (Local-First)**: Tus datos no se envían a ningún servidor por defecto. Se almacenan de forma segura en tu propio navegador usando IndexedDB.
-- **Sincronización Instantánea por QR**: Transfiere tus datos entre dispositivos de forma directa y 100% offline. Los datos se comprimen y viajan directamente en el código QR. Sin servidores de terceros, sin nubes, sin esperas.
-- **Backups Manuales**: Exporta e importa tu configuración y datos históricos en archivos JSON con un solo clic para tener siempre una copia de seguridad física.
-- **Diseño Premium & Glassmorphism**: Interfaz moderna, elegante y fluida con transiciones suaves, diseño adaptativo (mobile-first a large-desktop) y secciones plegables inteligentes.
-- **Progressive Web App (PWA)**: Instalable como una aplicación nativa en iOS y Android, con soporte offline y funcionamiento a pantalla completa.
-- **Soporte Multi-Cartera & Multi-Divisa**: 
-  - Gestión de activos en **EUR, USD y CAD** con tipos de cambio en tiempo real.
-  - Seguimiento de ETFs, Acciones y Cripto (BTC/ETH).
-- **Métricas Avanzadas**: 
-  - Cotizaciones en tiempo real via API.
-  - Cálculo de YTD (Year-To-Date) automático.
-  - Gráficos interactivos de distribución y evolución histórica del patrimonio.
+![CoreBalance Preview](https://github.com/kinacho/Rebalanceador-90-5-5/raw/main/static/pwa-512x512.png)
+
+## ✨ Características Principales
+
+- **Visualización Avanzada**: Gráficos interactivos de tarta y evolución histórica (Chart.js) con leyendas persistentes.
+- **Modo Rendimiento vs Valor**: Alterna instantáneamente entre ver tu evolución en euros o en porcentaje de rentabilidad.
 - **Motor de Rebalanceo**: Calculadora inteligente que optimiza tus nuevas aportaciones para mantener tu estrategia objetivo.
+- **Privacidad "On-the-fly"**: Oculta todos los valores monetarios con un solo clic para entornos públicos.
+- **Sincronización P2P por QR**: Transfiere toda tu cartera entre dispositivos sin pasar por ningún servidor, mediante compresión nativa (Deflate).
+- **PWA (Progressive Web App)**: Instálalo en tu escritorio o móvil como una aplicación nativa, con soporte offline.
 
 ## 🛠️ Stack Tecnológico
 
-- **Framework**: [SvelteKit](https://svelte.dev/) (Svelte 5 con Runes)
-- **Base de Datos Local**: [Dexie.js](https://dexie.org/) (IndexedDB)
-- **Compresión de Datos**: Native Compression Streams API (Deflate)
-- **Gráficos**: [Chart.js](https://www.chartjs.org/)
-- **API de Mercados**: Yahoo Finance
+- **Frontend**: [Svelte 5](https://svelte.dev/) (Runes) + Vite.
+- **Almacenamiento Local**: [Dexie.js](https://dexie.org/) (IndexedDB) para una persistencia robusta en el navegador.
+- **Persistencia en la Nube (Opcional)**: Integración lista para [Firebase](https://firebase.google.com/) (Auth + Firestore).
+- **Gráficos**: [Chart.js](https://www.chartjs.org/) con configuraciones personalizadas de glassmorphism.
+- **Datos en Tiempo Real**: API híbrida (Yahoo Finance + Financial Times Scraping) para máxima fiabilidad.
+
+## 🛡️ Seguridad y Robustez (Producción Ready)
+
+Tras una auditoría exhaustiva, CoreBalance incorpora:
+
+- **Rate Limiting**: Endpoints de API protegidos contra abusos mediante limitación de peticiones por IP.
+- **Validación Estricta**: Sanitización de tickers y validación de esquemas JSON/QR antes de cualquier importación.
+- **Aislamiento de Memoria**: Sistema de gestión de caché con límites automáticos para prevenir fugas de recursos.
+- **Arquitectura Local-First**: Tus datos financieros viven en tu dispositivo. Solo viajan a la nube si habilitas explícitamente Firebase.
 
 ## 📦 Instalación y Configuración
 
@@ -39,12 +47,10 @@ Dashboard profesional, premium y responsivo (PWA) para el seguimiento, rebalance
    npm install
    ```
 
-3. **Variables de Entorno (Opcional)**:
-   CoreBalance funciona de forma local sin configuración. Si deseas habilitar la persistencia opcional en la nube con Firebase, renombra `.env.example` a `.env` y configura tus credenciales:
+3. **Configuración (Opcional)**:
+   CoreBalance funciona de forma local por defecto. Si deseas habilitar la persistencia en Firebase, renombra `.env.example` a `.env` y activa:
    ```env
-   PUBLIC_USE_FIREBASE=false  # Cambia a true para usar Firebase
-   VITE_FIREBASE_API_KEY="..."
-   # ... otras variables de Firebase
+   PUBLIC_USE_FIREBASE=true
    ```
 
 4. **Entorno de Desarrollo**:
@@ -52,19 +58,11 @@ Dashboard profesional, premium y responsivo (PWA) para el seguimiento, rebalance
    npm run dev
    ```
 
-## 🔄 Cómo sincronizar dispositivos
+## 🔄 Sincronización sin Servidores
 
-1. En tu ordenador, pulsa el icono de **Sincronización** (Monitor + Móvil) en la cabecera.
-2. Ve a la pestaña **Código QR (P2P)**.
-3. El sistema comprimirá tus datos y generará un QR único.
-4. Abre la cámara de tu móvil y escanea el código.
-5. El navegador se abrirá, detectará los datos y los importará automáticamente en tu móvil.
-
-## 🛡️ Seguridad y Privacidad
-
-- **Modo Privado**: Oculta los valores monetarios de tu cartera con un clic para poder usar la app en lugares públicos de forma discreta.
-- **Sin Dependencias de Red**: La sincronización no requiere servidores externos (excepto para cotizaciones de precios), garantizando que tus datos financieros nunca viajen por internet si no lo deseas.
-- **Cero Rastreadores**: No hay analíticas, telemetría ni cookies de terceros. Tus datos financieros son 100% tuyos.
+1. En el dispositivo de origen, pulsa el icono de **Sincronización** en la cabecera.
+2. Selecciona la pestaña **Código QR (P2P)**.
+3. Escanea el código con tu móvil: el sistema detectará el hash comprimido e importará los datos al instante.
 
 ---
-*Desarrollado para uso personal. Este software no proporciona asesoramiento financiero. Úsalo bajo tu propia responsabilidad.*
+*Desarrollado con ❤️ para inversores inconformistas. Este software no proporciona asesoramiento financiero. Úsalo bajo tu propia responsabilidad.*
