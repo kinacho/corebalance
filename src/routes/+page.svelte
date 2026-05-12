@@ -1,445 +1,568 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import Header from '$lib/components/Header.svelte';
-	import AssetCard from '$lib/components/AssetCard.svelte';
-	import PortfolioSection from '$lib/components/PortfolioSection.svelte';
-	import HeroSummary from '$lib/components/HeroSummary.svelte';
-	import DonutChart from '$lib/components/DonutChart.svelte';
-	import HistoryChart from '$lib/components/HistoryChart.svelte';
-	import RebalancePanel from '$lib/components/RebalancePanel.svelte';
-	import ManageAssets from '$lib/components/ManageAssets.svelte';
-	import Projections from '$lib/components/Projections.svelte';
-	import PaypalDonation from '$lib/components/PaypalDonation.svelte';
-	import { portfolio } from '$lib/stores/portfolio.svelte';
-	import { formatEUR, formatPercent } from '$lib/utils';
-	import { DASHBOARD_TABS, type TabId } from '$lib/constants';
+  import { onMount } from "svelte";
+  import Header from "$lib/components/Header.svelte";
+  import AssetCard from "$lib/components/AssetCard.svelte";
+  import PortfolioSection from "$lib/components/PortfolioSection.svelte";
+  import HeroSummary from "$lib/components/HeroSummary.svelte";
+  import DonutChart from "$lib/components/DonutChart.svelte";
+  import HistoryChart from "$lib/components/HistoryChart.svelte";
+  import RebalancePanel from "$lib/components/RebalancePanel.svelte";
+  import ManageAssets from "$lib/components/ManageAssets.svelte";
+  import Projections from "$lib/components/Projections.svelte";
+  import PaypalDonation from "$lib/components/PaypalDonation.svelte";
+  import { portfolio } from "$lib/stores/portfolio.svelte";
+  import { formatEUR, formatPercent } from "$lib/utils";
+  import { DASHBOARD_TABS, type TabId } from "$lib/constants";
 
-	// Efecto para el tema dinámico
-	$effect(() => {
-		const mood = portfolio.moodColor;
-		const root = document.documentElement;
-		
-		// Generar variantes del color de humor para el degradado
-		root.style.setProperty('--bg-mesh-1', `${mood}33`); // 20% opacidad
-		root.style.setProperty('--bg-mesh-2', '#6366f122');
-		root.style.setProperty('--bg-mesh-3', `${mood}22`);
-		root.style.setProperty('--bg-mesh-4', '#3b82f622');
-		root.style.setProperty('--bg-mesh-5', `${mood}22`);
-		root.style.setProperty('--bg-mesh-6', '#f59e0b11');
-	});
+  // Efecto para el tema dinámico
+  $effect(() => {
+    const mood = portfolio.moodColor;
+    const root = document.documentElement;
 
-	// --- State ---
-	let activeTab = $state<TabId>('assets');
-	let showManageAssets = $state(false);
+    // Generar variantes del color de humor para el degradado
+    root.style.setProperty("--bg-mesh-1", `${mood}33`); // 20% opacidad
+    root.style.setProperty("--bg-mesh-2", "#6366f122");
+    root.style.setProperty("--bg-mesh-3", `${mood}22`);
+    root.style.setProperty("--bg-mesh-4", "#3b82f622");
+    root.style.setProperty("--bg-mesh-5", `${mood}22`);
+    root.style.setProperty("--bg-mesh-6", "#f59e0b11");
+  });
 
-	// --- Derived Data for Charts ---
-	const categoryChartData = $derived.by(() => {
-		const categories = [
-			{ name: `Core (${portfolio.targetLabel})`, value: portfolio.portfolioState.totalCapital, color: '#3b82f6' },
-			{ name: 'Acciones', value: portfolio.stockState.totalCapital, color: '#10b981' },
-			{ name: 'Conservadora', value: portfolio.satelliteState.totalCapital, color: '#f59e0b' }
-		];
-		const filtered = categories.filter(c => c.value > 0);
-		return {
-			labels: filtered.map(c => c.name),
-			values: filtered.map(c => portfolio.globalCapital > 0 ? (c.value / portfolio.globalCapital) * 100 : 0),
-			colors: filtered.map(c => c.color)
-		};
-	});
+  // --- State ---
+  let activeTab = $state<TabId>("assets");
+  let showManageAssets = $state(false);
+  let tabsEl = $state<HTMLElement | null>(null);
+  let scrollAnchor = $state<HTMLElement | null>(null);
 
-	const detailedChartData = $derived.by(() => {
-		const allPositions = [
-			...portfolio.portfolioState.positions,
-			...portfolio.stockState.positions,
-			...portfolio.satelliteState.positions
-		];
-		return {
-			labels: allPositions.map(p => p.asset.name),
-			values: allPositions.map(p => portfolio.globalCapital > 0 ? (p.totalValue / portfolio.globalCapital) * 100 : 0),
-			colors: allPositions.map(p => p.asset.color)
-		};
-	});
+  function switchTab(id: TabId) {
+    activeTab = id;
+    // Scroll up on mobile to the start of the section
+    if (window.innerWidth < 1024) {
+      setTimeout(() => {
+        if (scrollAnchor) {
+          const headerHeight = 64;
+          const elementPosition =
+            scrollAnchor.getBoundingClientRect().top + window.pageYOffset;
+          const offsetPosition = elementPosition - headerHeight;
 
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth",
+          });
+        }
+      }, 50);
+    }
+  }
 
+  // --- Derived Data for Charts ---
+  const categoryChartData = $derived.by(() => {
+    const categories = [
+      {
+        name: `Core (${portfolio.targetLabel})`,
+        value: portfolio.portfolioState.totalCapital,
+        color: "#3b82f6",
+      },
+      {
+        name: "Acciones",
+        value: portfolio.stockState.totalCapital,
+        color: "#10b981",
+      },
+      {
+        name: "Conservadora",
+        value: portfolio.satelliteState.totalCapital,
+        color: "#f59e0b",
+      },
+    ];
+    const filtered = categories.filter((c) => c.value > 0);
+    return {
+      labels: filtered.map((c) => c.name),
+      values: filtered.map((c) =>
+        portfolio.globalCapital > 0
+          ? (c.value / portfolio.globalCapital) * 100
+          : 0,
+      ),
+      colors: filtered.map((c) => c.color),
+    };
+  });
 
-	const coreActualChartData = $derived.by(() => {
-		const positions = portfolio.portfolioState.positions;
-		const total = portfolio.portfolioState.totalCapital;
-		return {
-			labels: positions.map(p => p.asset.name),
-			values: positions.map(p => total > 0 ? (p.totalValue / total) * 100 : 0),
-			colors: positions.map(p => p.asset.color)
-		};
-	});
+  const detailedChartData = $derived.by(() => {
+    const allPositions = [
+      ...portfolio.portfolioState.positions,
+      ...portfolio.stockState.positions,
+      ...portfolio.satelliteState.positions,
+    ];
+    return {
+      labels: allPositions.map((p) => p.asset.name),
+      values: allPositions.map((p) =>
+        portfolio.globalCapital > 0
+          ? (p.totalValue / portfolio.globalCapital) * 100
+          : 0,
+      ),
+      colors: allPositions.map((p) => p.asset.color),
+    };
+  });
 
-	// --- Lifecycle ---
-	onMount(() => {
-		portfolio.fetchPrices();
-	});
+  const coreActualChartData = $derived.by(() => {
+    const positions = portfolio.portfolioState.positions;
+    const total = portfolio.portfolioState.totalCapital;
+    return {
+      labels: positions.map((p) => p.asset.name),
+      values: positions.map((p) =>
+        total > 0 ? (p.totalValue / total) * 100 : 0,
+      ),
+      colors: positions.map((p) => p.asset.color),
+    };
+  });
+
+  // --- Lifecycle ---
+  onMount(() => {
+    portfolio.fetchPrices();
+  });
 </script>
 
 <svelte:head>
-	<title>CoreBalance — Dashboard de Inversión</title>
-	<meta name="description" content="Dashboard de inversión personalizable con rebalanceo automático" />
-	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>CoreBalance — Dashboard de Inversión</title>
+  <meta
+    name="description"
+    content="Dashboard de inversión personalizable con rebalanceo automático"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
 </svelte:head>
 
 {#if showManageAssets}
-	<ManageAssets onClose={() => showManageAssets = false} />
+  <ManageAssets onClose={() => (showManageAssets = false)} />
 {/if}
 
 <div class="app-container" class:privacy-mode={portfolio.isPrivate}>
-	<Header 
-		timestamp={portfolio.timestamp} 
-		loading={portfolio.loading} 
-		isPrivate={portfolio.isPrivate}
-		onRefresh={() => portfolio.fetchPrices()} 
-		onTogglePrivacy={() => portfolio.togglePrivacy()}
-		onManageAssets={() => showManageAssets = true}
-	/>
+  <Header
+    timestamp={portfolio.timestamp}
+    loading={portfolio.loading}
+    isPrivate={portfolio.isPrivate}
+    onRefresh={() => portfolio.fetchPrices()}
+    onTogglePrivacy={() => portfolio.togglePrivacy()}
+    onManageAssets={() => (showManageAssets = true)}
+  />
 
-	<main class="main-content">
-		<!-- Notifications Area -->
-		{#if portfolio.error}
-			<div class="error-banner" role="alert">
-				<span class="error-icon">⚠️</span>
-				<div class="error-text">
-					<strong>Error de conexión</strong>
-					<p>{portfolio.error}</p>
-				</div>
-				<button class="error-retry" onclick={() => portfolio.fetchPrices()}>Reintentar</button>
-			</div>
-		{/if}
+  <main class="main-content">
+    <!-- Notifications Area -->
+    {#if portfolio.error}
+      <div class="error-banner" role="alert">
+        <span class="error-icon">⚠️</span>
+        <div class="error-text">
+          <strong>Error de conexión</strong>
+          <p>{portfolio.error}</p>
+        </div>
+        <button class="error-retry" onclick={() => portfolio.fetchPrices()}
+          >Reintentar</button
+        >
+      </div>
+    {/if}
 
-		<!-- Hero Stats Section -->
-		<HeroSummary />
+    <!-- Hero Stats Section -->
+    <HeroSummary />
 
-		<!-- Navigation (Mobile Only) -->
-		<nav class="mobile-tabs">
-			{#each DASHBOARD_TABS as tab}
-				<button 
-					class="tab-btn" 
-					class:active={activeTab === tab.id} 
-					onclick={() => activeTab = tab.id}
-				>
-					<span class="tab-icon">{tab.icon}</span>
-					<span class="tab-label">{tab.label}</span>
-				</button>
-			{/each}
-		</nav>
+    <!-- Navigation (Mobile Only) -->
+    <div bind:this={scrollAnchor}></div>
+    <div class="tabs-sticky-nav" bind:this={tabsEl}>
+      <nav class="mobile-tabs">
+        {#each DASHBOARD_TABS as tab}
+          <button
+            class="tab-btn"
+            class:active={activeTab === tab.id}
+            onclick={() => switchTab(tab.id)}
+          >
+            <span class="tab-icon">{tab.icon}</span>
+            <span class="tab-label">{tab.label}</span>
+          </button>
+        {/each}
+      </nav>
+    </div>
 
-		<!-- History Chart Section -->
-		<section class="history-section card" class:tab-hidden={activeTab !== 'charts'}>
-			<div class="section-header">
-				<h3 class="section-title">Evolución del Patrimonio</h3>
-			</div>
-			<HistoryChart />
-		</section>
+    <!-- History Chart Section -->
+    <section
+      class="history-section card"
+      class:tab-hidden={activeTab !== "charts"}
+    >
+      <div class="section-header">
+        <h3 class="section-title">Evolución del Patrimonio</h3>
+      </div>
+      <HistoryChart />
+    </section>
 
-		<!-- Charts Row (Desktop: Horizontal, Mobile: Swipe Carousel) -->
-		<section class="desktop-charts-section" class:tab-hidden={activeTab !== 'charts'}>
-			<div class="charts-row-card card">
-				<div class="charts-mobile-hint">
-					<span>← Desliza para ver más →</span>
-				</div>
-				<div class="charts-grid">
-					<div class="chart-box">
-						<h4 class="chart-label">Estrategia actual</h4>
-						<DonutChart data={coreActualChartData} />
-					</div>
-					<div class="chart-box">
-						<h4 class="chart-label">Peso Global (Categorías)</h4>
-						<DonutChart data={categoryChartData} />
-					</div>
-					<div class="chart-box">
-						<h4 class="chart-label">Detalle Global</h4>
-						<DonutChart data={detailedChartData} />
-					</div>
-				</div>
-			</div>
-		</section>
+    <!-- Charts Row (Desktop: Horizontal, Mobile: Swipe Carousel) -->
+    <section
+      class="desktop-charts-section"
+      class:tab-hidden={activeTab !== "charts"}
+    >
+      <div class="charts-row-card card">
+        <div class="charts-mobile-hint">
+          <span>← Desliza para ver más →</span>
+        </div>
+        <div class="charts-grid">
+          <div class="chart-box">
+            <h4 class="chart-label">Estrategia actual</h4>
+            <DonutChart data={coreActualChartData} />
+          </div>
+          <div class="chart-box">
+            <h4 class="chart-label">Peso Global (Categorías)</h4>
+            <DonutChart data={categoryChartData} />
+          </div>
+          <div class="chart-box">
+            <h4 class="chart-label">Detalle Global</h4>
+            <DonutChart data={detailedChartData} />
+          </div>
+        </div>
+      </div>
+    </section>
 
-		<!-- Content Grid -->
-		<div class="dashboard-grid">
-			<!-- Assets Column -->
-			<section class="assets-section" class:tab-hidden={activeTab !== 'assets'}>
-				<PortfolioSection 
-					title={`Cartera Principal (${portfolio.targetLabel})`} 
-					portfolioState={portfolio.portfolioState} 
-					loading={portfolio.loading} 
-					skeletonCount={portfolio.coreAssets.length || 3} 
-				/>
-				
-				<PortfolioSection 
-					title="Acciones Individuales" 
-					portfolioState={portfolio.stockState} 
-					loading={portfolio.loading} 
-					skeletonCount={portfolio.stockAssets.length || 2} 
-					marginTop={true} 
-				/>
+    <!-- Content Grid -->
+    <div class="dashboard-grid">
+      <!-- Assets Column -->
+      <section class="assets-section" class:tab-hidden={activeTab !== "assets"}>
+        <PortfolioSection
+          title={`Cartera Principal (${portfolio.targetLabel})`}
+          portfolioState={portfolio.portfolioState}
+          loading={portfolio.loading}
+          skeletonCount={portfolio.coreAssets.length || 3}
+        />
 
-				<PortfolioSection 
-					title="Cartera Conservadora" 
-					portfolioState={portfolio.satelliteState} 
-					loading={portfolio.loading} 
-					skeletonCount={portfolio.satelliteAssets.length || 2} 
-					marginTop={true} 
-				/>
-			</section>
+        <PortfolioSection
+          title="Acciones Individuales"
+          portfolioState={portfolio.stockState}
+          loading={portfolio.loading}
+          skeletonCount={portfolio.stockAssets.length || 2}
+          marginTop={true}
+        />
 
-			<!-- Side Column: Tools & Charts -->
-			<aside class="sidebar">
-				<div class="sidebar-item" class:tab-hidden={activeTab !== 'rebalance'}>
-					<RebalancePanel 
-						result={portfolio.rebalanceResult} 
-						contribution={portfolio.contribution} 
-						onContributionChange={(val) => portfolio.updateContribution(val)} 
-					/>
-				</div>
-				
-				<div class="sidebar-item" class:tab-hidden={activeTab !== 'rebalance'}>
-					<Projections />
-				</div>
-			</aside>
-		</div>
+        <PortfolioSection
+          title="Cartera Conservadora"
+          portfolioState={portfolio.satelliteState}
+          loading={portfolio.loading}
+          skeletonCount={portfolio.satelliteAssets.length || 2}
+          marginTop={true}
+        />
+      </section>
 
-		<footer class="app-footer">
-			<PaypalDonation />
-			<p>CoreBalance · {new Date().getFullYear()}</p>
-		</footer>
-	</main>
+      <!-- Side Column: Tools & Charts -->
+      <aside class="sidebar">
+        <div class="sidebar-item" class:tab-hidden={activeTab !== "rebalance"}>
+          <RebalancePanel
+            result={portfolio.rebalanceResult}
+            contribution={portfolio.contribution}
+            onContributionChange={(val) => portfolio.updateContribution(val)}
+          />
+        </div>
+
+        <div class="sidebar-item" class:tab-hidden={activeTab !== "rebalance"}>
+          <Projections />
+        </div>
+      </aside>
+    </div>
+
+    <footer class="app-footer">
+      <PaypalDonation />
+      <p>CoreBalance · {new Date().getFullYear()}</p>
+    </footer>
+  </main>
 </div>
 
 <style>
-	:global(body) {
-		color: #f0f0ff;
-	}
+  :global(body) {
+    color: #f0f0ff;
+  }
 
-	.app-container {
-		min-height: 100dvh;
-	}
+  .app-container {
+    min-height: 100dvh;
+  }
 
-	.main-content {
-		max-width: 1140px;
-		margin: 0 auto;
-		padding: 0.75rem;
-		padding-bottom: 2rem;
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-	}
+  .main-content {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 0.75rem;
+    padding-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
 
-	@media (min-width: 768px) {
-		.main-content {
-			padding: 1.5rem;
-			gap: 1.25rem;
-		}
-	}
+  @media (min-width: 768px) {
+    .main-content {
+      padding: 1.5rem;
+      gap: 1.25rem;
+    }
+  }
 
-	/* --- Error Banner --- */
-	.error-banner {
-		display: flex;
-		align-items: center;
-		gap: 0.75rem;
-		padding: 1rem;
-		background: rgba(239, 68, 68, 0.1);
-		border: 1px solid rgba(239, 68, 68, 0.2);
-		border-radius: 14px;
-		color: #fca5a5;
-	}
+  /* --- Error Banner --- */
+  .error-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 14px;
+    color: #fca5a5;
+  }
 
-	.error-text strong { display: block; font-size: 0.85rem; }
-	.error-text p { margin: 0; font-size: 0.75rem; opacity: 0.7; }
+  .error-text strong {
+    display: block;
+    font-size: 0.85rem;
+  }
+  .error-text p {
+    margin: 0;
+    font-size: 0.75rem;
+    opacity: 0.7;
+  }
 
-	.error-retry {
-		margin-left: auto;
-		padding: 0.5rem 0.85rem;
-		background: rgba(239, 68, 68, 0.15);
-		border: 1px solid rgba(239, 68, 68, 0.3);
-		border-radius: 10px;
-		color: inherit;
-		font-size: 0.75rem;
-		font-weight: 700;
-		cursor: pointer;
-	}
+  .error-retry {
+    margin-left: auto;
+    padding: 0.5rem 0.85rem;
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 10px;
+    color: inherit;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
 
+  /* --- Navigation (Mobile) --- */
+  .tabs-sticky-nav {
+    position: sticky;
+    top: 4rem; /* Debajo del header */
+    z-index: 90;
+    background: linear-gradient(to bottom, #05050a 60%, transparent);
+    margin: -0.5rem -0.75rem 1.5rem -0.75rem;
+    padding: 0.75rem 0.75rem 1.5rem 0.75rem;
+    pointer-events: none; /* Dejar pasar clics fuera de los botones */
+  }
 
+  @media (min-width: 1024px) {
+    .tabs-sticky-nav {
+      display: none;
+    }
+  }
 
-	/* --- Navigation (Mobile) --- */
-	.mobile-tabs {
-		display: flex;
-		gap: 0.35rem;
-		background: rgba(15, 15, 25, 0.9);
-		backdrop-filter: blur(20px) saturate(180%);
-		-webkit-backdrop-filter: blur(20px) saturate(180%);
-		padding: 0.45rem;
-		border: 1px solid rgba(255, 255, 255, 0.12);
-		border-radius: 22px;
-		position: sticky;
-		top: 4.5rem;
-		z-index: 90;
-		box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
-		margin-bottom: 1.5rem;
-	}
+  .mobile-tabs {
+    pointer-events: auto;
+    display: flex;
+    gap: 0.35rem;
+    background: rgba(15, 15, 20, 0.95);
+    backdrop-filter: blur(24px) saturate(200%);
+    -webkit-backdrop-filter: blur(24px) saturate(200%);
+    padding: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    box-shadow:
+      0 12px 32px rgba(0, 0, 0, 0.5),
+      0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  }
 
-	.tab-btn {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		gap: 0.25rem;
-		padding: 0.6rem 0.25rem;
-		border: none;
-		border-radius: 14px;
-		background: transparent;
-		color: rgba(255, 255, 255, 0.3);
-		font-size: 0.65rem;
-		font-weight: 700;
-		text-transform: uppercase;
-		letter-spacing: 0.02em;
-		cursor: pointer;
-		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-	}
+  .tab-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    padding: 0.6rem 0.25rem;
+    border: none;
+    border-radius: 14px;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
 
-	.tab-icon {
-		font-size: 1.2rem;
-		margin-bottom: 2px;
-		transition: transform 0.3s ease;
-	}
+  .tab-icon {
+    font-size: 1.2rem;
+    margin-bottom: 2px;
+    transition: transform 0.3s ease;
+  }
 
-	.tab-btn.active { 
-		background: rgba(59, 130, 246, 0.15); 
-		color: #60a5fa;
-		box-shadow: 0 0 20px rgba(59, 130, 246, 0.1);
-	}
+  .tab-btn.active {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.1);
+  }
 
-	.tab-btn.active .tab-icon {
-		transform: translateY(-2px) scale(1.1);
-	}
+  .tab-btn.active .tab-icon {
+    transform: translateY(-2px) scale(1.1);
+  }
 
-	/* --- Layout Grid --- */
-	.dashboard-grid { display: flex; flex-direction: column; gap: 1rem; }
-	.assets-section { display: flex; flex-direction: column; gap: 1rem; }
-	.sidebar { display: flex; flex-direction: column; gap: 1rem; }
-	.tab-hidden { display: none; }
+  /* --- Layout Grid --- */
+  .dashboard-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .assets-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .tab-hidden {
+    display: none;
+  }
 
+  .history-section {
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(24px) saturate(200%);
+    -webkit-backdrop-filter: blur(24px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 28px;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+  }
 
+  .charts-row-card {
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(24px) saturate(200%);
+    -webkit-backdrop-filter: blur(24px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 28px;
+    box-shadow: 0 12px 48px 0 rgba(0, 0, 0, 0.5);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+  }
 
-	.history-section {
-		padding: 1.5rem;
-		background: rgba(255, 255, 255, 0.03);
-		backdrop-filter: blur(24px) saturate(200%);
-		-webkit-backdrop-filter: blur(24px) saturate(200%);
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		border-radius: 28px;
-		margin-bottom: 2rem;
-		box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-	}
+  .charts-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 100%);
+    gap: 0;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .charts-grid::-webkit-scrollbar {
+    display: none;
+  }
 
-	.charts-row-card { 
-		padding: 1.5rem; 
-		background: rgba(255, 255, 255, 0.03);
-		backdrop-filter: blur(24px) saturate(200%);
-		-webkit-backdrop-filter: blur(24px) saturate(200%);
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		border-radius: 28px;
-		box-shadow: 0 12px 48px 0 rgba(0, 0, 0, 0.5);
-		margin-bottom: 1.5rem;
-		overflow: hidden;
-	}
+  .chart-box {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+    scroll-snap-align: center;
+    padding: 0 1rem;
+  }
 
-	.charts-grid { 
-		display: grid; 
-		grid-template-columns: repeat(3, 100%); 
-		gap: 0; 
-		overflow-x: auto;
-		scroll-snap-type: x mandatory;
-		scrollbar-width: none;
-		-ms-overflow-style: none;
-	}
-	.charts-grid::-webkit-scrollbar { display: none; }
-	
-	.chart-box { 
-		display: flex; 
-		flex-direction: column; 
-		gap: 1rem; 
-		align-items: center; 
-		scroll-snap-align: center;
-		padding: 0 1rem;
-	}
-	
-	.chart-label { font-size: 0.75rem; color: rgba(255, 255, 255, 0.4); text-transform: uppercase; margin: 0; font-weight: 700; letter-spacing: 0.05em; }
+  .chart-label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.4);
+    text-transform: uppercase;
+    margin: 0;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
 
-	.charts-mobile-hint {
-		display: flex;
-		justify-content: center;
-		margin-bottom: 1rem;
-		opacity: 0.5;
-		font-size: 0.65rem;
-		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-	}
+  .charts-mobile-hint {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
 
-	@media (min-width: 1024px) {
-		.charts-mobile-hint { display: none; }
-		.charts-row-card { margin-bottom: 2rem; padding: 2rem; }
-		.charts-grid { 
-			grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
-			gap: 2rem; 
-			overflow: visible;
-			scroll-snap-type: none;
-		}
-		.chart-box { 
-			padding: 0;
-			align-items: flex-start;
-		}
-		.desktop-charts-section { display: block !important; }
-	}
+  @media (min-width: 1024px) {
+    .charts-mobile-hint {
+      display: none;
+    }
+    .charts-row-card {
+      margin-bottom: 2rem;
+      padding: 2rem;
+    }
+    .charts-grid {
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      overflow: visible;
+      scroll-snap-type: none;
+    }
+    .chart-box {
+      padding: 0;
+      align-items: flex-start;
+    }
+    .desktop-charts-section {
+      display: block !important;
+    }
+  }
 
-	/* --- Footer --- */
-	.app-footer { 
-		padding: 3rem 0 5rem; 
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 1.5rem;
-		opacity: 0.8; 
-	}
-	.app-footer p { font-size: 0.75rem; font-weight: 600; opacity: 0.4; margin: 0; }
+  /* --- Footer --- */
+  .app-footer {
+    padding: 3rem 0 5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    opacity: 0.8;
+  }
+  .app-footer p {
+    font-size: 0.75rem;
+    font-weight: 600;
+    opacity: 0.4;
+    margin: 0;
+  }
 
-	/* --- Responsive Magic --- */
-	
+  /* --- Responsive Magic --- */
 
+  /* Large Desktop */
+  @media (min-width: 1024px) {
+    .main-content {
+      padding: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      gap: 2.5rem;
+    }
 
-	/* Large Desktop */
-	@media (min-width: 1024px) {
-		.main-content { 
-			padding: 2rem; 
-			max-width: 1600px;
-			margin: 0 auto;
-		}
+    /* Hide mobile tabs, show desktop layout */
+    .mobile-tabs {
+      display: none;
+    }
+    .tab-hidden {
+      display: block !important;
+    }
 
-		/* Hide mobile tabs, show desktop layout */
-		.mobile-tabs { display: none; }
-		.tab-hidden { display: block !important; }
-		
-		.dashboard-grid { 
-			display: grid; 
-			grid-template-columns: minmax(0, 1.5fr) minmax(350px, 1fr); 
-			gap: 2.5rem; 
-			align-items: start; 
-		}
-		
-		.assets-section { 
-			display: flex; 
-			flex-direction: column;
-		}
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.6fr) minmax(360px, 1fr);
+      gap: 3rem;
+      align-items: start;
+    }
 
-		.sidebar-item.tab-hidden {
-			display: flex !important;
-		}
+    .assets-section {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
 
-	}
+    .sidebar {
+      position: sticky;
+      top: 6rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .sidebar-item.tab-hidden {
+      display: flex !important;
+    }
+  }
 </style>
