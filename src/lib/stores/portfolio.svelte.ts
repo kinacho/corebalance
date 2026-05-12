@@ -186,11 +186,15 @@ export class PortfolioStore {
 	// --- Private Methods ---
 	private initAuth() {
 		if (typeof window === 'undefined' || !storageProvider.onAuthStateChanged) return;
-		storageProvider.onAuthStateChanged(async (user) => {
+		this.authUnsubscribe = storageProvider.onAuthStateChanged(async (user) => {
 			this.user = user;
 			if (user) await this.loadFromCloud();
-		});
+		}) as (() => void) | undefined;
 	}
+
+	private pollingIntervalId: ReturnType<typeof setInterval> | undefined;
+	private visibilityHandler: (() => void) | undefined;
+	private authUnsubscribe: (() => void) | undefined;
 
 	private initPolling() {
 		if (typeof window === 'undefined') return;
@@ -199,18 +203,35 @@ export class PortfolioStore {
 		this.fetchPrices();
 
 		// Polling cada 30 segundos si la pestaña está activa
-		setInterval(() => {
+		this.pollingIntervalId = setInterval(() => {
 			if (document.visibilityState === 'visible' && !this.loading) {
 				this.fetchPrices();
 			}
 		}, 30000);
 
 		// Refresco inmediato al volver a la pestaña
-		document.addEventListener('visibilitychange', () => {
+		this.visibilityHandler = () => {
 			if (document.visibilityState === 'visible' && !this.loading) {
 				this.fetchPrices();
 			}
-		});
+		};
+		document.addEventListener('visibilitychange', this.visibilityHandler);
+	}
+
+	/** Limpia timers y listeners para evitar zombies tras logout */
+	private cleanupPolling() {
+		if (this.pollingIntervalId) {
+			clearInterval(this.pollingIntervalId);
+			this.pollingIntervalId = undefined;
+		}
+		if (this.visibilityHandler) {
+			document.removeEventListener('visibilitychange', this.visibilityHandler);
+			this.visibilityHandler = undefined;
+		}
+		if (this.authUnsubscribe) {
+			this.authUnsubscribe();
+			this.authUnsubscribe = undefined;
+		}
 	}
 
 	private async saveToCloud() {
@@ -321,7 +342,7 @@ export class PortfolioStore {
 		
 		this.dailyChange = {
 			value: last - prev,
-			percent: (last - prev) / prev
+			percent: prev > 0 ? (last - prev) / prev : 0
 		};
 	}
 
@@ -399,6 +420,7 @@ export class PortfolioStore {
 
 	async logout() {
 		try {
+			this.cleanupPolling();
 			if (storageProvider.logout) {
 				await storageProvider.logout();
 			}
@@ -415,6 +437,7 @@ export class PortfolioStore {
 			localStorage.removeItem('corebalance_privacy');
 			localStorage.removeItem(STORAGE_KEY_ASSETS);
 			this.setDemoData();
+			this.initPolling();
 		} catch (e) {
 			console.error('Logout error:', e);
 		}

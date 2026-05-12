@@ -29,7 +29,7 @@ export interface StorageProvider {
 	// Auth (optional for Local)
 	login?(): Promise<any>;
 	logout?(): Promise<void>;
-	onAuthStateChanged?(callback: (user: any | null) => void): void;
+	onAuthStateChanged?(callback: (user: any | null) => void): (() => void) | void;
 	
 	// Export/Import (Local DB mostly)
 	getAllData?(): Promise<any>;

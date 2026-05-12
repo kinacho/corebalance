@@ -71,11 +71,11 @@ export class FirebaseStorage implements StorageProvider {
 		}
 	}
 
-	onAuthStateChanged(callback: (user: User | null) => void): void {
+	onAuthStateChanged(callback: (user: User | null) => void): (() => void) | void {
 		if (!auth) {
 			callback(null);
-			return;
+			return () => {};
 		}
-		onAuthStateChanged(auth, callback);
+		return onAuthStateChanged(auth, callback);
 	}
 }

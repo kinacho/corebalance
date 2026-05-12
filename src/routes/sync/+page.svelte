@@ -3,6 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { storageProvider } from '$lib/db';
 	import { browser } from '$app/environment';
+	import { validateImportData } from '$lib/utils';
 
 	let status = $state('Esperando para sincronizar...');
 	let error = $state<string | null>(null);
@@ -31,6 +32,10 @@
 		try {
 			const json = await decodeAndDecompress(hash);
 			const data = JSON.parse(json);
+
+			if (!validateImportData(data)) {
+				throw new Error('Los datos del QR no tienen un formato válido.');
+			}
 
 			if (!storageProvider.importAllData) {
 				throw new Error('Importación no disponible.');

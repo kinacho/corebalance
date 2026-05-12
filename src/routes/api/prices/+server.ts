@@ -7,6 +7,16 @@ const yahooFinance = new YahooFinance({ suppressNotices: ['yahooSurvey', 'ripHis
 
 const historyCache: Record<string, { timestamp: number, sparkline: number[], ytd?: number, mtd?: number, oneMonth?: number }> = {};
 const CACHE_TTL = 1000 * 60 * 60 * 4; // 4 horas
+const MAX_CACHE_ENTRIES = 200;
+
+function pruneCache() {
+	const keys = Object.keys(historyCache);
+	if (keys.length <= MAX_CACHE_ENTRIES) return;
+	// Ordenar por timestamp ascendente y eliminar los más antiguos
+	const sorted = keys.sort((a, b) => historyCache[a].timestamp - historyCache[b].timestamp);
+	const toRemove = sorted.slice(0, keys.length - MAX_CACHE_ENTRIES);
+	for (const key of toRemove) delete historyCache[key];
+}
 
 // Mapeo de tickers problemáticos en Yahoo a ISINs/Symbols de Financial Times para mayor fiabilidad
 const RELIABLE_FT_MAPPINGS: Record<string, string> = {
@@ -41,7 +51,36 @@ async function fetchFTPrice(isin: string): Promise<{ price: number, change: numb
 	return null;
 }
 
-export const GET: RequestHandler = async ({ url }) => {
+// --- Rate Limiting ---
+const rateLimitMap = new Map<string, number[]>();
+const RATE_LIMIT = 30;       // max requests
+const RATE_WINDOW = 60_000;  // por minuto
+const MAX_TICKERS = 50;
+const TICKER_REGEX = /^[A-Za-z0-9._=\-]{1,25}$/;
+
+function checkRateLimit(ip: string): boolean {
+	const now = Date.now();
+	const requests = rateLimitMap.get(ip) || [];
+	const recent = requests.filter(t => now - t < RATE_WINDOW);
+	if (recent.length >= RATE_LIMIT) return false;
+	recent.push(now);
+	rateLimitMap.set(ip, recent);
+	// Limpieza periódica para evitar memory leak
+	if (rateLimitMap.size > 1000) {
+		for (const [key, times] of rateLimitMap) {
+			if (times.every(t => now - t > RATE_WINDOW)) rateLimitMap.delete(key);
+		}
+	}
+	return true;
+}
+
+export const GET: RequestHandler = async ({ url, getClientAddress }) => {
+	// --- Protección: Rate Limit ---
+	const clientIp = getClientAddress();
+	if (!checkRateLimit(clientIp)) {
+		return json({ error: 'Demasiadas peticiones. Inténtalo en un minuto.' }, { status: 429 });
+	}
+
 	// Aceptar tickers dinámicos del usuario, o usar los de pares de divisas como mínimo
 	const tickersParam = url.searchParams.get('tickers');
 	
@@ -52,6 +91,14 @@ export const GET: RequestHandler = async ({ url }) => {
 	if (tickersParam) {
 		userTickers = tickersParam.split(',').map(t => t.trim()).filter(Boolean);
 	}
+
+	// --- Protección: Limitar número de tickers ---
+	if (userTickers.length > MAX_TICKERS) {
+		return json({ error: `Máximo ${MAX_TICKERS} tickers por petición.` }, { status: 400 });
+	}
+
+	// --- Protección: Validar formato de tickers ---
+	userTickers = userTickers.filter(t => TICKER_REGEX.test(t));
 	
 	// Combinar tickers del usuario con pares de divisas (sin duplicados)
 	const tickers = [...new Set([...userTickers, ...currencyPairs])];
@@ -178,6 +225,7 @@ export const GET: RequestHandler = async ({ url }) => {
 						}
 						
 						historyCache[ticker] = { timestamp: now, sparkline, ytd, mtd, oneMonth };
+						pruneCache();
 					} catch (e) {
 						console.error(`Error fetching history for ${ticker}:`, e);
 						sparkline = historyCache[ticker]?.sparkline || [];

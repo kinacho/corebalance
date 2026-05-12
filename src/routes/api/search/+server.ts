@@ -4,6 +4,27 @@ import YahooFinance from 'yahoo-finance2';
 
 const yahooFinance = new YahooFinance({ suppressNotices: ['yahooSurvey', 'ripHistorical'] });
 
+// --- Rate Limiting ---
+const searchRateLimitMap = new Map<string, number[]>();
+const SEARCH_RATE_LIMIT = 20;   // max requests
+const SEARCH_RATE_WINDOW = 60_000; // por minuto
+const MAX_QUERY_LENGTH = 100;
+
+function checkSearchRateLimit(ip: string): boolean {
+	const now = Date.now();
+	const requests = searchRateLimitMap.get(ip) || [];
+	const recent = requests.filter(t => now - t < SEARCH_RATE_WINDOW);
+	if (recent.length >= SEARCH_RATE_LIMIT) return false;
+	recent.push(now);
+	searchRateLimitMap.set(ip, recent);
+	if (searchRateLimitMap.size > 1000) {
+		for (const [key, times] of searchRateLimitMap) {
+			if (times.every(t => now - t > SEARCH_RATE_WINDOW)) searchRateLimitMap.delete(key);
+		}
+	}
+	return true;
+}
+
 export interface SearchResult {
 	ticker: string;
 	name: string;
@@ -12,10 +33,21 @@ export interface SearchResult {
 	currency?: string;
 }
 
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url, getClientAddress }) => {
+	// --- Protección: Rate Limit ---
+	const clientIp = getClientAddress();
+	if (!checkSearchRateLimit(clientIp)) {
+		return json({ results: [], error: 'Demasiadas búsquedas. Inténtalo en un minuto.' }, { status: 429 });
+	}
+
 	const query = url.searchParams.get('q');
 	if (!query || query.trim().length < 2) {
 		return json({ results: [] });
+	}
+
+	// --- Protección: Limitar longitud de la query ---
+	if (query.length > MAX_QUERY_LENGTH) {
+		return json({ results: [], error: 'Búsqueda demasiado larga.' }, { status: 400 });
 	}
 
 	try {

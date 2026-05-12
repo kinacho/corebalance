@@ -92,3 +92,23 @@ export function formatDateTime(date: Date | number | string): string {
 		minute: '2-digit'
 	});
 }
+
+/** Valida la estructura de datos importados antes de procesarlos */
+export function validateImportData(data: any): boolean {
+	if (!data || typeof data !== 'object') return false;
+	
+	// Debe tener al menos userData o history (o ambos)
+	const hasUserData = Array.isArray(data.userData);
+	const hasHistory = Array.isArray(data.history);
+	
+	if (!hasUserData && !hasHistory) return false;
+
+	// Si tiene userData, cada registro debe tener al menos un id
+	if (hasUserData) {
+		for (const record of data.userData) {
+			if (!record.id) return false;
+		}
+	}
+
+	return true;
+}

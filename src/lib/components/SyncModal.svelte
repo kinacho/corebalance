@@ -111,6 +111,10 @@
 				const content = e.target?.result as string;
 				const data = JSON.parse(content);
 				
+				if (!validateImportData(data)) {
+					throw new Error('El archivo no tiene un formato de CoreBalance válido.');
+				}
+				
 				if (!storageProvider.importAllData) {
 					throw new Error('Importación no soportada en este modo.');
 				}
