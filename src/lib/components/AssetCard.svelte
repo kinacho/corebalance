@@ -133,6 +133,7 @@
 						oninput={handleHoldingsInput}
 						onblur={() => (isEditingHoldings = false)}
 						onfocus={handleHoldingsFocus}
+						onwheel={(e) => e.preventDefault()}
 						min="0"
 						step="0.001"
 						placeholder="0"
@@ -152,6 +153,7 @@
 						oninput={handleAvgCostInput}
 						onblur={() => (isEditingAvgCost = false)}
 						onfocus={handleAvgCostFocus}
+						onwheel={(e) => e.preventDefault()}
 						min="0"
 						step="0.01"
 						placeholder="0.00"
@@ -174,6 +176,7 @@
 							type="number" 
 							class="price-ghost-input" 
 							placeholder={`0.00 ${currencySymbol}`} 
+							onwheel={(e) => e.preventDefault()}
 							oninput={(e) => {
 								const val = parseFloat((e.target as HTMLInputElement).value);
 								if (!isNaN(val)) onUpdatePrice(position.asset.ticker, val);

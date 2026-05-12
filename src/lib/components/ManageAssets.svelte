@@ -172,6 +172,7 @@
 													type="number"
 													class="ter-input"
 													bind:value={editTer}
+													onwheel={(e) => e.preventDefault()}
 													min="0"
 													step="0.01"
 													inputmode="decimal"
@@ -214,6 +215,7 @@
 												max="100"
 												step="1"
 												value={Math.round(asset.targetWeight * 100)}
+												onwheel={(e) => e.preventDefault()}
 												oninput={(e) => handleWeightChange(asset.ticker, parseInt((e.target as HTMLInputElement).value) || 0)}
 											/>
 											<span class="weight-percent-sign">%</span>

@@ -71,6 +71,7 @@
 							oninput={handleInput}
 							onblur={handleBlur}
 							onfocus={handleFocus}
+							onwheel={(e) => e.preventDefault()}
 							min="0"
 							step="50"
 							placeholder="0"

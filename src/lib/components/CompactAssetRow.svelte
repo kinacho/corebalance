@@ -86,6 +86,7 @@
 				oninput={handleHoldingsInput}
 				onblur={() => (isEditingHoldings = false)}
 				onfocus={handleHoldingsFocus}
+				onwheel={(e) => e.preventDefault()}
 				min="0" step="0.001" placeholder="0" inputmode="decimal"
 			/>
 		</div>
@@ -99,6 +100,7 @@
 					oninput={handleAvgCostInput}
 					onblur={() => (isEditingAvgCost = false)}
 					onfocus={handleAvgCostFocus}
+					onwheel={(e) => e.preventDefault()}
 					min="0" step="0.01" placeholder="0.00" inputmode="decimal"
 				/>
 			</div>
