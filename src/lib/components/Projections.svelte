@@ -8,6 +8,7 @@
 	let expectedReturn = $state(7); // 7% anual por defecto
 	let years = $state(20);
 	let monthlySavings = $state(500); // Aportación mensual proyectada
+	let isOpen = $state(false);
 
 	const projections = $derived.by(() => {
 		const annualReturn = expectedReturn / 100;
@@ -46,195 +47,355 @@
 	});
 </script>
 
-<div class="projections-card glass">
-	<div class="projections-header">
-		<div class="title-group">
-			<h3 class="title">Proyección de Futuro</h3>
-			<p class="subtitle">Libertad financiera estimada</p>
-		</div>
-		<div class="params">
-			<div class="param-item">
-				<span class="param-label">Aportación Mensual</span>
-				<div class="param-input-wrapper">
-					<input type="range" min="0" max="5000" step="50" bind:value={monthlySavings} />
-					<span class="param-value">{formatEUR(monthlySavings)}</span>
-				</div>
-			</div>
-			<div class="param-item">
-				<span class="param-label">Interés Estimado</span>
-				<div class="param-input-wrapper">
-					<input type="range" min="1" max="15" step="0.5" bind:value={expectedReturn} />
-					<span class="param-value">{expectedReturn}%</span>
-				</div>
-			</div>
-			<div class="param-item">
-				<span class="param-label">Horizonte (Años)</span>
-				<div class="param-input-wrapper">
-					<input type="range" min="1" max="50" bind:value={years} />
-					<span class="param-value">{years}y</span>
-				</div>
+<div class="panel" class:open={isOpen}>
+	<button class="panel-header" onclick={() => isOpen = !isOpen} aria-expanded={isOpen}>
+		<div class="panel-info">
+			<div class="panel-icon">🚀</div>
+			<div class="panel-text">
+				<h2 class="panel-title">Proyección de Futuro</h2>
+				<p class="panel-subtitle">Libertad financiera estimada</p>
 			</div>
 		</div>
-	</div>
+		<span class="chevron" class:rotated={!isOpen}>
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+				<path d="M6 9l6 6 6-6" />
+			</svg>
+		</span>
+	</button>
 
-	<div class="projection-results">
-		<div class="main-result">
-			<span class="result-label">Capital estimado en {years} años</span>
-			<span class="result-value privacy-blur">{formatEUR($tweenedValue)}</span>
-		</div>
-		
-		<div class="results-grid">
-			<div class="grid-item">
-				<span class="item-label">Inversión Total</span>
-				<span class="item-value privacy-blur">{formatEUR(projections.totalInvested)}</span>
-			</div>
-			<div class="grid-item positive">
-				<span class="item-label">Intereses Generados</span>
-				<span class="item-value privacy-blur">+{formatEUR(projections.totalProfit)}</span>
-			</div>
-		</div>
-	</div>
-
-	<div class="projection-chart">
-		<div class="bars-container">
-			{#each projections.history as point}
-				<div class="bar-wrapper" style="height: {(point.value / projections.finalValue) * 100}%">
-					<div class="bar-invested" style="height: {(point.invested / point.value) * 100}%"></div>
-					<div class="bar-profit"></div>
-					<span class="bar-label">{point.month / 12}y</span>
+	<div class="collapsible" class:collapsed={!isOpen}>
+		<div class="wrapper">
+			<div class="content">
+				<div class="controls-grid">
+					<div class="control-item">
+						<div class="control-header">
+							<label class="control-label" for="savings-range">Aportación</label>
+							<span class="control-value">{formatEUR(monthlySavings)}</span>
+						</div>
+						<input id="savings-range" type="range" min="0" max="5000" step="50" bind:value={monthlySavings} />
+					</div>
+					<div class="control-item">
+						<div class="control-header">
+							<label class="control-label" for="return-range">Interés Anual</label>
+							<span class="control-value">{expectedReturn}%</span>
+						</div>
+						<input id="return-range" type="range" min="1" max="15" step="0.5" bind:value={expectedReturn} />
+					</div>
+					<div class="control-item">
+						<div class="control-header">
+							<label class="control-label" for="years-range">Horizonte</label>
+							<span class="control-value">{years} años</span>
+						</div>
+						<input id="years-range" type="range" min="1" max="50" bind:value={years} />
+					</div>
 				</div>
-			{/each}
+
+				<div class="results-card">
+					<div class="main-metric">
+						<span class="metric-label">Capital estimado en {years} años</span>
+						<span class="metric-value privacy-blur">{formatEUR($tweenedValue)}</span>
+					</div>
+					
+					<div class="sub-metrics">
+						<div class="metric-box">
+							<span class="sub-label">Inversión Total</span>
+							<span class="sub-value privacy-blur">{formatEUR(projections.totalInvested)}</span>
+						</div>
+						<div class="metric-box success">
+							<span class="sub-label">Intereses Generados</span>
+							<span class="sub-value privacy-blur">+{formatEUR(projections.totalProfit)}</span>
+						</div>
+					</div>
+				</div>
+
+				<div class="chart-container">
+					<div class="chart-bars">
+						{#each projections.history as point}
+							<div class="bar-group" style="height: {(point.value / projections.finalValue) * 100}%">
+								<div class="bar-fill invested" style="height: {(point.invested / point.value) * 100}%"></div>
+								<div class="bar-fill profit"></div>
+								<span class="bar-label">{point.month / 12}y</span>
+							</div>
+						{/each}
+					</div>
+				</div>
+				
+				<footer class="legal-footer">
+					<p>Rendimientos pasados no garantizan resultados futuros. Estimación basada en aportación constante.</p>
+				</footer>
+			</div>
 		</div>
 	</div>
-	
-	<p class="disclaimer">
-		Esta es una estimación basada en una aportación constante. Los rendimientos pasados no garantizan resultados futuros.
-	</p>
 </div>
 
 <style>
-	.projections-card {
-		padding: 1.5rem;
+	.panel {
 		background: rgba(255, 255, 255, 0.03);
-		border-radius: 24px;
+		backdrop-filter: blur(24px) saturate(200%);
+		-webkit-backdrop-filter: blur(24px) saturate(200%);
 		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 24px;
+		overflow: hidden;
+		transition: all 0.3s ease;
+	}
+
+	.panel:hover {
+		border-color: rgba(255, 255, 255, 0.15);
+		background: rgba(255, 255, 255, 0.05);
+	}
+
+	.panel-header {
+		width: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 1.25rem;
+		background: none;
+		border: none;
+		cursor: pointer;
+		text-align: left;
+		transition: background 0.2s ease;
+	}
+
+	.panel-info {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	.panel-icon {
+		width: 40px;
+		height: 40px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: rgba(255, 255, 255, 0.05);
+		border-radius: 12px;
+		font-size: 1.25rem;
+	}
+
+	.panel-title {
+		font-size: 1rem;
+		font-weight: 700;
+		color: #ffffff;
+		margin: 0;
+		letter-spacing: -0.01em;
+	}
+
+	.panel-subtitle {
+		font-size: 0.75rem;
+		color: rgba(160, 160, 200, 0.6);
+		margin: 0.1rem 0 0 0;
+	}
+
+	.chevron {
+		color: rgba(255, 255, 255, 0.3);
+		transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+		width: 20px;
+		height: 20px;
+	}
+
+	.chevron.rotated {
+		transform: rotate(-90deg);
+	}
+
+	.collapsible {
+		display: grid;
+		grid-template-rows: 1fr;
+		transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+		opacity: 1;
+	}
+
+	.collapsible.collapsed {
+		grid-template-rows: 0fr;
+		opacity: 0;
+		pointer-events: none;
+	}
+
+	.wrapper {
+		overflow: hidden;
+	}
+
+	.content {
+		padding: 0 1.25rem 1.25rem 1.25rem;
 		display: flex;
 		flex-direction: column;
 		gap: 1.5rem;
 	}
 
-	.projections-header {
+	.controls-grid {
+		display: grid;
+		gap: 1.25rem;
+		padding: 1.25rem;
+		background: rgba(0, 0, 0, 0.2);
+		border-radius: 20px;
+		border: 1px solid rgba(255, 255, 255, 0.05);
+	}
+
+	.control-item {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+
+	.control-header {
 		display: flex;
 		justify-content: space-between;
-		align-items: flex-start;
-		flex-wrap: wrap;
-		gap: 1.5rem;
+		align-items: center;
 	}
 
-	.title { font-size: 1.1rem; font-weight: 700; margin: 0; color: #fff; }
-	.subtitle { font-size: 0.8rem; color: rgba(255, 255, 255, 0.4); margin: 0.2rem 0 0 0; }
-
-	.params {
-		display: flex;
-		gap: 1.5rem;
-		flex-wrap: wrap;
+	.control-label {
+		font-size: 0.65rem;
+		font-weight: 700;
+		color: rgba(255, 255, 255, 0.3);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
 	}
 
-	.param-item { display: flex; flex-direction: column; gap: 0.5rem; }
-	.param-label { font-size: 0.65rem; text-transform: uppercase; font-weight: 700; color: rgba(255, 255, 255, 0.3); }
-	.param-input-wrapper { display: flex; align-items: center; gap: 0.75rem; }
-	.param-value { font-size: 0.85rem; font-weight: 700; min-width: 2.5rem; color: var(--accent-blue); }
+	.control-value {
+		font-size: 0.85rem;
+		font-weight: 700;
+		color: #3b82f6;
+	}
 
 	input[type="range"] {
 		-webkit-appearance: none;
 		appearance: none;
-		width: 100px;
+		width: 100%;
 		height: 4px;
 		background: rgba(255, 255, 255, 0.1);
-		border-radius: 2px;
-		cursor: pointer;
+		border-radius: 10px;
+		outline: none;
 	}
 
 	input[type="range"]::-webkit-slider-thumb {
 		-webkit-appearance: none;
-		appearance: none;
-		width: 12px;
-		height: 12px;
-		background: var(--accent-blue);
+		width: 16px;
+		height: 16px;
+		background: #3b82f6;
 		border-radius: 50%;
-		box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+		cursor: pointer;
+		border: 2px solid #05050a;
+		box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
 	}
 
-	.projection-results {
-		background: rgba(0, 0, 0, 0.2);
+	.results-card {
 		padding: 1.25rem;
-		border-radius: 16px;
-		display: flex;
-		flex-direction: column;
+		background: rgba(255, 255, 255, 0.03);
+		border-radius: 20px;
+		border: 1px solid rgba(255, 255, 255, 0.05);
+	}
+
+	.main-metric {
+		text-align: center;
+		padding-bottom: 1.25rem;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+		margin-bottom: 1rem;
+	}
+
+	.metric-label {
+		font-size: 0.75rem;
+		color: rgba(255, 255, 255, 0.4);
+		display: block;
+		margin-bottom: 0.5rem;
+	}
+
+	.metric-value {
+		font-size: 1.75rem;
+		font-weight: 800;
+		color: #ffffff;
+		letter-spacing: -0.02em;
+	}
+
+	.sub-metrics {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
 		gap: 1rem;
 	}
 
-	.main-result { display: flex; flex-direction: column; gap: 0.25rem; }
-	.result-label { font-size: 0.75rem; color: rgba(255, 255, 255, 0.5); }
-	.result-value { font-size: 1.75rem; font-weight: 800; color: #fff; letter-spacing: -0.02em; }
-
-	.results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-	.grid-item { display: flex; flex-direction: column; gap: 0.2rem; }
-	.item-label { font-size: 0.65rem; color: rgba(255, 255, 255, 0.4); }
-	.item-value { font-size: 0.9rem; font-weight: 700; }
-	.positive .item-value { color: var(--accent-green); }
-
-	.projection-chart {
-		height: 120px;
-		display: flex;
-		align-items: flex-end;
-		padding: 0 0.5rem;
-		margin-top: 0.5rem;
-	}
-
-	.bars-container {
-		display: flex;
-		width: 100%;
-		height: 100%;
-		align-items: flex-end;
-		gap: 4px;
-	}
-
-	.bar-wrapper {
-		flex: 1;
-		position: relative;
+	.metric-box {
 		display: flex;
 		flex-direction: column;
+		gap: 0.25rem;
+	}
+
+	.sub-label {
+		font-size: 0.65rem;
+		color: rgba(255, 255, 255, 0.3);
+	}
+
+	.sub-value {
+		font-size: 0.95rem;
+		font-weight: 700;
+		color: #ffffff;
+	}
+
+	.metric-box.success .sub-value {
+		color: #10b981;
+	}
+
+	.chart-container {
+		height: 100px;
+		display: flex;
+		align-items: flex-end;
+		padding-top: 1rem;
+		margin-bottom: 0.5rem;
+	}
+
+	.chart-bars {
+		display: flex;
+		align-items: flex-end;
+		gap: 2px;
+		height: 100%;
+		width: 100%;
+	}
+
+	.bar-group {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-end;
+		position: relative;
 		min-width: 2px;
 	}
 
-	.bar-invested {
-		background: var(--accent-blue);
-		opacity: 0.6;
-		border-radius: 2px 2px 0 0;
+	.bar-fill {
+		width: 100%;
+		border-radius: 1px;
 	}
 
-	.bar-profit {
+	.bar-fill.invested {
+		background: #3b82f6;
+		opacity: 0.7;
+	}
+
+	.bar-fill.profit {
+		background: #10b981;
 		flex: 1;
-		background: var(--accent-green);
-		opacity: 0.4;
-		border-radius: 2px 2px 0 0;
+		opacity: 0.5;
 	}
 
 	.bar-label {
 		position: absolute;
-		bottom: -1.2rem;
+		bottom: -1.25rem;
 		left: 50%;
 		transform: translateX(-50%);
 		font-size: 0.55rem;
-		color: rgba(255, 255, 255, 0.3);
+		font-weight: 700;
+		color: rgba(255, 255, 255, 0.2);
 		white-space: nowrap;
+		display: none;
 	}
 
-	.disclaimer {
-		font-size: 0.7rem;
-		color: rgba(255, 255, 255, 0.3);
+	.bar-group:nth-child(5n) .bar-label {
+		display: block;
+	}
+
+	.legal-footer {
+		font-size: 0.65rem;
+		color: rgba(255, 255, 255, 0.25);
 		text-align: center;
-		margin: 0;
+		font-style: italic;
+		line-height: 1.4;
 	}
 </style>

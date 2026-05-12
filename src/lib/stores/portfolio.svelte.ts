@@ -86,32 +86,58 @@ export class PortfolioStore {
 	// (Fallback si la historia de Firebase está vacía o es insuficiente)
 	reconstructedHistory = $derived.by(() => {
 		const days = 30; // Mostrar hasta 30 días reconstruidos
-		const historyPoints: { date: string, value: number }[] = [];
+		const historyPoints: { 
+			date: string, 
+			total: number,
+			core: number,
+			stocks: number,
+			satellite: number
+		}[] = [];
 		
-		// Inicializar puntos con fechas reales (hace 30 días hasta hoy)
+		// Inicializar puntos con fechas reales
 		for (let i = 0; i < days; i++) {
 			const d = new Date();
 			d.setDate(d.getDate() - (days - 1 - i));
-			historyPoints.push({ date: formatDate(d), value: 0 });
+			historyPoints.push({ 
+				date: formatDate(d), 
+				total: 0,
+				core: 0,
+				stocks: 0,
+				satellite: 0
+			});
 		}
 
 		let hasData = false;
-		const allAssets = [...this.portfolioState.positions, ...this.satelliteState.positions, ...this.stockState.positions];
+		
+		const processPositions = (positions: any[], key: 'core' | 'stocks' | 'satellite') => {
+			positions.forEach(pos => {
+				const spark = pos.sparkline || [];
+				if (spark.length > 0) hasData = true;
+				
+				for (let i = 0; i < days; i++) {
+					const priceAtDay = spark[spark.length - days + i] || pos.unitPrice;
+					const val = pos.holdings * priceAtDay;
+					historyPoints[i][key] += val;
+					historyPoints[i].total += val;
+				}
+			});
+		};
 
-		allAssets.forEach(pos => {
-			const spark = pos.sparkline || [];
-			if (spark.length > 0) hasData = true;
-			
-			for (let i = 0; i < days; i++) {
-				const priceAtDay = spark[spark.length - days + i] || pos.unitPrice;
-				historyPoints[i].value += pos.holdings * priceAtDay;
-			}
-		});
+		processPositions(this.portfolioState.positions, 'core');
+		processPositions(this.stockState.positions, 'stocks');
+		processPositions(this.satelliteState.positions, 'satellite');
 
-		// Si no hay datos de sparklines o la historia real es más larga, devolvemos historia real
-		if (!hasData || this.history.length >= days) return this.history;
+		// Si no hay datos de sparklines o la historia real es más larga, devolvemos historia real adaptada
+		if (!hasData || this.history.length >= days) {
+			return this.history.map(h => ({
+				date: h.date,
+				total: h.value,
+				core: h.value, // Fallback: todo al core si no hay breakdown real
+				stocks: 0,
+				satellite: 0
+			}));
+		}
 
-		// Si la historia real es muy corta, devolvemos la reconstrucción de 30 días
 		return historyPoints;
 	});
 

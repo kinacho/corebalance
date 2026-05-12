@@ -10,6 +10,7 @@
 
 	let { contribution, result, onContributionChange }: Props = $props();
 
+	let isOpen = $state(false);
 	let isEditing = $state(false);
 	let editValue = $state('');
 
@@ -38,142 +39,198 @@
 	}
 </script>
 
-<div class="rebalance-panel">
-	<div class="panel-header">
-		<div class="panel-icon">💰</div>
-		<div>
-			<h2 class="panel-title">Rebalanceo por Aportación</h2>
-			<p class="panel-subtitle">Calcula cómo distribuir tu nueva aportación mensual</p>
-		</div>
-	</div>
-
-	<div class="contribution-input-group">
-		<label class="contribution-label" for="contribution-input">
-			Nueva Aportación Mensual
-		</label>
-		<div class="input-wrapper">
-			<input
-				id="contribution-input"
-				type="number"
-				class="contribution-input no-privacy-blur"
-				value={isEditing ? editValue : displayValue}
-				oninput={handleInput}
-				onblur={handleBlur}
-				onfocus={handleFocus}
-				min="0"
-				step="50"
-				placeholder="500"
-				inputmode="decimal"
-			/>
-			<span class="input-currency">€</span>
-		</div>
-	</div>
-
-	{#if result && result.totalContribution > 0}
-		<div class="allocations">
-			<h3 class="allocations-title">Distribución Recomendada</h3>
-
-			{#each result.allocations as alloc}
-				<div class="allocation-row" style="--accent: {alloc.asset.color}">
-					<div class="alloc-left">
-						<span class="alloc-icon">{alloc.asset.icon}</span>
-						<div>
-							<span class="alloc-name">{alloc.asset.name}</span>
-							<span class="alloc-shares privacy-blur">
-								{formatShares(alloc.sharesToBuy)} participaciones
-							</span>
-						</div>
-					</div>
-					<div class="alloc-right">
-						<span class="alloc-amount privacy-blur">{formatEUR(alloc.amountToInvest)}</span>
-						<span class="alloc-weight">→ {formatPercent(alloc.resultingWeight)}</span>
-					</div>
-				</div>
-			{/each}
-
-			<div class="result-summary">
-				<div class="summary-row">
-					<span>Capital resultante</span>
-					<span class="summary-value privacy-blur">{formatEUR(result.newTotalCapital)}</span>
-				</div>
+<div class="panel" class:open={isOpen}>
+	<button class="panel-header" onclick={() => isOpen = !isOpen} aria-expanded={isOpen}>
+		<div class="panel-info">
+			<div class="panel-icon">💰</div>
+			<div class="panel-text">
+				<h2 class="panel-title">Rebalanceo por Aportación</h2>
+				<p class="panel-subtitle">Distribuye tu nueva inversión</p>
 			</div>
 		</div>
-	{:else if contribution > 0}
-		<div class="empty-state">
-			<p>Introduce tus participaciones actuales para calcular el rebalanceo</p>
+		<span class="chevron" class:rotated={!isOpen}>
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+				<path d="M6 9l6 6 6-6" />
+			</svg>
+		</span>
+	</button>
+
+	<div class="collapsible" class:collapsed={!isOpen}>
+		<div class="wrapper">
+			<div class="content">
+				<div class="input-section">
+					<label class="input-label" for="contribution-input">
+						Nueva Aportación Mensual
+					</label>
+					<div class="input-container">
+						<input
+							id="contribution-input"
+							type="number"
+							class="contribution-input no-privacy-blur"
+							value={isEditing ? editValue : displayValue}
+							oninput={handleInput}
+							onblur={handleBlur}
+							onfocus={handleFocus}
+							min="0"
+							step="50"
+							placeholder="0"
+							inputmode="decimal"
+						/>
+						<span class="currency">€</span>
+					</div>
+					{#if !result || result.totalContribution === 0}
+						<p class="hint">Introduce una cantidad para calcular</p>
+					{/if}
+				</div>
+
+				{#if result && result.totalContribution > 0}
+					<div class="results-section">
+						<h3 class="section-heading">Distribución Recomendada</h3>
+
+						<div class="alloc-list">
+							{#each result.allocations as alloc}
+								<div class="alloc-row" style="--accent: {alloc.asset.color}">
+									<div class="alloc-left">
+										<span class="alloc-emoji">{alloc.asset.icon}</span>
+										<div class="alloc-meta">
+											<span class="alloc-name">{alloc.asset.name}</span>
+											<span class="alloc-shares privacy-blur">
+												+{formatShares(alloc.sharesToBuy)} títulos
+											</span>
+										</div>
+									</div>
+									<div class="alloc-right">
+										<span class="alloc-value privacy-blur">{formatEUR(alloc.amountToInvest)}</span>
+										<span class="alloc-percent">→ {formatPercent(alloc.resultingWeight)}</span>
+									</div>
+								</div>
+							{/each}
+						</div>
+
+						<div class="total-summary">
+							<span class="total-label">Nuevo Capital Total</span>
+							<span class="total-value privacy-blur">{formatEUR(result.newTotalCapital)}</span>
+						</div>
+					</div>
+				{/if}
+			</div>
 		</div>
-	{:else}
-		<div class="empty-state">
-			<p>Introduce una cantidad para ver cómo distribuirla</p>
-		</div>
-	{/if}
+	</div>
 </div>
 
 <style>
-	.rebalance-panel {
-		background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%);
-		backdrop-filter: blur(24px) saturate(180%);
-		-webkit-backdrop-filter: blur(24px) saturate(180%);
-		border: 1px solid rgba(255, 255, 255, 0.1);
+	.panel {
+		background: rgba(255, 255, 255, 0.03);
+		backdrop-filter: blur(24px) saturate(200%);
+		-webkit-backdrop-filter: blur(24px) saturate(200%);
+		border: 1px solid rgba(255, 255, 255, 0.08);
 		border-radius: 24px;
-		padding: 1.75rem;
-		position: relative;
 		overflow: hidden;
-		box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+		transition: all 0.3s ease;
 	}
 
-	.rebalance-panel::before {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		height: 2px;
-		background: linear-gradient(90deg, #3b82f6, #10b981, #f59e0b);
-		opacity: 0.5;
+	.panel:hover {
+		border-color: rgba(255, 255, 255, 0.15);
+		background: rgba(255, 255, 255, 0.05);
 	}
 
 	.panel-header {
+		width: 100%;
 		display: flex;
 		align-items: center;
-		gap: 0.85rem;
-		margin-bottom: 1.5rem;
+		justify-content: space-between;
+		padding: 1.25rem;
+		background: none;
+		border: none;
+		cursor: pointer;
+		text-align: left;
+		transition: background 0.2s ease;
+	}
+
+	.panel-info {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
 	}
 
 	.panel-icon {
-		font-size: 1.75rem;
-		line-height: 1;
+		width: 40px;
+		height: 40px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: rgba(255, 255, 255, 0.05);
+		border-radius: 12px;
+		font-size: 1.25rem;
 	}
 
 	.panel-title {
-		font-size: 1.15rem;
-		font-weight: 600;
-		color: #f0f0ff;
+		font-size: 1rem;
+		font-weight: 700;
+		color: #ffffff;
 		margin: 0;
-		line-height: 1.3;
+		letter-spacing: -0.01em;
 	}
 
 	.panel-subtitle {
-		font-size: 0.8rem;
-		color: rgba(160, 160, 200, 0.6);
-		margin: 0;
-	}
-
-	.contribution-input-group {
-		margin-bottom: 1.5rem;
-	}
-
-	.contribution-label {
-		display: block;
 		font-size: 0.75rem;
 		color: rgba(160, 160, 200, 0.6);
-		font-weight: 500;
-		text-transform: uppercase;
-		letter-spacing: 0.06em;
-		margin-bottom: 0.4rem;
+		margin: 0.1rem 0 0 0;
 	}
 
-	.input-wrapper {
+	.chevron {
+		color: rgba(255, 255, 255, 0.3);
+		transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+		width: 20px;
+		height: 20px;
+	}
+
+	.chevron.rotated {
+		transform: rotate(-90deg);
+	}
+
+	.collapsible {
+		display: grid;
+		grid-template-rows: 1fr;
+		transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+		opacity: 1;
+	}
+
+	.collapsible.collapsed {
+		grid-template-rows: 0fr;
+		opacity: 0;
+		pointer-events: none;
+	}
+
+	.wrapper {
+		overflow: hidden;
+	}
+
+	.content {
+		padding: 0 1.25rem 1.25rem 1.25rem;
+		display: flex;
+		flex-direction: column;
+		gap: 1.5rem;
+	}
+
+	.input-section {
+		padding: 1rem;
+		background: rgba(0, 0, 0, 0.2);
+		border-radius: 16px;
+		border: 1px solid rgba(255, 255, 255, 0.05);
+	}
+
+	.input-label {
+		font-size: 0.65rem;
+		font-weight: 700;
+		color: rgba(255, 255, 255, 0.3);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		margin-bottom: 0.75rem;
+		display: block;
+	}
+
+	.input-container {
 		position: relative;
 		display: flex;
 		align-items: center;
@@ -181,148 +238,149 @@
 
 	.contribution-input {
 		width: 100%;
-		padding: 0.75rem 2.5rem 0.75rem 1rem;
-		background: rgba(0, 0, 0, 0.3);
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		background: rgba(255, 255, 255, 0.03);
+		border: 1px solid rgba(255, 255, 255, 0.1);
 		border-radius: 12px;
-		color: #f0f0ff;
-		font-size: 1.25rem;
-		font-weight: 600;
-		font-family: 'Inter', sans-serif;
-		outline: none;
+		padding: 0.75rem 1rem;
+		font-size: 1.5rem;
+		font-weight: 700;
+		color: #ffffff;
 		transition: all 0.2s ease;
-		box-sizing: border-box;
 	}
 
 	.contribution-input:focus {
+		outline: none;
 		border-color: #3b82f6;
-		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+		background: rgba(255, 255, 255, 0.06);
 	}
 
-	.contribution-input::placeholder {
-		color: rgba(160, 160, 200, 0.3);
-		font-weight: 400;
-	}
-
-	.contribution-input::-webkit-outer-spin-button,
-	.contribution-input::-webkit-inner-spin-button {
-		-webkit-appearance: none;
-		appearance: none;
-		margin: 0;
-	}
-	.contribution-input[type='number'] {
-		-moz-appearance: textfield;
-		appearance: textfield;
-	}
-
-	.input-currency {
+	.currency {
 		position: absolute;
 		right: 1rem;
-		color: rgba(160, 160, 200, 0.5);
-		font-size: 1.1rem;
-		font-weight: 600;
-		pointer-events: none;
+		font-size: 1.25rem;
+		font-weight: 700;
+		color: rgba(255, 255, 255, 0.2);
 	}
 
-	.allocations {
+	.hint {
+		font-size: 0.7rem;
+		color: rgba(255, 255, 255, 0.3);
+		text-align: center;
+		margin-top: 0.75rem;
+	}
+
+	.results-section {
 		display: flex;
 		flex-direction: column;
-		gap: 0.75rem;
+		gap: 1rem;
 	}
 
-	.allocations-title {
-		font-size: 0.75rem;
-		color: rgba(160, 160, 200, 0.5);
+	.section-heading {
+		font-size: 0.7rem;
+		font-weight: 700;
+		color: rgba(255, 255, 255, 0.4);
 		text-transform: uppercase;
-		letter-spacing: 0.08em;
-		margin: 0 0 0.25rem 0;
-		font-weight: 500;
+		letter-spacing: 0.05em;
+		margin: 0;
 	}
 
-	.allocation-row {
+	.alloc-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.alloc-row {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		padding: 0.85rem 1rem;
-		background: rgba(0, 0, 0, 0.2);
-		border: 1px solid rgba(255, 255, 255, 0.04);
+		padding: 0.75rem;
+		background: rgba(255, 255, 255, 0.02);
+		border-radius: 12px;
 		border-left: 3px solid var(--accent);
-		border-radius: 10px;
-		transition: all 0.2s ease;
+		transition: transform 0.2s ease;
 	}
 
-	.allocation-row:hover {
-		background: rgba(0, 0, 0, 0.3);
-		border-color: rgba(255, 255, 255, 0.08);
-		border-left-color: var(--accent);
+	.alloc-row:hover {
+		transform: translateX(4px);
+		background: rgba(255, 255, 255, 0.04);
 	}
 
 	.alloc-left {
 		display: flex;
 		align-items: center;
-		gap: 0.65rem;
+		gap: 0.75rem;
 	}
 
-	.alloc-icon {
-		font-size: 1.3rem;
-		line-height: 1;
+	.alloc-emoji {
+		font-size: 1.25rem;
+	}
+
+	.alloc-meta {
+		display: flex;
+		flex-direction: column;
 	}
 
 	.alloc-name {
-		display: block;
-		font-size: 0.9rem;
+		font-size: 0.85rem;
 		font-weight: 600;
-		color: #f0f0ff;
+		color: #ffffff;
 	}
 
 	.alloc-shares {
-		display: block;
-		font-size: 0.75rem;
+		font-size: 0.7rem;
 		color: rgba(160, 160, 200, 0.6);
-		margin-top: 0.1rem;
 	}
 
 	.alloc-right {
 		text-align: right;
+		display: flex;
+		flex-direction: column;
 	}
 
-	.alloc-amount {
-		display: block;
-		font-size: 1rem;
+	.alloc-value {
+		font-size: 0.9rem;
 		font-weight: 700;
-		color: var(--accent);
+		color: #10b981;
 	}
 
-	.alloc-weight {
-		display: block;
-		font-size: 0.72rem;
-		color: rgba(160, 160, 200, 0.5);
-		margin-top: 0.1rem;
+	.alloc-percent {
+		font-size: 0.7rem;
+		font-weight: 600;
+		color: rgba(255, 255, 255, 0.3);
 	}
 
-	.result-summary {
+	.total-summary {
 		margin-top: 0.5rem;
-		padding-top: 0.75rem;
-		border-top: 1px solid rgba(255, 255, 255, 0.06);
-	}
-
-	.summary-row {
+		padding: 1rem;
+		background: rgba(255, 255, 255, 0.03);
+		border: 1px dashed rgba(255, 255, 255, 0.1);
+		border-radius: 12px;
 		display: flex;
 		justify-content: space-between;
-		font-size: 0.85rem;
-		color: rgba(200, 200, 220, 0.7);
+		align-items: center;
 	}
 
-	.summary-value {
+	.total-label {
+		font-size: 0.75rem;
+		font-weight: 600;
+		color: rgba(255, 255, 255, 0.4);
+	}
+
+	.total-value {
+		font-size: 0.9rem;
 		font-weight: 700;
-		color: #f0f0ff;
-		font-size: 0.95rem;
+		color: #ffffff;
 	}
 
-	.empty-state {
-		text-align: center;
-		padding: 1.5rem 1rem;
-		color: rgba(160, 160, 200, 0.4);
-		font-size: 0.85rem;
+	/* Remove arrows from number input */
+	input::-webkit-outer-spin-button,
+	input::-webkit-inner-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
+	}
+	input[type=number] {
+		-moz-appearance: textfield;
+		appearance: textfield;
 	}
 </style>
