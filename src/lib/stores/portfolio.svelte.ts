@@ -167,29 +167,42 @@ export class PortfolioStore {
 	get isLocal() { return storageProvider.isLocal; }
 
 	constructor() {
-		this.loadFromStorage();
 		this.initAuth();
 		this.initPolling();
 
-		// Safety timeout: si en 3 segundos no se ha inicializado (por lentitud de la API), 
-		// forzamos la inicialización para mostrar el dashboard con lo que tengamos.
-		if (typeof window !== 'undefined') {
-			setTimeout(() => {
-				if (!this.isInitialized) {
-					console.warn('Initialization timeout - forcing display');
-					this.loading = false;
-					this.isInitialized = true;
-				}
-			}, 3000);
-		}
 	}
 
 	// --- Private Methods ---
-	private initAuth() {
+	private async initAuth() {
 		if (typeof window === 'undefined' || !storageProvider.onAuthStateChanged) return;
+		
+		// Iniciar carga local inmediatamente para no bloquear la UI
+		this.loadFromStorage();
+		this.isInitialized = true;
+		this.loading = false;
+		this.fetchPrices();
+
+		// Manejar el resultado de redirección (si venimos de un login por redirect)
+		if (!storageProvider.isLocal) {
+			try {
+				const { auth } = await import('$lib/firebase');
+				if (auth) {
+					const { getRedirectResult } = await import('firebase/auth');
+					await getRedirectResult(auth);
+				}
+			} catch (e) {
+				console.error('Redirect result error:', e);
+			}
+		}
+
 		this.authUnsubscribe = storageProvider.onAuthStateChanged(async (user) => {
 			this.user = user;
-			if (user) await this.loadFromCloud();
+			if (user) {
+				// Carga de la nube en segundo plano, sin poner loading=true si ya tenemos datos
+				await this.loadFromCloud();
+			}
+			this.isInitialized = true;
+			this.loading = false;
 		}) as (() => void) | undefined;
 	}
 
@@ -272,9 +285,14 @@ export class PortfolioStore {
 				if (data.stockAssets && Array.isArray(data.stockAssets)) {
 					this.stockAssets = data.stockAssets;
 				}
-			} else if (Object.keys(this.holdings).length > 0) {
-				// MIGRACIÓN SILENCIOSA: La nube está vacía pero hay datos en local
-				console.log('CoreBalance: Migrando datos locales a la nube...');
+			} else if (
+				Object.keys(this.holdings).length > 0 || 
+				this.coreAssets.length > 0 || 
+				this.satelliteAssets.length > 0 || 
+				this.stockAssets.length > 0
+			) {
+				// MIGRACIÓN SILENCIOSA: La nube está vacía pero hay configuración local
+				console.log('CoreBalance: Migrando configuración local a la nube...');
 				await this.saveToCloud();
 			}
 			
@@ -402,13 +420,9 @@ export class PortfolioStore {
 			const savedHoldings = localStorage.getItem(STORAGE_KEY_HOLDINGS);
 			if (savedHoldings) {
 				const parsed = JSON.parse(savedHoldings);
-				if (Object.keys(parsed).length > 0) {
-					this.holdings = parsed;
-				} else {
-					this.setDemoData();
-				}
+				this.holdings = parsed || {};
 			} else {
-				this.setDemoData();
+				this.holdings = {};
 			}
 
 			const savedContribution = localStorage.getItem(STORAGE_KEY_CONTRIBUTION);
@@ -419,7 +433,6 @@ export class PortfolioStore {
 			this.isPrivate = localStorage.getItem('corebalance_privacy') === 'true';
 		} catch (e) {
 			console.error('Storage access error (possibly incognito):', e);
-			this.setDemoData(); // Fallback a datos demo si falla el storage
 		}
 	}
 
@@ -441,19 +454,12 @@ export class PortfolioStore {
 				await storageProvider.logout();
 			}
 			this.user = null;
-			this.holdings = {};
-			this.contribution = 0;
-			this.isPrivate = false;
-			// Resetear activos a defaults
-			this.coreAssets = [...DEFAULT_CORE_ASSETS];
-			this.satelliteAssets = [...DEFAULT_SATELLITE_ASSETS];
-			this.stockAssets = [...DEFAULT_STOCK_ASSETS];
-			localStorage.removeItem(STORAGE_KEY_HOLDINGS);
-			localStorage.removeItem(STORAGE_KEY_CONTRIBUTION);
-			localStorage.removeItem('corebalance_privacy');
-			localStorage.removeItem(STORAGE_KEY_ASSETS);
-			this.setDemoData();
+			this.history = [];
+			
+			// Recargar datos locales inmediatamente después de desloguear
+			this.loadFromStorage();
 			this.initPolling();
+			this.fetchPrices();
 		} catch (e) {
 			console.error('Logout error:', e);
 		}
@@ -573,30 +579,6 @@ export class PortfolioStore {
 	/** Comprobar si un ticker ya existe en alguna categoría */
 	hasAsset(ticker: string): boolean {
 		return this.allUserTickers.includes(ticker);
-	}
-
-	setDemoData() {
-		// Solo ponemos datos demo si no hay usuario logueado
-		// para no pisar datos reales accidentalmente durante la inicialización
-		if (this.user) return;
-
-		// Cargamos holdings demo para los activos por defecto
-		const defaultHoldings: Record<string, { shares: number, avgCost: number }> = {};
-		
-		// Llenar dinámicamente para evitar errores si cambian las listas por defecto
-		if (DEFAULT_CORE_ASSETS[0]) defaultHoldings[DEFAULT_CORE_ASSETS[0].ticker] = { shares: 10.5, avgCost: 100.25 };
-		if (DEFAULT_CORE_ASSETS[1]) defaultHoldings[DEFAULT_CORE_ASSETS[1].ticker] = { shares: 5.2, avgCost: 80.80 };
-		if (DEFAULT_CORE_ASSETS[2]) defaultHoldings[DEFAULT_CORE_ASSETS[2].ticker] = { shares: 20.0, avgCost: 50.45 };
-		
-		if (DEFAULT_SATELLITE_ASSETS[0]) defaultHoldings[DEFAULT_SATELLITE_ASSETS[0].ticker] = { shares: 100, avgCost: 10.30 };
-		
-		if (DEFAULT_STOCK_ASSETS[0]) defaultHoldings[DEFAULT_STOCK_ASSETS[0].ticker] = { shares: 5, avgCost: 400.45 };
-		if (DEFAULT_STOCK_ASSETS[1]) defaultHoldings[DEFAULT_STOCK_ASSETS[1].ticker] = { shares: 10, avgCost: 180.025 };
-		if (DEFAULT_STOCK_ASSETS[2]) defaultHoldings[DEFAULT_STOCK_ASSETS[2].ticker] = { shares: 2, avgCost: 2500.00 };
-		if (DEFAULT_STOCK_ASSETS[3]) defaultHoldings[DEFAULT_STOCK_ASSETS[3].ticker] = { shares: 15, avgCost: 160.00 };
-
-		this.holdings = defaultHoldings;
-		this.contribution = 500;
 	}
 }
 

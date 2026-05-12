@@ -56,9 +56,18 @@ export class FirebaseStorage implements StorageProvider {
 	async login(): Promise<void> {
 		if (!auth) return;
 		try {
+			// Intentar con Popup primero (mejor UX)
 			await signInWithPopup(auth, googleProvider);
-		} catch (e) {
+		} catch (e: any) {
 			console.error('Login error:', e);
+			
+			// Si el navegador bloqueó el popup o hubo un error similar, intentar con Redirect
+			if (e.code === 'auth/popup-blocked' || e.code === 'auth/cancelled-popup-request') {
+				const { signInWithRedirect } = await import('firebase/auth');
+				await signInWithRedirect(auth, googleProvider);
+			} else {
+				alert(`Error al iniciar sesión: ${e.message}`);
+			}
 		}
 	}
 

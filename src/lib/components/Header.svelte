@@ -6,25 +6,50 @@
 
 	interface Props {
 		timestamp: string | null;
-		loading: boolean;
-		onRefresh: () => void;
-		isPrivate: boolean;
 		onTogglePrivacy: () => void;
 		onManageAssets: () => void;
 	}
 
-	let { timestamp, loading, onRefresh, isPrivate, onTogglePrivacy, onManageAssets }: Props = $props();
+	let { timestamp, onTogglePrivacy, onManageAssets }: Props = $props();
 
-	let scrolled = $state(false);
+	let loading = $derived(portfolio.loading);
+	let isPrivate = $derived(portfolio.isPrivate);
+	let showUserMenu = $state(false);
 	let showSyncModal = $state(false);
+	let scrolled = $state(false);
+
+	function onRefresh() {
+		portfolio.fetchPrices();
+	}
+
+	function toggleUserMenu(event: MouseEvent) {
+		event.stopPropagation();
+		showUserMenu = !showUserMenu;
+	}
+
+	function handleKeyDown(event: KeyboardEvent) {
+		if (event.key === 'Escape') showUserMenu = false;
+	}
 
 	onMount(() => {
 		const handleScroll = () => {
-			scrolled = window.scrollY > 10;
+			scrolled = window.scrollY > 20;
 		};
+		const handleClick = () => {
+			showUserMenu = false;
+		};
+
 		window.addEventListener('scroll', handleScroll, { passive: true });
+		window.addEventListener('click', handleClick);
+		window.addEventListener('keydown', handleKeyDown);
+		
 		handleScroll();
-		return () => window.removeEventListener('scroll', handleScroll);
+		
+		return () => {
+			window.removeEventListener('scroll', handleScroll);
+			window.removeEventListener('click', handleClick);
+			window.removeEventListener('keydown', handleKeyDown);
+		};
 	});
 
 	const formattedTime = $derived(
@@ -125,17 +150,44 @@
 		{#if !portfolio.isLocal}
 			<div class="user-zone">
 				{#if portfolio.user}
-					<button 
-						class="action-btn user-btn" 
-						onclick={() => portfolio.logout()}
-						title="Cerrar sesión ({portfolio.user.email})"
-					>
-						{#if portfolio.user.photoURL}
-							<img src={portfolio.user.photoURL} alt="User" class="user-avatar" />
-						{:else}
-							<span class="user-initial">{portfolio.user.email?.[0].toUpperCase()}</span>
+					<div class="user-container">
+						<button 
+							class="action-btn user-btn" 
+							onclick={toggleUserMenu}
+							title="Opciones de usuario"
+						>
+							{#if portfolio.user.photoURL}
+								<img src={portfolio.user.photoURL} alt="User" class="user-avatar" />
+							{:else}
+								<span class="user-initial">{portfolio.user.email?.[0].toUpperCase()}</span>
+							{/if}
+						</button>
+
+						{#if showUserMenu}
+							<div 
+								class="user-dropdown" 
+								role="menu" 
+								tabindex="-1"
+								onkeydown={(e) => e.key === 'Escape' && (showUserMenu = false)}
+								onclick={(e) => e.stopPropagation()}
+							>
+								<div class="dropdown-header">
+									<span class="user-email">{portfolio.user.email}</span>
+								</div>
+								<div class="dropdown-divider"></div>
+								<button 
+									class="dropdown-item logout" 
+									role="menuitem"
+									onclick={() => { portfolio.logout(); showUserMenu = false; }}
+								>
+									<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2.5">
+										<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
+									</svg>
+									<span>Cerrar Sesión</span>
+								</button>
+							</div>
 						{/if}
-					</button>
+					</div>
 				{:else}
 					<button 
 						class="login-pill" 
@@ -354,6 +406,98 @@
 		font-weight: 800;
 		color: #3b82f6;
 		font-size: 1rem;
+	}
+
+	/* User Dropdown */
+	.user-container {
+		position: relative;
+	}
+
+	.user-dropdown {
+		position: absolute;
+		top: calc(100% + 12px);
+		right: 0;
+		width: 220px;
+		background: rgba(255, 255, 255, 0.95);
+		backdrop-filter: blur(20px);
+		-webkit-backdrop-filter: blur(20px);
+		border-radius: 16px;
+		border: 1px solid rgba(255, 255, 255, 0.2);
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+		z-index: 1000;
+		padding: 0.5rem;
+		transform-origin: top right;
+		animation: dropdownFade 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	:global(.dark) .user-dropdown {
+		background: rgba(30, 41, 59, 0.95);
+		border-color: rgba(255, 255, 255, 0.05);
+	}
+
+	@keyframes dropdownFade {
+		from { opacity: 0; transform: scale(0.95) translateY(-10px); }
+		to { opacity: 1; transform: scale(1) translateY(0); }
+	}
+
+	.dropdown-header {
+		padding: 0.75rem 0.75rem 0.5rem;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.user-email {
+		font-size: 0.8rem;
+		color: #64748b;
+		word-break: break-all;
+		font-weight: 500;
+	}
+
+	.dropdown-divider {
+		height: 1px;
+		background: rgba(0, 0, 0, 0.05);
+		margin: 0.5rem 0;
+	}
+
+	:global(.dark) .dropdown-divider {
+		background: rgba(255, 255, 255, 0.05);
+	}
+
+	.dropdown-item {
+		width: 100%;
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 0.75rem;
+		border: none;
+		background: transparent;
+		color: #1e293b;
+		font-size: 0.9rem;
+		font-weight: 600;
+		border-radius: 10px;
+		cursor: pointer;
+		transition: all 0.2s;
+		text-align: left;
+	}
+
+	:global(.dark) .dropdown-item {
+		color: #f1f5f9;
+	}
+
+	.dropdown-item:hover {
+		background: rgba(0, 0, 0, 0.03);
+	}
+
+	:global(.dark) .dropdown-item:hover {
+		background: rgba(255, 255, 255, 0.03);
+	}
+
+	.dropdown-item.logout {
+		color: #ef4444;
+	}
+
+	.dropdown-item.logout:hover {
+		background: rgba(239, 68, 68, 0.08);
 	}
 
 	/* Loading Bar */

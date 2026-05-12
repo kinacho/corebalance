@@ -51,7 +51,7 @@
 		if (chart && history.length > 0) {
 			const first = history[0];
 			
-			chart.data.labels = history.map((p, i) => {
+			chart.data.labels = history.map((p: any, i: number) => {
 				const date = new Date(p.date);
 				return date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }).replace('.', '');
 			});
@@ -64,19 +64,19 @@
 			};
 
 			// Dataset 0: Total
-			chart.data.datasets[0].data = history.map(p => transform(p.total, first.total));
+			chart.data.datasets[0].data = history.map((p: any) => transform(p.total, first.total));
 			chart.data.datasets[0].hidden = hiddenDatasets.includes('Total');
 
 			// Dataset 1: Principal
-			chart.data.datasets[1].data = history.map(p => transform(p.core, first.core));
+			chart.data.datasets[1].data = history.map((p: any) => transform(p.core, first.core));
 			chart.data.datasets[1].hidden = hiddenDatasets.includes('Principal');
 
 			// Dataset 2: Acciones
-			chart.data.datasets[2].data = history.map(p => transform(p.stocks, first.stocks));
+			chart.data.datasets[2].data = history.map((p: any) => transform(p.stocks, first.stocks));
 			chart.data.datasets[2].hidden = hiddenDatasets.includes('Acciones');
 
 			// Dataset 3: Conservadora
-			chart.data.datasets[3].data = history.map(p => transform(p.satellite, first.satellite));
+			chart.data.datasets[3].data = history.map((p: any) => transform(p.satellite, first.satellite));
 			chart.data.datasets[3].hidden = hiddenDatasets.includes('Conservadora');
 
 			// Dataset 4: Invertido

@@ -92,13 +92,13 @@
       ...portfolio.satelliteState.positions,
     ];
     return {
-      labels: allPositions.map((p) => p.asset.name),
-      values: allPositions.map((p) =>
+      labels: allPositions.map((p: any) => p.asset.name),
+      values: allPositions.map((p: any) =>
         portfolio.globalCapital > 0
           ? (p.totalValue / portfolio.globalCapital) * 100
           : 0,
       ),
-      colors: allPositions.map((p) => p.asset.color),
+      colors: allPositions.map((p: any) => p.asset.color),
     };
   });
 
@@ -106,11 +106,11 @@
     const positions = portfolio.portfolioState.positions;
     const total = portfolio.portfolioState.totalCapital;
     return {
-      labels: positions.map((p) => p.asset.name),
-      values: positions.map((p) =>
+      labels: positions.map((p: any) => p.asset.name),
+      values: positions.map((p: any) =>
         total > 0 ? (p.totalValue / total) * 100 : 0,
       ),
-      colors: positions.map((p) => p.asset.color),
+      colors: positions.map((p: any) => p.asset.color),
     };
   });
 
@@ -139,9 +139,6 @@
 <div class="app-container" class:privacy-mode={portfolio.isPrivate}>
   <Header
     timestamp={portfolio.timestamp}
-    loading={portfolio.loading}
-    isPrivate={portfolio.isPrivate}
-    onRefresh={() => portfolio.fetchPrices()}
     onTogglePrivacy={() => portfolio.togglePrivacy()}
     onManageAssets={() => (showManageAssets = true)}
   />

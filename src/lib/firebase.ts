@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, setPersistence, browserLocalPersistence } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 // Estas variables deben configurarse en Vercel y en un archivo .env local
@@ -22,6 +22,12 @@ if (firebaseConfig.apiKey) {
 	try {
 		app = initializeApp(firebaseConfig);
 		auth = getAuth(app);
+		
+		// Configurar persistencia local
+		setPersistence(auth, browserLocalPersistence).catch(err => {
+			console.error('Error al configurar persistencia:', err);
+		});
+
 		db = getFirestore(app);
 		googleProvider = new GoogleAuthProvider();
 		// Forzar a Google a mostrar el selector de cuentas al hacer login
