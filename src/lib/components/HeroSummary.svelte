@@ -19,8 +19,9 @@
 </script>
 
 {#if !portfolio.loading || Object.keys(portfolio.prices).length > 0}
-	<section class="hero-summary glass" aria-label="Resumen de capital">
+	<section id="tour-global-summary" class="hero-summary glass" aria-label="Resumen de capital">
 		<div class="hero-primary">
+
 			<span class="summary-label">Capital Global</span>
 			<div class="summary-value privacy-blur">{formatEUR($tweenedGlobalCapital)}</div>
 			{#if portfolio.satelliteState.totalCapital > 0 || portfolio.stockState.totalCapital > 0}

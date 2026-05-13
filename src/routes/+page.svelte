@@ -10,7 +10,9 @@
   import ManageAssets from "$lib/components/ManageAssets.svelte";
   import Projections from "$lib/components/Projections.svelte";
   import PaypalDonation from "$lib/components/PaypalDonation.svelte";
+  import OnboardingTour from "$lib/components/OnboardingTour.svelte";
   import { portfolio } from "$lib/stores/portfolio.svelte";
+
   import { formatEUR, formatPercent } from "$lib/utils";
   import { DASHBOARD_TABS, type TabId } from "$lib/constants";
 
@@ -117,8 +119,27 @@
   // --- Lifecycle ---
   onMount(() => {
     portfolio.fetchPrices();
+
+    // Listener para el Tour (cambio automático de pestañas en móvil)
+    const handleTourStep = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail && customEvent.detail.target) {
+        // Forzamos el cambio de pestaña independientemente de la resolución
+        // porque el panel de rebalanceo está en la barra lateral en desktop (siempre visible)
+        // pero en móvil está en su propia pestaña.
+        if (window.innerWidth < 1024) {
+          switchTab(customEvent.detail.target);
+        }
+      }
+    };
+    window.addEventListener('tour-step', handleTourStep);
+
+    return () => {
+      window.removeEventListener('tour-step', handleTourStep);
+    };
   });
 </script>
+
 
 <svelte:head>
   <title>CoreBalance — Dashboard de Inversión</title>
@@ -143,7 +164,10 @@
     onManageAssets={() => (showManageAssets = true)}
   />
 
+  <OnboardingTour />
+
   <main class="main-content">
+
     <!-- Notifications Area -->
     {#if portfolio.error}
       <div class="error-banner" role="alert">

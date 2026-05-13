@@ -111,8 +111,10 @@
 		{/if}
 		
 		<button
+			id="tour-manage-btn"
 			class="action-btn"
 			onclick={onManageAssets}
+
 			title="Gestionar activos"
 			aria-label="Gestionar activos"
 		>
@@ -179,8 +181,9 @@
 			</svg>
 		</button>
 
-		<div class="user-zone">
+		<div id="tour-sync-auth" class="user-zone">
 			{#if !authReady}
+
 				<div class="auth-skeleton"></div>
 			{:else if portfolio.user}
 				<div class="user-container" in:scale={{ duration: 300, start: 0.9 }}>
