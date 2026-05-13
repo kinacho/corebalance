@@ -3,7 +3,7 @@
 	import { storageProvider } from '$lib/db';
 	import { onMount } from 'svelte';
 	import QRCode from 'qrcode';
-	import { formatDate } from '$lib/utils';
+	import { formatDate, validateImportData } from '../utils';
 
 
 	interface Props {
@@ -130,10 +130,30 @@
 		};
 		reader.readAsText(file);
 	}
+	onMount(() => {
+		const handleKeydown = (e: KeyboardEvent) => {
+			if (e.key === 'Escape') onClose();
+		};
+		window.addEventListener('keydown', handleKeydown);
+		return () => window.removeEventListener('keydown', handleKeydown);
+	});
 </script>
 
-<div class="modal-backdrop" transition:fade={{ duration: 200 }}>
-	<div class="modal-content">
+<div 
+	class="modal-backdrop" 
+	transition:fade={{ duration: 200 }} 
+	onclick={(e) => e.target === e.currentTarget && onClose()}
+	onkeydown={(e) => (e.key === 'Enter' || e.key === ' ') && e.target === e.currentTarget && onClose()}
+	role="button"
+	tabindex="0"
+	aria-label="Cerrar modal"
+>
+	<div 
+		class="modal-content" 
+		onclick={(e) => e.stopPropagation()}
+		onkeydown={(e) => e.stopPropagation()}
+		role="presentation"
+	>
 		<button class="close-btn" onclick={onClose} aria-label="Cerrar">
 			<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
 				<line x1="18" y1="6" x2="6" y2="18"></line>
@@ -261,9 +281,11 @@
 		backdrop-filter: blur(8px);
 		z-index: 1000;
 		display: flex;
-		align-items: center;
+		align-items: flex-start;
 		justify-content: center;
 		padding: 1rem;
+		overflow-y: auto;
+		-webkit-overflow-scrolling: touch;
 	}
 
 	.modal-content {
@@ -275,6 +297,30 @@
 		padding: 2rem;
 		position: relative;
 		box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+		margin-top: auto;
+		margin-bottom: auto;
+	}
+
+	@media (max-width: 480px) {
+		.modal-content {
+			padding: 1.5rem 1.5rem 3rem 1.5rem;
+			border-radius: 28px 28px 0 0;
+			margin-top: 2rem;
+			margin-bottom: 0;
+			min-height: calc(100% - 2rem);
+		}
+
+		.close-btn {
+			top: 1rem !important;
+			right: 1rem !important;
+			width: 36px !important;
+			height: 36px !important;
+		}
+
+		.modal-title {
+			font-size: 1.25rem !important;
+			margin-top: 0.5rem;
+		}
 	}
 
 	.close-btn {
@@ -415,8 +461,15 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		min-height: 320px;
+		min-height: 280px;
 		margin-bottom: 1.5rem;
+	}
+
+	@media (max-width: 480px) {
+		.qr-container {
+			min-height: 240px;
+			padding: 0.75rem;
+		}
 	}
 
 	.qr-image {
