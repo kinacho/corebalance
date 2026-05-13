@@ -176,11 +176,17 @@ export class PortfolioStore {
 	private async initAuth() {
 		if (typeof window === 'undefined' || !storageProvider.onAuthStateChanged) return;
 		
-		// Iniciar carga local inmediatamente para no bloquear la UI
+		// Iniciar carga local inmediatamente
 		this.loadFromStorage();
+		
+		// Retardo artificial para asegurar que los runes de Svelte se propaguen
+		// y evitar el salto de "0" a valor real mientras desaparece el SplashScreen
+		await new Promise(resolve => setTimeout(resolve, 500));
+
 		this.isInitialized = true;
 		this.loading = false;
 		this.fetchPrices();
+
 
 		// Manejar el resultado de redirección (si venimos de un login por redirect)
 		if (!storageProvider.isLocal) {
