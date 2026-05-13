@@ -1,4 +1,4 @@
-import { DEFAULT_CORE_ASSETS, DEFAULT_SATELLITE_ASSETS, DEFAULT_STOCK_ASSETS, STORAGE_KEY_HOLDINGS, STORAGE_KEY_CONTRIBUTION, STORAGE_KEY_ASSETS } from '$lib/constants';
+import { DEFAULT_CORE_ASSETS, DEFAULT_SATELLITE_ASSETS, DEFAULT_STOCK_ASSETS, STORAGE_KEY_HOLDINGS, STORAGE_KEY_CONTRIBUTION, STORAGE_KEY_ASSETS, STORAGE_KEY_PRICES } from '$lib/constants';
 import type { Asset, HoldingData, HoldingsMap, PortfolioState, PriceData, RebalanceResult } from '$lib/types';
 import { calculatePortfolioState, calculateRebalance } from '$lib/rebalance';
 import { storageProvider } from '$lib/db';
@@ -386,13 +386,15 @@ export class PortfolioStore {
 			localStorage.setItem(STORAGE_KEY_HOLDINGS, JSON.stringify(this.holdings));
 			localStorage.setItem(STORAGE_KEY_CONTRIBUTION, this.contribution.toString());
 			localStorage.setItem('corebalance_privacy', this.isPrivate.toString());
-			// Guardar configuración de activos en localStorage
 			localStorage.setItem(STORAGE_KEY_ASSETS, JSON.stringify({
 				coreAssets: this.coreAssets,
 				satelliteAssets: this.satelliteAssets,
 				stockAssets: this.stockAssets
 			}));
+			// Caché de precios para carga instantánea
+			localStorage.setItem(STORAGE_KEY_PRICES, JSON.stringify(this.prices));
 		} catch (e) {
+
 			console.warn('Storage save failed (possibly incognito or quota full):', e);
 		}
 		this.saveToCloud();
@@ -431,7 +433,14 @@ export class PortfolioStore {
 			}
 
 			this.isPrivate = localStorage.getItem('corebalance_privacy') === 'true';
+
+			// Cargar caché de precios
+			const savedPrices = localStorage.getItem(STORAGE_KEY_PRICES);
+			if (savedPrices) {
+				this.prices = JSON.parse(savedPrices) || {};
+			}
 		} catch (e) {
+
 			console.error('Storage access error (possibly incognito):', e);
 		}
 	}
@@ -491,6 +500,12 @@ export class PortfolioStore {
 			// Asegurar que prices no sea null
 			this.prices = data.prices || {};
 			this.timestamp = data.timestamp || new Date().toISOString();
+			
+			// Actualizar caché
+			if (typeof localStorage !== 'undefined') {
+				localStorage.setItem(STORAGE_KEY_PRICES, JSON.stringify(this.prices));
+			}
+
 
 			if (this.user) {
 				await this.updateHistoryPoints();

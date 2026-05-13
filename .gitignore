@@ -21,3 +21,16 @@ Thumbs.db
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Tests
+/test-results
+/playwright-report
+/blob-report
+/playwright/.cache
+/coverage
+*.test.ts
+*.spec.ts
+src/setupTest.ts
+vitest.config.ts
+playwright.config.ts
+
