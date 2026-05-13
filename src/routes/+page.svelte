@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
+  import QRCode from "qrcode";
   import Header from "$lib/components/Header.svelte";
   import AssetCard from "$lib/components/AssetCard.svelte";
   import PortfolioSection from "$lib/components/PortfolioSection.svelte";
@@ -124,14 +125,13 @@
     const handleTourStep = (e: Event) => {
       const customEvent = e as CustomEvent;
       if (customEvent.detail && customEvent.detail.target) {
-        // Forzamos el cambio de pestaña independientemente de la resolución
-        // porque el panel de rebalanceo está en la barra lateral en desktop (siempre visible)
-        // pero en móvil está en su propia pestaña.
         if (window.innerWidth < 1024) {
-          switchTab(customEvent.detail.target);
+          // Cambiamos la pestaña pero indicamos que es por el tour para no disparar el scroll automático
+          activeTab = customEvent.detail.target;
         }
       }
     };
+
     window.addEventListener('tour-step', handleTourStep);
 
     return () => {

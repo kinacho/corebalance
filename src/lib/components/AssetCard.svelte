@@ -23,6 +23,13 @@
 	const displayHoldings = $derived(position.holdings.toString());
 	const displayAvgCost = $derived(position.avgCost.toString());
 
+	const currentPerfValue = $derived(
+		perfFilter === 'YTD' ? position.ytdChangePercent 
+		: perfFilter === 'MTD' ? position.mtdChangePercent 
+		: position.oneMonthChangePercent
+	);
+
+
 	const isCrypto = $derived(
 		['btc', 'eth'].some(t => position.asset.ticker.toLowerCase().includes(t)) || 
 		['bitcoin', 'ethereum'].some(n => position.asset.name.toLowerCase().includes(n))
@@ -204,8 +211,8 @@
 			</div>
 			<button 
 				class="metric pnl-metric clickable-metric" 
-				class:positive={((perfFilter === 'YTD' ? position.ytdChangePercent : perfFilter === 'MTD' ? position.mtdChangePercent : position.oneMonthChangePercent) ?? 0) > 0} 
-				class:negative={((perfFilter === 'YTD' ? position.ytdChangePercent : perfFilter === 'MTD' ? position.mtdChangePercent : position.oneMonthChangePercent) ?? 0) < 0}
+				class:positive={(currentPerfValue ?? 0) > 0} 
+				class:negative={(currentPerfValue ?? 0) < 0}
 				onclick={() => {
 					if (perfFilter === 'YTD') perfFilter = 'MTD';
 					else if (perfFilter === 'MTD') perfFilter = '1M';
@@ -221,8 +228,8 @@
 				</span>
 				<div class="metric-content">
 					<span class="profit-tag" style="margin-left: 0;">
-						{((perfFilter === 'YTD' ? position.ytdChangePercent : perfFilter === 'MTD' ? position.mtdChangePercent : position.oneMonthChangePercent) !== undefined) 
-							? (((perfFilter === 'YTD' ? position.ytdChangePercent : perfFilter === 'MTD' ? position.mtdChangePercent : position.oneMonthChangePercent) ?? 0) > 0 ? '+' : '') + formatPercent((perfFilter === 'YTD' ? position.ytdChangePercent : perfFilter === 'MTD' ? position.mtdChangePercent : position.oneMonthChangePercent) ?? 0) 
+						{currentPerfValue !== undefined 
+							? ((currentPerfValue ?? 0) > 0 ? '+' : '') + formatPercent(currentPerfValue ?? 0) 
 							: '--'}
 					</span>
 				</div>

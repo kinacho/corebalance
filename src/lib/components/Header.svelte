@@ -5,6 +5,7 @@
 	import { formatDateTime } from '$lib/utils';
 	import SyncModal from './SyncModal.svelte';
 
+
 	interface Props {
 		timestamp: string | null;
 		onTogglePrivacy: () => void;
@@ -91,12 +92,10 @@
 
 <header class="dashboard-header" class:scrolled={scrolled}>
 	<div class="header-left">
+		<img src="/favicon.png" alt="CoreBalance Logo" class="logo-img" />
 		<div class="logo-group">
-			<img src="/favicon.png" alt="CoreBalance Logo" class="logo-img" />
-			<div>
-				<h1 class="logo-title">CoreBalance</h1>
-				<p class="logo-subtitle">{portfolio.targetLabel}</p>
-			</div>
+			<h1 class="logo-title">CoreBalance</h1>
+			<p class="logo-subtitle">{portfolio.targetLabel}</p>
 		</div>
 	</div>
 
@@ -319,28 +318,33 @@
 	.header-left {
 		display: flex;
 		align-items: center;
+		gap: 0.75rem;
 		min-width: 0;
+		flex: 1;
 	}
 
 	.logo-group {
 		display: flex;
-		align-items: center;
-		gap: 0.6rem;
+		flex-direction: column;
+		min-width: 0;
 	}
 
 	.logo-img {
 		width: 32px;
 		height: 32px;
-		object-fit: contain;
+		flex-shrink: 0;
 	}
 
 	.logo-title {
 		font-size: 1.15rem;
-		font-weight: 700;
-		color: #f0f0ff;
-		letter-spacing: -0.02em;
+		font-weight: 800;
+		color: #fff;
 		margin: 0;
-		line-height: 1.2;
+		letter-spacing: -0.02em;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		flex-shrink: 1;
 	}
 
 	.logo-subtitle {
@@ -349,7 +353,15 @@
 		font-weight: 500;
 		letter-spacing: 0.05em;
 		margin: 0;
+		display: none; /* Ocultar por defecto en móvil */
 	}
+
+	@media (min-width: 400px) {
+		.logo-subtitle {
+			display: block;
+		}
+	}
+
 
 	.header-right {
 		display: flex;
@@ -379,9 +391,9 @@
 	}
 
 	.action-btn {
-		width: 40px;
-		height: 40px;
-		border-radius: 12px;
+		width: 34px; /* Un poco más pequeños en móvil */
+		height: 34px;
+		border-radius: 10px;
 		border: 1px solid rgba(255, 255, 255, 0.08);
 		background: rgba(255, 255, 255, 0.04);
 		color: rgba(160, 160, 200, 0.8);
@@ -391,6 +403,7 @@
 		justify-content: center;
 		transition: all 0.2s ease;
 		-webkit-tap-highlight-color: transparent;
+		flex-shrink: 0;
 	}
 
 	.action-btn:hover {
@@ -474,18 +487,20 @@
 	.login-pill {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
-		padding: 0.5rem 1rem;
+		gap: 0.4rem;
+		padding: 0.4rem 0.75rem;
 		background: #3b82f6;
 		color: white;
 		border: none;
 		border-radius: 100px;
 		font-weight: 700;
-		font-size: 0.85rem;
+		font-size: 0.75rem;
 		cursor: pointer;
 		transition: all 0.2s;
 		box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+		white-space: nowrap;
 	}
+
 
 	.login-pill:hover {
 		background: #2563eb;
@@ -701,6 +716,17 @@
 		.logo-title { font-size: 1.5rem; }
 
 		.header-right { gap: 0.75rem; }
+		
+		.action-btn {
+			width: 40px;
+			height: 40px;
+		}
+		
+		.login-pill {
+			font-size: 0.85rem;
+			padding: 0.5rem 1rem;
+		}
+
 
 		.timestamp {
 			display: flex;

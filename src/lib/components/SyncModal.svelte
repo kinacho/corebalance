@@ -2,8 +2,9 @@
 	import { fade, slide } from 'svelte/transition';
 	import { storageProvider } from '$lib/db';
 	import { onMount } from 'svelte';
-	import QRCode from 'qrcode';
+	import * as QRCode from 'qrcode';
 	import { formatDate, validateImportData } from '../utils';
+
 
 
 	interface Props {
