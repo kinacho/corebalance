@@ -466,10 +466,12 @@ export class PortfolioStore {
 	async login() {
 		this.authLoading = true;
 		try {
-			await storageProvider.login();
-			// Forzar F5 tras login exitoso para asegurar estado limpio
-			if (typeof window !== 'undefined') {
-				window.location.reload();
+			if (storageProvider.login) {
+				await storageProvider.login();
+				// Forzar F5 tras login exitoso para asegurar estado limpio
+				if (typeof window !== 'undefined') {
+					window.location.reload();
+				}
 			}
 		} catch (e) {
 			console.error('Error durante el login:', e);
@@ -477,6 +479,7 @@ export class PortfolioStore {
 			this.authLoading = false;
 		}
 	}
+
 
 
 
