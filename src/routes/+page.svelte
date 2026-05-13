@@ -10,7 +10,9 @@
   import RebalancePanel from "$lib/components/RebalancePanel.svelte";
   import ManageAssets from "$lib/components/ManageAssets.svelte";
   import Projections from "$lib/components/Projections.svelte";
+  import CrisisSimulator from "$lib/components/CrisisSimulator.svelte";
   import PaypalDonation from "$lib/components/PaypalDonation.svelte";
+
   import OnboardingTour from "$lib/components/OnboardingTour.svelte";
   import { portfolio } from "$lib/stores/portfolio.svelte";
 
@@ -239,6 +241,9 @@
       </div>
     </section>
 
+
+
+
     <!-- Content Grid -->
     <div class="dashboard-grid">
       <!-- Assets Column -->
@@ -280,7 +285,12 @@
         <div class="sidebar-item" class:tab-hidden={activeTab !== "rebalance"}>
           <Projections />
         </div>
+
+        <div class="sidebar-item" class:tab-hidden={activeTab !== "rebalance"}>
+          <CrisisSimulator />
+        </div>
       </aside>
+
     </div>
 
     <footer class="app-footer">

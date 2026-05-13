@@ -122,7 +122,9 @@
 
 <style>
 	.panel {
+		width: 100%;
 		background: rgba(255, 255, 255, 0.03);
+
 		backdrop-filter: blur(24px) saturate(200%);
 		-webkit-backdrop-filter: blur(24px) saturate(200%);
 		border: 1px solid rgba(255, 255, 255, 0.08);

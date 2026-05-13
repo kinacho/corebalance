@@ -46,3 +46,5 @@ export const DASHBOARD_TABS = [
 ] as const;
 
 export type TabId = 'assets' | 'rebalance' | 'charts';
+
+
