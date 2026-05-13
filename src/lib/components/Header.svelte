@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { fade, fly, scale } from 'svelte/transition';
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { onMount } from 'svelte';
 	import { formatDateTime } from '$lib/utils';
@@ -13,10 +14,13 @@
 	let { timestamp, onTogglePrivacy, onManageAssets }: Props = $props();
 
 	let loading = $derived(portfolio.loading);
+	let authLoading = $derived(portfolio.authLoading);
+	let authReady = $derived(portfolio.authReady);
 	let isPrivate = $derived(portfolio.isPrivate);
 	let showUserMenu = $state(false);
 	let showSyncModal = $state(false);
 	let scrolled = $state(false);
+	let authNotification = $state<{ type: 'success' | 'info', message: string } | null>(null);
 
 	function onRefresh() {
 		portfolio.fetchPrices();
@@ -27,9 +31,28 @@
 		showUserMenu = !showUserMenu;
 	}
 
+	function showNotification(message: string, type: 'success' | 'info' = 'success') {
+		authNotification = { message, type };
+		setTimeout(() => {
+			authNotification = null;
+		}, 3000);
+	}
+
 	function handleKeyDown(event: KeyboardEvent) {
 		if (event.key === 'Escape') showUserMenu = false;
 	}
+
+	// Reaccionar a cambios de usuario para notificaciones
+	let lastUserUid = $state<string | null>(null);
+	$effect(() => {
+		const currentUserUid = portfolio.user?.uid || null;
+		if (lastUserUid === null && currentUserUid) {
+			showNotification(`¡Bienvenido de nuevo!`);
+		} else if (lastUserUid && currentUserUid === null) {
+			showNotification(`Sesión cerrada correctamente`, 'info');
+		}
+		lastUserUid = currentUserUid;
+	});
 
 	onMount(() => {
 		const handleScroll = () => {
@@ -55,6 +78,15 @@
 	const formattedTime = $derived(
 		timestamp ? formatDateTime(timestamp) : ''
 	);
+
+	function getUserColor(email: string) {
+		const colors = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#ef4444'];
+		let hash = 0;
+		for (let i = 0; i < email.length; i++) {
+			hash = email.charCodeAt(i) + ((hash << 5) - hash);
+		}
+		return colors[Math.abs(hash) % colors.length];
+	}
 </script>
 
 <header class="dashboard-header" class:scrolled={scrolled}>
@@ -147,65 +179,109 @@
 			</svg>
 		</button>
 
-		{#if !portfolio.isLocal}
-			<div class="user-zone">
-				{#if portfolio.user}
-					<div class="user-container">
-						<button 
-							class="action-btn user-btn" 
-							onclick={toggleUserMenu}
-							title="Opciones de usuario"
-						>
-							{#if portfolio.user.photoURL}
-								<img src={portfolio.user.photoURL} alt="User" class="user-avatar" />
-							{:else}
-								<span class="user-initial">{portfolio.user.email?.[0].toUpperCase()}</span>
-							{/if}
-						</button>
+		<div class="user-zone">
+			{#if !authReady}
+				<div class="auth-skeleton"></div>
+			{:else if portfolio.user}
+				<div class="user-container" in:scale={{ duration: 300, start: 0.9 }}>
+					<button 
+						class="action-btn user-btn" 
+						class:auth-loading={authLoading}
+						onclick={toggleUserMenu}
+						title="Opciones de usuario"
+					>
+						{#if portfolio.user.photoURL}
+							<img src={portfolio.user.photoURL} alt="User" class="user-avatar" />
+						{:else}
+							<div class="user-initial-circle" style="background: {getUserColor(portfolio.user.email || 'user')}">
+								{portfolio.user.email?.[0].toUpperCase() ?? 'U'}
+							</div>
+						{/if}
+						
+						{#if authLoading}
+							<div class="user-loading-overlay" transition:fade>
+								<div class="mini-spinner"></div>
+							</div>
+						{/if}
+					</button>
 
-						{#if showUserMenu}
-							<div 
-								class="user-dropdown" 
-								role="menu" 
-								tabindex="-1"
-								onkeydown={(e) => e.key === 'Escape' && (showUserMenu = false)}
-								onclick={(e) => e.stopPropagation()}
+					{#if showUserMenu}
+						<div 
+							class="user-dropdown" 
+							role="menu" 
+							tabindex="-1"
+							in:scale={{ duration: 200, start: 0.95 }}
+							out:fade={{ duration: 150 }}
+							onkeydown={(e) => e.key === 'Escape' && (showUserMenu = false)}
+							onclick={(e) => e.stopPropagation()}
+						>
+							<div class="dropdown-header">
+								<span class="user-name">{portfolio.user.displayName || 'Inversor'}</span>
+								<span class="user-email">{portfolio.user.email}</span>
+							</div>
+							<div class="dropdown-divider"></div>
+							<button 
+								class="dropdown-item logout" 
+								role="menuitem"
+								disabled={authLoading}
+								onclick={() => { portfolio.logout(); showUserMenu = false; }}
 							>
-								<div class="dropdown-header">
-									<span class="user-email">{portfolio.user.email}</span>
-								</div>
-								<div class="dropdown-divider"></div>
-								<button 
-									class="dropdown-item logout" 
-									role="menuitem"
-									onclick={() => { portfolio.logout(); showUserMenu = false; }}
-								>
+								{#if authLoading}
+									<div class="mini-spinner red"></div>
+									<span>Cerrando...</span>
+								{:else}
 									<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2.5">
 										<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
 									</svg>
 									<span>Cerrar Sesión</span>
-								</button>
-							</div>
-						{/if}
-					</div>
-				{:else}
-					<button 
-						class="login-pill" 
-						onclick={() => portfolio.login()}
-					>
+								{/if}
+							</button>
+						</div>
+					{/if}
+				</div>
+			{:else}
+				<button 
+					class="login-pill" 
+					class:loading={authLoading}
+					disabled={authLoading}
+					onclick={() => portfolio.login()}
+					in:scale={{ duration: 300, start: 0.9 }}
+				>
+					{#if authLoading}
+						<div class="mini-spinner white"></div>
+						<span>Entrando...</span>
+					{:else}
 						<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2.5">
 							<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M13.8 12H3" />
 						</svg>
 						<span>Entrar</span>
-					</button>
-				{/if}
-			</div>
-		{/if}
+					{/if}
+				</button>
+			{/if}
+		</div>
 	</div>
 
 	<!-- Loading Bar -->
 	{#if loading}
 		<div class="loading-bar"></div>
+	{/if}
+
+	<!-- Notificación de Auth -->
+	{#if authNotification}
+		<div class="auth-notification" in:fly={{ y: -20, duration: 400 }} out:fade>
+			<div class="notif-content" class:success={authNotification.type === 'success'}>
+				{#if authNotification.type === 'success'}
+					<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="3">
+						<path d="M20 6L9 17l-5-5" />
+					</svg>
+				{:else}
+					<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="3">
+						<circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" />
+					</svg>
+				{/if}
+				<span>{authNotification.message}</span>
+			</div>
+		</div>
 	{/if}
 </header>
 
@@ -358,9 +434,38 @@
 		to { transform: rotate(360deg); }
 	}
 
-	/* User Zone */
+	.user-initial-circle {
+		width: 100%;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: white;
+		font-weight: 800;
+		font-size: 1rem;
+		text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+	}
+
 	.user-zone {
 		margin-left: 0.25rem;
+		min-width: 40px;
+		height: 40px;
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+	}
+
+	.auth-skeleton {
+		width: 40px;
+		height: 40px;
+		border-radius: 12px;
+		background: rgba(255, 255, 255, 0.05);
+		animation: pulse-skeleton 2s ease-in-out infinite;
+	}
+
+	@keyframes pulse-skeleton {
+		0%, 100% { opacity: 0.5; }
+		50% { opacity: 0.2; }
 	}
 
 	.login-pill {
@@ -402,12 +507,6 @@
 		object-fit: cover;
 	}
 
-	.user-initial {
-		font-weight: 800;
-		color: #3b82f6;
-		font-size: 1rem;
-	}
-
 	/* User Dropdown */
 	.user-container {
 		position: relative;
@@ -418,12 +517,12 @@
 		top: calc(100% + 12px);
 		right: 0;
 		width: 220px;
-		background: rgba(255, 255, 255, 0.95);
+		background: rgba(255, 255, 255, 0.98);
 		backdrop-filter: blur(20px);
 		-webkit-backdrop-filter: blur(20px);
 		border-radius: 16px;
-		border: 1px solid rgba(255, 255, 255, 0.2);
-		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+		border: 1px solid rgba(0, 0, 0, 0.08);
+		box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
 		z-index: 1000;
 		padding: 0.5rem;
 		transform-origin: top right;
@@ -444,13 +543,6 @@
 		padding: 0.75rem 0.75rem 0.5rem;
 		display: flex;
 		flex-direction: column;
-	}
-
-	.user-email {
-		font-size: 0.8rem;
-		color: #64748b;
-		word-break: break-all;
-		font-weight: 500;
 	}
 
 	.dropdown-divider {
@@ -499,6 +591,84 @@
 	.dropdown-item.logout:hover {
 		background: rgba(239, 68, 68, 0.08);
 	}
+
+	/* Auth Notifications */
+	.auth-notification {
+		position: absolute;
+		top: calc(100% + 15px);
+		left: 50%;
+		transform: translateX(-50%);
+		z-index: 1000;
+		pointer-events: none;
+	}
+
+	.notif-content {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		padding: 0.6rem 1rem;
+		background: rgba(30, 41, 59, 0.95);
+		backdrop-filter: blur(10px);
+		border-radius: 100px;
+		color: #fff;
+		font-size: 0.8rem;
+		font-weight: 700;
+		box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		white-space: nowrap;
+	}
+
+	.notif-content.success {
+		border-color: rgba(16, 185, 129, 0.3);
+		color: #10b981;
+	}
+
+	/* Spinners */
+	.mini-spinner {
+		width: 14px;
+		height: 14px;
+		border: 2px solid rgba(255, 255, 255, 0.2);
+		border-top-color: currentColor;
+		border-radius: 50%;
+		animation: spin 0.8s linear infinite;
+	}
+
+	.mini-spinner.red { color: #ef4444; border-top-color: #ef4444; border-color: rgba(239, 68, 68, 0.1); }
+	.mini-spinner.white { color: #fff; border-top-color: #fff; border-color: rgba(255, 255, 255, 0.2); }
+
+	.user-loading-overlay {
+		position: absolute;
+		inset: 0;
+		background: rgba(10, 10, 20, 0.6);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 5;
+	}
+
+	.login-pill.loading {
+		padding-left: 0.75rem;
+		background: #2563eb;
+		opacity: 0.9;
+	}
+
+	/* User Dropdown Enhancements */
+	.user-name {
+		font-size: 0.95rem;
+		font-weight: 800;
+		color: #0f172a;
+		margin-bottom: 0.1rem;
+		display: block;
+	}
+
+	.user-email {
+		font-size: 0.75rem;
+		color: #64748b;
+		word-break: break-all;
+		font-weight: 500;
+	}
+
+	:global(.dark) .user-name { color: #fff; }
 
 	/* Loading Bar */
 	.loading-bar {

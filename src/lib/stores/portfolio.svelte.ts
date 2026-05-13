@@ -19,6 +19,10 @@ export class PortfolioStore {
 	isInitialized = $state(false);
 	history = $state<{ date: string; value: number }[]>([]);
 	dailyChange = $state({ value: 0, percent: 0 });
+	authLoading = $state(false);
+	authReady = $state(false);
+
+
 
 	// --- User-Configurable Assets ---
 	coreAssets = $state<Asset[]>([...DEFAULT_CORE_ASSETS]);
@@ -202,15 +206,22 @@ export class PortfolioStore {
 		}
 
 		this.authUnsubscribe = storageProvider.onAuthStateChanged(async (user) => {
+			this.authLoading = false;
 			this.user = user;
 			if (user) {
-				// Carga de la nube en segundo plano, sin poner loading=true si ya tenemos datos
 				await this.loadFromCloud();
 			}
 			this.isInitialized = true;
 			this.loading = false;
+			this.authReady = true; // El sistema de auth ya sabe quién eres
 		}) as (() => void) | undefined;
+
+		// Salvaguarda: si Firebase tarda demasiado, liberamos la UI para que el botón de login sea pulsable
+		setTimeout(() => {
+			if (!this.authReady) this.authReady = true;
+		}, 2000);
 	}
+
 
 	private pollingIntervalId: ReturnType<typeof setInterval> | undefined;
 	private visibilityHandler: (() => void) | undefined;
@@ -453,16 +464,24 @@ export class PortfolioStore {
 
 	// --- Public Actions ---
 	async login() {
-		if (storageProvider.login) {
-			try {
-				await storageProvider.login();
-			} catch (e) {
-				console.error('Login error:', e);
+		this.authLoading = true;
+		try {
+			await storageProvider.login();
+			// Forzar F5 tras login exitoso para asegurar estado limpio
+			if (typeof window !== 'undefined') {
+				window.location.reload();
 			}
+		} catch (e) {
+			console.error('Error durante el login:', e);
+		} finally {
+			this.authLoading = false;
 		}
 	}
 
+
+
 	async logout() {
+		this.authLoading = true;
 		try {
 			this.cleanupPolling();
 			if (storageProvider.logout) {
@@ -477,8 +496,12 @@ export class PortfolioStore {
 			this.fetchPrices();
 		} catch (e) {
 			console.error('Logout error:', e);
+		} finally {
+			this.authLoading = false;
 		}
 	}
+
+
 
 	async fetchPrices() {
 		// Bloquear si ya hay una petición en curso o estamos inicializando
