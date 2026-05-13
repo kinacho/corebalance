@@ -18,11 +18,12 @@
 	// Sincronizar con el store si cambia el capital global, pero solo si el usuario no ha editado manualmente aún
 	let hasManuallyEdited = $state(false);
 
+	let hasManuallyEditedDca = $state(false);
 	$effect(() => {
 		if (portfolio.globalCapital > 0 && !hasManuallyEdited) {
 			initialCapital = Number(portfolio.globalCapital.toFixed(2));
 		}
-		if (portfolio.contribution > 0 && monthlyDca === 500) {
+		if (portfolio.contribution > 0 && !hasManuallyEditedDca) {
 			monthlyDca = portfolio.contribution;
 		}
 	});
@@ -179,6 +180,7 @@
 					},
 					scales: {
 						y: {
+							min: 0,
 							grid: { color: 'rgba(255, 255, 255, 0.05)' },
 							ticks: { 
 								color: 'rgba(255, 255, 255, 0.5)',
@@ -259,7 +261,7 @@
 							<label class="control-label" for="dca">Aportación DCA</label>
 							<span class="control-value">{formatEUR(monthlyDca)}</span>
 						</div>
-						<input id="dca" type="range" min="0" max="10000" step="50" bind:value={monthlyDca} />
+						<input id="dca" type="range" min="0" max="10000" step="50" bind:value={monthlyDca} oninput={() => hasManuallyEditedDca = true} />
 					</div>
 
 					<div class="control-item">
@@ -407,7 +409,7 @@
 
 	.controls-grid {
 		display: grid;
-		gap: 1.25rem;
+		gap: 1.5rem;
 		padding: 1.25rem;
 		background: rgba(0, 0, 0, 0.2);
 		border-radius: 20px;
@@ -452,6 +454,7 @@
 		background: rgba(255, 255, 255, 0.1);
 		border-radius: 10px;
 		outline: none;
+		touch-action: pan-y;
 	}
 
 	input[type="range"]::-webkit-slider-thumb {

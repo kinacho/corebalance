@@ -227,7 +227,7 @@
 
 	.controls-grid {
 		display: grid;
-		gap: 1.25rem;
+		gap: 1.5rem;
 		padding: 1.25rem;
 		background: rgba(0, 0, 0, 0.2);
 		border-radius: 20px;
@@ -268,6 +268,7 @@
 		background: rgba(255, 255, 255, 0.1);
 		border-radius: 10px;
 		outline: none;
+		touch-action: pan-y;
 	}
 
 	input[type="range"]::-webkit-slider-thumb {
