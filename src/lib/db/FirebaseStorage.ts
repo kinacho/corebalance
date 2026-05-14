@@ -87,4 +87,29 @@ export class FirebaseStorage implements StorageProvider {
 		}
 		return onAuthStateChanged(auth, callback);
 	}
+
+	async getAllData(): Promise<any> {
+		if (!auth?.currentUser) throw new Error('Debes iniciar sesión para exportar datos.');
+		const userId = auth.currentUser.uid;
+		const userData = await this.loadUserData(userId);
+		const history = await this.loadHistory(userId);
+		return { 
+			userData: userData ? [{ ...userData, id: userId }] : [], 
+			history: history.length ? [{ id: userId, points: history }] : [] 
+		};
+	}
+
+	async importAllData(data: any): Promise<void> {
+		if (!auth?.currentUser) throw new Error('Debes iniciar sesión para importar datos.');
+		const userId = auth.currentUser.uid;
+		
+		if (data.userData?.[0]) {
+			const newUserData = { ...data.userData[0] };
+			delete newUserData.id; // Prevent overwriting id
+			await this.saveUserData(userId, newUserData);
+		}
+		if (data.history?.[0]?.points) {
+			await this.saveHistory(userId, data.history[0].points);
+		}
+	}
 }
