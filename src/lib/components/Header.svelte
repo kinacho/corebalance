@@ -48,6 +48,9 @@
 	// Reaccionar a cambios de usuario para notificaciones
 	let lastUserUid = $state<string | null>(null);
 	$effect(() => {
+		// Wait until splash screen is done to show notifications
+		if (!portfolio.isInitialized) return;
+
 		const currentUserUid = portfolio.user?.uid || null;
 		if (lastUserUid === null && currentUserUid) {
 			showNotification(`¡Bienvenido de nuevo!`);
