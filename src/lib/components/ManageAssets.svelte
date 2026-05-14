@@ -1,7 +1,10 @@
 <script lang="ts">
 	import { portfolio } from '$lib/stores/portfolio.svelte';
+	import { ui } from '$lib/stores/ui.svelte';
 	import type { Asset, AssetCategory } from '$lib/types';
 	import { formatPercent } from '$lib/utils';
+	import { focusTrap } from '$lib/actions/focusTrap';
+	import { onMount } from 'svelte';
 	import AssetSearch from './AssetSearch.svelte';
 
 	interface Props {
@@ -14,6 +17,28 @@
 	let searchCategory = $state<AssetCategory>('core');
 	let editingAsset = $state<string | null>(null);
 	let editTer = $state('');
+
+	let originalState: any;
+
+	onMount(() => {
+		originalState = {
+			core: JSON.parse(JSON.stringify(portfolio.coreAssets)),
+			satellite: JSON.parse(JSON.stringify(portfolio.satelliteAssets)),
+			stock: JSON.parse(JSON.stringify(portfolio.stockAssets)),
+			holdings: JSON.parse(JSON.stringify(portfolio.holdings))
+		};
+	});
+
+	function handleCancel() {
+		if (originalState) portfolio.restoreState(originalState);
+		onClose();
+	}
+
+	function handleSave() {
+		ui.addToast('Cartera guardada correctamente', 'success');
+		ui.hapticFeedback('heavy');
+		onClose();
+	}
 
 	const sections = $derived([
 		{ id: 'core' as AssetCategory, label: 'Cartera Principal', assets: portfolio.coreAssets, description: 'Activos con peso objetivo para rebalanceo', showWeights: true },
@@ -38,6 +63,7 @@
 	function handleWeightChange(ticker: string, newPercent: number) {
 		const clamped = Math.max(0, Math.min(100, newPercent));
 		portfolio.updateAsset(ticker, { targetWeight: clamped / 100 });
+		ui.hapticFeedback('light');
 	}
 
 	function startEditTer(asset: Asset) {
@@ -56,6 +82,8 @@
 	function confirmRemove(asset: Asset) {
 		if (confirm(`¿Eliminar "${asset.name}" (${asset.ticker}) de tu cartera?`)) {
 			portfolio.removeAsset(asset.ticker);
+			ui.addToast('Activo eliminado', 'info');
+			ui.hapticFeedback('medium');
 		}
 	}
 
@@ -69,10 +97,11 @@
 			const w = i === 0 ? baseWeight + remainder : baseWeight;
 			portfolio.updateAsset(asset.ticker, { targetWeight: w / 100 });
 		});
+		ui.hapticFeedback('medium');
 	}
 
 	function handleKeydown(e: KeyboardEvent) {
-		if (e.key === 'Escape' && !showSearch) onClose();
+		if (e.key === 'Escape' && !showSearch) handleCancel();
 	}
 </script>
 
@@ -83,14 +112,14 @@
 {/if}
 
 <div class="manage-overlay" role="dialog" aria-modal="true" aria-label="Gestionar activos">
-	<button class="manage-backdrop" onclick={onClose} aria-label="Cerrar"></button>
-	<div class="manage-panel">
+	<button class="manage-backdrop" onclick={handleCancel} aria-label="Cerrar"></button>
+	<div class="manage-panel" use:focusTrap>
 		<div class="manage-header">
 			<div>
 				<h2 class="manage-title">⚙️ Gestionar Cartera</h2>
 				<p class="manage-subtitle">Añade, elimina y configura los activos de tu portfolio</p>
 			</div>
-			<button class="close-btn" onclick={onClose} aria-label="Cerrar">
+			<button class="close-btn" onclick={handleCancel} aria-label="Cancelar">
 				<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
 					<path d="M18 6L6 18M6 6l12 12" />
 				</svg>
@@ -237,7 +266,7 @@
 		</div>
 
 		<div class="manage-footer">
-			<button class="btn-save" onclick={onClose}>
+			<button class="btn-save" onclick={handleSave}>
 				<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
 					<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
 					<polyline points="17 21 17 13 7 13 7 21"></polyline>

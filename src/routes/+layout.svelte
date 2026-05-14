@@ -1,6 +1,7 @@
 <script lang="ts">
 	import './layout.css';
 	import SplashScreen from '$lib/components/SplashScreen.svelte';
+	import Toast from '$lib/components/Toast.svelte';
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 
 	let { children } = $props();
@@ -26,3 +27,5 @@
 {/if}
 
 {@render children()}
+
+<Toast />

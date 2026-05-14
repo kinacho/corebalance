@@ -1,6 +1,11 @@
+import { ui } from './stores/ui.svelte';
+
 /** Formatea un número según la moneda especificada (2 decimales por defecto para totales) */
 export function formatCurrency(value: number, currency: string = 'EUR', decimals = 2): string {
-	const locale = currency === 'USD' ? 'en-US' : 'es-ES';
+	let locale = 'es-ES';
+	if (currency === 'USD') locale = 'en-US';
+	if (currency === 'GBP') locale = 'en-GB';
+
 	return new Intl.NumberFormat(locale, {
 		style: 'currency',
 		currency: currency,
@@ -14,9 +19,9 @@ export function formatPrice(value: number, currency: string = 'EUR'): string {
 	return formatCurrency(value, currency, 3);
 }
 
-/** Formatea un número como moneda Euro */
+/** Formatea un número como moneda Euro (o la divisa base configurada) */
 export function formatEUR(value: number): string {
-	return formatCurrency(value, 'EUR', 2);
+	return formatCurrency(value, ui.baseCurrency, 2);
 }
 
 /** Formatea un número como porcentaje */

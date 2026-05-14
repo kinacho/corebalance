@@ -76,7 +76,14 @@ function checkRateLimit(ip: string): boolean {
 
 export const GET: RequestHandler = async ({ url, getClientAddress }) => {
 	// --- Protección: Rate Limit ---
-	const clientIp = getClientAddress();
+	let clientIp = 'unknown';
+	try {
+		clientIp = getClientAddress();
+	} catch (e) {
+		// Fallback silencioso si el adaptador no puede determinar la IP (ej. en dev local)
+		clientIp = '127.0.0.1';
+	}
+	
 	if (!checkRateLimit(clientIp)) {
 		return json({ error: 'Demasiadas peticiones. Inténtalo en un minuto.' }, { status: 429 });
 	}

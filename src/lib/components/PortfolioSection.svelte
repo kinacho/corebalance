@@ -106,6 +106,14 @@
 						{/each}
 					</div>
 				</div>
+			{:else if portfolioState.positions.length === 0}
+				<div class="empty-state">
+					<div class="empty-icon-wrap">
+						<span class="empty-icon">✨</span>
+					</div>
+					<h4 class="empty-title">Aún no tienes activos</h4>
+					<p class="empty-desc">Esta sección está vacía. Ve a "Gestionar Cartera" para añadir nuevos activos y empezar a estructurar tu patrimonio.</p>
+				</div>
 			{:else}
 				<div class="cards-grid">
 					{#each portfolioState.positions as position (position.asset.ticker)}
@@ -352,6 +360,50 @@
 		background: rgba(255, 255, 255, 0.03); 
 		border-radius: 20px; 
 		min-height: 200px; 
+	}
+
+	.empty-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 3rem 1.5rem;
+		background: linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+		border: 1px dashed rgba(255, 255, 255, 0.1);
+		border-radius: 20px;
+		text-align: center;
+		margin-top: 1rem;
+	}
+
+	.empty-icon-wrap {
+		width: 64px;
+		height: 64px;
+		background: rgba(59, 130, 246, 0.1);
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin-bottom: 1rem;
+		box-shadow: 0 0 30px rgba(59, 130, 246, 0.2);
+	}
+
+	.empty-icon {
+		font-size: 1.8rem;
+	}
+
+	.empty-title {
+		font-size: 1.1rem;
+		font-weight: 700;
+		color: #fff;
+		margin: 0 0 0.5rem 0;
+	}
+
+	.empty-desc {
+		font-size: 0.8rem;
+		color: rgba(160, 160, 200, 0.6);
+		margin: 0;
+		max-width: 300px;
+		line-height: 1.5;
 	}
 
 	@media (min-width: 1024px) {

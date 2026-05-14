@@ -211,7 +211,7 @@
 	});
 </script>
 
-<div class="panel" class:open={isOpen}>
+<div id="tour-crisis" class="panel" class:open={isOpen}>
 	<button class="panel-header" onclick={() => isOpen = !isOpen} aria-expanded={isOpen}>
 		<div class="panel-info">
 			<div class="panel-icon">📉</div>

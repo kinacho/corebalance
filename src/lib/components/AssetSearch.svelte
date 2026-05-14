@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { portfolio } from '$lib/stores/portfolio.svelte';
+	import { ui } from '$lib/stores/ui.svelte';
+	import { focusTrap } from '$lib/actions/focusTrap';
 	import { ASSET_COLORS, ASSET_ICONS } from '$lib/constants';
 	import type { Asset, AssetCategory, SearchResult } from '$lib/types';
 
@@ -87,6 +89,8 @@
 		};
 
 		portfolio.addAsset(asset);
+		ui.addToast(`"${result.name}" añadido correctamente`, 'success');
+		ui.hapticFeedback('medium');
 		// Eliminado el onClose() para permitir añadir varios
 	}
 
@@ -99,7 +103,7 @@
 
 <div class="search-overlay" role="dialog" aria-modal="true" aria-label="Buscar activo">
 	<button class="search-backdrop" onclick={onClose} aria-label="Cerrar"></button>
-	<div class="search-panel">
+	<div class="search-panel" use:focusTrap>
 		<div class="search-header">
 			<div class="search-title-row">
 				<span class="search-icon">🔍</span>

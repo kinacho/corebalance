@@ -60,6 +60,22 @@
         },
 
         {
+          element: '#tour-crisis',
+          popover: {
+            title: 'Simulador de Crisis 📉',
+            description: 'Descubre qué pasaría con tu cartera si el mercado se desploma. Ajusta la caída y mira cómo tus aportaciones regulares (DCA) pueden salvarte y acelerar la recuperación.',
+            side: "top",
+            align: 'center'
+          },
+          onHighlightStarted: () => {
+            if (typeof window !== 'undefined') {
+              window.dispatchEvent(new CustomEvent('tour-step', { detail: { target: 'rebalance' } }));
+              // Asegurarnos de que el panel se ve abriéndolo si no está abierto. El usuario puede verlo.
+            }
+          }
+        },
+
+        {
           element: '#tour-manage-btn',
           popover: {
             title: 'A tu medida',

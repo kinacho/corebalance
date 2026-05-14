@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { fade, fly, scale } from 'svelte/transition';
 	import { portfolio } from '$lib/stores/portfolio.svelte';
+	import { ui } from '$lib/stores/ui.svelte';
 	import { onMount } from 'svelte';
 	import { formatDateTime } from '$lib/utils';
 	import SyncModal from './SyncModal.svelte';
@@ -221,6 +222,25 @@
 								<span class="user-name">{portfolio.user.displayName || 'Inversor'}</span>
 								<span class="user-email">{portfolio.user.email}</span>
 							</div>
+							<div class="dropdown-divider"></div>
+							
+							<div class="dropdown-setting">
+								<label for="currency-select" class="setting-label">Moneda Base</label>
+								<select 
+									id="currency-select" 
+									class="currency-select"
+									value={ui.baseCurrency}
+									onchange={(e) => {
+										ui.setBaseCurrency((e.target as HTMLSelectElement).value as any);
+										portfolio.fetchPrices(); // Refresh to apply conversion
+									}}
+								>
+									<option value="EUR">€ EUR</option>
+									<option value="USD">$ USD</option>
+									<option value="GBP">£ GBP</option>
+								</select>
+							</div>
+
 							<div class="dropdown-divider"></div>
 							<button 
 								class="dropdown-item logout" 
@@ -608,6 +628,39 @@
 
 	.dropdown-item.logout:hover {
 		background: rgba(239, 68, 68, 0.08);
+	}
+
+	.dropdown-setting {
+		padding: 0.5rem 0.75rem;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	.setting-label {
+		font-size: 0.8rem;
+		font-weight: 600;
+		color: #64748b;
+	}
+
+	:global(.dark) .setting-label { color: #94a3b8; }
+
+	.currency-select {
+		background: rgba(0, 0, 0, 0.05);
+		border: 1px solid rgba(0, 0, 0, 0.1);
+		border-radius: 8px;
+		padding: 0.3rem 0.5rem;
+		font-size: 0.8rem;
+		font-weight: 700;
+		color: #1e293b;
+		cursor: pointer;
+		outline: none;
+	}
+
+	:global(.dark) .currency-select {
+		background: rgba(255, 255, 255, 0.05);
+		border-color: rgba(255, 255, 255, 0.1);
+		color: #f1f5f9;
 	}
 
 	/* Auth Notifications */

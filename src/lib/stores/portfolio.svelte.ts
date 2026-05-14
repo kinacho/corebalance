@@ -3,6 +3,7 @@ import type { Asset, HoldingData, HoldingsMap, PortfolioState, PriceData, Rebala
 import { calculatePortfolioState, calculateRebalance } from '$lib/rebalance';
 import { storageProvider } from '$lib/db';
 import { formatDate } from '$lib/utils';
+import { ui } from '$lib/stores/ui.svelte';
 
 export interface User { uid: string; displayName?: string | null; photoURL?: string | null; email?: string | null; }
 
@@ -49,10 +50,22 @@ export class PortfolioStore {
 
 	convertedPrices: Record<string, PriceData> = $derived.by(() => {
 		const res: Record<string, PriceData> = {};
+		const base = ui.baseCurrency;
 		for (const [ticker, data] of Object.entries(this.prices)) {
 			let price = data.price;
-			if (data.currency === 'USD') price /= this.eurUsd;
-			if (data.currency === 'CAD') price /= this.eurCad;
+			
+			if (base === 'EUR') {
+				if (data.currency === 'USD') price /= this.eurUsd;
+				if (data.currency === 'CAD') price /= this.eurCad;
+				if (data.currency === 'GBP') price /= 0.85; // Simplification or fetch eurgbp
+			} else if (base === 'USD') {
+				if (data.currency === 'EUR') price *= this.eurUsd;
+				if (data.currency === 'CAD') price *= (this.eurUsd / this.eurCad);
+			} else if (base === 'GBP') {
+				if (data.currency === 'EUR') price *= 0.85;
+				if (data.currency === 'USD') price *= (0.85 / this.eurUsd);
+			}
+
 			res[ticker] = { ...data, price };
 		}
 		return res;
@@ -626,6 +639,15 @@ export class PortfolioStore {
 	/** Comprobar si un ticker ya existe en alguna categoría */
 	hasAsset(ticker: string): boolean {
 		return this.allUserTickers.includes(ticker);
+	}
+
+	/** Restaurar el estado completo de los activos (usado para cancelar edición) */
+	restoreState(state: { core: Asset[], satellite: Asset[], stock: Asset[], holdings: HoldingsMap }) {
+		this.coreAssets = [...state.core];
+		this.satelliteAssets = [...state.satellite];
+		this.stockAssets = [...state.stock];
+		this.holdings = { ...state.holdings };
+		this.saveToStorage();
 	}
 }
 
