@@ -172,4 +172,19 @@
 		transition: filter 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 		opacity: 0.6;
 	}
+
+	/* Slider Scroll Fix para Móviles: 
+	   Desactivar eventos de puntero en la pista para que el scroll pase a través de ella,
+	   pero reactivarlos en el 'thumb' para que se pueda arrastrar. */
+	input[type="range"] {
+		pointer-events: none;
+	}
+	
+	input[type="range"]::-webkit-slider-thumb {
+		pointer-events: auto;
+	}
+	
+	input[type="range"]::-moz-range-thumb {
+		pointer-events: auto;
+	}
 }
