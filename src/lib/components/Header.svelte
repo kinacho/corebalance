@@ -23,6 +23,7 @@
 	let showSyncModal = $state(false);
 	let scrolled = $state(false);
 	let authNotification = $state<{ type: 'success' | 'info', message: string } | null>(null);
+	let imgError = $state(false);
 
 	function onRefresh() {
 		portfolio.fetchPrices();
@@ -50,6 +51,7 @@
 		const currentUserUid = portfolio.user?.uid || null;
 		if (lastUserUid === null && currentUserUid) {
 			showNotification(`¡Bienvenido de nuevo!`);
+			imgError = false;
 		} else if (lastUserUid && currentUserUid === null) {
 			showNotification(`Sesión cerrada correctamente`, 'info');
 		}
@@ -193,8 +195,14 @@
 						onclick={toggleUserMenu}
 						title="Opciones de usuario"
 					>
-						{#if portfolio.user.photoURL}
-							<img src={portfolio.user.photoURL} alt="User" class="user-avatar" />
+						{#if portfolio.user.photoURL && !imgError}
+							<img 
+								src={portfolio.user.photoURL} 
+								alt="User" 
+								class="user-avatar" 
+								referrerpolicy="no-referrer"
+								onerror={() => imgError = true}
+							/>
 						{:else}
 							<div class="user-initial-circle" style="background: {getUserColor(portfolio.user.email || 'user')}">
 								{portfolio.user.email?.[0].toUpperCase() ?? 'U'}

@@ -2,37 +2,40 @@
 
 [![Svelte 5](https://img.shields.io/badge/Svelte-5_Runes-FF3E00?logo=svelte)](https://svelte.dev/)
 [![PWA](https://img.shields.io/badge/PWA-Ready-00a8cc?logo=pwa)](https://vite-pwa-org.netlify.app/)
+[![Redis](https://img.shields.io/badge/Cache-Upstash_Redis-ED1C24?logo=redis)](https://upstash.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**CoreBalance** es una herramienta avanzada de gestión de carteras de inversión diseñada bajo la filosofía *local-first*. Permite visualizar, analizar y rebalancear tu patrimonio con una estética de terminal financiera premium, manteniendo el control total de tus datos.
+**CoreBalance** es una herramienta profesional de gestión de carteras de inversión diseñada bajo la filosofía *local-first* y escalada para el mundo real. Permite visualizar, analizar y rebalancear tu patrimonio con una estética premium, manteniendo el control total de tus datos y la máxima velocidad de respuesta.
 
 ![CoreBalance Preview](https://github.com/kinacho/Rebalanceador-90-5-5/raw/main/static/pwa-512x512.png)
 
 ## ✨ Características Principales
 
-- **Visualización Avanzada**: Gráficos interactivos de tarta y evolución histórica (Chart.js) con leyendas persistentes.
-- **Modo Rendimiento vs Valor**: Alterna instantáneamente entre ver tu evolución en euros o en porcentaje de rentabilidad.
-- **Motor de Rebalanceo**: Calculadora inteligente que optimiza tus nuevas aportaciones para mantener tu estrategia objetivo.
-- **Privacidad "On-the-fly"**: Oculta todos los valores monetarios con un solo clic para entornos públicos.
-- **Sincronización P2P por QR**: Transfiere toda tu cartera entre dispositivos sin pasar por ningún servidor, mediante compresión nativa (Deflate).
-- **PWA (Progressive Web App)**: Instálalo en tu escritorio o móvil como una aplicación nativa, con soporte offline.
+- **Visualización Avanzada**: Gráficos interactivos de tarta y evolución histórica (Chart.js) con leyendas persistentes y efectos de glassmorphism.
+- **Motor de Rebalanceo**: Calculadora inteligente que optimiza tus nuevas aportaciones para mantener tu estrategia objetivo de forma automática.
+- **Simulador de Crisis**: Módulo interactivo para proyectar caídas históricas (ej. 2008, COVID) sobre tu cartera actual y evaluar tu tolerancia al riesgo.
+- **Sincronización Híbrida**: 
+    - **QR P2P**: Transfiere toda tu cartera entre dispositivos sin pasar por servidores.
+    - **Cloud Sync**: Sincronización opcional mediante Firebase (Auth + Firestore).
+- **Escalabilidad Global**: Sistema de cache compartido con **Upstash Redis** para obtener cotizaciones instantáneas sin bloqueos de API.
+- **PWA (Progressive Web App)**: Instalación nativa en móvil y escritorio con soporte offline completo.
 
 ## 🛠️ Stack Tecnológico
 
 - **Frontend**: [Svelte 5](https://svelte.dev/) (Runes) + Vite.
-- **Almacenamiento Local**: [Dexie.js](https://dexie.org/) (IndexedDB) para una persistencia robusta en el navegador.
-- **Persistencia en la Nube (Opcional)**: Integración lista para [Firebase](https://firebase.google.com/) (Auth + Firestore).
-- **Gráficos**: [Chart.js](https://www.chartjs.org/) con configuraciones personalizadas de glassmorphism.
-- **Datos en Tiempo Real**: API híbrida (Yahoo Finance + Financial Times Scraping) para máxima fiabilidad.
+- **Almacenamiento Local**: [Dexie.js](https://dexie.org/) (IndexedDB).
+- **Cache de Datos**: [Upstash Redis](https://upstash.com/) para una gestión de precios escalable y global.
+- **Persistencia en la Nube**: [Firebase](https://firebase.google.com/) (Auth + Firestore).
+- **Datos en Tiempo Real**: API híbrida (Yahoo Finance + Financial Times) con sistema de redundancia.
 
-## 🛡️ Seguridad y Robustez (Producción Ready)
+## 🛡️ Producción Ready y Privacidad
 
-Tras una auditoría exhaustiva, CoreBalance incorpora:
+CoreBalance está diseñado para ser seguro y transparente:
 
-- **Rate Limiting**: Endpoints de API protegidos contra abusos mediante limitación de peticiones por IP.
-- **Validación Estricta**: Sanitización de tickers y validación de esquemas JSON/QR antes de cualquier importación.
-- **Aislamiento de Memoria**: Sistema de gestión de caché con límites automáticos para prevenir fugas de recursos.
-- **Arquitectura Local-First**: Tus datos financieros viven en tu dispositivo. Solo viajan a la nube si habilitas explícitamente Firebase.
+- **Derecho al Olvido**: Sistema integrado de eliminación de cuenta y borrado total de datos (Firebase/IndexedDB).
+- **Cache Compartido**: Optimización de peticiones API para servir a miles de usuarios sin degradación de servicio.
+- **Rate Limiting**: Protección de endpoints mediante limitación de peticiones por IP.
+- **Aviso Legal**: Integración de disclaimers financieros para cumplimiento normativo básico.
 
 ## 📦 Instalación y Configuración
 
@@ -47,10 +50,16 @@ Tras una auditoría exhaustiva, CoreBalance incorpora:
    npm install
    ```
 
-3. **Configuración (Opcional)**:
-   CoreBalance funciona de forma local por defecto. Si deseas habilitar la persistencia en Firebase, renombra `.env.example` a `.env` y activa:
+3. **Configuración de Entorno**:
+   Renombra `.env.example` a `.env` y añade tus credenciales:
    ```env
+   # Firebase (Opcional)
+   VITE_FIREBASE_API_KEY=...
    PUBLIC_USE_FIREBASE=true
+
+   # Redis (Recomendado para producción)
+   KV_REST_API_URL=...
+   KV_REST_API_TOKEN=...
    ```
 
 4. **Entorno de Desarrollo**:
@@ -58,11 +67,5 @@ Tras una auditoría exhaustiva, CoreBalance incorpora:
    npm run dev
    ```
 
-## 🔄 Sincronización sin Servidores
-
-1. En el dispositivo de origen, pulsa el icono de **Sincronización** en la cabecera.
-2. Selecciona la pestaña **Código QR (P2P)**.
-3. Escanea el código con tu móvil: el sistema detectará el hash comprimido e importará los datos al instante.
-
 ---
-*Desarrollado con ❤️ para inversores inconformistas. Este software no proporciona asesoramiento financiero. Úsalo bajo tu propia responsabilidad.*
+*Desarrollado con ❤️ para la comunidad inversora. **CoreBalance** es una herramienta informativa; no constituye asesoramiento financiero. Invierte siempre bajo tu propia responsabilidad.*

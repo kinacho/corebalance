@@ -191,19 +191,17 @@ export class PortfolioStore {
 
 	// --- Private Methods ---
 	private async initAuth() {
-		if (typeof window === 'undefined' || !storageProvider.onAuthStateChanged) return;
+		if (typeof window === 'undefined') return;
 		
-		// Iniciar carga local inmediatamente
-		this.loadFromStorage();
-		
-		// Retardo artificial para asegurar que los runes de Svelte se propaguen
-		// y evitar el salto de "0" a valor real mientras desaparece el SplashScreen
-		await new Promise(resolve => setTimeout(resolve, 500));
-
-		this.isInitialized = true;
-		this.loading = false;
-		this.fetchPrices();
-
+		// Si no hay provider de autenticación, usar solo almacenamiento local
+		if (!storageProvider.onAuthStateChanged) {
+			this.loadFromStorage();
+			await this.fetchPrices();
+			await new Promise(resolve => setTimeout(resolve, 300));
+			this.isInitialized = true;
+			this.loading = false;
+			return;
+		}
 
 		// Manejar el resultado de redirección (si venimos de un login por redirect)
 		if (!storageProvider.isLocal) {
@@ -218,21 +216,36 @@ export class PortfolioStore {
 			}
 		}
 
+		// Esperamos a saber quién es el usuario antes de quitar el splash screen
 		this.authUnsubscribe = storageProvider.onAuthStateChanged(async (user) => {
 			this.authLoading = false;
 			this.user = user;
+			
 			if (user) {
-				await this.loadFromCloud();
+				await this.loadFromCloud(); // loadFromCloud ya hace await fetchPrices()
+			} else {
+				this.loadFromStorage();
+				await this.fetchPrices();
 			}
+			
+			// Retardo artificial para transición suave
+			await new Promise(resolve => setTimeout(resolve, 400));
+			
 			this.isInitialized = true;
 			this.loading = false;
-			this.authReady = true; // El sistema de auth ya sabe quién eres
+			this.authReady = true;
 		}) as (() => void) | undefined;
 
-		// Salvaguarda: si Firebase tarda demasiado, liberamos la UI para que el botón de login sea pulsable
+		// Salvaguarda extrema: Si Firebase o la red se cuelgan, liberamos la UI en 4s
 		setTimeout(() => {
-			if (!this.authReady) this.authReady = true;
-		}, 2000);
+			if (this.loading) {
+				this.loadFromStorage();
+				this.fetchPrices();
+				this.isInitialized = true;
+				this.loading = false;
+				this.authReady = true;
+			}
+		}, 4000);
 	}
 
 
@@ -330,7 +343,7 @@ export class PortfolioStore {
 			await this.loadHistory();
 			
 			// Re-fetch precios con los nuevos tickers del usuario
-			this.fetchPrices();
+			await this.fetchPrices();
 		} catch (e) {
 			console.error('Storage load error:', e);
 		}
@@ -503,13 +516,19 @@ export class PortfolioStore {
 			if (storageProvider.logout) {
 				await storageProvider.logout();
 			}
-			this.user = null;
-			this.history = [];
 			
-			// Recargar datos locales inmediatamente después de desloguear
-			this.loadFromStorage();
-			this.initPolling();
-			this.fetchPrices();
+			// Limpiar localStorage para no dejar los datos de esta cuenta en el dispositivo
+			if (typeof localStorage !== 'undefined') {
+				localStorage.removeItem(STORAGE_KEY_HOLDINGS);
+				localStorage.removeItem(STORAGE_KEY_ASSETS);
+				localStorage.removeItem(STORAGE_KEY_CONTRIBUTION);
+				localStorage.removeItem(STORAGE_KEY_PRICES);
+			}
+
+			// Forzar F5 tras logout exitoso para asegurar estado limpio
+			if (typeof window !== 'undefined') {
+				window.location.reload();
+			}
 		} catch (e) {
 			console.error('Logout error:', e);
 		} finally {

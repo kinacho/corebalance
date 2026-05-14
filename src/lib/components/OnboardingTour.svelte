@@ -70,7 +70,20 @@
           onHighlightStarted: () => {
             if (typeof window !== 'undefined') {
               window.dispatchEvent(new CustomEvent('tour-step', { detail: { target: 'rebalance' } }));
-              // Asegurarnos de que el panel se ve abriéndolo si no está abierto. El usuario puede verlo.
+            }
+          }
+        },
+        {
+          element: '#tour-projections',
+          popover: {
+            title: 'Proyección de Futuro 🚀',
+            description: 'Mira hacia adelante. Proyecta cuánto capital podrías tener en el futuro según tu interés esperado y tus aportaciones mensuales. La magia del interés compuesto, a tu vista.',
+            side: "top",
+            align: 'center'
+          },
+          onHighlightStarted: () => {
+            if (typeof window !== 'undefined') {
+              window.dispatchEvent(new CustomEvent('tour-step', { detail: { target: 'rebalance' } }));
             }
           }
         },

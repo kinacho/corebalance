@@ -34,6 +34,7 @@
 		"vitest": "^4.1.6"
 	},
 	"dependencies": {
+		"@upstash/redis": "^1.38.0",
 		"chart.js": "^4.5.1",
 		"dexie": "^4.4.2",
 		"driver.js": "^1.4.0",

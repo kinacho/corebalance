@@ -35,7 +35,12 @@ export interface SearchResult {
 
 export const GET: RequestHandler = async ({ url, getClientAddress }) => {
 	// --- Protección: Rate Limit ---
-	const clientIp = getClientAddress();
+	let clientIp = 'unknown';
+	try {
+		clientIp = getClientAddress();
+	} catch (e) {
+		clientIp = '127.0.0.1';
+	}
 	if (!checkSearchRateLimit(clientIp)) {
 		return json({ results: [], error: 'Demasiadas búsquedas. Inténtalo en un minuto.' }, { status: 429 });
 	}

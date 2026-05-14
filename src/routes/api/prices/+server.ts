@@ -2,20 +2,38 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import YahooFinance from 'yahoo-finance2';
 import type { PricesResponse, PriceData } from '$lib/types';
+import { Redis } from '@upstash/redis';
+import { KV_REST_API_URL, KV_REST_API_TOKEN } from '$env/static/private';
+
+const redis = (KV_REST_API_URL && KV_REST_API_TOKEN)
+	? new Redis({ url: KV_REST_API_URL, token: KV_REST_API_TOKEN })
+	: null;
 
 const yahooFinance = new YahooFinance({ suppressNotices: ['yahooSurvey', 'ripHistorical'] });
 
+// Fallback en memoria para desarrollo local si no hay KV configurado
 const historyCache: Record<string, { timestamp: number, sparkline: number[], ytd?: number, mtd?: number, oneMonth?: number }> = {};
-const CACHE_TTL = 1000 * 60 * 60 * 4; // 4 horas
-const MAX_CACHE_ENTRIES = 200;
+const CACHE_TTL_SECONDS = 60 * 60 * 4; // 4 horas
+const CACHE_TTL_MS = CACHE_TTL_SECONDS * 1000;
 
-function pruneCache() {
-	const keys = Object.keys(historyCache);
-	if (keys.length <= MAX_CACHE_ENTRIES) return;
-	// Ordenar por timestamp ascendente y eliminar los más antiguos
-	const sorted = keys.sort((a, b) => historyCache[a].timestamp - historyCache[b].timestamp);
-	const toRemove = sorted.slice(0, keys.length - MAX_CACHE_ENTRIES);
-	for (const key of toRemove) delete historyCache[key];
+async function getCachedHistory(ticker: string) {
+	try {
+		return redis ? await redis.get(`price_history:${ticker}`) : historyCache[ticker];
+	} catch (e) {
+		return historyCache[ticker];
+	}
+}
+
+async function setCachedHistory(ticker: string, data: any) {
+	try {
+		if (redis) {
+			await redis.set(`price_history:${ticker}`, data, { ex: CACHE_TTL_SECONDS });
+		} else {
+			historyCache[ticker] = { ...data, timestamp: Date.now() };
+		}
+	} catch (e) {
+		historyCache[ticker] = { ...data, timestamp: Date.now() };
+	}
 }
 
 // Mapeo de tickers problemáticos en Yahoo a ISINs/Symbols de Financial Times para mayor fiabilidad
@@ -28,7 +46,10 @@ const RELIABLE_FT_MAPPINGS: Record<string, string> = {
 async function fetchFTPrice(isin: string): Promise<{ price: number, change: number, ytd?: number } | null> {
 	try {
 		const url = `https://markets.ft.com/data/funds/tearsheet/summary?s=${isin}:EUR`;
-		const res = await fetch(url, { cache: 'no-store' });
+		const controller = new AbortController();
+		const timeout = setTimeout(() => controller.abort(), 8000);
+		const res = await fetch(url, { cache: 'no-store', signal: controller.signal });
+		clearTimeout(timeout);
 		if (!res.ok) return null;
 		const html = await res.text();
 		
@@ -158,11 +179,13 @@ export const GET: RequestHandler = async ({ url, getClientAddress }) => {
 				let mtd: number | undefined = undefined;
 				let oneMonth: number | undefined = undefined;
 
-				if (historyCache[ticker] && (now - historyCache[ticker].timestamp < CACHE_TTL)) {
-					sparkline = historyCache[ticker].sparkline;
-					if (historyCache[ticker].ytd !== undefined) ytd = historyCache[ticker].ytd;
-					mtd = historyCache[ticker].mtd;
-					oneMonth = historyCache[ticker].oneMonth;
+				const cached = await getCachedHistory(ticker) as any;
+
+				if (cached && (now - (cached.timestamp || 0) < CACHE_TTL_MS)) {
+					sparkline = cached.sparkline;
+					if (cached.ytd !== undefined) ytd = cached.ytd;
+					mtd = cached.mtd;
+					oneMonth = cached.oneMonth;
 				} else {
 					try {
 						// Pedir desde el 20 de Dic del año anterior para asegurar que cogemos el último cierre
@@ -231,14 +254,14 @@ export const GET: RequestHandler = async ({ url, getClientAddress }) => {
 							}
 						}
 						
-						historyCache[ticker] = { timestamp: now, sparkline, ytd, mtd, oneMonth };
-						pruneCache();
+						await setCachedHistory(ticker, { timestamp: now, sparkline, ytd, mtd, oneMonth });
 					} catch (e) {
 						console.error(`Error fetching history for ${ticker}:`, e);
-						sparkline = historyCache[ticker]?.sparkline || [];
-						ytd = historyCache[ticker]?.ytd ?? ytd;
-						mtd = historyCache[ticker]?.mtd;
-						oneMonth = historyCache[ticker]?.oneMonth;
+						const fallback = await getCachedHistory(ticker) as any;
+						sparkline = fallback?.sparkline || [];
+						ytd = fallback?.ytd ?? ytd;
+						mtd = fallback?.mtd;
+						oneMonth = fallback?.oneMonth;
 					}
 				}
 
