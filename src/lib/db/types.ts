@@ -34,4 +34,7 @@ export interface StorageProvider {
 	// Export/Import (Local DB mostly)
 	getAllData?(): Promise<any>;
 	importAllData?(data: any): Promise<void>;
+	
+	// Delete Account
+	deleteAccount?(): Promise<void>;
 }

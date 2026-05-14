@@ -81,7 +81,6 @@ export class LocalDBStorage implements StorageProvider {
 		const history = await localDB.history.toArray();
 		return { userData, history };
 	}
-
 	async importAllData(data: any): Promise<void> {
 		if (!localDB || !data) return;
 		await localDB.transaction('rw', localDB.userData, localDB.history, async () => {
@@ -90,5 +89,14 @@ export class LocalDBStorage implements StorageProvider {
 			if (data.userData?.length) await localDB.userData.bulkPut(data.userData);
 			if (data.history?.length) await localDB.history.bulkPut(data.history);
 		});
+	}
+
+	async deleteAccount(): Promise<void> {
+		if (!localDB) return;
+		await localDB.transaction('rw', localDB.userData, localDB.history, async () => {
+			await localDB.userData.clear();
+			await localDB.history.clear();
+		});
+		localStorage.clear();
 	}
 }

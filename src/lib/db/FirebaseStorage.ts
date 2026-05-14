@@ -112,4 +112,27 @@ export class FirebaseStorage implements StorageProvider {
 			await this.saveHistory(userId, data.history[0].points);
 		}
 	}
+
+	async deleteAccount(): Promise<void> {
+		if (!auth?.currentUser || !db) return;
+		const user = auth.currentUser;
+		const userId = user.uid;
+		
+		try {
+			// 1. Borrar datos de Firestore
+			const { deleteDoc, doc } = await import('firebase/firestore');
+			await deleteDoc(doc(db, 'user_data', userId));
+			await deleteDoc(doc(db, 'user_history', userId));
+			
+			// 2. Borrar el usuario de Firebase Auth
+			const { deleteUser } = await import('firebase/auth');
+			await deleteUser(user);
+		} catch (e: any) {
+			console.error('Error al eliminar cuenta:', e);
+			if (e.code === 'auth/requires-recent-login') {
+				throw new Error('Por seguridad, debes haber iniciado sesión recientemente para eliminar tu cuenta. Por favor, cierra sesión y vuelve a entrar.');
+			}
+			throw e;
+		}
+	}
 }

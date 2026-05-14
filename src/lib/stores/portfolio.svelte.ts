@@ -649,6 +649,23 @@ export class PortfolioStore {
 		this.holdings = { ...state.holdings };
 		this.saveToStorage();
 	}
+
+	/** Eliminar definitivamente la cuenta y todos los datos asociados */
+	async deleteAccount() {
+		if (!confirm('¿ESTÁS SEGURO? Esta acción es irreversible y borrará todos tus activos e historial definitivamente.')) return;
+		
+		this.authLoading = true;
+		try {
+			if (storageProvider.deleteAccount) {
+				await storageProvider.deleteAccount();
+				window.location.reload();
+			}
+		} catch (e: any) {
+			alert(e.message || 'Error al eliminar la cuenta');
+		} finally {
+			this.authLoading = false;
+		}
+	}
 }
 
 export const portfolio = new PortfolioStore();

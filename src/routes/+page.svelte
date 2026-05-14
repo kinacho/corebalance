@@ -294,8 +294,29 @@
     </div>
 
     <footer class="app-footer">
-      <PaypalDonation />
-      <p>CoreBalance · {new Date().getFullYear()}</p>
+      <div class="footer-divider"></div>
+      
+      <div class="footer-main">
+        <div class="footer-brand">
+          <div class="footer-logo-group">
+            <img src="/favicon.png" alt="CoreBalance" class="footer-logo" />
+            <span class="footer-title">CoreBalance</span>
+          </div>
+          <p class="footer-tagline">Tu centro de mandos para una gestión de activos inteligente y equilibrada.</p>
+        </div>
+
+        <div class="footer-donation">
+          <PaypalDonation />
+        </div>
+      </div>
+
+      <div class="footer-legal">
+        <p><strong>Aviso Legal:</strong> CoreBalance es una herramienta puramente informativa y educativa. No constituye asesoramiento financiero, de inversión ni fiscal. Los datos mostrados pueden sufrir retrasos o ser inexactos. El desarrollador no se hace responsable de posibles pérdidas financieras derivadas del uso de esta aplicación. Invierte siempre bajo tu propia responsabilidad.</p>
+      </div>
+
+      <div class="footer-copyright">
+        <p>© {new Date().getFullYear()} CoreBalance · Hecho con ❤️ para la comunidad inversora</p>
+      </div>
     </footer>
   </main>
 </div>
@@ -538,17 +559,102 @@
 
   /* --- Footer --- */
   .app-footer {
-    padding: 3rem 0 5rem;
+    padding: 4rem 1rem 6rem;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1.5rem;
-    opacity: 0.8;
+    gap: 3rem;
+    max-width: 1140px;
+    margin: 0 auto;
   }
-  .app-footer p {
+
+  .footer-divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05) 50%, transparent);
+  }
+
+  .footer-main {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    text-align: center;
+  }
+
+  @media (min-width: 768px) {
+    .footer-main {
+      grid-template-columns: 1.5fr 1fr;
+      text-align: left;
+      align-items: center;
+    }
+  }
+
+  .footer-logo-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    justify-content: center;
+  }
+
+  @media (min-width: 768px) {
+    .footer-logo-group {
+      justify-content: flex-start;
+    }
+  }
+
+  .footer-logo {
+    width: 28px;
+    height: 28px;
+    filter: grayscale(0.5) opacity(0.8);
+  }
+
+  .footer-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    background: linear-gradient(to bottom, #fff, rgba(255, 255, 255, 0.4));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .footer-tagline {
+    font-size: 0.9rem;
+    color: rgba(160, 160, 200, 0.4);
+    line-height: 1.5;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  @media (min-width: 768px) {
+    .footer-tagline {
+      margin: 0;
+    }
+  }
+
+  .footer-legal {
+    width: 100%;
+    max-width: 800px;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+  }
+
+  .footer-legal p {
+    font-size: 0.7rem;
+    line-height: 1.6;
+    color: rgba(160, 160, 200, 0.35);
+    margin: 0;
+    text-align: center;
+  }
+
+  .footer-copyright p {
     font-size: 0.75rem;
     font-weight: 600;
-    opacity: 0.4;
+    color: rgba(160, 160, 200, 0.25);
     margin: 0;
   }
 

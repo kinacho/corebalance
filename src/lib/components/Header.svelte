@@ -248,16 +248,31 @@
 								disabled={authLoading}
 								onclick={() => { portfolio.logout(); showUserMenu = false; }}
 							>
-								{#if authLoading}
-									<div class="mini-spinner red"></div>
-									<span>Cerrando...</span>
-								{:else}
-									<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2.5">
-										<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
-									</svg>
-									<span>Cerrar Sesión</span>
-								{/if}
+								<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none">
+									<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+									<polyline points="16 17 21 12 16 7"></polyline>
+									<line x1="21" y1="12" x2="9" y2="12"></line>
+								</svg>
+								Cerrar sesión
 							</button>
+
+							{#if !portfolio.isLocal}
+								<div class="dropdown-divider"></div>
+								<button 
+									class="dropdown-item delete-account" 
+									role="menuitem"
+									disabled={authLoading}
+									onclick={() => { portfolio.deleteAccount(); showUserMenu = false; }}
+								>
+									<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none">
+										<polyline points="3 6 5 6 21 6"></polyline>
+										<path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+										<line x1="10" y1="11" x2="10" y2="17"></line>
+										<line x1="14" y1="11" x2="14" y2="17"></line>
+									</svg>
+									Eliminar mi cuenta
+								</button>
+							{/if}
 						</div>
 					{/if}
 				</div>
@@ -627,7 +642,18 @@
 	}
 
 	.dropdown-item.logout:hover {
-		background: rgba(239, 68, 68, 0.08);
+		background: rgba(239, 68, 68, 0.1);
+		color: #fca5a5;
+	}
+
+	.dropdown-item.delete-account {
+		color: rgba(239, 68, 68, 0.6);
+		font-size: 0.75rem;
+	}
+
+	.dropdown-item.delete-account:hover {
+		background: #ef4444;
+		color: white;
 	}
 
 	.dropdown-setting {
@@ -704,7 +730,7 @@
 		animation: spin 0.8s linear infinite;
 	}
 
-	.mini-spinner.red { color: #ef4444; border-top-color: #ef4444; border-color: rgba(239, 68, 68, 0.1); }
+
 	.mini-spinner.white { color: #fff; border-top-color: #fff; border-color: rgba(255, 255, 255, 0.2); }
 
 	.user-loading-overlay {
