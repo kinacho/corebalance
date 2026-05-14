@@ -33,6 +33,13 @@ describe('Search API', () => {
 		expect(data.results).toEqual([]);
 	});
 
+	it('returns empty results for missing query param', async () => {
+		const url = new URL('http://localhost/api/search');
+		const response = await GET({ url, getClientAddress: mockGetClientAddress } as any);
+		const data = await response.json();
+		expect(data.results).toEqual([]);
+	});
+
 	it('returns mapped results for valid queries', async () => {
 		const url = new URL('http://localhost/api/search?q=Apple');
 		const response = await GET({ url, getClientAddress: mockGetClientAddress } as any);
@@ -41,6 +48,14 @@ describe('Search API', () => {
 		expect(data.results[0].ticker).toBe('AAPL');
 		expect(data.results[0].type).toBe('Acción');
 		expect(data.results[1].type).toBe('Crypto');
+	});
+
+	it('includes exchange and currency in results', async () => {
+		const url = new URL('http://localhost/api/search?q=Apple');
+		const response = await GET({ url, getClientAddress: mockGetClientAddress } as any);
+		const data = await response.json();
+		expect(data.results[0].exchange).toBe('NASDAQ');
+		expect(data.results[0].currency).toBe('USD');
 	});
 
 	it('handles errors from YahooFinance', async () => {
@@ -56,5 +71,39 @@ describe('Search API', () => {
 		const url = new URL(`http://localhost/api/search?q=${longQuery}`);
 		const response = await GET({ url, getClientAddress: mockGetClientAddress } as any);
 		expect(response.status).toBe(400);
+	});
+
+	it('returns 429 when rate limit is exceeded', async () => {
+		// Use a unique IP to avoid interference from other tests
+		const uniqueIp = () => '10.0.0.99';
+		const url = new URL('http://localhost/api/search?q=Apple');
+		
+		// Send 20 requests (the limit)
+		for (let i = 0; i < 20; i++) {
+			await GET({ url, getClientAddress: uniqueIp } as any);
+		}
+		
+		// The 21st should be rate limited
+		const response = await GET({ url, getClientAddress: uniqueIp } as any);
+		expect(response.status).toBe(429);
+		const data = await response.json();
+		expect(data.error).toMatch(/Demasiadas/);
+	});
+
+	it('does not rate limit different IPs', async () => {
+		const url = new URL('http://localhost/api/search?q=Apple');
+		
+		// Use a fresh IP
+		const freshIp = () => '192.168.50.1';
+		const response = await GET({ url, getClientAddress: freshIp } as any);
+		expect(response.status).toBe(200);
+	});
+
+	it('handles getClientAddress failure gracefully', async () => {
+		const url = new URL('http://localhost/api/search?q=Apple');
+		const failingGetClientAddress = () => { throw new Error('No IP'); };
+		const response = await GET({ url, getClientAddress: failingGetClientAddress } as any);
+		// Should not crash — falls back to 127.0.0.1
+		expect(response.status).toBe(200);
 	});
 });

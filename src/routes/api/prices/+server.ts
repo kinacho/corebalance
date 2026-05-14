@@ -3,10 +3,10 @@ import type { RequestHandler } from './$types';
 import YahooFinance from 'yahoo-finance2';
 import type { PricesResponse, PriceData } from '$lib/types';
 import { Redis } from '@upstash/redis';
-import { KV_REST_API_URL, KV_REST_API_TOKEN } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 
-const redis = (KV_REST_API_URL && KV_REST_API_TOKEN)
-	? new Redis({ url: KV_REST_API_URL, token: KV_REST_API_TOKEN })
+const redis = (env.KV_REST_API_URL && env.KV_REST_API_TOKEN)
+	? new Redis({ url: env.KV_REST_API_URL, token: env.KV_REST_API_TOKEN })
 	: null;
 
 const yahooFinance = new YahooFinance({ suppressNotices: ['yahooSurvey', 'ripHistorical'] });
