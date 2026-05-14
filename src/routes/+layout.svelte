@@ -22,9 +22,7 @@
 	"
 ></div>
 
-{#if !portfolio.isInitialized}
-	<SplashScreen loading={portfolio.loading} />
-{/if}
+<SplashScreen loading={!portfolio.isInitialized} />
 
 {@render children()}
 
