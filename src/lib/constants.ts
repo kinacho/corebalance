@@ -41,7 +41,7 @@ export const STORAGE_KEY_PRICES = 'corebalance_prices_cache';
 /** Tabs del dashboard */
 export const DASHBOARD_TABS = [
 	{ id: 'assets', label: 'Activos', icon: '📊' },
-	{ id: 'rebalance', label: 'Rebalanceo', icon: '💰' },
+	{ id: 'rebalance', label: 'Estrategia', icon: '🎯' },
 	{ id: 'charts', label: 'Gráficos', icon: '🍩' }
 ] as const;
 

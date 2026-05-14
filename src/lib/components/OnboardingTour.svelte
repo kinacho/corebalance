@@ -43,27 +43,25 @@
             }
           }
         },
-
         {
-          element: '#tour-rebalance',
+          element: '#tour-portfolio-categories',
           popover: {
-            title: 'La Calculadora Mágica ✨',
-            description: 'Dinos cuánto dinero nuevo quieres invertir. CoreBalance calculará matemáticamente qué activos comprar para mantener tu cartera perfectamente equilibrada.',
+            title: 'Tus Tres Pilares 🏦',
+            description: 'Organizamos tu dinero en 3 categorías: Cartera Principal (tu estrategia Core), Acciones Individuales y Cartera Conservadora (para proteger capital).',
             side: "top",
             align: 'center'
           },
           onHighlightStarted: () => {
             if (typeof window !== 'undefined') {
-              window.dispatchEvent(new CustomEvent('tour-step', { detail: { target: 'rebalance' } }));
+              window.dispatchEvent(new CustomEvent('tour-step', { detail: { target: 'assets' } }));
             }
           }
         },
-
         {
-          element: '#tour-crisis',
+          element: '#tour-rebalance',
           popover: {
-            title: 'Simulador de Crisis 📉',
-            description: 'Descubre qué pasaría con tu cartera si el mercado se desploma. Ajusta la caída y mira cómo tus aportaciones regulares (DCA) pueden salvarte y acelerar la recuperación.',
+            title: 'La Calculadora Mágica ✨',
+            description: 'Dinos cuánto dinero nuevo quieres invertir. CoreBalance calculará matemáticamente qué activos comprar para mantener tu cartera perfectamente equilibrada.',
             side: "top",
             align: 'center'
           },
@@ -87,7 +85,20 @@
             }
           }
         },
-
+        {
+          element: '#tour-crisis',
+          popover: {
+            title: 'Simulador de Crisis 📉',
+            description: 'Descubre qué pasaría con tu cartera si el mercado se desploma. Ajusta la caída y mira cómo tus aportaciones regulares (DCA) pueden salvarte y acelerar la recuperación.',
+            side: "top",
+            align: 'center'
+          },
+          onHighlightStarted: () => {
+            if (typeof window !== 'undefined') {
+              window.dispatchEvent(new CustomEvent('tour-step', { detail: { target: 'rebalance' } }));
+            }
+          }
+        },
         {
           element: '#tour-manage-btn',
           popover: {

@@ -247,7 +247,7 @@
     <!-- Content Grid -->
     <div class="dashboard-grid">
       <!-- Assets Column -->
-      <section class="assets-section" class:tab-hidden={activeTab !== "assets"}>
+      <section id="tour-portfolio-categories" class="assets-section" class:tab-hidden={activeTab !== "assets"}>
         <PortfolioSection
           title={`Cartera Principal (${portfolio.targetLabel})`}
           portfolioState={portfolio.portfolioState}
