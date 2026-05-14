@@ -539,20 +539,15 @@ export class PortfolioStore {
 
 
 	async fetchPrices() {
-		// Bloquear si ya hay una petición en curso o estamos inicializando
-		if (this.isFetching || (this.loading && Object.keys(this.prices).length === 0 && this.isInitialized)) return;
+		// Bloquear si ya hay una petición en curso
+		if (this.isFetching) return;
 
 		this.isFetching = true;
-		const isInitial = Object.keys(this.prices).length === 0;
-		if (isInitial) this.loading = true;
-		
 		this.error = null;
+		
 		try {
 			const tickerList = this.allUserTickers.join(',');
 			if (!tickerList) {
-				// Si no hay tickers, terminamos rápido
-				this.loading = false;
-				this.isInitialized = true;
 				this.isFetching = false;
 				return;
 			}
@@ -570,7 +565,6 @@ export class PortfolioStore {
 				localStorage.setItem(STORAGE_KEY_PRICES, JSON.stringify(this.prices));
 			}
 
-
 			if (this.user) {
 				await this.updateHistoryPoints();
 			}
@@ -578,11 +572,7 @@ export class PortfolioStore {
 			console.error('Fetch prices error:', e);
 			this.error = e instanceof Error ? e.message : 'Error de conexión';
 		} finally {
-			this.loading = false;
 			this.isFetching = false;
-			if (isInitial) {
-				this.isInitialized = true;
-			}
 		}
 	}
 
