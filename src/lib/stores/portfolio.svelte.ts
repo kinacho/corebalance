@@ -216,15 +216,19 @@ export class PortfolioStore {
 			}
 		}
 
+		// Carga inicial inmediata de caché local para evitar ceros (Offline-first)
+		this.loadFromStorage();
+
 		// Esperamos a saber quién es el usuario antes de quitar el splash screen
 		this.authUnsubscribe = storageProvider.onAuthStateChanged(async (user) => {
 			this.authLoading = false;
 			this.user = user;
 			
 			if (user) {
-				await this.loadFromCloud(); // loadFromCloud ya hace await fetchPrices()
+				// El usuario está logueado, sincronizamos con la nube
+				await this.loadFromCloud(); 
 			} else {
-				this.loadFromStorage();
+				// No hay usuario, nos aseguramos de tener los últimos precios para los datos locales
 				await this.fetchPrices();
 			}
 			
@@ -236,16 +240,18 @@ export class PortfolioStore {
 			this.authReady = true;
 		}) as (() => void) | undefined;
 
-		// Salvaguarda extrema: Si Firebase o la red se cuelgan, liberamos la UI en 4s
+		// Salvaguarda extrema: Si Firebase o la red se cuelgan, liberamos la UI en 8s
+		// Pero solo si no hemos terminado ya la inicialización
 		setTimeout(() => {
-			if (this.loading) {
+			if (!this.isInitialized) {
+				console.warn('CoreBalance: La inicialización ha tardado demasiado, forzando liberación de UI...');
 				this.loadFromStorage();
 				this.fetchPrices();
 				this.isInitialized = true;
 				this.loading = false;
 				this.authReady = true;
 			}
-		}, 4000);
+		}, 8000);
 	}
 
 

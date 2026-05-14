@@ -24,6 +24,18 @@
 	});
 
 	$effect(() => {
+		if (show && typeof document !== 'undefined') {
+			// Bloquear scroll del body para evitar "tambaleos" o desplazamientos de fondo
+			const originalOverflow = document.body.style.overflow;
+			document.body.style.overflow = 'hidden';
+			
+			return () => {
+				document.body.style.overflow = originalOverflow;
+			};
+		}
+	});
+
+	$effect(() => {
 		if (!loading) {
 			progress = 100;
 			setTimeout(() => {
@@ -69,7 +81,12 @@
 <style>
 	.splash-screen {
 		position: fixed;
-		inset: 0;
+		top: 0;
+		left: 0;
+		width: 100%;
+		/* Usar dvh (Dynamic Viewport Height) para evitar que la barra de direcciones de móvil lo desplace */
+		height: 100vh;
+		height: 100dvh;
 		z-index: 9999;
 		background: #05050a;
 		display: flex;
@@ -77,6 +94,9 @@
 		align-items: center;
 		justify-content: center;
 		overflow: hidden;
+		/* Evitar cualquier interacción táctil que pueda disparar scroll o gestos del navegador */
+		touch-action: none;
+		overscroll-behavior: none;
 	}
 
 	.splash-mesh {
