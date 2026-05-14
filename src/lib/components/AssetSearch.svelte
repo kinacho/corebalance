@@ -87,7 +87,7 @@
 		};
 
 		portfolio.addAsset(asset);
-		onClose();
+		// Eliminado el onClose() para permitir añadir varios
 	}
 
 	function handleKeydown(e: KeyboardEvent) {
@@ -185,6 +185,15 @@
 					<p class="hint-examples">Ej: "MSCI World", "AAPL", "IE00B4L5Y983"</p>
 				</div>
 			{/if}
+		</div>
+
+		<div class="search-footer">
+			<button class="btn-done" onclick={onClose}>
+				<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+					<polyline points="20 6 9 17 4 12"></polyline>
+				</svg>
+				Listo, volver a la cartera
+			</button>
 		</div>
 	</div>
 </div>
@@ -437,24 +446,84 @@
 	}
 
 	.add-badge {
-		padding: 0.3rem 0.7rem;
-		background: rgba(59, 130, 246, 0.12);
-		border: 1px solid rgba(59, 130, 246, 0.2);
-		border-radius: 8px;
+		display: flex;
+		align-items: center;
+		gap: 0.3rem;
+		padding: 0.4rem 0.8rem;
+		background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.05));
+		border: 1px solid rgba(59, 130, 246, 0.3);
+		border-radius: 10px;
 		font-size: 0.72rem;
 		font-weight: 700;
 		color: #60a5fa;
 		white-space: nowrap;
+		transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+		box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+	}
+
+	.result-row:hover:not(.disabled) .add-badge {
+		background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(59, 130, 246, 0.1));
+		border-color: rgba(59, 130, 246, 0.5);
+		transform: translateY(-1px);
+		box-shadow: 0 6px 16px rgba(59, 130, 246, 0.2);
 	}
 
 	.already-badge {
-		padding: 0.3rem 0.7rem;
-		background: rgba(16, 185, 129, 0.1);
-		border-radius: 8px;
+		display: flex;
+		align-items: center;
+		gap: 0.3rem;
+		padding: 0.4rem 0.8rem;
+		background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05));
+		border: 1px solid rgba(16, 185, 129, 0.3);
+		border-radius: 10px;
 		font-size: 0.72rem;
 		font-weight: 700;
 		color: #10b981;
 		white-space: nowrap;
+		box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);
+		animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+	}
+
+	@keyframes scaleIn {
+		0% { transform: scale(0.8); opacity: 0; }
+		100% { transform: scale(1); opacity: 1; }
+	}
+
+	.search-footer {
+		padding: 1rem 1.5rem;
+		border-top: 1px solid rgba(255, 255, 255, 0.06);
+		background: rgba(18, 18, 35, 0.95);
+		display: flex;
+		justify-content: center;
+	}
+
+	.btn-done {
+		width: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		padding: 0.85rem;
+		background: linear-gradient(135deg, #3b82f6, #2563eb);
+		border: none;
+		border-radius: 14px;
+		color: white;
+		font-size: 0.95rem;
+		font-weight: 700;
+		cursor: pointer;
+		transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+		box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+	}
+
+	.btn-done:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 12px 25px rgba(59, 130, 246, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+		background: linear-gradient(135deg, #4f46e5, #3b82f6);
+	}
+
+	.btn-done:active {
+		transform: translateY(0);
+		box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
 	}
 
 	.search-empty, .search-hint {

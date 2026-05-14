@@ -235,6 +235,17 @@
 				</div>
 			{/each}
 		</div>
+
+		<div class="manage-footer">
+			<button class="btn-save" onclick={onClose}>
+				<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+					<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+					<polyline points="17 21 17 13 7 13 7 21"></polyline>
+					<polyline points="7 3 7 8 15 8"></polyline>
+				</svg>
+				Guardar Cartera y Volver
+			</button>
+		</div>
 	</div>
 </div>
 
@@ -643,6 +654,7 @@
 		border-radius: 3px;
 		outline: none;
 		cursor: pointer;
+		touch-action: pan-y pinch-zoom;
 	}
 
 	.weight-slider::-webkit-slider-thumb {
@@ -735,6 +747,43 @@
 		background: rgba(59, 130, 246, 0.1);
 		border-color: rgba(59, 130, 246, 0.4);
 		color: #60a5fa;
+	}
+
+	.manage-footer {
+		padding: 1.25rem 1.5rem;
+		border-top: 1px solid rgba(255, 255, 255, 0.06);
+		background: rgba(18, 18, 35, 0.95);
+		display: flex;
+		justify-content: center;
+	}
+
+	.btn-save {
+		width: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.6rem;
+		padding: 0.9rem;
+		background: linear-gradient(135deg, #10b981, #059669);
+		border: none;
+		border-radius: 14px;
+		color: white;
+		font-size: 1rem;
+		font-weight: 700;
+		cursor: pointer;
+		transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+		box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+	}
+
+	.btn-save:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 12px 25px rgba(16, 185, 129, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+		background: linear-gradient(135deg, #059669, #10b981);
+	}
+
+	.btn-save:active {
+		transform: translateY(0);
+		box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
 	}
 
 	/* Scrollbar */

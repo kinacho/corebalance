@@ -454,7 +454,7 @@
 		background: rgba(255, 255, 255, 0.1);
 		border-radius: 10px;
 		outline: none;
-		touch-action: pan-y;
+		touch-action: pan-y pinch-zoom;
 	}
 
 	input[type="range"]::-webkit-slider-thumb {
