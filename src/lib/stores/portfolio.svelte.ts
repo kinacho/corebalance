@@ -48,22 +48,37 @@ export class PortfolioStore {
 		return [...tickers];
 	});
 
+	getExchangeRateToEur(currency: string): number {
+		if (currency === 'EUR') return 1;
+		const pair = `EUR${currency}=X`;
+		if (this.prices[pair]?.price) return this.prices[pair].price;
+		// Fallbacks si no se encontró el par live
+		if (currency === 'USD') return this.prices['EURUSD=X']?.price || 1.10;
+		if (currency === 'CAD') return this.prices['EURCAD=X']?.price || 1.50;
+		if (currency === 'GBP') return this.prices['EURGBP=X']?.price || 0.85;
+		if (currency === 'CHF') return this.prices['EURCHF=X']?.price || 0.95;
+		if (currency === 'AUD') return this.prices['EURAUD=X']?.price || 1.65;
+		if (currency === 'JPY') return this.prices['EURJPY=X']?.price || 160;
+		return 1; // Fallback final
+	}
+
 	convertedPrices: Record<string, PriceData> = $derived.by(() => {
 		const res: Record<string, PriceData> = {};
 		const base = ui.baseCurrency;
 		for (const [ticker, data] of Object.entries(this.prices)) {
 			let price = data.price;
+			const fromCurrency = data.currency || 'EUR';
 			
-			if (base === 'EUR') {
-				if (data.currency === 'USD') price /= this.eurUsd;
-				if (data.currency === 'CAD') price /= this.eurCad;
-				if (data.currency === 'GBP') price /= 0.85; // Simplification or fetch eurgbp
-			} else if (base === 'USD') {
-				if (data.currency === 'EUR') price *= this.eurUsd;
-				if (data.currency === 'CAD') price *= (this.eurUsd / this.eurCad);
-			} else if (base === 'GBP') {
-				if (data.currency === 'EUR') price *= 0.85;
-				if (data.currency === 'USD') price *= (0.85 / this.eurUsd);
+			if (fromCurrency !== base) {
+				const fromRateToEur = this.getExchangeRateToEur(fromCurrency);
+				const priceInEur = price / fromRateToEur;
+				
+				if (base === 'EUR') {
+					price = priceInEur;
+				} else {
+					const baseRateToEur = this.getExchangeRateToEur(base);
+					price = priceInEur * baseRateToEur;
+				}
 			}
 
 			res[ticker] = { ...data, price };

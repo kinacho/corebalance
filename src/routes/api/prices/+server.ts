@@ -113,7 +113,7 @@ export const GET: RequestHandler = async ({ url, getClientAddress }) => {
 	const tickersParam = url.searchParams.get('tickers');
 	
 	// Siempre incluir pares de divisas para conversión
-	const currencyPairs = ['BTC-EUR', 'EURUSD=X', 'EURCAD=X'];
+	const currencyPairs = ['BTC-EUR', 'EURUSD=X', 'EURCAD=X', 'EURGBP=X', 'EURCHF=X', 'EURAUD=X', 'EURJPY=X'];
 	
 	let userTickers: string[] = [];
 	if (tickersParam) {
@@ -279,10 +279,28 @@ export const GET: RequestHandler = async ({ url, getClientAddress }) => {
 
 	for (const result of results) {
 		if (result.status === 'fulfilled') {
-			const { ticker, quote, sparkline, ytd: yahooYtd, mtd, oneMonth } = result.value;
+			let { ticker, quote, sparkline, ytd: yahooYtd, mtd, oneMonth } = result.value;
 			let p = quote.regularMarketPrice;
 			let change = quote.regularMarketChangePercent;
 			let ytd = yahooYtd;
+			let currency = quote.currency ?? 'EUR';
+
+			// Corrección generalizada de divisas fraccionarias (ej: GBp = peniques, ZAc = centavos)
+			const SUBUNIT_DIVISOR = 100;
+			const KNOWN_SUBUNITS: Record<string, string> = {
+				'GBp': 'GBP',
+				'ZAc': 'ZAR',
+				'IEp': 'EUR',
+				'EUc': 'EUR',
+				'USc': 'USD'
+			};
+
+			if (KNOWN_SUBUNITS[currency] || (currency.length === 3 && currency.endsWith('p'))) {
+				const baseCurrency = KNOWN_SUBUNITS[currency] || (currency.substring(0, 2) + 'P');
+				p = (p ?? 0) / SUBUNIT_DIVISOR;
+				sparkline = sparkline.map(s => s / SUBUNIT_DIVISOR);
+				currency = baseCurrency;
+			}
 
 			// Intentar obtener precio más actualizado de Financial Times para tickers problemáticos
 			if (RELIABLE_FT_MAPPINGS[ticker]) {
@@ -306,7 +324,7 @@ export const GET: RequestHandler = async ({ url, getClientAddress }) => {
 
 			prices[ticker] = {
 				price: p ?? 0,
-				currency: quote.currency ?? 'EUR',
+				currency: currency,
 				name: quote.shortName ?? quote.longName ?? ticker,
 				change: change ?? 0,
 				sparkline,
