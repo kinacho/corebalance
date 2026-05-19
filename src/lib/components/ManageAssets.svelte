@@ -186,7 +186,7 @@
 		allSections.forEach(sec => sec.classList.remove('drag-over'));
 
 		if (activeTouchTicker && touchTargetSectionId) {
-			portfolio.moveAsset(activeTouchTicker, touchTargetSectionId);
+			moveAssetSafely(activeTouchTicker, touchTargetSectionId);
 			ui.addToast('Activo reclasificado', 'success');
 			ui.hapticFeedback('medium');
 		}
@@ -221,14 +221,84 @@
 		Math.abs(coreWeightTotal - 1) < 0.005
 	);
 
+	let lockedAssets = $state<Record<string, boolean>>({});
+
+	function toggleLock(ticker: string) {
+		lockedAssets[ticker] = !lockedAssets[ticker];
+		ui.hapticFeedback('light');
+	}
+
 	function openSearch(cat: AssetCategory) {
 		searchCategory = cat;
 		showSearch = true;
 	}
 
+	function adjustSumToExact100() {
+		const assets = portfolio.coreAssets;
+		if (assets.length === 0) return;
+		
+		let total = 0;
+		assets.forEach(a => total += a.targetWeight);
+		
+		const diff = 1.0 - total;
+		if (Math.abs(diff) > 0.0001) {
+			const adjustable = assets.find(a => !lockedAssets[a.ticker]);
+			if (adjustable) {
+				portfolio.updateAsset(adjustable.ticker, { 
+					targetWeight: Math.max(0, adjustable.targetWeight + diff) 
+				});
+			} else if (assets.length > 0) {
+				portfolio.updateAsset(assets[0].ticker, { 
+					targetWeight: Math.max(0, assets[0].targetWeight + diff) 
+				});
+			}
+		}
+	}
+
 	function handleWeightChange(ticker: string, newPercent: number) {
-		const clamped = Math.max(0, Math.min(100, newPercent));
-		portfolio.updateAsset(ticker, { targetWeight: clamped / 100 });
+		const assets = portfolio.coreAssets;
+		if (assets.length <= 1) {
+			portfolio.updateAsset(ticker, { targetWeight: 1.0 });
+			return;
+		}
+
+		let lockedSum = 0;
+		assets.forEach(a => {
+			if (a.ticker !== ticker && lockedAssets[a.ticker]) {
+				lockedSum += a.targetWeight;
+			}
+		});
+
+		const maxPercent = Math.max(0, 100 - Math.round(lockedSum * 100));
+		const clampedPercent = Math.max(0, Math.min(maxPercent, newPercent));
+		const newWeight = clampedPercent / 100;
+
+		const availableWeight = 1.0 - newWeight - lockedSum;
+		const otherFreeAssets = assets.filter(a => a.ticker !== ticker && !lockedAssets[a.ticker]);
+
+		if (otherFreeAssets.length > 0) {
+			let otherFreeSum = 0;
+			otherFreeAssets.forEach(a => {
+				otherFreeSum += a.targetWeight;
+			});
+
+			if (otherFreeSum > 0) {
+				otherFreeAssets.forEach(a => {
+					const proportionalWeight = a.targetWeight * (availableWeight / otherFreeSum);
+					const rounded = Math.round(proportionalWeight * 100) / 100;
+					portfolio.updateAsset(a.ticker, { targetWeight: rounded });
+				});
+			} else {
+				const equalShare = availableWeight / otherFreeAssets.length;
+				otherFreeAssets.forEach(a => {
+					const rounded = Math.round(equalShare * 100) / 100;
+					portfolio.updateAsset(a.ticker, { targetWeight: rounded });
+				});
+			}
+		}
+
+		portfolio.updateAsset(ticker, { targetWeight: newWeight });
+		adjustSumToExact100();
 		ui.hapticFeedback('light');
 	}
 
@@ -245,8 +315,19 @@
 		editingAsset = null;
 	}
 
+	function moveAssetSafely(ticker: string, newCategory: AssetCategory) {
+		const isInCore = portfolio.coreAssets.some(a => a.ticker === ticker);
+		if (isInCore && newCategory !== 'core') {
+			handleWeightChange(ticker, 0);
+		}
+		portfolio.moveAsset(ticker, newCategory);
+	}
+
 	function confirmRemove(asset: Asset) {
 		if (confirm(`¿Eliminar "${asset.name}" (${asset.ticker}) de tu cartera?`)) {
+			if (asset.category === 'core') {
+				handleWeightChange(asset.ticker, 0);
+			}
 			portfolio.removeAsset(asset.ticker);
 			ui.addToast('Activo eliminado', 'info');
 			ui.hapticFeedback('medium');
@@ -255,6 +336,7 @@
 
 	/** Distribuir pesos equitativamente entre activos del core */
 	function equalizeWeights() {
+		lockedAssets = {}; // Liberar todos los candados al igualar
 		const count = portfolio.coreAssets.length;
 		if (count === 0) return;
 		const baseWeight = Math.floor(100 / count);
@@ -330,7 +412,7 @@
 						if (!e.dataTransfer) return;
 						const ticker = e.dataTransfer.getData('text/plain');
 						if (ticker) {
-							portfolio.moveAsset(ticker, section.id);
+							moveAssetSafely(ticker, section.id);
 							ui.hapticFeedback('medium');
 						}
 					}}
@@ -455,7 +537,7 @@
 											<select
 												class="action-move"
 												value={section.id}
-												onchange={(e) => portfolio.moveAsset(asset.ticker, e.currentTarget.value as any)}
+												onchange={(e) => moveAssetSafely(asset.ticker, e.currentTarget.value as any)}
 												title="Mover a otra cartera"
 											>
 												<option value="core">P.</option>
@@ -478,6 +560,23 @@
 								{#if section.showWeights}
 									<div class="weight-slider-row">
 										<div class="slider-color-dot" style="background: {asset.color};"></div>
+										<button 
+											class="lock-btn" 
+											class:is-locked={lockedAssets[asset.ticker]}
+											onclick={() => toggleLock(asset.ticker)}
+											title={lockedAssets[asset.ticker] ? 'Desbloquear peso' : 'Bloquear peso'}
+										>
+											{#if lockedAssets[asset.ticker]}
+												<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+													<path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+												</svg>
+											{:else}
+												<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+													<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+													<path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
+												</svg>
+											{/if}
+										</button>
 										<input
 											type="range"
 											class="weight-slider"
@@ -485,6 +584,7 @@
 											min="0"
 											max="100"
 											step="1"
+											disabled={lockedAssets[asset.ticker]}
 											value={Math.round(asset.targetWeight * 100)}
 											oninput={(e) => handleWeightChange(asset.ticker, parseInt((e.target as HTMLInputElement).value))}
 										/>
@@ -495,6 +595,7 @@
 												min="0"
 												max="100"
 												step="1"
+												disabled={lockedAssets[asset.ticker]}
 												value={Math.round(asset.targetWeight * 100)}
 												onwheel={(e) => e.preventDefault()}
 												oninput={(e) => handleWeightChange(asset.ticker, parseInt((e.target as HTMLInputElement).value) || 0)}
@@ -1019,6 +1120,35 @@
 		box-shadow: 0 0 6px currentColor;
 	}
 
+	.lock-btn {
+		background: transparent;
+		border: none;
+		color: rgba(255, 255, 255, 0.3);
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 5px;
+		border-radius: 6px;
+		transition: all 0.2s ease;
+		flex-shrink: 0;
+	}
+	
+	.lock-btn:hover {
+		color: rgba(255, 255, 255, 0.7);
+		background: rgba(255, 255, 255, 0.05);
+	}
+	
+	.lock-btn.is-locked {
+		color: #f59e0b;
+		background: rgba(245, 158, 11, 0.1);
+	}
+
+	.weight-slider:disabled {
+		opacity: 0.35;
+		cursor: not-allowed;
+	}
+
 	.weight-slider {
 		flex: 1;
 		height: 6px;
@@ -1085,6 +1215,12 @@
 		text-align: right;
 		-moz-appearance: textfield;
 		appearance: textfield;
+	}
+
+	.weight-number-input:disabled {
+		opacity: 0.4;
+		color: rgba(255, 255, 255, 0.3);
+		cursor: not-allowed;
 	}
 
 	.weight-number-input::-webkit-outer-spin-button,
