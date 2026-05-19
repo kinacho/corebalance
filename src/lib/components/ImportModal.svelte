@@ -205,7 +205,7 @@
 		<!-- Header -->
 		<div class="import-header">
 			<div>
-				<h2 class="import-title">📥 Importar Cartera</h2>
+				<h2 class="import-title">📥 Importar Cartera <span class="beta-badge">Beta</span></h2>
 				<p class="import-subtitle">
 					{#if step === 'upload'}Sube el CSV de tu bróker
 					{:else if step === 'resolving'}Buscando activos en Yahoo Finance...
@@ -348,7 +348,8 @@
 	.import-panel { position:relative; width:92%; max-width:620px; max-height:85vh; background:rgba(18,18,35,.98); backdrop-filter:blur(40px) saturate(200%); -webkit-backdrop-filter:blur(40px) saturate(200%); border:1px solid rgba(255,255,255,.12); border-radius:24px; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 25px 80px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.05) inset; animation:slideUp .2s cubic-bezier(.34,1.56,.64,1); }
 	@keyframes slideUp { from{transform:translateY(20px) scale(.97);opacity:0} to{transform:translateY(0) scale(1);opacity:1} }
 	.import-header { display:flex; align-items:center; justify-content:space-between; padding:1.25rem 1.5rem; border-bottom:1px solid rgba(255,255,255,.06); }
-	.import-title { font-size:1.1rem; font-weight:700; color:#fff; margin:0; }
+	.import-title { font-size:1.1rem; font-weight:700; color:#fff; margin:0; display:flex; align-items:center; }
+	.beta-badge { font-size: 0.6rem; font-weight: 800; color: #3b82f6; background: rgba(59, 130, 246, 0.12); padding: 0.15rem 0.45rem; border-radius: 6px; margin-left: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid rgba(59, 130, 246, 0.2); }
 	.import-subtitle { font-size:.72rem; color:rgba(160,160,200,.5); margin:0; }
 	.close-btn { width:36px; height:36px; border-radius:10px; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.04); color:rgba(160,160,200,.6); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .2s; }
 	.close-btn:hover { background:rgba(255,255,255,.08); color:#fff; }
