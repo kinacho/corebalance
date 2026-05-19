@@ -6,6 +6,7 @@
 	import { focusTrap } from '$lib/actions/focusTrap';
 	import { onMount } from 'svelte';
 	import AssetSearch from './AssetSearch.svelte';
+	import ImportModal from './ImportModal.svelte';
 
 	interface Props {
 		onClose: () => void;
@@ -14,6 +15,7 @@
 	let { onClose }: Props = $props();
 
 	let showSearch = $state(false);
+	let showImport = $state(false);
 	let searchCategory = $state<AssetCategory>('core');
 	let editingAsset = $state<string | null>(null);
 	let editTer = $state('');
@@ -109,6 +111,10 @@
 
 {#if showSearch}
 	<AssetSearch category={searchCategory} onClose={() => showSearch = false} />
+{/if}
+
+{#if showImport}
+	<ImportModal onClose={() => showImport = false} />
 {/if}
 
 <div class="manage-overlay" role="dialog" aria-modal="true" aria-label="Gestionar activos">
@@ -263,6 +269,17 @@
 					</button>
 				</div>
 			{/each}
+
+			<!-- Import CSV Button -->
+			<div class="import-section">
+				<button class="import-csv-btn" onclick={() => showImport = true}>
+					<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+						<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
+					</svg>
+					Importar desde CSV de bróker
+				</button>
+				<p class="import-hint">DEGIRO · Trading 212 · Interactive Brokers · MyInvestor</p>
+			</div>
 		</div>
 
 		<div class="manage-footer">
@@ -825,5 +842,42 @@
 	.manage-body::-webkit-scrollbar-thumb {
 		background: rgba(255, 255, 255, 0.1);
 		border-radius: 3px;
+	}
+
+	/* Import CSV section */
+	.import-section {
+		margin-top: 0.5rem;
+		padding-top: 1.25rem;
+		border-top: 1px solid rgba(255, 255, 255, 0.04);
+		text-align: center;
+	}
+
+	.import-csv-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		width: 100%;
+		padding: 0.7rem;
+		background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(59, 130, 246, 0.08));
+		border: 1.5px dashed rgba(139, 92, 246, 0.25);
+		border-radius: 12px;
+		color: rgba(167, 139, 250, 0.8);
+		font-size: 0.78rem;
+		font-weight: 700;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.import-csv-btn:hover {
+		background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(59, 130, 246, 0.12));
+		border-color: rgba(139, 92, 246, 0.45);
+		color: #a78bfa;
+	}
+
+	.import-hint {
+		font-size: 0.6rem;
+		color: rgba(160, 160, 200, 0.3);
+		margin: 0.4rem 0 0;
 	}
 </style>
