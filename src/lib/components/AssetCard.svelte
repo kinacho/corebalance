@@ -20,8 +20,8 @@
 	// Filtro de rendimiento seleccionado
 	let perfFilter = $state<'YTD' | 'MTD' | '1M'>('YTD');
 
-	const displayHoldings = $derived(position.holdings.toString());
-	const displayAvgCost = $derived(position.avgCost.toString());
+	const displayHoldings = $derived((Math.round(position.holdings * 1000) / 1000).toString());
+	const displayAvgCost = $derived((Math.round(position.avgCost * 1000) / 1000).toString());
 
 	const currentPerfValue = $derived(
 		perfFilter === 'YTD' ? position.ytdChangePercent 
@@ -95,10 +95,15 @@
 			</div>
 			<div class="asset-info" style="min-width: 0; flex: 1;">
 				<div class="header-main" style="min-width: 0;">
-					<span class="ticker" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; max-width: 100%;">
-						{position.asset.ticker}
-					</span>
-					<h3 class="asset-name">{position.asset.name}</h3>
+					<div class="ticker-row" style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; width: 100%;">
+						<span class="ticker" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; max-width: 75%;">
+							{position.asset.ticker}
+						</span>
+						<div class="target-badge">
+							{formatPercent(position.asset.targetWeight, 0)}
+						</div>
+					</div>
+					<h3 class="asset-name" title={position.asset.name}>{position.asset.name}</h3>
 				</div>
 				<div class="asset-meta">
 					<span class="asset-isin">{position.asset.isin}</span>
@@ -121,9 +126,6 @@
 					</span>
 				</div>
 			{/if}
-			<div class="target-badge">
-				{formatPercent(position.asset.targetWeight, 0)}
-			</div>
 		</div>
 	</div>
 
@@ -362,6 +364,8 @@
 		display: flex;
 		align-items: center;
 		gap: 0.85rem;
+		min-width: 0;
+		flex: 1;
 	}
 
 	.asset-icon-wrapper {
@@ -471,11 +475,12 @@
 	.target-badge {
 		background: color-mix(in srgb, var(--accent) 15%, transparent);
 		color: var(--accent);
-		padding: 0.3rem 0.7rem;
-		border-radius: 8px;
-		font-size: 0.75rem;
+		padding: 0.15rem 0.5rem;
+		border-radius: 6px;
+		font-size: 0.68rem;
 		font-weight: 800;
 		border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+		line-height: 1;
 	}
 
 	.card-body {

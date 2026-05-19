@@ -43,8 +43,8 @@
 			ui.addToast('Solo se aceptan archivos CSV, TSV o TXT', 'error');
 			return;
 		}
-		if (file.size > 5 * 1024 * 1024) {
-			ui.addToast('El archivo es demasiado grande (máx. 5 MB)', 'error');
+		if (file.size > 1 * 1024 * 1024) {
+			ui.addToast('El archivo es demasiado grande (máx. 1 MB)', 'error');
 			return;
 		}
 

@@ -84,8 +84,8 @@ export function parseNumber(value: string): number {
 	
 	let cleaned = value.trim();
 	
-	// Eliminar símbolos de moneda y espacios
-	cleaned = cleaned.replace(/[€$£¥CHF\s]/g, '');
+	// Eliminar símbolos de moneda, letras y espacios (ej: "560 EUR" -> "560")
+	cleaned = cleaned.replace(/[^\d.,-]/g, '');
 	
 	if (cleaned === '' || cleaned === '-') return 0;
 	

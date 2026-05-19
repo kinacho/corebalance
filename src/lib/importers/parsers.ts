@@ -334,7 +334,7 @@ const myinvestorDetector: BrokerDetector = {
 		const joined = normalized.join(' ');
 		
 		const markers = ['nombre fondo', 'nombre del fondo', 'isin', 'participaciones',
-			'valoracion', 'valor liquidativo', 'fecha suscripcion', 'importe'];
+			'valoracion', 'valor liquidativo', 'fecha suscripcion', 'importe', 'fecha de la orden', 'importe estimado', 'estado'];
 		const matches = markers.filter(m => joined.includes(m)).length;
 		
 		if (matches >= 3) return 0.9;
@@ -353,8 +353,17 @@ const myinvestorDetector: BrokerDetector = {
 		const warnings: string[] = [];
 		let skipped = 0;
 		
+		const accumulated = new Map<string, { name: string; shares: number; totalCost: number; currency: string }>();
+		
 		for (const row of rows) {
 			try {
+				// Ignorar transacciones que no estén finalizadas o ejecutadas si existe la columna de estado
+				const estado = findField(headers, row, 'Estado').toLowerCase();
+				if (estado && !estado.includes('finalizada') && !estado.includes('ejecutad')) {
+					skipped++;
+					continue;
+				}
+
 				let isin = findField(headers, row, 'ISIN', 'Código ISIN', 'Codigo ISIN');
 				const name = findField(headers, row, 'Nombre fondo', 'Nombre del fondo', 'Producto', 'Nombre', 'Descripción');
 				
@@ -370,22 +379,46 @@ const myinvestorDetector: BrokerDetector = {
 				}
 				
 				const shares = parseNumber(findField(headers, row,
-					'Participaciones', 'Títulos', 'Titulos', 'Cantidad', 'Nº participaciones'));
-				const avgCost = parseNumber(findField(headers, row,
+					'Participaciones', 'Títulos', 'Titulos', 'Cantidad', 'participaciones'));
+				
+				let avgCost = parseNumber(findField(headers, row,
 					'Precio medio', 'Coste medio', 'Precio de compra', 'VL compra', 'Valor liquidativo compra'));
+				
+				const importeTotal = parseNumber(findField(headers, row,
+					'Importe estimado', 'Importe', 'Valoracion', 'Valoración'));
+
+				// Si no hay coste medio pero tenemos importe total y participaciones, lo calculamos
+				if (avgCost === 0 && importeTotal > 0 && shares > 0) {
+					avgCost = importeTotal / shares;
+				}
 				
 				if (shares <= 0) { skipped++; continue; }
 				
-				positions.push({
-					isin,
-					name: name || isin,
-					shares,
-					avgCost: avgCost > 0 ? avgCost : 0,
-					currency: 'EUR',
-				});
+				const existing = accumulated.get(isin);
+				if (existing) {
+					existing.shares += shares;
+					existing.totalCost += shares * avgCost;
+				} else {
+					accumulated.set(isin, {
+						name: name || isin,
+						shares,
+						totalCost: shares * avgCost,
+						currency: 'EUR',
+					});
+				}
 			} catch {
 				skipped++;
 			}
+		}
+		
+		for (const [isin, data] of accumulated) {
+			positions.push({
+				isin,
+				name: data.name,
+				shares: data.shares,
+				avgCost: data.totalCost / data.shares,
+				currency: data.currency,
+			});
 		}
 		
 		return { positions, warnings, skipped };

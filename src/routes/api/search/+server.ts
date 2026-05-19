@@ -68,7 +68,7 @@ export const GET: RequestHandler = async ({ url, getClientAddress }) => {
 			})
 			.map((q: any) => ({
 				ticker: q.symbol,
-				name: q.shortname || q.longname || q.symbol,
+				name: q.longname || q.shortname || q.symbol,
 				type: mapQuoteType(q.quoteType || q.typeDisp || ''),
 				exchange: q.exchDisp || q.exchange || '',
 				currency: q.currency || undefined

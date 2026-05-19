@@ -1,5 +1,5 @@
 import { DEFAULT_CORE_ASSETS, DEFAULT_SATELLITE_ASSETS, DEFAULT_STOCK_ASSETS, STORAGE_KEY_HOLDINGS, STORAGE_KEY_CONTRIBUTION, STORAGE_KEY_ASSETS, STORAGE_KEY_PRICES } from '$lib/constants';
-import type { Asset, HoldingData, HoldingsMap, PortfolioState, PriceData, RebalanceResult } from '$lib/types';
+import type { Asset, AssetCategory, HoldingData, HoldingsMap, PortfolioState, PriceData, RebalanceResult } from '$lib/types';
 import { calculatePortfolioState, calculateRebalance } from '$lib/rebalance';
 import { storageProvider } from '$lib/db';
 import { formatDate } from '$lib/utils';
@@ -336,7 +336,7 @@ export class PortfolioStore {
 		try {
 			const data = await storageProvider.loadUserData(this.user.uid);
 			if (data) {
-				this.holdings = data.holdings || {};
+				this.holdings = this.sanitizeHoldings(data.holdings || {});
 				this.contribution = data.contribution || 0;
 				this.isPrivate = data.isPrivate ?? this.isPrivate;
 				
@@ -464,6 +464,19 @@ export class PortfolioStore {
 		this.saveToCloud();
 	}
 
+	private sanitizeHoldings(holdings: HoldingsMap): HoldingsMap {
+		const sanitized: HoldingsMap = {};
+		for (const ticker in holdings) {
+			if (holdings[ticker]) {
+				sanitized[ticker] = {
+					shares: Math.round((holdings[ticker].shares ?? 0) * 1000) / 1000,
+					avgCost: Math.round((holdings[ticker].avgCost ?? 0) * 1000) / 1000
+				};
+			}
+		}
+		return sanitized;
+	}
+
 	private loadFromStorage() {
 		if (typeof localStorage === 'undefined') return;
 		
@@ -486,7 +499,7 @@ export class PortfolioStore {
 			const savedHoldings = localStorage.getItem(STORAGE_KEY_HOLDINGS);
 			if (savedHoldings) {
 				const parsed = JSON.parse(savedHoldings);
-				this.holdings = parsed || {};
+				this.holdings = this.sanitizeHoldings(parsed || {});
 			} else {
 				this.holdings = {};
 			}
@@ -581,6 +594,27 @@ export class PortfolioStore {
 			this.prices = data.prices || {};
 			this.timestamp = data.timestamp || new Date().toISOString();
 			
+			// Actualizar automáticamente los TERs de activos si vienen informados y están en 0 en la app
+			let assetsUpdated = false;
+			const updateAssetTers = (assets: Asset[]): Asset[] => {
+				return assets.map(asset => {
+					const priceInfo = this.prices[asset.ticker];
+					if (priceInfo && priceInfo.ter !== undefined && priceInfo.ter > 0 && asset.ter === 0) {
+						assetsUpdated = true;
+						return { ...asset, ter: priceInfo.ter };
+					}
+					return asset;
+				});
+			};
+
+			this.coreAssets = updateAssetTers(this.coreAssets);
+			this.satelliteAssets = updateAssetTers(this.satelliteAssets);
+			this.stockAssets = updateAssetTers(this.stockAssets);
+
+			if (assetsUpdated) {
+				this.saveToStorage();
+			}
+
 			// Actualizar caché
 			if (typeof localStorage !== 'undefined') {
 				localStorage.setItem(STORAGE_KEY_PRICES, JSON.stringify(this.prices));
@@ -599,9 +633,19 @@ export class PortfolioStore {
 
 	updateHolding(ticker: string, data: Partial<HoldingData>) {
 		const current = this.holdings[ticker] ?? { shares: 0, avgCost: 0 };
+		const merged = { ...current, ...data };
+		
+		// Enforce exactly 3 decimals maximum for shares and avgCost
+		if (merged.shares !== undefined) {
+			merged.shares = Math.round(merged.shares * 1000) / 1000;
+		}
+		if (merged.avgCost !== undefined) {
+			merged.avgCost = Math.round(merged.avgCost * 1000) / 1000;
+		}
+
 		this.holdings = {
 			...this.holdings,
-			[ticker]: { ...current, ...data }
+			[ticker]: merged
 		};
 		this.saveToStorage();
 	}
@@ -669,6 +713,34 @@ export class PortfolioStore {
 	/** Comprobar si un ticker ya existe en alguna categoría */
 	hasAsset(ticker: string): boolean {
 		return this.allUserTickers.includes(ticker);
+	}
+
+	/** Mover un activo a otra categoría */
+	moveAsset(ticker: string, newCategory: AssetCategory) {
+		// Buscar el activo en todas las listas
+		const allAssets = [...this.coreAssets, ...this.satelliteAssets, ...this.stockAssets];
+		const asset = allAssets.find(a => a.ticker === ticker);
+		
+		if (!asset || asset.category === newCategory) return;
+		
+		// Actualizar categoría y resetear target weight al cambiar
+		const updatedAsset = { ...asset, category: newCategory, targetWeight: 0 };
+		
+		// Eliminar de todas las listas
+		this.coreAssets = this.coreAssets.filter(a => a.ticker !== ticker);
+		this.satelliteAssets = this.satelliteAssets.filter(a => a.ticker !== ticker);
+		this.stockAssets = this.stockAssets.filter(a => a.ticker !== ticker);
+		
+		// Añadir a la nueva lista
+		if (newCategory === 'core') {
+			this.coreAssets = [...this.coreAssets, updatedAsset];
+		} else if (newCategory === 'satellite') {
+			this.satelliteAssets = [...this.satelliteAssets, updatedAsset];
+		} else {
+			this.stockAssets = [...this.stockAssets, updatedAsset];
+		}
+		
+		this.saveToStorage();
 	}
 
 	/** Restaurar el estado completo de los activos (usado para cancelar edición) */

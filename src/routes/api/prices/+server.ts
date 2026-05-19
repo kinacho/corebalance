@@ -332,7 +332,8 @@ export const GET: RequestHandler = async ({ url, getClientAddress }) => {
 				lastUpdate: quote.regularMarketTime ? new Date(quote.regularMarketTime).getTime() : undefined,
 				ytdChangePercent: ytd,
 				mtdChangePercent: mtd,
-				oneMonthChangePercent: oneMonth
+				oneMonthChangePercent: oneMonth,
+				ter: quote.netExpenseRatio !== undefined ? (quote.netExpenseRatio / 100) : undefined
 			};
 		} else {
 			errors.push(result.reason?.message ?? 'Error desconocido');

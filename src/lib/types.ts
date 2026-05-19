@@ -26,6 +26,7 @@ export interface PriceData {
 	ytdChangePercent?: number; // Cambio Year-To-Date
 	mtdChangePercent?: number; // Cambio Month-To-Date
 	oneMonthChangePercent?: number; // Cambio últimos 30 días
+	ter?: number;        // Total Expense Ratio (0.01 = 1%)
 }
 
 /** Respuesta del endpoint /api/prices */

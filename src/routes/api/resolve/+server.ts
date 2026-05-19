@@ -94,7 +94,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 			results.push({
 				query: isin,
 				ticker: (best as any)?.symbol || null,
-				name: (best as any)?.shortname || (best as any)?.longname || null,
+				name: (best as any)?.longname || (best as any)?.shortname || null,
 				type: (best as any)?.quoteType || (best as any)?.typeDisp || null,
 				exchange: (best as any)?.exchDisp || (best as any)?.exchange || null,
 			});
@@ -123,7 +123,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 			results.push({
 				query: ticker,
 				ticker: (exact as any)?.symbol || ticker,
-				name: (exact as any)?.shortname || (exact as any)?.longname || null,
+				name: (exact as any)?.longname || (exact as any)?.shortname || null,
 				type: (exact as any)?.quoteType || null,
 				exchange: (exact as any)?.exchDisp || null,
 			});

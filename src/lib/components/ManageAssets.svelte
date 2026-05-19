@@ -4,7 +4,7 @@
 	import type { Asset, AssetCategory } from '$lib/types';
 	import { formatPercent } from '$lib/utils';
 	import { focusTrap } from '$lib/actions/focusTrap';
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import AssetSearch from './AssetSearch.svelte';
 	import ImportModal from './ImportModal.svelte';
 
@@ -22,6 +22,15 @@
 
 	let originalState: any;
 
+	// Scroll container and drag/touch scrolling helpers
+	let scrollContainer = $state<HTMLElement | null>(null);
+	let dragScrollInterval = $state<any>(null);
+	
+	let activeTouchTicker = $state<string | null>(null);
+	let activeTouchItem = $state<HTMLElement | null>(null);
+	let touchGhost = $state<HTMLElement | null>(null);
+	let touchTargetSectionId = $state<AssetCategory | null>(null);
+
 	onMount(() => {
 		originalState = {
 			core: JSON.parse(JSON.stringify(portfolio.coreAssets)),
@@ -30,6 +39,161 @@
 			holdings: JSON.parse(JSON.stringify(portfolio.holdings))
 		};
 	});
+
+	onDestroy(() => {
+		if (dragScrollInterval) clearInterval(dragScrollInterval);
+		if (touchGhost) touchGhost.remove();
+	});
+
+	function handleScrollDragOver(e: DragEvent) {
+		if (!scrollContainer) return;
+		
+		const rect = scrollContainer.getBoundingClientRect();
+		const y = e.clientY - rect.top;
+		const containerHeight = rect.height;
+		
+		const threshold = 70; // 70px scroll boundary
+		
+		clearInterval(dragScrollInterval);
+		dragScrollInterval = null;
+		
+		if (y < threshold) {
+			const speed = Math.max(3, (threshold - y) / 1.2);
+			dragScrollInterval = setInterval(() => {
+				if (scrollContainer) scrollContainer.scrollTop -= speed;
+			}, 16);
+		} else if (y > containerHeight - threshold) {
+			const speed = Math.max(3, (y - (containerHeight - threshold)) / 1.2);
+			dragScrollInterval = setInterval(() => {
+				if (scrollContainer) scrollContainer.scrollTop += speed;
+			}, 16);
+		}
+	}
+
+	function handleDragEnd() {
+		clearInterval(dragScrollInterval);
+		dragScrollInterval = null;
+	}
+
+	function handleTouchStart(e: TouchEvent, ticker: string) {
+		const target = e.currentTarget as HTMLElement;
+		const item = target.closest('.asset-item') as HTMLElement;
+		if (!item) return;
+
+		activeTouchTicker = ticker;
+		activeTouchItem = item;
+
+		const rect = item.getBoundingClientRect();
+		
+		touchGhost = document.createElement('div');
+		touchGhost.className = 'touch-drag-ghost';
+		
+		// Capture icon and text area
+		const iconEl = target.querySelector('.asset-icon')?.outerHTML || '';
+		const infoEl = target.querySelector('.asset-info')?.outerHTML || '';
+		
+		touchGhost.innerHTML = `
+			<div style="display: flex; align-items: center; gap: 0.8rem; padding: 0.75rem 1rem;">
+				${iconEl}
+				${infoEl}
+			</div>
+		`;
+		
+		// Premium floating ghost style
+		touchGhost.style.position = 'fixed';
+		touchGhost.style.top = `${rect.top}px`;
+		touchGhost.style.left = `${rect.left}px`;
+		touchGhost.style.width = `${rect.width}px`;
+		touchGhost.style.opacity = '0.9';
+		touchGhost.style.pointerEvents = 'none';
+		touchGhost.style.zIndex = '9999';
+		touchGhost.style.background = 'rgba(25, 25, 40, 0.95)';
+		touchGhost.style.border = '2.5px solid var(--accent, #3b82f6)';
+		touchGhost.style.borderRadius = '16px';
+		touchGhost.style.boxShadow = '0 15px 35px rgba(0,0,0,0.6)';
+		touchGhost.style.transform = 'scale(0.98)';
+		
+		const accent = item.style.getPropertyValue('--accent');
+		if (accent) touchGhost.style.setProperty('--accent', accent);
+
+		document.body.appendChild(touchGhost);
+		item.classList.add('dragging');
+		
+		ui.hapticFeedback('light');
+	}
+
+	function handleTouchMove(e: TouchEvent) {
+		if (!activeTouchTicker || !touchGhost || !scrollContainer) return;
+		
+		const touch = e.touches[0];
+		
+		// Keep the ghost aligned
+		const ghostRect = touchGhost.getBoundingClientRect();
+		touchGhost.style.top = `${touch.clientY - ghostRect.height / 2}px`;
+		touchGhost.style.left = `${touch.clientX - ghostRect.width / 2}px`;
+
+		// Auto scroll on touch dragging near boundaries
+		const scrollRect = scrollContainer.getBoundingClientRect();
+		const y = touch.clientY - scrollRect.top;
+		const threshold = 70;
+		
+		clearInterval(dragScrollInterval);
+		dragScrollInterval = null;
+		
+		if (y < threshold) {
+			const speed = Math.max(3, (threshold - y) / 1.2);
+			dragScrollInterval = setInterval(() => {
+				if (scrollContainer) scrollContainer.scrollTop -= speed;
+			}, 16);
+		} else if (y > scrollRect.height - threshold) {
+			const speed = Math.max(3, (y - (scrollRect.height - threshold)) / 1.2);
+			dragScrollInterval = setInterval(() => {
+				if (scrollContainer) scrollContainer.scrollTop += speed;
+			}, 16);
+		}
+
+		// Spot target drop section
+		const elements = document.elementsFromPoint(touch.clientX, touch.clientY);
+		const sectionBlock = elements.find(el => el.classList.contains('section-block')) as HTMLElement;
+		
+		const allSections = document.querySelectorAll('.section-block');
+		allSections.forEach(sec => sec.classList.remove('drag-over'));
+		
+		if (sectionBlock) {
+			sectionBlock.classList.add('drag-over');
+			const sectionId = sectionBlock.getAttribute('data-section-id') as AssetCategory;
+			touchTargetSectionId = sectionId;
+		} else {
+			touchTargetSectionId = null;
+		}
+	}
+
+	function handleTouchEnd() {
+		clearInterval(dragScrollInterval);
+		dragScrollInterval = null;
+
+		if (touchGhost) {
+			touchGhost.remove();
+			touchGhost = null;
+		}
+
+		if (activeTouchItem) {
+			activeTouchItem.classList.remove('dragging');
+			activeTouchItem = null;
+		}
+
+		const allSections = document.querySelectorAll('.section-block');
+		allSections.forEach(sec => sec.classList.remove('drag-over'));
+
+		if (activeTouchTicker && touchTargetSectionId) {
+			portfolio.moveAsset(activeTouchTicker, touchTargetSectionId);
+			ui.addToast('Activo reclasificado', 'success');
+			ui.hapticFeedback('medium');
+		}
+
+		activeTouchTicker = null;
+		touchTargetSectionId = null;
+	}
 
 	function handleCancel() {
 		if (originalState) portfolio.restoreState(originalState);
@@ -44,8 +208,8 @@
 
 	const sections = $derived([
 		{ id: 'core' as AssetCategory, label: 'Cartera Principal', assets: portfolio.coreAssets, description: 'Activos con peso objetivo para rebalanceo', showWeights: true },
-		{ id: 'satellite' as AssetCategory, label: 'Cartera Conservadora', assets: portfolio.satelliteAssets, description: 'Renta fija, monetarios, mixtos', showWeights: false },
-		{ id: 'stocks' as AssetCategory, label: 'Acciones Individuales', assets: portfolio.stockAssets, description: 'Acciones y posiciones especulativas', showWeights: false }
+		{ id: 'stocks' as AssetCategory, label: 'Acciones Individuales', assets: portfolio.stockAssets, description: 'Acciones y posiciones especulativas', showWeights: false },
+		{ id: 'satellite' as AssetCategory, label: 'Cartera Conservadora', assets: portfolio.satelliteAssets, description: 'Renta fija, monetarios, mixtos', showWeights: false }
 	]);
 
 	/** Peso total del Core (debe sumar 100%) */
@@ -132,9 +296,45 @@
 			</button>
 		</div>
 
-		<div class="manage-body">
+		<div 
+			class="manage-body"
+			role="region"
+			aria-label="Panel de gestión de activos"
+			bind:this={scrollContainer}
+			ondragover={handleScrollDragOver}
+		>
 			{#each sections as section (section.id)}
-				<div class="section-block">
+				<div 
+					class="section-block"
+					data-section-id={section.id}
+					role="region"
+					aria-label="Zona para soltar activos en {section.label}"
+					ondragover={(e) => {
+						e.preventDefault();
+						if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+					}}
+					ondragenter={(e) => {
+						e.preventDefault();
+						(e.currentTarget as HTMLElement).classList.add('drag-over');
+					}}
+					ondragleave={(e) => {
+						// Only remove if we're actually leaving the container, not just entering a child
+						const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+						if (e.clientX <= rect.left || e.clientX >= rect.right || e.clientY <= rect.top || e.clientY >= rect.bottom) {
+							(e.currentTarget as HTMLElement).classList.remove('drag-over');
+						}
+					}}
+					ondrop={(e) => {
+						e.preventDefault();
+						(e.currentTarget as HTMLElement).classList.remove('drag-over');
+						if (!e.dataTransfer) return;
+						const ticker = e.dataTransfer.getData('text/plain');
+						if (ticker) {
+							portfolio.moveAsset(ticker, section.id);
+							ui.hapticFeedback('medium');
+						}
+					}}
+				>
 					<div class="section-head">
 						<div>
 							<h3 class="section-label">{section.label}</h3>
@@ -184,9 +384,45 @@
 
 					<div class="asset-list">
 						{#each section.assets as asset (asset.ticker)}
-							<div class="asset-item" style="--accent: {asset.color}">
+							<div 
+								class="asset-item" 
+								style="--accent: {asset.color}"
+							>
 								<div class="asset-view">
-									<div class="asset-left">
+									<div 
+										class="asset-left"
+										draggable="true"
+										role="button"
+										tabindex="0"
+										aria-label="Arrastrar para mover {asset.name}"
+										ondragstart={(e) => {
+											if (e.dataTransfer) {
+												e.dataTransfer.setData('text/plain', asset.ticker);
+												e.dataTransfer.effectAllowed = 'move';
+											}
+											const item = (e.currentTarget as HTMLElement).closest('.asset-item');
+											if (item) item.classList.add('dragging');
+										}}
+										ondragend={(e) => {
+											const item = (e.currentTarget as HTMLElement).closest('.asset-item');
+											if (item) item.classList.remove('dragging');
+											handleDragEnd();
+										}}
+										onkeydown={(e) => {
+											if (e.key === 'Enter' || e.key === ' ') {
+												e.preventDefault();
+											}
+										}}
+										ontouchstart={(e) => handleTouchStart(e, asset.ticker)}
+										ontouchmove={handleTouchMove}
+										ontouchend={handleTouchEnd}
+									>
+										<div class="drag-handle">
+											<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none">
+												<circle cx="9" cy="5" r="1.5" /><circle cx="9" cy="12" r="1.5" /><circle cx="9" cy="19" r="1.5" />
+												<circle cx="15" cy="5" r="1.5" /><circle cx="15" cy="12" r="1.5" /><circle cx="15" cy="19" r="1.5" />
+											</svg>
+										</div>
 										<span class="asset-icon">{asset.icon}</span>
 										<div class="asset-info">
 											<span class="asset-name">{asset.name}</span>
@@ -216,6 +452,16 @@
 												<button class="ter-cancel" onclick={() => editingAsset = null}>✕</button>
 											</div>
 										{:else}
+											<select
+												class="action-move"
+												value={section.id}
+												onchange={(e) => portfolio.moveAsset(asset.ticker, e.currentTarget.value as any)}
+												title="Mover a otra cartera"
+											>
+												<option value="core">P.</option>
+												<option value="satellite">C.</option>
+												<option value="stocks">A.</option>
+											</select>
 											<button class="action-ter" onclick={() => startEditTer(asset)} title="Editar TER">
 												TER
 											</button>
@@ -394,9 +640,20 @@
 	}
 
 	.section-block {
+		background: rgba(20, 20, 35, 0.4);
+		border: 1px solid rgba(255, 255, 255, 0.05);
+		border-radius: 16px;
+		padding: 1rem;
 		display: flex;
 		flex-direction: column;
-		gap: 0.75rem;
+		gap: 0.8rem;
+		transition: all 0.2s ease;
+	}
+
+	:global(.section-block.drag-over) {
+		background: rgba(59, 130, 246, 0.05);
+		border-color: rgba(59, 130, 246, 0.3);
+		box-shadow: 0 0 20px rgba(59, 130, 246, 0.1) inset;
 	}
 
 	.section-head {
@@ -512,12 +769,17 @@
 	}
 
 	.asset-item {
+		display: flex;
+		flex-direction: column;
 		background: rgba(0, 0, 0, 0.2);
-		border: 1px solid rgba(255, 255, 255, 0.05);
+		border: 1px solid rgba(255, 255, 255, 0.04);
 		border-left: 3px solid var(--accent);
 		border-radius: 12px;
+		padding: 0.75rem;
+		gap: 0.75rem;
+		position: relative;
 		overflow: hidden;
-		transition: all 0.15s;
+		transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s, background 0.15s, border-color 0.15s;
 	}
 
 	.asset-item:hover {
@@ -526,11 +788,34 @@
 		border-left-color: var(--accent);
 	}
 
+	:global(.asset-item.dragging) {
+		opacity: 0.4;
+		transform: scale(0.98);
+		box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+	}
+
+	.drag-handle {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0.2rem;
+		margin-right: -0.2rem;
+		color: rgba(160, 160, 200, 0.3);
+		cursor: inherit;
+		border-radius: 4px;
+		transition: all 0.15s;
+	}
+
+	.drag-handle:hover {
+		color: rgba(160, 160, 200, 0.8);
+		background: rgba(255, 255, 255, 0.05);
+	}
+
 	.asset-view {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		padding: 0.6rem 0.85rem;
+		padding: 0;
 	}
 
 	.asset-left {
@@ -539,6 +824,20 @@
 		gap: 0.6rem;
 		min-width: 0;
 		flex: 1;
+		cursor: grab;
+		padding: 0.3rem 0.5rem 0.3rem 0.3rem;
+		border-radius: 8px;
+		transition: all 0.2s ease;
+		user-select: none;
+		-webkit-user-select: none;
+	}
+
+	.asset-left:hover {
+		background: rgba(255, 255, 255, 0.04);
+	}
+
+	.asset-left:active {
+		cursor: grabbing;
 	}
 
 	.asset-icon {
@@ -583,6 +882,35 @@
 		align-items: center;
 		gap: 0.25rem;
 		flex-shrink: 0;
+	}
+
+	.action-move {
+		padding: 0.2rem 0.1rem 0.2rem 0.35rem;
+		border-radius: 6px;
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		background: rgba(255, 255, 255, 0.03);
+		color: rgba(160, 160, 200, 0.5);
+		font-size: 0.58rem;
+		font-weight: 700;
+		cursor: pointer;
+		transition: all 0.15s;
+		outline: none;
+		appearance: none;
+		-webkit-appearance: none;
+		-moz-appearance: none;
+		text-align: center;
+	}
+
+	.action-move:hover {
+		background: rgba(59, 130, 246, 0.1);
+		color: #60a5fa;
+		border-color: rgba(59, 130, 246, 0.2);
+	}
+
+	.action-move option {
+		background: #121223;
+		color: #fff;
+		font-weight: normal;
 	}
 
 	.action-ter {
@@ -680,7 +1008,7 @@
 		display: flex;
 		align-items: center;
 		gap: 0.6rem;
-		padding: 0.3rem 0.85rem 0.65rem;
+		padding: 0;
 	}
 
 	.slider-color-dot {
