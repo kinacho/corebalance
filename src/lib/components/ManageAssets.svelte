@@ -37,6 +37,7 @@
 	let touchTargetSectionId = $state<AssetCategory | null>(null);
 
 	onMount(() => {
+		document.body.classList.add('modal-open');
 		originalState = {
 			core: JSON.parse(JSON.stringify(portfolio.coreAssets)),
 			satellite: JSON.parse(JSON.stringify(portfolio.satelliteAssets)),
@@ -46,6 +47,7 @@
 	});
 
 	onDestroy(() => {
+		document.body.classList.remove('modal-open');
 		if (dragScrollInterval) clearInterval(dragScrollInterval);
 		if (touchGhost) touchGhost.remove();
 	});

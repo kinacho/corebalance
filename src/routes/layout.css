@@ -187,4 +187,10 @@
 	input[type="range"]::-moz-range-thumb {
 		pointer-events: auto;
 	}
+
+	/* Scroll Lock para Modales */
+	body.modal-open {
+		overflow: hidden;
+		height: 100vh;
+	}
 }

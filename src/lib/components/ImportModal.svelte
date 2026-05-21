@@ -6,9 +6,18 @@
 	import type { ImportResult, ParsedPosition } from '$lib/importers';
 	import { ASSET_COLORS, ASSET_ICONS } from '$lib/constants';
 	import type { Asset, AssetCategory } from '$lib/types';
+	import { onMount, onDestroy } from 'svelte';
 
 	interface Props { onClose: () => void; }
 	let { onClose }: Props = $props();
+
+	onMount(() => {
+		document.body.classList.add('modal-open');
+	});
+
+	onDestroy(() => {
+		document.body.classList.remove('modal-open');
+	});
 
 	// --- State Machine ---
 	type Step = 'upload' | 'resolving' | 'preview' | 'done';

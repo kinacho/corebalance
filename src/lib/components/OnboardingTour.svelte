@@ -15,7 +15,7 @@
           element: '#tour-welcome',
           popover: {
             title: '¡Bienvenido a CoreBalance! 🚀',
-            description: 'Tu nuevo centro de mandos financiero. Vamos a dar un paseo rápido de 1 minuto para que saques el máximo partido a la herramienta.',
+            description: 'Tu centro de mando para una inversión inteligente. Vamos a mostrarte cómo optimizar tu cartera en menos de 1 minuto.',
             side: "bottom",
             align: 'start'
           }
@@ -23,8 +23,8 @@
         {
           element: '#tour-sync-auth',
           popover: {
-            title: 'Tus datos, siempre contigo',
-            description: 'Sincroniza tus dispositivos escaneando un QR o inicia sesión con Google para guardar tu cartera en la nube de forma segura.',
+            title: 'Sincronización Total',
+            description: 'Mantén tus datos seguros y sincronizados entre dispositivos mediante Google Auth o exportación local cifrada.',
             side: "bottom",
             align: 'end'
           }
@@ -32,8 +32,8 @@
         {
           element: '#tour-global-summary',
           popover: {
-            title: 'Visión Global',
-            description: 'Aquí verás el valor total de tu patrimonio, cuánto has aportado históricamente y el beneficio neto. Simple y directo.',
+            title: 'Visión de Alto Nivel',
+            description: 'Monitoriza tu Patrimonio Neto, Capital Invertido y Rentabilidad Total de un vistazo con datos actualizados en tiempo real.',
             side: "bottom",
             align: 'center'
           },
@@ -46,8 +46,8 @@
         {
           element: '#tour-portfolio-categories',
           popover: {
-            title: 'Tus Tres Pilares 🏦',
-            description: 'Organizamos tu dinero en 3 categorías: Cartera Principal (tu estrategia Core), Acciones Individuales y Cartera Conservadora (para proteger capital).',
+            title: 'Estrategia Multicartera 🏦',
+            description: 'Gestiona tu estrategia Core (90%), Satélite (5%) y Efectivo (5%) de forma independiente pero integrada.',
             side: "top",
             align: 'center'
           },
@@ -60,8 +60,8 @@
         {
           element: '#tour-rebalance',
           popover: {
-            title: 'La Calculadora Mágica ✨',
-            description: 'Dinos cuánto dinero nuevo quieres invertir. CoreBalance calculará matemáticamente qué activos comprar para mantener tu cartera perfectamente equilibrada.',
+            title: 'Inyección Óptima de Capital ✨',
+            description: 'Nuestra calculadora matemática te indica exactamente qué activos comprar para restaurar tus pesos ideales, minimizando las desviaciones.',
             side: "top",
             align: 'center'
           },
@@ -74,8 +74,8 @@
         {
           element: '#tour-projections',
           popover: {
-            title: 'Proyección de Futuro 🚀',
-            description: 'Mira hacia adelante. Proyecta cuánto capital podrías tener en el futuro según tu interés esperado y tus aportaciones mensuales. La magia del interés compuesto, a tu vista.',
+            title: 'Proyecciones de Interés Compuesto',
+            description: 'Simula el crecimiento de tu riqueza a largo plazo. Ahora puedes elegir entre usar tu capital real o uno personalizado para ver diferentes escenarios.',
             side: "top",
             align: 'center'
           },
@@ -88,8 +88,8 @@
         {
           element: '#tour-crisis',
           popover: {
-            title: 'Simulador de Crisis 📉',
-            description: 'Descubre qué pasaría con tu cartera si el mercado se desploma. Ajusta la caída y mira cómo tus aportaciones regulares (DCA) pueden salvarte y acelerar la recuperación.',
+            title: 'Simulador de Crisis Históricas 📉',
+            description: 'Pon a prueba tu temple financiero. Analiza cómo se comportaría tu cartera en crisis reales como el 2008 o el COVID-19 y el impacto del DCA.',
             side: "top",
             align: 'center'
           },
@@ -102,8 +102,8 @@
         {
           element: '#tour-manage-btn',
           popover: {
-            title: 'A tu medida',
-            description: 'Añade tus propios fondos, ETFs o acciones, cambia los porcentajes objetivo y crea tu propia estrategia financiera.',
+            title: 'Control de Pesos de Precisión',
+            description: 'Ajusta tus objetivos con precisión decimal. Usa los candados para fijar activos y deja que el algoritmo autocompense el resto automáticamente.',
             side: "bottom",
             align: 'end'
           }

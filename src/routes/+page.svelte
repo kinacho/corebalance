@@ -40,6 +40,13 @@
   let showChangelog = $state(false);
   let tabsEl = $state<HTMLElement | null>(null);
   let scrollAnchor = $state<HTMLElement | null>(null);
+  let tourComponent = $state<any>(null);
+
+  function restartTour() {
+    if (tourComponent) {
+      tourComponent.startTour();
+    }
+  }
 
   function switchTab(id: TabId) {
     activeTab = id;
@@ -168,7 +175,7 @@
     onManageAssets={() => (showManageAssets = true)}
   />
 
-  <OnboardingTour />
+  <OnboardingTour bind:this={tourComponent} />
 
   <main class="main-content">
 
@@ -317,7 +324,7 @@
       </div>
 
       <div class="footer-copyright">
-        <p>© {new Date().getFullYear()} CoreBalance · Hecho con ❤️ para la comunidad inversora · <button class="changelog-badge-btn" onclick={() => showChangelog = true} title="Ver historial de cambios">v1.4.0 🚀</button></p>
+        <p>© {new Date().getFullYear()} CoreBalance · Hecho con ❤️ para la comunidad inversora · <button class="changelog-badge-btn" onclick={() => showChangelog = true} title="Ver historial de cambios">v1.4.0 🚀</button> · <button class="tour-repeat-btn" onclick={restartTour} title="Repetir tutorial de bienvenida">🎓 Tutorial</button></p>
       </div>
     </footer>
   </main>
@@ -330,6 +337,35 @@
 <style>
   :global(body) {
     color: #f0f0ff;
+  }
+
+  .tour-repeat-btn {
+    background: rgba(59, 130, 246, 0.08);
+    border: 1px solid rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.12rem 0.45rem;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-left: 0.35rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    vertical-align: middle;
+  }
+
+  .tour-repeat-btn:hover {
+    background: rgba(59, 130, 246, 0.18);
+    border-color: rgba(59, 130, 246, 0.35);
+    color: #93c5fd;
+    transform: translateY(-0.5px);
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.15);
+  }
+
+  .tour-repeat-btn:active {
+    transform: translateY(0);
   }
 
   .app-container {

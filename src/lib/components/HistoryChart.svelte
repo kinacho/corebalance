@@ -16,7 +16,8 @@
 	];
 
 	// Estado para la visibilidad de los datasets
-	let hiddenDatasets = $state<string[]>([]);
+	// Por defecto ocultamos todo excepto 'Total'
+	let hiddenDatasets = $state<string[]>(['Principal', 'Acciones', 'Conservadora', 'Invertido']);
 
 	// Cargar preferencias guardadas
 	onMount(() => {

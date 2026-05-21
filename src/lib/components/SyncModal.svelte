@@ -1,17 +1,23 @@
 <script lang="ts">
 	import { fade, slide } from 'svelte/transition';
 	import { storageProvider } from '$lib/db';
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import * as QRCode from 'qrcode';
 	import { formatDate, validateImportData } from '../utils';
-
-
 
 	interface Props {
 		onClose: () => void;
 	}
 
 	let { onClose }: Props = $props();
+
+	onMount(() => {
+		document.body.classList.add('modal-open');
+	});
+
+	onDestroy(() => {
+		document.body.classList.remove('modal-open');
+	});
 
 	let activeTab = $state<'file' | 'p2p'>('file');
 	

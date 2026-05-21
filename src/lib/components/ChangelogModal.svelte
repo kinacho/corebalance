@@ -1,7 +1,16 @@
 <script lang="ts">
 	import { ui } from '$lib/stores/ui.svelte';
+	import { onMount, onDestroy } from 'svelte';
 
 	let { onClose }: { onClose: () => void } = $props();
+
+	onMount(() => {
+		document.body.classList.add('modal-open');
+	});
+
+	onDestroy(() => {
+		document.body.classList.remove('modal-open');
+	});
 
 	const releases = [
 		{
@@ -15,6 +24,9 @@
 				'📊 **Proyecciones con Base Personalizada:** Selector dinámico de simulación con pildoras interactivas para alternar entre "Cartera Real" y "Capital Personalizado".',
 				'📉 **Crisis Simulator Educativo e Histórico:** Reemplazo de presets genéricos por 3 grandes crisis históricas reales (DotCom, Lehman, COVID) con tarjetas educativas de impacto DCA.',
 				'🔒 **Candados y Avisos de Bloqueo:** Corrección de warnings ante bloqueos absolutos de compensación utilizando toasts nativos de tipo error.',
+				'🎓 **Tutorial Renovado y Persistente:** Mejoras en los pasos del tour de bienvenida y nuevo botón en el pie de página para repetirlo en cualquier momento.',
+				'🚫 **Bloqueo de Scroll en Modales:** Implementado sistema de scroll-lock para que al abrir un modal el fondo de la web quede estático.',
+				'📊 **Gráfica de Historia Simplificada:** Por defecto ahora solo se muestra la línea de "Total", manteniendo la personalización del usuario entre sesiones.',
 				'🐛 **Corrección de Sliders Dinámicos y A11y:** Resuelto el bug del simulador de crisis donde el capital inicial aumentaba al infinito al deslizar, y eliminadas advertencias del compilador.'
 			]
 		},
