@@ -70,8 +70,19 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 	
 	// Resolver ISINs buscándolos en Yahoo Finance
 	for (const isin of isins) {
+		const cleanIsin = isin.trim().toUpperCase();
+		if (cleanIsin === 'IE00B2NXKW18') {
+			results.push({
+				query: isin,
+				ticker: 'IE00B2NXKW18',
+				name: 'Seilern World Growth EUR U R',
+				type: 'MUTUALFUND',
+				exchange: 'Financial Times'
+			});
+			continue;
+		}
 		try {
-			const searchResults = await yahooFinance.search(isin.trim(), {
+			const searchResults = await yahooFinance.search(cleanIsin, {
 				quotesCount: 5,
 				newsCount: 0
 			});

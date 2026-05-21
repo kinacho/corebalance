@@ -162,7 +162,7 @@
 	<div class="cell-weight">
 		<span class="w-current">{formatPercent(position.currentWeight)}</span>
 		{#if position.asset.targetWeight > 0}
-			<span class="w-target">/ {formatPercent(position.asset.targetWeight, 0)}</span>
+			<span class="w-target">/ {position.asset.targetWeight * 100 % 1 === 0 ? formatPercent(position.asset.targetWeight, 0) : formatPercent(position.asset.targetWeight, 1)}</span>
 		{/if}
 	</div>
 </div>

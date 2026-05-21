@@ -317,7 +317,7 @@
       </div>
 
       <div class="footer-copyright">
-        <p>© {new Date().getFullYear()} CoreBalance · Hecho con ❤️ para la comunidad inversora · <button class="changelog-badge-btn" onclick={() => showChangelog = true} title="Ver historial de cambios">v1.3.0 🚀</button></p>
+        <p>© {new Date().getFullYear()} CoreBalance · Hecho con ❤️ para la comunidad inversora · <button class="changelog-badge-btn" onclick={() => showChangelog = true} title="Ver historial de cambios">v1.4.0 🚀</button></p>
       </div>
     </footer>
   </main>

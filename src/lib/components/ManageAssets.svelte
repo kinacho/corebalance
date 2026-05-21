@@ -22,6 +22,11 @@
 
 	let originalState: any;
 
+	function roundDec(val: number, dec: number = 4): number {
+		const factor = Math.pow(10, dec);
+		return Math.round(val * factor) / factor;
+	}
+
 	// Scroll container and drag/touch scrolling helpers
 	let scrollContainer = $state<HTMLElement | null>(null);
 	let dragScrollInterval = $state<any>(null);
@@ -218,7 +223,7 @@
 	);
 
 	const coreWeightValid = $derived(
-		Math.abs(coreWeightTotal - 1) < 0.005
+		Math.abs(coreWeightTotal - 1) < 0.001
 	);
 
 	let lockedAssets = $state<Record<string, boolean>>({});
@@ -241,15 +246,15 @@
 		assets.forEach(a => total += a.targetWeight);
 		
 		const diff = 1.0 - total;
-		if (Math.abs(diff) > 0.0001) {
+		if (Math.abs(diff) > 0.00001) {
 			const adjustable = assets.find(a => !lockedAssets[a.ticker]);
 			if (adjustable) {
 				portfolio.updateAsset(adjustable.ticker, { 
-					targetWeight: Math.max(0, adjustable.targetWeight + diff) 
+					targetWeight: Math.max(0, roundDec(adjustable.targetWeight + diff, 4)) 
 				});
 			} else if (assets.length > 0) {
 				portfolio.updateAsset(assets[0].ticker, { 
-					targetWeight: Math.max(0, assets[0].targetWeight + diff) 
+					targetWeight: Math.max(0, roundDec(assets[0].targetWeight + diff, 4)) 
 				});
 			}
 		}
@@ -269,32 +274,35 @@
 			}
 		});
 
-		const maxPercent = Math.max(0, 100 - Math.round(lockedSum * 100));
-		const clampedPercent = Math.max(0, Math.min(maxPercent, newPercent));
-		const newWeight = clampedPercent / 100;
-
-		const availableWeight = 1.0 - newWeight - lockedSum;
 		const otherFreeAssets = assets.filter(a => a.ticker !== ticker && !lockedAssets[a.ticker]);
+		if (otherFreeAssets.length === 0) {
+			ui.addToast('No hay activos libres para compensar el ajuste de peso', 'error');
+			return;
+		}
 
-		if (otherFreeAssets.length > 0) {
-			let otherFreeSum = 0;
+		const maxPercent = Math.max(0, 100 - roundDec(lockedSum * 100, 2));
+		const clampedPercent = Math.max(0, Math.min(maxPercent, newPercent));
+		const newWeight = roundDec(clampedPercent / 100, 4);
+
+		const availableWeight = roundDec(1.0 - newWeight - lockedSum, 4);
+
+		let otherFreeSum = 0;
+		otherFreeAssets.forEach(a => {
+			otherFreeSum += a.targetWeight;
+		});
+
+		if (otherFreeSum > 0) {
 			otherFreeAssets.forEach(a => {
-				otherFreeSum += a.targetWeight;
+				const proportionalWeight = a.targetWeight * (availableWeight / otherFreeSum);
+				const rounded = roundDec(proportionalWeight, 4);
+				portfolio.updateAsset(a.ticker, { targetWeight: rounded });
 			});
-
-			if (otherFreeSum > 0) {
-				otherFreeAssets.forEach(a => {
-					const proportionalWeight = a.targetWeight * (availableWeight / otherFreeSum);
-					const rounded = Math.round(proportionalWeight * 100) / 100;
-					portfolio.updateAsset(a.ticker, { targetWeight: rounded });
-				});
-			} else {
-				const equalShare = availableWeight / otherFreeAssets.length;
-				otherFreeAssets.forEach(a => {
-					const rounded = Math.round(equalShare * 100) / 100;
-					portfolio.updateAsset(a.ticker, { targetWeight: rounded });
-				});
-			}
+		} else {
+			const equalShare = availableWeight / otherFreeAssets.length;
+			otherFreeAssets.forEach(a => {
+				const rounded = roundDec(equalShare, 4);
+				portfolio.updateAsset(a.ticker, { targetWeight: rounded });
+			});
 		}
 
 		portfolio.updateAsset(ticker, { targetWeight: newWeight });
@@ -339,12 +347,14 @@
 		lockedAssets = {}; // Liberar todos los candados al igualar
 		const count = portfolio.coreAssets.length;
 		if (count === 0) return;
-		const baseWeight = Math.floor(100 / count);
-		const remainder = 100 - (baseWeight * count);
-		portfolio.coreAssets.forEach((asset, i) => {
-			const w = i === 0 ? baseWeight + remainder : baseWeight;
-			portfolio.updateAsset(asset.ticker, { targetWeight: w / 100 });
+		
+		const baseWeight = roundDec(1.0 / count, 4);
+		
+		portfolio.coreAssets.forEach((asset) => {
+			portfolio.updateAsset(asset.ticker, { targetWeight: baseWeight });
 		});
+		
+		adjustSumToExact100();
 		ui.hapticFeedback('medium');
 	}
 
@@ -431,7 +441,7 @@
 									Igualar
 								</button>
 								<div class="weight-indicator" class:valid={coreWeightValid} class:invalid={!coreWeightValid && coreWeightTotal > 0}>
-									<span class="weight-sum">{Math.round(coreWeightTotal * 100)}%</span>
+									<span class="weight-sum">{roundDec(coreWeightTotal * 100, 1)}%</span>
 									{#if coreWeightValid}
 										<span class="weight-check">✓</span>
 									{:else}
@@ -447,7 +457,7 @@
 						<div class="weight-bar-container">
 							<div class="weight-bar">
 								{#each section.assets as asset (asset.ticker)}
-									{@const pct = Math.round(asset.targetWeight * 100)}
+									{@const pct = roundDec(asset.targetWeight * 100, 1)}
 									{#if pct > 0}
 										<div
 											class="weight-bar-segment"
@@ -583,10 +593,10 @@
 											style="--slider-color: {asset.color};"
 											min="0"
 											max="100"
-											step="1"
+											step="0.5"
 											disabled={lockedAssets[asset.ticker]}
-											value={Math.round(asset.targetWeight * 100)}
-											oninput={(e) => handleWeightChange(asset.ticker, parseInt((e.target as HTMLInputElement).value))}
+											value={roundDec(asset.targetWeight * 100, 1)}
+											oninput={(e) => handleWeightChange(asset.ticker, parseFloat((e.target as HTMLInputElement).value))}
 										/>
 										<div class="weight-value-box">
 											<input
@@ -594,11 +604,11 @@
 												class="weight-number-input"
 												min="0"
 												max="100"
-												step="1"
+												step="0.1"
 												disabled={lockedAssets[asset.ticker]}
-												value={Math.round(asset.targetWeight * 100)}
+												value={roundDec(asset.targetWeight * 100, 1)}
 												onwheel={(e) => e.preventDefault()}
-												oninput={(e) => handleWeightChange(asset.ticker, parseInt((e.target as HTMLInputElement).value) || 0)}
+												oninput={(e) => handleWeightChange(asset.ticker, parseFloat((e.target as HTMLInputElement).value) || 0)}
 											/>
 											<span class="weight-percent-sign">%</span>
 										</div>
@@ -1201,11 +1211,11 @@
 		border: 1px solid rgba(255, 255, 255, 0.08);
 		border-radius: 8px;
 		padding: 0.25rem 0.15rem 0.25rem 0.35rem;
-		min-width: 52px;
+		min-width: 62px;
 	}
 
 	.weight-number-input {
-		width: 28px;
+		width: 38px;
 		background: transparent;
 		border: none;
 		color: #fff;

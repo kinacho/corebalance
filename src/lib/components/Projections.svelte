@@ -10,11 +10,20 @@
 	let monthlySavings = $state(500); // Aportación mensual proyectada
 	let isOpen = $state(false);
 
+	let useCustomBase = $state(false);
+	let customBase = $state(portfolio.globalCapital || 10000);
+
+	$effect(() => {
+		if (portfolio.globalCapital > 0 && !useCustomBase) {
+			customBase = Number(portfolio.globalCapital.toFixed(2));
+		}
+	});
+
 	const projections = $derived.by(() => {
 		const annualReturn = expectedReturn / 100;
 		const monthlyReturn = Math.pow(1 + annualReturn, 1/12) - 1;
 		const monthlyContribution = monthlySavings;
-		const initialCapital = portfolio.globalCapital;
+		const initialCapital = useCustomBase ? customBase : portfolio.globalCapital;
 		
 		const months = years * 12;
 		let balance = initialCapital;
@@ -67,6 +76,42 @@
 		<div class="wrapper">
 			<div class="content">
 				<div class="controls-grid">
+					<div class="control-item full-width-capital">
+						<div class="control-header">
+							<span class="control-label">Capital Base de Simulación</span>
+							<span class="control-value highlight">{formatEUR(useCustomBase ? customBase : portfolio.globalCapital)}</span>
+						</div>
+						<div class="capital-selector-pills">
+							<button 
+								class="pill-btn" 
+								class:active={!useCustomBase} 
+								onclick={() => useCustomBase = false}
+							>
+								📊 Cartera Real
+							</button>
+							<button 
+								class="pill-btn" 
+								class:active={useCustomBase} 
+								onclick={() => useCustomBase = true}
+							>
+								✏️ Personalizado
+							</button>
+							
+							{#if useCustomBase}
+								<div class="custom-capital-input-wrapper">
+									<input 
+										type="number" 
+										class="custom-capital-input" 
+										min="0" 
+										step="1000"
+										bind:value={customBase}
+									/>
+									<span class="currency-symbol">€</span>
+								</div>
+							{/if}
+						</div>
+					</div>
+
 					<div class="control-item">
 						<div class="control-header">
 							<label class="control-label" for="savings-range">Aportación</label>
@@ -400,5 +445,80 @@
 		text-align: center;
 		font-style: italic;
 		line-height: 1.4;
+	}
+
+	.full-width-capital {
+		grid-column: 1 / -1;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+		padding-bottom: 1rem;
+		margin-bottom: 0.25rem;
+	}
+
+	.capital-selector-pills {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		flex-wrap: wrap;
+	}
+
+	.pill-btn {
+		background: rgba(255, 255, 255, 0.04);
+		border: 1px solid rgba(255, 255, 255, 0.05);
+		color: rgba(255, 255, 255, 0.7);
+		border-radius: 99px;
+		padding: 0.4rem 0.8rem;
+		font-size: 0.72rem;
+		font-weight: 700;
+		cursor: pointer;
+		transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	.pill-btn:hover {
+		background: rgba(255, 255, 255, 0.08);
+		color: white;
+	}
+
+	.pill-btn.active {
+		background: rgba(59, 130, 246, 0.15);
+		border-color: rgba(59, 130, 246, 0.4);
+		color: #60a5fa;
+	}
+
+	.custom-capital-input-wrapper {
+		display: flex;
+		align-items: center;
+		background: rgba(0, 0, 0, 0.35);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 10px;
+		padding: 0.25rem 0.5rem 0.25rem 0.75rem;
+		margin-left: 0.5rem;
+		height: 28px;
+	}
+
+	.custom-capital-input {
+		width: 80px;
+		background: transparent;
+		border: none;
+		color: #fff;
+		font-size: 0.78rem;
+		font-weight: 700;
+		outline: none;
+		text-align: right;
+		-moz-appearance: textfield;
+		appearance: textfield;
+	}
+
+	.custom-capital-input::-webkit-outer-spin-button,
+	.custom-capital-input::-webkit-inner-spin-button {
+		-webkit-appearance: none;
+		appearance: none;
+		margin: 0;
+	}
+
+	.currency-symbol {
+		font-size: 0.72rem;
+		font-weight: 700;
+		color: rgba(160, 160, 200, 0.5);
+		margin-left: 0.2rem;
 	}
 </style>

@@ -8,6 +8,12 @@
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 
+	const HISTORIC_CRISES = [
+		{ name: 'DotCom (2000)', drop: 49, recovery: '7 años', emoji: '💻', desc: 'Estallido de la burbuja tecnológica. El Nasdaq se hundió un 78% y el S&P 500 un 49%. Tardó unos 7 años en volver a máximos históricos.' },
+		{ name: 'Lehman (2008)', drop: 56, recovery: '5.5 años', emoji: '🏦', desc: 'Crisis financiera global por hipotecas subprime. El S&P 500 cayó un 56% y la recuperación se demoró unos 5 años y medio en un entorno recesivo.' },
+		{ name: 'COVID-19 (2020)', drop: 34, recovery: '5 meses', emoji: '🦠', desc: 'Pánico inicial por pandemia y confinamientos. Desplome instantáneo de un 34% seguido de una recuperación récord de solo 5 meses apoyada por bancos centrales.' }
+	];
+
 	// --- State (Runes) ---
 	let initialCapital = $state(portfolio.globalCapital || 10000);
 	let dropPercent = $state(40);
@@ -30,6 +36,7 @@
 
 
 	// --- Calculations ---
+	const maxCapital = $derived(Math.max(1000000, portfolio.globalCapital * 2));
 	const monthlyRate = $derived(expectedReturn / 100 / 12);
 	const capitalAfterDrop = $derived(initialCapital * (1 - dropPercent / 100));
 
@@ -231,13 +238,25 @@
 		<div class="wrapper">
 			<div class="content">
 				
+				<div class="crisis-edu-card">
+					<div class="edu-header">
+						<span class="edu-icon">⚙️</span>
+						<div class="edu-content">
+							<h4 class="edu-title">Simulador de Caídas e Impacto del DCA</h4>
+							<p class="edu-text">
+								Esta herramienta simula el impacto instantáneo (*drawdown*) de caídas severas del mercado sobre tu patrimonio. Compara visualmente cómo realizar aportaciones periódicas constantes (**DCA**) reduce de manera sustancial el tiempo necesario para recuperar tu dinero original, amortiguando las pérdidas temporales mediante compras a precios rebajados.
+							</p>
+						</div>
+					</div>
+				</div>
+
 				<div class="controls-grid">
 					<div class="control-item">
 						<div class="control-header">
 							<label class="control-label" for="capital-range">Capital Inicial</label>
 							<span class="control-value">{formatEUR(initialCapital)}</span>
 						</div>
-						<input id="capital-range" type="range" min="0" max={Math.max(1000000, initialCapital * 2)} step="100" bind:value={initialCapital} oninput={() => hasManuallyEdited = true} />
+						<input id="capital-range" type="range" min="0" max={maxCapital} step="100" bind:value={initialCapital} oninput={() => hasManuallyEdited = true} />
 					</div>
 
 
@@ -248,12 +267,24 @@
 						</div>
 						<input id="drop" type="range" min="5" max="90" step="5" bind:value={dropPercent} />
 						<div class="presets">
-							{#each [20, 40, 60, 80] as p}
-								<button class="preset-btn" class:active={dropPercent === p} onclick={() => dropPercent = p}>
-									-{p}%
+							{#each HISTORIC_CRISES as crisis}
+								<button class="preset-btn" class:active={dropPercent === crisis.drop} onclick={() => dropPercent = crisis.drop}>
+									{crisis.emoji} {crisis.name.split(' ')[0]} (-{crisis.drop}%)
 								</button>
 							{/each}
 						</div>
+						
+						{#each HISTORIC_CRISES as crisis}
+							{#if dropPercent === crisis.drop}
+								<div class="crisis-detail-toast" transition:fade={{ duration: 150 }}>
+									<div class="detail-header">
+										<span class="detail-title">{crisis.emoji} {crisis.name}</span>
+										<span class="recovery-badge">Recuperación: {crisis.recovery}</span>
+									</div>
+									<p class="detail-desc">{crisis.desc}</p>
+								</div>
+							{/if}
+						{/each}
 					</div>
 
 					<div class="control-item">
@@ -471,27 +502,114 @@
 
 	.presets {
 		display: grid;
-		grid-template-columns: repeat(4, 1fr);
-		gap: 0.5rem;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 0.4rem;
 	}
 
 	.preset-btn {
 		background: rgba(255, 255, 255, 0.05);
 		border: 1px solid rgba(255, 255, 255, 0.05);
 		border-radius: 8px;
-		padding: 0.4rem;
+		padding: 0.45rem 0.2rem;
 		color: rgba(255, 255, 255, 0.6);
-		font-size: 0.7rem;
+		font-size: 0.65rem;
 		font-weight: 700;
 		cursor: pointer;
 		transition: all 0.2s;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
 	.preset-btn:hover { background: rgba(255, 255, 255, 0.1); }
 	.preset-btn.active {
 		background: rgba(59, 130, 246, 0.2);
 		border-color: #3b82f6;
-		color: #3b82f6;
+		color: #60a5fa;
+	}
+
+	/* Educational persistent card */
+	.crisis-edu-card {
+		background: rgba(255, 255, 255, 0.02);
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		border-radius: 12px;
+		padding: 0.75rem 1rem;
+		margin-bottom: 1.25rem;
+	}
+
+	.edu-header {
+		display: flex;
+		gap: 0.75rem;
+		align-items: flex-start;
+	}
+
+	.edu-icon {
+		font-size: 1.1rem;
+		margin-top: 0.1rem;
+		opacity: 0.8;
+	}
+
+	.edu-content {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+	}
+
+	.edu-title {
+		font-size: 0.82rem;
+		font-weight: 700;
+		color: #e2e8f0;
+		margin: 0;
+	}
+
+	.edu-text {
+		font-size: 0.72rem;
+		line-height: 1.4;
+		color: rgba(226, 232, 240, 0.6);
+		margin: 0;
+	}
+
+	/* Dynamic detailed info toast */
+	.crisis-detail-toast {
+		background: rgba(59, 130, 246, 0.06);
+		border: 1px solid rgba(59, 130, 246, 0.15);
+		border-radius: 10px;
+		padding: 0.75rem;
+		margin-top: 0.75rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.4rem;
+	}
+
+	.detail-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 0.5rem;
+		flex-wrap: wrap;
+	}
+
+	.detail-title {
+		font-size: 0.76rem;
+		font-weight: 700;
+		color: #93c5fd;
+	}
+
+	.recovery-badge {
+		font-size: 0.65rem;
+		font-weight: 700;
+		background: rgba(16, 185, 129, 0.1);
+		color: #34d399;
+		padding: 0.15rem 0.4rem;
+		border-radius: 6px;
+		border: 1px solid rgba(16, 185, 129, 0.15);
+	}
+
+	.detail-desc {
+		font-size: 0.68rem;
+		line-height: 1.4;
+		color: rgba(255, 255, 255, 0.75);
+		margin: 0;
 	}
 
 	.chart-container {

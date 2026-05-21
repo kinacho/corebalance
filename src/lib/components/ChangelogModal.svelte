@@ -5,6 +5,20 @@
 
 	const releases = [
 		{
+			version: 'v1.4.0',
+			date: '21 de Mayo, 2026',
+			badge: 'Interactividad y Análisis',
+			badgeColor: '#a855f7',
+			changes: [
+				'🔢 **Precisión Decimal y Redondeo Robusto (Proyecto B):** Soporte completo para pesos objetivos con decimales (ej. 7.5%) en sliders y entradas numéricas con compensación proporcional y redondeo robusto.',
+				'📈 **Visualizador Comparativo de Pesos (Proyecto D.3):** Nuevo panel "Convergencia de Pesos" con barras comparativas antes/después y desviaciones dinámicas en el módulo de rebalanceo.',
+				'📊 **Proyecciones con Base Personalizada (Proyecto D.2):** Selector dinámico de simulación con pildoras interactivas para alternar entre "Cartera Real" y "Capital Personalizado".',
+				'📉 **Crisis Simulator Educativo e Histórico (Proyecto D.1):** Reemplazo de presets genéricos por 3 grandes crisis históricas reales (DotCom, Lehman, COVID) con tarjetas educativas de impacto DCA.',
+				'🔒 **Candados y Avisos de Bloqueo:** Corrección de warnings ante bloqueos absolutos de compensación utilizando toasts nativos de tipo error.',
+				'🐛 **Corrección de Sliders Dinámicos y A11y:** Resuelto el bug del simulador de crisis donde el capital inicial aumentaba al infinito al deslizar, y eliminadas advertencias del compilador.'
+			]
+		},
+		{
 			version: 'v1.3.0',
 			date: '21 de Mayo, 2026',
 			badge: 'Autonomía y Privacidad',

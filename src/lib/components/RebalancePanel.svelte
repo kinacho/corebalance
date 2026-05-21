@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { RebalanceResult } from '$lib/types';
 	import { formatEUR, formatPercent, formatShares } from '$lib/utils';
+	import { portfolio } from '$lib/stores/portfolio.svelte';
 
 	interface Props {
 		contribution: number;
@@ -15,6 +16,14 @@
 	let editValue = $state('');
 
 	const displayValue = $derived(contribution > 0 ? contribution.toString() : '');
+
+	const currentWeightMap = $derived.by(() => {
+		const map = new Map<string, number>();
+		portfolio.portfolioState.positions.forEach(pos => {
+			map.set(pos.asset.ticker, pos.currentWeight);
+		});
+		return map;
+	});
 
 	function handleInput(e: Event) {
 		const target = e.target as HTMLInputElement;
@@ -107,6 +116,49 @@
 									</div>
 								</div>
 							{/each}
+						</div>
+
+						<!-- Weight Comparison: Before vs After -->
+						<div class="weight-comparison">
+							<h4 class="comparison-heading">Convergencia de Pesos</h4>
+							{#each result.allocations as alloc}
+								{@const currentW = currentWeightMap.get(alloc.asset.ticker) ?? 0}
+								{@const targetW = alloc.asset.targetWeight}
+								{@const resultW = alloc.resultingWeight}
+								{@const deviationBefore = Math.abs(currentW - targetW)}
+								{@const deviationAfter = Math.abs(resultW - targetW)}
+								{@const improvement = deviationBefore > 0 ? ((deviationBefore - deviationAfter) / deviationBefore) * 100 : 0}
+								<div class="comparison-row">
+									<div class="comparison-label">
+										<span class="comparison-dot" style="background: {alloc.asset.color};"></span>
+										<span class="comparison-ticker">{alloc.asset.ticker}</span>
+									</div>
+									<div class="comparison-bars">
+										<div class="bar-track">
+											<!-- Target line -->
+											<div class="target-line" style="left: {Math.min(targetW * 100, 100)}%;"></div>
+											<!-- Before bar -->
+											<div class="bar-before" style="width: {Math.min(currentW * 100, 100)}%;"></div>
+											<!-- After bar -->
+											<div class="bar-after" style="width: {Math.min(resultW * 100, 100)}%; background: {alloc.asset.color};"></div>
+										</div>
+									</div>
+									<div class="convergence-info">
+										{#if deviationBefore > 0.001}
+											<span class="convergence-label" class:improved={improvement > 0}>
+												{improvement > 0 ? '↓' : '↑'}{Math.abs(deviationAfter * 100).toFixed(1)}%
+											</span>
+										{:else}
+											<span class="convergence-label perfect">✓</span>
+										{/if}
+									</div>
+								</div>
+							{/each}
+							<div class="comparison-legend">
+								<span class="legend-item"><span class="legend-dot before"></span>Actual</span>
+								<span class="legend-item"><span class="legend-dot after"></span>Tras aportación</span>
+								<span class="legend-item"><span class="legend-line"></span>Objetivo</span>
+							</div>
 						</div>
 
 						<div class="total-summary">
@@ -386,5 +438,170 @@
 	input[type=number] {
 		-moz-appearance: textfield;
 		appearance: textfield;
+	}
+
+	/* === Weight Comparison Section === */
+	.weight-comparison {
+		margin-top: 1rem;
+		padding: 1rem;
+		background: rgba(0, 0, 0, 0.2);
+		border: 1px solid rgba(255, 255, 255, 0.05);
+		border-radius: 16px;
+		display: flex;
+		flex-direction: column;
+		gap: 0.6rem;
+	}
+
+	.comparison-heading {
+		font-size: 0.65rem;
+		font-weight: 700;
+		color: rgba(255, 255, 255, 0.35);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		margin: 0 0 0.25rem 0;
+	}
+
+	.comparison-row {
+		display: grid;
+		grid-template-columns: 60px 1fr 45px;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.comparison-label {
+		display: flex;
+		align-items: center;
+		gap: 0.35rem;
+		overflow: hidden;
+	}
+
+	.comparison-dot {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		flex-shrink: 0;
+		box-shadow: 0 0 4px currentColor;
+	}
+
+	.comparison-ticker {
+		font-size: 0.65rem;
+		font-weight: 700;
+		color: rgba(255, 255, 255, 0.6);
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.comparison-bars {
+		position: relative;
+	}
+
+	.bar-track {
+		position: relative;
+		height: 14px;
+		background: rgba(255, 255, 255, 0.04);
+		border-radius: 4px;
+		overflow: visible;
+	}
+
+	.bar-before {
+		position: absolute;
+		top: 0;
+		left: 0;
+		height: 6px;
+		background: rgba(255, 255, 255, 0.12);
+		border-radius: 3px 3px 0 0;
+		transition: width 0.3s ease;
+	}
+
+	.bar-after {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		height: 6px;
+		border-radius: 0 0 3px 3px;
+		opacity: 0.7;
+		transition: width 0.3s ease;
+	}
+
+	.target-line {
+		position: absolute;
+		top: -2px;
+		bottom: -2px;
+		width: 2px;
+		background: rgba(255, 255, 255, 0.4);
+		border-radius: 1px;
+		z-index: 2;
+		transform: translateX(-1px);
+	}
+
+	.target-line::after {
+		content: '';
+		position: absolute;
+		top: -1px;
+		left: -1px;
+		width: 4px;
+		height: 4px;
+		border-radius: 50%;
+		background: rgba(255, 255, 255, 0.5);
+	}
+
+	.convergence-info {
+		text-align: right;
+	}
+
+	.convergence-label {
+		font-size: 0.62rem;
+		font-weight: 700;
+		color: rgba(255, 255, 255, 0.35);
+		white-space: nowrap;
+	}
+
+	.convergence-label.improved {
+		color: #34d399;
+	}
+
+	.convergence-label.perfect {
+		color: #10b981;
+	}
+
+	.comparison-legend {
+		display: flex;
+		gap: 0.75rem;
+		justify-content: center;
+		margin-top: 0.25rem;
+		padding-top: 0.5rem;
+		border-top: 1px solid rgba(255, 255, 255, 0.04);
+	}
+
+	.legend-item {
+		display: flex;
+		align-items: center;
+		gap: 0.3rem;
+		font-size: 0.58rem;
+		font-weight: 600;
+		color: rgba(255, 255, 255, 0.3);
+	}
+
+	.legend-dot {
+		width: 8px;
+		height: 4px;
+		border-radius: 2px;
+	}
+
+	.legend-dot.before {
+		background: rgba(255, 255, 255, 0.15);
+	}
+
+	.legend-dot.after {
+		background: #3b82f6;
+		opacity: 0.7;
+	}
+
+	.legend-line {
+		width: 8px;
+		height: 2px;
+		background: rgba(255, 255, 255, 0.4);
+		border-radius: 1px;
 	}
 </style>

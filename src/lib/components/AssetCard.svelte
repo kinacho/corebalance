@@ -100,7 +100,7 @@
 							{position.asset.ticker}
 						</span>
 						<div class="target-badge">
-							{formatPercent(position.asset.targetWeight, 0)}
+							{position.asset.targetWeight * 100 % 1 === 0 ? formatPercent(position.asset.targetWeight, 0) : formatPercent(position.asset.targetWeight, 1)}
 						</div>
 					</div>
 					<h3 class="asset-name" title={position.asset.name}>{position.asset.name}</h3>

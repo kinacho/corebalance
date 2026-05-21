@@ -74,6 +74,21 @@ export const GET: RequestHandler = async ({ url, getClientAddress }) => {
 				currency: q.currency || undefined
 			}));
 
+		// Inyectar activo personalizado de Financial Times si coincide con la búsqueda
+		const lowerQuery = query.toLowerCase().trim();
+		if (lowerQuery.includes('ie00b2nxkw18') || lowerQuery.includes('seilern')) {
+			const hasSeilern = results.some(r => r.ticker === 'IE00B2NXKW18');
+			if (!hasSeilern) {
+				results.unshift({
+					ticker: 'IE00B2NXKW18',
+					name: 'Seilern World Growth EUR U R',
+					type: 'Fondo',
+					exchange: 'Financial Times',
+					currency: 'EUR'
+				});
+			}
+		}
+
 		return json({ results }, {
 			headers: { 'Cache-Control': 'public, max-age=300' }
 		});

@@ -35,7 +35,10 @@ export class PortfolioStore {
 
 	/** Label dinámico basado en los pesos reales del Core */
 	targetLabel = $derived.by(() => {
-		const weights = this.coreAssets.map(a => Math.round(a.targetWeight * 100));
+		const weights = this.coreAssets.map(a => {
+			const val = a.targetWeight * 100;
+			return val % 1 === 0 ? val.toFixed(0) : val.toFixed(1);
+		});
 		return weights.join(' / ') || 'Custom';
 	});
 

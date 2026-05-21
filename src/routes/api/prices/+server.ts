@@ -43,6 +43,11 @@ const RELIABLE_FT_MAPPINGS: Record<string, string> = {
 	'XS2940466316.SG': 'IB1T:FRA'   // BlackRock Bitcoin ETP (Frankfurt)
 };
 
+// Tickers que no existen en Yahoo Finance y se obtienen directamente de Financial Times
+const PURE_FT_TICKERS: Record<string, { name: string, currency: string }> = {
+	'IE00B2NXKW18': { name: 'Seilern World Growth EUR U R', currency: 'EUR' }
+};
+
 async function fetchFTPrice(isin: string): Promise<{ price: number, change: number, ytd?: number } | null> {
 	try {
 		const url = `https://markets.ft.com/data/funds/tearsheet/summary?s=${isin}:EUR`;
