@@ -27,6 +27,7 @@ export interface PriceData {
 	mtdChangePercent?: number; // Cambio Month-To-Date
 	oneMonthChangePercent?: number; // Cambio últimos 30 días
 	ter?: number;        // Total Expense Ratio (0.01 = 1%)
+	fxRate?: number;     // Multiplicador para convertir de divisa del activo a divisa base (baseCurrency)
 }
 
 /** Respuesta del endpoint /api/prices */

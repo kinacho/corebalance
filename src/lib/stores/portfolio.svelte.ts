@@ -68,6 +68,7 @@ export class PortfolioStore {
 		for (const [ticker, data] of Object.entries(this.prices)) {
 			let price = data.price;
 			const fromCurrency = data.currency || 'EUR';
+			let fxRate = 1;
 			
 			if (fromCurrency !== base) {
 				const fromRateToEur = this.getExchangeRateToEur(fromCurrency);
@@ -75,13 +76,15 @@ export class PortfolioStore {
 				
 				if (base === 'EUR') {
 					price = priceInEur;
+					fxRate = 1 / fromRateToEur;
 				} else {
 					const baseRateToEur = this.getExchangeRateToEur(base);
 					price = priceInEur * baseRateToEur;
+					fxRate = baseRateToEur / fromRateToEur;
 				}
 			}
 
-			res[ticker] = { ...data, price };
+			res[ticker] = { ...data, price, fxRate };
 		}
 		return res;
 	});

@@ -22,18 +22,18 @@ export function calculatePortfolioState(
 		const data = holdings[asset.ticker] ?? { shares: 0, avgCost: 0 };
 		const h = data.shares;
 		const avg = data.avgCost;
-		const p = prices[asset.ticker]?.price ?? 0;
+		const pData = prices[asset.ticker];
+		const p = pData?.price ?? 0;
+		const fxRate = pData?.fxRate ?? 1;
 		
 		const totalValue = h * p;
-		const totalCost = h * avg;
+		const totalCost = h * (avg * fxRate);
 		const profit = totalValue - totalCost;
 		const profitPercent = totalCost > 0 ? profit / totalCost : 0;
 		
-		const changePercent = prices[asset.ticker]?.change ?? 0;
+		const changePercent = pData?.change ?? 0;
 		const dailyChangeValue = totalValue * (changePercent / 100);
 		const dailyChangePercent = changePercent / 100;
-
-		const pData = prices[asset.ticker];
 		
 		return { 
 			asset, 
