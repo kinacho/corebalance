@@ -5,17 +5,25 @@
 
 	const releases = [
 		{
-			version: 'v1.2.0',
-			date: '19 de Mayo, 2026',
-			badge: 'Última Versión',
+			version: 'v1.3.0',
+			date: '21 de Mayo, 2026',
+			badge: 'Autonomía y Privacidad',
 			badgeColor: '#10b981',
 			changes: [
-				'🧠 **Sliders Autocompensados 100% (Proyecto B):** Algoritmo dinámico que autoajusta el resto de pesos proporcionalmente en tiempo real para clavar el 100% de la cartera principal.',
-				'🔒 **Candados de Peso Objetivo (`Lock`):** Posibilidad de fijar el peso objetivo de activos específicos para que se mantengan inalterados mientras reajustas libremente el resto de la cartera.',
-				'♻️ **Compensación de Activos Trasladados/Borrados:** Al eliminar o mover un activo a otra cartera, el peso restante se auto-reparte inteligentemente entre los activos libres del Core.',
 				'💾 **Exportación local segura en formato JSON (Proyecto A):** Descarga de la configuración completa de tu cartera en un archivo `.json` de forma offline y sin necesidad de registrarse.',
 				'🕶️ **Privacidad Visual Total (Modo Pantalla Segura):** Ocultación instantánea bajo asteriscos (`****`) de los ejes del gráfico histórico y valores detallados de tooltips.',
 				'⚙️ **Configuración Unificada:** Reestructuración de ajustes de cartera y app con selector de divisa base (EUR/USD/GBP) en caliente y menú superior de alta fidelidad.'
+			]
+		},
+		{
+			version: 'v1.2.0',
+			date: '19 de Mayo, 2026',
+			badge: 'Motor de Sliders',
+			badgeColor: '#3b82f6',
+			changes: [
+				'🧠 **Sliders Autocompensados 100% (Proyecto B):** Algoritmo dinámico que autoajusta el resto de pesos proporcionalmente en tiempo real para clavar el 100% de la cartera principal.',
+				'🔒 **Candados de Peso Objetivo (`Lock`):** Posibilidad de fijar el peso objetivo de activos específicos para que se mantengan inalterados mientras reajustas libremente el resto de la cartera.',
+				'♻️ **Compensación de Activos Trasladados/Borrados:** Al eliminar o mover un activo a otra cartera, el peso restante se auto-reparte inteligentemente entre los activos libres del Core.'
 			]
 		},
 		{

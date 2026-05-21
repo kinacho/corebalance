@@ -114,6 +114,7 @@
 			return gradient;
 		};
 
+		// @ts-ignore - Chart.js types are too strict for this configuration
 		chart = new Chart(ctx, {
 			type: 'line',
 			data: {
@@ -188,7 +189,7 @@
 						usePointStyle: true,
 						itemSort: (a: any, b: any) => (b.raw as number) - (a.raw as number),
 						callbacks: {
-							label: (context) => {
+							label: (context: any) => {
 								const label = context.dataset.label || '';
 								if (portfolio.isPrivate) return ` ${label}: ****`;
 								const yValue = context.parsed.y ?? 0;
@@ -225,7 +226,7 @@
 						}
 					}
 				}
-			}
+			} as any
 		});
 	});
 
