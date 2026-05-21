@@ -4,13 +4,14 @@
 	import Toast from '$lib/components/Toast.svelte';
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { onMount } from 'svelte';
-	import { inject } from '@vercel/analytics';
+	import { dev } from '$app/environment';
+	import { injectAnalytics } from '@vercel/analytics/sveltekit';
 	import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
 
 	let { children } = $props();
 
 	onMount(() => {
-		inject();
+		injectAnalytics({ mode: dev ? 'development' : 'production' });
 		injectSpeedInsights();
 	});
 </script>
