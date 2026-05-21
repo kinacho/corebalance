@@ -120,12 +120,19 @@
 			class="action-btn"
 			onclick={onManageAssets}
 
-			title="Gestionar activos"
-			aria-label="Gestionar activos"
+			title="Configuración de Cartera"
+			aria-label="Configuración de Cartera"
 		>
-			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-				<circle cx="12" cy="12" r="3" />
-				<path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<line x1="4" y1="21" x2="4" y2="14" />
+				<line x1="4" y1="10" x2="4" y2="3" />
+				<line x1="12" y1="21" x2="12" y2="12" />
+				<line x1="12" y1="8" x2="12" y2="3" />
+				<line x1="20" y1="21" x2="20" y2="16" />
+				<line x1="20" y1="12" x2="20" y2="3" />
+				<line x1="1" y1="14" x2="7" y2="14" />
+				<line x1="9" y1="8" x2="15" y2="8" />
+				<line x1="17" y1="16" x2="23" y2="16" />
 			</svg>
 		</button>
 
@@ -188,17 +195,16 @@
 
 		<div id="tour-sync-auth" class="user-zone">
 			{#if !authReady}
-
 				<div class="auth-skeleton"></div>
-			{:else if portfolio.user}
+			{:else}
 				<div class="user-container" in:scale={{ duration: 300, start: 0.9 }}>
 					<button 
 						class="action-btn user-btn" 
 						class:auth-loading={authLoading}
 						onclick={toggleUserMenu}
-						title="Opciones de usuario"
+						title="Configuración de la App"
 					>
-						{#if portfolio.user.photoURL && !imgError}
+						{#if portfolio.user?.photoURL && !imgError}
 							<img 
 								src={portfolio.user.photoURL} 
 								alt="User" 
@@ -206,10 +212,15 @@
 								referrerpolicy="no-referrer"
 								onerror={() => imgError = true}
 							/>
-						{:else}
-							<div class="user-initial-circle" style="background: {getUserColor(portfolio.user.email || 'user')}">
-								{portfolio.user.email?.[0].toUpperCase() ?? 'U'}
+						{:else if portfolio.user?.email}
+							<div class="user-initial-circle" style="background: {getUserColor(portfolio.user.email)}">
+								{portfolio.user.email[0].toUpperCase()}
 							</div>
+						{:else}
+							<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+								<circle cx="12" cy="12" r="3" />
+								<path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+							</svg>
 						{/if}
 						
 						{#if authLoading}
@@ -230,8 +241,10 @@
 							onclick={(e) => e.stopPropagation()}
 						>
 							<div class="dropdown-header">
-								<span class="user-name">{portfolio.user.displayName || 'Inversor'}</span>
-								<span class="user-email">{portfolio.user.email}</span>
+								<span class="user-name">{portfolio.user ? (portfolio.user.displayName || 'Inversor') : 'Configuración'}</span>
+								{#if portfolio.user?.email}
+									<span class="user-email">{portfolio.user.email}</span>
+								{/if}
 							</div>
 							<div class="dropdown-divider"></div>
 							
@@ -254,57 +267,66 @@
 
 							<div class="dropdown-divider"></div>
 							<button 
-								class="dropdown-item logout" 
+								class="dropdown-item" 
 								role="menuitem"
-								disabled={authLoading}
-								onclick={() => { portfolio.logout(); showUserMenu = false; }}
+								onclick={() => { portfolio.exportJSON(); showUserMenu = false; }}
 							>
 								<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none">
-									<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-									<polyline points="16 17 21 12 16 7"></polyline>
-									<line x1="21" y1="12" x2="9" y2="12"></line>
+									<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
 								</svg>
-								Cerrar sesión
+								Exportar JSON (Offline)
 							</button>
 
-							{#if !portfolio.isLocal}
-								<div class="dropdown-divider"></div>
+							<div class="dropdown-divider"></div>
+							{#if portfolio.user}
 								<button 
-									class="dropdown-item delete-account" 
+									class="dropdown-item logout" 
 									role="menuitem"
 									disabled={authLoading}
-									onclick={() => { portfolio.deleteAccount(); showUserMenu = false; }}
+									onclick={() => { portfolio.logout(); showUserMenu = false; }}
 								>
 									<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none">
-										<polyline points="3 6 5 6 21 6"></polyline>
-										<path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-										<line x1="10" y1="11" x2="10" y2="17"></line>
-										<line x1="14" y1="11" x2="14" y2="17"></line>
+										<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+										<polyline points="16 17 21 12 16 7"></polyline>
+										<line x1="21" y1="12" x2="9" y2="12"></line>
 									</svg>
-									Eliminar mi cuenta
+									Cerrar sesión
+								</button>
+
+								{#if !portfolio.isLocal}
+									<div class="dropdown-divider"></div>
+									<button 
+										class="dropdown-item delete-account" 
+										role="menuitem"
+										disabled={authLoading}
+										onclick={() => { portfolio.deleteAccount(); showUserMenu = false; }}
+									>
+										<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none">
+											<polyline points="3 6 5 6 21 6"></polyline>
+											<path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+											<line x1="10" y1="11" x2="10" y2="17"></line>
+											<line x1="14" y1="11" x2="14" y2="17"></line>
+										</svg>
+										Eliminar mi cuenta
+									</button>
+								{/if}
+							{:else}
+								<button 
+									class="dropdown-item" 
+									role="menuitem"
+									disabled={authLoading}
+									onclick={() => { portfolio.login(); showUserMenu = false; }}
+									style="color: #3b82f6;"
+								>
+									<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none">
+										<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M13.8 12H3" />
+									</svg>
+									Iniciar sesión (Nube)
 								</button>
 							{/if}
 						</div>
 					{/if}
 				</div>
-			{:else}
-				<button 
-					class="login-pill" 
-					class:loading={authLoading}
-					disabled={authLoading}
-					onclick={() => portfolio.login()}
-					in:scale={{ duration: 300, start: 0.9 }}
-				>
-					{#if authLoading}
-						<div class="mini-spinner white"></div>
-						<span>Entrando...</span>
-					{:else}
-						<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2.5">
-							<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M13.8 12H3" />
-						</svg>
-						<span>Entrar</span>
-					{/if}
-				</button>
 			{/if}
 		</div>
 	</div>
@@ -530,33 +552,6 @@
 		50% { opacity: 0.2; }
 	}
 
-	.login-pill {
-		display: flex;
-		align-items: center;
-		gap: 0.4rem;
-		padding: 0.4rem 0.75rem;
-		background: #3b82f6;
-		color: white;
-		border: none;
-		border-radius: 100px;
-		font-weight: 700;
-		font-size: 0.75rem;
-		cursor: pointer;
-		transition: all 0.2s;
-		box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-		white-space: nowrap;
-	}
-
-
-	.login-pill:hover {
-		background: #2563eb;
-		transform: translateY(-1px);
-		box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
-	}
-
-	.login-pill:active {
-		transform: translateY(0);
-	}
 
 	.user-btn {
 		overflow: hidden;
@@ -581,21 +576,16 @@
 		top: calc(100% + 12px);
 		right: 0;
 		width: 220px;
-		background: rgba(255, 255, 255, 0.98);
-		backdrop-filter: blur(20px);
-		-webkit-backdrop-filter: blur(20px);
+		background: rgba(15, 15, 30, 0.85);
+		backdrop-filter: blur(24px) saturate(200%);
+		-webkit-backdrop-filter: blur(24px) saturate(200%);
 		border-radius: 16px;
-		border: 1px solid rgba(0, 0, 0, 0.08);
-		box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 		z-index: 1000;
 		padding: 0.5rem;
 		transform-origin: top right;
 		animation: dropdownFade 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-	}
-
-	:global(.dark) .user-dropdown {
-		background: rgba(30, 41, 59, 0.95);
-		border-color: rgba(255, 255, 255, 0.05);
 	}
 
 	@keyframes dropdownFade {
@@ -611,12 +601,8 @@
 
 	.dropdown-divider {
 		height: 1px;
-		background: rgba(0, 0, 0, 0.05);
+		background: rgba(255, 255, 255, 0.08);
 		margin: 0.5rem 0;
-	}
-
-	:global(.dark) .dropdown-divider {
-		background: rgba(255, 255, 255, 0.05);
 	}
 
 	.dropdown-item {
@@ -627,7 +613,7 @@
 		padding: 0.75rem;
 		border: none;
 		background: transparent;
-		color: #1e293b;
+		color: rgba(255, 255, 255, 0.85);
 		font-size: 0.9rem;
 		font-weight: 600;
 		border-radius: 10px;
@@ -636,16 +622,9 @@
 		text-align: left;
 	}
 
-	:global(.dark) .dropdown-item {
-		color: #f1f5f9;
-	}
-
 	.dropdown-item:hover {
-		background: rgba(0, 0, 0, 0.03);
-	}
-
-	:global(.dark) .dropdown-item:hover {
-		background: rgba(255, 255, 255, 0.03);
+		background: rgba(255, 255, 255, 0.06);
+		color: #ffffff;
 	}
 
 	.dropdown-item.logout {
@@ -677,27 +656,19 @@
 	.setting-label {
 		font-size: 0.8rem;
 		font-weight: 600;
-		color: #64748b;
+		color: rgba(255, 255, 255, 0.5);
 	}
 
-	:global(.dark) .setting-label { color: #94a3b8; }
-
 	.currency-select {
-		background: rgba(0, 0, 0, 0.05);
-		border: 1px solid rgba(0, 0, 0, 0.1);
+		background: rgba(255, 255, 255, 0.06);
+		border: 1px solid rgba(255, 255, 255, 0.1);
 		border-radius: 8px;
 		padding: 0.3rem 0.5rem;
 		font-size: 0.8rem;
 		font-weight: 700;
-		color: #1e293b;
+		color: #ffffff;
 		cursor: pointer;
 		outline: none;
-	}
-
-	:global(.dark) .currency-select {
-		background: rgba(255, 255, 255, 0.05);
-		border-color: rgba(255, 255, 255, 0.1);
-		color: #f1f5f9;
 	}
 
 	/* Auth Notifications */
@@ -742,7 +713,6 @@
 	}
 
 
-	.mini-spinner.white { color: #fff; border-top-color: #fff; border-color: rgba(255, 255, 255, 0.2); }
 
 	.user-loading-overlay {
 		position: absolute;
@@ -754,29 +724,22 @@
 		z-index: 5;
 	}
 
-	.login-pill.loading {
-		padding-left: 0.75rem;
-		background: #2563eb;
-		opacity: 0.9;
-	}
 
 	/* User Dropdown Enhancements */
 	.user-name {
 		font-size: 0.95rem;
 		font-weight: 800;
-		color: #0f172a;
+		color: #ffffff;
 		margin-bottom: 0.1rem;
 		display: block;
 	}
 
 	.user-email {
 		font-size: 0.75rem;
-		color: #64748b;
+		color: rgba(255, 255, 255, 0.4);
 		word-break: break-all;
 		font-weight: 500;
 	}
-
-	:global(.dark) .user-name { color: #fff; }
 
 	/* Loading Bar */
 	.loading-bar {
@@ -812,10 +775,6 @@
 			height: 40px;
 		}
 		
-		.login-pill {
-			font-size: 0.85rem;
-			padding: 0.5rem 1rem;
-		}
 
 
 		.timestamp {

@@ -14,6 +14,7 @@
   import PaypalDonation from "$lib/components/PaypalDonation.svelte";
 
   import OnboardingTour from "$lib/components/OnboardingTour.svelte";
+  import ChangelogModal from "$lib/components/ChangelogModal.svelte";
   import { portfolio } from "$lib/stores/portfolio.svelte";
 
   import { formatEUR, formatPercent } from "$lib/utils";
@@ -36,6 +37,7 @@
   // --- State ---
   let activeTab = $state<TabId>("assets");
   let showManageAssets = $state(false);
+  let showChangelog = $state(false);
   let tabsEl = $state<HTMLElement | null>(null);
   let scrollAnchor = $state<HTMLElement | null>(null);
 
@@ -315,11 +317,15 @@
       </div>
 
       <div class="footer-copyright">
-        <p>© {new Date().getFullYear()} CoreBalance · Hecho con ❤️ para la comunidad inversora</p>
+        <p>© {new Date().getFullYear()} CoreBalance · Hecho con ❤️ para la comunidad inversora · <button class="changelog-badge-btn" onclick={() => showChangelog = true} title="Ver historial de cambios">v1.3.0 🚀</button></p>
       </div>
     </footer>
   </main>
 </div>
+
+{#if showChangelog}
+  <ChangelogModal onClose={() => showChangelog = false} />
+{/if}
 
 <style>
   :global(body) {
@@ -656,6 +662,35 @@
     font-weight: 600;
     color: rgba(160, 160, 200, 0.25);
     margin: 0;
+  }
+
+  .changelog-badge-btn {
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.15);
+    color: #10b981;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.12rem 0.45rem;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-left: 0.35rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    vertical-align: middle;
+  }
+
+  .changelog-badge-btn:hover {
+    background: rgba(16, 185, 129, 0.18);
+    border-color: rgba(16, 185, 129, 0.35);
+    color: #34d399;
+    transform: translateY(-0.5px);
+    box-shadow: 0 4px 10px rgba(16, 185, 129, 0.15);
+  }
+
+  .changelog-badge-btn:active {
+    transform: translateY(0);
   }
 
   /* --- Responsive Magic --- */

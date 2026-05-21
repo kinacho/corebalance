@@ -91,10 +91,10 @@
 			if (chart.options.scales?.y) {
 				const yAxis = chart.options.scales.y as any;
 				if (viewMode === 'percent') {
-					yAxis.ticks.callback = (value: number) => value.toFixed(1) + '%';
+					yAxis.ticks.callback = (value: number) => portfolio.isPrivate ? '****' : value.toFixed(1) + '%';
 					yAxis.title = { display: true, text: 'Rendimiento (%)', color: 'rgba(255,255,255,0.3)', font: { size: 10 } };
 				} else {
-					yAxis.ticks.callback = (value: number) => formatEUR(value);
+					yAxis.ticks.callback = (value: number) => portfolio.isPrivate ? '****' : formatEUR(value);
 					yAxis.title = { display: false };
 				}
 			}
@@ -114,6 +114,7 @@
 			return gradient;
 		};
 
+		// @ts-ignore - Chart.js types are too strict for this configuration
 		chart = new Chart(ctx, {
 			type: 'line',
 			data: {
@@ -188,8 +189,9 @@
 						usePointStyle: true,
 						itemSort: (a: any, b: any) => (b.raw as number) - (a.raw as number),
 						callbacks: {
-							label: (context) => {
+							label: (context: any) => {
 								const label = context.dataset.label || '';
+								if (portfolio.isPrivate) return ` ${label}: ****`;
 								const yValue = context.parsed.y ?? 0;
 								const value = viewMode === 'percent' 
 									? yValue.toFixed(2) + '%' 
@@ -224,7 +226,7 @@
 						}
 					}
 				}
-			}
+			} as any
 		});
 	});
 
