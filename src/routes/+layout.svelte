@@ -3,8 +3,16 @@
 	import SplashScreen from '$lib/components/SplashScreen.svelte';
 	import Toast from '$lib/components/Toast.svelte';
 	import { portfolio } from '$lib/stores/portfolio.svelte';
+	import { onMount } from 'svelte';
+	import { inject } from '@vercel/analytics';
+	import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
 
 	let { children } = $props();
+
+	onMount(() => {
+		inject();
+		injectSpeedInsights();
+	});
 </script>
 
 <svelte:head>
