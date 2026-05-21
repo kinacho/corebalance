@@ -131,7 +131,7 @@
 								<div class="comparison-row">
 									<div class="comparison-label">
 										<span class="comparison-dot" style="background: {alloc.asset.color};"></span>
-										<span class="comparison-ticker">{alloc.asset.ticker}</span>
+										<span class="comparison-name" title={alloc.asset.name}>{alloc.asset.name}</span>
 									</div>
 									<div class="comparison-bars">
 										<div class="bar-track">
@@ -146,7 +146,7 @@
 									<div class="convergence-info">
 										{#if deviationBefore > 0.001}
 											<span class="convergence-label" class:improved={improvement > 0}>
-												{improvement > 0 ? '↓' : '↑'}{Math.abs(deviationAfter * 100).toFixed(1)}%
+												{improvement > 0 ? '→' : ''} {Math.abs(resultW * 100).toFixed(1)}%
 											</span>
 										{:else}
 											<span class="convergence-label perfect">✓</span>
@@ -463,7 +463,7 @@
 
 	.comparison-row {
 		display: grid;
-		grid-template-columns: 60px 1fr 45px;
+		grid-template-columns: 140px 1fr 45px;
 		align-items: center;
 		gap: 0.5rem;
 	}
@@ -471,22 +471,23 @@
 	.comparison-label {
 		display: flex;
 		align-items: center;
-		gap: 0.35rem;
+		gap: 0.75rem; /* Aumentado ligeramente para más aire */
 		overflow: hidden;
+		padding-left: 0.25rem; /* Margen extra para el punto */
 	}
 
 	.comparison-dot {
-		width: 6px;
-		height: 6px;
+		width: 8px; /* Punto ligeramente más grande y visible */
+		height: 8px;
 		border-radius: 50%;
 		flex-shrink: 0;
 		box-shadow: 0 0 4px currentColor;
 	}
 
-	.comparison-ticker {
-		font-size: 0.65rem;
-		font-weight: 700;
-		color: rgba(255, 255, 255, 0.6);
+	.comparison-name {
+		font-size: 0.7rem;
+		font-weight: 600;
+		color: rgba(255, 255, 255, 0.7);
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;

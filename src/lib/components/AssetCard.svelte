@@ -99,8 +99,8 @@
 {/if}
 
 <div class="asset-card" style="--accent: {position.asset.color}">
-	<div class="card-header">
-		<div class="asset-identity">
+	<div class="card-header" style="display: grid; grid-template-columns: 1fr auto; align-items: start; gap: 1rem;">
+		<div class="asset-identity" style="min-width: 0;">
 			<div class="asset-icon-wrapper">
 				<span class="asset-icon">{position.asset.icon}</span>
 				<span class="market-dot" class:open={isMarketOpen(position.asset.ticker, position.marketState)} class:closed={!isMarketOpen(position.asset.ticker, position.marketState)} title={position.marketState || 'Estado desconocido'}></span>
@@ -117,9 +117,6 @@
 									📜
 								</button>
 							{/if}
-							<div class="target-badge">
-								{position.asset.targetWeight * 100 % 1 === 0 ? formatPercent(position.asset.targetWeight, 0) : formatPercent(position.asset.targetWeight, 1)}
-							</div>
 						</div>
 					</div>
 					<h3 class="asset-name" title={position.asset.name}>{position.asset.name}</h3>
@@ -135,7 +132,10 @@
 				</div>
 			</div>
 		</div>
-		<div class="header-right-info">
+		<div class="header-right-info" style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.4rem;">
+			<div class="target-badge">
+				{position.asset.targetWeight * 100 % 1 === 0 ? formatPercent(position.asset.targetWeight, 0) : formatPercent(position.asset.targetWeight, 1)}
+			</div>
 			{#if isCrypto && portfolio.btcPrice > 0}
 				<div class="btc-spot-price" class:eth={position.asset.ticker.includes('ETH')}>
 					<span class="live-dot"></span>
