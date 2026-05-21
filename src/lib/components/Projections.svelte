@@ -21,31 +21,49 @@
 
 	const projections = $derived.by(() => {
 		const annualReturn = expectedReturn / 100;
-		const monthlyReturn = Math.pow(1 + annualReturn, 1/12) - 1;
 		const monthlyContribution = monthlySavings;
 		const initialCapital = useCustomBase ? customBase : portfolio.globalCapital;
-		
 		const months = years * 12;
-		let balance = initialCapital;
+		
+		let finalValue = initialCapital;
 		const history: { month: number, value: number, invested: number }[] = [];
 
-		for (let m = 0; m <= months; m++) {
-			if (m > 0) {
-				balance = balance * (1 + monthlyReturn) + monthlyContribution;
+		if (annualReturn === 0) {
+			finalValue = initialCapital + (monthlyContribution * months);
+			for (let m = 0; m <= months; m++) {
+				if (m % 12 === 0 || m === months) {
+					history.push({
+						month: m,
+						value: initialCapital + (monthlyContribution * m),
+						invested: initialCapital + (monthlyContribution * m)
+					});
+				}
 			}
-			if (m % 12 === 0 || m === months) {
-				history.push({ 
-					month: m, 
-					value: balance, 
-					invested: initialCapital + (monthlyContribution * m) 
-				});
+		} else {
+			const monthlyReturn = Math.pow(1 + annualReturn, 1/12) - 1;
+			
+			// Fórmula de interés compuesto:
+			// Capital Final = Capital Inicial * (1+r)^n + Aportación * [((1+r)^n - 1) / r]
+			finalValue = initialCapital * Math.pow(1 + monthlyReturn, months) + 
+						 monthlyContribution * ((Math.pow(1 + monthlyReturn, months) - 1) / monthlyReturn);
+
+			for (let m = 0; m <= months; m++) {
+				if (m % 12 === 0 || m === months) {
+					const val = initialCapital * Math.pow(1 + monthlyReturn, m) + 
+								(m > 0 ? monthlyContribution * ((Math.pow(1 + monthlyReturn, m) - 1) / monthlyReturn) : 0);
+					history.push({ 
+						month: m, 
+						value: val, 
+						invested: initialCapital + (monthlyContribution * m) 
+					});
+				}
 			}
 		}
 
 		return {
-			finalValue: balance,
+			finalValue,
 			totalInvested: initialCapital + (monthlyContribution * months),
-			totalProfit: balance - (initialCapital + (monthlyContribution * months)),
+			totalProfit: finalValue - (initialCapital + (monthlyContribution * months)),
 			history
 		};
 	});

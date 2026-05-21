@@ -10,10 +10,10 @@
 			badge: 'Interactividad y Análisis',
 			badgeColor: '#a855f7',
 			changes: [
-				'🔢 **Precisión Decimal y Redondeo Robusto (Proyecto B):** Soporte completo para pesos objetivos con decimales (ej. 7.5%) en sliders y entradas numéricas con compensación proporcional y redondeo robusto.',
-				'📈 **Visualizador Comparativo de Pesos (Proyecto D.3):** Nuevo panel "Convergencia de Pesos" con barras comparativas antes/después y desviaciones dinámicas en el módulo de rebalanceo.',
-				'📊 **Proyecciones con Base Personalizada (Proyecto D.2):** Selector dinámico de simulación con pildoras interactivas para alternar entre "Cartera Real" y "Capital Personalizado".',
-				'📉 **Crisis Simulator Educativo e Histórico (Proyecto D.1):** Reemplazo de presets genéricos por 3 grandes crisis históricas reales (DotCom, Lehman, COVID) con tarjetas educativas de impacto DCA.',
+				'🔢 **Precisión Decimal y Redondeo Robusto:** Soporte completo para pesos objetivos con decimales (ej. 7.5%) en sliders y entradas numéricas con compensación proporcional y redondeo robusto.',
+				'📈 **Visualizador Comparativo de Pesos:** Nuevo panel "Convergencia de Pesos" con barras comparativas antes/después y desviaciones dinámicas en el módulo de rebalanceo.',
+				'📊 **Proyecciones con Base Personalizada:** Selector dinámico de simulación con pildoras interactivas para alternar entre "Cartera Real" y "Capital Personalizado".',
+				'📉 **Crisis Simulator Educativo e Histórico:** Reemplazo de presets genéricos por 3 grandes crisis históricas reales (DotCom, Lehman, COVID) con tarjetas educativas de impacto DCA.',
 				'🔒 **Candados y Avisos de Bloqueo:** Corrección de warnings ante bloqueos absolutos de compensación utilizando toasts nativos de tipo error.',
 				'🐛 **Corrección de Sliders Dinámicos y A11y:** Resuelto el bug del simulador de crisis donde el capital inicial aumentaba al infinito al deslizar, y eliminadas advertencias del compilador.'
 			]
@@ -24,7 +24,7 @@
 			badge: 'Autonomía y Privacidad',
 			badgeColor: '#10b981',
 			changes: [
-				'💾 **Exportación local segura en formato JSON (Proyecto A):** Descarga de la configuración completa de tu cartera en un archivo `.json` de forma offline y sin necesidad de registrarse.',
+				'💾 **Exportación local segura en formato JSON:** Descarga de la configuración completa de tu cartera en un archivo `.json` de forma offline y sin necesidad de registrarse.',
 				'🕶️ **Privacidad Visual Total (Modo Pantalla Segura):** Ocultación instantánea bajo asteriscos (`****`) de los ejes del gráfico histórico y valores detallados de tooltips.',
 				'⚙️ **Configuración Unificada:** Reestructuración de ajustes de cartera y app con selector de divisa base (EUR/USD/GBP) en caliente y menú superior de alta fidelidad.'
 			]
@@ -35,7 +35,7 @@
 			badge: 'Motor de Sliders',
 			badgeColor: '#3b82f6',
 			changes: [
-				'🧠 **Sliders Autocompensados 100% (Proyecto B):** Algoritmo dinámico que autoajusta el resto de pesos proporcionalmente en tiempo real para clavar el 100% de la cartera principal.',
+				'🧠 **Sliders Autocompensados 100%:** Algoritmo dinámico que autoajusta el resto de pesos proporcionalmente en tiempo real para clavar el 100% de la cartera principal.',
 				'🔒 **Candados de Peso Objetivo (`Lock`):** Posibilidad de fijar el peso objetivo de activos específicos para que se mantengan inalterados mientras reajustas libremente el resto de la cartera.',
 				'♻️ **Compensación de Activos Trasladados/Borrados:** Al eliminar o mover un activo a otra cartera, el peso restante se auto-reparte inteligentemente entre los activos libres del Core.'
 			]
