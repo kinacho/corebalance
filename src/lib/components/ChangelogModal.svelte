@@ -19,6 +19,7 @@
 			badge: 'Interactividad y Análisis',
 			badgeColor: '#a855f7',
 			changes: [
+				'📜 **Sistema de Ledger (Libro de Operaciones):** Nuevo motor profesional para registrar compras, ventas, dividendos y traspasos con cálculo automático de precio medio y participaciones.',
 				'🔢 **Precisión Decimal y Redondeo Robusto:** Soporte completo para pesos objetivos con decimales (ej. 7.5%) en sliders y entradas numéricas con compensación proporcional y redondeo robusto.',
 				'📈 **Visualizador Comparativo de Pesos:** Nuevo panel "Convergencia de Pesos" con barras comparativas antes/después y desviaciones dinámicas en el módulo de rebalanceo.',
 				'📊 **Proyecciones con Base Personalizada:** Selector dinámico de simulación con pildoras interactivas para alternar entre "Cartera Real" y "Capital Personalizado".',

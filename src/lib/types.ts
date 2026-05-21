@@ -89,10 +89,26 @@ export interface RebalanceResult {
 	newTotalCapital: number;
 }
 
+export type TransactionType = 'buy' | 'sell' | 'dividend' | 'transfer' | 'initial_balance';
+
+export interface Transaction {
+	id: string;
+	ticker: string;
+	type: TransactionType;
+	date: number; // Unix timestamp
+	shares: number;
+	price: number; // Unit price in transaction currency
+	currency: string;
+	fees: number;
+	fxRate: number; // Rate to base currency at time of transaction
+	notes?: string;
+}
+
 /** Datos de un activo guardados en localStorage */
 export interface HoldingData {
 	shares: number;
 	avgCost: number;
+	useLedger?: boolean; // Si es true, ignora estos campos y usa el historial de transacciones
 }
 
 /** Holdings almacenados en localStorage */

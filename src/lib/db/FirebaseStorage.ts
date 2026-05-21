@@ -1,4 +1,5 @@
 import type { StorageProvider, UserData, HistoryPoint } from './types';
+import type { Transaction } from '$lib/types';
 import { auth, db, googleProvider } from '$lib/firebase';
 import { onAuthStateChanged, signInWithPopup, signOut, type User } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
@@ -26,6 +27,30 @@ export class FirebaseStorage implements StorageProvider {
 		} catch (e) {
 			console.error('Firestore load error:', e);
 			return null;
+		}
+	}
+
+	async saveTransactions(userId: string, items: Transaction[]): Promise<void> {
+		if (!db) return;
+		try {
+			await setDoc(doc(db, 'user_transactions', userId), { items }, { merge: true });
+		} catch (e) {
+			console.error('Firestore transactions save error:', e);
+		}
+	}
+
+	async loadTransactions(userId: string): Promise<Transaction[]> {
+		if (!db) return [];
+		try {
+			const snap = await getDoc(doc(db, 'user_transactions', userId));
+			if (snap.exists()) {
+				const data = snap.data();
+				return data.items || [];
+			}
+			return [];
+		} catch (e) {
+			console.error('Firestore transactions load error:', e);
+			return [];
 		}
 	}
 
@@ -93,9 +118,11 @@ export class FirebaseStorage implements StorageProvider {
 		const userId = auth.currentUser.uid;
 		const userData = await this.loadUserData(userId);
 		const history = await this.loadHistory(userId);
+		const transactions = await this.loadTransactions(userId);
 		return { 
 			userData: userData ? [{ ...userData, id: userId }] : [], 
-			history: history.length ? [{ id: userId, points: history }] : [] 
+			history: history.length ? [{ id: userId, points: history }] : [],
+			transactions: transactions.length ? [{ userId, items: transactions }] : []
 		};
 	}
 
@@ -111,6 +138,9 @@ export class FirebaseStorage implements StorageProvider {
 		if (data.history?.[0]?.points) {
 			await this.saveHistory(userId, data.history[0].points);
 		}
+		if (data.transactions?.[0]?.items) {
+			await this.saveTransactions(userId, data.transactions[0].items);
+		}
 	}
 
 	async deleteAccount(): Promise<void> {
@@ -123,6 +153,7 @@ export class FirebaseStorage implements StorageProvider {
 			const { deleteDoc, doc } = await import('firebase/firestore');
 			await deleteDoc(doc(db, 'user_data', userId));
 			await deleteDoc(doc(db, 'user_history', userId));
+			await deleteDoc(doc(db, 'user_transactions', userId));
 			
 			// 2. Borrar el usuario de Firebase Auth
 			const { deleteUser } = await import('firebase/auth');

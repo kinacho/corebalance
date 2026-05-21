@@ -1,4 +1,4 @@
-import type { Asset, HoldingsMap } from '$lib/types';
+import type { Asset, HoldingsMap, Transaction } from '$lib/types';
 
 export interface UserData {
 	holdings: HoldingsMap;
@@ -8,6 +8,7 @@ export interface UserData {
 	satelliteAssets: Asset[];
 	stockAssets: Asset[];
 	updatedAt?: string;
+	transactions?: Transaction[]; // Opcional para backward compatibility
 }
 
 export interface HistoryPoint {
@@ -21,6 +22,10 @@ export interface StorageProvider {
 	// Data
 	saveUserData(userId: string, data: Partial<UserData>): Promise<void>;
 	loadUserData(userId: string): Promise<UserData | null>;
+	
+	// Transactions (Ledger)
+	saveTransactions?(userId: string, transactions: Transaction[]): Promise<void>;
+	loadTransactions?(userId: string): Promise<Transaction[]>;
 	
 	// History
 	saveHistory(userId: string, points: HistoryPoint[]): Promise<void>;

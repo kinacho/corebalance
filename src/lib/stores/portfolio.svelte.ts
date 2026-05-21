@@ -1,5 +1,5 @@
 import { DEFAULT_CORE_ASSETS, DEFAULT_SATELLITE_ASSETS, DEFAULT_STOCK_ASSETS, STORAGE_KEY_HOLDINGS, STORAGE_KEY_CONTRIBUTION, STORAGE_KEY_ASSETS, STORAGE_KEY_PRICES } from '$lib/constants';
-import type { Asset, AssetCategory, HoldingData, HoldingsMap, PortfolioState, PriceData, RebalanceResult } from '$lib/types';
+import type { Asset, AssetCategory, HoldingData, HoldingsMap, PortfolioState, PriceData, RebalanceResult, Transaction } from '$lib/types';
 import { calculatePortfolioState, calculateRebalance } from '$lib/rebalance';
 import { storageProvider } from '$lib/db';
 import { formatDate } from '$lib/utils';
@@ -10,6 +10,7 @@ export interface User { uid: string; displayName?: string | null; photoURL?: str
 export class PortfolioStore {
 	// --- State (Runes) ---
 	holdings = $state<HoldingsMap>({});
+	transactions = $state<Transaction[]>([]);
 	prices = $state<Record<string, PriceData>>({});
 	contribution = $state(0);
 	loading = $state(true);
@@ -32,6 +33,67 @@ export class PortfolioStore {
 
 	// --- Derived State ---
 
+	/** Cálculo de posiciones basado exclusivamente en el Ledger (Transacciones) */
+	ledgerHoldings = $derived.by(() => {
+		const result: Record<string, { shares: number; avgCost: number; totalCostRaw: number }> = {};
+		
+		// Ordenar transacciones por fecha para cálculos consistentes
+		const sorted = [...this.transactions].sort((a, b) => a.date - b.date);
+		
+		for (const t of sorted) {
+			if (!result[t.ticker]) {
+				result[t.ticker] = { shares: 0, avgCost: 0, totalCostRaw: 0 };
+			}
+			
+			const pos = result[t.ticker];
+			
+			if (t.type === 'buy' || t.type === 'initial_balance' || t.type === 'transfer') {
+				if (t.shares > 0) {
+					// Calculamos el coste en la divisa original del activo para compatibilidad con rebalance.ts
+					const txCostRaw = (t.shares * t.price) + (t.fees || 0); 
+					const newTotalCostRaw = pos.totalCostRaw + txCostRaw;
+					const newShares = pos.shares + t.shares;
+					pos.avgCost = newShares > 0 ? newTotalCostRaw / newShares : 0;
+					pos.shares = newShares;
+					pos.totalCostRaw = newTotalCostRaw;
+				}
+			} else if (t.type === 'sell') {
+				if (pos.shares > 0) {
+					const ratio = Math.min(1, t.shares / pos.shares);
+					pos.totalCostRaw -= pos.totalCostRaw * ratio;
+					pos.shares -= t.shares;
+				}
+			} else if (t.type === 'dividend') {
+				// Los dividendos reducen el coste medio en la divisa original
+				const divAmountRaw = (t.shares * t.price) - (t.fees || 0);
+				pos.totalCostRaw -= divAmountRaw;
+				pos.avgCost = pos.shares > 0 ? pos.totalCostRaw / pos.shares : 0;
+			}
+		}
+
+		// Redondeo final para evitar problemas de precisión en JS
+		for (const ticker in result) {
+			result[ticker].shares = Math.round(result[ticker].shares * 1000) / 1000;
+			result[ticker].avgCost = Math.round(result[ticker].avgCost * 1000) / 1000;
+		}
+
+		return result;
+	});
+
+	/** Holdings finales: combina entrada manual con Ledger según configuración por activo */
+	effectiveHoldings: HoldingsMap = $derived.by(() => {
+		const merged: HoldingsMap = { ...this.holdings };
+		for (const ticker in this.ledgerHoldings) {
+			if (this.holdings[ticker]?.useLedger) {
+				merged[ticker] = {
+					shares: this.ledgerHoldings[ticker].shares,
+					avgCost: this.ledgerHoldings[ticker].avgCost,
+					useLedger: true
+				};
+			}
+		}
+		return merged;
+	});
 
 	/** Label dinámico basado en los pesos reales del Core */
 	targetLabel = $derived.by(() => {
@@ -93,15 +155,15 @@ export class PortfolioStore {
 	});
 
 	portfolioState: PortfolioState = $derived(
-		calculatePortfolioState(this.coreAssets, this.holdings, this.convertedPrices)
+		calculatePortfolioState(this.coreAssets, this.effectiveHoldings, this.convertedPrices)
 	);
 
 	satelliteState: PortfolioState = $derived(
-		calculatePortfolioState(this.satelliteAssets, this.holdings, this.convertedPrices)
+		calculatePortfolioState(this.satelliteAssets, this.effectiveHoldings, this.convertedPrices)
 	);
 
 	stockState: PortfolioState = $derived(
-		calculatePortfolioState(this.stockAssets, this.holdings, this.convertedPrices)
+		calculatePortfolioState(this.stockAssets, this.effectiveHoldings, this.convertedPrices)
 	);
 
 	globalCapital = $derived(this.portfolioState.totalCapital + this.satelliteState.totalCapital + this.stockState.totalCapital);
@@ -189,12 +251,12 @@ export class PortfolioStore {
 
 	rebalanceResult: RebalanceResult | null = $derived(
 		this.contribution > 0 && Object.keys(this.prices).length > 0
-			? calculateRebalance(this.coreAssets, this.holdings, this.convertedPrices, this.contribution)
+			? calculateRebalance(this.coreAssets, this.effectiveHoldings, this.convertedPrices, this.contribution)
 			: null
 	);
 
 	hasAnyHoldings = $derived(
-		Object.values(this.holdings).some((h) => h.shares > 0)
+		Object.values(this.effectiveHoldings).some((h) => h.shares > 0)
 	);
 
 	// Precios live para referencias rápidas en UI
@@ -332,6 +394,10 @@ export class PortfolioStore {
 				updatedAt: new Date().toISOString()
 			};
 			await storageProvider.saveUserData(this.user.uid, dataToSave);
+			
+			if (storageProvider.saveTransactions) {
+				await storageProvider.saveTransactions(this.user.uid, $state.snapshot(this.transactions));
+			}
 		} catch (e) {
 			console.error('Storage save error:', e);
 		}
@@ -364,6 +430,10 @@ export class PortfolioStore {
 				// MIGRACIÓN SILENCIOSA: La nube está vacía pero hay configuración local
 				console.log('CoreBalance: Migrando configuración local a la nube...');
 				await this.saveToCloud();
+			}
+
+			if (storageProvider.loadTransactions) {
+				this.transactions = await storageProvider.loadTransactions(this.user.uid);
 			}
 			
 			// Cargar historial después de los datos de la cartera
@@ -461,6 +531,7 @@ export class PortfolioStore {
 				satelliteAssets: this.satelliteAssets,
 				stockAssets: this.stockAssets
 			}));
+			localStorage.setItem('corebalance_transactions', JSON.stringify(this.transactions));
 			// Caché de precios para carga instantánea
 			localStorage.setItem(STORAGE_KEY_PRICES, JSON.stringify(this.prices));
 		} catch (e) {
@@ -476,7 +547,8 @@ export class PortfolioStore {
 			if (holdings[ticker]) {
 				sanitized[ticker] = {
 					shares: Math.round((holdings[ticker].shares ?? 0) * 1000) / 1000,
-					avgCost: Math.round((holdings[ticker].avgCost ?? 0) * 1000) / 1000
+					avgCost: Math.round((holdings[ticker].avgCost ?? 0) * 1000) / 1000,
+					useLedger: holdings[ticker].useLedger ?? false
 				};
 			}
 		}
@@ -508,6 +580,11 @@ export class PortfolioStore {
 				this.holdings = this.sanitizeHoldings(parsed || {});
 			} else {
 				this.holdings = {};
+			}
+
+			const savedTransactions = localStorage.getItem('corebalance_transactions');
+			if (savedTransactions) {
+				this.transactions = JSON.parse(savedTransactions) || [];
 			}
 
 			const savedContribution = localStorage.getItem(STORAGE_KEY_CONTRIBUTION);
@@ -563,6 +640,7 @@ export class PortfolioStore {
 				localStorage.removeItem(STORAGE_KEY_ASSETS);
 				localStorage.removeItem(STORAGE_KEY_CONTRIBUTION);
 				localStorage.removeItem(STORAGE_KEY_PRICES);
+				localStorage.removeItem('corebalance_transactions');
 			}
 
 			// Forzar F5 tras logout exitoso para asegurar estado limpio
@@ -638,7 +716,7 @@ export class PortfolioStore {
 	}
 
 	updateHolding(ticker: string, data: Partial<HoldingData>) {
-		const current = this.holdings[ticker] ?? { shares: 0, avgCost: 0 };
+		const current = this.holdings[ticker] ?? { shares: 0, avgCost: 0, useLedger: false };
 		const merged = { ...current, ...data };
 		
 		// Enforce exactly 3 decimals maximum for shares and avgCost
@@ -656,6 +734,27 @@ export class PortfolioStore {
 		this.saveToStorage();
 	}
 
+	// --- Ledger Actions ---
+
+	addTransaction(t: Transaction) {
+		this.transactions = [...this.transactions, t];
+		this.saveToStorage();
+	}
+
+	removeTransaction(id: string) {
+		this.transactions = this.transactions.filter(t => t.id !== id);
+		this.saveToStorage();
+	}
+
+	updateTransaction(id: string, updates: Partial<Transaction>) {
+		this.transactions = this.transactions.map(t => t.id === id ? { ...t, ...updates } : t);
+		this.saveToStorage();
+	}
+
+	toggleLedger(ticker: string, enabled: boolean) {
+		this.updateHolding(ticker, { useLedger: enabled });
+	}
+
 	updateContribution(value: number) {
 		this.contribution = value;
 		this.saveToStorage();
@@ -669,6 +768,7 @@ export class PortfolioStore {
 	exportJSON() {
 		const data = {
 			holdings: $state.snapshot(this.holdings),
+			transactions: $state.snapshot(this.transactions),
 			contribution: this.contribution,
 			coreAssets: $state.snapshot(this.coreAssets),
 			satelliteAssets: $state.snapshot(this.satelliteAssets),
@@ -691,6 +791,7 @@ export class PortfolioStore {
 	reset() {
 		if (confirm('¿Seguro que quieres borrar toda la cartera?')) {
 			this.holdings = {};
+			this.transactions = [];
 			this.contribution = 0;
 			this.saveToStorage();
 		}
@@ -721,9 +822,10 @@ export class PortfolioStore {
 		this.coreAssets = this.coreAssets.filter(a => a.ticker !== ticker);
 		this.satelliteAssets = this.satelliteAssets.filter(a => a.ticker !== ticker);
 		this.stockAssets = this.stockAssets.filter(a => a.ticker !== ticker);
-		// Eliminar holdings del activo
+		// Eliminar holdings y transacciones del activo
 		const { [ticker]: _, ...rest } = this.holdings;
 		this.holdings = rest;
+		this.transactions = this.transactions.filter(t => t.ticker !== ticker);
 		this.saveToStorage();
 	}
 
@@ -772,11 +874,14 @@ export class PortfolioStore {
 	}
 
 	/** Restaurar el estado completo de los activos (usado para cancelar edición) */
-	restoreState(state: { core: Asset[], satellite: Asset[], stock: Asset[], holdings: HoldingsMap }) {
+	restoreState(state: { core: Asset[], satellite: Asset[], stock: Asset[], holdings: HoldingsMap, transactions?: Transaction[] }) {
 		this.coreAssets = [...state.core];
 		this.satelliteAssets = [...state.satellite];
 		this.stockAssets = [...state.stock];
 		this.holdings = { ...state.holdings };
+		if (state.transactions) {
+			this.transactions = [...state.transactions];
+		}
 		this.saveToStorage();
 	}
 

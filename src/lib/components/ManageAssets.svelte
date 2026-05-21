@@ -7,6 +7,7 @@
 	import { onMount, onDestroy } from 'svelte';
 	import AssetSearch from './AssetSearch.svelte';
 	import ImportModal from './ImportModal.svelte';
+	import LedgerModal from './LedgerModal.svelte';
 
 	interface Props {
 		onClose: () => void;
@@ -16,6 +17,8 @@
 
 	let showSearch = $state(false);
 	let showImport = $state(false);
+	let showLedger = $state(false);
+	let ledgerAsset = $state<Asset | null>(null);
 	let searchCategory = $state<AssetCategory>('core');
 	let editingAsset = $state<string | null>(null);
 	let editTer = $state('');
@@ -360,8 +363,13 @@
 		ui.hapticFeedback('medium');
 	}
 
+	function openLedger(asset: Asset) {
+		ledgerAsset = asset;
+		showLedger = true;
+	}
+
 	function handleKeydown(e: KeyboardEvent) {
-		if (e.key === 'Escape' && !showSearch) handleCancel();
+		if (e.key === 'Escape' && !showSearch && !showLedger) handleCancel();
 	}
 </script>
 
@@ -373,6 +381,10 @@
 
 {#if showImport}
 	<ImportModal onClose={() => showImport = false} />
+{/if}
+
+{#if showLedger && ledgerAsset}
+	<LedgerModal asset={ledgerAsset} onClose={() => { showLedger = false; ledgerAsset = null; }} />
 {/if}
 
 <div class="manage-overlay" role="dialog" aria-modal="true" aria-label="Gestionar activos">
@@ -558,6 +570,14 @@
 											</select>
 											<button class="action-ter" onclick={() => startEditTer(asset)} title="Editar TER">
 												TER
+											</button>
+											<button 
+												class="action-ledger" 
+												class:active={portfolio.holdings[asset.ticker]?.useLedger}
+												onclick={() => openLedger(asset)} 
+												title="Libro de transacciones"
+											>
+												📜 Ledger
 											</button>
 										{/if}
 										<button class="action-delete" onclick={() => confirmRemove(asset)} title="Eliminar">
@@ -1044,6 +1064,30 @@
 		background: rgba(59, 130, 246, 0.1);
 		color: #60a5fa;
 		border-color: rgba(59, 130, 246, 0.2);
+	}
+
+	.action-ledger {
+		padding: 0.2rem 0.45rem;
+		border-radius: 6px;
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		background: rgba(255, 255, 255, 0.03);
+		color: rgba(160, 160, 200, 0.5);
+		font-size: 0.58rem;
+		font-weight: 700;
+		cursor: pointer;
+		transition: all 0.15s;
+	}
+
+	.action-ledger:hover {
+		background: rgba(59, 130, 246, 0.1);
+		color: #60a5fa;
+		border-color: rgba(59, 130, 246, 0.2);
+	}
+
+	.action-ledger.active {
+		background: rgba(139, 92, 246, 0.1);
+		color: #a78bfa;
+		border-color: rgba(139, 92, 246, 0.3);
 	}
 
 	.action-delete {

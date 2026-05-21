@@ -1,16 +1,21 @@
 import Dexie, { type Table } from 'dexie';
 import type { StorageProvider, UserData, HistoryPoint } from './types';
+import type { Transaction } from '$lib/types';
 import { browser } from '$app/environment';
 
 export class CoreBalanceDB extends Dexie {
 	userData!: Table<UserData & { id: string }>;
 	history!: Table<{ id: string; points: HistoryPoint[] }>;
+	transactions!: Table<{ userId: string; items: Transaction[] }>;
 
 	constructor() {
 		super('CoreBalanceDB');
 		this.version(1).stores({
-			userData: 'id', // Primary key and indexed props
+			userData: 'id',
 			history: 'id'
+		});
+		this.version(2).stores({
+			transactions: 'userId'
 		});
 	}
 }
@@ -46,6 +51,17 @@ export class LocalDBStorage implements StorageProvider {
 		return data || null;
 	}
 
+	async saveTransactions(userId: string, items: Transaction[]): Promise<void> {
+		if (!localDB) return;
+		await localDB.transactions.put({ userId, items });
+	}
+
+	async loadTransactions(userId: string): Promise<Transaction[]> {
+		if (!localDB) return [];
+		const data = await localDB.transactions.get(userId);
+		return data?.items || [];
+	}
+
 	async saveHistory(userId: string, points: HistoryPoint[]): Promise<void> {
 		if (!localDB) return;
 		await localDB.history.put({ id: userId, points });
@@ -79,23 +95,27 @@ export class LocalDBStorage implements StorageProvider {
 		if (!localDB) return null;
 		const userData = await localDB.userData.toArray();
 		const history = await localDB.history.toArray();
-		return { userData, history };
+		const transactions = await localDB.transactions.toArray();
+		return { userData, history, transactions };
 	}
 	async importAllData(data: any): Promise<void> {
 		if (!localDB || !data) return;
-		await localDB.transaction('rw', localDB.userData, localDB.history, async () => {
+		await localDB.transaction('rw', localDB.userData, localDB.history, localDB.transactions, async () => {
 			await localDB.userData.clear();
 			await localDB.history.clear();
+			await localDB.transactions.clear();
 			if (data.userData?.length) await localDB.userData.bulkPut(data.userData);
 			if (data.history?.length) await localDB.history.bulkPut(data.history);
+			if (data.transactions?.length) await localDB.transactions.bulkPut(data.transactions);
 		});
 	}
 
 	async deleteAccount(): Promise<void> {
 		if (!localDB) return;
-		await localDB.transaction('rw', localDB.userData, localDB.history, async () => {
+		await localDB.transaction('rw', localDB.userData, localDB.history, localDB.transactions, async () => {
 			await localDB.userData.clear();
 			await localDB.history.clear();
+			await localDB.transactions.clear();
 		});
 		localStorage.clear();
 	}

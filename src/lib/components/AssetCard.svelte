@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { portfolio } from '$lib/stores/portfolio.svelte';
-	import type { PortfolioPosition } from '$lib/types';
+	import type { PortfolioPosition, HoldingData } from '$lib/types';
 	import { formatCurrency, formatPrice, formatPercent, isMarketOpen, formatDateTime } from '$lib/utils';
+	import LedgerModal from './LedgerModal.svelte';
 
 	interface Props {
 		position: PortfolioPosition;
-		onUpdateHolding: (ticker: string, data: { shares?: number; avgCost?: number }) => void;
+		onUpdateHolding: (ticker: string, data: Partial<HoldingData>) => void;
 		onUpdatePrice: (ticker: string, price: number) => void;
 	}
 
@@ -16,6 +17,9 @@
 	
 	let isEditingAvgCost = $state(false);
 	let editAvgCostValue = $state('');
+	let showLedger = $state(false);
+
+	const useLedger = $derived(portfolio.holdings[position.asset.ticker]?.useLedger ?? false);
 
 	// Filtro de rendimiento seleccionado
 	let perfFilter = $state<'YTD' | 'MTD' | '1M'>('YTD');
@@ -50,6 +54,7 @@
 	const currencySymbol = $derived(assetCurrency === 'USD' ? '$' : '€');
 
 	function handleHoldingsInput(e: Event) {
+		if (useLedger) return;
 		const target = e.target as HTMLInputElement;
 		editHoldingsValue = target.value;
 		isEditingHoldings = true;
@@ -62,6 +67,7 @@
 	}
 
 	function handleAvgCostInput(e: Event) {
+		if (useLedger) return;
 		const target = e.target as HTMLInputElement;
 		editAvgCostValue = target.value;
 		isEditingAvgCost = true;
@@ -74,17 +80,23 @@
 	}
 
 	function handleHoldingsFocus(e: Event) {
+		if (useLedger) return;
 		const target = e.target as HTMLInputElement;
 		editHoldingsValue = target.value;
 		isEditingHoldings = true;
 	}
 
 	function handleAvgCostFocus(e: Event) {
+		if (useLedger) return;
 		const target = e.target as HTMLInputElement;
 		editAvgCostValue = target.value;
 		isEditingAvgCost = true;
 	}
 </script>
+
+{#if showLedger}
+	<LedgerModal asset={position.asset} onClose={() => showLedger = false} />
+{/if}
 
 <div class="asset-card" style="--accent: {position.asset.color}">
 	<div class="card-header">
@@ -99,8 +111,15 @@
 						<span class="ticker" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; max-width: 75%;">
 							{position.asset.ticker}
 						</span>
-						<div class="target-badge">
-							{position.asset.targetWeight * 100 % 1 === 0 ? formatPercent(position.asset.targetWeight, 0) : formatPercent(position.asset.targetWeight, 1)}
+						<div class="ticker-badges">
+							{#if useLedger}
+								<button class="ledger-badge active" onclick={() => showLedger = true} title="Modo Ledger activo (haz clic para ver historial)">
+									📜
+								</button>
+							{/if}
+							<div class="target-badge">
+								{position.asset.targetWeight * 100 % 1 === 0 ? formatPercent(position.asset.targetWeight, 0) : formatPercent(position.asset.targetWeight, 1)}
+							</div>
 						</div>
 					</div>
 					<h3 class="asset-name" title={position.asset.name}>{position.asset.name}</h3>
@@ -147,6 +166,7 @@
 						step="0.001"
 						placeholder="0"
 						inputmode="decimal"
+						readonly={useLedger}
 					/>
 				</div>
 			</div>
@@ -167,6 +187,7 @@
 						step="0.01"
 						placeholder="0.00"
 						inputmode="decimal"
+						readonly={useLedger}
 					/>
 					<span class="input-suffix">{currencySymbol}</span>
 				</div>
@@ -483,6 +504,35 @@
 		line-height: 1;
 	}
 
+	.ticker-badges {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+	}
+
+	.ledger-badge {
+		background: rgba(167, 139, 250, 0.1);
+		color: #a78bfa;
+		border: 1px solid rgba(167, 139, 250, 0.2);
+		padding: 0.15rem 0.35rem;
+		border-radius: 6px;
+		font-size: 0.7rem;
+		cursor: pointer;
+		transition: all 0.2s;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.ledger-badge:hover {
+		background: rgba(167, 139, 250, 0.2);
+		transform: scale(1.1);
+	}
+
+	.ledger-badge.active {
+		box-shadow: 0 0 10px rgba(167, 139, 250, 0.2);
+	}
+
 	.card-body {
 		display: flex;
 		flex-direction: column;
@@ -526,6 +576,14 @@
 		font-weight: 600;
 		transition: all 0.2s;
 		outline: none;
+	}
+
+	:global(.modern-input[readonly]) {
+		opacity: 0.5;
+		cursor: default;
+		background: rgba(167, 139, 250, 0.05) !important;
+		border-color: rgba(167, 139, 250, 0.1) !important;
+		color: #a78bfa !important;
 	}
 
 	.modern-input:focus {

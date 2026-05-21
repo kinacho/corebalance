@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { portfolio } from '$lib/stores/portfolio.svelte';
-	import type { PortfolioPosition } from '$lib/types';
+	import type { PortfolioPosition, HoldingData } from '$lib/types';
 	import { formatCurrency, formatPrice, formatPercent, isMarketOpen } from '$lib/utils';
+	import LedgerModal from './LedgerModal.svelte';
 
 	interface Props {
 		position: PortfolioPosition;
-		onUpdateHolding: (ticker: string, data: { shares?: number; avgCost?: number }) => void;
+		onUpdateHolding: (ticker: string, data: Partial<HoldingData>) => void;
 	}
 
 	let { position, onUpdateHolding }: Props = $props();
@@ -15,17 +16,21 @@
 	
 	let isEditingAvgCost = $state(false);
 	let editAvgCostValue = $state('');
+	let showLedger = $state(false);
+
+	const useLedger = $derived(portfolio.holdings[position.asset.ticker]?.useLedger ?? false);
 
 	// Filtro de rendimiento seleccionado
 	let perfFilter = $state<'YTD' | 'MTD' | '1M'>('YTD');
 
-	const displayHoldings = $derived(position.holdings.toString());
-	const displayAvgCost = $derived(position.avgCost.toString());
+	const displayHoldings = $derived((Math.round(position.holdings * 1000) / 1000).toString());
+	const displayAvgCost = $derived((Math.round(position.avgCost * 1000) / 1000).toString());
 
 	const assetCurrency = $derived(portfolio.prices[position.asset.ticker]?.currency || 'EUR');
 	const currencySymbol = $derived(assetCurrency === 'USD' ? '$' : '€');
 
 	function handleHoldingsInput(e: Event) {
+		if (useLedger) return;
 		const target = e.target as HTMLInputElement;
 		editHoldingsValue = target.value;
 		isEditingHoldings = true;
@@ -38,6 +43,7 @@
 	}
 
 	function handleAvgCostInput(e: Event) {
+		if (useLedger) return;
 		const target = e.target as HTMLInputElement;
 		editAvgCostValue = target.value;
 		isEditingAvgCost = true;
@@ -50,24 +56,33 @@
 	}
 
 	function handleHoldingsFocus(e: Event) {
+		if (useLedger) return;
 		const target = e.target as HTMLInputElement;
 		editHoldingsValue = target.value;
 		isEditingHoldings = true;
 	}
 
 	function handleAvgCostFocus(e: Event) {
+		if (useLedger) return;
 		const target = e.target as HTMLInputElement;
 		editAvgCostValue = target.value;
 		isEditingAvgCost = true;
 	}
 </script>
 
-<div class="compact-row">
+{#if showLedger}
+	<LedgerModal asset={position.asset} onClose={() => showLedger = false} />
+{/if}
+
+<div class="compact-row" class:ledger-active={useLedger}>
 	<div class="cell-identity">
-		<div class="asset-icon">
+		<button class="asset-icon" onclick={() => showLedger = true} title={useLedger ? 'Modo Ledger activo' : 'Ver transacciones'}>
 			{position.asset.icon}
 			<span class="market-dot" class:open={isMarketOpen(position.asset.ticker, position.marketState)} class:closed={!isMarketOpen(position.asset.ticker, position.marketState)} title={position.marketState || 'Estado desconocido'}></span>
-		</div>
+			{#if useLedger}
+				<span class="ledger-indicator">📜</span>
+			{/if}
+		</button>
 		<div class="asset-names">
 			<span class="asset-ticker">
 				{position.asset.ticker.split('.')[0]}
@@ -88,6 +103,7 @@
 				onfocus={handleHoldingsFocus}
 				onwheel={(e) => e.preventDefault()}
 				min="0" step="0.001" placeholder="0" inputmode="decimal"
+				readonly={useLedger}
 			/>
 		</div>
 		<div class="input-mini">
@@ -102,6 +118,7 @@
 					onfocus={handleAvgCostFocus}
 					onwheel={(e) => e.preventDefault()}
 					min="0" step="0.01" placeholder="0.00" inputmode="decimal"
+					readonly={useLedger}
 				/>
 			</div>
 		</div>
@@ -199,12 +216,36 @@
 		width: 32px;
 		height: 32px;
 		background: rgba(0,0,0,0.3);
+		border: 1px solid rgba(255,255,255,0.1);
 		border-radius: 8px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		flex-shrink: 0;
 		position: relative;
+		cursor: pointer;
+		padding: 0;
+		color: inherit;
+	}
+
+	.asset-icon:hover {
+		background: rgba(255,255,255,0.05);
+		border-color: rgba(255,255,255,0.2);
+	}
+
+	.ledger-indicator {
+		position: absolute;
+		top: -6px;
+		right: -6px;
+		font-size: 0.7rem;
+		filter: drop-shadow(0 0 2px rgba(0,0,0,0.5));
+	}
+
+	.ledger-active .input-mini input {
+		opacity: 0.5;
+		background: rgba(167, 139, 250, 0.05);
+		color: #a78bfa;
+		border-color: rgba(167, 139, 250, 0.1);
 	}
 
 	.asset-icon :global(.market-dot) {
