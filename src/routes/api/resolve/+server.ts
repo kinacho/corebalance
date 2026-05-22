@@ -2,7 +2,10 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import YahooFinance from 'yahoo-finance2';
 
-const yahooFinance = new YahooFinance({ suppressNotices: ['yahooSurvey', 'ripHistorical'] });
+const yahooFinance = new YahooFinance({ 
+	suppressNotices: ['yahooSurvey', 'ripHistorical'],
+	validation: { logErrors: false }
+});
 
 // Rate limiting
 const resolveLimitMap = new Map<string, number[]>();

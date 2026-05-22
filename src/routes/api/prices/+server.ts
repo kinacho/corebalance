@@ -9,7 +9,10 @@ const redis = (env.KV_REST_API_URL && env.KV_REST_API_TOKEN)
 	? new Redis({ url: env.KV_REST_API_URL, token: env.KV_REST_API_TOKEN })
 	: null;
 
-const yahooFinance = new YahooFinance({ suppressNotices: ['yahooSurvey', 'ripHistorical'] });
+const yahooFinance = new YahooFinance({ 
+	suppressNotices: ['yahooSurvey', 'ripHistorical'],
+	validation: { logErrors: false }
+});
 
 // Fallback en memoria para desarrollo local si no hay KV configurado
 const historyCache: Record<string, { timestamp: number, sparkline: number[], ytd?: number, mtd?: number, oneMonth?: number }> = {};

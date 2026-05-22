@@ -1,6 +1,9 @@
 import YahooFinance from 'yahoo-finance2';
 
-const yahooFinance = new YahooFinance({ suppressNotices: ['yahooSurvey', 'ripHistorical'] });
+const yahooFinance = new YahooFinance({ 
+	suppressNotices: ['yahooSurvey', 'ripHistorical'],
+	validation: { logErrors: false }
+});
 
 async function test() {
 	const ticker = '0P0001XF3Z.F';
