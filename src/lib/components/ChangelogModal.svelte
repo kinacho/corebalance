@@ -11,26 +11,39 @@
 	onDestroy(() => {
 		document.body.classList.remove('modal-open');
 	});
-
-	const releases = [
-		{
-			version: 'v1.4.0',
-			date: '21 de Mayo, 2026',
-			badge: 'Interactividad y Análisis',
-			badgeColor: '#a855f7',
-			changes: [
-				'📜 **Sistema de Ledger (Libro de Operaciones):** Nuevo motor profesional para registrar compras, ventas, dividendos y traspasos con cálculo automático de precio medio y participaciones.',
-				'🔢 **Precisión Decimal y Redondeo Robusto:** Soporte completo para pesos objetivos con decimales (ej. 7.5%) en sliders y entradas numéricas con compensación proporcional y redondeo robusto.',
-				'📈 **Visualizador Comparativo de Pesos:** Nuevo panel "Convergencia de Pesos" con barras comparativas antes/después y desviaciones dinámicas en el módulo de rebalanceo.',
-				'📊 **Proyecciones con Base Personalizada:** Selector dinámico de simulación con pildoras interactivas para alternar entre "Cartera Real" y "Capital Personalizado".',
-				'📉 **Crisis Simulator Educativo e Histórico:** Reemplazo de presets genéricos por 3 grandes crisis históricas reales (DotCom, Lehman, COVID) con tarjetas educativas de impacto DCA.',
-				'🔒 **Candados y Avisos de Bloqueo:** Corrección de warnings ante bloqueos absolutos de compensación utilizando toasts nativos de tipo error.',
-				'🎓 **Tutorial Renovado y Persistente:** Mejoras en los pasos del tour de bienvenida y nuevo botón en el pie de página para repetirlo en cualquier momento.',
-				'🚫 **Bloqueo de Scroll en Modales:** Implementado sistema de scroll-lock para que al abrir un modal el fondo de la web quede estático.',
-				'📊 **Gráfica de Historia Simplificada:** Por defecto ahora solo se muestra la línea de "Total", manteniendo la personalización del usuario entre sesiones.',
-				'🐛 **Corrección de Sliders Dinámicos y A11y:** Resuelto el bug del simulador de crisis donde el capital inicial aumentaba al infinito al deslizar, y eliminadas advertencias del compilador.'
-			]
-		},
+const releases = [
+	{
+		version: 'v1.5.0',
+		date: '22 de Mayo, 2026',
+		badge: 'Cuentas Remuneradas y CSV',
+		badgeColor: '#eab308',
+		changes: [
+			'🏦 **Cuentas Remuneradas:** Ahora puedes añadir activos "Cash" (efectivo) en la Cartera Conservadora con interés TIN configurable para simular cuentas de ahorro.',
+			'📄 **Rediseño de Importación CSV:** Nuevo sistema de importación universal con mapeo manual obligatorio, eliminando la detección automática para garantizar fiabilidad total.',
+			'🛠️ **Resolución Manual de Tickers:** En caso de que Yahoo Finance no encuentre un activo, puedes editar manualmente el ticker en la previsualización.',
+			'⚡ **Resiliencia API:** Actualización de `yahoo-finance2` a v3.14.1 y supresión de logs de validación para evitar errores por cambios en el esquema de Yahoo.',
+			'✍️ **Personalización de Activos:** Ahora es posible editar el nombre de cualquier activo para identificar mejor tus cuentas o brókers.',
+			'📉 **Heurística de Decimales:** Mejora en el parseo de números del CSV detectando automáticamente separadores (punto vs coma) de forma inteligente.'
+		]
+	},
+	{
+		version: 'v1.4.0',
+		date: '21 de Mayo, 2026',
+		badge: 'Interactividad y Análisis',
+		badgeColor: '#a855f7',
+		changes: [
+			'📜 **Sistema de Ledger (Libro de Operaciones):** Nuevo motor profesional para registrar compras, ventas, dividendos y traspasos con cálculo automático de precio medio y participaciones.',
+			'🔢 **Precisión Decimal y Redondeo Robusto:** Soporte completo para pesos objetivos con decimales (ej. 7.5%) en sliders y entradas numéricas con compensación proporcional y redondeo robusto.',
+			'📈 **Visualizador Comparativo de Pesos:** Nuevo panel "Convergencia de Pesos" con barras comparativas antes/después y desviaciones dinámicas en el módulo de rebalanceo.',
+			'📊 **Proyecciones con Base Personalizada:** Selector dinámico de simulación con pildoras interactivas para alternar entre "Cartera Real" y "Capital Personalizado".',
+			'📉 **Crisis Simulator Educativo e Histórico:** Reemplazo de presets genéricos por 3 grandes crisis históricas reales (DotCom, Lehman, COVID) con tarjetas educativas de impacto DCA.',
+			'🔒 **Candados y Avisos de Bloqueo:** Corrección de warnings ante bloqueos absolutos de compensación utilizando toasts nativos de tipo error.',
+			'🎓 **Tutorial Renovado y Persistente:** Mejoras en los pasos del tour de bienvenida y nuevo botón en el pie de página para repetirlo en cualquier momento.',
+			'🚫 **Bloqueo de Scroll en Modales:** Implementado sistema de scroll-lock para que al abrir un modal el fondo de la web quede estático.',
+			'📊 **Gráfica de Historia Simplificada:** Por defecto ahora solo se muestra la línea de "Total", manteniendo la personalización del usuario entre sesiones.',
+			'🐛 **Corrección de Sliders Dinámicos y A11y:** Resuelto el bug del simulador de crisis donde el capital inicial aumentaba al infinito al deslizar, y eliminadas advertencias del compilador.'
+		]
+	},
 		{
 			version: 'v1.3.0',
 			date: '21 de Mayo, 2026',

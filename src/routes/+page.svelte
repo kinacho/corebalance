@@ -324,7 +324,7 @@
       </div>
 
       <div class="footer-copyright">
-        <p>© {new Date().getFullYear()} CoreBalance · Hecho con ❤️ para la comunidad inversora · <button class="changelog-badge-btn" onclick={() => showChangelog = true} title="Ver historial de cambios">v1.4.0 🚀</button> · <button class="tour-repeat-btn" onclick={restartTour} title="Repetir tutorial de bienvenida">🎓 Tutorial</button></p>
+        <p>© {new Date().getFullYear()} CoreBalance · Hecho con ❤️ para la comunidad inversora · <button class="changelog-badge-btn" onclick={() => showChangelog = true} title="Ver historial de cambios">v1.5.0 🚀</button> · <button class="tour-repeat-btn" onclick={restartTour} title="Repetir tutorial de bienvenida">🎓 Tutorial</button></p>
       </div>
     </footer>
   </main>
