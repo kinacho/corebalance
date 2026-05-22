@@ -10,6 +10,7 @@ export interface ToastMessage {
 class UIStore {
 	toasts = $state<ToastMessage[]>([]);
 	baseCurrency = $state<'EUR' | 'USD' | 'GBP'>('EUR');
+	deferredPrompt: any = $state(null);
 
 	constructor() {
 		if (typeof localStorage !== 'undefined') {

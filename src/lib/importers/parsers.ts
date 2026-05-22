@@ -3,7 +3,7 @@
  * Cada parser recibe headers + rows crudos y devuelve ParsedPosition[].
  */
 
-import type { BrokerInfo, ParsedPosition, ImportResult } from './types';
+import type { BrokerInfo, ParsedPosition, ImportResult, MappingConfig } from './types';
 import {
 	parseCSV, parseNumber, normalizeHeader,
 	findField, isValidISIN, extractISIN

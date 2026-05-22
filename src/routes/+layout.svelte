@@ -2,7 +2,9 @@
 	import './layout.css';
 	import SplashScreen from '$lib/components/SplashScreen.svelte';
 	import Toast from '$lib/components/Toast.svelte';
+	import InstallPrompt from '$lib/components/InstallPrompt.svelte';
 	import { portfolio } from '$lib/stores/portfolio.svelte';
+	import { ui } from '$lib/stores/ui.svelte';
 	import { onMount } from 'svelte';
 	import { dev } from '$app/environment';
 	import { injectAnalytics } from '@vercel/analytics/sveltekit';
@@ -13,6 +15,13 @@
 	onMount(() => {
 		injectAnalytics({ mode: dev ? 'development' : 'production' });
 		injectSpeedInsights();
+
+		if ((window as any).__deferredPrompt) {
+			ui.deferredPrompt = (window as any).__deferredPrompt;
+		}
+		window.addEventListener('pwa-prompt-ready', () => {
+			ui.deferredPrompt = (window as any).__deferredPrompt;
+		});
 	});
 </script>
 
@@ -36,3 +45,4 @@
 {@render children()}
 
 <Toast />
+<InstallPrompt />

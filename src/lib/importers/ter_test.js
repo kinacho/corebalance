@@ -23,8 +23,10 @@ async function test() {
 		const summary1 = await yahooFinance.quoteSummary(ticker1, {
 			modules: ['defaultKeyStatistics', 'fundProfile', 'summaryDetail']
 		}, { validateResult: false });
-		console.log('ticker1 summaryDetail.expenseRatio:', summary1.summaryDetail?.expenseRatio);
-		console.log('ticker1 defaultKeyStatistics.annualReportExpenseRatio:', summary1.defaultKeyStatistics?.annualReportExpenseRatio);
+		/** @type {any} */
+		const s1 = summary1;
+		console.log('ticker1 summaryDetail.expenseRatio:', s1.summaryDetail?.expenseRatio);
+		console.log('ticker1 defaultKeyStatistics.annualReportExpenseRatio:', s1.defaultKeyStatistics?.annualReportExpenseRatio);
 	} catch (e) {
 		console.error('Error summary detail:', e);
 	}
@@ -34,8 +36,10 @@ async function test() {
 		const summary2 = await yahooFinance.quoteSummary(ticker2, {
 			modules: ['defaultKeyStatistics', 'fundProfile', 'summaryDetail']
 		}, { validateResult: false });
-		console.log('ticker2 summaryDetail.expenseRatio:', summary2.summaryDetail?.expenseRatio);
-		console.log('ticker2 defaultKeyStatistics.annualReportExpenseRatio:', summary2.defaultKeyStatistics?.annualReportExpenseRatio);
+		/** @type {any} */
+		const s2 = summary2;
+		console.log('ticker2 summaryDetail.expenseRatio:', s2.summaryDetail?.expenseRatio);
+		console.log('ticker2 defaultKeyStatistics.annualReportExpenseRatio:', s2.defaultKeyStatistics?.annualReportExpenseRatio);
 	} catch (e) {
 		console.error('Error summary2:', e);
 	}

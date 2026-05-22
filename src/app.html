@@ -15,6 +15,19 @@
 		<link rel="apple-touch-icon" href="/pwa-192x192.png" />
 		<link rel="manifest" href="/manifest.webmanifest" />
 		<link rel="icon" href="/favicon.png" />
+		<script>
+			window.__deferredPrompt = null;
+			window.addEventListener('beforeinstallprompt', (e) => {
+				e.preventDefault();
+				window.__deferredPrompt = e;
+				window.dispatchEvent(new CustomEvent('pwa-prompt-ready'));
+				console.log('✅ beforeinstallprompt capturado');
+			});
+			window.addEventListener('appinstalled', () => {
+				window.__deferredPrompt = null;
+				console.log('✅ PWA instalada');
+			});
+		</script>
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">

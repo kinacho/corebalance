@@ -149,17 +149,16 @@ export const GET: RequestHandler = async ({ url, getClientAddress }) => {
 	// 1. Filtrar tickers manuales (CASH-*)
 	const realTickers = tickers.filter(t => !t.startsWith('CASH-'));
 	const cashTickers = tickers.filter(t => t.startsWith('CASH-'));
-
-	// Pre-llenar resultados para tickers manuales
-	for (const t of cashTickers) {
-		prices[t] = {
-			ticker: t,
-			price: 1.0,
-			currency: 'EUR',
-			change: 0,
-			lastUpdate: new Date().toISOString()
-		};
-	}
+// Pre-llenar resultados para tickers manuales
+for (const t of cashTickers) {
+	prices[t] = {
+		price: 1.0,
+		currency: 'EUR',
+		name: t,
+		change: 0 as number,
+		lastUpdate: Date.now()
+	};
+}
 
 	if (realTickers.length === 0) {
 		return json({ prices, timestamp: new Date().toISOString(), errors });
