@@ -167,6 +167,13 @@ const trading212Detector: BrokerDetector = {
 		for (const row of rows) {
 			try {
 				const action = findField(headers, row, 'Action').toLowerCase();
+				
+				// Solo procesar operaciones de compra/venta que afectan a activos
+				if (!action.includes('buy') && !action.includes('sell')) {
+					skipped++;
+					continue;
+				}
+
 				const isin = findField(headers, row, 'ISIN');
 				const ticker = findField(headers, row, 'Ticker');
 				const name = findField(headers, row, 'Name');
@@ -180,7 +187,7 @@ const trading212Detector: BrokerDetector = {
 				}
 				
 				// Determinar dirección: positivo para compras, negativo para ventas
-				const isBuy = action.includes('buy') || action.includes('market buy') || action.includes('limit buy');
+				const isBuy = action.includes('buy');
 				const multiplier = isBuy ? 1 : -1;
 				
 				const existing = accumulated.get(isin);
@@ -203,13 +210,13 @@ const trading212Detector: BrokerDetector = {
 		}
 		
 		for (const [isin, data] of accumulated) {
-			if (data.shares > 0) {
+			if (data.shares > 0.0001) {
 				positions.push({
 					isin,
 					ticker: data.ticker,
 					name: data.name,
 					shares: data.shares,
-					avgCost: data.totalCost / data.shares,
+					avgCost: data.shares > 0 ? (data.totalCost / data.shares) : 0,
 					currency: data.currency,
 				});
 			}
@@ -357,7 +364,7 @@ const myinvestorDetector: BrokerDetector = {
 		
 		for (const row of rows) {
 			try {
-				// Ignorar transacciones que no estén finalizadas o ejecutadas si existe la columna de estado
+				// Ignorar transacciones que no estén finalizadas o ejecutadas
 				const estado = findField(headers, row, 'Estado').toLowerCase();
 				if (estado && !estado.includes('finalizada') && !estado.includes('ejecutad')) {
 					skipped++;
@@ -366,6 +373,7 @@ const myinvestorDetector: BrokerDetector = {
 
 				let isin = findField(headers, row, 'ISIN', 'Código ISIN', 'Codigo ISIN');
 				const name = findField(headers, row, 'Nombre fondo', 'Nombre del fondo', 'Producto', 'Nombre', 'Descripción');
+				const tipoOp = findField(headers, row, 'Tipo operación').toLowerCase();
 				
 				// Extraer ISIN del nombre si no hay campo dedicado
 				if (!isValidISIN(isin) && name) {
@@ -381,28 +389,31 @@ const myinvestorDetector: BrokerDetector = {
 				const shares = parseNumber(findField(headers, row,
 					'Participaciones', 'Títulos', 'Titulos', 'Cantidad', 'participaciones'));
 				
-				let avgCost = parseNumber(findField(headers, row,
-					'Precio medio', 'Coste medio', 'Precio de compra', 'VL compra', 'Valor liquidativo compra'));
+				// Determinar dirección: positivo para suscripciones/traspasos entrada, negativo para reembolsos/traspasos salida
+				const isIncrease = tipoOp.includes('suscripcion') || tipoOp.includes('traspaso entrada');
+				const multiplier = isIncrease ? 1 : -1;
 				
 				const importeTotal = parseNumber(findField(headers, row,
-					'Importe estimado', 'Importe', 'Valoracion', 'Valoración'));
+					'Importe neto', 'Importe bruto', 'Importe', 'Valoracion', 'Valoración'));
 
-				// Si no hay coste medio pero tenemos importe total y participaciones, lo calculamos
-				if (avgCost === 0 && importeTotal > 0 && shares > 0) {
-					avgCost = importeTotal / shares;
+				// Calculamos coste unitario si es suscripción
+				let costPerShare = 0;
+				if (isIncrease && shares > 0) {
+					costPerShare = importeTotal / shares;
 				}
-				
-				if (shares <= 0) { skipped++; continue; }
-				
+
 				const existing = accumulated.get(isin);
 				if (existing) {
-					existing.shares += shares;
-					existing.totalCost += shares * avgCost;
+					existing.shares += (shares * multiplier);
+					// Solo ajustamos coste si es compra/entrada
+					if (isIncrease) {
+						existing.totalCost += (shares * costPerShare);
+					}
 				} else {
 					accumulated.set(isin, {
 						name: name || isin,
-						shares,
-						totalCost: shares * avgCost,
+						shares: (shares * multiplier),
+						totalCost: isIncrease ? (shares * costPerShare) : 0,
 						currency: 'EUR',
 					});
 				}
@@ -412,13 +423,15 @@ const myinvestorDetector: BrokerDetector = {
 		}
 		
 		for (const [isin, data] of accumulated) {
-			positions.push({
-				isin,
-				name: data.name,
-				shares: data.shares,
-				avgCost: data.totalCost / data.shares,
-				currency: data.currency,
-			});
+			if (data.shares > 0.0001) { // Pequeño margen para errores de redondeo
+				positions.push({
+					isin,
+					name: data.name,
+					shares: data.shares,
+					avgCost: data.shares > 0 ? (data.totalCost / data.shares) : 0,
+					currency: data.currency,
+				});
+			}
 		}
 		
 		return { positions, warnings, skipped };

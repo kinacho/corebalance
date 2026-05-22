@@ -34,3 +34,9 @@ src/setupTest.ts
 vitest.config.ts
 playwright.config.ts
 
+training/trading212_transactions.csv
+training/README.md
+training/myinvestor_movimientos.csv
+training/interactive_brokers_activity.csv
+training/degiro_transactions.csv
+training/degiro_account_statement.csv
