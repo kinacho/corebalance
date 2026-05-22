@@ -31,7 +31,7 @@ export function calculatePortfolioState(
 		const profit = totalValue - totalCost;
 		const profitPercent = totalCost > 0 ? profit / totalCost : 0;
 		
-		const changePercent = pData?.change ?? 0;
+		const changePercent = asset.manualInterestRate !== undefined ? (asset.manualInterestRate * 100 / 365) : (pData?.change ?? 0);
 		const dailyChangeValue = totalValue * (changePercent / 100);
 		const dailyChangePercent = changePercent / 100;
 		
@@ -48,7 +48,7 @@ export function calculatePortfolioState(
 			dailyChangePercent,
 			marketState: pData?.marketState,
 			lastUpdate: pData?.lastUpdate,
-			ytdChangePercent: pData?.ytdChangePercent !== undefined ? (pData.ytdChangePercent / 100) : undefined,
+			ytdChangePercent: asset.manualInterestRate !== undefined ? (asset.manualInterestRate / 1) : (pData?.ytdChangePercent !== undefined ? (pData.ytdChangePercent / 100) : undefined),
 			mtdChangePercent: pData?.mtdChangePercent !== undefined ? (pData.mtdChangePercent / 100) : undefined,
 			oneMonthChangePercent: pData?.oneMonthChangePercent !== undefined ? (pData.oneMonthChangePercent / 100) : undefined,
 			sparkline: pData?.sparkline

@@ -24,13 +24,17 @@
 	// Filtro de rendimiento seleccionado
 	let perfFilter = $state<'YTD' | 'MTD' | '1M'>('YTD');
 
-	const displayHoldings = $derived((Math.round(position.holdings * 1000) / 1000).toString());
+	const isCash = $derived(position.asset.ticker.startsWith('CASH-'));
+
+	const displayHoldings = $derived((Math.round(position.holdings * 100) / 100).toString());
 	const displayAvgCost = $derived((Math.round(position.avgCost * 1000) / 1000).toString());
 
 	const currentPerfValue = $derived(
-		perfFilter === 'YTD' ? position.ytdChangePercent 
-		: perfFilter === 'MTD' ? position.mtdChangePercent 
-		: position.oneMonthChangePercent
+		isCash ? position.asset.manualInterestRate : (
+			perfFilter === 'YTD' ? position.ytdChangePercent 
+			: perfFilter === 'MTD' ? position.mtdChangePercent 
+			: position.oneMonthChangePercent
+		)
 	);
 
 
@@ -103,7 +107,9 @@
 		<div class="asset-identity" style="min-width: 0;">
 			<div class="asset-icon-wrapper">
 				<span class="asset-icon">{position.asset.icon}</span>
-				<span class="market-dot" class:open={isMarketOpen(position.asset.ticker, position.marketState)} class:closed={!isMarketOpen(position.asset.ticker, position.marketState)} title={position.marketState || 'Estado desconocido'}></span>
+				{#if !isCash}
+					<span class="market-dot" class:open={isMarketOpen(position.asset.ticker, position.marketState)} class:closed={!isMarketOpen(position.asset.ticker, position.marketState)} title={position.marketState || 'Estado desconocido'}></span>
+				{/if}
 			</div>
 			<div class="asset-info" style="min-width: 0; flex: 1;">
 				<div class="header-main" style="min-width: 0;">
@@ -122,10 +128,14 @@
 					<h3 class="asset-name" title={position.asset.name}>{position.asset.name}</h3>
 				</div>
 				<div class="asset-meta">
-					<span class="asset-isin">{position.asset.isin}</span>
-					<span class="asset-divider">•</span>
-					<span class="asset-ter" title="Total Expense Ratio">{formatPercent(position.asset.ter)} TER</span>
-					{#if position.lastUpdate}
+					{#if isCash}
+						<span class="asset-ter" title="Interés Anual Remunerado">{formatPercent(position.asset.manualInterestRate ?? 0)} TIN</span>
+					{:else}
+						<span class="asset-isin">{position.asset.isin}</span>
+						<span class="asset-divider">•</span>
+						<span class="asset-ter" title="Total Expense Ratio">{formatPercent(position.asset.ter)} TER</span>
+					{/if}
+					{#if position.lastUpdate && !isCash}
 						<span class="asset-divider">•</span>
 						<span class="asset-time">{formatDateTime(position.lastUpdate)}</span>
 					{/if}
@@ -149,9 +159,11 @@
 	</div>
 
 	<div class="card-body">
-		<div class="inputs-grid">
-			<div class="input-field">
-				<label class="field-label" for="holdings-{position.asset.ticker}">Participaciones</label>
+		<div class="inputs-grid" style={isCash ? 'grid-template-columns: 1fr;' : ''}>
+			<div class="input-field" style={isCash ? 'grid-column: span 2;' : ''}>
+				<label class="field-label" for="holdings-{position.asset.ticker}">
+					{isCash ? 'Saldo en cuenta' : 'Participaciones'}
+				</label>
 				<div class="input-wrapper">
 					<input
 						id="holdings-{position.asset.ticker}"
@@ -163,60 +175,65 @@
 						onfocus={handleHoldingsFocus}
 						onwheel={(e) => e.preventDefault()}
 						min="0"
-						step="0.001"
+						step={isCash ? "0.01" : "0.001"}
 						placeholder="0"
 						inputmode="decimal"
 						readonly={useLedger}
 					/>
+					{#if isCash}<span class="input-suffix" style="opacity: 1; color: #fff;">€</span>{/if}
 				</div>
 			</div>
 			
-			<div class="input-field">
-				<label class="field-label" for="avgcost-{position.asset.ticker}">Coste Medio</label>
-				<div class="input-wrapper">
-					<input
-						id="avgcost-{position.asset.ticker}"
-						type="number"
-						class="modern-input"
-						value={isEditingAvgCost ? editAvgCostValue : displayAvgCost}
-						oninput={handleAvgCostInput}
-						onblur={() => (isEditingAvgCost = false)}
-						onfocus={handleAvgCostFocus}
-						onwheel={(e) => e.preventDefault()}
-						min="0"
-						step="0.01"
-						placeholder="0.00"
-						inputmode="decimal"
-						readonly={useLedger}
-					/>
-					<span class="input-suffix">{currencySymbol}</span>
+			{#if !isCash}
+				<div class="input-field">
+					<label class="field-label" for="avgcost-{position.asset.ticker}">Coste Medio</label>
+					<div class="input-wrapper">
+						<input
+							id="avgcost-{position.asset.ticker}"
+							type="number"
+							class="modern-input"
+							value={isEditingAvgCost ? editAvgCostValue : displayAvgCost}
+							oninput={handleAvgCostInput}
+							onblur={() => (isEditingAvgCost = false)}
+							onfocus={handleAvgCostFocus}
+							onwheel={(e) => e.preventDefault()}
+							min="0"
+							step="0.01"
+							placeholder="0.00"
+							inputmode="decimal"
+							readonly={useLedger}
+						/>
+						<span class="input-suffix">{currencySymbol}</span>
+					</div>
 				</div>
-			</div>
+			{/if}
 		</div>
 
 		<!-- Compact stats -->
-		<div class="metrics-row">
-			<div class="metric">
-				<span class="metric-label">Precio</span>
-				<div class="metric-content">
-					{#if position.unitPrice > 0}
-						<span class="metric-value">{formatPrice(portfolio.prices[position.asset.ticker]?.price || 0, assetCurrency)}</span>
-					{:else}
-						<input 
-							type="number" 
-							class="price-ghost-input" 
-							placeholder={`0.00 ${currencySymbol}`} 
-							onwheel={(e) => e.preventDefault()}
-							oninput={(e) => {
-								const val = parseFloat((e.target as HTMLInputElement).value);
-								if (!isNaN(val)) onUpdatePrice(position.asset.ticker, val);
-							}}
-						/>
-					{/if}
+		<div class="metrics-row" style={isCash ? 'grid-template-columns: repeat(3, 1fr);' : ''}>
+			{#if !isCash}
+				<div class="metric">
+					<span class="metric-label">Precio</span>
+					<div class="metric-content">
+						{#if position.unitPrice > 0}
+							<span class="metric-value">{formatPrice(portfolio.prices[position.asset.ticker]?.price || 0, assetCurrency)}</span>
+						{:else}
+							<input 
+								type="number" 
+								class="price-ghost-input" 
+								placeholder={`0.00 ${currencySymbol}`} 
+								onwheel={(e) => e.preventDefault()}
+								oninput={(e) => {
+									const val = parseFloat((e.target as HTMLInputElement).value);
+									if (!isNaN(val)) onUpdatePrice(position.asset.ticker, val);
+								}}
+							/>
+						{/if}
+					</div>
 				</div>
-			</div>
+			{/if}
 			<div class="metric">
-				<span class="metric-label">Valor Total</span>
+				<span class="metric-label">{isCash ? 'Capital' : 'Valor Total'}</span>
 				<div class="metric-content">
 					<span class="metric-value highlight privacy-blur">{formatCurrency(position.totalValue, 'EUR')}</span>
 				</div>
@@ -237,17 +254,21 @@
 				class:positive={(currentPerfValue ?? 0) > 0} 
 				class:negative={(currentPerfValue ?? 0) < 0}
 				onclick={() => {
+					if (isCash) return;
 					if (perfFilter === 'YTD') perfFilter = 'MTD';
 					else if (perfFilter === 'MTD') perfFilter = '1M';
 					else perfFilter = 'YTD';
 				}}
-				title="Haz clic para cambiar entre YTD, MTD y 1M"
+				style={isCash ? 'cursor: default' : ''}
+				title={isCash ? 'Interés Anual' : 'Haz clic para cambiar entre YTD, MTD y 1M'}
 			>
 				<span class="metric-label">
-					{perfFilter}
-					<svg class="perf-icon" viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="3">
-						<path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
-					</svg>
+					{isCash ? 'Rendimiento' : perfFilter}
+					{#if !isCash}
+						<svg class="perf-icon" viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="3">
+							<path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+						</svg>
+					{/if}
 				</span>
 				<div class="metric-content">
 					<span class="profit-tag" style="margin-left: 0;">
@@ -257,18 +278,20 @@
 					</span>
 				</div>
 			</button>
-			<div class="metric pnl-metric" class:positive={position.profit > 0} class:negative={position.profit < 0}>
-				<span class="metric-label">Total</span>
-				<div class="metric-content">
-					<span class="metric-value privacy-blur">
-						{position.profit > 0 ? '+' : ''}{formatCurrency(position.profit, 'EUR')}
-					</span>
-					<span class="profit-tag">
-						{position.profit > 0 ? '+' : ''}{formatPercent(position.profitPercent)}
-					</span>
+			{#if !isCash}
+				<div class="metric pnl-metric" class:positive={position.profit > 0} class:negative={position.profit < 0}>
+					<span class="metric-label">Total</span>
+					<div class="metric-content">
+						<span class="metric-value privacy-blur">
+							{position.profit > 0 ? '+' : ''}{formatCurrency(position.profit, 'EUR')}
+						</span>
+						<span class="profit-tag">
+							{position.profit > 0 ? '+' : ''}{formatPercent(position.profitPercent)}
+						</span>
+					</div>
 				</div>
-			</div>
-			{#if position.asset.ter > 0}
+			{/if}
+			{#if position.asset.ter > 0 && !isCash}
 				<div class="metric cost-metric">
 					<span class="metric-label">Coste Est.</span>
 					<div class="metric-content">

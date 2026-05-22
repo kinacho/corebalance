@@ -501,11 +501,62 @@ const ALL_DETECTORS: BrokerDetector[] = [
 ];
 
 /**
+ * Parsea un CSV utilizando un mapeo manual de columnas definido por el usuario.
+ */
+export function importWithMapping(fileContent: string, mapping: MappingConfig): ImportResult {
+	const { headers, rows, delimiter } = parseCSV(fileContent);
+	const positions: ParsedPosition[] = [];
+	const warnings: string[] = [];
+	let skipped = 0;
+
+	for (const row of rows) {
+		try {
+			const shares = parseNumber(row[mapping.shares]);
+			if (shares === 0) { skipped++; continue; }
+
+			const isinRaw = mapping.isin !== undefined ? row[mapping.isin] : '';
+			const isin = isValidISIN(isinRaw) ? isinRaw.trim().toUpperCase() : '';
+			const ticker = mapping.ticker !== undefined ? row[mapping.ticker]?.trim() : undefined;
+			const name = mapping.name !== undefined ? row[mapping.name]?.trim() : (ticker || isin || 'Activo desconocido');
+			const avgCost = mapping.avgCost !== undefined ? parseNumber(row[mapping.avgCost]) : 0;
+			const currency = mapping.currency !== undefined ? row[mapping.currency]?.trim() || 'EUR' : 'EUR';
+
+			if (!isin && !ticker) {
+				skipped++;
+				continue;
+			}
+
+			positions.push({
+				isin,
+				ticker,
+				name,
+				shares,
+				avgCost,
+				currency
+			});
+		} catch {
+			skipped++;
+		}
+	}
+
+	return {
+		broker: { id: 'generic', name: 'Mapeo Manual', icon: '⚙️', confidence: 1 },
+		positions,
+		warnings,
+		skippedRows: skipped,
+		rawHeaders: headers,
+		rawRows: rows.slice(0, 10),
+		delimiter
+	};
+}
+
+/**
  * Punto de entrada principal: dado el contenido bruto de un archivo CSV,
+
  * detecta automáticamente el bróker y extrae las posiciones.
  */
 export function importFromCSV(fileContent: string): ImportResult {
-	const { headers, rows } = parseCSV(fileContent);
+	const { headers, rows, delimiter } = parseCSV(fileContent);
 	
 	if (headers.length === 0 || rows.length === 0) {
 		return {
@@ -545,5 +596,8 @@ export function importFromCSV(fileContent: string): ImportResult {
 		positions,
 		warnings,
 		skippedRows: skipped,
+		rawHeaders: headers,
+		rawRows: rows.slice(0, 10), // Guardar solo las primeras 10 para previsualización ligera
+		delimiter: delimiter,
 	};
 }

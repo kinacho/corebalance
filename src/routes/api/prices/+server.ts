@@ -146,10 +146,29 @@ export const GET: RequestHandler = async ({ url, getClientAddress }) => {
 	const errors: string[] = [];
 	const prices: Record<string, PriceData> = {};
 
+	// 1. Filtrar tickers manuales (CASH-*)
+	const realTickers = tickers.filter(t => !t.startsWith('CASH-'));
+	const cashTickers = tickers.filter(t => t.startsWith('CASH-'));
+
+	// Pre-llenar resultados para tickers manuales
+	for (const t of cashTickers) {
+		prices[t] = {
+			ticker: t,
+			price: 1.0,
+			currency: 'EUR',
+			change: 0,
+			lastUpdate: new Date().toISOString()
+		};
+	}
+
+	if (realTickers.length === 0) {
+		return json({ prices, timestamp: new Date().toISOString(), errors });
+	}
+
 	// 1. Obtener todas las cotizaciones de golpe (Bulk fetch) para mejorar rendimiento
 	let quotesResult: any[] = [];
 	try {
-		quotesResult = await yahooFinance.quote(tickers);
+		quotesResult = await yahooFinance.quote(realTickers);
 	} catch (error: any) {
 		console.error("Error en bulk quote:", error);
 		errors.push("Error general obteniendo cotizaciones: " + error.message);
@@ -172,7 +191,7 @@ export const GET: RequestHandler = async ({ url, getClientAddress }) => {
 		);
 	};
 
-	const chunks = chunkArray(tickers, 3);
+	const chunks = chunkArray(realTickers, 3);
 	const results: PromiseSettledResult<{ ticker: string, quote: any, sparkline: number[], ytd: number | undefined, mtd: number | undefined, oneMonth: number | undefined }>[] = [];
 
 	for (let i = 0; i < chunks.length; i++) {

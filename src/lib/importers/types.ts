@@ -25,6 +25,16 @@ export interface ParsedPosition {
 	currency: string;
 }
 
+/** Configuración de mapeo manual de columnas para CSVs genéricos */
+export interface MappingConfig {
+	isin?: number;
+	ticker?: number;
+	name?: number;
+	shares: number;
+	avgCost?: number;
+	currency?: number;
+}
+
 /** Resultado completo de un parseo de importación */
 export interface ImportResult {
 	/** Bróker detectado */
@@ -35,4 +45,10 @@ export interface ImportResult {
 	warnings: string[];
 	/** Número de filas que no se pudieron parsear */
 	skippedRows: number;
+	/** Cabeceras crudas del CSV para previsualización */
+	rawHeaders?: string[];
+	/** Primeras filas del CSV para previsualización */
+	rawRows?: string[][];
+	/** Delimitador detectado */
+	delimiter?: string;
 }

@@ -187,6 +187,19 @@
 					<span class="hint-icon">💡</span>
 					<p>Escribe al menos 2 caracteres para buscar</p>
 					<p class="hint-examples">Ej: "MSCI World", "AAPL", "IE00B4L5Y983"</p>
+
+					<button class="btn-manual-add" onclick={() => {
+						const name = query.trim() || 'Cuenta Remunerada';
+						const ticker = 'CASH-' + Math.random().toString(36).substring(2, 7).toUpperCase();
+						addResult({
+							ticker,
+							name,
+							type: 'CASH',
+							exchange: 'Manual'
+						});
+					}}>
+						<span class="plus">➕</span> Crear "{query || 'Cuenta Manual'}" como saldo en efectivo
+					</button>
 				</div>
 			{/if}
 		</div>
@@ -551,6 +564,34 @@
 		font-size: 0.72rem !important;
 		margin-top: 0.35rem !important;
 		opacity: 0.6;
+	}
+
+	.btn-manual-add {
+		margin-top: 1.5rem;
+		width: 100%;
+		padding: 0.75rem;
+		background: rgba(59, 130, 246, 0.05);
+		border: 1px dashed rgba(59, 130, 246, 0.3);
+		border-radius: 12px;
+		color: #60a5fa;
+		font-size: 0.8rem;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.2s;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+	}
+
+	.btn-manual-add:hover {
+		background: rgba(59, 130, 246, 0.1);
+		border-color: #3b82f6;
+		color: #fff;
+	}
+
+	.btn-manual-add .plus {
+		font-size: 1rem;
 	}
 
 	.search-error {

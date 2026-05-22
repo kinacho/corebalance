@@ -1,3 +1,3 @@
-export type { BrokerId, BrokerInfo, ParsedPosition, ImportResult } from './types';
-export { importFromCSV } from './parsers';
+export type { BrokerId, BrokerInfo, ParsedPosition, ImportResult, MappingConfig } from './types';
+export { importFromCSV, importWithMapping } from './parsers';
 export { parseCSV, parseNumber, isValidISIN, extractISIN } from './csv-utils';

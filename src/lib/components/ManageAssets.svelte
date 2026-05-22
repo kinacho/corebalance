@@ -21,7 +21,9 @@
 	let ledgerAsset = $state<Asset | null>(null);
 	let searchCategory = $state<AssetCategory>('core');
 	let editingAsset = $state<string | null>(null);
+	let editName = $state('');
 	let editTer = $state('');
+	let editInterest = $state('');
 
 	let originalState: any;
 
@@ -317,13 +319,31 @@
 
 	function startEditTer(asset: Asset) {
 		editingAsset = asset.ticker;
+		editName = asset.name;
 		editTer = (asset.ter * 100).toFixed(2);
+		editInterest = ((asset.manualInterestRate ?? 0) * 100).toFixed(2);
 	}
 
 	function saveTerEdit(ticker: string) {
 		const ter = parseFloat(editTer);
+		const interest = parseFloat(editInterest);
+		const updates: Partial<Asset> = {};
+
+		if (editName.trim()) {
+			updates.name = editName.trim();
+		}
+
 		if (!isNaN(ter) && ter >= 0) {
-			portfolio.updateAsset(ticker, { ter: ter / 100 });
+			updates.ter = ter / 100;
+		}
+
+		const isCash = ticker.startsWith('CASH-');
+		if (isCash && !isNaN(interest)) {
+			updates.manualInterestRate = interest / 100;
+		}
+
+		if (Object.keys(updates).length > 0) {
+			portfolio.updateAsset(ticker, updates);
 		}
 		editingAsset = null;
 	}
@@ -543,19 +563,51 @@
 									<div class="asset-actions-mini">
 										{#if editingAsset === asset.ticker}
 											<div class="ter-edit-inline">
-												<label class="ter-label" for="ter-{asset.ticker}">TER %</label>
-												<input
-													id="ter-{asset.ticker}"
-													type="number"
-													class="ter-input"
-													bind:value={editTer}
-													onwheel={(e) => e.preventDefault()}
-													min="0"
-													step="0.01"
-													inputmode="decimal"
-												/>
-												<button class="ter-save" onclick={() => saveTerEdit(asset.ticker)}>✓</button>
-												<button class="ter-cancel" onclick={() => editingAsset = null}>✕</button>
+												<div class="edit-fields-stack">
+													<div class="edit-field-group">
+														<label class="ter-label" for="name-{asset.ticker}">Nombre</label>
+														<input
+															id="name-{asset.ticker}"
+															type="text"
+															class="ter-input"
+															style="width: 120px;"
+															bind:value={editName}
+															placeholder="Nombre"
+														/>
+													</div>
+													<div class="edit-field-group">
+														<label class="ter-label" for="ter-{asset.ticker}">TER %</label>
+														<input
+															id="ter-{asset.ticker}"
+															type="number"
+															class="ter-input"
+															bind:value={editTer}
+															onwheel={(e) => e.preventDefault()}
+															min="0"
+															step="0.01"
+															inputmode="decimal"
+														/>
+													</div>
+													{#if asset.ticker.startsWith('CASH-')}
+														<div class="edit-field-group">
+															<label class="ter-label" for="int-{asset.ticker}">INT %</label>
+															<input
+																id="int-{asset.ticker}"
+																type="number"
+																class="ter-input"
+																bind:value={editInterest}
+																onwheel={(e) => e.preventDefault()}
+																min="0"
+																step="0.01"
+																inputmode="decimal"
+															/>
+														</div>
+													{/if}
+												</div>
+												<div class="edit-actions-stack">
+													<button class="ter-save" onclick={() => saveTerEdit(asset.ticker)}>✓</button>
+													<button class="ter-cancel" onclick={() => editingAsset = null}>✕</button>
+												</div>
 											</div>
 										{:else}
 											<select
@@ -568,8 +620,8 @@
 												<option value="satellite">C.</option>
 												<option value="stocks">A.</option>
 											</select>
-											<button class="action-ter" onclick={() => startEditTer(asset)} title="Editar TER">
-												TER
+											<button class="action-ter" onclick={() => startEditTer(asset)} title={asset.ticker.startsWith('CASH-') ? 'Configurar cuenta' : 'Editar TER'}>
+												{asset.ticker.startsWith('CASH-') ? 'Config' : 'TER'}
 											</button>
 											<button 
 												class="action-ledger" 
@@ -1134,6 +1186,38 @@
 		font-size: 0.75rem;
 		font-weight: 600;
 		outline: none;
+	}
+
+	.edit-fields-stack {
+		display: flex;
+		flex-direction: column;
+		gap: 0.4rem;
+	}
+
+	.edit-field-group {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+		justify-content: flex-end;
+	}
+
+	.edit-actions-stack {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+	}
+
+	.edit-field-group {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+		justify-content: flex-end;
+	}
+
+	.edit-fields-stack {
+		display: flex;
+		flex-direction: column;
+		gap: 0.35rem;
 	}
 
 	.ter-save, .ter-cancel {

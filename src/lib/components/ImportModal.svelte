@@ -2,11 +2,12 @@
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { ui } from '$lib/stores/ui.svelte';
 	import { focusTrap } from '$lib/actions/focusTrap';
-	import { importFromCSV } from '$lib/importers';
-	import type { ImportResult, ParsedPosition } from '$lib/importers';
+	import { importFromCSV, importWithMapping } from '$lib/importers';
+	import type { ImportResult, ParsedPosition, MappingConfig } from '$lib/importers';
 	import { ASSET_COLORS, ASSET_ICONS } from '$lib/constants';
 	import type { Asset, AssetCategory } from '$lib/types';
 	import { onMount, onDestroy } from 'svelte';
+	import ColumnMapper from './ColumnMapper.svelte';
 
 	interface Props { onClose: () => void; }
 	let { onClose }: Props = $props();
@@ -20,9 +21,10 @@
 	});
 
 	// --- State Machine ---
-	type Step = 'upload' | 'resolving' | 'preview' | 'done';
+	type Step = 'upload' | 'mapping' | 'resolving' | 'preview' | 'done';
 	let step = $state<Step>('upload');
 	let isDragging = $state(false);
+	let rawFileContent = $state<string>('');
 	let importResult = $state<ImportResult | null>(null);
 	let resolvedMap = $state<Record<string, { ticker: string; name: string; type: string; exchange: string }>>({});
 	let selectedPositions = $state<Set<string>>(new Set());
@@ -61,18 +63,31 @@
 		reader.onload = (ev) => {
 			const text = ev.target?.result as string;
 			if (!text) return;
+			rawFileContent = text;
+			
+			// Obtenemos los datos crudos para el mapeo
 			const result = importFromCSV(text);
 			importResult = result;
-
-			if (result.positions.length === 0) {
-				ui.addToast('No se encontraron posiciones en el archivo', 'error');
-				return;
-			}
-			// Select all by default
-			selectedPositions = new Set(result.positions.map((_, i) => String(i)));
-			resolveISINs(result.positions);
+			step = 'mapping';
 		};
 		reader.readAsText(file);
+	}
+
+	function handleManualMapping(mapping: MappingConfig) {
+		const result = importWithMapping(rawFileContent, mapping);
+		importResult = result;
+		startResolution(result);
+	}
+
+	function startResolution(result: ImportResult) {
+		if (result.positions.length === 0) {
+			ui.addToast('No se encontraron posiciones en el archivo', 'error');
+			step = 'upload';
+			return;
+		}
+		// Select all by default
+		selectedPositions = new Set(result.positions.map((_, i) => String(i)));
+		resolveISINs(result.positions);
 	}
 
 	// --- ISIN Resolution ---
@@ -217,6 +232,7 @@
 				<h2 class="import-title">📥 Importar Cartera <span class="beta-badge">Beta</span></h2>
 				<p class="import-subtitle">
 					{#if step === 'upload'}Sube el CSV de tu bróker
+					{:else if step === 'mapping'}Configura las columnas de tu archivo
 					{:else if step === 'resolving'}Buscando activos en Yahoo Finance...
 					{:else if step === 'preview'}Revisa y confirma las posiciones
 					{:else}¡Importación completada!
@@ -240,15 +256,34 @@
 					<input type="file" accept=".csv,.tsv,.txt" class="file-input" onchange={handleFileInput} />
 				</div>
 				<div class="broker-badges">
-					<span class="broker-badge">🟠 DEGIRO</span>
-					<span class="broker-badge">🔵 Trading 212</span>
-					<span class="broker-badge">🔴 Interactive Brokers</span>
-					<span class="broker-badge">🟢 MyInvestor</span>
-					<span class="broker-badge">📄 CSV Genérico</span>
+					<span class="broker-badge">CSV Universal (Mapeo Manual)</span>
 				</div>
+
+				<div class="import-guide">
+					<h3 class="guide-title">¿Qué archivo necesito?</h3>
+					<p class="guide-text">Puedes importar el CSV de <strong>cualquier bróker</strong>. Solo asegúrate de que el archivo contenga al menos estas columnas:</p>
+					<ul class="guide-list">
+						<li><strong>Identificador:</strong> ISIN (ej: IE00B4L5Y983) o Ticker (ej: VOO).</li>
+						<li><strong>Cantidad:</strong> Número de acciones o participaciones.</li>
+						<li><strong>Precio/Coste (Opcional):</strong> Para calcular tu rentabilidad.</li>
+					</ul>
+					<p class="guide-note">💡 Tras subirlo, tú mismo indicarás qué columna es cada dato.</p>
+				</div>
+
 				<p class="privacy-note">🔒 Tu archivo se procesa 100% en tu navegador. No se sube a ningún servidor.</p>
 
-			<!-- STEP 2: Resolving -->
+			<!-- STEP 2: Mapping -->
+			{:else if step === 'mapping'}
+				{#if importResult}
+					<ColumnMapper 
+						headers={importResult.rawHeaders || []} 
+						rows={importResult.rawRows || []}
+						onConfirm={handleManualMapping}
+						onBack={() => step = 'upload'}
+					/>
+				{/if}
+
+			<!-- STEP 3: Resolving -->
 			{:else if step === 'resolving'}
 				<div class="resolving-state">
 					<div class="resolving-spinner"></div>
@@ -261,9 +296,8 @@
 				{#if importResult}
 					<div class="preview-header-row">
 						<div class="broker-detected">
-							<span>{importResult.broker.icon}</span>
-							<span class="broker-name">{importResult.broker.name}</span>
-							<span class="broker-confidence">{Math.round(importResult.broker.confidence * 100)}% match</span>
+							<span>📄</span>
+							<span class="broker-name">Activos Identificados</span>
 						</div>
 						<div class="category-picker">
 							<label for="import-category">Añadir a:</label>
@@ -297,26 +331,47 @@
 							{@const ticker = getResolvedTicker(pos)}
 							{@const isSelected = selectedPositions.has(String(idx))}
 							{@const alreadyExists = ticker ? portfolio.hasAsset(ticker) : false}
-							<button class="position-row" class:selected={isSelected} class:unresolved={!ticker}
-								onclick={() => togglePosition(String(idx))}>
-								<span class="pos-check">{isSelected ? '☑' : '☐'}</span>
-								<div class="pos-info">
-									<span class="pos-name">{getResolvedName(pos)}</span>
-									<span class="pos-meta">
-										{#if ticker}
-											<span class="pos-ticker">{ticker}</span>
-										{:else}
-											<span class="pos-no-ticker">❌ No encontrado</span>
-										{/if}
-										{#if pos.isin}<span class="pos-isin">{pos.isin}</span>{/if}
-										{#if alreadyExists}<span class="pos-exists">⟳ Actualizar</span>{/if}
-									</span>
-								</div>
-								<div class="pos-numbers">
-									<span class="pos-shares">{pos.shares.toFixed(pos.shares % 1 === 0 ? 0 : 3)}</span>
-									<span class="pos-cost">{pos.avgCost > 0 ? `${pos.avgCost.toFixed(2)} ${pos.currency}` : '—'}</span>
-								</div>
-							</button>
+							<div class="position-row-container">
+								<button class="position-row" class:selected={isSelected} class:unresolved={!ticker}
+									onclick={() => togglePosition(String(idx))}>
+									<span class="pos-check">{isSelected ? '☑' : '☐'}</span>
+									<div class="pos-info">
+										<span class="pos-name">{getResolvedName(pos)}</span>
+										<span class="pos-meta">
+											{#if ticker}
+												<span class="pos-ticker">{ticker}</span>
+											{:else}
+												<span class="pos-no-ticker">❌ No encontrado</span>
+											{/if}
+											{#if pos.isin}<span class="pos-isin">{pos.isin}</span>{/if}
+											{#if alreadyExists}<span class="pos-exists">⟳ Actualizar</span>{/if}
+										</span>
+									</div>
+									<div class="pos-numbers">
+										<span class="pos-shares">{pos.shares.toFixed(pos.shares % 1 === 0 ? 0 : 3)}</span>
+										<span class="pos-cost">{pos.avgCost > 0 ? `${pos.avgCost.toFixed(2)} ${pos.currency}` : '—'}</span>
+									</div>
+								</button>
+								{#if !ticker || isSelected}
+									<div class="manual-ticker-edit">
+										<input type="text" 
+											placeholder="Ticker Yahoo (ej: IWDA.AS)"
+											value={ticker || ''}
+											onchange={(e) => {
+												const val = (e.target as HTMLInputElement).value.toUpperCase().trim();
+												if (val) {
+													resolvedMap[pos.isin || pos.ticker || String(idx)] = {
+														ticker: val,
+														name: getResolvedName(pos),
+														type: 'EQUITY',
+														exchange: ''
+													};
+												}
+											}}
+										/>
+									</div>
+								{/if}
+							</div>
 						{/each}
 					</div>
 				{/if}
@@ -374,8 +429,17 @@
 	.upload-hint { font-size:.75rem; color:rgba(160,160,200,.4); margin:0; }
 	.file-input { position:absolute; inset:0; opacity:0; cursor:pointer; }
 	.broker-badges { display:flex; flex-wrap:wrap; gap:.4rem; justify-content:center; }
-	.broker-badge { padding:.3rem .6rem; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.06); border-radius:8px; font-size:.65rem; color:rgba(160,160,200,.6); font-weight:600; }
+	.broker-badge { padding:.3rem .6rem; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06); border-radius:8px; font-size:.65rem; color:rgba(160,160,200,0.6); font-weight:600; }
 	.privacy-note { text-align:center; font-size:.65rem; color:rgba(16,185,129,.6); margin:0; font-weight:600; }
+
+	/* Guide Section */
+	.import-guide { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 16px; padding: 1.25rem; margin: 0.5rem 0; }
+	.guide-title { font-size: 0.85rem; font-weight: 700; color: #fff; margin: 0 0 0.5rem; }
+	.guide-text { font-size: 0.75rem; color: rgba(160, 160, 200, 0.7); margin: 0 0 0.75rem; line-height: 1.4; }
+	.guide-list { margin: 0 0 0.75rem; padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.35rem; }
+	.guide-list li { font-size: 0.72rem; color: rgba(160, 160, 200, 0.6); }
+	.guide-list li strong { color: rgba(255, 255, 255, 0.8); }
+	.guide-note { font-size: 0.7rem; color: rgba(59, 130, 246, 0.8); margin: 0; font-weight: 600; }
 
 	/* Resolving */
 	.resolving-state { text-align:center; padding:3rem 1rem; }
@@ -387,7 +451,6 @@
 	/* Preview */
 	.preview-header-row { display:flex; justify-content:space-between; align-items:center; gap:.75rem; flex-wrap:wrap; }
 	.broker-detected { display:flex; align-items:center; gap:.4rem; font-size:.8rem; font-weight:700; color:#fff; }
-	.broker-confidence { font-size:.6rem; color:rgba(16,185,129,.7); font-weight:600; padding:.15rem .4rem; background:rgba(16,185,129,.1); border-radius:6px; }
 	.category-picker { display:flex; align-items:center; gap:.4rem; font-size:.7rem; color:rgba(160,160,200,.6); }
 	.category-picker select { background:rgba(0,0,0,.3); border:1px solid rgba(255,255,255,.1); border-radius:8px; color:#fff; padding:.3rem .5rem; font-size:.7rem; font-weight:600; outline:none; cursor:pointer; }
 	.resolve-warning { font-size:.7rem; color:#fbbf24; background:rgba(251,191,36,.08); border:1px solid rgba(251,191,36,.15); border-radius:10px; padding:.5rem .75rem; }
@@ -411,6 +474,11 @@
 	.pos-isin { font-family:'Monaco','Menlo',monospace; }
 	.pos-no-ticker { color:#f87171; font-weight:600; }
 	.pos-exists { color:#60a5fa; font-weight:600; padding:.05rem .3rem; background:rgba(59,130,246,.1); border-radius:4px; }
+	
+	.manual-ticker-edit { padding: 0.5rem 0.75rem 0.75rem; background: rgba(0, 0, 0, 0.1); border-radius: 0 0 12px 12px; margin-top: -4px; border: 1px solid rgba(255, 255, 255, 0.04); border-top: none; }
+	.manual-ticker-edit input { width: 100%; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: #fff; padding: 0.4rem 0.6rem; font-size: 0.75rem; font-family: 'Monaco', monospace; outline: none; transition: all 0.2s; }
+	.manual-ticker-edit input:focus { border-color: #3b82f6; background: rgba(59, 130, 246, 0.05); }
+
 	.pos-numbers { text-align:right; flex-shrink:0; }
 	.pos-shares { display:block; font-size:.8rem; font-weight:700; color:#fff; }
 	.pos-cost { display:block; font-size:.6rem; color:rgba(160,160,200,.4); }

@@ -11,6 +11,7 @@ export interface Asset {
 	icon: string; // Emoji del activo
 	ter: number; // Total Expense Ratio (0.01 = 1%)
 	category: AssetCategory; // Categoría a la que pertenece
+	manualInterestRate?: number; // Rentabilidad anual manual (ej: 0.03 para 3%) para activos tipo "Cash"
 }
 
 
