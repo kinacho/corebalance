@@ -122,6 +122,7 @@
 
 <svelte:head>
 	<title>Sincronizando... | CoreBalance</title>
+	<meta name="robots" content="noindex" />
 </svelte:head>
 
 <div class="sync-container">

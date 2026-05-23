@@ -2,11 +2,18 @@ import tailwindcss from '@tailwindcss/vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 import { SvelteKitPWA } from '@vite-pwa/sveltekit';
+import Sitemap from 'vite-plugin-sitemap';
 
 export default defineConfig({
 	plugins: [
 		tailwindcss(),
 		sveltekit(),
+		Sitemap({
+			hostname: 'https://corebalance.app',
+			dynamicRoutes: ['/sync'],
+			generateRobotsTxt: true,
+			outDir: '.svelte-kit/output/client'
+		}),
 		SvelteKitPWA({
 			registerType: 'autoUpdate',
 			injectRegister: 'auto',
