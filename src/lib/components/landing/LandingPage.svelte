@@ -5,6 +5,7 @@
   import Comparison from './Comparison.svelte';
   import WhyUs from './WhyUs.svelte';
   import HowItWorks from './HowItWorks.svelte';
+  import EducationalFAQ from './EducationalFAQ.svelte';
   import Cta from './Cta.svelte';
   import LandingFooter from './LandingFooter.svelte';
 
@@ -47,6 +48,7 @@
     <Comparison />
     <HowItWorks />
     <WhyUs />
+    <EducationalFAQ />
     <Cta {onStart} />
   </main>
 

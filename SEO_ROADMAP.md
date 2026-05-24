@@ -44,9 +44,9 @@ Este documento detalla la estrategia de SEO y visibilidad para posicionar **Core
 
 - [x] **Estructura de Encabezados (H1-H3):** H1 optimizado: *"Rebalancea tu cartera de ETFs y fondos indexados"*.
 - [x] **Footer Minimalista:** Eliminación de ruido (redes sociales) para centrar la atención en el producto y el soporte vía email.
-- [ ] **Contenido Educativo:** Añadir una sección "¿Qué es el rebalanceo de cartera?" en la landing para capturar tráfico informacional.
-- [ ] **FAQ con Marcado Schema:** Implementar una sección de preguntas frecuentes con JSON-LD `FAQPage`.
-- [ ] **Herramienta de Captación:** Mantener la accesibilidad directa sin login para reducir la fricción de entrada.
+- [x] **Contenido Educativo:** Añadida sección "Inversión Inteligente" explicando por qué rebalancear carteras.
+- [x] **FAQ con Marcado Schema:** Implementada sección de preguntas frecuentes con JSON-LD `FAQPage` para mejorar la visibilidad en Google.
+- [x] **Herramienta de Captación:** Implementado modo "Probar Demo" con cartera pre-configurada (80/10/10) para reducir la fricción y demostrar valor instantáneo.
 
 ## 📢 Fase 3: Visibilidad & Autoridad (Meses 2-3)
 *Enfoque: Generar autoridad inicial a través de enlaces externos y comunidad.*

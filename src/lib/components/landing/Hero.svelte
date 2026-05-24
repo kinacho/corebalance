@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { portfolio } from '$lib/stores/portfolio.svelte';
+  import { goto } from '$app/navigation';
   let { onStart = () => {} } = $props();
 </script>
 
@@ -14,8 +16,11 @@
         optimiza tus aportaciones y mantén tu estrategia bajo control sin hojas de cálculo complejas.
       </p>
       <div class="cta-group">
-        <button class="btn-primary btn-lg" onclick={onStart}>
-          Empezar a rebalancear gratis
+        <button class="btn-primary btn-lg" onclick={() => onStart()}>
+          Empezar gratis
+        </button>
+        <button class="btn-demo" onclick={() => { (portfolio as any).loadDemoData(); goto('/dashboard'); }}>
+          Probar Demo Interactiva
         </button>
         <a href="#how-it-works" class="btn-text">Ver cómo funciona →</a>
       </div>
@@ -131,6 +136,26 @@
   .btn-primary:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+  }
+
+  .btn-demo {
+    background: rgba(139, 92, 246, 0.1);
+    color: #a78bfa;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    padding: 1rem 2rem;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-demo:hover {
+    background: rgba(139, 92, 246, 0.2);
+    color: #c4b5fd;
+    border-color: rgba(139, 92, 246, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.2);
   }
 
   .btn-text {

@@ -15,6 +15,7 @@
 
   import OnboardingTour from "$lib/components/OnboardingTour.svelte";
   import ChangelogModal from "$lib/components/ChangelogModal.svelte";
+  import DemoRibbon from "$lib/components/DemoRibbon.svelte";
   import { portfolio } from "$lib/stores/portfolio.svelte";
 
   import { formatEUR, formatPercent } from "$lib/utils";
@@ -217,6 +218,7 @@
   {/if}
 
   <div class="app-container" class:privacy-mode={portfolio.isPrivate}>
+    <DemoRibbon />
     <Header
       timestamp={portfolio.timestamp}
       onTogglePrivacy={() => portfolio.togglePrivacy()}

@@ -1,5 +1,12 @@
 <script lang="ts">
+  import { portfolio } from '$lib/stores/portfolio.svelte';
+  import { goto } from '$app/navigation';
   let { onStart = () => {} } = $props();
+
+  function startDemo() {
+    (portfolio as any).loadDemoData();
+    goto('/dashboard');
+  }
 </script>
 
 <section class="cta-section">
@@ -8,10 +15,13 @@
       <h2>Empieza a optimizar tu cartera <span class="text-gradient">hoy mismo</span></h2>
       <p>Únete a cientos de inversores que ya confían en CoreBalance para gestionar su patrimonio.</p>
       <div class="cta-actions">
-        <button class="btn-primary btn-lg" onclick={onStart}>
+        <button class="btn-primary btn-lg" onclick={() => onStart()}>
           Crear mi cuenta gratis
         </button>
-        <span class="no-credit">No requiere tarjeta de crédito</span>
+        <button class="btn-demo-cta" onclick={() => startDemo()}>
+          Probar Demo Interactiva
+        </button>
+        <span class="no-credit">No requiere tarjeta de crédito · 100% Privado</span>
       </div>
     </div>
   </div>
@@ -100,6 +110,26 @@
   .btn-primary:hover {
     transform: translateY(-2px);
     box-shadow: 0 12px 32px rgba(59, 130, 246, 0.4);
+  }
+
+  .btn-demo-cta {
+    background: rgba(139, 92, 246, 0.1);
+    color: #a78bfa;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    padding: 0.8rem 2rem;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-demo-cta:hover {
+    background: rgba(139, 92, 246, 0.2);
+    color: #c4b5fd;
+    border-color: rgba(139, 92, 246, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.2);
   }
 
   .no-credit {

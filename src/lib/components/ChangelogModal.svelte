@@ -22,7 +22,9 @@ const releases = [
 			'📱 **Diseño Responsive Premium:** Experiencia optimizada para móviles con navegación fluida y efectos visuales de alta fidelidad.',
 			'🎨 **Identidad Visual:** Implementación de un sistema de diseño coherente basado en azul corporativo y glassmorphism.',
 			'🏠 **Puerta de Enlace (Gatekeeper):** Sistema inteligente que muestra la landing a nuevos usuarios y el dashboard a los recurrentes.',
-			'📧 **Nuevos Canales:** Añadido enlace directo de contacto y reporte de errores vía email en el pie de página.'
+			'📧 **Nuevos Canales:** Añadido enlace directo de contacto y reporte de errores vía email en el pie de página.',
+			'📚 **Sección Educativa y FAQ:** Nueva sección sobre los fundamentos del rebalanceo con marcado Schema (JSON-LD) para mejorar el SEO y resolver dudas comunes.',
+			'✨ **Modo Demo Interactivo:** Botón "Probar Demo" para explorar la potencia del dashboard con una cartera pre-configurada (80/10/10 + acciones) sin necesidad de registro.'
 		]
 	},
 	{

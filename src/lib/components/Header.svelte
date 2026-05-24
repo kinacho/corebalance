@@ -115,83 +115,84 @@
 			</div>
 		{/if}
 		
-		<button
-			id="tour-manage-btn"
-			class="action-btn"
-			onclick={onManageAssets}
-
-			title="Configuración de Cartera"
-			aria-label="Configuración de Cartera"
-		>
-			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-				<line x1="4" y1="21" x2="4" y2="14" />
-				<line x1="4" y1="10" x2="4" y2="3" />
-				<line x1="12" y1="21" x2="12" y2="12" />
-				<line x1="12" y1="8" x2="12" y2="3" />
-				<line x1="20" y1="21" x2="20" y2="16" />
-				<line x1="20" y1="12" x2="20" y2="3" />
-				<line x1="1" y1="14" x2="7" y2="14" />
-				<line x1="9" y1="8" x2="15" y2="8" />
-				<line x1="17" y1="16" x2="23" y2="16" />
-			</svg>
-		</button>
-
-		<button
-			class="action-btn sync-btn"
-			onclick={() => showSyncModal = true}
-			title="Sincronizar Dispositivos"
-			aria-label="Sincronizar Dispositivos"
-		>
-			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-				<rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-				<path d="M8 21h8"></path>
-				<path d="M12 17v4"></path>
-				<rect x="16" y="13" width="6" height="8" rx="1"></rect>
-			</svg>
-		</button>
-
-		<button
-			class="action-btn"
-			onclick={onTogglePrivacy}
-			title={isPrivate ? 'Mostrar valores' : 'Ocultar valores'}
-			aria-label="Alternar privacidad"
-		>
-			{#if isPrivate}
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-					<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
-					<line x1="1" y1="1" x2="23" y2="23" />
-				</svg>
-			{:else}
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-					<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-					<circle cx="12" cy="12" r="3" />
-				</svg>
-			{/if}
-		</button>
-
-		<button
-			class="action-btn refresh-btn"
-			class:loading={loading}
-			onclick={onRefresh}
-			disabled={loading}
-			aria-label="Actualizar precios"
-		>
-			<svg
-				class="refresh-icon"
-				class:spinning={loading}
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2.5"
-				stroke-linecap="round"
-				stroke-linejoin="round"
+		{#if !portfolio.isDemo}
+			<button
+				id="tour-manage-btn"
+				class="action-btn"
+				onclick={onManageAssets}
+				title="Configuración de Cartera"
+				aria-label="Configuración de Cartera"
 			>
-				<path d="M21 2v6h-6" />
-				<path d="M3 12a9 9 0 0 1 15-6.7L21 8" />
-				<path d="M3 22v-6h6" />
-				<path d="M21 12a9 9 0 0 1-15 6.7L3 16" />
-			</svg>
-		</button>
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<line x1="4" y1="21" x2="4" y2="14" />
+					<line x1="4" y1="10" x2="4" y2="3" />
+					<line x1="12" y1="21" x2="12" y2="12" />
+					<line x1="12" y1="8" x2="12" y2="3" />
+					<line x1="20" y1="21" x2="20" y2="16" />
+					<line x1="20" y1="12" x2="20" y2="3" />
+					<line x1="1" y1="14" x2="7" y2="14" />
+					<line x1="9" y1="8" x2="15" y2="8" />
+					<line x1="17" y1="16" x2="23" y2="16" />
+				</svg>
+			</button>
+
+			<button
+				class="action-btn sync-btn"
+				onclick={() => showSyncModal = true}
+				title="Sincronizar Dispositivos"
+				aria-label="Sincronizar Dispositivos"
+			>
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+					<path d="M8 21h8"></path>
+					<path d="M12 17v4"></path>
+					<rect x="16" y="13" width="6" height="8" rx="1"></rect>
+				</svg>
+			</button>
+
+			<button
+				class="action-btn"
+				onclick={onTogglePrivacy}
+				title={isPrivate ? 'Mostrar valores' : 'Ocultar valores'}
+				aria-label="Alternar privacidad"
+			>
+				{#if isPrivate}
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+						<line x1="1" y1="1" x2="23" y2="23" />
+					</svg>
+				{:else}
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+						<circle cx="12" cy="12" r="3" />
+					</svg>
+				{/if}
+			</button>
+
+			<button
+				class="action-btn refresh-btn"
+				class:loading={loading}
+				onclick={onRefresh}
+				disabled={loading}
+				aria-label="Actualizar precios"
+			>
+				<svg
+					class="refresh-icon"
+					class:spinning={loading}
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2.5"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				>
+					<path d="M21 2v6h-6" />
+					<path d="M3 12a9 9 0 0 1 15-6.7L21 8" />
+					<path d="M3 22v-6h6" />
+					<path d="M21 12a9 9 0 0 1-15 6.7L3 16" />
+				</svg>
+			</button>
+		{/if}
 
 		<div id="tour-sync-auth" class="user-zone">
 			{#if !authReady}
@@ -331,7 +332,6 @@
 		</div>
 	</div>
 
-	<!-- Loading Bar -->
 	{#if loading}
 		<div class="loading-bar"></div>
 	{/if}

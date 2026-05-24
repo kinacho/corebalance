@@ -7,6 +7,18 @@
   let { onStart = () => {} } = $props();
   let isScrolled = $state(false);
 
+  function startDemo() {
+    console.log('--- NAV DEMO BUTTON CLICKED ---');
+    if (portfolio && typeof portfolio.loadDemoData === 'function') {
+      console.log('Store and loadDemoData found, executing...');
+      portfolio.loadDemoData();
+      console.log('Demo data loaded, navigating...');
+      goto('/dashboard');
+    } else {
+      console.error('ERROR: portfolio or loadDemoData is undefined/not a function', { portfolio });
+    }
+  }
+
   onMount(() => {
     const handleScroll = () => {
       isScrolled = window.scrollY > 20;
@@ -27,6 +39,7 @@
       <a href="#features">Características</a>
       <a href="#how-it-works">Cómo funciona</a>
       <a href="#why-us">Por qué CoreBalance</a>
+      <a href="#educational">FAQ</a>
     </div>
 
     <div class="nav-actions">
@@ -35,10 +48,13 @@
           Ir al Dashboard
         </button>
       {:else}
+        <button class="btn-demo" onclick={() => startDemo()}>
+          Probar Demo
+        </button>
         <button class="btn-secondary" onclick={() => portfolio.login()}>
           Iniciar sesión
         </button>
-        <button class="btn-primary" onclick={onStart}>
+        <button class="btn-primary" onclick={() => onStart()}>
           Empezar gratis
         </button>
       {/if}
@@ -147,6 +163,26 @@
     filter: brightness(1.1);
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  }
+
+  .btn-demo {
+    background: rgba(139, 92, 246, 0.1);
+    color: #a78bfa;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    padding: 0.6rem 1.25rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-demo:hover {
+    background: rgba(139, 92, 246, 0.2);
+    color: #c4b5fd;
+    border-color: rgba(139, 92, 246, 0.5);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
   }
 
   .btn-secondary {
