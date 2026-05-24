@@ -1,0 +1,191 @@
+<script lang="ts">
+  import { portfolio } from '$lib/stores/portfolio.svelte';
+</script>
+
+<footer class="landing-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="brand-col">
+        <div class="logo-group">
+          <img src="/favicon.png" alt="CoreBalance" class="logo" />
+          <span class="brand-name">CoreBalance</span>
+        </div>
+        <p>Tu centro de mandos para una gestión de activos inteligente y equilibrada.</p>
+        <div class="social-links">
+          <a href="#" aria-label="Twitter">𝕏</a>
+          <a href="#" aria-label="LinkedIn">in</a>
+          <a href="https://github.com/kinacho/Rebalanceador-90-5-5" target="_blank" aria-label="GitHub">gh</a>
+        </div>
+      </div>
+
+      <div class="links-col">
+        <h4>Producto</h4>
+        <ul>
+          <li><a href="#features">Características</a></li>
+          <li><a href="#how-it-works">Cómo funciona</a></li>
+          <li><a href="#why-us">Por qué CoreBalance</a></li>
+          <li><a href="/sync">Sincronización</a></li>
+        </ul>
+      </div>
+
+      <div class="links-col">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="/privacy">Privacidad</a></li>
+          <li><a href="/terms">Términos</a></li>
+          <li><a href="/cookies">Cookies</a></li>
+        </ul>
+      </div>
+
+      <div class="links-col">
+        <h4>Comunidad</h4>
+        <ul>
+          <li><a href="https://github.com/kinacho/Rebalanceador-90-5-5" target="_blank">Contribuir</a></li>
+          <li><a href="https://github.com/kinacho/Rebalanceador-90-5-5/issues" target="_blank">Reportar un error</a></li>
+          <li><a href="https://paypal.me/kinacho" target="_blank">Donar</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© {new Date().getFullYear()} CoreBalance. Hecho con ❤️ para la comunidad inversora.</p>
+      <div class="legal-notice">
+        CoreBalance es una herramienta informativa. No constituye asesoramiento financiero.
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .landing-footer {
+    padding: 80px 1.5rem 40px;
+    background: #05050a;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 4rem;
+    margin-bottom: 4rem;
+  }
+
+  @media (min-width: 1024px) {
+    .brand-col {
+      grid-column: span 2;
+    }
+  }
+
+  .logo-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .logo {
+    width: 28px;
+    height: 28px;
+  }
+
+  .brand-name {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #fff;
+  }
+
+  .brand-col p {
+    color: rgba(160, 160, 200, 0.5);
+    line-height: 1.6;
+    max-width: 300px;
+    margin-bottom: 2rem;
+  }
+
+  .social-links {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .social-links a {
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.4);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+  }
+
+  .social-links a:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    transform: translateY(-2px);
+  }
+
+  h4 {
+    color: #fff;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  li {
+    margin-bottom: 0.75rem;
+  }
+
+  li a {
+    color: rgba(160, 160, 200, 0.5);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.2s ease;
+  }
+
+  li a:hover {
+    color: #3b82f6;
+  }
+
+  .footer-bottom {
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.03);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  @media (min-width: 768px) {
+    .footer-bottom {
+      flex-direction: row;
+      justify-content: space-between;
+      text-align: left;
+    }
+  }
+
+  .footer-bottom p {
+    color: rgba(160, 160, 200, 0.3);
+    font-size: 0.85rem;
+    margin: 0;
+  }
+
+  .legal-notice {
+    color: rgba(160, 160, 200, 0.2);
+    font-size: 0.75rem;
+  }
+</style>
