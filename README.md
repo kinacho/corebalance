@@ -13,11 +13,8 @@
 
 - **Visualización Avanzada**: Gráficos interactivos de tarta y evolución histórica (Chart.js) con leyendas persistentes y efectos de glassmorphism.
 - **Motor de Rebalanceo**: Calculadora inteligente que optimiza tus nuevas aportaciones para mantener tu estrategia objetivo de forma automática.
-- **Simulador de Crisis**: Módulo interactivo para proyectar caídas históricas (ej. 2008, COVID) sobre tu cartera actual y evaluar tu tolerancia al riesgo.
-- **Sincronización Híbrida**: 
-    - **QR P2P**: Transfiere toda tu cartera entre dispositivos sin pasar por servidores.
-    - **Cloud Sync**: Sincronización opcional mediante Firebase (Auth + Firestore).
-- **Escalabilidad Global**: Sistema de cache compartido con **Upstash Redis** para obtener cotizaciones instantáneas sin bloqueos de API.
+- **Simulador de Crisis**: Módulo interactivo para proyectar caídas históricas reales sobre tu cartera actual y evaluar tu tolerancia al riesgo.
+- **Privacidad Total**: Almacenamiento 100% local en tu navegador. Tus datos financieros nunca salen de tu dispositivo.
 - **PWA (Progressive Web App)**: Instalación nativa en móvil y escritorio con soporte offline completo.
 
 ## 🛠️ Stack Tecnológico
@@ -25,16 +22,15 @@
 - **Frontend**: [Svelte 5](https://svelte.dev/) (Runes) + Vite.
 - **Almacenamiento Local**: [Dexie.js](https://dexie.org/) (IndexedDB).
 - **Cache de Datos**: [Upstash Redis](https://upstash.com/) para una gestión de precios escalable y global.
-- **Persistencia en la Nube**: [Firebase](https://firebase.google.com/) (Auth + Firestore).
 - **Datos en Tiempo Real**: API híbrida (Yahoo Finance + Financial Times) con sistema de redundancia.
 
-## 🛡️ Producción Ready y Privacidad
+## 🛡️ Seguridad y Privacidad
 
 CoreBalance está diseñado para ser seguro y transparente:
 
-- **Derecho al Olvido**: Sistema integrado de eliminación de cuenta y borrado total de datos (Firebase/IndexedDB).
-- **Cache Compartido**: Optimización de peticiones API para servir a miles de usuarios sin degradación de servicio.
-- **Rate Limiting**: Protección de endpoints mediante limitación de peticiones por IP.
+- **Local-First**: Todos los cálculos y el almacenamiento se realizan en el cliente (IndexedDB).
+- **Sin Registro**: No necesitas crear una cuenta ni ceder tus datos para usar la herramienta.
+- **Cache de Precios**: Optimización de peticiones API para servir cotizaciones en tiempo real sin comprometer la identidad del usuario.
 - **Aviso Legal**: Integración de disclaimers financieros para cumplimiento normativo básico.
 
 ## 📦 Instalación y Configuración
@@ -51,12 +47,8 @@ CoreBalance está diseñado para ser seguro y transparente:
    ```
 
 3. **Configuración de Entorno**:
-   Renombra `.env.example` a `.env` y añade tus credenciales:
+   Renombra `.env.example` a `.env` y añade tus credenciales (si deseas usar el backend de precios):
    ```env
-   # Firebase (Opcional)
-   VITE_FIREBASE_API_KEY=...
-   PUBLIC_USE_FIREBASE=true
-
    # Redis (Recomendado para producción)
    KV_REST_API_URL=...
    KV_REST_API_TOKEN=...
@@ -68,4 +60,4 @@ CoreBalance está diseñado para ser seguro y transparente:
    ```
 
 ---
-*Desarrollado con ❤️ para la comunidad inversora. **CoreBalance** es una herramienta informativa; no constituye asesoramiento financiero. Invierte siempre bajo tu propia responsabilidad.*
+*Desarrollado con ❤️ para la comunidad inversora por [kinacho](https://github.com/kinacho). **CoreBalance** es una herramienta informativa; no constituye asesoramiento financiero. Invierte siempre bajo tu propia responsabilidad.*

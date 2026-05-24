@@ -13,10 +13,9 @@
             cuánto debía aportar a cada fondo para mantener mi estrategia 90/10 o 80/20.
           </p>
           <p>
-            Buscaba una herramienta que fuera <strong>sencilla, rápida y privada</strong>. 
+            Buscaba una herramienta que fuera <span class="text-highlight">sencilla, rápida y privada</span>.
             No quería dar mis contraseñas bancarias a terceros ni pagar cuotas mensuales por algo que debería ser básico.
-          </p>
-          <p>
+          </p>          <p>
             Así nació CoreBalance: una herramienta creada por un inversor para inversores. Sin florituras innecesarias, 
             centrada en lo que de verdad importa: mantener el rumbo de tu estrategia de inversión.
           </p>
@@ -96,6 +95,11 @@
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
+  }
+
+  .text-highlight {
+    color: #3b82f6;
+    font-weight: 700;
   }
 
   .story p {

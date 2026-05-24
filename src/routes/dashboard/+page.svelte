@@ -357,6 +357,15 @@
               <span class="footer-title">CoreBalance</span>
             </div>
             <p class="footer-tagline">Tu centro de mandos para una gestión de activos inteligente y equilibrada.</p>
+            <div class="footer-links">
+              <a href="mailto:bug@corebalance.app" class="footer-link">
+                <span class="link-icon">🪲</span> Reportar un error
+              </a>
+              <span class="link-separator">•</span>
+              <a href="mailto:hola@corebalance.app" class="footer-link">
+                <span class="link-icon">✉️</span> Contacto
+              </a>
+            </div>
           </div>
 
           <div class="footer-donation">
@@ -369,7 +378,7 @@
         </div>
 
         <div class="footer-copyright">
-          <p>© {new Date().getFullYear()} CoreBalance · Hecho con ❤️ para la comunidad inversora · <button class="changelog-badge-btn" onclick={() => showChangelog = true} title="Ver historial de cambios">v1.5.0 🚀</button> · <button class="tour-repeat-btn" onclick={restartTour} title="Repetir tutorial de bienvenida">🎓 Tutorial</button></p>
+          <p>© {new Date().getFullYear()} CoreBalance · Hecho con ❤️ para la comunidad inversora · <button class="changelog-badge-btn" onclick={() => showChangelog = true} title="Ver historial de cambios">v1.6.0 🚀</button> · <button class="tour-repeat-btn" onclick={restartTour} title="Repetir tutorial de bienvenida">🎓 Tutorial</button></p>
         </div>
       </footer>
     </main>
@@ -722,6 +731,45 @@
     .footer-tagline {
       margin: 0;
     }
+  }
+
+  .footer-links {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    justify-content: center;
+  }
+
+  @media (min-width: 768px) {
+    .footer-links {
+      justify-content: flex-start;
+    }
+  }
+
+  .footer-link {
+    font-size: 0.8rem;
+    color: rgba(160, 160, 200, 0.4);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .footer-link:hover {
+    color: #3b82f6;
+    transform: translateY(-1px);
+  }
+
+  .link-separator {
+    color: rgba(160, 160, 200, 0.15);
+    font-size: 0.8rem;
+  }
+
+  .link-icon {
+    font-size: 0.9rem;
+    opacity: 0.7;
   }
 
   .footer-legal {

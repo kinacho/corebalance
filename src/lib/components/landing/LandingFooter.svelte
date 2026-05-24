@@ -11,11 +11,6 @@
           <span class="brand-name">CoreBalance</span>
         </div>
         <p>Tu centro de mandos para una gestión de activos inteligente y equilibrada.</p>
-        <div class="social-links">
-          <a href="#" aria-label="Twitter">𝕏</a>
-          <a href="#" aria-label="LinkedIn">in</a>
-          <a href="https://github.com/kinacho/Rebalanceador-90-5-5" target="_blank" aria-label="GitHub">gh</a>
-        </div>
       </div>
 
       <div class="links-col">
@@ -24,7 +19,7 @@
           <li><a href="#features">Características</a></li>
           <li><a href="#how-it-works">Cómo funciona</a></li>
           <li><a href="#why-us">Por qué CoreBalance</a></li>
-          <li><a href="/sync">Sincronización</a></li>
+          <li><span class="link-disabled">Sincronización (Próximamente)</span></li>
         </ul>
       </div>
 
@@ -40,9 +35,9 @@
       <div class="links-col">
         <h4>Comunidad</h4>
         <ul>
-          <li><a href="https://github.com/kinacho/Rebalanceador-90-5-5" target="_blank">Contribuir</a></li>
-          <li><a href="https://github.com/kinacho/Rebalanceador-90-5-5/issues" target="_blank">Reportar un error</a></li>
-          <li><a href="https://paypal.me/kinacho" target="_blank">Donar</a></li>
+          <li><a href="mailto:bug@corebalance.app">Reportar un error</a></li>
+          <li><a href="https://paypal.me/kinacho" target="_blank">Apoya el proyecto</a></li>
+          <li><a href="mailto:hola@corebalance.app">Contacto</a></li>
         </ul>
       </div>
     </div>
@@ -106,32 +101,6 @@
     margin-bottom: 2rem;
   }
 
-  .social-links {
-    display: flex;
-    gap: 1rem;
-  }
-
-  .social-links a {
-    width: 36px;
-    height: 36px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: rgba(255, 255, 255, 0.4);
-    text-decoration: none;
-    font-size: 0.9rem;
-    transition: all 0.2s ease;
-  }
-
-  .social-links a:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
-    transform: translateY(-2px);
-  }
-
   h4 {
     color: #fff;
     font-weight: 700;
@@ -158,6 +127,12 @@
 
   li a:hover {
     color: #3b82f6;
+  }
+
+  .link-disabled {
+    color: rgba(160, 160, 200, 0.2);
+    font-size: 0.9rem;
+    cursor: not-allowed;
   }
 
   .footer-bottom {

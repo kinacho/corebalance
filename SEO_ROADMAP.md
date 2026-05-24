@@ -33,45 +33,43 @@ Este documento detalla la estrategia de SEO y visibilidad para posicionar **Core
 - [x] **Google Search Console (GSC):** Preparado el terreno para verificación.
 - [x] **Sitemap.xml & robots.txt:** Configurado con `vite-plugin-sitemap`. Generación automática en cada build.
 - [x] **Meta Tags & Open Graph:**
-    - [x] Títulos y descripciones únicas implementadas en `/` y `/sync`.
+    - [x] Títulos y descripciones únicas implementadas.
     - [x] Configurado `og:image` y Twitter Cards.
 - [x] **Schema.org (JSON-LD):** Añadido `SoftwareApplication` en la página principal.
 - [x] **Optimización de Core Web Vitals:** Verificado el uso de `@vercel/speed-insights`.
+- [x] **Privacidad como Valor:** Enfatizado el enfoque *local-first* y "sin registro" en las meta-descripciones.
 
-## 🚀 Fase 2: Landing Page Optimizada (Semanas 2-4)
-*Enfoque: Convertir la landing page en un imán de keywords.*
+## 🚀 Fase 2: Landing Page & Conversión (Semanas 2-4)
+*Enfoque: Convertir la landing page en un imán de keywords y confianza.*
 
-- [ ] **Estructura de Encabezados (H1-H3):** Asegurar que el H1 contenga la keyword principal: *"Rebalancea tu cartera de ETFs y fondos indexados"*.
-- [ ] **URLs Limpias:** Mantener rutas descriptivas (ej: `/herramientas/calculadora-rebalanceo`).
+- [x] **Estructura de Encabezados (H1-H3):** H1 optimizado: *"Rebalancea tu cartera de ETFs y fondos indexados"*.
+- [x] **Footer Minimalista:** Eliminación de ruido (redes sociales) para centrar la atención en el producto y el soporte vía email.
 - [ ] **Contenido Educativo:** Añadir una sección "¿Qué es el rebalanceo de cartera?" en la landing para capturar tráfico informacional.
 - [ ] **FAQ con Marcado Schema:** Implementar una sección de preguntas frecuentes con JSON-LD `FAQPage`.
-- [ ] **Herramienta Pública:** Crear una versión simplificada del rebalanceador que sea accesible sin login para atraer backlinks y tráfico inicial.
+- [ ] **Herramienta de Captación:** Mantener la accesibilidad directa sin login para reducir la fricción de entrada.
 
-## 📢 Fase 3: Visibilidad Externa & Link Building (Meses 2-3)
-*Enfoque: Generar autoridad inicial a través de enlaces externos.*
+## 📢 Fase 3: Visibilidad & Autoridad (Meses 2-3)
+*Enfoque: Generar autoridad inicial a través de enlaces externos y comunidad.*
 
 - [ ] **Directorios de SaaS/Apps:** Listar en *AlternativeTo* (como alternativa a Portfolio Performance), *BetaList*, *Microlaunch*.
-- [ ] **Product Hunt Launch:** Preparar un lanzamiento oficial para obtener un backlink de alta autoridad y tráfico masivo inicial.
-- [ ] **Comunidades (Reddit/Foros):** Participar de forma orgánica en `r/eupersonalfinance`, `r/bolsa`, Rankia y Finect.
-- [ ] **Newsletters de Finanzas:** Contactar con autores de newsletters en español para posibles reseñas o menciones.
-- [ ] **GitHub SEO:** Optimizar el README del repositorio con enlaces directos a la app.
+- [ ] **Product Hunt Launch:** Preparar un lanzamiento oficial enfocado en la privacidad y la simplicidad.
+- [ ] **Comunidades (Reddit/Foros):** Participar de forma orgánica en `r/eupersonalfinance`, `r/bolsa`, Rankia y Finect destacando que es una herramienta *open-source* y gratuita.
+- [ ] **GitHub SEO:** Optimizar el README del repositorio con enlaces directos a la app y palabras clave técnicas.
 
-## ✍️ Fase 4: Autoridad de Contenido (Meses 3-6)
-*Enfoque: Dominar las búsquedas long-tail mediante contenido especializado.*
+## ✍️ Fase 4: Especialización (Meses 3-6)
+*Enfoque: Dominar las búsquedas específicas sobre gestión de carteras.*
 
-- [ ] **Blog de Artículos Pilar:** Escribir 4-6 artículos profundos (>1500 palabras) sobre estrategias de inversión y rebalanceo.
-- [ ] **Contenido Programático:** Crear páginas de comparación automática (ej: `/comparar/msci-world-vs-sp500`) y fichas de ETFs.
-- [ ] **Build in Public:** Compartir actualizaciones en Twitter/X y LinkedIn para generar tráfico referral y autoridad de marca.
-- [ ] **Enlazado Interno:** Conectar el blog con la herramienta principal usando textos de ancla optimizados.
+- [ ] **Guías Rápidas:** Crear mini-guías de configuración para carteras populares (Bogleheads 2-3 fondos, 90/10, etc.).
+- [ ] **Contenido Programático:** Páginas de utilidad sobre TER y solapamiento de fondos.
+- [ ] **Foco en Privacidad:** Posicionar CoreBalance como la alternativa privada a herramientas que requieren vincular cuentas bancarias.
 
 ## 🤖 Fase 5: GEO - Generative Engine Optimization (Meses 6-12)
 *Enfoque: Aparecer en las respuestas de IAs (ChatGPT, Perplexity, AI Overviews).*
 
-- [ ] **Aparecer en AI Overviews:** Estructurar el contenido para responder preguntas directas de forma concisa.
-- [ ] **Archivo `llms.txt`:** Implementar `/llms.txt` para guiar a los crawlers de LLMs sobre qué hace CoreBalance.
-- [ ] **Datos Estructurados Avanzados:** Usar `HowTo` Schema para guiar sobre cómo rebalancear carteras.
-- [ ] **Fomentar el UGC:** Incentivar a los usuarios a mencionar la herramienta en foros públicos, ya que las IAs usan estas fuentes para sus recomendaciones.
+- [ ] **Respuesta a IAs:** Estructurar el contenido para responder preguntas directas como "¿Cómo rebalancear mi cartera de MyInvestor gratis?".
+- [ ] **Archivo `llms.txt`:** Implementar `/llms.txt` para guiar a los crawlers de LLMs sobre las capacidades de CoreBalance.
+- [ ] **Datos Estructurados Avanzados:** Usar `HowTo` Schema para guiar sobre el proceso de rebalanceo manual.
 
 ---
 
-*Última actualización: Mayo 2026*
+*Última actualización: 24 de Mayo, 2026 (v1.6.0)*

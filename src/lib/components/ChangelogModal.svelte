@@ -13,6 +13,19 @@
 	});
 const releases = [
 	{
+		version: 'v1.6.0',
+		date: '24 de Mayo, 2026',
+		badge: 'Nueva Landing Page',
+		badgeColor: '#8b5cf6',
+		changes: [
+			'🌐 **Nueva Landing Page:** Presentación profesional de CoreBalance con secciones de características, funcionamiento y comparativa.',
+			'📱 **Diseño Responsive Premium:** Experiencia optimizada para móviles con navegación fluida y efectos visuales de alta fidelidad.',
+			'🎨 **Identidad Visual:** Implementación de un sistema de diseño coherente basado en azul corporativo y glassmorphism.',
+			'🏠 **Puerta de Enlace (Gatekeeper):** Sistema inteligente que muestra la landing a nuevos usuarios y el dashboard a los recurrentes.',
+			'📧 **Nuevos Canales:** Añadido enlace directo de contacto y reporte de errores vía email en el pie de página.'
+		]
+	},
+	{
 		version: 'v1.5.0',
 		date: '22 de Mayo, 2026',
 		badge: 'Cuentas Remuneradas y CSV',
@@ -252,7 +265,7 @@ const releases = [
 	.timeline::before {
 		content: '';
 		position: absolute;
-		left: 140px;
+		left: 153px;
 		top: 8px;
 		bottom: 8px;
 		width: 2px;
@@ -261,7 +274,7 @@ const releases = [
 
 	.timeline-item {
 		display: grid;
-		grid-template-columns: 120px 1fr;
+		grid-template-columns: 135px 1fr;
 		gap: 2.25rem;
 		position: relative;
 	}
@@ -286,7 +299,6 @@ const releases = [
 		font-weight: 700;
 		padding: 0.15rem 0.4rem;
 		border-radius: 100px;
-		white-space: nowrap;
 	}
 
 	.timeline-dot {
