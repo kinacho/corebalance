@@ -43,16 +43,13 @@
     </div>
 
     <div class="nav-actions">
-      {#if portfolio.user}
+      {#if portfolio.user && portfolio.hasAnyHoldings}
         <button class="btn-primary" onclick={() => goto('/dashboard')}>
           Ir al Dashboard
         </button>
       {:else}
         <button class="btn-demo" onclick={() => startDemo()}>
           Probar Demo
-        </button>
-        <button class="btn-secondary" onclick={() => portfolio.login()}>
-          Iniciar sesión
         </button>
         <button class="btn-primary" onclick={() => onStart()}>
           Empezar gratis
