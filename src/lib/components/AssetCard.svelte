@@ -421,9 +421,16 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		font-size: 1.5rem;
 		box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);
 		position: relative;
+	}
+
+	.asset-icon {
+		font-size: 1.5rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		line-height: 1;
 	}
 
 	.asset-icon-wrapper :global(.market-dot) {

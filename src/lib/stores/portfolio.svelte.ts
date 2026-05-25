@@ -2,7 +2,7 @@ import { DEFAULT_CORE_ASSETS, DEFAULT_SATELLITE_ASSETS, DEFAULT_STOCK_ASSETS, ST
 import type { Asset, AssetCategory, HoldingData, HoldingsMap, PortfolioState, PriceData, RebalanceResult, Transaction } from '$lib/types';
 import { calculatePortfolioState, calculateRebalance } from '$lib/rebalance';
 import { storageProvider } from '$lib/db';
-import { formatDate } from '$lib/utils';
+import { formatDate, resolveAssetIcon } from '$lib/utils';
 import { ui } from '$lib/stores/ui.svelte';
 import { goto } from '$app/navigation';
 
@@ -578,21 +578,21 @@ export class PortfolioStore {
 		this.isInitialized = true;
 		
 		this.coreAssets = [
-			{ ticker: 'IWDA.AS', name: 'iShares Core MSCI World', isin: 'IE00B4L5Y983', targetWeight: 0.8, category: 'core', color: '#3b82f6', ter: 0.002, icon: '🌐' },
-			{ ticker: 'ZPRV.DE', name: 'SPDR MSCI USA Small Cap Value', isin: 'IE00BS166D92', targetWeight: 0.1, category: 'core', color: '#10b981', ter: 0.003, icon: '💎' },
-			{ ticker: 'EMIM.AS', name: 'iShares Core MSCI EM IMI', isin: 'IE00BKM4GZ66', targetWeight: 0.1, category: 'core', color: '#f59e0b', ter: 0.0018, icon: '🌏' }
+			{ ticker: 'IWDA.AS', name: 'iShares Core MSCI World', isin: 'IE00B4L5Y983', targetWeight: 0.8, category: 'core', color: '#3b82f6', ter: 0.002, icon: resolveAssetIcon('IWDA.AS', 'iShares Core MSCI World') },
+			{ ticker: 'ZPRV.DE', name: 'SPDR MSCI USA Small Cap Value', isin: 'IE00BS166D92', targetWeight: 0.1, category: 'core', color: '#10b981', ter: 0.003, icon: resolveAssetIcon('ZPRV.DE', 'SPDR MSCI USA Small Cap Value') },
+			{ ticker: 'EMIM.AS', name: 'iShares Core MSCI EM IMI', isin: 'IE00BKM4GZ66', targetWeight: 0.1, category: 'core', color: '#f59e0b', ter: 0.0018, icon: resolveAssetIcon('EMIM.AS', 'iShares Core MSCI EM IMI') }
 		];
 
 		this.stockAssets = [
-			{ ticker: 'MSFT', name: 'Microsoft Corp', isin: 'US5949181045', targetWeight: 0, category: 'stocks', color: '#00a4ef', icon: '💻', ter: 0 },
-			{ ticker: 'AAPL', name: 'Apple Inc', isin: 'US0378331005', targetWeight: 0, category: 'stocks', color: '#555555', icon: '🍎', ter: 0 },
-			{ ticker: 'AMZN', name: 'Amazon.com Inc', isin: 'US0231351067', targetWeight: 0, category: 'stocks', color: '#ff9900', icon: '📦', ter: 0 },
-			{ ticker: 'GOOGL', name: 'Alphabet Inc', isin: 'US02079K3059', targetWeight: 0, category: 'stocks', color: '#4285f4', icon: '🔍', ter: 0 },
-			{ ticker: 'TSLA', name: 'Tesla, Inc.', isin: 'US88160R1014', targetWeight: 0, category: 'stocks', color: '#e81010', icon: '⚡', ter: 0 }
+			{ ticker: 'MSFT', name: 'Microsoft Corp', isin: 'US5949181045', targetWeight: 0, category: 'stocks', color: '#00a4ef', icon: resolveAssetIcon('MSFT', 'Microsoft Corp'), ter: 0 },
+			{ ticker: 'AAPL', name: 'Apple Inc', isin: 'US0378331005', targetWeight: 0, category: 'stocks', color: '#555555', icon: resolveAssetIcon('AAPL', 'Apple Inc'), ter: 0 },
+			{ ticker: 'AMZN', name: 'Amazon.com Inc', isin: 'US0231351067', targetWeight: 0, category: 'stocks', color: '#ff9900', icon: resolveAssetIcon('AMZN', 'Amazon.com Inc'), ter: 0 },
+			{ ticker: 'GOOGL', name: 'Alphabet Inc', isin: 'US02079K3059', targetWeight: 0, category: 'stocks', color: '#4285f4', icon: resolveAssetIcon('GOOGL', 'Alphabet Inc'), ter: 0 },
+			{ ticker: 'TSLA', name: 'Tesla, Inc.', isin: 'US88160R1014', targetWeight: 0, category: 'stocks', color: '#e81010', icon: resolveAssetIcon('TSLA', 'Tesla, Inc.'), ter: 0 }
 		];
 
 		this.satelliteAssets = [
-			{ ticker: 'CASH-DEMO', name: 'Cuenta Remunerada (Demo)', isin: '', targetWeight: 0, category: 'satellite', color: '#6366f1', icon: '🏦', ter: 0 }
+			{ ticker: 'CASH-DEMO', name: 'Cuenta Remunerada (Demo)', isin: '', targetWeight: 0, category: 'satellite', color: '#6366f1', icon: resolveAssetIcon('CASH-DEMO', 'Cuenta Remunerada (Demo)'), ter: 0 }
 		];
 
 		this.holdings = {
