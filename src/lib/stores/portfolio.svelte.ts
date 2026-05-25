@@ -442,6 +442,9 @@ export class PortfolioStore {
 				localStorage.removeItem(STORAGE_KEY_PRICES);
 				localStorage.removeItem('corebalance_transactions');
 			}
+			if (typeof sessionStorage !== 'undefined') {
+				sessionStorage.removeItem('bypassLanding');
+			}
 			if (typeof window !== 'undefined') window.location.reload();
 		} catch (e) { console.error('Logout error:', e); } finally { this.authLoading = false; }
 	}
@@ -522,6 +525,9 @@ export class PortfolioStore {
 			this.holdings = {};
 			this.transactions = [];
 			this.contribution = 0;
+			if (typeof sessionStorage !== 'undefined') {
+				sessionStorage.removeItem('bypassLanding');
+			}
 			this.saveToStorage();
 		}
 	}
