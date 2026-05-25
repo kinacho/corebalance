@@ -119,10 +119,10 @@ export function validateImportData(data: any): boolean {
 }
 
 /** Resuelve el icono (emoji) apropiado para un activo según su ticker, nombre y tipo */
-export function resolveAssetIcon(ticker: string, name: string = '', type: string = ''): string {
-	const t = ticker.toUpperCase();
-	const n = name.toUpperCase();
-	const ty = type.toUpperCase();
+export function resolveAssetIcon(ticker: string = '', name: string = '', type: string = ''): string {
+	const t = (ticker || '').toUpperCase();
+	const n = (name || '').toUpperCase();
+	const ty = (type || '').toUpperCase();
 
 	// 1. Criptoactivos
 	if (t.includes('BTC') || t.includes('BITCOIN') || n.includes('BITCOIN') || n.includes('BTC')) return '₿';
@@ -182,6 +182,7 @@ export function resolveAssetIcon(ticker: string, name: string = '', type: string
 	// 6. Por Ticker o ISIN directo (para fondos muy comunes en España)
 	if (t.includes('IE00') || t.includes('LU0')) return '📊'; // ETF/Fondo Irlandés/Luxemburgués estándar
 
-	// 7. Genérico por defecto
-	return '💎';
+	// 7. Genérico por defecto (Acción por defecto como pidió el usuario)
+	return '📈';
 }
+

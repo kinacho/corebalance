@@ -77,8 +77,9 @@
 <div class="compact-row" class:ledger-active={useLedger}>
 	<div class="cell-identity">
 		<button class="asset-icon" onclick={() => showLedger = true} title={useLedger ? 'Modo Ledger activo' : 'Ver transacciones'}>
-			{position.asset.icon}
+			{position.asset.icon || '📈'}
 			<span class="market-dot" class:open={isMarketOpen(position.asset.ticker, position.marketState)} class:closed={!isMarketOpen(position.asset.ticker, position.marketState)} title={position.marketState || 'Estado desconocido'}></span>
+
 			{#if useLedger}
 				<span class="ledger-indicator">📜</span>
 			{/if}
@@ -212,9 +213,9 @@
 	}
 
 	.asset-icon {
-		font-size: 1.2rem;
-		width: 32px;
-		height: 32px;
+		font-size: 1.25rem;
+		width: 36px;
+		height: 36px;
 		background: rgba(0,0,0,0.3);
 		border: 1px solid rgba(255,255,255,0.1);
 		border-radius: 8px;
@@ -226,6 +227,7 @@
 		cursor: pointer;
 		padding: 0;
 		color: inherit;
+		line-height: 1;
 	}
 
 	.asset-icon:hover {

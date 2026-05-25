@@ -373,7 +373,7 @@ const myinvestorDetector: BrokerDetector = {
 
 				let isin = findField(headers, row, 'ISIN', 'Código ISIN', 'Codigo ISIN');
 				const name = findField(headers, row, 'Nombre fondo', 'Nombre del fondo', 'Producto', 'Nombre', 'Descripción');
-				const tipoOp = findField(headers, row, 'Tipo operación').toLowerCase();
+				const tipoOp = findField(headers, row, 'Tipo operación', 'Operación', 'Tipo').toLowerCase();
 				
 				// Extraer ISIN del nombre si no hay campo dedicado
 				if (!isValidISIN(isin) && name) {
@@ -387,18 +387,25 @@ const myinvestorDetector: BrokerDetector = {
 				}
 				
 				const shares = parseNumber(findField(headers, row,
-					'Participaciones', 'Títulos', 'Titulos', 'Cantidad', 'participaciones'));
+					'Participaciones', 'Títulos', 'Titulos', 'Cantidad', 'participaciones', 'Nº participaciones'));
 				
-				// Determinar dirección: positivo para suscripciones/traspasos entrada, negativo para reembolsos/traspasos salida
-				const isIncrease = tipoOp.includes('suscripcion') || tipoOp.includes('traspaso entrada');
-				const multiplier = isIncrease ? 1 : -1;
+				// Determinar dirección: positivo para suscripciones/traspasos entrada/compras, negativo para reembolsos/traspasos salida/ventas
+				const isIncrease = tipoOp.includes('suscripcion') || tipoOp.includes('entrada') || tipoOp.includes('compra') || tipoOp.includes('aportacion');
+				const isDecrease = tipoOp.includes('reembolso') || tipoOp.includes('salida') || tipoOp.includes('venta');
+				
+				const multiplier = isIncrease ? 1 : (isDecrease ? -1 : 1); // Por defecto aumento si no se detecta
 				
 				const importeTotal = parseNumber(findField(headers, row,
 					'Importe neto', 'Importe bruto', 'Importe', 'Valoracion', 'Valoración'));
 
+				// Si el usuario añadió "Precio Medio" manualmente, intentamos usarlo
+				const manualAvgCost = parseNumber(findField(headers, row, 'Precio medio', 'Coste medio', 'Precio de compra'));
+
 				// Calculamos coste unitario si es suscripción
 				let costPerShare = 0;
-				if (isIncrease && shares > 0) {
+				if (manualAvgCost > 0) {
+					costPerShare = manualAvgCost;
+				} else if (isIncrease && shares > 0 && importeTotal > 0) {
 					costPerShare = importeTotal / shares;
 				}
 
@@ -407,7 +414,12 @@ const myinvestorDetector: BrokerDetector = {
 					existing.shares += (shares * multiplier);
 					// Solo ajustamos coste si es compra/entrada
 					if (isIncrease) {
-						existing.totalCost += (shares * costPerShare);
+						// Si ya tenemos coste previo, hacemos media ponderada
+						if (existing.totalCost > 0) {
+							existing.totalCost += (shares * costPerShare);
+						} else {
+							existing.totalCost = (existing.shares * costPerShare);
+						}
 					}
 				} else {
 					accumulated.set(isin, {
@@ -417,6 +429,7 @@ const myinvestorDetector: BrokerDetector = {
 						currency: 'EUR',
 					});
 				}
+
 			} catch {
 				skipped++;
 			}
@@ -438,6 +451,36 @@ const myinvestorDetector: BrokerDetector = {
 	}
 };
 
+/**
+ * Agrega posiciones duplicadas por Ticker o ISIN, calculando el coste medio ponderado.
+ */
+function aggregateParsedPositions(positions: ParsedPosition[]): ParsedPosition[] {
+	const map = new Map<string, ParsedPosition>();
+	
+	for (const pos of positions) {
+		const key = (pos.isin || pos.ticker || pos.name).toUpperCase();
+		const existing = map.get(key);
+		
+		if (existing) {
+			const totalShares = existing.shares + pos.shares;
+			if (totalShares > 0) {
+				// Coste medio ponderado: (S1*C1 + S2*C2) / (S1+S2)
+				existing.avgCost = (existing.shares * existing.avgCost + pos.shares * pos.avgCost) / totalShares;
+			}
+			existing.shares = totalShares;
+			
+			// Mantener el nombre más descriptivo
+			if (pos.name.length > existing.name.length) existing.name = pos.name;
+			if (!existing.isin && pos.isin) existing.isin = pos.isin;
+			if (!existing.ticker && pos.ticker) existing.ticker = pos.ticker;
+		} else {
+			map.set(key, { ...pos });
+		}
+	}
+	
+	return Array.from(map.values());
+}
+
 // ─── Parser Genérico ────────────────────────────────────────────────────
 
 const genericDetector: BrokerDetector = {
@@ -455,7 +498,7 @@ const genericDetector: BrokerDetector = {
 		return (hasIdentifier && hasQuantity) ? 0.3 : 0;
 	},
 	parse(headers, rows) {
-		const positions: ParsedPosition[] = [];
+		let positions: ParsedPosition[] = [];
 		const warnings: string[] = [];
 		let skipped = 0;
 		
@@ -465,9 +508,9 @@ const genericDetector: BrokerDetector = {
 				const ticker = findField(headers, row, 'Ticker', 'Symbol', 'Símbolo', 'Codigo');
 				const name = findField(headers, row, 'Name', 'Nombre', 'Product', 'Producto', 'Description');
 				const shares = parseNumber(findField(headers, row,
-					'Shares', 'Quantity', 'Cantidad', 'Participaciones', 'Units', 'Position', 'Títulos'));
+					'Shares', 'Quantity', 'Cantidad', 'Participaciones', 'Units', 'Position', 'Títulos', 'Participaciones actuales'));
 				const avgCost = parseNumber(findField(headers, row,
-					'Avg Cost', 'Average Cost', 'Price', 'Precio', 'Precio medio', 'Cost'));
+					'Avg Cost', 'Average Cost', 'Price', 'Precio', 'Precio medio', 'Cost', 'Precio de compra'));
 				const currency = findField(headers, row, 'Currency', 'Moneda', 'Divisa') || 'EUR';
 				
 				if (!isin && !ticker) { skipped++; continue; }
@@ -485,6 +528,9 @@ const genericDetector: BrokerDetector = {
 				skipped++;
 			}
 		}
+
+		// Agregar posiciones duplicadas (ej: múltiples compras del mismo activo)
+		positions = aggregateParsedPositions(positions);
 		
 		return { positions, warnings, skipped };
 	}
@@ -505,7 +551,7 @@ const ALL_DETECTORS: BrokerDetector[] = [
  */
 export function importWithMapping(fileContent: string, mapping: MappingConfig): ImportResult {
 	const { headers, rows, delimiter } = parseCSV(fileContent);
-	const positions: ParsedPosition[] = [];
+	let positions: ParsedPosition[] = [];
 	const warnings: string[] = [];
 	let skipped = 0;
 
@@ -539,6 +585,9 @@ export function importWithMapping(fileContent: string, mapping: MappingConfig): 
 		}
 	}
 
+	// Agregar posiciones duplicadas
+	positions = aggregateParsedPositions(positions);
+
 	return {
 		broker: { id: 'generic', name: 'Mapeo Manual', icon: '⚙️', confidence: 1 },
 		positions,
@@ -549,6 +598,7 @@ export function importWithMapping(fileContent: string, mapping: MappingConfig): 
 		delimiter
 	};
 }
+
 
 /**
  * Punto de entrada principal: dado el contenido bruto de un archivo CSV,

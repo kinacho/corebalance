@@ -102,8 +102,9 @@
 							{#each result.allocations as alloc}
 								<div class="alloc-row" style="--accent: {alloc.asset.color}">
 									<div class="alloc-left">
-										<span class="alloc-emoji">{alloc.asset.icon}</span>
+										<span class="alloc-emoji">{alloc.asset.icon || '📈'}</span>
 										<div class="alloc-meta">
+
 											<span class="alloc-name">{alloc.asset.name}</span>
 											<span class="alloc-shares privacy-blur">
 												+{formatShares(alloc.sharesToBuy)} títulos

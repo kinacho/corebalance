@@ -106,8 +106,9 @@
 	<div class="card-header" style="display: grid; grid-template-columns: 1fr auto; align-items: start; gap: 1rem;">
 		<div class="asset-identity" style="min-width: 0;">
 			<div class="asset-icon-wrapper">
-				<span class="asset-icon">{position.asset.icon}</span>
+				<span class="asset-icon">{position.asset.icon || '📈'}</span>
 				{#if !isCash}
+
 					<span class="market-dot" class:open={isMarketOpen(position.asset.ticker, position.marketState)} class:closed={!isMarketOpen(position.asset.ticker, position.marketState)} title={position.marketState || 'Estado desconocido'}></span>
 				{/if}
 			</div>
@@ -423,6 +424,7 @@
 		justify-content: center;
 		box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);
 		position: relative;
+		flex-shrink: 0;
 	}
 
 	.asset-icon {

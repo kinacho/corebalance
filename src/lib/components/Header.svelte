@@ -197,8 +197,9 @@
 		<div id="tour-sync-auth" class="user-zone">
 			{#if !authReady}
 				<div class="auth-skeleton"></div>
-			{:else}
+			{:else if !portfolio.isDemo}
 				<div class="user-container" in:scale={{ duration: 300, start: 0.9 }}>
+
 					<button 
 						class="action-btn user-btn" 
 						class:auth-loading={authLoading}

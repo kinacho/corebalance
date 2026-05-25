@@ -379,11 +379,17 @@ export class PortfolioStore {
 			const savedAssets = localStorage.getItem(STORAGE_KEY_ASSETS);
 			if (savedAssets) {
 				const parsed = JSON.parse(savedAssets);
-				if (parsed.coreAssets && Array.isArray(parsed.coreAssets)) this.coreAssets = parsed.coreAssets;
-				if (parsed.satelliteAssets && Array.isArray(parsed.satelliteAssets)) this.satelliteAssets = parsed.satelliteAssets;
-				if (parsed.stockAssets && Array.isArray(parsed.stockAssets)) this.stockAssets = parsed.stockAssets;
+				const ensureIcons = (assets: Asset[]) => assets.map(a => ({
+					...a,
+					icon: a.icon || resolveAssetIcon(a.ticker, a.name)
+				}));
+
+				if (parsed.coreAssets && Array.isArray(parsed.coreAssets)) this.coreAssets = ensureIcons(parsed.coreAssets);
+				if (parsed.satelliteAssets && Array.isArray(parsed.satelliteAssets)) this.satelliteAssets = ensureIcons(parsed.satelliteAssets);
+				if (parsed.stockAssets && Array.isArray(parsed.stockAssets)) this.stockAssets = ensureIcons(parsed.stockAssets);
 			}
 			const savedHoldings = localStorage.getItem(STORAGE_KEY_HOLDINGS);
+
 			if (savedHoldings) {
 				const parsed = JSON.parse(savedHoldings);
 				this.holdings = this.sanitizeHoldings(parsed || {});
