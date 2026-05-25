@@ -7,11 +7,13 @@
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { ui } from '$lib/stores/ui.svelte';
 	import { onMount } from 'svelte';
+	import { page } from '$app/stores';
 	import { dev } from '$app/environment';
 	import { injectAnalytics } from '@vercel/analytics/sveltekit';
 	import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
 
 	let { children } = $props();
+	let canonicalUrl = $derived(`https://corebalance.app${$page.url.pathname}`);
 
 	onMount(() => {
 		injectAnalytics({ mode: dev ? 'development' : 'production' });
@@ -30,6 +32,9 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+	<link rel="canonical" href={canonicalUrl} />
+	<link rel="alternate" hreflang="es" href="https://corebalance.app" />
+	<link rel="alternate" hreflang="x-default" href="https://corebalance.app" />
 </svelte:head>
 
 <div 
