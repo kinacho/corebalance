@@ -1,6 +1,5 @@
 User-agent: *
 Disallow: /dashboard/
-Disallow: /sync/
 Disallow: /cookies/
 Disallow: /privacy/
 Disallow: /terms/
