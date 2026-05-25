@@ -10,7 +10,6 @@ export default defineConfig({
 		sveltekit(),
 		Sitemap({
 			hostname: 'https://corebalance.app',
-			dynamicRoutes: ['/sync'],
 			generateRobotsTxt: true,
 			outDir: '.svelte-kit/output/client'
 		}),
