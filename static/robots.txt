@@ -1,8 +1,21 @@
+# CoreBalance — corebalance.app
+# Bots principales
 User-agent: *
+Allow: /
 Disallow: /dashboard/
+Disallow: /dashboard
 Disallow: /sync/
-Disallow: /cookies/
-Disallow: /privacy/
-Disallow: /terms/
+Disallow: /sync
+Disallow: /_app/
+
+# Bloquear bots de scraping de IA que no aportan tráfico
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
 
 Sitemap: https://corebalance.app/sitemap.xml
