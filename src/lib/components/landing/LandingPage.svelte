@@ -11,22 +11,12 @@
   import LandingFooter from './LandingFooter.svelte';
 
   let { onStart = () => {} } = $props();
-</script>
 
-<svelte:head>
-  <title>CoreBalance — Rebalancea tu cartera de ETFs y Fondos Indexados</title>
-  <meta name="description" content="La herramienta definitiva para el inversor indexado. Calcula tu rebalanceo en segundos, optimiza tu cartera y mantén tu estrategia bajo control." />
-  
-  <!-- Open Graph -->
-  <meta property="og:title" content="CoreBalance — Rebalancea tu cartera de ETFs" />
-  <meta property="og:description" content="Gestiona tu cartera de fondos indexados y ETFs con rebalanceo inteligente y seguimiento en tiempo real." />
-  <meta property="og:image" content="https://corebalance.app/og-image-landing.png" />
-  
-  <!-- JSON-LD -->
-  <script type="application/ld+json">
-    {@html JSON.stringify([
+  // Schema.org JSON-LD
+  const schemaData = {
+    "@context": "https://schema.org",
+    "@graph": [
       {
-        "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "CoreBalance",
         "url": "https://corebalance.app",
@@ -47,16 +37,14 @@
         ]
       },
       {
-        "@context": "https://schema.org",
         "@type": "Organization",
         "name": "CoreBalance",
         "url": "https://corebalance.app",
         "sameAs": [
-          "https://github.com/kino166/rebalanceador" 
+          "https://github.com/kino166/rebalanceador"
         ]
       },
       {
-        "@context": "https://schema.org",
         "@type": "FAQPage",
         "mainEntity": [
           {
@@ -101,10 +89,26 @@
           }
         ]
       }
-    ])}
+    ]
+  };
+
+  const schemaString = JSON.stringify(schemaData);
   </script>
 
-</svelte:head>
+  <svelte:head>
+  <title>CoreBalance — Rebalancea tu cartera de ETFs y Fondos Indexados</title>
+  <meta name="description" content="La herramienta definitiva para el inversor indexado. Calcula tu rebalanceo en segundos, optimiza tu cartera y mantén tu estrategia bajo control." />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="CoreBalance — Rebalancea tu cartera de ETFs" />
+  <meta property="og:description" content="Gestiona tu cartera de fondos indexados y ETFs con rebalanceo inteligente y seguimiento en tiempo real." />
+  <meta property="og:image" content="https://corebalance.app/og-image-landing.png" />
+
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+    {@html schemaString}
+  </script>
+  </svelte:head>
 
 <div class="landing-page">
   <LandingNavBar {onStart} />

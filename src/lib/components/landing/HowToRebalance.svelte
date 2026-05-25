@@ -35,11 +35,13 @@
       "url": "https://corebalance.app/#guia-rebalanceo"
     }))
   };
+
+  const howToSchemaString = JSON.stringify(howToSchema);
 </script>
 
 <svelte:head>
   <script type="application/ld+json">
-    {@html JSON.stringify(howToSchema)}
+    {@html howToSchemaString}
   </script>
 </svelte:head>
 

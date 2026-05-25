@@ -172,6 +172,23 @@
       window.removeEventListener('tour-step', handleTourStep);
     };
   });
+
+  // Schema.org JSON-LD for Dashboard
+  const dashboardSchema = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "CoreBalance",
+    "operatingSystem": "Web, iOS, Android",
+    "applicationCategory": "FinanceApplication",
+    "description": "Herramienta de gestión y rebalanceo de carteras de inversión para fondos indexados y ETFs.",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "EUR"
+    },
+    "screenshot": "https://corebalance.app/og-image.png"
+  };
+  const dashboardSchemaString = JSON.stringify(dashboardSchema);
 </script>
 
 
@@ -202,20 +219,7 @@
 
   <!-- Schema.org JSON-LD -->
   <script type="application/ld+json">
-    {@html JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      "name": "CoreBalance",
-      "operatingSystem": "Web, iOS, Android",
-      "applicationCategory": "FinanceApplication",
-      "description": "Herramienta de gestión y rebalanceo de carteras de inversión para fondos indexados y ETFs.",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "EUR"
-      },
-      "screenshot": "https://corebalance.app/og-image.png"
-    })}
+    {@html dashboardSchemaString}
   </script>
 </svelte:head>
 

@@ -37,11 +37,13 @@
       }
     }))
   };
+
+  const faqSchemaString = JSON.stringify(faqSchema);
 </script>
 
 <svelte:head>
   <script type="application/ld+json">
-    {@html JSON.stringify(faqSchema)}
+    {@html faqSchemaString}
   </script>
 </svelte:head>
 
