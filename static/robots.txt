@@ -1,3 +1,8 @@
-# allow crawling everything by default
 User-agent: *
-Disallow:
+Disallow: /dashboard/
+Disallow: /sync/
+Disallow: /cookies/
+Disallow: /privacy/
+Disallow: /terms/
+
+Sitemap: https://corebalance.app/sitemap.xml

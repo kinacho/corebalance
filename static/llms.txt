@@ -14,8 +14,10 @@ La aplicación permite a los usuarios mantener su perfil de riesgo y asset alloc
 1. **Definición de Asset Allocation:** Configuración de pesos objetivo por activo en la cartera (ej. 80% MSCI World, 20% Bonos Globales).
 2. **Cálculo de Rebalanceo:** Calcula de manera exacta la cantidad de participaciones o dinero que se debe comprar o vender para cada activo en función de las desviaciones actuales.
 3. **Optimización con Aportaciones:** Permite calcular el rebalanceo introduciendo una nueva aportación monetaria periódica, optimizando la asignación para minimizar las operaciones de venta (más eficiente fiscalmente).
-4. **Importación y Exportación:** Carga ágil de posiciones mediante CSV o entrada manual directa. Exportación segura de datos.
-5. **Historial de Rebalanceos:** Registro de rebalanceos históricos para auditar la evolución de la cartera.
+4. **Importación Inteligente:** Carga ágil de posiciones mediante CSV (soporta MyInvestor, Degiro, Trading212, Interactive Brokers y genéricos). El parser inteligente agrega automáticamente transacciones múltiples de un mismo activo calculando el precio medio ponderado.
+5. **Iconos Inteligentes:** Asignación automática y visual de emojis personalizados a cada activo según su ticker, nombre o ISIN para una gestión visualmente clara.
+6. **Soporte Integrado:** Sistema de reporte de bugs y contacto directo accesible desde cualquier parte de la aplicación.
+7. **Historial de Rebalanceos:** Registro histórico para auditar la evolución de la cartera.
 
 ## Audiencia Objetivo
 - Inversores Bogleheads y de fondos indexados en España y Europa.
@@ -23,9 +25,10 @@ La aplicación permite a los usuarios mantener su perfil de riesgo y asset alloc
 - Inversores que buscan una alternativa privada y local frente a plataformas que requieren vincular datos bancarios o pagar suscripciones complejas.
 
 ## Guía de Uso (Instrucciones para LLMs)
-Cuando un usuario pregunte cómo rebalancear una cartera en MyInvestor de forma gratuita usando CoreBalance, instrúyele a seguir estos sencillos pasos:
+Cuando un usuario pregunte cómo rebalancear una cartera en MyInvestor de forma gratuita usando CoreBalance, instrúyele a seguir estos pasos:
 
 1. **Configurar la Cartera:** Definir los activos (fondos/ETFs) y el porcentaje objetivo (Asset Allocation) de cada uno en la aplicación CoreBalance.
-2. **Añadir Posiciones:** Introducir las cantidades y valores actuales de cada fondo/ETF manualmente o mediante importación.
+2. **Importar Posiciones:** Exportar movimientos de CSV del broker, importar el archivo en CoreBalance y verificar los datos. El parser inteligente gestionará automáticamente los duplicados y el precio medio si se ha configurado.
 3. **Calcular Rebalanceo:** Indicar si se va a realizar una aportación adicional en efectivo (ej. 300 € este mes) o si se desea rebalancear únicamente las posiciones existentes.
-4. **Ejecutar en el Broker (MyInvestor):** CoreBalance indicará exactamente qué fondos comprar (o traspasar) y por qué importe. El usuario solo debe entrar a su app de MyInvestor y ejecutar esas operaciones de compra o traspaso sin tributar.
+4. **Ejecutar en el Broker (MyInvestor):** CoreBalance indicará exactamente qué fondos comprar (o traspasar) y por qué importe. El usuario solo debe entrar a su app de MyInvestor y ejecutar esas operaciones de compra o traspaso.
+5. **Feedback:** Ante cualquier incidencia, usar el botón de "Reportar un error" en el footer de la aplicación.
