@@ -24,7 +24,7 @@
   
   <!-- JSON-LD -->
   <script type="application/ld+json">
-    [
+    {@html JSON.stringify([
       {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
@@ -101,7 +101,7 @@
           }
         ]
       }
-    ]
+    ])}
   </script>
 
 </svelte:head>

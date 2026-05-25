@@ -39,7 +39,7 @@
 
 <svelte:head>
   <script type="application/ld+json">
-    {JSON.stringify(howToSchema)}
+    {@html JSON.stringify(howToSchema)}
   </script>
 </svelte:head>
 

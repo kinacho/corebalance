@@ -41,7 +41,7 @@
 
 <svelte:head>
   <script type="application/ld+json">
-    {JSON.stringify(faqSchema)}
+    {@html JSON.stringify(faqSchema)}
   </script>
 </svelte:head>
 

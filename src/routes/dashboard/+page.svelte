@@ -202,7 +202,7 @@
 
   <!-- Schema.org JSON-LD -->
   <script type="application/ld+json">
-    {
+    {@html JSON.stringify({
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
       "name": "CoreBalance",
@@ -215,7 +215,7 @@
         "priceCurrency": "EUR"
       },
       "screenshot": "https://corebalance.app/og-image.png"
-    }
+    })}
   </script>
 </svelte:head>
 
