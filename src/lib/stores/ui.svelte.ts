@@ -11,6 +11,10 @@ class UIStore {
 	toasts = $state<ToastMessage[]>([]);
 	baseCurrency = $state<'EUR' | 'USD' | 'GBP'>('EUR');
 	deferredPrompt: any = $state(null);
+	
+	// Support Modal State
+	showSupportModal = $state(false);
+	supportType = $state<'bug' | 'contact'>('contact');
 
 	constructor() {
 		if (typeof localStorage !== 'undefined') {

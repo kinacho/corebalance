@@ -3,6 +3,7 @@
 	import SplashScreen from '$lib/components/SplashScreen.svelte';
 	import Toast from '$lib/components/Toast.svelte';
 	import InstallPrompt from '$lib/components/InstallPrompt.svelte';
+	import SupportModal from '$lib/components/SupportModal.svelte';
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { ui } from '$lib/stores/ui.svelte';
 	import { onMount } from 'svelte';
@@ -46,3 +47,4 @@
 
 <Toast />
 <InstallPrompt />
+<SupportModal />

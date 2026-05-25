@@ -44,6 +44,7 @@
 		"firebase": "^12.12.1",
 		"html5-qrcode": "^2.3.8",
 		"qrcode": "^1.5.4",
+		"resend": "^6.12.3",
 		"yahoo-finance2": "^3.14.1"
 	}
 }

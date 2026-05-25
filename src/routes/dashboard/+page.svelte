@@ -17,6 +17,7 @@
   import ChangelogModal from "$lib/components/ChangelogModal.svelte";
   import DemoRibbon from "$lib/components/DemoRibbon.svelte";
   import { portfolio } from "$lib/stores/portfolio.svelte";
+  import { ui } from "$lib/stores/ui.svelte";
 
   import { formatEUR, formatPercent } from "$lib/utils";
   import { DASHBOARD_TABS, type TabId } from "$lib/constants";
@@ -367,14 +368,21 @@
             </div>
             <p class="footer-tagline">Tu centro de mandos para una gestión de activos inteligente y equilibrada.</p>
             <div class="footer-links">
-              <a href="mailto:bug@corebalance.app" class="footer-link">
+              <button 
+                class="footer-link-btn" 
+                onclick={() => { ui.supportType = 'bug'; ui.showSupportModal = true; }}
+              >
                 <span class="link-icon">🪲</span> Reportar un error
-              </a>
+              </button>
               <span class="link-separator">•</span>
-              <a href="mailto:hola@corebalance.app" class="footer-link">
+              <button 
+                class="footer-link-btn" 
+                onclick={() => { ui.supportType = 'contact'; ui.showSupportModal = true; }}
+              >
                 <span class="link-icon">✉️</span> Contacto
-              </a>
+              </button>
             </div>
+
           </div>
 
           <div class="footer-donation">
@@ -756,7 +764,7 @@
     }
   }
 
-  .footer-link {
+  .footer-link-btn {
     font-size: 0.8rem;
     color: rgba(160, 160, 200, 0.4);
     text-decoration: none;
@@ -764,9 +772,13 @@
     display: flex;
     align-items: center;
     gap: 0.35rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
   }
 
-  .footer-link:hover {
+  .footer-link-btn:hover {
     color: #3b82f6;
     transform: translateY(-1px);
   }

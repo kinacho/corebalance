@@ -1,5 +1,6 @@
 <script lang="ts">
   import { portfolio } from '$lib/stores/portfolio.svelte';
+  import { ui } from '$lib/stores/ui.svelte';
 </script>
 
 <footer class="landing-footer">
@@ -35,12 +36,27 @@
       <div class="links-col">
         <h4>Comunidad</h4>
         <ul>
-          <li><a href="mailto:bug@corebalance.app">Reportar un error</a></li>
+          <li>
+            <button 
+              class="footer-btn" 
+              onclick={() => { ui.supportType = 'bug'; ui.showSupportModal = true; }}
+            >
+              Reportar un error
+            </button>
+          </li>
           <li><a href="https://paypal.me/kinacho" target="_blank">Apoya el proyecto</a></li>
-          <li><a href="mailto:hola@corebalance.app">Contacto</a></li>
+          <li>
+            <button 
+              class="footer-btn" 
+              onclick={() => { ui.supportType = 'contact'; ui.showSupportModal = true; }}
+            >
+              Contacto
+            </button>
+          </li>
         </ul>
       </div>
     </div>
+
 
     <div class="footer-bottom">
       <p>© {new Date().getFullYear()} CoreBalance. Hecho con ❤️ para la comunidad inversora.</p>
@@ -118,14 +134,20 @@
     margin-bottom: 0.75rem;
   }
 
-  li a {
+  li a, .footer-btn {
     color: rgba(160, 160, 200, 0.5);
     text-decoration: none;
     font-size: 0.9rem;
     transition: color 0.2s ease;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    font-family: inherit;
+    display: inline;
   }
 
-  li a:hover {
+  li a:hover, .footer-btn:hover {
     color: #3b82f6;
   }
 
