@@ -40,9 +40,7 @@
 </script>
 
 <svelte:head>
-  <script type="application/ld+json">
-    {@html howToSchemaString}
-  </script>
+  {@html `<script type="application/ld+json">${howToSchemaString}</script>`}
 </svelte:head>
 
 <section id="guia-rebalanceo" class="howto-section">

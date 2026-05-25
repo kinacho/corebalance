@@ -104,10 +104,7 @@
   <meta property="og:description" content="Gestiona tu cartera de fondos indexados y ETFs con rebalanceo inteligente y seguimiento en tiempo real." />
   <meta property="og:image" content="https://corebalance.app/og-image-landing.png" />
 
-  <!-- JSON-LD -->
-  <script type="application/ld+json">
-    {@html schemaString}
-  </script>
+  {@html `<script type="application/ld+json">${schemaString}</script>`}
   </svelte:head>
 
 <div class="landing-page">

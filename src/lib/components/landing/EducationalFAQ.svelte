@@ -42,9 +42,7 @@
 </script>
 
 <svelte:head>
-  <script type="application/ld+json">
-    {@html faqSchemaString}
-  </script>
+  {@html `<script type="application/ld+json">${faqSchemaString}</script>`}
 </svelte:head>
 
 <section id="educational" class="edu-faq-section">

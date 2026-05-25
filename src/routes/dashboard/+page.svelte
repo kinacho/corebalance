@@ -217,10 +217,7 @@
   <meta property="twitter:description" content="Gestiona tu cartera de fondos indexados y ETFs con rebalanceo inteligente." />
   <meta property="twitter:image" content="https://corebalance.app/og-image.png" />
 
-  <!-- Schema.org JSON-LD -->
-  <script type="application/ld+json">
-    {@html dashboardSchemaString}
-  </script>
+  {@html `<script type="application/ld+json">${dashboardSchemaString}</script>`}
 </svelte:head>
 
 {#if portfolio.isInitialized}
