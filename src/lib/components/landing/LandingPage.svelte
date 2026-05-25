@@ -4,6 +4,7 @@
   import Features from './Features.svelte';
   import Comparison from './Comparison.svelte';
   import WhyUs from './WhyUs.svelte';
+  import HowToRebalance from './HowToRebalance.svelte';
   import HowItWorks from './HowItWorks.svelte';
   import EducationalFAQ from './EducationalFAQ.svelte';
   import Cta from './Cta.svelte';
@@ -48,6 +49,7 @@
     <Comparison />
     <HowItWorks />
     <WhyUs />
+    <HowToRebalance />
     <EducationalFAQ />
     <Cta {onStart} />
   </main>

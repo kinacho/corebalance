@@ -9,20 +9,20 @@
     <div class="reveal">
       <span class="badge">Disponible para Web, iOS y Android</span>
       <h1>
-        Toma el control de tu <span class="text-gradient">rebalanceo</span>
+        Rebalancea tu cartera de <span class="text-gradient">ETFs y Fondos Indexados</span>
       </h1>
       <p class="subtitle">
-        La herramienta definitiva para el inversor indexado. Calcula tu rebalanceo en segundos, 
-        optimiza tus aportaciones y mantén tu estrategia bajo control sin hojas de cálculo complejas.
+        La calculadora definitiva para el inversor indexado. Calcula tu rebalanceo en segundos, 
+        optimiza tus aportaciones y mantén tu estrategia bajo control de forma local y privada.
       </p>
       <div class="cta-group">
-        <button class="btn-primary btn-lg" onclick={() => onStart()}>
+        <button class="btn-primary btn-lg" onclick={() => onStart()} aria-label="Empezar gratis a rebalancear tu cartera con CoreBalance">
           Empezar gratis
         </button>
-        <button class="btn-demo" onclick={() => { (portfolio as any).loadDemoData(); goto('/dashboard'); }}>
+        <button class="btn-demo" onclick={() => { (portfolio as any).loadDemoData(); goto('/dashboard'); }} aria-label="Probar demo interactiva con una cartera indexada de ejemplo">
           Probar Demo Interactiva
         </button>
-        <a href="#how-it-works" class="btn-text">Ver cómo funciona →</a>
+        <a href="#how-it-works" class="btn-text" aria-label="Ver explicación de cómo funciona el rebalanceo de carteras">Ver cómo funciona →</a>
       </div>
     </div>
 

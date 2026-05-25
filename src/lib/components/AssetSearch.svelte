@@ -5,6 +5,7 @@
 	import { focusTrap } from '$lib/actions/focusTrap';
 	import { ASSET_COLORS, ASSET_ICONS } from '$lib/constants';
 	import type { Asset, AssetCategory, SearchResult } from '$lib/types';
+	import { resolveAssetIcon } from '$lib/utils';
 
 	interface Props {
 		category: AssetCategory;
@@ -83,7 +84,7 @@
 			isin: '', // Yahoo no suele devolver ISIN directamente
 			targetWeight: category === 'core' ? 0 : 0,
 			color: getNextColor(),
-			icon: ASSET_ICONS[result.type] || ASSET_ICONS['Otro'],
+			icon: resolveAssetIcon(result.ticker, result.name, result.type),
 			ter: 0,
 			category
 		};
@@ -151,7 +152,7 @@
 						disabled={alreadyAdded}
 					>
 						<div class="result-icon">
-							{ASSET_ICONS[result.type] || '💎'}
+							{resolveAssetIcon(result.ticker, result.name, result.type)}
 						</div>
 						<div class="result-info">
 							<span class="result-name">{result.name}</span>

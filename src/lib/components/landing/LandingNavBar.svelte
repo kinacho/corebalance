@@ -36,22 +36,22 @@
     </div>
 
     <div class="nav-links">
-      <a href="#features">Características</a>
-      <a href="#how-it-works">Cómo funciona</a>
-      <a href="#why-us">Por qué CoreBalance</a>
-      <a href="#educational">FAQ</a>
+      <a href="#features" aria-label="Ir a la sección de características de CoreBalance">Características</a>
+      <a href="#how-it-works" aria-label="Ver cómo funciona el rebalanceo de carteras">Cómo funciona</a>
+      <a href="#why-us" aria-label="Conocer la historia y por qué usar CoreBalance">Por qué CoreBalance</a>
+      <a href="#educational" aria-label="Ver preguntas frecuentes sobre inversión pasiva y rebalanceo">FAQ</a>
     </div>
 
     <div class="nav-actions">
       {#if portfolio.user && portfolio.hasAnyHoldings}
-        <button class="btn-primary" onclick={() => goto('/dashboard')}>
+        <button class="btn-primary" onclick={() => goto('/dashboard')} aria-label="Ir a tu panel de control de inversiones">
           Ir al Dashboard
         </button>
       {:else}
-        <button class="btn-demo" onclick={() => startDemo()}>
+        <button class="btn-demo" onclick={() => startDemo()} aria-label="Probar demostración interactiva de rebalanceo de cartera">
           Probar Demo
         </button>
-        <button class="btn-primary" onclick={() => onStart()}>
+        <button class="btn-primary" onclick={() => onStart()} aria-label="Empezar a rebalancear tu cartera gratis">
           Empezar gratis
         </button>
       {/if}
@@ -180,27 +180,5 @@
     border-color: rgba(139, 92, 246, 0.5);
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
-  }
-
-  .btn-secondary {
-    background: rgba(255, 255, 255, 0.05);
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 0.6rem 1.25rem;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-
-  .btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.1);
-  }
-
-  @media (max-width: 640px) {
-    .btn-secondary {
-      display: none;
-    }
   }
 </style>

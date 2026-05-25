@@ -6,6 +6,7 @@
 	import type { ImportResult, ParsedPosition, MappingConfig } from '$lib/importers';
 	import { ASSET_COLORS, ASSET_ICONS } from '$lib/constants';
 	import type { Asset, AssetCategory } from '$lib/types';
+	import { resolveAssetIcon } from '$lib/utils';
 	import { onMount, onDestroy } from 'svelte';
 	import ColumnMapper from './ColumnMapper.svelte';
 
@@ -195,7 +196,7 @@
 				isin: pos.isin || '',
 				targetWeight: 0,
 				color: getNextColor(),
-				icon: ASSET_ICONS[assetType] || ASSET_ICONS['Otro'],
+				icon: resolveAssetIcon(ticker, getResolvedName(pos), resolved?.type || ''),
 				ter: 0,
 				category: targetCategory
 			};

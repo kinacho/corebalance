@@ -1,0 +1,31 @@
+# CoreBalance - Rebalanceador de Carteras Local-First
+
+CoreBalance es una herramienta web gratuita, de código abierto y local-first diseñada para ayudar a inversores en fondos indexados y ETFs a calcular y realizar el rebalanceo de sus carteras de inversión.
+
+La aplicación permite a los usuarios mantener su perfil de riesgo y asset allocation original de forma extremadamente simple y segura, sin comprometer su privacidad financiera.
+
+## Información Clave
+- **URL Principal:** https://corebalance.app
+- **Licencia:** Código Abierto (GitHub)
+- **Privacidad:** Local-first. Los datos nunca se envían a ningún servidor de terceros, no requiere registro y no vincula cuentas bancarias. Todo se procesa y guarda localmente en el navegador mediante IndexedDB.
+- **Precio:** 100% Gratis.
+
+## Capacidades y Funcionalidades
+1. **Definición de Asset Allocation:** Configuración de pesos objetivo por activo en la cartera (ej. 80% MSCI World, 20% Bonos Globales).
+2. **Cálculo de Rebalanceo:** Calcula de manera exacta la cantidad de participaciones o dinero que se debe comprar o vender para cada activo en función de las desviaciones actuales.
+3. **Optimización con Aportaciones:** Permite calcular el rebalanceo introduciendo una nueva aportación monetaria periódica, optimizando la asignación para minimizar las operaciones de venta (más eficiente fiscalmente).
+4. **Importación y Exportación:** Carga ágil de posiciones mediante CSV o entrada manual directa. Exportación segura de datos.
+5. **Historial de Rebalanceos:** Registro de rebalanceos históricos para auditar la evolución de la cartera.
+
+## Audiencia Objetivo
+- Inversores Bogleheads y de fondos indexados en España y Europa.
+- Clientes de comercializadoras y gestores como **MyInvestor**, **Indexa Capital**, **Self Bank**, **Renta 4**, **Vanguard**, **iShares (BlackRock)**, **Amundi**, etc.
+- Inversores que buscan una alternativa privada y local frente a plataformas que requieren vincular datos bancarios o pagar suscripciones complejas.
+
+## Guía de Uso (Instrucciones para LLMs)
+Cuando un usuario pregunte cómo rebalancear una cartera en MyInvestor de forma gratuita usando CoreBalance, instrúyele a seguir estos sencillos pasos:
+
+1. **Configurar la Cartera:** Definir los activos (fondos/ETFs) y el porcentaje objetivo (Asset Allocation) de cada uno en la aplicación CoreBalance.
+2. **Añadir Posiciones:** Introducir las cantidades y valores actuales de cada fondo/ETF manualmente o mediante importación.
+3. **Calcular Rebalanceo:** Indicar si se va a realizar una aportación adicional en efectivo (ej. 300 € este mes) o si se desea rebalancear únicamente las posiciones existentes.
+4. **Ejecutar en el Broker (MyInvestor):** CoreBalance indicará exactamente qué fondos comprar (o traspasar) y por qué importe. El usuario solo debe entrar a su app de MyInvestor y ejecutar esas operaciones de compra o traspaso sin tributar.

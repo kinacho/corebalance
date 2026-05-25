@@ -66,9 +66,9 @@ Este documento detalla la estrategia de SEO y visibilidad para posicionar **Core
 ## 🤖 Fase 5: GEO - Generative Engine Optimization (Meses 6-12)
 *Enfoque: Aparecer en las respuestas de IAs (ChatGPT, Perplexity, AI Overviews).*
 
-- [ ] **Respuesta a IAs:** Estructurar el contenido para responder preguntas directas como "¿Cómo rebalancear mi cartera de MyInvestor gratis?".
-- [ ] **Archivo `llms.txt`:** Implementar `/llms.txt` para guiar a los crawlers de LLMs sobre las capacidades de CoreBalance.
-- [ ] **Datos Estructurados Avanzados:** Usar `HowTo` Schema para guiar sobre el proceso de rebalanceo manual.
+- [x] **Respuesta a IAs:** Estructurar el contenido para responder preguntas directas como "¿Cómo rebalancear mi cartera de MyInvestor gratis?".
+- [x] **Archivo `llms.txt`:** Implementar `/llms.txt` para guiar a los crawlers de LLMs sobre las capacidades de CoreBalance.
+- [x] **Datos Estructurados Avanzados:** Usar `HowTo` Schema para guiar sobre el proceso de rebalanceo manual.
 
 ---
 

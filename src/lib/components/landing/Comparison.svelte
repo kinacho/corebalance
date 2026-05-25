@@ -34,8 +34,8 @@
 <section class="comparison">
   <div class="container">
     <div class="section-header">
-      <h2>Adiós a las <span class="text-gradient">hojas de cálculo</span> infinitas</h2>
-      <p>CoreBalance hace el trabajo sucio por ti, para que tú te centres en lo que importa: tu libertad financiera.</p>
+      <h2>La alternativa a <span class="text-gradient">Portfolio Performance</span> y Excel</h2>
+      <p>CoreBalance es la herramienta gratuita, rápida y privada que hace el trabajo sucio por ti, para que te centres en lo que importa: tu libertad financiera.</p>
     </div>
 
     <div class="table-container">
