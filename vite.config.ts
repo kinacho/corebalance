@@ -2,16 +2,17 @@ import tailwindcss from '@tailwindcss/vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 import { SvelteKitPWA } from '@vite-pwa/sveltekit';
-import Sitemap from 'vite-plugin-sitemap';
+import { imagetools } from 'vite-imagetools';
+import { visualizer } from 'rollup-plugin-visualizer';
 
 export default defineConfig({
 	plugins: [
 		tailwindcss(),
+		imagetools(),
 		sveltekit(),
-		Sitemap({
-			hostname: 'https://corebalance.app',
-			generateRobotsTxt: true,
-			outDir: '.svelte-kit/output/client'
+		visualizer({
+			emitFile: true,
+			filename: 'stats.html'
 		}),
 		SvelteKitPWA({
 			registerType: 'autoUpdate',
