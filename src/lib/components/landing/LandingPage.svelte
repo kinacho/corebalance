@@ -43,51 +43,6 @@
         "sameAs": [
           "https://github.com/kino166/rebalanceador"
         ]
-      },
-      {
-        "@type": "FAQPage",
-        "mainEntity": [
-          {
-            "@type": "Question",
-            "name": "¿Cómo rebalancear una cartera en MyInvestor de forma gratuita?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Exporta tus movimientos en CSV desde MyInvestor, impórtalo en CoreBalance y la app calculará automáticamente qué compras o traspasos realizar para volver a tu asignación objetivo."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "¿Es seguro CoreBalance? ¿Dónde se guardan mis datos?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "CoreBalance es una aplicación 'local-first'. Todos tus datos financieros se almacenan únicamente en tu navegador (IndexedDB), sin servidores externos ni registros obligatorios."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "¿Qué brokers y plataformas soporta CoreBalance?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Soporta importación automática de MyInvestor, DEGIRO, Trading 212 e Interactive Brokers, además de permitir la carga mediante CSV genérico o entrada manual."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "¿Necesito registrarme para usar CoreBalance?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "No es necesario. Puedes usar la herramienta de forma totalmente anónima gracias a su arquitectura local. La autenticación solo es opcional si deseas sincronizar tus datos en la nube."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "¿Qué es el rebalanceo de cartera y cuándo debo hacerlo?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Es el proceso de ajustar los pesos de tus activos a sus objetivos originales. Se recomienda hacerlo cuando las desviaciones superan un umbral (ej. 5%) o cuando realizas aportaciones periódicas."
-            }
-          }
-        ]
       }
     ]
   };
