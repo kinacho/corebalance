@@ -18,9 +18,16 @@
   }
 
   $effect(() => {
-    // Si el usuario ya está autenticado y tiene cartera, al dashboard directo
-    if (portfolio.isInitialized && portfolio.user && portfolio.hasAnyHoldings && !bypassLanding) {
-      goto('/dashboard');
+    // Si la app ya inicializó, decidimos dónde mandarlo
+    if (portfolio.isInitialized) {
+      const hasSession = (portfolio.user && portfolio.hasAnyHoldings);
+      const hasLocalData = !portfolio.user && portfolio.hasAnyHoldings;
+      
+      // Si tiene datos (en la nube o locales), el dashboard es su sitio.
+      // Ya no permitimos ver la landing si hay una cartera activa.
+      if (hasSession || hasLocalData || bypassLanding) {
+        goto('/dashboard');
+      }
     }
   });
 

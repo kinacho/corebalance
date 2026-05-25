@@ -5,6 +5,12 @@
 
   import { portfolio } from '$lib/stores/portfolio.svelte';
 
+  $effect(() => {
+    if (portfolio.isInitialized && portfolio.hasAnyHoldings) {
+      goto('/dashboard');
+    }
+  });
+
   function handleStart() {
     if (browser) {
       if (portfolio.isDemo) {

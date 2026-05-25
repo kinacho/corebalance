@@ -21,7 +21,14 @@
   import { formatEUR, formatPercent } from "$lib/utils";
   import { DASHBOARD_TABS, type TabId } from "$lib/constants";
   import { browser } from "$app/environment";
-  import { goto } from "$app/navigation";
+  import { goto, beforeNavigate } from "$app/navigation";
+
+  // --- Auto-Exit Demo on Navigation ---
+  beforeNavigate(({ to }) => {
+    if (portfolio.isDemo && to?.url.pathname !== '/dashboard') {
+      portfolio.exitDemo();
+    }
+  });
 
   // --- Gatekeeper Logic (Reverse) ---
   $effect(() => {
