@@ -1015,6 +1015,7 @@
 		transition: all 0.2s ease;
 		user-select: none;
 		-webkit-user-select: none;
+		touch-action: none;
 	}
 
 	.asset-left:hover {
