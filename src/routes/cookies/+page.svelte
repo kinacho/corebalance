@@ -11,6 +11,7 @@
 
 <svelte:head>
   <title>Política de Cookies — CoreBalance</title>
+  <meta name="description" content="Consulta nuestra política de cookies. Conoce qué cookies utilizamos para garantizar la seguridad y funcionalidad técnica en CoreBalance." />
 </svelte:head>
 
 <div class="legal-page">
@@ -88,10 +89,10 @@
           la operativa es diferente:
         </p>
         <ul>
-          <li><a href="https://support.google.com/chrome/answer/95647?hl=es" target="_blank">Chrome</a></li>
-          <li><a href="https://support.microsoft.com/es-es/microsoft-edge/eliminar-las-cookies-en-microsoft-edge-63491102-8316-6551-34a1-5360f35352c2" target="_blank">Edge</a></li>
-          <li><a href="https://support.mozilla.org/es/kb/habilitar-y-deshabilitar-cookies-sitios-web-rastrear-preferencias" target="_blank">Firefox</a></li>
-          <li><a href="https://support.apple.com/es-es/guide/safari/sfri11471/mac" target="_blank">Safari</a></li>
+          <li><a href="https://support.google.com/chrome/answer/95647?hl=es" target="_blank" rel="noopener noreferrer">Chrome</a></li>
+          <li><a href="https://support.microsoft.com/es-es/microsoft-edge/eliminar-las-cookies-en-microsoft-edge-63491102-8316-6551-34a1-5360f35352c2" target="_blank" rel="noopener noreferrer">Edge</a></li>
+          <li><a href="https://support.mozilla.org/es/kb/habilitar-y-deshabilitar-cookies-sitios-web-rastrear-preferencias" target="_blank" rel="noopener noreferrer">Firefox</a></li>
+          <li><a href="https://support.apple.com/es-es/guide/safari/sfri11471/mac" target="_blank" rel="noopener noreferrer">Safari</a></li>
         </ul>
         <p><em>Tenga en cuenta que si desactiva las cookies técnicas, es posible que no pueda iniciar sesión ni usar las funciones principales de la aplicación.</em></p>
       </section>

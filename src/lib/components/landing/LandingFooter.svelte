@@ -15,17 +15,17 @@
       </div>
 
       <div class="links-col">
-        <h4>Producto</h4>
+        <h3>Producto</h3>
         <ul>
-          <li><a href="#features">Características</a></li>
-          <li><a href="#how-it-works">Cómo funciona</a></li>
-          <li><a href="#why-us">Por qué CoreBalance</a></li>
+          <li><a href="/#features">Características</a></li>
+          <li><a href="/#how-it-works">Cómo funciona</a></li>
+          <li><a href="/#why-us">Por qué CoreBalance</a></li>
           <li><span class="link-disabled">Sincronización (Próximamente)</span></li>
         </ul>
       </div>
 
       <div class="links-col">
-        <h4>Legal</h4>
+        <h3>Legal</h3>
         <ul>
           <li><a href="/privacy">Privacidad</a></li>
           <li><a href="/terms">Términos</a></li>
@@ -34,7 +34,7 @@
       </div>
 
       <div class="links-col">
-        <h4>Comunidad</h4>
+        <h3>Comunidad</h3>
         <ul>
           <li>
             <button 
@@ -44,7 +44,7 @@
               Reportar un error
             </button>
           </li>
-          <li><a href="https://paypal.me/kinacho" target="_blank">Apoya el proyecto</a></li>
+          <li><a href="https://paypal.me/kinacho" target="_blank" rel="noopener noreferrer">Apoya el proyecto</a></li>
           <li>
             <button 
               class="footer-btn" 
@@ -117,7 +117,7 @@
     margin-bottom: 2rem;
   }
 
-  h4 {
+  h3 {
     color: #fff;
     font-weight: 700;
     margin-bottom: 1.5rem;

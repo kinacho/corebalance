@@ -15,8 +15,8 @@
       <h2>Empieza a optimizar tu cartera <span class="text-gradient">hoy mismo</span></h2>
       <p>Únete a cientos de inversores que ya confían en CoreBalance para gestionar su patrimonio.</p>
       <div class="cta-actions">
-        <button class="btn-primary btn-lg" onclick={() => onStart()}>
-          Crear mi cuenta gratis
+        <button class="btn-primary btn-lg" onclick={() => onStart()} aria-label="Empezar gratis a rebalancear tu cartera con CoreBalance">
+          Empezar gratis
         </button>
         <button class="btn-demo-cta" onclick={() => startDemo()}>
           Probar Demo Interactiva

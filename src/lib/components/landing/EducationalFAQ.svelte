@@ -60,21 +60,21 @@
           <div class="edu-card">
             <div class="edu-card-icon">📈</div>
             <div class="edu-card-text">
-              <h4>Vende caro, compra barato</h4>
+              <h3>Vende caro, compra barato</h3>
               <p>Al rebalancear, trasladas beneficios de los activos que han sobre-rendido hacia aquellos que están infravalorados respecto a tu plan inicial.</p>
             </div>
           </div>
           <div class="edu-card">
             <div class="edu-card-icon">🛡️</div>
             <div class="edu-card-text">
-              <h4>Mantén tu perfil de riesgo</h4>
+              <h3>Mantén tu perfil de riesgo</h3>
               <p>Si tu plan es 80% acciones y 20% bonos, y las acciones suben hasta el 90%, tu cartera es ahora mucho más volátil de lo que decidiste originalmente.</p>
             </div>
           </div>
           <div class="edu-card">
             <div class="edu-card-icon">⚖️</div>
             <div class="edu-card-text">
-              <h4>Traspasos en España</h4>
+              <h3>Traspasos en España</h3>
               <p>Recuerda que en España los traspasos entre fondos de inversión están exentos de tributación, lo que hace que el rebalanceo sea fiscalmente ultra-eficiente.</p>
             </div>
           </div>
@@ -192,7 +192,7 @@
     flex-shrink: 0;
   }
 
-  .edu-card-text h4 {
+  .edu-card-text h3 {
     color: #fff;
     font-weight: 700;
     margin: 0 0 0.25rem 0;

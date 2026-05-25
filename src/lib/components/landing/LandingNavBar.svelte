@@ -1,21 +1,17 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { fade } from 'svelte/transition';
   import { portfolio } from '$lib/stores/portfolio.svelte';
-  import { browser } from '$app/environment';
   import { goto } from '$app/navigation';
 
   let { onStart = () => {} } = $props();
   let isScrolled = $state(false);
+  let isMobileMenuOpen = $state(false);
 
   function startDemo() {
-    console.log('--- NAV DEMO BUTTON CLICKED ---');
     if (portfolio && typeof portfolio.loadDemoData === 'function') {
-      console.log('Store and loadDemoData found, executing...');
       portfolio.loadDemoData();
-      console.log('Demo data loaded, navigating...');
       goto('/dashboard');
-    } else {
-      console.error('ERROR: portfolio or loadDemoData is undefined/not a function', { portfolio });
     }
   }
 
@@ -35,13 +31,15 @@
       <span class="brand-name">CoreBalance</span>
     </div>
 
+    <!-- Menú Desktop Links -->
     <div class="nav-links">
-      <a href="#features" aria-label="Ir a la sección de características de CoreBalance">Características</a>
-      <a href="#how-it-works" aria-label="Ver cómo funciona el rebalanceo de carteras">Cómo funciona</a>
-      <a href="#why-us" aria-label="Conocer la historia y por qué usar CoreBalance">Por qué CoreBalance</a>
-      <a href="#educational" aria-label="Ver preguntas frecuentes sobre inversión pasiva y rebalanceo">FAQ</a>
+      <a href="/#features" aria-label="Ir a la sección de características de CoreBalance">Características</a>
+      <a href="/#how-it-works" aria-label="Ver cómo funciona el rebalanceo de carteras">Cómo funciona</a>
+      <a href="/#why-us" aria-label="Conocer la historia y por qué usar CoreBalance">Por qué CoreBalance</a>
+      <a href="/#educational" aria-label="Ver preguntas frecuentes sobre inversión pasiva y rebalanceo">FAQ</a>
     </div>
 
+    <!-- Menú Desktop Acciones -->
     <div class="nav-actions">
       {#if portfolio.user && portfolio.hasAnyHoldings}
         <button class="btn-primary" onclick={() => goto('/dashboard')} aria-label="Ir a tu panel de control de inversiones">
@@ -56,8 +54,44 @@
         </button>
       {/if}
     </div>
+
+    <!-- Botón Menú Hamburguesa para Móviles -->
+    <button 
+      class="menu-toggle" 
+      onclick={() => isMobileMenuOpen = !isMobileMenuOpen} 
+      aria-label={isMobileMenuOpen ? "Cerrar menú de navegación" : "Abrir menú de navegación"}
+      aria-expanded={isMobileMenuOpen}
+    >
+      <span class="hamburger-bar" class:open={isMobileMenuOpen}></span>
+    </button>
   </div>
 </nav>
+
+<!-- Menú Móvil Desplegable -->
+{#if isMobileMenuOpen}
+  <div class="mobile-menu" transition:fade={{ duration: 150 }}>
+    <div class="mobile-menu-links">
+      <a href="/#features" onclick={() => isMobileMenuOpen = false} aria-label="Ir a la sección de características de CoreBalance">Características</a>
+      <a href="/#how-it-works" onclick={() => isMobileMenuOpen = false} aria-label="Ver cómo funciona el rebalanceo de carteras">Cómo funciona</a>
+      <a href="/#why-us" onclick={() => isMobileMenuOpen = false} aria-label="Conocer la historia y por qué usar CoreBalance">Por qué CoreBalance</a>
+      <a href="/#educational" onclick={() => isMobileMenuOpen = false} aria-label="Ver preguntas frecuentes sobre inversión pasiva y rebalanceo">FAQ</a>
+    </div>
+    <div class="mobile-menu-actions">
+      {#if portfolio.user && portfolio.hasAnyHoldings}
+        <button class="btn-primary w-full" onclick={() => { isMobileMenuOpen = false; goto('/dashboard'); }} aria-label="Ir a tu panel de control de inversiones">
+          Ir al Dashboard
+        </button>
+      {:else}
+        <button class="btn-demo w-full" onclick={() => { isMobileMenuOpen = false; startDemo(); }} aria-label="Probar demostración interactiva de rebalanceo de cartera">
+          Probar Demo
+        </button>
+        <button class="btn-primary w-full" onclick={() => { isMobileMenuOpen = false; onStart(); }} aria-label="Empezar a rebalancear tu cartera gratis">
+          Empezar gratis
+        </button>
+      {/if}
+    </div>
+  </div>
+{/if}
 
 <style>
   .navbar {
@@ -140,8 +174,14 @@
   }
 
   .nav-actions {
-    display: flex;
+    display: none;
     gap: 0.75rem;
+  }
+
+  @media (min-width: 768px) {
+    .nav-actions {
+      display: flex;
+    }
   }
 
   .btn-primary {
@@ -180,5 +220,121 @@
     border-color: rgba(139, 92, 246, 0.5);
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+  }
+
+  /* Hamburguesa Menú */
+  .menu-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    cursor: pointer;
+    z-index: 1010;
+    transition: all 0.2s ease;
+  }
+
+  .menu-toggle:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  @media (min-width: 1024px) {
+    .menu-toggle {
+      display: none;
+    }
+  }
+
+  .hamburger-bar {
+    width: 20px;
+    height: 2px;
+    background: #fff;
+    position: relative;
+    transition: all 0.3s ease;
+  }
+
+  .hamburger-bar::before,
+  .hamburger-bar::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 2px;
+    background: #fff;
+    left: 0;
+    transition: all 0.3s ease;
+  }
+
+  .hamburger-bar::before {
+    top: -6px;
+  }
+
+  .hamburger-bar::after {
+    top: 6px;
+  }
+
+  .hamburger-bar.open {
+    background: transparent;
+  }
+
+  .hamburger-bar.open::before {
+    transform: rotate(45deg);
+    top: 0;
+  }
+
+  .hamburger-bar.open::after {
+    transform: rotate(-45deg);
+    top: 0;
+  }
+
+  /* Menú móvil desplegable */
+  .mobile-menu {
+    position: fixed;
+    top: 72px;
+    left: 0;
+    width: 100%;
+    height: calc(100vh - 72px);
+    background: rgba(5, 5, 10, 0.98);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem 1.5rem;
+    gap: 2.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .mobile-menu-links {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .mobile-menu-links a {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    font-size: 1.15rem;
+    font-weight: 600;
+    transition: color 0.2s ease;
+    padding: 0.5rem 0;
+  }
+
+  .mobile-menu-links a:hover {
+    color: #3b82f6;
+  }
+
+  .mobile-menu-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: auto;
+    padding-bottom: 2rem;
+  }
+
+  .w-full {
+    width: 100%;
+    padding: 0.8rem 1.25rem;
   }
 </style>

@@ -1,10 +1,11 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { Resend } from 'resend';
+import { RESEND_API_KEY } from '$env/static/private';
 
-// Inicializar Resend con la API Key
-// Nota: En producción, asegúrate de tener RESEND_API_KEY en tus variables de entorno
-const resend = new Resend('re_KBDyejrt_NPuoLznhUSwR8GfTKJ8NZChG');
+// Inicializar Resend con la API Key cargada desde las variables de entorno
+const resend = new Resend(RESEND_API_KEY);
+
 
 export const POST: RequestHandler = async ({ request }) => {
 	try {

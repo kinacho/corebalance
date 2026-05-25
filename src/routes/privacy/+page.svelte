@@ -12,6 +12,7 @@
 
 <svelte:head>
   <title>Política de Privacidad — CoreBalance</title>
+  <meta name="description" content="Consulta nuestra política de privacidad. En CoreBalance priorizamos tu seguridad y privacidad utilizando almacenamiento local por defecto." />
 </svelte:head>
 
 <div class="legal-page">
@@ -26,7 +27,7 @@
         <h2>1. Responsable del Tratamiento</h2>
         <p>
           El responsable del tratamiento de sus datos personales es un desarrollador individual con residencia en España. 
-          Puede contactar conmigo a través del email: <strong>[mi_email]</strong>.
+          Puede contactar conmigo a través del email: <strong>soporte@corebalance.app</strong>.
         </p>
       </section>
 
@@ -87,7 +88,7 @@
           <li><strong>Portabilidad:</strong> Descargar sus datos en un formato legible.</li>
           <li><strong>Oposición y Limitación:</strong> En casos específicos previstos por la ley.</li>
         </ul>
-        <p>Para ejercer estos derechos, envíe un email a <strong>[mi_email]</strong>.</p>
+        <p>Para ejercer estos derechos, envíe un email a <strong>soporte@corebalance.app</strong>.</p>
       </section>
 
       <section>

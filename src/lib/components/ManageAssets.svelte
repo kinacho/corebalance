@@ -1484,4 +1484,39 @@
 		color: rgba(160, 160, 200, 0.3);
 		margin: 0.4rem 0 0;
 	}
+
+	@media (max-width: 480px) {
+		.asset-view {
+			flex-direction: column;
+			align-items: stretch;
+			gap: 0.6rem;
+		}
+
+		.asset-left {
+			width: 100%;
+			padding: 0;
+		}
+
+		.asset-actions-mini {
+			justify-content: flex-end;
+			border-top: 1px solid rgba(255, 255, 255, 0.05);
+			padding-top: 0.5rem;
+			gap: 0.4rem;
+			width: 100%;
+		}
+
+		.action-move, .action-ter, .action-ledger, .action-delete {
+			padding: 0.35rem 0.55rem;
+			font-size: 0.68rem;
+			height: auto;
+			display: inline-flex;
+			align-items: center;
+		}
+
+		.action-delete {
+			width: 32px;
+			height: 32px;
+			border-radius: 8px;
+		}
+	}
 </style>

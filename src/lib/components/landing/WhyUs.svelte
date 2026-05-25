@@ -32,14 +32,14 @@
         <div class="experience-card">
           <div class="exp-header">
             <span class="exp-icon">✨</span>
-            <h4>Experiencia Nativa</h4>
+            <h3>Experiencia Nativa</h3>
           </div>
           <p>Diseñado para sentirse como una app nativa en tu móvil, pero con la facilidad de acceso de una web.</p>
         </div>
         <div class="experience-card">
           <div class="exp-header">
             <span class="exp-icon">🛠️</span>
-            <h4>Evolución Constante</h4>
+            <h3>Evolución Constante</h3>
           </div>
           <p>Añadimos mejoras cada semana basadas en el feedback real de la comunidad de inversores.</p>
         </div>
@@ -170,7 +170,7 @@
     font-size: 1.5rem;
   }
 
-  h4 {
+  h3 {
     margin: 0;
     color: #fff;
     font-weight: 700;

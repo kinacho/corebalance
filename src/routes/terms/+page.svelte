@@ -11,6 +11,7 @@
 
 <svelte:head>
   <title>Términos y Condiciones — CoreBalance</title>
+  <meta name="description" content="Lee nuestros términos y condiciones de uso. Conoce las condiciones bajo las cuales puedes usar la herramienta de rebalanceo CoreBalance." />
 </svelte:head>
 
 <div class="legal-page">
@@ -92,7 +93,7 @@
 
       <section>
         <h2>8. Contacto</h2>
-        <p>Si tiene dudas sobre estos términos, puede contactarme en: <strong>[mi_email]</strong>.</p>
+        <p>Si tiene dudas sobre estos términos, puede contactarme en: <strong>soporte@corebalance.app</strong>.</p>
       </section>
     </div>
   </main>
