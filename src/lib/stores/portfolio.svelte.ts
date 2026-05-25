@@ -156,27 +156,43 @@ export class PortfolioStore {
 			d.setDate(d.getDate() - (days - 1 - i));
 			historyPoints.push({ date: formatDate(d), total: 0, core: 0, stocks: 0, satellite: 0 });
 		}
-		let hasData = false;
+
 		const processPositions = (positions: any[], key: 'core' | 'stocks' | 'satellite') => {
 			positions.forEach(pos => {
 				const spark = pos.sparkline || [];
-				if (spark.length > 0) hasData = true;
 				for (let i = 0; i < days; i++) {
-					const priceAtDay = spark[spark.length - days + i] || pos.unitPrice;
+					const sparkIndex = spark.length - days + i;
+					const priceAtDay = (sparkIndex >= 0 && sparkIndex < spark.length) ? spark[sparkIndex] : pos.unitPrice;
 					const val = pos.holdings * priceAtDay;
 					historyPoints[i][key] += val;
 					historyPoints[i].total += val;
 				}
 			});
 		};
+
 		processPositions(this.portfolioState.positions, 'core');
 		processPositions(this.stockState.positions, 'stocks');
 		processPositions(this.satelliteState.positions, 'satellite');
-		if (!hasData || this.history.length >= days) {
+
+		// Si tenemos historia real que cubra más tiempo, la usamos
+		if (this.history.length >= days) {
 			return this.history.map(h => ({ date: h.date, total: h.value, core: h.value, stocks: 0, satellite: 0 }));
 		}
+
+		// Si tenemos historia real corta, sobreescribimos los puntos correspondientes para mayor precisión
+		if (this.history.length > 0) {
+			this.history.forEach(h => {
+				const idx = historyPoints.findIndex(p => p.date === h.date);
+				if (idx >= 0) {
+					historyPoints[idx].total = h.value;
+					historyPoints[idx].core = h.value;
+				}
+			});
+		}
+
 		return historyPoints;
 	});
+
 
 	moodColor = $derived.by(() => {
 		if (this.globalDailyChangePercent > 0.005) return '#10b981';

@@ -9,6 +9,9 @@
   let bypassLanding = $state(browser ? sessionStorage.getItem('bypassLanding') === 'true' : false);
 
   function handleBypass() {
+    if (portfolio.isDemo) {
+      portfolio.exitDemo();
+    }
     bypassLanding = true;
     if (browser) sessionStorage.setItem('bypassLanding', 'true');
     goto('/dashboard');

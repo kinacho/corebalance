@@ -19,11 +19,12 @@
         <button class="btn-primary btn-lg" onclick={() => onStart()} aria-label="Empezar gratis a rebalancear tu cartera con CoreBalance">
           Empezar gratis
         </button>
-        <button class="btn-demo" onclick={() => { (portfolio as any).loadDemoData(); goto('/dashboard'); }} aria-label="Probar demo interactiva con una cartera indexada de ejemplo">
+        <button class="btn-demo" onclick={() => { portfolio.loadDemoData(); goto('/dashboard'); }} aria-label="Probar demo interactiva con una cartera indexada de ejemplo">
           Probar Demo Interactiva
         </button>
         <a href="#how-it-works" class="btn-text" aria-label="Ver explicación de cómo funciona el rebalanceo de carteras">Ver cómo funciona →</a>
       </div>
+
     </div>
 
     <div class="hero-mockup-container reveal">

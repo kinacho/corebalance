@@ -4,7 +4,7 @@
   let { onStart = () => {} } = $props();
 
   function startDemo() {
-    (portfolio as any).loadDemoData();
+    portfolio.loadDemoData();
     goto('/dashboard');
   }
 </script>

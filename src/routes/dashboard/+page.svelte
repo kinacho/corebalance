@@ -27,7 +27,7 @@
   $effect(() => {
     if (portfolio.isInitialized) {
       const bypassLanding = browser ? sessionStorage.getItem('bypassLanding') === 'true' : false;
-      const hasSession = portfolio.user && portfolio.hasAnyHoldings;
+      const hasSession = (portfolio.user && portfolio.hasAnyHoldings) || portfolio.isDemo;
       
       if (!hasSession && !bypassLanding) {
         goto('/');
