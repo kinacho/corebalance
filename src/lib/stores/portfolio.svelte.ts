@@ -62,7 +62,7 @@ export class PortfolioStore {
 				if (pos.shares > 0) {
 					const ratio = Math.min(1, t.shares / pos.shares);
 					pos.totalCostRaw -= pos.totalCostRaw * ratio;
-					pos.shares -= t.shares;
+					pos.shares = Math.max(0, pos.shares - t.shares);
 				}
 			} else if (t.type === 'dividend') {
 				const divAmountRaw = (t.shares * t.price) - (t.fees || 0);

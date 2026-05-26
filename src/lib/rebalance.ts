@@ -26,7 +26,7 @@ export function calculatePortfolioState(
 		const p = pData?.price ?? 0;
 		const fxRate = pData?.fxRate ?? 1;
 		
-		const totalValue = h * p;
+		const totalValue = h * p * fxRate;
 		const totalCost = h * (avg * fxRate);
 		const profit = totalValue - totalCost;
 		const profitPercent = totalCost > 0 ? profit / totalCost : 0;
@@ -165,6 +165,9 @@ export function calculateRebalance(
 
 	// Calcular déficit de cada activo respecto al objetivo
 	const deficits = state.positions.map((pos) => {
+		// Si el precio es 0, no podemos comprar, así que el déficit es 0
+		if (pos.unitPrice <= 0) return { position: pos, deficit: 0 };
+		
 		const targetValue = newTotalCapital * pos.asset.targetWeight;
 		const deficit = Math.max(0, targetValue - pos.totalValue);
 		return { position: pos, deficit };
@@ -176,12 +179,16 @@ export function calculateRebalance(
 	let allocations: RebalanceAllocation[];
 
 	if (totalDeficit > 0) {
-		// Caso normal: hay déficits, distribuir proporcionalmente
+		// Caso normal: hay déficits
+		// Si el déficit total es menor que la aportación, no normalizamos (respetamos el tope de targetWeights)
+		// Si el déficit total es mayor, prorrateamos la aportación
+		const factor = totalDeficit > contribution ? (contribution / totalDeficit) : 1;
+
 		allocations = deficits.map(({ position, deficit }) => {
-			const proportion = deficit / totalDeficit;
-			const amountToInvest = Math.min(contribution * proportion, contribution);
+			const amountToInvest = deficit * factor;
 			const price = position.unitPrice;
-			const sharesToBuy = price > 0 ? amountToInvest / price : 0;
+			const fxRate = prices[position.asset.ticker]?.fxRate ?? 1;
+			const sharesToBuy = (price > 0 && fxRate > 0) ? amountToInvest / (price * fxRate) : 0;
 			const newValue = position.totalValue + amountToInvest;
 			const resultingWeight = newTotalCapital > 0 ? newValue / newTotalCapital : 0;
 
@@ -193,12 +200,21 @@ export function calculateRebalance(
 			};
 		});
 	} else {
-		// Caso especial: no hay déficits (cartera perfectamente balanceada o sin capital)
-		// Distribuir según pesos objetivo
+		// Caso especial: no hay déficits
+		// Distribuir según pesos objetivo, pero solo entre los que tienen precio > 0
+		const validPositions = state.positions.filter(p => p.unitPrice > 0);
+		const totalValidWeight = validPositions.reduce((sum, p) => sum + p.asset.targetWeight, 0);
+
 		allocations = state.positions.map((pos) => {
-			const amountToInvest = contribution * pos.asset.targetWeight;
+			let amountToInvest = 0;
+			if (pos.unitPrice > 0 && totalValidWeight > 0) {
+				const normalizedWeight = pos.asset.targetWeight / totalValidWeight;
+				amountToInvest = contribution * normalizedWeight;
+			}
+			
 			const price = pos.unitPrice;
-			const sharesToBuy = price > 0 ? amountToInvest / price : 0;
+			const fxRate = prices[pos.asset.ticker]?.fxRate ?? 1;
+			const sharesToBuy = (price > 0 && fxRate > 0) ? amountToInvest / (price * fxRate) : 0;
 			const newValue = pos.totalValue + amountToInvest;
 			const resultingWeight = newTotalCapital > 0 ? newValue / newTotalCapital : 0;
 
@@ -217,4 +233,3 @@ export function calculateRebalance(
 		newTotalCapital
 	};
 }
-

@@ -48,8 +48,49 @@ vi.mock('svelte/motion', () => ({
 
 describe('HeroSummary.svelte', () => {
 	it('renders total capital formatted', async () => {
-		const { container } = render(HeroSummary);
-		// The formatted currency uses the local format.
-		expect(container.textContent).toMatch(/10\.?000/);
+	        const { container } = render(HeroSummary);
+	        // The formatted currency uses the local format.
+	        expect(container.textContent).toMatch(/10\.?000/);
 	});
-});
+
+	it('does not render main section when loading and no prices', async () => {
+	        const { portfolio } = await import('$lib/stores/portfolio.svelte');
+	        portfolio.loading = true;
+	        portfolio.prices = {};
+	        const { container } = render(HeroSummary);
+	        expect(container.querySelector('.hero-summary')).toBeNull();
+	});
+
+	it('shows negative class when globalProfit < 0', async () => {
+	        const { portfolio } = await import('$lib/stores/portfolio.svelte');
+	        portfolio.loading = false;
+	        portfolio.globalProfit = -100;
+	        portfolio.prices = { 'AAPL': {} };
+	        const { container } = render(HeroSummary);
+	        expect(container.querySelector('.negative')).not.toBeNull();
+	});
+
+	it('shows positive class when globalProfit > 0', async () => {
+	        const { portfolio } = await import('$lib/stores/portfolio.svelte');
+	        portfolio.loading = false;
+	        portfolio.globalProfit = 100;
+	        portfolio.prices = { 'AAPL': {} };
+	        const { container } = render(HeroSummary);
+	        expect(container.querySelector('.positive')).not.toBeNull();
+	});
+
+	it('shows breakdown when satellite or stocks have capital', async () => {
+	        const { portfolio } = await import('$lib/stores/portfolio.svelte');
+	        portfolio.satelliteState.totalCapital = 500;
+	        portfolio.stockState.totalCapital = 500;
+	        const { container } = render(HeroSummary);
+	        expect(container.querySelector('.capital-breakdown')).not.toBeNull();
+	});
+
+	it('hides breakdown when satellite and stocks are zero', async () => {
+	        const { portfolio } = await import('$lib/stores/portfolio.svelte');
+	        portfolio.satelliteState.totalCapital = 0;
+	        portfolio.stockState.totalCapital = 0;
+	        const { container } = render(HeroSummary);
+	        expect(container.querySelector('.capital-breakdown')).toBeNull();
+	});	});

@@ -114,11 +114,60 @@ describe('utils.ts', () => {
 			// With a known state, these should respect the state
 			expect(isMarketOpen('IWDA.AS', 'REGULAR')).toBe(true);
 			expect(isMarketOpen('0P0001XF40.F', 'CLOSED')).toBe(false);
-		});
-	});
+			});
+			});
 
-	describe('validateImportData', () => {
-		it('returns true for valid data with userData', () => {
+			describe('isMarketOpen - fallback por horario', () => {
+			beforeEach(() => {
+			vi.useFakeTimers();
+			});
+
+			afterEach(() => {
+			vi.useRealTimers();
+			});
+
+			it('Martes a las 10:00 UTC (11:00 CEST/CET) -> mercado europeo abierto', () => {
+			// 2024-05-21 is a Tuesday
+			const date = new Date('2024-05-21T10:00:00Z');
+			vi.setSystemTime(date);
+			// isEuropean checks suffixes .F, .AS, .MC, etc.
+			expect(isMarketOpen('IWDA.AS')).toBe(true);
+			});
+
+			it('Martes a las 18:00 UTC -> mercado europeo cerrado', () => {
+			const date = new Date('2024-05-21T18:00:00Z');
+			vi.setSystemTime(date);
+			expect(isMarketOpen('IWDA.AS')).toBe(false);
+			});
+
+			it('Martes a las 15:30 UTC -> mercado americano abierto', () => {
+			const date = new Date('2024-05-21T15:30:00Z');
+			vi.setSystemTime(date);
+			// No suffix or .US means USA
+			expect(isMarketOpen('AAPL')).toBe(true);
+			});
+
+			it('Martes a las 23:00 UTC -> mercado americano cerrado', () => {
+			const date = new Date('2024-05-21T23:00:00Z');
+			vi.setSystemTime(date);
+			expect(isMarketOpen('AAPL')).toBe(false);
+			});
+
+			it('Sábado a las 12:00 UTC -> mercado cerrado', () => {
+			const date = new Date('2024-05-25T12:00:00Z'); // Saturday
+			vi.setSystemTime(date);
+			expect(isMarketOpen('AAPL')).toBe(false);
+			expect(isMarketOpen('IWDA.AS')).toBe(false);
+			});
+
+			it('Cripto (BTC-USD) en sábado a las 03:00 UTC -> siempre abierto', () => {
+			const date = new Date('2024-05-25T03:00:00Z');
+			vi.setSystemTime(date);
+			expect(isMarketOpen('BTC-USD')).toBe(true);
+			});
+			});
+
+			describe('validateImportData', () => {		it('returns true for valid data with userData', () => {
 			expect(validateImportData({ userData: [{ id: '1' }] })).toBe(true);
 		});
 		it('returns true for valid data with history', () => {

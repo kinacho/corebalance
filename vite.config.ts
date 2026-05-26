@@ -21,7 +21,9 @@ export default defineConfig({
 				enabled: true
 			},
 			workbox: {
-				globPatterns: ['**/*.{js,css,html,ico,png,svg,webp}']
+				globDirectory: '.svelte-kit/output',
+				globPatterns: ['client/**/*.{js,css,html,ico,png,svg,webp}'],
+				globIgnores: ['server/**', 'prerendered/**']
 			},
 			manifest: {
 				name: 'CoreBalance — Portfolio Dashboard',

@@ -157,5 +157,50 @@ describe('rebalance.ts', () => {
 			expect(result.allocations[1].amountToInvest).toBeCloseTo(40);
 			expect(result.allocations[2].amountToInvest).toBeCloseTo(60);
 		});
+
+		it('handles fxRate correctly in calculatePortfolioState', () => {
+			const usdAsset: Asset[] = [{ ticker: 'USD', name: 'USD Asset', isin: '', targetWeight: 1, ter: 0, color: '', icon: '', category: 'core' }];
+			const usdHoldings: HoldingsMap = { 'USD': { shares: 10, avgCost: 100 } };
+			const usdPrices: Record<string, PriceData> = { 'USD': { price: 150, change: 0, currency: 'USD', name: 'USD', fxRate: 1.10 } };
+			
+			const state = calculatePortfolioState(usdAsset, usdHoldings, usdPrices);
+			// Total capital in base currency: 10 * 150 * 1.10 = 1650
+			expect(state.totalCapital).toBeCloseTo(1650, 2);
+			// Total invested in base currency: 10 * 100 * 1.10 = 1100
+			expect(state.totalInvested).toBeCloseTo(1100, 2);
+			expect(state.totalProfit).toBeCloseTo(550, 2);
+		});
+
+		it('uses manualInterestRate instead of daily change if present', () => {
+			const fund: Asset[] = [{ ticker: 'FUND', name: 'Money Market', isin: '', targetWeight: 1, ter: 0, color: '', icon: '', category: 'core', manualInterestRate: 0.0365 }];
+			const h: HoldingsMap = { 'FUND': { shares: 1000, avgCost: 1 } };
+			const p: Record<string, PriceData> = { 'FUND': { price: 1, change: 0.5, currency: 'EUR', name: 'FUND' } };
+			
+			const state = calculatePortfolioState(fund, h, p);
+			// manualInterestRate (0.0365) / 365 = 0.0001 (0.01%)
+			expect(state.positions[0].dailyChangePercent).toBeCloseTo(0.0001, 6);
+		});
+
+		it('handles price 0 gracefully in calculateRebalance by ignoring the asset', () => {
+			const zeroPrice: Record<string, PriceData> = {
+				'AAPL': { price: 0, change: 0, currency: 'USD', name: 'Apple' },
+				'MSFT': { price: 100, change: 0, currency: 'USD', name: 'Microsoft' }
+			};
+			const result = calculateRebalance(assets, holdings, zeroPrice, 1000);
+			expect(result.allocations[0].amountToInvest).toBe(0); // Price 0
+			expect(result.allocations[1].amountToInvest).toBe(1000); // All to the other one that has price
+		});
+
+		it('handles total targetWeight < 1 correctly', () => {
+			const partialAssets: Asset[] = [
+				{ ...assets[0], targetWeight: 0.5 },
+				{ ...assets[1], targetWeight: 0.3 }
+			];
+			const result = calculateRebalance(partialAssets, {}, prices, 1000);
+			// Should distribute 500 and 300, 200 remains unallocated
+			expect(result.allocations[0].amountToInvest).toBe(500);
+			expect(result.allocations[1].amountToInvest).toBe(300);
+			expect(result.totalContribution).toBe(1000);
+		});
 	});
 });
