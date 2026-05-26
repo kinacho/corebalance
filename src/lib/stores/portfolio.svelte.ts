@@ -220,8 +220,9 @@ export class PortfolioStore {
 		if (typeof window === 'undefined') return;
 		if (!storageProvider.onAuthStateChanged) {
 			this.loadFromStorage();
-			await this.fetchPrices();
-			await new Promise(resolve => setTimeout(resolve, 300));
+			if (this.hasAnyHoldings) {
+				await this.fetchPrices();
+			}
 			this.isInitialized = true;
 			this.loading = false;
 			return;
@@ -239,8 +240,13 @@ export class PortfolioStore {
 		this.authUnsubscribe = storageProvider.onAuthStateChanged(async (user) => {
 			this.authLoading = false;
 			this.user = user;
-			if (user) await this.loadFromCloud(); else await this.fetchPrices();
-			await new Promise(resolve => setTimeout(resolve, 400));
+			if (user) {
+				await this.loadFromCloud();
+			} else {
+				if (this.hasAnyHoldings) {
+					await this.fetchPrices();
+				}
+			}
 			this.isInitialized = true;
 			this.loading = false;
 			this.authReady = true;
@@ -248,7 +254,9 @@ export class PortfolioStore {
 		setTimeout(() => {
 			if (!this.isInitialized) {
 				this.loadFromStorage();
-				this.fetchPrices();
+				if (this.hasAnyHoldings) {
+					this.fetchPrices();
+				}
 				this.isInitialized = true;
 				this.loading = false;
 				this.authReady = true;
@@ -263,9 +271,19 @@ export class PortfolioStore {
 
 	private initPolling() {
 		if (typeof window === 'undefined') return;
-		this.fetchPrices();
-		this.pollingIntervalId = setInterval(() => { if (document.visibilityState === 'visible' && !this.loading) this.fetchPrices(); }, 30000);
-		this.visibilityHandler = () => { if (document.visibilityState === 'visible' && !this.loading) this.fetchPrices(); };
+		if (this.hasAnyHoldings) {
+			this.fetchPrices();
+		}
+		this.pollingIntervalId = setInterval(() => { 
+			if (document.visibilityState === 'visible' && !this.loading && this.hasAnyHoldings) {
+				this.fetchPrices(); 
+			}
+		}, 30000);
+		this.visibilityHandler = () => { 
+			if (document.visibilityState === 'visible' && !this.loading && this.hasAnyHoldings) {
+				this.fetchPrices(); 
+			}
+		};
 		document.addEventListener('visibilitychange', this.visibilityHandler);
 	}
 

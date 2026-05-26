@@ -18,6 +18,18 @@
     goto('/dashboard');
   }
 
+  // Determinar de manera síncrona si hay datos locales guardados para evitar flashes de la landing en usuarios recurrentes.
+  const hasLocalHoldings = browser ? (() => {
+    try {
+      const saved = localStorage.getItem('corebalance_holdings_v2');
+      if (!saved) return false;
+      const parsed = JSON.parse(saved);
+      return Object.values(parsed).some((h: any) => h.shares > 0);
+    } catch {
+      return false;
+    }
+  })() : false;
+
   $effect(() => {
     // Si la app ya inicializó, decidimos dónde mandarlo
     if (portfolio.isInitialized) {
@@ -31,8 +43,8 @@
   });
 </script>
 
-{#if portfolio.isInitialized}
-  {#if !bypassLanding && (!portfolio.user || !portfolio.hasAnyHoldings)}
+{#if !bypassLanding && (!hasLocalHoldings || portfolio.isInitialized)}
+  {#if !portfolio.isInitialized || (!portfolio.user || !portfolio.hasAnyHoldings)}
     <LandingPage onStart={handleBypass} />
   {/if}
 {/if}

@@ -8,12 +8,39 @@
 	import { ui } from '$lib/stores/ui.svelte';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { dev } from '$app/environment';
+	import { dev, browser } from '$app/environment';
 	import { injectAnalytics } from '@vercel/analytics/sveltekit';
 	import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
 
 	let { children } = $props();
 	let canonicalUrl = $derived(`https://corebalance.app${$page.url.pathname}`);
+
+	// Determinar de manera síncrona si hay datos locales o flag de bypass para evitar flashes en la redirección.
+	const hasLocalHoldings = browser ? (() => {
+		try {
+			const saved = localStorage.getItem('corebalance_holdings_v2');
+			if (!saved) return false;
+			const parsed = JSON.parse(saved);
+			return Object.values(parsed).some((h: any) => h.shares > 0);
+		} catch {
+			return false;
+		}
+	})() : false;
+
+	const isBypassed = browser ? sessionStorage.getItem('bypassLanding') === 'true' : false;
+
+	// Solo mostrar la pantalla de carga si el usuario va al dashboard,
+	// o si va a la landing pero va a ser redirigido (tiene datos locales o flag de bypass).
+	let showSplash = $derived.by(() => {
+		if ($page.url.pathname === '/dashboard') {
+			return !portfolio.isInitialized;
+		}
+		if ($page.url.pathname === '/' || $page.url.pathname === '/landing') {
+			const willRedirect = hasLocalHoldings || isBypassed;
+			return willRedirect && !portfolio.isInitialized;
+		}
+		return false;
+	});
 
 	onMount(() => {
 		injectAnalytics({ mode: dev ? 'development' : 'production' });
@@ -46,7 +73,9 @@
 	"
 ></div>
 
-<SplashScreen loading={!portfolio.isInitialized} />
+{#if showSplash}
+	<SplashScreen loading={!portfolio.isInitialized} />
+{/if}
 
 {@render children()}
 
