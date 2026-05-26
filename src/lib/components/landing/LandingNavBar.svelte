@@ -27,7 +27,10 @@
 <nav class="navbar" class:scrolled={isScrolled}>
   <div class="nav-container">
     <div class="nav-brand">
-      <img src="/favicon.png" alt="CoreBalance" class="logo" />
+      <picture>
+        <source srcset="/logo.webp" type="image/webp" />
+        <img src="/logo.png" alt="CoreBalance" class="logo" width="32" height="32" fetchpriority="high" loading="eager" />
+      </picture>
       <span class="brand-name">CoreBalance</span>
     </div>
 

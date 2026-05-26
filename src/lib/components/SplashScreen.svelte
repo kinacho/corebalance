@@ -56,7 +56,10 @@
 		<div class="splash-content">
 			<div class="logo-container">
 				<div class="logo-glow"></div>
-				<img src="/pwa-512x512.png" alt="CoreBalance Logo" class="logo-img" />
+				<picture>
+					<source srcset="/logo.webp" type="image/webp" />
+					<img src="/logo.png" alt="CoreBalance Logo" class="logo-img" width="80" height="80" fetchpriority="high" loading="eager" />
+				</picture>
 			</div>
 			
 			<div class="text-container">

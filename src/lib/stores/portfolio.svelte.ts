@@ -2,8 +2,6 @@ import { DEFAULT_CORE_ASSETS, DEFAULT_SATELLITE_ASSETS, DEFAULT_STOCK_ASSETS, ST
 import type { Asset, AssetCategory, HoldingData, HoldingsMap, PortfolioState, PriceData, RebalanceResult, Transaction } from '$lib/types';
 import { calculatePortfolioState, calculateRebalance } from '$lib/rebalance';
 import { storageProvider } from '$lib/db';
-import { localDB } from '$lib/db/LocalDBStorage';
-import { auth } from '$lib/firebase';
 import { formatDate, resolveAssetIcon } from '$lib/utils';
 import { ui } from '$lib/stores/ui.svelte';
 import { goto } from '$app/navigation';
@@ -230,6 +228,7 @@ export class PortfolioStore {
 		}
 		if (!storageProvider.isLocal) {
 			try {
+				const { auth } = await import('$lib/firebase');
 				if (auth) {
 					const { getRedirectResult } = await import('firebase/auth');
 					await getRedirectResult(auth);
@@ -336,11 +335,14 @@ export class PortfolioStore {
 			const points = await storageProvider.loadHistory(this.user.uid);
 			if (points.length > 0) {
 				this.history = points;
-			} else if (localDB) {
-				const localHistory = await localDB.history.get('local_user');
-				if (localHistory && localHistory.points.length > 0) {
-					this.history = localHistory.points;
-					await storageProvider.saveHistory(this.user.uid, this.history);
+			} else {
+				const { localDB } = await import('$lib/db/LocalDBStorage');
+				if (localDB) {
+					const localHistory = await localDB.history.get('local_user');
+					if (localHistory && localHistory.points.length > 0) {
+						this.history = localHistory.points;
+						await storageProvider.saveHistory(this.user.uid, this.history);
+					}
 				}
 			}
 		} catch (e) { console.error('History load error:', e); }

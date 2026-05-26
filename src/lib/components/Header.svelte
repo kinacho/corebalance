@@ -98,7 +98,10 @@
 
 <header class="dashboard-header" class:scrolled={scrolled}>
 	<div class="header-left">
-		<img src="/favicon.png" alt="CoreBalance Logo" class="logo-img" />
+		<picture>
+			<source srcset="/logo.webp" type="image/webp" />
+			<img src="/logo.png" alt="CoreBalance Logo" class="logo-img" width="32" height="32" fetchpriority="high" loading="eager" />
+		</picture>
 		<div class="logo-group">
 			<h1 class="logo-title">CoreBalance</h1>
 			<p class="logo-subtitle">{portfolio.targetLabel}</p>

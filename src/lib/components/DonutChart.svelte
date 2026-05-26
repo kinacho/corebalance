@@ -129,6 +129,7 @@
 		position: relative;
 		width: 100%;
 		max-width: 180px;
+		aspect-ratio: 1;
 		filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
 	}
 

@@ -361,7 +361,10 @@
         <div class="footer-main">
           <div class="footer-brand">
             <div class="footer-logo-group">
-              <img src="/favicon.png" alt="CoreBalance" class="footer-logo" />
+              <picture>
+                <source srcset="/logo.webp" type="image/webp" />
+                <img src="/logo.png" alt="CoreBalance" class="footer-logo" width="28" height="28" loading="lazy" />
+              </picture>
               <span class="footer-title">CoreBalance</span>
             </div>
             <p class="footer-tagline">Tu centro de mandos para una gestión de activos inteligente y equilibrada.</p>

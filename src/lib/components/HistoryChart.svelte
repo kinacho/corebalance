@@ -459,6 +459,7 @@
 	.canvas-wrapper {
 		flex: 1;
 		min-height: 280px;
+		height: 280px;
 		position: relative;
 	}
 

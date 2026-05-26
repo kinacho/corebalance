@@ -8,7 +8,10 @@
     <div class="footer-grid">
       <div class="brand-col">
         <div class="logo-group">
-          <img src="/favicon.png" alt="CoreBalance" class="logo" />
+          <picture>
+            <source srcset="/logo.webp" type="image/webp" />
+            <img src="/logo.png" alt="CoreBalance" class="logo" width="28" height="28" loading="lazy" />
+          </picture>
           <span class="brand-name">CoreBalance</span>
         </div>
         <p>Tu centro de mandos para una gestión de activos inteligente y equilibrada.</p>
