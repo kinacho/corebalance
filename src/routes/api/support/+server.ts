@@ -1,12 +1,23 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { Resend } from 'resend';
+import { env } from '$env/dynamic/private';
 
-const resend = new Resend('re_KBDyejrt_NPuoLznhUSwR8GfTKJ8NZChG');
+const resend = new Resend(env.RESEND_API_KEY);
 
 // Sencillo rate limiter en memoria
 const recentRequests = new Map<string, number>();
 const RATE_LIMIT_MS = 60000; // 1 minuto de cooldown
+
+function escapeHtml(str: string): string {
+	if (!str) return '';
+	return str
+		.replace(/&/g, '&amp;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;')
+		.replace(/"/g, '&quot;')
+		.replace(/'/g, '&#39;');
+}
 
 export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 	const ip = getClientAddress();
@@ -24,19 +35,24 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 			return json({ error: 'Faltan campos obligatorios' }, { status: 400 });
 		}
 
+		const cleanEmail = escapeHtml(email);
+		const cleanSubject = escapeHtml(subject);
+		const cleanMessage = escapeHtml(message);
+		const cleanUserAgent = escapeHtml(userAgent);
+
 		recentRequests.set(ip, now);
 
 		await resend.emails.send({
 			from: 'CoreBalance Soporte <onboarding@resend.dev>',
-			to: 'kino166@gmail.com',
-			subject: `[${type.toUpperCase()}] ${subject}`,
+			to: env.SUPPORT_EMAIL || 'kino166@gmail.com',
+			subject: `[${type.toUpperCase()}] ${cleanSubject}`,
 			html: `
 				<h2>Nuevo mensaje de ${type === 'bug' ? 'Bug Report' : 'Contacto'}</h2>
-				<p><strong>De:</strong> ${email}</p>
-				<p><strong>Asunto:</strong> ${subject}</p>
-				<p><strong>Mensaje:</strong><br>${message.replace(/\n/g, '<br>')}</p>
+				<p><strong>De:</strong> ${cleanEmail}</p>
+				<p><strong>Asunto:</strong> ${cleanSubject}</p>
+				<p><strong>Mensaje:</strong><br>${cleanMessage.replace(/\n/g, '<br>')}</p>
 				<hr />
-				<p><small>Enviado desde CoreBalance App (${userAgent}) el ${timestamp}</small></p>
+				<p><small>Enviado desde CoreBalance App (${cleanUserAgent}) el ${timestamp}</small></p>
 			`
 		});
 

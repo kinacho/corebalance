@@ -79,7 +79,7 @@ export class FirebaseStorage implements StorageProvider {
 	}
 
 	async login(): Promise<void> {
-		if (!auth) return;
+		if (!auth || !googleProvider) return;
 		try {
 			// Intentar con Popup primero (mejor UX)
 			await signInWithPopup(auth, googleProvider);
@@ -91,7 +91,8 @@ export class FirebaseStorage implements StorageProvider {
 				const { signInWithRedirect } = await import('firebase/auth');
 				await signInWithRedirect(auth, googleProvider);
 			} else {
-				alert(`Error al iniciar sesión: ${e.message}`);
+				// FIX 5: Reemplazar alert() por throw Error
+				throw new Error(e.message);
 			}
 		}
 	}

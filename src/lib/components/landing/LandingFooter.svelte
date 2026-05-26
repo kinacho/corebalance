@@ -153,12 +153,6 @@
     color: #3b82f6;
   }
 
-  .link-disabled {
-    color: rgba(160, 160, 200, 0.2);
-    font-size: 0.9rem;
-    cursor: not-allowed;
-  }
-
   .footer-bottom {
     padding-top: 2rem;
     border-top: 1px solid rgba(255, 255, 255, 0.03);
