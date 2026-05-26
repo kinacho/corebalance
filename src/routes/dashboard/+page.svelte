@@ -1,8 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import QRCode from "qrcode";
   import Header from "$lib/components/Header.svelte";
-  import AssetCard from "$lib/components/AssetCard.svelte";
   import PortfolioSection from "$lib/components/PortfolioSection.svelte";
   import HeroSummary from "$lib/components/HeroSummary.svelte";
   import DonutChart from "$lib/components/DonutChart.svelte";
@@ -19,7 +17,6 @@
   import { portfolio } from "$lib/stores/portfolio.svelte";
   import { ui } from "$lib/stores/ui.svelte";
 
-  import { formatEUR, formatPercent } from "$lib/utils";
   import { DASHBOARD_TABS, type TabId } from "$lib/constants";
   import { browser } from "$app/environment";
   import { goto, beforeNavigate } from "$app/navigation";

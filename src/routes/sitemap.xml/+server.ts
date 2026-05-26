@@ -7,7 +7,6 @@ export const GET: RequestHandler = async () => {
   
   const pages = [
     { url: '', priority: '1.0', changefreq: 'weekly' },
-    { url: 'landing', priority: '0.9', changefreq: 'weekly' },
     { url: 'privacy', priority: '0.3', changefreq: 'monthly' },
     { url: 'terms', priority: '0.3', changefreq: 'monthly' },
     { url: 'cookies', priority: '0.3', changefreq: 'monthly' }

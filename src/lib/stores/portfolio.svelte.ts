@@ -21,7 +21,6 @@ export class PortfolioStore {
 	isPrivate = $state(false);
 	isInitialized = $state(false);
 	history = $state<{ date: string; value: number }[]>([]);
-	dailyChange = $state({ value: 0, percent: 0 });
 	authLoading = $state(false);
 	authReady = $state(false);
 	isDemo = $state(false);
@@ -336,14 +335,12 @@ export class PortfolioStore {
 			const points = await storageProvider.loadHistory(this.user.uid);
 			if (points.length > 0) {
 				this.history = points;
-				this.calculateDailyChange();
 			} else {
 				const { localDB } = await import('$lib/db/LocalDBStorage');
 				if (localDB) {
 					const localHistory = await localDB.history.get('local_user');
 					if (localHistory && localHistory.points.length > 0) {
 						this.history = localHistory.points;
-						this.calculateDailyChange();
 						await storageProvider.saveHistory(this.user.uid, this.history);
 					}
 				}
@@ -365,14 +362,7 @@ export class PortfolioStore {
 		newHistory.sort((a, b) => a.date.localeCompare(b.date));
 		if (newHistory.length > 365) newHistory = newHistory.slice(-365);
 		this.history = newHistory;
-		try { await storageProvider.saveHistory(this.user.uid, newHistory); this.calculateDailyChange(); } catch (e) { console.error('Update history error:', e); }
-	}
-
-	private calculateDailyChange() {
-		if (this.history.length < 2) return;
-		const last = this.history[this.history.length - 1].value;
-		const prev = this.history[this.history.length - 2].value;
-		this.dailyChange = { value: last - prev, percent: prev > 0 ? (last - prev) / prev : 0 };
+		try { await storageProvider.saveHistory(this.user.uid, newHistory); } catch (e) { console.error('Update history error:', e); }
 	}
 
 	private saveToStorage() {

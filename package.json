@@ -36,8 +36,6 @@
 		"vitest": "^4.1.6"
 	},
 	"dependencies": {
-		"@inlang/paraglide-js": "^2.18.1",
-		"@inlang/paraglide-sveltekit": "^0.16.1",
 		"@upstash/redis": "^1.38.0",
 		"@vercel/analytics": "^2.0.1",
 		"@vercel/speed-insights": "^2.0.0",
@@ -45,14 +43,12 @@
 		"dexie": "^4.4.2",
 		"driver.js": "^1.4.0",
 		"firebase": "^12.12.1",
-		"html5-qrcode": "^2.3.8",
 		"qrcode": "^1.5.4",
 		"resend": "^6.12.3",
 		"yahoo-finance2": "^3.14.1"
 	},
 	"overrides": {
 		"cookie": "^0.7.2",
-		"solid-js": "^1.9.4",
 		"devalue": "^5.1.1"
 	}
 }

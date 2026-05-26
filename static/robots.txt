@@ -2,7 +2,6 @@ User-agent: *
 Disallow: /dashboard/
 Disallow: /api/
 Allow: /
-Allow: /landing
 Allow: /privacy
 Allow: /terms
 Allow: /cookies

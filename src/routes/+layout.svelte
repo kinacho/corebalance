@@ -35,7 +35,7 @@
 		if ($page.url.pathname === '/dashboard') {
 			return !portfolio.isInitialized;
 		}
-		if ($page.url.pathname === '/' || $page.url.pathname === '/landing') {
+		if ($page.url.pathname === '/') {
 			const willRedirect = hasLocalHoldings || isBypassed;
 			return willRedirect && !portfolio.isInitialized;
 		}
