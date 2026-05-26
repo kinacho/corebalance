@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from "svelte";
   import { portfolio } from "$lib/stores/portfolio.svelte";
   import LandingPage from "$lib/components/landing/LandingPage.svelte";
   import { browser } from "$app/environment";
@@ -12,7 +11,9 @@
     if (portfolio.isDemo) {
       portfolio.exitDemo();
     }
-    bypassLanding = true;
+    // Solo poner el flag en sessionStorage y navegar.
+    // NO mutar el estado reactivo bypassLanding para evitar que el $effect
+    // lo detecte y lo borre antes de que el dashboard pueda leerlo.
     if (browser) sessionStorage.setItem('bypassLanding', 'true');
     goto('/dashboard');
   }
@@ -24,29 +25,8 @@
       const hasLocalData = !portfolio.user && portfolio.hasAnyHoldings;
       
       if (hasSession || hasLocalData || bypassLanding) {
-        // Solo redirigir si realmente hay datos. Si bypassLanding está activo
-        // pero no hay datos, limpiar el flag para evitar loops.
-        if (bypassLanding && !hasSession && !hasLocalData) {
-          if (browser) sessionStorage.removeItem('bypassLanding');
-          bypassLanding = false;
-          return; // No redirigir, mostrar landing
-        }
         goto('/dashboard');
       }
-    }
-  });
-
-  onMount(() => {
-    // Si ya hay bypass activo, redirigir al dashboard
-    if (bypassLanding) {
-      // Solo hacer goto si hay datos reales, si no limpiar el flag
-      if (portfolio.isInitialized && !portfolio.hasAnyHoldings && !portfolio.user) {
-        if (browser) sessionStorage.removeItem('bypassLanding');
-        bypassLanding = false;
-      } else if (portfolio.isInitialized) {
-        goto('/dashboard');
-      }
-      // Si no está initialized todavía, el $effect se encargará cuando lo esté
     }
   });
 </script>
