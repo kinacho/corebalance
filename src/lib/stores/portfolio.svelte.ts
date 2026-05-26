@@ -217,15 +217,22 @@ export class PortfolioStore {
 
 	private async initAuth() {
 		if (typeof window === 'undefined') return;
+		
+		// 1. Carga inmediata desde Storage (SWR approach)
+		this.loadFromStorage();
+		
+		// 2. Si tenemos activos locales, disparamos fetch de precios de inmediato 
+		// sin esperar a Firebase o Auth.
+		if (this.hasAnyHoldings) {
+			this.fetchPrices();
+		}
+
 		if (!storageProvider.onAuthStateChanged) {
-			this.loadFromStorage();
-			if (this.hasAnyHoldings) {
-				await this.fetchPrices();
-			}
 			this.isInitialized = true;
 			this.loading = false;
 			return;
 		}
+
 		if (!storageProvider.isLocal) {
 			try {
 				const { auth } = await import('$lib/firebase');
@@ -235,32 +242,28 @@ export class PortfolioStore {
 				}
 			} catch (e) { console.error('Redirect result error:', e); }
 		}
-		this.loadFromStorage();
+
 		this.authUnsubscribe = storageProvider.onAuthStateChanged(async (user) => {
 			this.authLoading = false;
 			this.user = user;
+			
 			if (user) {
 				await this.loadFromCloud();
-			} else {
-				if (this.hasAnyHoldings) {
-					await this.fetchPrices();
-				}
 			}
+
 			this.isInitialized = true;
 			this.loading = false;
 			this.authReady = true;
 		}) as (() => void) | undefined;
+
+		// Reducimos el timeout de seguridad a 4s (era 8s)
 		setTimeout(() => {
 			if (!this.isInitialized) {
-				this.loadFromStorage();
-				if (this.hasAnyHoldings) {
-					this.fetchPrices();
-				}
 				this.isInitialized = true;
 				this.loading = false;
 				this.authReady = true;
 			}
-		}, 8000);
+		}, 4000);
 	}
 
 	private pollingIntervalId: ReturnType<typeof setInterval> | undefined;
@@ -270,9 +273,6 @@ export class PortfolioStore {
 
 	private initPolling() {
 		if (typeof window === 'undefined') return;
-		if (this.hasAnyHoldings) {
-			this.fetchPrices();
-		}
 		this.pollingIntervalId = setInterval(() => { 
 			if (document.visibilityState === 'visible' && !this.loading && this.hasAnyHoldings) {
 				this.fetchPrices(); 
@@ -312,19 +312,34 @@ export class PortfolioStore {
 	private async loadFromCloud() {
 		if (!this.user) return;
 		try {
-			const data = await storageProvider.loadUserData(this.user.uid);
-			if (data) {
-				this.holdings = this.sanitizeHoldings(data.holdings || {});
-				this.contribution = data.contribution || 0;
-				this.isPrivate = data.isPrivate ?? this.isPrivate;
-				if (data.coreAssets && Array.isArray(data.coreAssets)) this.coreAssets = data.coreAssets;
-				if (data.satelliteAssets && Array.isArray(data.satelliteAssets)) this.satelliteAssets = data.satelliteAssets;
-				if (data.stockAssets && Array.isArray(data.stockAssets)) this.stockAssets = data.stockAssets;
+			// Paralelizamos la carga de todos los datos del usuario
+			const [userData, transactions, history] = await Promise.all([
+				storageProvider.loadUserData(this.user.uid),
+				storageProvider.loadTransactions ? storageProvider.loadTransactions(this.user.uid) : Promise.resolve([]),
+				storageProvider.loadHistory ? storageProvider.loadHistory(this.user.uid) : Promise.resolve([])
+			]);
+
+			if (userData) {
+				this.holdings = this.sanitizeHoldings(userData.holdings || {});
+				this.contribution = userData.contribution || 0;
+				this.isPrivate = userData.isPrivate ?? this.isPrivate;
+				if (userData.coreAssets && Array.isArray(userData.coreAssets)) this.coreAssets = userData.coreAssets;
+				if (userData.satelliteAssets && Array.isArray(userData.satelliteAssets)) this.satelliteAssets = userData.satelliteAssets;
+				if (userData.stockAssets && Array.isArray(userData.stockAssets)) this.stockAssets = userData.stockAssets;
 			} else if (Object.keys(this.holdings).length > 0 || this.coreAssets.length > 0 || this.satelliteAssets.length > 0 || this.stockAssets.length > 0) {
 				await this.saveToCloud();
 			}
-			if (storageProvider.loadTransactions) this.transactions = await storageProvider.loadTransactions(this.user.uid);
-			await this.loadHistory();
+
+			if (transactions) this.transactions = transactions;
+			
+			// Si no venía historia en el primer bloque paralelo o está vacía, intentamos cargar/migrar
+			if (history && history.length > 0) {
+				this.history = history;
+			} else {
+				await this.loadHistory();
+			}
+
+			// Tras cargar los activos del usuario, refrescamos precios si han cambiado los activos
 			await this.fetchPrices();
 		} catch (e) { console.error('Storage load error:', e); }
 	}
@@ -336,6 +351,7 @@ export class PortfolioStore {
 			if (points.length > 0) {
 				this.history = points;
 			} else {
+				// Fallback a migración de historia local si no hay en nube
 				const { localDB } = await import('$lib/db/LocalDBStorage');
 				if (localDB) {
 					const localHistory = await localDB.history.get('local_user');

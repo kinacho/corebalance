@@ -11,17 +11,7 @@
 	let { loading = true, title = 'CoreBalance', subtitle = 'Portfolio Dashboard' }: Props = $props();
 	
 	let show = $state(true);
-	let progress = $state(0);
-
-	onMount(() => {
-		const interval = setInterval(() => {
-			if (progress < 90) {
-				progress += Math.random() * 15;
-			}
-		}, 200);
-
-		return () => clearInterval(interval);
-	});
+	let progress = $derived(loading ? 70 : 100);
 
 	$effect(() => {
 		if (show && typeof document !== 'undefined') {
@@ -37,7 +27,6 @@
 
 	$effect(() => {
 		if (!loading) {
-			progress = 100;
 			setTimeout(() => {
 				show = false;
 			}, 400);

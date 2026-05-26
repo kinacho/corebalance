@@ -42,6 +42,13 @@
 		return false;
 	});
 
+	// Ocultar la splash screen estática de app.html cuando el portfolio esté listo
+	$effect(() => {
+		if (portfolio.isInitialized && browser && (window as any).__hideInitialSplash) {
+			(window as any).__hideInitialSplash();
+		}
+	});
+
 	onMount(() => {
 		injectAnalytics({ mode: dev ? 'development' : 'production' });
 		injectSpeedInsights();

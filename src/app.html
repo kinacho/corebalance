@@ -34,6 +34,71 @@
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">
+		<script>
+			// Verificación inmediata para evitar mostrar splash en la landing si no es necesario
+			(function() {
+				const path = window.location.pathname;
+				let hasData = false;
+				try {
+					const saved = localStorage.getItem('corebalance_holdings_v2');
+					if (saved) {
+						const parsed = JSON.parse(saved);
+						hasData = Object.values(parsed).some(h => h.shares > 0);
+					}
+				} catch(e) {}
+				const isBypassed = sessionStorage.getItem('bypassLanding') === 'true';
+				
+				// Solo queremos splash si vamos al dashboard o si vamos a redirigir desde la landing
+				const needsSplash = path === '/dashboard' || (path === '/' && (hasData || isBypassed));
+				
+				if (!needsSplash) {
+					document.body.classList.add('no-splash-needed');
+				}
+			})();
+		</script>
+
+		<style>
+			.no-splash-needed #initial-splash { display: none !important; }
+		</style>
+
+		<!-- Initial Splash Screen (Static) -->
+		<div id="initial-splash" style="position: fixed; inset: 0; background: #05050a; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10000; transition: opacity 0.5s ease; font-family: 'Plus Jakarta Sans', sans-serif;">
+			<div style="position: absolute; inset: 0; background: radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.25) 0, transparent 50%), radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.15) 0, transparent 50%), radial-gradient(at 50% 50%, rgba(139, 92, 246, 0.1) 0, transparent 70%); filter: blur(60px); opacity: 0.8;"></div>
+			<div style="position: relative; z-index: 10; display: flex; flex-direction: column; align-items: center; gap: 2.5rem; width: 100%; max-width: 320px; padding: 2rem;">
+				<div style="position: relative; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center;">
+					<img src="/logo.webp" alt="Logo" style="width: 80px; height: 80px; object-fit: contain; filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.3));" />
+				</div>
+				<div style="text-align: center;">
+					<h1 style="font-size: 2.25rem; font-weight: 900; color: #fff; margin: 0; letter-spacing: -0.04em;">CoreBalance</h1>
+					<p style="font-size: 0.85rem; font-weight: 500; color: rgba(255, 255, 255, 0.4); margin: 0.5rem 0 0 0; text-transform: uppercase; letter-spacing: 0.15em;">Portfolio Dashboard</p>
+				</div>
+				<div style="width: 100%; height: 4px; background: rgba(255, 255, 255, 0.05); border-radius: 10px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.03);">
+					<div id="initial-bar" style="height: 100%; width: 0%; background: linear-gradient(90deg, #3b82f6, #60a5fa, #10b981); border-radius: 10px; transition: width 0.3s ease; box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);"></div>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			// Pequeña animación de barra mientras carga el JS
+			(function() {
+				const bar = document.getElementById('initial-bar');
+				let progress = 0;
+				const interval = setInterval(() => {
+					progress += Math.random() * 10;
+					if (progress > 90) clearInterval(interval);
+					if (bar) bar.style.width = progress + '%';
+				}, 150);
+				window.__hideInitialSplash = function() {
+					const splash = document.getElementById('initial-splash');
+					if (splash) {
+						splash.style.opacity = '0';
+						setTimeout(() => splash.remove(), 500);
+					}
+					clearInterval(interval);
+				};
+			})();
+		</script>
+
 		<!-- Noise Filter -->
 		<svg style="display: none;">
 			<filter id="noiseFilter">
