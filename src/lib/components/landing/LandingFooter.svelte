@@ -23,7 +23,6 @@
           <li><a href="/#features">Características</a></li>
           <li><a href="/#how-it-works">Cómo funciona</a></li>
           <li><a href="/#why-us">Por qué CoreBalance</a></li>
-          <li><span class="link-disabled">Sincronización (Próximamente)</span></li>
         </ul>
       </div>
 

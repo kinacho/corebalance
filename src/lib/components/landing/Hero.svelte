@@ -160,8 +160,21 @@
   .cta-group {
     display: flex;
     flex-wrap: wrap;
-    gap: 1.5rem;
+    gap: 1.25rem;
     align-items: center;
+  }
+
+  @media (max-width: 640px) {
+    .cta-group {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1rem;
+    }
+    
+    .btn-text {
+      text-align: center;
+      padding: 0.5rem;
+    }
   }
 
   .btn-lg {
@@ -177,6 +190,7 @@
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s ease;
+    text-align: center;
   }
 
   .btn-primary:hover {
@@ -194,6 +208,7 @@
     font-size: 1.1rem;
     cursor: pointer;
     transition: all 0.2s ease;
+    text-align: center;
   }
 
   .btn-demo:hover {
@@ -219,6 +234,9 @@
   .hero-mockup-container {
     perspective: 1200px;
     position: relative;
+    width: 100%;
+    overflow: hidden;
+    padding: 2rem 0;
   }
 
   .hero-mockup {
@@ -231,6 +249,7 @@
     transition: transform 0.8s cubic-bezier(0.2, 0, 0.2, 1);
     max-width: 580px;
     margin: 0 auto;
+    width: 100%;
   }
 
   .hero-mockup:hover {
@@ -240,7 +259,27 @@
   @media (max-width: 1024px) {
     .hero-mockup {
       transform: none;
-      max-width: 100%;
+      max-width: 500px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .hero-mockup {
+      border-radius: 16px;
+    }
+    
+    .mockup-header {
+      padding: 0 0.75rem;
+      gap: 0.75rem;
+    }
+    
+    .address-bar {
+      font-size: 0.65rem;
+    }
+    
+    .mockup-content {
+      height: auto;
+      min-height: 400px;
     }
   }
 
@@ -285,7 +324,7 @@
   }
 
   .mockup-sidebar {
-    width: 60px;
+    width: 48px;
     background: rgba(255, 255, 255, 0.01);
     border-right: 1px solid rgba(255, 255, 255, 0.05);
     padding: 1rem 0;
@@ -295,10 +334,16 @@
     gap: 1.5rem;
   }
 
+  @media (max-width: 480px) {
+    .mockup-sidebar {
+      width: 40px;
+    }
+  }
+
   .sidebar-item {
-    width: 24px;
-    height: 24px;
-    border-radius: 6px;
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
     background: rgba(255, 255, 255, 0.05);
   }
 
@@ -309,38 +354,48 @@
 
   .mockup-main {
     flex: 1;
-    padding: 1.5rem;
+    padding: 1.25rem;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1.25rem;
     background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.05), transparent);
+    overflow: hidden;
   }
 
   .mockup-stats {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 0.75rem;
+    gap: 0.5rem;
+  }
+
+  @media (max-width: 400px) {
+    .mockup-stats {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .mock-stat:last-child {
+      display: none;
+    }
   }
 
   .mock-stat {
-    padding: 0.75rem;
+    padding: 0.5rem;
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 12px;
+    border-radius: 10px;
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.15rem;
   }
 
   .mock-stat .label {
-    font-size: 0.6rem;
+    font-size: 0.5rem;
     color: rgba(255, 255, 255, 0.4);
     text-transform: uppercase;
     font-weight: 700;
   }
 
   .mock-stat .value {
-    font-size: 0.9rem;
+    font-size: 0.75rem;
     font-weight: 800;
     color: #fff;
   }
@@ -355,9 +410,26 @@
 
   .mockup-grid {
     display: grid;
-    grid-template-columns: 140px 1fr;
-    gap: 1.5rem;
+    grid-template-columns: 120px 1fr;
+    gap: 1rem;
     align-items: center;
+  }
+
+  @media (max-width: 480px) {
+    .mockup-grid {
+      grid-template-columns: 1fr;
+      justify-items: center;
+      text-align: center;
+    }
+    
+    .mock-donut {
+      width: 100px;
+      height: 100px;
+    }
+    
+    .donut-center {
+      inset: 20px;
+    }
   }
 
   .mock-chart-container {
@@ -366,19 +438,10 @@
   }
 
   .mock-donut {
-    width: 120px;
-    height: 120px;
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
     position: relative;
-    background: conic-gradient(
-      var(--color) calc(var(--offset) * 1%), 
-      var(--color) calc((var(--offset) + var(--size)) * 1%),
-      transparent 0
-    );
-  }
-
-  /* Simplified donut logic with layers */
-  .mock-donut {
     background: conic-gradient(
       #3b82f6 0% 70%,
       #10b981 70% 90%,
@@ -388,7 +451,7 @@
 
   .donut-center {
     position: absolute;
-    inset: 25px;
+    inset: 20px;
     background: #0f0f14;
     border-radius: 50%;
     box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
@@ -397,46 +460,48 @@
   .mock-assets {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.5rem;
+    width: 100%;
   }
 
   .mock-asset {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem;
+    gap: 0.5rem;
+    padding: 0.5rem;
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 12px;
+    border-radius: 10px;
     transition: background 0.2s;
   }
 
   .mock-asset .icon {
-    font-size: 1.25rem;
-    width: 32px;
-    height: 32px;
+    font-size: 1rem;
+    width: 28px;
+    height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
     background: rgba(0,0,0,0.2);
-    border-radius: 8px;
+    border-radius: 6px;
   }
 
   .mock-asset .info {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
+    gap: 0.25rem;
+    text-align: left;
   }
 
   .mock-asset .name {
-    font-size: 0.75rem;
+    font-size: 0.65rem;
     font-weight: 700;
     color: rgba(255, 255, 255, 0.9);
   }
 
   .mock-asset .progress {
-    height: 4px;
+    height: 3px;
     background: rgba(255, 255, 255, 0.05);
     border-radius: 2px;
     width: 100%;
@@ -452,9 +517,9 @@
   .mock-asset:nth-child(3) .fill { background: #f59e0b; }
 
   .mock-asset .badge {
-    font-size: 0.55rem;
+    font-size: 0.5rem;
     font-weight: 900;
-    padding: 2px 6px;
+    padding: 1px 4px;
     border-radius: 4px;
     margin-bottom: 0;
   }

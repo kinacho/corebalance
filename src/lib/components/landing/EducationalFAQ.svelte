@@ -109,9 +109,15 @@
 
 <style>
   .edu-faq-section {
-    padding: 100px 1.5rem;
+    padding: 80px 1rem;
     background: rgba(10, 10, 20, 0.3);
     border-top: 1px solid rgba(255, 255, 255, 0.03);
+  }
+
+  @media (min-width: 768px) {
+    .edu-faq-section {
+      padding: 100px 1.5rem;
+    }
   }
 
   .container {
@@ -122,12 +128,13 @@
   .grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 5rem;
+    gap: 3rem;
   }
 
   @media (min-width: 1024px) {
     .grid {
       grid-template-columns: 1fr 1fr;
+      gap: 5rem;
     }
   }
 
@@ -144,11 +151,16 @@
   h2, h3 {
     color: #fff;
     font-weight: 800;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
   }
 
-  h2 { font-size: clamp(2rem, 4vw, 2.5rem); letter-spacing: -0.02em; }
-  h3 { font-size: 1.75rem; }
+  h2 { font-size: clamp(1.75rem, 5vw, 2.5rem); letter-spacing: -0.02em; line-height: 1.2; }
+  h3 { font-size: 1.5rem; }
+
+  @media (min-width: 768px) {
+    h2, h3 { margin-bottom: 2rem; }
+    h3 { font-size: 1.75rem; }
+  }
 
   .text-gradient {
     background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
@@ -159,20 +171,35 @@
 
   .edu-body p {
     color: rgba(160, 160, 200, 0.7);
-    font-size: 1.1rem;
+    font-size: 1rem;
     line-height: 1.7;
-    margin-bottom: 2.5rem;
+    margin-bottom: 2rem;
+  }
+
+  @media (min-width: 768px) {
+    .edu-body p {
+      font-size: 1.1rem;
+      margin-bottom: 2.5rem;
+    }
   }
 
   .edu-card {
     display: flex;
-    gap: 1.25rem;
-    margin-bottom: 1.5rem;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
     background: rgba(255, 255, 255, 0.02);
     padding: 1.25rem;
     border-radius: 16px;
     border: 1px solid rgba(255, 255, 255, 0.05);
     transition: transform 0.2s ease;
+  }
+
+  @media (min-width: 480px) {
+    .edu-card {
+      flex-direction: row;
+      gap: 1.25rem;
+    }
   }
 
   .edu-card:hover {
@@ -181,15 +208,24 @@
   }
 
   .edu-card-icon {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     background: rgba(59, 130, 246, 0.1);
-    width: 48px;
-    height: 48px;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 12px;
+    border-radius: 10px;
     flex-shrink: 0;
+  }
+
+  @media (min-width: 480px) {
+    .edu-card-icon {
+      font-size: 1.5rem;
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+    }
   }
 
   .edu-card-text h3 {
@@ -201,9 +237,15 @@
 
   .edu-card-text p {
     color: rgba(160, 160, 200, 0.5);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     line-height: 1.5;
     margin: 0;
+  }
+
+  @media (min-width: 480px) {
+    .edu-card-text p {
+      font-size: 0.9rem;
+    }
   }
 
   /* FAQ Styles */
@@ -228,7 +270,7 @@
 
   .faq-question {
     width: 100%;
-    padding: 1.25rem 1.5rem;
+    padding: 1rem 1.25rem;
     background: transparent;
     border: none;
     display: flex;
@@ -236,17 +278,31 @@
     align-items: center;
     color: #fff;
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 0.95rem;
     text-align: left;
     cursor: pointer;
     gap: 1rem;
   }
 
+  @media (min-width: 480px) {
+    .faq-question {
+      padding: 1.25rem 1.5rem;
+      font-size: 1rem;
+    }
+  }
+
   .chevron {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     position: relative;
     flex-shrink: 0;
+  }
+
+  @media (min-width: 480px) {
+    .chevron {
+      width: 20px;
+      height: 20px;
+    }
   }
 
   .chevron::before, .chevron::after {
@@ -254,10 +310,16 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 10px;
+    width: 8px;
     height: 2px;
     background: #3b82f6;
     transition: transform 0.3s ease;
+  }
+
+  @media (min-width: 480px) {
+    .chevron::before, .chevron::after {
+      width: 10px;
+    }
   }
 
   .chevron::before { transform: translate(-50%, -50%) rotate(0deg); }
@@ -266,15 +328,27 @@
   .faq-item.open .chevron::after { transform: translate(-50%, -50%) rotate(0deg); }
 
   .faq-answer {
-    padding: 0 1.5rem 1.25rem;
+    padding: 0 1.25rem 1rem;
     animation: slideDown 0.3s ease-out;
+  }
+
+  @media (min-width: 480px) {
+    .faq-answer {
+      padding: 0 1.5rem 1.25rem;
+    }
   }
 
   .faq-answer p {
     color: rgba(160, 160, 200, 0.6);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     line-height: 1.6;
     margin: 0;
+  }
+
+  @media (min-width: 480px) {
+    .faq-answer p {
+      font-size: 0.95rem;
+    }
   }
 
   @keyframes slideDown {
@@ -282,3 +356,4 @@
     to { opacity: 1; transform: translateY(0); }
   }
 </style>
+

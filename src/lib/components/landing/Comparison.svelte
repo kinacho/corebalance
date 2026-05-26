@@ -65,7 +65,13 @@
 
 <style>
   .comparison {
-    padding: 100px 1.5rem;
+    padding: 80px 1rem;
+  }
+
+  @media (min-width: 768px) {
+    .comparison {
+      padding: 100px 1.5rem;
+    }
   }
 
   .container {
@@ -75,14 +81,21 @@
 
   .section-header {
     text-align: center;
-    margin-bottom: 4rem;
+    margin-bottom: 3rem;
+  }
+
+  @media (min-width: 768px) {
+    .section-header {
+      margin-bottom: 4rem;
+    }
   }
 
   h2 {
-    font-size: clamp(2rem, 4vw, 2.5rem);
+    font-size: clamp(1.75rem, 5vw, 2.5rem);
     font-weight: 800;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
     color: #fff;
+    line-height: 1.2;
   }
 
   .text-gradient {
@@ -94,43 +107,73 @@
 
   .section-header p {
     color: rgba(160, 160, 200, 0.6);
-    font-size: 1.1rem;
+    font-size: 1rem;
     max-width: 600px;
     margin: 0 auto;
+  }
+
+  @media (min-width: 768px) {
+    .section-header p {
+      font-size: 1.1rem;
+    }
   }
 
   .table-container {
     background: var(--bg-secondary, #0f0f14);
     border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 24px;
+    border-radius: 20px;
     overflow-x: auto;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    -webkit-overflow-scrolling: touch;
+  }
+
+  @media (min-width: 768px) {
+    .table-container {
+      border-radius: 24px;
+    }
   }
 
   table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 600px;
+    min-width: 500px;
   }
 
   th, td {
-    padding: 1.5rem;
+    padding: 1rem;
     text-align: left;
     border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-    font-size: 0.95rem;
+    font-size: 0.85rem;
+  }
+
+  @media (min-width: 768px) {
+    th, td {
+      padding: 1.5rem;
+      font-size: 0.95rem;
+    }
   }
 
   th {
     color: rgba(255, 255, 255, 0.4);
     font-weight: 600;
     text-transform: uppercase;
-    font-size: 0.75rem;
+    font-size: 0.65rem;
     letter-spacing: 0.1em;
+  }
+
+  @media (min-width: 768px) {
+    th {
+      font-size: 0.75rem;
+    }
   }
 
   .feature-name {
     color: #fff;
     font-weight: 600;
+    position: sticky;
+    left: 0;
+    background: #0f0f14;
+    z-index: 1;
   }
 
   td {
@@ -148,3 +191,4 @@
     color: #3b82f6;
   }
 </style>
+

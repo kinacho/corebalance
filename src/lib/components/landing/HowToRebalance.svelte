@@ -81,11 +81,17 @@
 
 <style>
   .howto-section {
-    padding: 100px 1.5rem;
+    padding: 80px 1rem;
     background: rgba(10, 10, 20, 0.2);
     border-top: 1px solid rgba(255, 255, 255, 0.03);
     position: relative;
     overflow: hidden;
+  }
+
+  @media (min-width: 768px) {
+    .howto-section {
+      padding: 100px 1.5rem;
+    }
   }
 
   /* Efecto de brillo de fondo */
@@ -111,7 +117,13 @@
 
   .section-header {
     text-align: center;
-    margin-bottom: 5rem;
+    margin-bottom: 3rem;
+  }
+
+  @media (min-width: 768px) {
+    .section-header {
+      margin-bottom: 5rem;
+    }
   }
 
   .eyebrow {
@@ -125,9 +137,9 @@
   }
 
   h2 {
-    font-size: clamp(2rem, 4vw, 2.75rem);
+    font-size: clamp(1.75rem, 5vw, 2.75rem);
     font-weight: 800;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
     color: #fff;
     letter-spacing: -0.02em;
     line-height: 1.2;
@@ -142,33 +154,50 @@
 
   .section-desc {
     color: rgba(160, 160, 200, 0.6);
-    font-size: 1.1rem;
+    font-size: 1rem;
     max-width: 700px;
     margin: 0 auto;
     line-height: 1.6;
   }
 
+  @media (min-width: 768px) {
+    .section-desc {
+      font-size: 1.1rem;
+    }
+  }
+
   .howto-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 2rem;
-    margin-bottom: 4rem;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
   }
 
   @media (min-width: 768px) {
     .howto-grid {
       grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+      margin-bottom: 4rem;
     }
   }
 
   .howto-step {
     display: flex;
-    gap: 1.5rem;
+    flex-direction: column;
+    gap: 1.25rem;
     background: rgba(255, 255, 255, 0.01);
     border: 1px solid rgba(255, 255, 255, 0.04);
-    padding: 2rem;
+    padding: 1.5rem;
     border-radius: 20px;
     transition: all 0.3s ease;
+  }
+
+  @media (min-width: 480px) {
+    .howto-step {
+      flex-direction: row;
+      padding: 2rem;
+      gap: 1.5rem;
+    }
   }
 
   .howto-step:hover {
@@ -182,46 +211,76 @@
     background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.2) 100%);
     border: 1px solid rgba(59, 130, 246, 0.3);
     color: #3b82f6;
-    width: 48px;
-    height: 48px;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
     font-weight: 800;
-    font-size: 1.25rem;
+    font-size: 1.1rem;
     flex-shrink: 0;
     box-shadow: 0 0 15px rgba(59, 130, 246, 0.15);
   }
 
+  @media (min-width: 480px) {
+    .step-badge {
+      width: 48px;
+      height: 48px;
+      font-size: 1.25rem;
+    }
+  }
+
   .step-body h3 {
     color: #fff;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 700;
-    margin: 0 0 0.75rem 0;
+    margin: 0 0 0.5rem 0;
+  }
+
+  @media (min-width: 480px) {
+    .step-body h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.75rem;
+    }
   }
 
   .step-body p {
     color: rgba(160, 160, 200, 0.6);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     line-height: 1.6;
     margin: 0;
   }
 
+  @media (min-width: 480px) {
+    .step-body p {
+      font-size: 0.95rem;
+    }
+  }
+
   .howto-note {
     display: flex;
-    gap: 1.5rem;
+    flex-direction: column;
+    gap: 1.25rem;
     background: linear-gradient(135deg, rgba(59, 130, 246, 0.03) 0%, rgba(96, 165, 250, 0.01) 100%);
     border: 1px solid rgba(59, 130, 246, 0.15);
-    padding: 2rem;
+    padding: 1.5rem;
     border-radius: 20px;
     max-width: 900px;
     margin: 0 auto;
     align-items: flex-start;
   }
 
+  @media (min-width: 640px) {
+    .howto-note {
+      flex-direction: row;
+      padding: 2rem;
+      gap: 1.5rem;
+    }
+  }
+
   .note-icon {
-    font-size: 2rem;
+    font-size: 1.75rem;
     line-height: 1;
   }
 
@@ -234,8 +293,9 @@
 
   .note-content p {
     color: rgba(160, 160, 200, 0.6);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     line-height: 1.6;
     margin: 0;
   }
 </style>
+

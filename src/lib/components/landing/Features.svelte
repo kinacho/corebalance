@@ -55,8 +55,14 @@
 
 <style>
   .features {
-    padding: 100px 1.5rem;
+    padding: 80px 1rem;
     background: rgba(255, 255, 255, 0.02);
+  }
+
+  @media (min-width: 768px) {
+    .features {
+      padding: 100px 1.5rem;
+    }
   }
 
   .container {
@@ -66,7 +72,13 @@
 
   .section-header {
     text-align: center;
-    margin-bottom: 4rem;
+    margin-bottom: 3rem;
+  }
+
+  @media (min-width: 768px) {
+    .section-header {
+      margin-bottom: 4rem;
+    }
   }
 
   .eyebrow {
@@ -80,11 +92,12 @@
   }
 
   h2 {
-    font-size: clamp(2rem, 4vw, 3rem);
+    font-size: clamp(1.75rem, 5vw, 3rem);
     font-weight: 800;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
     color: #fff;
     letter-spacing: -0.02em;
+    line-height: 1.2;
   }
 
   .text-gradient {
@@ -96,23 +109,42 @@
 
   .section-header p {
     color: rgba(160, 160, 200, 0.6);
-    font-size: 1.1rem;
+    font-size: 1rem;
     max-width: 600px;
     margin: 0 auto;
   }
 
+  @media (min-width: 768px) {
+    .section-header p {
+      font-size: 1.1rem;
+    }
+  }
+
   .features-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 360px) {
+    .features-grid {
+      grid-template-columns: 1fr;
+    }
   }
 
   .feature-card {
     background: var(--bg-secondary, #0f0f14);
     border: 1px solid rgba(255, 255, 255, 0.05);
-    padding: 2.5rem;
-    border-radius: 24px;
+    padding: 1.5rem;
+    border-radius: 20px;
     transition: all 0.3s ease;
+  }
+
+  @media (min-width: 768px) {
+    .feature-card {
+      padding: 2.5rem;
+      border-radius: 24px;
+    }
   }
 
   .feature-card:hover {
@@ -122,20 +154,42 @@
   }
 
   .icon {
-    font-size: 2.5rem;
-    margin-bottom: 1.5rem;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  @media (min-width: 768px) {
+    .icon {
+      font-size: 2.5rem;
+      margin-bottom: 1.5rem;
+    }
   }
 
   h3 {
-    font-size: 1.25rem;
+    font-size: 1.15rem;
     font-weight: 700;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
     color: #fff;
+  }
+
+  @media (min-width: 768px) {
+    h3 {
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+    }
   }
 
   .feature-card p {
     color: rgba(160, 160, 200, 0.5);
     line-height: 1.6;
     margin: 0;
+    font-size: 0.9rem;
+  }
+
+  @media (min-width: 768px) {
+    .feature-card p {
+      font-size: 0.95rem;
+    }
   }
 </style>
+
