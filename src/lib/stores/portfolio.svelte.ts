@@ -8,6 +8,15 @@ import { goto } from '$app/navigation';
 
 export interface User { uid: string; displayName?: string | null; photoURL?: string | null; email?: string | null; }
 
+interface PortfolioBackup {
+	holdings: HoldingsMap;
+	coreAssets: Asset[];
+	satelliteAssets: Asset[];
+	stockAssets: Asset[];
+	contribution: number;
+	transactions: Transaction[];
+}
+
 export class PortfolioStore {
 	// --- State (Runes) ---
 	holdings = $state<HoldingsMap>({});
@@ -31,7 +40,7 @@ export class PortfolioStore {
 	stockAssets = $state<Asset[]>([...DEFAULT_STOCK_ASSETS]);
 
 	// --- Internal Backup for Demo Mode ---
-	private _backup: any = null;
+	private _backup: PortfolioBackup | null = null;
 
 	// --- Derived State ---
 	ledgerHoldings = $derived.by(() => {

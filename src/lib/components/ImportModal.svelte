@@ -173,6 +173,27 @@
 
 	async function confirmImport() {
 		if (!importResult) return;
+
+		// --- Validation FIX 5 ---
+		const weightsByCategory: Record<AssetCategory, number> = {
+			core: portfolio.coreAssets.reduce((sum, a) => sum + (a.targetWeight || 0), 0),
+			satellite: portfolio.satelliteAssets.reduce((sum, a) => sum + (a.targetWeight || 0), 0),
+			stocks: portfolio.stockAssets.reduce((sum, a) => sum + (a.targetWeight || 0), 0)
+		};
+
+		// Calcular pesos de los nuevos activos (siempre entran con targetWeight 0 según lógica actual,
+		// pero por seguridad validamos la categoría destino si la lógica cambiara)
+		// En este caso, el usuario solo elige UNA categoría para TODOS los nuevos activos.
+		let newAssetsWeight = 0;
+		// (Actualmente el código asigna targetWeight: 0 a los nuevos, pero validamos por si acaso)
+		
+		if (weightsByCategory[targetCategory] > 1.0001) {
+			const catNames = { core: 'Principal', satellite: 'Conservadora', stocks: 'Acciones' };
+			ui.addToast(`La cartera ${catNames[targetCategory]} ya suma ${(weightsByCategory[targetCategory] * 100).toFixed(0)}%. Ajusta los pesos antes de importar más activos.`, 'error');
+			return;
+		}
+		// --- End Validation ---
+
 		let count = 0;
 
 		for (const [idx, pos] of importResult.positions.entries()) {

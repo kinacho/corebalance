@@ -7,10 +7,16 @@ export interface ToastMessage {
 	duration?: number;
 }
 
+interface BeforeInstallPromptEvent extends Event {
+	readonly platforms: string[];
+	readonly userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>;
+	prompt(): Promise<void>;
+}
+
 class UIStore {
 	toasts = $state<ToastMessage[]>([]);
 	baseCurrency = $state<'EUR' | 'USD' | 'GBP'>('EUR');
-	deferredPrompt: any = $state(null);
+	deferredPrompt = $state<BeforeInstallPromptEvent | null>(null);
 	
 	// Support Modal State
 	showSupportModal = $state(false);
