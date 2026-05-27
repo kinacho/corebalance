@@ -65,7 +65,7 @@ describe('HeroSummary.svelte', () => {
 	        const { portfolio } = await import('$lib/stores/portfolio.svelte');
 	        portfolio.loading = false;
 	        portfolio.globalProfit = -100;
-	        portfolio.prices = { 'AAPL': {} };
+	        portfolio.prices = { 'AAPL': { price: 150, currency: 'USD', name: 'Apple Inc', change: 1.5 } };
 	        const { container } = render(HeroSummary);
 	        expect(container.querySelector('.negative')).not.toBeNull();
 	});
@@ -74,7 +74,7 @@ describe('HeroSummary.svelte', () => {
 	        const { portfolio } = await import('$lib/stores/portfolio.svelte');
 	        portfolio.loading = false;
 	        portfolio.globalProfit = 100;
-	        portfolio.prices = { 'AAPL': {} };
+	        portfolio.prices = { 'AAPL': { price: 150, currency: 'USD', name: 'Apple Inc', change: 1.5 } };
 	        const { container } = render(HeroSummary);
 	        expect(container.querySelector('.positive')).not.toBeNull();
 	});

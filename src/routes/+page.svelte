@@ -33,10 +33,14 @@
   $effect(() => {
     // Si la app ya inicializó, decidimos dónde mandarlo
     if (portfolio.isInitialized) {
-      const hasSession = (portfolio.user && portfolio.hasAnyHoldings);
-      const hasLocalData = !portfolio.user && portfolio.hasAnyHoldings;
+      // Regla simétrica: permitimos dashboard si hay usuario, activos o es demo
+      const canAccessDashboard = portfolio.user || portfolio.hasAnyHoldings || portfolio.isDemo;
       
-      if (hasSession || hasLocalData || bypassLanding) {
+      if (canAccessDashboard || bypassLanding) {
+        // El ticket de acceso rápido es de un solo uso
+        if (browser && bypassLanding) {
+          sessionStorage.removeItem('bypassLanding');
+        }
         goto('/dashboard');
       }
     }

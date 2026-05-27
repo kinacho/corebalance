@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { formatCurrency, formatPercent, formatShares, formatDate, formatDateTime, isMarketOpen, validateImportData } from './utils';
 
 describe('utils.ts', () => {
@@ -197,3 +197,4 @@ describe('utils.ts', () => {
 		});
 	});
 });
+// Fix type errors

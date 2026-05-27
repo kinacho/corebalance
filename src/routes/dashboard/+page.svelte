@@ -20,22 +20,33 @@
   import { DASHBOARD_TABS, type TabId } from "$lib/constants";
   import { browser } from "$app/environment";
   import { goto, beforeNavigate } from "$app/navigation";
+  import { navigating } from "$app/stores";
 
   // --- Auto-Exit Demo on Navigation ---
   beforeNavigate(({ to }) => {
-    if (portfolio.isDemo && to?.url.pathname !== '/dashboard') {
+    // Normalizamos la URL de destino para evitar cierres accidentales por barras finales
+    const targetPath = to?.url.pathname.replace(/\/$/, '') || '';
+    if (portfolio.isDemo && targetPath !== '/dashboard') {
       portfolio.exitDemo();
     }
   });
 
   // --- Gatekeeper Logic (Reverse) ---
   $effect(() => {
+    // Pausamos evaluaciones si SvelteKit está en plena transición de páginas
+    if ($navigating) return;
+
     if (portfolio.isInitialized) {
       const bypassLanding = browser ? sessionStorage.getItem('bypassLanding') === 'true' : false;
-      const hasSession = (portfolio.user && portfolio.hasAnyHoldings) || portfolio.isDemo;
+      
+      // Espejo simétrico de la landing: permitimos estancia si es demo, usuario registrado o tiene activos
+      const hasSession = portfolio.isDemo || portfolio.user || portfolio.hasAnyHoldings;
       
       if (!hasSession && !bypassLanding) {
         goto('/');
+      } else if (browser && bypassLanding) {
+        // Limpiamos el ticket una vez consumido para que sea de un solo uso
+        sessionStorage.removeItem('bypassLanding');
       }
     }
   });
