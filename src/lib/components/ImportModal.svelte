@@ -2,7 +2,7 @@
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { ui } from '$lib/stores/ui.svelte';
 	import { focusTrap } from '$lib/actions/focusTrap';
-	import { importFromCSV, importWithMapping } from '$lib/importers';
+	import { importFromCSV, importWithMapping, generateCsvSignature } from '$lib/importers';
 	import type { ImportResult, ParsedPosition, MappingConfig } from '$lib/importers';
 	import { ASSET_COLORS, ASSET_ICONS } from '$lib/constants';
 	import type { Asset, AssetCategory } from '$lib/types';
@@ -32,6 +32,8 @@
 	let targetCategory = $state<AssetCategory>('stocks');
 	let resolveError = $state<string | null>(null);
 	let importedCount = $state(0);
+	let activeSignature = $state<string>('');
+	let savedMapping = $state<MappingConfig | undefined>(undefined);
 
 	// --- File Handling ---
 	function handleDragOver(e: DragEvent) { e.preventDefault(); isDragging = true; }
@@ -66,15 +68,44 @@
 			if (!text) return;
 			rawFileContent = text;
 			
-			// Obtenemos los datos crudos para el mapeo
+			// Obtenemos los datos crudos para el mapeo o importación directa
 			const result = importFromCSV(text);
 			importResult = result;
-			step = 'mapping';
+
+			if (result.broker.id !== 'generic' && result.broker.confidence >= 0.7) {
+				// Bróker detectado correctamente, saltar el paso de mapeo
+				ui.addToast(`Bróker detectado: ${result.broker.name}`, 'success');
+				startResolution(result);
+			} else {
+				// Bróker desconocido, requiere mapeo manual
+				if (result.rawHeaders && result.rawRows) {
+					activeSignature = generateCsvSignature(result.rawHeaders, result.rawRows);
+					try {
+						const saved = localStorage.getItem('csv_mapping_' + activeSignature);
+						if (saved) {
+							savedMapping = JSON.parse(saved);
+							ui.addToast('Se ha cargado tu mapeo anterior para este formato', 'success');
+						} else {
+							savedMapping = undefined;
+						}
+					} catch {
+						savedMapping = undefined;
+					}
+				}
+				step = 'mapping';
+			}
 		};
 		reader.readAsText(file);
 	}
 
 	function handleManualMapping(mapping: MappingConfig) {
+		if (activeSignature) {
+			try {
+				localStorage.setItem('csv_mapping_' + activeSignature, JSON.stringify(mapping));
+			} catch {
+				// Silencioso
+			}
+		}
 		const result = importWithMapping(rawFileContent, mapping);
 		importResult = result;
 		startResolution(result);
@@ -302,6 +333,7 @@
 						rows={importResult.rawRows || []}
 						onConfirm={handleManualMapping}
 						onBack={() => step = 'upload'}
+						initialMapping={savedMapping}
 					/>
 				{/if}
 
@@ -339,6 +371,12 @@
 						{#each importResult.warnings as warning}
 							<div class="resolve-warning">⚠️ {warning}</div>
 						{/each}
+					{/if}
+
+					{#if importResult.skippedRows > 0}
+						<div class="import-summary-banner">
+							ℹ️ <strong>Resumen:</strong> Se importarán {importResult.positions.length} posiciones. Se han omitido {importResult.skippedRows} filas (como cabeceras, depósitos, comisiones o celdas vacías).
+						</div>
 					{/if}
 
 					<div class="select-all-row">
@@ -476,6 +514,7 @@
 	.category-picker { display:flex; align-items:center; gap:.4rem; font-size:.7rem; color:rgba(160,160,200,.6); }
 	.category-picker select { background:rgba(0,0,0,.3); border:1px solid rgba(255,255,255,.1); border-radius:8px; color:#fff; padding:.3rem .5rem; font-size:.7rem; font-weight:600; outline:none; cursor:pointer; }
 	.resolve-warning { font-size:.7rem; color:#fbbf24; background:rgba(251,191,36,.08); border:1px solid rgba(251,191,36,.15); border-radius:10px; padding:.5rem .75rem; }
+	.import-summary-banner { font-size:.72rem; color:rgba(160,160,200,.8); background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08); border-radius:10px; padding:.5rem .75rem; line-height:1.4; }
 	.select-all-row { display:flex; justify-content:space-between; align-items:center; }
 	.select-all-btn { background:none; border:none; color:rgba(160,160,200,.7); font-size:.75rem; font-weight:600; cursor:pointer; padding:.25rem 0; }
 	.selected-count { font-size:.65rem; color:rgba(160,160,200,.4); }

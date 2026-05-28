@@ -3,6 +3,8 @@
  * Soporta formatos europeos (separador decimal = coma) y americanos (separador decimal = punto).
  */
 
+import type { ColumnRole, ColumnAnalysis, MappingConfig } from './types';
+
 /** Detecta el delimitador principal del CSV (coma, punto y coma, o tabulador) */
 export function detectDelimiter(text: string): string {
 	const firstLines = text.split('\n').slice(0, 5).join('\n');
@@ -53,19 +55,80 @@ export function parseCSVLine(line: string, delimiter: string): string[] {
 	return fields;
 }
 
-/** Parsea el contenido completo del CSV a un array de filas */
+/** Detecta si la primera fila de un CSV es una cabecera comparando tipos con las filas siguientes */
+export function detectHeaderRow(rows: string[][]): { hasHeader: boolean; headerRowIndex: number } {
+	if (rows.length < 2) return { hasHeader: true, headerRowIndex: 0 };
+
+	const firstRow = rows[0];
+	const dataRows = rows.slice(1, Math.min(rows.length, 6));
+
+	let headerTextCols = 0;
+	let numericOrDateCols = 0;
+
+	const numCols = Math.max(...rows.slice(0, 5).map(r => r.length));
+
+	for (let colIdx = 0; colIdx < numCols; colIdx++) {
+		const firstVal = firstRow[colIdx] || '';
+		const dataVals = dataRows.map(r => r[colIdx] || '').filter(v => v.trim().length > 0);
+
+		if (dataVals.length === 0) continue;
+
+		// Verificar si el primer elemento parece texto de cabecera no numérico
+		const isFirstValNumber = looksLikeNumericValue(firstVal);
+		const isFirstValDate = looksLikeDateValue(firstVal);
+		const isFirstValHeaderText = firstVal.trim().length > 0 && !isFirstValNumber && !isFirstValDate;
+
+		// Contar tipos de datos subsiguientes
+		let dataNumbers = 0;
+		let dataDates = 0;
+		for (const val of dataVals) {
+			if (looksLikeNumericValue(val)) dataNumbers++;
+			if (looksLikeDateValue(val)) dataDates++;
+		}
+
+		const isDataNumericOrDate = (dataNumbers / dataVals.length > 0.6) || (dataDates / dataVals.length > 0.6);
+
+		if (isFirstValHeaderText && isDataNumericOrDate) {
+			headerTextCols++;
+		}
+		if (isDataNumericOrDate) {
+			numericOrDateCols++;
+		}
+	}
+
+	// Heurística: si encontramos columnas con texto arriba y números/fechas abajo,
+	// o si al menos la mitad de las columnas con números tienen texto en la primera fila.
+	const hasHeader = headerTextCols > 0 || (headerTextCols >= numericOrDateCols / 2 && numericOrDateCols > 0);
+	return { hasHeader, headerRowIndex: 0 };
+}
+
+/** Parsea el contenido completo del CSV a un array de filas detectando cabeceras de forma inteligente */
 export function parseCSV(text: string): { headers: string[]; rows: string[][]; delimiter: string } {
 	// Normalizar saltos de línea
 	const normalized = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
 	const lines = normalized.split('\n').filter(l => l.trim().length > 0);
 	
-	if (lines.length < 2) {
+	if (lines.length < 1) {
 		return { headers: [], rows: [], delimiter: ',' };
 	}
 	
 	const delimiter = detectDelimiter(normalized);
-	const headers = parseCSVLine(lines[0], delimiter).map(h => h.trim());
-	const rows = lines.slice(1).map(line => parseCSVLine(line, delimiter));
+	const parsedRows = lines.map(line => parseCSVLine(line, delimiter));
+	
+	const { hasHeader, headerRowIndex } = detectHeaderRow(parsedRows);
+	
+	let headers: string[] = [];
+	let rows: string[][] = [];
+	
+	if (hasHeader && parsedRows.length > 0) {
+		headers = parsedRows[headerRowIndex].map(h => h.trim());
+		rows = parsedRows.slice(headerRowIndex + 1);
+	} else {
+		// Generar cabeceras genéricas
+		const numCols = Math.max(...parsedRows.map(r => r.length));
+		headers = Array.from({ length: numCols }, (_, i) => `Columna ${i + 1}`);
+		rows = parsedRows;
+	}
 	
 	return { headers, rows, delimiter };
 }
@@ -141,7 +204,7 @@ export function findField(headers: string[], row: string[], ...possibleNames: st
 	// Búsqueda parcial (contiene)
 	for (const name of possibleNames) {
 		const normalized = normalizeHeader(name);
-		const idx = normalizedHeaders.findIndex(h => h.includes(normalized) || normalized.includes(h));
+		const idx = normalizedHeaders.findIndex(h => h.includes(normalized));
 		if (idx !== -1 && idx < row.length) {
 			return row[idx];
 		}
@@ -159,4 +222,220 @@ export function isValidISIN(value: string): boolean {
 export function extractISIN(text: string): string | null {
 	const match = text.match(/\b([A-Z]{2}[A-Z0-9]{9}[0-9])\b/i);
 	return match ? match[1].toUpperCase() : null;
+}
+
+/** Alias para normalizeHeader alineado con el roadmap */
+export function normalizeHeaderName(raw: string): string {
+	return normalizeHeader(raw);
+}
+
+/** Normaliza códigos y símbolos de divisa comunes a formato estándar ISO de 3 letras */
+export function normalizeCurrency(value: string): string | null {
+	const v = value.trim().toUpperCase();
+	if (!v) return null;
+	if (/^[A-Z]{3}$/.test(v)) return v;
+	if (/€|eur/.test(v)) return 'EUR';
+	if (/\$|usd/.test(v)) return 'USD';
+	if (/£|gbp/.test(v)) return 'GBP';
+	return v;
+}
+
+/** Comprueba si una cadena de texto tiene la forma estructural de un ISIN */
+export function looksLikeIsinValue(value: string): boolean {
+	const v = value.trim().toUpperCase();
+	if (!/^[A-Z0-9]{12}$/.test(v)) return false;
+	if (!/^[A-Z]{2}/.test(v)) return false;
+	return true;
+}
+
+/** Comprueba si una cadena de texto tiene la forma estructural de un Ticker */
+export function looksLikeTickerValue(value: string): boolean {
+	const v = value.trim().toUpperCase();
+	if (!v) return false;
+	if (!/^[A-Z0-9.\-]+$/.test(v)) return false;
+	if (v.length > 8) return false;
+	if (looksLikeIsinValue(v)) return false;
+	return true;
+}
+
+/** Comprueba si una cadena de texto parece un valor numérico */
+export function looksLikeNumericValue(value: string): boolean {
+	const v = value.trim();
+	if (!v) return false;
+	const cleaned = v.replace(/[^\d.,-]/g, '');
+	if (!cleaned || cleaned === '-') return false;
+	return /\d/.test(cleaned);
+}
+
+/** Comprueba si una cadena de texto parece representar una fecha */
+export function looksLikeDateValue(value: string): boolean {
+	const v = value.trim();
+	if (!v) return false;
+	if (/^\d{1,4}[-/.]\d{1,2}[-/.]\d{1,4}(\s+\d{2}:\d{2}(:\d{2})?)?$/.test(v)) return true;
+	const ts = Date.parse(v);
+	return !isNaN(ts);
+}
+
+/** Analiza las columnas de un CSV para calcular probabilidades de rol por columna */
+export function analyzeColumns(headers: string[], rows: string[][]): ColumnAnalysis[] {
+	const sampleRows = rows.slice(0, 50);
+	const numCols = headers.length;
+
+	return headers.map((header, colIdx) => {
+		const normalized = normalizeHeader(header);
+		const sampleValues = sampleRows.map(r => r[colIdx] || '').filter(v => v.trim().length > 0);
+
+		const scores: Record<ColumnRole, number> = {
+			isin: 0,
+			ticker: 0,
+			name: 0,
+			quantity: 0,
+			price: 0,
+			currency: 0,
+			date: 0,
+			ignored: 0
+		};
+
+		if (sampleValues.length > 0) {
+			// 1. ISIN
+			let isinCount = 0;
+			for (const val of sampleValues) {
+				if (looksLikeIsinValue(val)) isinCount++;
+			}
+			const isinRatio = isinCount / sampleValues.length;
+			let isinScore = 0;
+			if (normalized.includes('isin')) isinScore += 0.6;
+			if (isinRatio > 0.8) isinScore += 0.4;
+			scores.isin = isinScore;
+
+			// 2. Ticker
+			let tickerCount = 0;
+			for (const val of sampleValues) {
+				if (looksLikeTickerValue(val)) tickerCount++;
+			}
+			const tickerRatio = tickerCount / sampleValues.length;
+			let tickerScore = 0;
+			if (/\b(ticker|symbol|simbolo|sym|epic|codigo|code)\b/i.test(normalized)) tickerScore += 0.5;
+			if (tickerRatio > 0.8) tickerScore += 0.5;
+			scores.ticker = tickerScore;
+
+			// 3. Cantidad
+			let numCount = 0;
+			for (const val of sampleValues) {
+				if (looksLikeNumericValue(val)) numCount++;
+			}
+			const numRatio = numCount / sampleValues.length;
+			let qtyScore = 0;
+			if (/\b(shares|quantity|cantidad|participaciones|units|posicion|position|size|tamaño|volumen|volume|titulos)\b/i.test(normalized)) qtyScore += 0.5;
+			if (numRatio > 0.8) qtyScore += 0.4;
+			scores.quantity = qtyScore;
+
+			// 4. Precio
+			let priceScore = 0;
+			if (/\b(price|precio|avg|average|cost|coste|valor|value|importe|monto|amount)\b/i.test(normalized)) priceScore += 0.5;
+			if (numRatio > 0.8) priceScore += 0.3;
+			const currencySymbolCount = sampleValues.filter(v => /[\$€£]/.test(v)).length;
+			if (currencySymbolCount / sampleValues.length > 0.5) priceScore += 0.2;
+			scores.price = priceScore;
+
+			// 5. Divisa
+			let curCount = 0;
+			for (const val of sampleValues) {
+				if (normalizeCurrency(val) !== null) curCount++;
+			}
+			const curRatio = curCount / sampleValues.length;
+			let curScore = 0;
+			if (/\b(currency|divisa|cur|moneda|valuta)\b/i.test(normalized)) curScore += 0.6;
+			if (curRatio > 0.8) curScore += 0.4;
+			scores.currency = curScore;
+
+			// 6. Nombre
+			let textCount = 0;
+			for (const val of sampleValues) {
+				const v = val.trim();
+				if (v.length > 3 && !looksLikeIsinValue(v) && !looksLikeTickerValue(v) && !looksLikeNumericValue(v)) {
+					textCount++;
+				}
+			}
+			const textRatio = textCount / sampleValues.length;
+			let nameScore = 0;
+			if (/\b(name|nombre|producto|product|descripcion|description|asset|activo|security|instrumento|instrument)\b/i.test(normalized)) nameScore += 0.5;
+			if (textRatio > 0.6) nameScore += 0.5;
+			scores.name = nameScore;
+
+			// 7. Fecha
+			let dateCount = 0;
+			for (const val of sampleValues) {
+				if (looksLikeDateValue(val)) dateCount++;
+			}
+			const dateRatio = dateCount / sampleValues.length;
+			let dateScore = 0;
+			if (/\b(date|fecha|datum|tijd|time|hora)\b/i.test(normalized)) dateScore += 0.5;
+			if (dateRatio > 0.8) dateScore += 0.5;
+			scores.date = dateScore;
+		}
+
+		return {
+			index: colIdx,
+			header,
+			normalizedHeader: normalized,
+			sampleValues,
+			roleScores: scores
+		};
+	});
+}
+
+/** Sugiere un MappingConfig óptimo basado en las puntuaciones del análisis de columnas */
+export function suggestMappingFromAnalysis(analysis: ColumnAnalysis[]): MappingConfig {
+	const pickBest = (role: ColumnRole): number => {
+		const candidates = analysis
+			.map(col => ({ index: col.index, score: col.roleScores[role] ?? 0 }))
+			.filter(c => c.score > 0.25)
+			.sort((a, b) => b.score - a.score);
+
+		if (!candidates.length) return -1;
+
+		const [best, second] = candidates;
+		if (second && best.score - second.score < 0.1) {
+			// Empate o muy similar -> forzar confirmación manual
+			return -1;
+		}
+
+		return best.index;
+	};
+
+	const shares = pickBest('quantity');
+
+	return {
+		shares: shares !== -1 ? shares : 0, // La cantidad es obligatoria, fallback a primera columna
+		isin: pickBest('isin') !== -1 ? pickBest('isin') : undefined,
+		ticker: pickBest('ticker') !== -1 ? pickBest('ticker') : undefined,
+		name: pickBest('name') !== -1 ? pickBest('name') : undefined,
+		avgCost: pickBest('price') !== -1 ? pickBest('price') : undefined,
+		currency: pickBest('currency') !== -1 ? pickBest('currency') : undefined
+	};
+}
+
+/** Genera una firma única y estable para un diseño/estructura de CSV dado */
+export function generateCsvSignature(headers: string[], rows: string[][]): string {
+	const colCount = headers.length;
+	const headerString = headers.map(normalizeHeader).join('|');
+	const sampleRows = rows.slice(0, 5);
+	const types: string[] = [];
+
+	for (let colIdx = 0; colIdx < colCount; colIdx++) {
+		let numCount = 0;
+		let dateCount = 0;
+		const vals = sampleRows.map(r => r[colIdx] || '').filter(v => v.trim().length > 0);
+		for (const val of vals) {
+			if (looksLikeNumericValue(val)) numCount++;
+			if (looksLikeDateValue(val)) dateCount++;
+		}
+		const total = vals.length || 1;
+		if (numCount / total > 0.6) types.push('N');
+		else if (dateCount / total > 0.6) types.push('D');
+		else types.push('T');
+	}
+	const typeString = types.join('');
+	return `${colCount}_${typeString}_${headerString}`;
 }

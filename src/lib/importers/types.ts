@@ -1,6 +1,26 @@
 /** Brókeres soportados para importación automática */
 export type BrokerId = 'degiro' | 'trading212' | 'interactive_brokers' | 'myinvestor' | 'generic';
 
+/** Roles posibles para una columna de CSV */
+export type ColumnRole =
+	| 'isin'
+	| 'ticker'
+	| 'name'
+	| 'quantity'
+	| 'price'
+	| 'currency'
+	| 'date'
+	| 'ignored';
+
+/** Análisis detallado de una columna */
+export interface ColumnAnalysis {
+	index: number;
+	header: string;
+	normalizedHeader: string;
+	sampleValues: string[];
+	roleScores: Record<ColumnRole, number>;
+}
+
 /** Información del bróker detectado */
 export interface BrokerInfo {
 	id: BrokerId;

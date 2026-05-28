@@ -1,14 +1,17 @@
 <script lang="ts">
 	import type { MappingConfig } from '$lib/importers';
+	import { normalizeHeader, analyzeColumns, suggestMappingFromAnalysis } from '$lib/importers/csv-utils';
 
 	interface Props {
 		headers: string[];
 		rows: string[][];
 		onConfirm: (mapping: MappingConfig) => void;
 		onBack: () => void;
+		initialMapping?: Partial<MappingConfig>;
+		mappingScore?: number;      // 0..1, score global
 	}
 
-	let { headers, rows, onConfirm, onBack }: Props = $props();
+	let { headers, rows, onConfirm, onBack, initialMapping, mappingScore }: Props = $props();
 
 	let mapping = $state<MappingConfig>({
 		shares: -1,
@@ -19,22 +22,42 @@
 		currency: -1
 	});
 
-	// Intento de auto-mapeo inicial basado en nombres comunes
-	import { normalizeHeader } from '$lib/importers/csv-utils';
-	
 	$effect(() => {
-		const normalized = headers.map(normalizeHeader);
+		// 1. Obtener sugerencia del motor analítico
+		const analysis = analyzeColumns(headers, rows);
+		const suggestion = suggestMappingFromAnalysis(analysis);
+
+		// 2. Aplicar sugerencias o valores predeterminados (priorizando initialMapping de props si existe)
+		if (mapping.shares === -1) mapping.shares = initialMapping?.shares ?? suggestion.shares ?? -1;
+		if (mapping.isin === -1) mapping.isin = initialMapping?.isin ?? suggestion.isin ?? -1;
+		if (mapping.ticker === -1) mapping.ticker = initialMapping?.ticker ?? suggestion.ticker ?? -1;
+		if (mapping.name === -1) mapping.name = initialMapping?.name ?? suggestion.name ?? -1;
+		if (mapping.avgCost === -1) mapping.avgCost = initialMapping?.avgCost ?? suggestion.avgCost ?? -1;
+		if (mapping.currency === -1) mapping.currency = initialMapping?.currency ?? suggestion.currency ?? -1;
+	});
+
+	const calculatedScore = $derived.by(() => {
+		if (mappingScore !== undefined) return mappingScore;
 		
-		const findIdx = (names: string[]) => {
-			return normalized.findIndex(h => names.some(n => h.includes(normalizeHeader(n))));
+		const analysis = analyzeColumns(headers, rows);
+		let totalScore = 0;
+		let count = 0;
+
+		const checkScore = (role: 'quantity' | 'isin' | 'ticker' | 'name' | 'price' | 'currency', colIdx: number | undefined) => {
+			if (colIdx !== undefined && colIdx !== -1 && colIdx < analysis.length) {
+				totalScore += analysis[colIdx].roleScores[role] || 0;
+				count++;
+			}
 		};
 
-		if (mapping.shares === -1) mapping.shares = findIdx(['cantidad', 'shares', 'units', 'participaciones', 'posicion']);
-		if (mapping.isin === -1) mapping.isin = findIdx(['isin', 'codigo']);
-		if (mapping.ticker === -1) mapping.ticker = findIdx(['ticker', 'symbol', 'simbolo', 'codigo']);
-		if (mapping.name === -1) mapping.name = findIdx(['nombre', 'name', 'producto', 'descripcion']);
-		if (mapping.avgCost === -1) mapping.avgCost = findIdx(['precio medio', 'avg cost', 'coste', 'price']);
-		if (mapping.currency === -1) mapping.currency = findIdx(['moneda', 'currency', 'divisa']);
+		checkScore('quantity', mapping.shares);
+		checkScore('isin', mapping.isin);
+		checkScore('ticker', mapping.ticker);
+		checkScore('name', mapping.name);
+		checkScore('price', mapping.avgCost);
+		checkScore('currency', mapping.currency);
+
+		return count > 0 ? totalScore / count : 0;
 	});
 
 	const isValid = $derived(mapping.shares !== -1 && (mapping.isin !== -1 || mapping.ticker !== -1));
@@ -58,6 +81,17 @@
 <div class="mapper-container">
 	<div class="mapper-info">
 		<p class="mapper-hint">Asigna cada campo a una columna de tu archivo para que podamos importar los datos correctamente.</p>
+		
+		{#if calculatedScore > 0}
+			<div class="score-indicator" class:low={calculatedScore < 0.6} class:high={calculatedScore >= 0.8}>
+				Cobertura estimada del mapeo: <strong>{Math.round(calculatedScore * 100)}%</strong>. 
+				{#if calculatedScore < 0.6}
+					⚠️ Algunas columnas podrían no coincidir del todo. Por favor, revísalas.
+				{:else}
+					✓ Todo parece correcto.
+				{/if}
+			</div>
+		{/if}
 	</div>
 
 	<div class="mapping-grid">
@@ -124,24 +158,26 @@
 
 	<div class="preview-table-container">
 		<p class="preview-title">Vista previa de los datos:</p>
-		<table class="preview-table">
-			<thead>
-				<tr>
-					{#each headers as header}
-						<th>{header}</th>
-					{/each}
-				</tr>
-			</thead>
-			<tbody>
-				{#each rows.slice(0, 3) as row}
+		<div class="preview-scroll">
+			<table class="preview-table">
+				<thead>
 					<tr>
-						{#each row as cell}
-							<td>{cell}</td>
+						{#each headers as header}
+							<th>{header}</th>
 						{/each}
 					</tr>
-				{/each}
-			</tbody>
-		</table>
+				</thead>
+				<tbody>
+					{#each rows.slice(0, 3) as row}
+						<tr>
+							{#each row as cell}
+								<td>{cell}</td>
+							{/each}
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		</div>
 	</div>
 
 	<div class="mapper-actions">
@@ -156,6 +192,26 @@
 	.mapper-container { display: flex; flex-direction: column; gap: 1.25rem; }
 	.mapper-hint { font-size: 0.8rem; color: rgba(160, 160, 200, 0.6); line-height: 1.4; margin: 0; }
 	
+	.score-indicator {
+		font-size: 0.75rem;
+		padding: 0.5rem 0.75rem;
+		border-radius: 8px;
+		margin-top: 0.5rem;
+		background: rgba(251, 191, 36, 0.08);
+		border: 1px solid rgba(251, 191, 36, 0.2);
+		color: #fbbf24;
+	}
+	.score-indicator.high {
+		background: rgba(16, 185, 129, 0.08);
+		border: 1px solid rgba(16, 185, 129, 0.2);
+		color: #34d399;
+	}
+	.score-indicator.low {
+		background: rgba(239, 68, 68, 0.08);
+		border: 1px solid rgba(239, 68, 68, 0.2);
+		color: #f87171;
+	}
+
 	.mapping-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
 	.mapping-field { display: flex; flex-direction: column; gap: 0.35rem; padding: 0.75rem; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; transition: all 0.2s; }
 	.mapping-field.active { border-color: rgba(59, 130, 246, 0.3); background: rgba(59, 130, 246, 0.05); }
@@ -165,7 +221,8 @@
 	select { background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: #fff; padding: 0.45rem; font-size: 0.8rem; outline: none; cursor: pointer; }
 	select:focus { border-color: #3b82f6; }
 
-	.preview-table-container { overflow-x: auto; background: rgba(0, 0, 0, 0.2); border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.05); padding: 0.75rem; }
+	.preview-table-container { background: rgba(0, 0, 0, 0.2); border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.05); padding: 0.75rem; }
+	.preview-scroll { overflow-x: auto; }
 	.preview-title { font-size: 0.7rem; font-weight: 700; color: rgba(160, 160, 200, 0.5); margin: 0 0 0.5rem; text-transform: uppercase; }
 	.preview-table { width: 100%; border-collapse: collapse; font-size: 0.7rem; color: rgba(255, 255, 255, 0.7); }
 	.preview-table th { text-align: left; padding: 0.4rem; color: rgba(160, 160, 200, 0.4); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
