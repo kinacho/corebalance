@@ -3,7 +3,7 @@
  * Soporta formatos europeos (separador decimal = coma) y americanos (separador decimal = punto).
  */
 
-import type { ColumnRole, ColumnAnalysis, MappingConfig } from './types';
+import type { ColumnRole, ColumnAnalysis, MappingConfig, CSVBlock } from './types';
 
 /** Detecta el delimitador principal del CSV (coma, punto y coma, o tabulador) */
 export function detectDelimiter(text: string): string {
@@ -102,35 +102,127 @@ export function detectHeaderRow(rows: string[][]): { hasHeader: boolean; headerR
 	return { hasHeader, headerRowIndex: 0 };
 }
 
-/** Parsea el contenido completo del CSV a un array de filas detectando cabeceras de forma inteligente */
-export function parseCSV(text: string): { headers: string[]; rows: string[][]; delimiter: string } {
-	// Normalizar saltos de línea
+/** Parsea el contenido completo del CSV en bloques de tablas según la estructura detectada */
+export function parseCSVBlocks(text: string): CSVBlock[] {
 	const normalized = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
 	const lines = normalized.split('\n').filter(l => l.trim().length > 0);
 	
-	if (lines.length < 1) {
-		return { headers: [], rows: [], delimiter: ',' };
-	}
+	if (lines.length === 0) return [];
 	
 	const delimiter = detectDelimiter(normalized);
-	const parsedRows = lines.map(line => parseCSVLine(line, delimiter));
 	
-	const { hasHeader, headerRowIndex } = detectHeaderRow(parsedRows);
-	
-	let headers: string[] = [];
-	let rows: string[][] = [];
-	
-	if (hasHeader && parsedRows.length > 0) {
-		headers = parsedRows[headerRowIndex].map(h => h.trim());
-		rows = parsedRows.slice(headerRowIndex + 1);
-	} else {
-		// Generar cabeceras genéricas
-		const numCols = Math.max(...parsedRows.map(r => r.length));
-		headers = Array.from({ length: numCols }, (_, i) => `Columna ${i + 1}`);
-		rows = parsedRows;
+	// 1. Estrategia A (Prefijo de Sección / Estilo IBKR)
+	let strategyACount = 0;
+	const parsedLines = lines.map(line => parseCSVLine(line, delimiter));
+	for (const row of parsedLines) {
+		if (row.length >= 2) {
+			const marker = row[1].toLowerCase();
+			if (marker === 'header' || marker === 'data' || marker === 'total' || marker === 'subtotal') {
+				strategyACount++;
+			}
+		}
 	}
 	
-	return { headers, rows, delimiter };
+	const isStrategyA = strategyACount >= 3 && strategyACount >= parsedLines.length * 0.2;
+	
+	if (isStrategyA) {
+		const blockMap = new Map<string, { headers: string[]; rows: string[][] }>();
+		for (const row of parsedLines) {
+			if (row.length >= 2) {
+				const sectionName = row[0].trim();
+				const marker = row[1].toLowerCase();
+				if (sectionName && (marker === 'header' || marker === 'data')) {
+					const fields = row.slice(2);
+					if (marker === 'header') {
+						if (!blockMap.has(sectionName)) {
+							blockMap.set(sectionName, { headers: fields, rows: [] });
+						} else {
+							blockMap.get(sectionName)!.headers = fields;
+						}
+					} else if (marker === 'data') {
+						let block = blockMap.get(sectionName);
+						if (!block) {
+							block = { headers: [], rows: [] };
+							blockMap.set(sectionName, block);
+						}
+						block.rows.push(fields);
+					}
+				}
+			}
+		}
+		
+		const blocks: CSVBlock[] = [];
+		for (const [name, data] of blockMap.entries()) {
+			if (data.headers.length > 0 || data.rows.length > 0) {
+				blocks.push({
+					name,
+					headers: data.headers,
+					rows: data.rows
+				});
+			}
+		}
+		return blocks;
+	}
+	
+	// 2. Estrategia B (Bloques por saltos de línea en blanco)
+	const segments = normalized.split(/\n\s*\n/).filter(s => s.trim().length > 0);
+	const blocks: CSVBlock[] = [];
+	let blockIndex = 1;
+	
+	for (const segment of segments) {
+		const segmentLines = segment.split('\n').filter(l => l.trim().length > 0);
+		if (segmentLines.length === 0) continue;
+		
+		const segDelimiter = detectDelimiter(segment);
+		const parsedRows = segmentLines.map(line => parseCSVLine(line, segDelimiter));
+		
+		const { hasHeader, headerRowIndex } = detectHeaderRow(parsedRows);
+		
+		let headers: string[] = [];
+		let rows: string[][] = [];
+		
+		if (hasHeader && parsedRows.length > 0) {
+			headers = parsedRows[headerRowIndex].map(h => h.trim());
+			rows = parsedRows.slice(headerRowIndex + 1);
+		} else {
+			const numCols = Math.max(...parsedRows.map(r => r.length));
+			headers = Array.from({ length: numCols }, (_, i) => `Columna ${i + 1}`);
+			rows = parsedRows;
+		}
+		
+		blocks.push({
+			name: `Bloque ${blockIndex++}`,
+			headers,
+			rows
+		});
+	}
+	
+	return blocks;
+}
+
+/** Parsea el contenido completo del CSV a un array de filas detectando cabeceras de forma inteligente */
+export function parseCSV(text: string): { headers: string[]; rows: string[][]; delimiter: string } {
+	const delimiter = detectDelimiter(text);
+	const blocks = parseCSVBlocks(text);
+	if (blocks.length === 0) {
+		return { headers: [], rows: [], delimiter };
+	}
+	
+	// Buscar el bloque más relevante: "Trades", "Positions" o el que tenga más filas/columnas, o simplemente el primero.
+	let bestBlock = blocks[0];
+	for (const block of blocks) {
+		const lowerName = block.name.toLowerCase();
+		if (lowerName === 'trades' || lowerName === 'positions') {
+			bestBlock = block;
+			break;
+		}
+	}
+	
+	return {
+		headers: bestBlock.headers,
+		rows: bestBlock.rows,
+		delimiter
+	};
 }
 
 /**

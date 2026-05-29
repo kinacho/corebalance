@@ -3,12 +3,13 @@
  * Cada parser recibe headers + rows crudos y devuelve ParsedPosition[].
  */
 
-import type { BrokerInfo, ParsedPosition, ImportResult, MappingConfig } from './types';
+import type { BrokerInfo, ParsedPosition, ImportResult, MappingConfig, SkippedDetail, Transaction, TransactionType, CSVBlock } from './types';
 import {
-	parseCSV, parseNumber, normalizeHeader,
+	parseCSV, parseCSVBlocks, detectDelimiter, parseNumber, normalizeHeader,
 	findField, isValidISIN, extractISIN,
 	analyzeColumns, suggestMappingFromAnalysis, normalizeCurrency
 } from './csv-utils';
+import { reduceTransactionsToPositions } from './aggregator';
 
 // ─── Detección de Bróker ────────────────────────────────────────────────
 
@@ -19,7 +20,7 @@ interface BrokerDetector {
 	/** Devuelve confianza 0-1 de que las cabeceras pertenecen a este bróker */
 	detect: (headers: string[]) => number;
 	/** Parsea las filas del CSV para este bróker */
-	parse: (headers: string[], rows: string[][]) => { positions: ParsedPosition[]; warnings: string[]; skipped: number };
+	parse: (headers: string[], rows: string[][], blocks?: CSVBlock[]) => { positions: ParsedPosition[]; warnings: string[]; skipped: number; skippedDetails: SkippedDetail[] };
 }
 
 // ─── DEGIRO Account Statement ───────────────────────────────────────────
@@ -99,6 +100,39 @@ function parseDegiroStockSplit(description: string): {
 	};
 }
 
+/** Parsea una fecha y hora con formato específico de DEGIRO */
+function parseDegiroDate(dateStr: string, timeStr?: string): Date {
+	const trimmed = dateStr.trim();
+	if (!trimmed) return new Date();
+
+	// Formato: DD-MM-YYYY o DD/MM/YYYY
+	const parts = trimmed.split(/[-/]/);
+	if (parts.length === 3) {
+		const day = parseInt(parts[0], 10);
+		const month = parseInt(parts[1], 10) - 1; // 0-indexed en JS
+		const year = parseInt(parts[2], 10);
+
+		if (timeStr && timeStr.trim()) {
+			const timeParts = timeStr.trim().split(':');
+			const hours = parseInt(timeParts[0], 10) || 0;
+			const minutes = parseInt(timeParts[1], 10) || 0;
+			const seconds = timeParts[2] ? parseInt(timeParts[2], 10) : 0;
+			return new Date(year, month, day, hours, minutes, seconds);
+		}
+		return new Date(year, month, day);
+	}
+
+	const ts = Date.parse(trimmed);
+	return isNaN(ts) ? new Date() : new Date(ts);
+}
+
+/** Devuelve el string si parece un código de divisa de 3 letras, null en caso contrario */
+function potentialCurrency(val: string | undefined): string | null {
+	if (!val) return null;
+	const trimmed = val.trim().toUpperCase();
+	return /^[A-Z]{3}$/.test(trimmed) ? trimmed : null;
+}
+
 const degiroAccountStatementDetector: BrokerDetector = {
 	id: 'degiro',
 	name: 'DEGIRO (Account Statement)',
@@ -134,84 +168,70 @@ const degiroAccountStatementDetector: BrokerDetector = {
 		return 0;
 	},
 	parse(headers, rows) {
-		const positions: ParsedPosition[] = [];
+		const transactions: Transaction[] = [];
 		const warnings: string[] = [];
 		let skipped = 0;
+		const skippedDetails: SkippedDetail[] = [];
 
-		// Accumulate positions by ISIN from buy/sell descriptions
-		const accumulated = new Map<string, {
-			name: string;
-			shares: number;
-			totalCost: number;
-			currency: string;
-		}>();
+		const skipRow = (rowIdx: number, row: string[], reason: string) => {
+			skipped++;
+			skippedDetails.push({
+				rowNumber: rowIdx + 1,
+				preview: row.filter(Boolean).slice(0, 3).join(' | '),
+				reason,
+			});
+		};
 
-		for (const row of rows) {
+		for (const [rowIdx, row] of rows.entries()) {
 			try {
 				// The description field contains the trade info
 				const description = findField(headers, row, 'Descripción', 'Description', 'Omschrijving', 'Descripcion');
+				const dateStr = findField(headers, row, 'Fecha', 'Date', 'Datum');
+				const timeStr = findField(headers, row, 'Hora', 'Time', 'Tijd');
+				const date = parseDegiroDate(dateStr, timeStr);
 
 				// ── 1. Intentar parsear como STOCK SPLIT ───────────────────────────
-				// STOCK SPLIT lines come in pairs:
-				//   split-out: "STOCK SPLIT: N OldName @ Price CUR (OLD_ISIN)" — shares leaving old ISIN
-				//   split-in:  "STOCK SPLIT: M NewName @ Price CUR (NEW_ISIN)" — shares entering new ISIN
-				// We handle them by subtracting from the old ISIN and adding to the new one.
-				// Rows where shares=0 represent the split-out of the NEW isin (ignore).
 				const splitInfo = parseDegiroStockSplit(description);
 				if (splitInfo) {
-					if (!isValidISIN(splitInfo.isin)) { skipped++; continue; }
+					if (!isValidISIN(splitInfo.isin)) {
+						skipRow(rowIdx, row, `Stock Split con ISIN inválido: "${splitInfo.isin}"`);
+						continue;
+					}
 					
-					// Find the Variación (change) column to determine direction.
-					// IMPORTANT: In the DEGIRO Account.csv the headers are:
-					//   ..., Variación, [empty], Saldo, [empty], ID Orden
-					// Col "Variación" (e.g. col 7) contains the CURRENCY (EUR, USD, …),
-					// and col "Variación+1" (col 8, empty header) contains the NUMERIC VALUE.
-					// So we look one column to the right of the "Variación" header first.
 					const varIdx = headers.findIndex(h => {
 						const n = h.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
 						return n === 'variacion' || n === 'change' || n === 'mutatie';
 					});
 
-					// Read the numeric change value: prefer varIdx+1, fall back to varIdx
 					let varNum = 0;
 					if (varIdx !== -1) {
 						const nextCol = varIdx + 1;
 						const nextVal = nextCol < row.length ? (row[nextCol] ?? '') : '';
-						const nextParsed = parseNumber(nextVal);
-						// Use nextCol if it looks numeric (non-empty and contains digits)
 						if (/[\d]/.test(nextVal)) {
-							varNum = nextParsed;
+							varNum = parseNumber(nextVal);
 						} else {
-							// Fallback: the value might be directly in varIdx (non-split layout)
 							varNum = parseNumber(row[varIdx] ?? '');
 						}
 					}
 					
-					// Positive monetary change (varNum > 0) → money enters account → shares leave this ISIN (split-out)
-					// Negative monetary change (varNum < 0) → money leaves account → shares enter this ISIN (split-in)
-					// Zero monetary change (e.g. 0 shares) → skip
 					if (splitInfo.shares === 0) {
-						// Split with 0 shares — no position change
-						skipped++;
+						// Split con 0 acciones — apunte fantasma sin cambio de posición, ignorar
+						skipRow(rowIdx, row, `Stock Split con 0 acciones (apunte contable sin efecto)`);
 						continue;
 					}
-					const isIn = varNum < 0;
-					const multiplier = isIn ? 1 : -1;
-					const existing = accumulated.get(splitInfo.isin);
-					if (existing) {
-						existing.shares += splitInfo.shares * multiplier;
-						// Cost basis: for split-in, inherit avg cost of split-out ISIN if possible
-						// (we use the declared price as proxy)
-						if (isIn) existing.totalCost += splitInfo.shares * splitInfo.price;
-						if (splitInfo.name.length > existing.name.length) existing.name = splitInfo.name;
-					} else {
-						accumulated.set(splitInfo.isin, {
-							name: splitInfo.name,
-							shares: splitInfo.shares * multiplier,
-							totalCost: isIn ? splitInfo.shares * splitInfo.price : 0,
-							currency: splitInfo.currency,
-						});
-					}
+
+					// En stock splits: varNum < 0 (dinero sale, entran acciones) -> BUY. varNum >= 0 -> SELL (salen acciones).
+					const type: TransactionType = varNum < 0 ? 'BUY' : 'SELL';
+
+					transactions.push({
+						date,
+						type,
+						isin: splitInfo.isin,
+						name: splitInfo.name,
+						shares: splitInfo.shares,
+						price: splitInfo.price,
+						currency: splitInfo.currency
+					});
 					continue;
 				}
 
@@ -219,61 +239,40 @@ const degiroAccountStatementDetector: BrokerDetector = {
 				const trade = parseDegiroAccountDescription(description);
 
 				if (!trade) {
-					// Not a buy/sell row — skip (deposits, transfers, fees, FX, etc.)
-					skipped++;
+					// Not a buy/sell row — depósitos, traspasos, comisiones, FX, etc.
+					skipRow(rowIdx, row, description
+						? `Apunte no operativo: "${description.substring(0, 60)}"`
+						: 'Fila sin descripción de compra/venta');
 					continue;
 				}
 
 				if (!isValidISIN(trade.isin)) {
-					skipped++;
+					skipRow(rowIdx, row, `ISIN inválido en operación: "${trade.isin}"`);
 					continue;
 				}
 
-				const multiplier = trade.type === 'buy' ? 1 : -1;
-				const existing = accumulated.get(trade.isin);
-
-				if (existing) {
-					existing.shares += trade.shares * multiplier;
-					existing.totalCost += trade.shares * trade.price * multiplier;
-					// Keep the longest/most descriptive name
-					if (trade.name.length > existing.name.length) {
-						existing.name = trade.name;
-					}
-				} else {
-					accumulated.set(trade.isin, {
-						name: trade.name,
-						shares: trade.shares * multiplier,
-						totalCost: trade.shares * trade.price * multiplier,
-						currency: trade.currency,
-					});
-				}
-			} catch {
-				skipped++;
-			}
-		}
-
-		// Convert accumulated to positions
-		for (const [isin, data] of accumulated) {
-			if (data.shares > 0.0001) {
-				positions.push({
-					isin,
-					name: data.name,
-					shares: data.shares,
-					avgCost: data.totalCost / data.shares,
-					currency: data.currency,
+				transactions.push({
+					date,
+					type: trade.type === 'buy' ? 'BUY' : 'SELL',
+					isin: trade.isin,
+					name: trade.name,
+					shares: trade.shares,
+					price: trade.price,
+					currency: trade.currency
 				});
-			} else if (data.shares < -0.0001) {
-				// Net negative position — fully sold + extra
-				warnings.push(`"${data.name}" (${isin}) tiene posición neta negativa (${data.shares.toFixed(4)}), omitida.`);
+			} catch {
+				skipRow(rowIdx, row, 'Error inesperado al procesar la fila');
 			}
-			// shares ≈ 0 → fully closed position, silently skip
 		}
+
+		// Consolidar posiciones usando el agregador cronológico de coste medio ponderado
+		const positions = reduceTransactionsToPositions(transactions);
 
 		if (positions.length === 0 && rows.length > 0) {
 			warnings.push('No se encontraron operaciones de compra/venta en el extracto de cuenta. Asegúrate de que el CSV contiene transacciones con formato "Compra/Venta X Nombre@Precio DIVISA (ISIN)".');
 		}
 
-		return { positions, warnings, skipped };
+		return { positions, warnings, skipped, skippedDetails };
 	}
 };
 
@@ -307,101 +306,168 @@ const degiroDetector: BrokerDetector = {
 		const positions: ParsedPosition[] = [];
 		const warnings: string[] = [];
 		let skipped = 0;
-		
-		// Acumular posiciones por ISIN (DEGIRO puede tener múltiples transacciones por activo)
-		const accumulated = new Map<string, { name: string; shares: number; totalCost: number; currency: string; ticker?: string }>();
-		
-		for (const row of rows) {
-			try {
-				// Buscar ISIN (siempre presente en DEGIRO)
-				let isin = findField(headers, row, 'ISIN');
-				
-				// A veces el ISIN está dentro del campo Producto
-				if (!isValidISIN(isin)) {
-					const product = findField(headers, row, 'Producto', 'Product');
-					const extracted = extractISIN(product);
-					if (extracted) isin = extracted;
-				}
-				
-				if (!isValidISIN(isin)) {
-					skipped++;
-					continue;
-				}
-				
-				const name = findField(headers, row, 'Producto', 'Product', 'Nombre');
-				
-				// Intentar detectar si es un portfolio snapshot o transacciones
-				const closingPrice = findField(headers, row, 'Precio de cierre', 'Slotkoers', 'Closing price', 'Closing');
-				
-				if (closingPrice) {
-					// Portfolio snapshot: una fila = una posición actual
+		const skippedDetails: SkippedDetail[] = [];
+
+		const skipRow = (rowIdx: number, row: string[], reason: string) => {
+			skipped++;
+			skippedDetails.push({
+				rowNumber: rowIdx + 1,
+				preview: row.filter(Boolean).slice(0, 3).join(' | '),
+				reason,
+			});
+		};
+
+		// Intentar detectar si es un portfolio snapshot o transacciones buscando el campo de precio en las primeras filas
+		let closingPrice = '';
+		for (let i = 0; i < Math.min(rows.length, 5); i++) {
+			closingPrice = findField(headers, rows[i], 'Precio de cierre', 'Slotkoers', 'Closing price', 'Closing', 'Precio de');
+			if (closingPrice) break;
+		}
+
+		if (closingPrice) {
+			// Portfolio snapshot: procesar directamente
+			const accumulated = new Map<string, { name: string; shares: number; totalCost: number; currency: string }>();
+
+			for (const [rowIdx, row] of rows.entries()) {
+				try {
+					let isin = findField(headers, row, 'ISIN');
+					if (!isValidISIN(isin)) {
+						const product = findField(headers, row, 'Producto', 'Product');
+						const extracted = extractISIN(product);
+						if (extracted) isin = extracted;
+					}
+
+					if (!isValidISIN(isin)) {
+						skipRow(rowIdx, row, 'Sin ISIN válido');
+						continue;
+					}
+
+					const name = findField(headers, row, 'Producto', 'Product', 'Nombre');
 					const shares = parseNumber(findField(headers, row, 'Cantidad', 'Aantal', 'Quantity', 'Tamaño', 'Size'));
-					const price = parseNumber(closingPrice);
-					const currency = findField(headers, row, 'Moneda', 'Currency', 'Valuta') || 'EUR';
+					const price = parseNumber(findField(headers, row, 'Precio de cierre', 'Slotkoers', 'Closing price', 'Closing', 'Precio de'));
+					const valorEUR = parseNumber(findField(headers, row, 'Valor en EUR', 'Value in EUR', 'Waarde in EUR', 'Valor EUR'));
 					
+					let currency = findField(headers, row, 'Moneda', 'Currency', 'Valuta');
+					if (!currency) {
+						// Heurística: DEGIRO a veces pone la divisa en una columna con cabecera "Valor local" o similar
+						const possibleIdx = headers.findIndex(h => {
+							const n = normalizeHeader(h);
+							return n.includes('valor local') || n.includes('precio de');
+						});
+						const possibleVal = potentialCurrency(row[possibleIdx]);
+						if (possibleVal) {
+							currency = possibleVal;
+						} else {
+							// Heurística: divisa en columna sin cabecera justo después del precio o valor local
+							const priceIdx = headers.findIndex(h => {
+								const n = normalizeHeader(h);
+								return n.includes('precio') || n.includes('price') || n.includes('koers');
+							});
+							if (priceIdx !== -1 && priceIdx + 1 < row.length && !headers[priceIdx + 1]) {
+								const pVal = potentialCurrency(row[priceIdx + 1]);
+								if (pVal) currency = pVal;
+							}
+							
+							if (!currency) {
+								const localValIdx = headers.findIndex(h => normalizeHeader(h).includes('valor local'));
+								if (localValIdx !== -1 && localValIdx + 1 < row.length && !headers[localValIdx + 1]) {
+									const lVal = potentialCurrency(row[localValIdx + 1]);
+									if (lVal) currency = lVal;
+								}
+							}
+						}
+					}
+					
+					// Si tenemos el valor en EUR, lo preferimos para el coste total
+					const totalCost = valorEUR > 0 ? valorEUR : (shares * price);
+					const finalCurrency = valorEUR > 0 ? 'EUR' : (normalizeCurrency(currency || 'EUR') || 'EUR');
+
 					if (shares > 0) {
 						accumulated.set(isin, {
 							name: name || isin,
 							shares,
-							totalCost: shares * price,
-							currency,
+							totalCost,
+							currency: finalCurrency,
 						});
+					} else {
+						skipRow(rowIdx, row, `Cantidad <= 0 (valor: ${shares})`);
 					}
-				} else {
-					// Transaction history: acumular compras/ventas
+				} catch {
+					skipRow(rowIdx, row, 'Error inesperado al procesar la fila');
+				}
+			}
+
+			for (const [isin, data] of accumulated) {
+				positions.push({
+					isin,
+					name: data.name,
+					shares: data.shares,
+					avgCost: data.shares > 0 ? (data.totalCost / data.shares) : 0,
+					currency: data.currency,
+				});
+			}
+
+			return { positions, warnings, skipped, skippedDetails };
+		} else {
+			// Transaction history: usar transacciones + agregador cronológico
+			const transactions: Transaction[] = [];
+
+			for (const [rowIdx, row] of rows.entries()) {
+				try {
+					let isin = findField(headers, row, 'ISIN');
+					if (!isValidISIN(isin)) {
+						const product = findField(headers, row, 'Producto', 'Product');
+						const extracted = extractISIN(product);
+						if (extracted) isin = extracted;
+					}
+
+					if (!isValidISIN(isin)) {
+						skipRow(rowIdx, row, 'Sin ISIN válido');
+						continue;
+					}
+
+					const name = findField(headers, row, 'Producto', 'Product', 'Nombre') || isin;
 					const sharesRaw = parseNumber(findField(headers, row, 'Cantidad', 'Aantal', 'Quantity', 'Number', 'Número'));
 					const priceIdx = headers.findIndex(h => {
 						const n = normalizeHeader(h);
-						return n === 'precio' || n === 'koers' || n === 'price';
+						return n === 'precio' || n === 'koers' || n === 'price' || n === 'precio de';
 					});
 					const price = priceIdx !== -1 ? parseNumber(row[priceIdx]) : 0;
-					
+
 					let currency = 'EUR';
-					if (priceIdx !== -1 && priceIdx + 1 < headers.length && headers[priceIdx + 1].trim() === '') {
+					if (priceIdx !== -1 && priceIdx + 1 < row.length && (priceIdx + 1 >= headers.length || headers[priceIdx + 1].trim() === '')) {
 						currency = row[priceIdx + 1]?.trim() || 'EUR';
 					} else {
 						currency = findField(headers, row, 'Moneda', 'Currency', 'Valuta') || 'EUR';
 					}
-					
+					currency = normalizeCurrency(currency) || 'EUR';
+
 					if (sharesRaw !== 0 && price > 0) {
-						const existing = accumulated.get(isin);
-						if (existing) {
-							existing.shares += sharesRaw;
-							existing.totalCost += sharesRaw * price;
-						} else {
-							accumulated.set(isin, {
-								name: name || isin,
-								shares: sharesRaw,
-								totalCost: sharesRaw * price,
-								currency,
-							});
-						}
+						const dateStr = findField(headers, row, 'Fecha', 'Date', 'Datum');
+						const timeStr = findField(headers, row, 'Hora', 'Time', 'Tijd');
+						const date = parseDegiroDate(dateStr, timeStr);
+
+						transactions.push({
+							date,
+							type: sharesRaw > 0 ? 'BUY' : 'SELL',
+							isin,
+							name,
+							shares: Math.abs(sharesRaw),
+							price,
+							currency,
+						});
 					} else {
-						skipped++;
+						const reason = sharesRaw === 0 ? 'Cantidad = 0' : price === 0 ? 'Precio = 0' : 'Sin datos válidos';
+						skipRow(rowIdx, row, reason);
 					}
+				} catch {
+					skipRow(rowIdx, row, 'Error inesperado al procesar la fila');
 				}
-			} catch {
-				skipped++;
 			}
+
+			const consolidated = reduceTransactionsToPositions(transactions);
+			return { positions: consolidated, warnings, skipped, skippedDetails };
 		}
-		
-		// Convertir acumulados a posiciones
-		for (const [isin, data] of accumulated) {
-			if (data.shares > 0) {
-				positions.push({
-					isin,
-					name: data.name,
-					shares: Math.abs(data.shares),
-					avgCost: data.shares > 0 ? Math.abs(data.totalCost / data.shares) : 0,
-					currency: data.currency,
-				});
-			} else if (data.shares < 0) {
-				warnings.push(`"${data.name}" tiene posición neta negativa (${data.shares}), omitida.`);
-			}
-			// shares === 0 → posición cerrada, ignorar silenciosamente
-		}
-		
-		return { positions, warnings, skipped };
 	}
 };
 
@@ -424,19 +490,27 @@ const trading212Detector: BrokerDetector = {
 		return 0;
 	},
 	parse(headers, rows) {
-		const positions: ParsedPosition[] = [];
+		const transactions: Transaction[] = [];
 		const warnings: string[] = [];
 		let skipped = 0;
+		const skippedDetails: SkippedDetail[] = [];
+
+		const skipRow = (rowIdx: number, row: string[], reason: string) => {
+			skipped++;
+			skippedDetails.push({
+				rowNumber: rowIdx + 1,
+				preview: row.filter(Boolean).slice(0, 3).join(' | '),
+				reason,
+			});
+		};
 		
-		const accumulated = new Map<string, { name: string; shares: number; totalCost: number; currency: string; ticker?: string }>();
-		
-		for (const row of rows) {
+		for (const [rowIdx, row] of rows.entries()) {
 			try {
 				const action = findField(headers, row, 'Action').toLowerCase();
 				
 				// Solo procesar operaciones de compra/venta que afectan a activos
 				if (!action.includes('buy') && !action.includes('sell')) {
-					skipped++;
+					skipRow(rowIdx, row, `Operación no aplicable: "${action || 'sin acción'}"`); 
 					continue;
 				}
 
@@ -447,48 +521,36 @@ const trading212Detector: BrokerDetector = {
 				const price = parseNumber(findField(headers, row, 'Price / share', 'Price share'));
 				const currency = findField(headers, row, 'Currency (Price / share)', 'Currency Price share') || 'EUR';
 				
-				if (!isValidISIN(isin) || shares === 0) {
-					skipped++;
+				if (!isValidISIN(isin)) {
+					skipRow(rowIdx, row, `ISIN inválido: "${isin}"`);
+					continue;
+				}
+				if (shares === 0) {
+					skipRow(rowIdx, row, 'Cantidad de acciones = 0');
 					continue;
 				}
 				
-				// Determinar dirección: positivo para compras, negativo para ventas
 				const isBuy = action.includes('buy');
-				const multiplier = isBuy ? 1 : -1;
-				
-				const existing = accumulated.get(isin);
-				if (existing) {
-					existing.shares += shares * multiplier;
-					existing.totalCost += shares * price * multiplier;
-					if (ticker) existing.ticker = ticker;
-				} else {
-					accumulated.set(isin, {
-						name: name || ticker || isin,
-						shares: shares * multiplier,
-						totalCost: shares * price * multiplier,
-						currency,
-						ticker: ticker || undefined,
-					});
-				}
-			} catch {
-				skipped++;
-			}
-		}
-		
-		for (const [isin, data] of accumulated) {
-			if (data.shares > 0.0001) {
-				positions.push({
+				const dateStr = findField(headers, row, 'Time', 'Date', 'Fecha');
+				const date = dateStr ? new Date(dateStr) : new Date();
+
+				transactions.push({
+					date: isNaN(date.getTime()) ? new Date() : date,
+					type: isBuy ? 'BUY' : 'SELL',
 					isin,
-					ticker: data.ticker,
-					name: data.name,
-					shares: data.shares,
-					avgCost: data.shares > 0 ? (data.totalCost / data.shares) : 0,
-					currency: data.currency,
+					ticker: ticker || undefined,
+					name: name || ticker || isin,
+					shares,
+					price: price || 0,
+					currency,
 				});
+			} catch {
+				skipRow(rowIdx, row, 'Error inesperado al procesar la fila');
 			}
 		}
-		
-		return { positions, warnings, skipped };
+
+		const consolidated = reduceTransactionsToPositions(transactions);
+		return { positions: consolidated, warnings, skipped, skippedDetails };
 	}
 };
 
@@ -517,82 +579,182 @@ const ibDetector: BrokerDetector = {
 		
 		return 0;
 	},
-	parse(headers, rows) {
+	parse(headers, rows, blocks) {
 		const positions: ParsedPosition[] = [];
 		const warnings: string[] = [];
 		let skipped = 0;
+		const skippedDetails: SkippedDetail[] = [];
+
+		const skipRow = (rowIdx: number, row: string[], reason: string) => {
+			skipped++;
+			skippedDetails.push({
+				rowNumber: rowIdx + 1,
+				preview: row.filter(Boolean).slice(0, 3).join(' | '),
+				reason,
+			});
+		};
+
+		// 1. Extraer mapeo de Símbolo a ISIN de todas partes del documento (ej: bloque Dividendos)
+		const symbolToIsinMap = new Map<string, string>();
+		const listToScan = blocks || [{ name: 'Default', headers, rows }];
 		
-		// IB suele ser snapshot de posiciones o trades  
-		const isSnapshot = headers.some(h => normalizeHeader(h).includes('position') || normalizeHeader(h).includes('market value'));
-		
-		if (isSnapshot) {
-			for (const row of rows) {
-				try {
-					const symbol = findField(headers, row, 'Symbol', 'Ticker');
-					const positionSize = parseNumber(findField(headers, row, 'Position', 'Quantity'));
-					const avgCost = parseNumber(findField(headers, row, 'Average Cost', 'Avg Cost', 'Cost Basis Per Share'));
-					const currency = findField(headers, row, 'Currency') || 'USD';
-					
-					// Intentar obtener ISIN si disponible
-					const isin = findField(headers, row, 'ISIN');
-					
-					if (positionSize <= 0 || !symbol) {
-						skipped++;
-						continue;
-					}
-					
-					positions.push({
-						isin: isValidISIN(isin) ? isin : '',
-						ticker: symbol,
-						name: findField(headers, row, 'Description', 'Financial Instrument', 'Name') || symbol,
-						shares: positionSize,
-						avgCost: avgCost > 0 ? avgCost : 0,
-						currency,
-					});
-				} catch {
-					skipped++;
-				}
-			}
-		} else {
-			// Trade history: acumular
-			const accumulated = new Map<string, { name: string; shares: number; totalCost: number; currency: string }>();
+		for (const block of listToScan) {
+			const isinColIdx = block.headers.findIndex(h => normalizeHeader(h) === 'isin');
+			const symbolColIdx = block.headers.findIndex(h => {
+				const n = normalizeHeader(h);
+				return n === 'symbol' || n === 'ticker';
+			});
 			
-			for (const row of rows) {
-				try {
-					const symbol = findField(headers, row, 'Symbol', 'Ticker');
-					const qty = parseNumber(findField(headers, row, 'Quantity', 'Qty'));
-					const price = parseNumber(findField(headers, row, 'T. Price', 'Trade Price', 'Price'));
-					const currency = findField(headers, row, 'Currency') || 'USD';
-					
-					if (!symbol || qty === 0) { skipped++; continue; }
-					
-					const existing = accumulated.get(symbol);
-					if (existing) {
-						existing.shares += qty;
-						existing.totalCost += qty * price;
-					} else {
-						accumulated.set(symbol, { name: symbol, shares: qty, totalCost: qty * price, currency });
+			for (const row of block.rows) {
+				// Buscar mapping directo en columnas
+				if (isinColIdx !== -1 && symbolColIdx !== -1 && isinColIdx < row.length && symbolColIdx < row.length) {
+					const isinVal = row[isinColIdx]?.trim().toUpperCase();
+					const symbolVal = row[symbolColIdx]?.trim().toUpperCase();
+					if (isValidISIN(isinVal) && symbolVal) {
+						symbolToIsinMap.set(symbolVal, isinVal);
 					}
-				} catch {
-					skipped++;
 				}
-			}
-			
-			for (const [symbol, data] of accumulated) {
-				if (data.shares > 0) {
-					positions.push({
-						isin: '',
-						ticker: symbol,
-						name: data.name,
-						shares: data.shares,
-						avgCost: data.totalCost / data.shares,
-						currency: data.currency,
-					});
+				
+				// Buscar en descripciones de texto o en cualquier celda
+				for (const cell of row) {
+					if (cell && cell.includes('(')) {
+						// Patrón: SYMBOL (ISIN)
+						const match = cell.match(/\b([A-Z0-9.\-]+)\s*\(([A-Z]{2}[A-Z0-9]{9}[0-9])\)/i);
+						if (match) {
+							const sym = match[1].trim().toUpperCase();
+							const isin = match[2].toUpperCase();
+							if (isValidISIN(isin)) {
+								symbolToIsinMap.set(sym, isin);
+							}
+						}
+					}
 				}
 			}
 		}
-		
-		return { positions, warnings, skipped };
+
+		// 2. Procesar bloques de transacciones ("Trades") o snapshots ("Positions")
+		// Buscaremos primero si hay algún bloque de transacciones (Trades)
+		let hasTradesBlock = false;
+		const tradesBlocks = listToScan.filter(b => {
+			const nameLower = b.name.toLowerCase();
+			const hasRequiredHeaders = b.headers.some(h => {
+				const n = normalizeHeader(h);
+				return n === 'symbol' || n === 'ticker';
+			}) && b.headers.some(h => {
+				const n = normalizeHeader(h);
+				return n === 'quantity' || n === 'qty';
+			});
+			return nameLower === 'trades' || (hasRequiredHeaders && !nameLower.includes('positions') && !b.headers.some(h => normalizeHeader(h).includes('position') || normalizeHeader(h).includes('market value')));
+		});
+
+		if (tradesBlocks.length > 0) {
+			hasTradesBlock = true;
+		}
+
+		if (hasTradesBlock) {
+			const transactions: Transaction[] = [];
+			for (const block of tradesBlocks) {
+				for (const [rowIdx, row] of block.rows.entries()) {
+					try {
+						const symbol = findField(block.headers, row, 'Symbol', 'Ticker');
+						const qty = parseNumber(findField(block.headers, row, 'Quantity', 'Qty'));
+						const price = parseNumber(findField(block.headers, row, 'T. Price', 'Trade Price', 'Price'));
+						const currency = findField(block.headers, row, 'Currency') || 'USD';
+						
+						if (!symbol) {
+							skipRow(rowIdx, row, 'Sin símbolo/ticker');
+							continue;
+						}
+						if (qty === 0) {
+							skipRow(rowIdx, row, `Cantidad = 0 para ${symbol}`);
+							continue;
+						}
+						
+						const dateStr = findField(block.headers, row, 'Date/Time', 'DateTime', 'Date', 'Fecha');
+						const date = dateStr ? new Date(dateStr) : new Date();
+
+						// Determinar el ISIN desde nuestro mapa acumulado o columna si existe
+						let isin = findField(block.headers, row, 'ISIN');
+						if (!isValidISIN(isin) && symbol) {
+							isin = symbolToIsinMap.get(symbol.toUpperCase()) || '';
+						}
+
+						transactions.push({
+							date: isNaN(date.getTime()) ? new Date() : date,
+							type: qty > 0 ? 'BUY' : 'SELL',
+							isin: isValidISIN(isin) ? isin : undefined,
+							ticker: symbol,
+							name: findField(block.headers, row, 'Description', 'Financial Instrument', 'Name') || symbol,
+							shares: Math.abs(qty),
+							price: price || 0,
+							currency: normalizeCurrency(currency) || 'USD'
+						});
+					} catch {
+						skipRow(rowIdx, row, 'Error inesperado al procesar fila de trade');
+					}
+				}
+			}
+
+			// Consolidar posiciones con coste medio ponderado
+			const consolidated = reduceTransactionsToPositions(transactions);
+			positions.push(...consolidated);
+		} else {
+			// Si no hay bloques de transacciones, procesamos como snapshot de posiciones
+			const positionsBlocks = listToScan.filter(b => {
+				const nameLower = b.name.toLowerCase();
+				return nameLower.includes('position') || b.headers.some(h => normalizeHeader(h).includes('position') || normalizeHeader(h).includes('market value'));
+			});
+
+			const blocksToParse = positionsBlocks.length > 0 ? positionsBlocks : listToScan;
+
+			for (const block of blocksToParse) {
+				for (const [rowIdx, row] of block.rows.entries()) {
+					try {
+						const symbol = findField(block.headers, row, 'Symbol', 'Ticker');
+						const positionSize = parseNumber(findField(block.headers, row, 'Position', 'Quantity'));
+						const avgCost = parseNumber(findField(block.headers, row, 'Average Cost', 'Avg Cost', 'Cost Basis Per Share'));
+						const currency = findField(block.headers, row, 'Currency') || 'USD';
+						
+						let isin = findField(block.headers, row, 'ISIN');
+						if (!isValidISIN(isin) && symbol) {
+							isin = symbolToIsinMap.get(symbol.toUpperCase()) || '';
+						}
+
+						if (!symbol) {
+							skipRow(rowIdx, row, 'Sin símbolo/ticker');
+							continue;
+						}
+						if (positionSize <= 0) {
+							skipRow(rowIdx, row, `Posición <= 0 para ${symbol}`);
+							continue;
+						}
+
+						positions.push({
+							isin: isValidISIN(isin) ? isin : '',
+							ticker: symbol,
+							name: findField(block.headers, row, 'Description', 'Financial Instrument', 'Name') || symbol,
+							shares: positionSize,
+							avgCost: avgCost > 0 ? avgCost : 0,
+							currency: normalizeCurrency(currency) || 'USD',
+						});
+					} catch {
+						skipRow(rowIdx, row, 'Error inesperado al procesar la fila de posición');
+					}
+				}
+			}
+		}
+
+		// Enriquecer posiciones resultantes con ISIN si quedó vacío y lo tenemos mapeado
+		for (const pos of positions) {
+			if (!pos.isin && pos.ticker) {
+				const mappedIsin = symbolToIsinMap.get(pos.ticker.toUpperCase());
+				if (mappedIsin) {
+					pos.isin = mappedIsin;
+				}
+			}
+		}
+
+		return { positions, warnings, skipped, skippedDetails };
 	}
 };
 
@@ -622,24 +784,33 @@ const myinvestorDetector: BrokerDetector = {
 		return 0;
 	},
 	parse(headers, rows) {
-		const positions: ParsedPosition[] = [];
+		const transactions: Transaction[] = [];
 		const warnings: string[] = [];
 		let skipped = 0;
+		const skippedDetails: SkippedDetail[] = [];
+
+		const skipRow = (rowIdx: number, row: string[], reason: string) => {
+			skipped++;
+			skippedDetails.push({
+				rowNumber: rowIdx + 1,
+				preview: row.filter(Boolean).slice(0, 3).join(' | '),
+				reason,
+			});
+		};
 		
-		const accumulated = new Map<string, { name: string; shares: number; totalCost: number; currency: string }>();
-		
-		for (const row of rows) {
+		for (const [rowIdx, row] of rows.entries()) {
 			try {
 				// Ignorar transacciones que no estén finalizadas o ejecutadas
 				const estado = findField(headers, row, 'Estado').toLowerCase();
 				if (estado && !estado.includes('finalizada') && !estado.includes('ejecutad')) {
-					skipped++;
+					skipRow(rowIdx, row, `Estado no procesable: "${estado}"`);
 					continue;
 				}
 
 				let isin = findField(headers, row, 'ISIN', 'Código ISIN', 'Codigo ISIN');
 				const name = findField(headers, row, 'Nombre fondo', 'Nombre del fondo', 'Producto', 'Nombre', 'Descripción');
-				const tipoOp = findField(headers, row, 'Tipo operación', 'Operación', 'Tipo').toLowerCase();
+				const tipoOpRaw = findField(headers, row, 'Tipo operación', 'Operación', 'Tipo');
+				const tipoOp = tipoOpRaw ? tipoOpRaw.toLowerCase() : '';
 				
 				// Extraer ISIN del nombre si no hay campo dedicado
 				if (!isValidISIN(isin) && name) {
@@ -648,7 +819,7 @@ const myinvestorDetector: BrokerDetector = {
 				}
 				
 				if (!isValidISIN(isin)) {
-					skipped++;
+					skipRow(rowIdx, row, `Sin ISIN válido (valor: "${isin || 'vacío'}")`);
 					continue;
 				}
 				
@@ -656,64 +827,57 @@ const myinvestorDetector: BrokerDetector = {
 					'Participaciones', 'Títulos', 'Titulos', 'Cantidad', 'participaciones', 'Nº participaciones'));
 				
 				// Determinar dirección: positivo para suscripciones/traspasos entrada/compras, negativo para reembolsos/traspasos salida/ventas
-				const isIncrease = tipoOp.includes('suscripcion') || tipoOp.includes('entrada') || tipoOp.includes('compra') || tipoOp.includes('aportacion');
-				const isDecrease = tipoOp.includes('reembolso') || tipoOp.includes('salida') || tipoOp.includes('venta');
+				let isIncrease = tipoOp.includes('suscripcion') || tipoOp.includes('entrada') || tipoOp.includes('compra') || tipoOp.includes('aportacion');
+				let isDecrease = tipoOp.includes('reembolso') || tipoOp.includes('salida') || tipoOp.includes('venta');
 				
-				const multiplier = isIncrease ? 1 : (isDecrease ? -1 : 1); // Por defecto aumento si no se detecta
-				
+				// HEURÍSTICA: Si no hay tipo de operación pero sí participaciones y estado finalizado, asumimos COMPRA (Suscripción)
+				if (!tipoOp && shares > 0 && estado.includes('finalizada')) {
+					isIncrease = true;
+				}
+
+				if (shares === 0) {
+					skipRow(rowIdx, row, 'Cantidad de participaciones = 0');
+					continue;
+				}
+
+				if (!isIncrease && !isDecrease) {
+					skipRow(rowIdx, row, `Tipo de operación no reconocido: "${tipoOp || 'vacio'}"`);
+					continue;
+				}
+
+				const dateStr = findField(headers, row, 'Fecha suscripcion', 'Fecha de la orden', 'Fecha valor', 'Fecha', 'Fecha de suscripción');
+				const date = parseDegiroDate(dateStr); // Utiliza el mismo parseador de DD/MM/YYYY o DD_MM_YYYY
+
 				const importeTotal = parseNumber(findField(headers, row,
-					'Importe neto', 'Importe bruto', 'Importe', 'Valoracion', 'Valoración'));
+					'Importe neto', 'Importe bruto', 'Importe', 'Valoracion', 'Valoración', 'Importe estimado'));
 
 				// Si el usuario añadió "Precio Medio" manualmente, intentamos usarlo
 				const manualAvgCost = parseNumber(findField(headers, row, 'Precio medio', 'Coste medio', 'Precio de compra'));
 
-				// Calculamos coste unitario si es suscripción
+				// Calculamos coste unitario
 				let costPerShare = 0;
 				if (manualAvgCost > 0) {
 					costPerShare = manualAvgCost;
-				} else if (isIncrease && shares > 0 && importeTotal > 0) {
-					costPerShare = importeTotal / shares;
+				} else if (Math.abs(shares) > 0 && Math.abs(importeTotal) > 0) {
+					costPerShare = Math.abs(importeTotal) / Math.abs(shares);
 				}
 
-				const existing = accumulated.get(isin);
-				if (existing) {
-					existing.shares += (shares * multiplier);
-					// Solo ajustamos coste si es compra/entrada
-					if (isIncrease) {
-						// Si ya tenemos coste previo, hacemos media ponderada
-						if (existing.totalCost > 0) {
-							existing.totalCost += (shares * costPerShare);
-						} else {
-							existing.totalCost = (existing.shares * costPerShare);
-						}
-					}
-				} else {
-					accumulated.set(isin, {
-						name: name || isin,
-						shares: (shares * multiplier),
-						totalCost: isIncrease ? (shares * costPerShare) : 0,
-						currency: 'EUR',
-					});
-				}
-
-			} catch {
-				skipped++;
-			}
-		}
-		
-		for (const [isin, data] of accumulated) {
-			if (data.shares > 0.0001) { // Pequeño margen para errores de redondeo
-				positions.push({
+				transactions.push({
+					date,
+					type: isIncrease ? 'BUY' : 'SELL',
 					isin,
-					name: data.name,
-					shares: data.shares,
-					avgCost: data.shares > 0 ? (data.totalCost / data.shares) : 0,
-					currency: data.currency,
+					name: name || isin,
+					shares: Math.abs(shares),
+					price: costPerShare,
+					currency: 'EUR',
 				});
+			} catch {
+				skipRow(rowIdx, row, 'Error inesperado al procesar la fila');
 			}
 		}
 		
-		return { positions, warnings, skipped };
+		const consolidated = reduceTransactionsToPositions(transactions);
+		return { positions: consolidated, warnings, skipped, skippedDetails };
 	}
 };
 
@@ -770,11 +934,21 @@ const genericDetector: BrokerDetector = {
 		let positions: ParsedPosition[] = [];
 		const warnings: string[] = [];
 		let skipped = 0;
+		const skippedDetails: SkippedDetail[] = [];
+
+		const skipRow = (rowIdx: number, row: string[], reason: string) => {
+			skipped++;
+			skippedDetails.push({
+				rowNumber: rowIdx + 1,
+				preview: row.filter(Boolean).slice(0, 3).join(' | '),
+				reason,
+			});
+		};
 		
-		for (const row of rows) {
+		for (const [rowIdx, row] of rows.entries()) {
 			try {
 				const shares = parseNumber(row[mapping.shares]);
-				if (shares <= 0) { skipped++; continue; }
+				if (shares <= 0) { skipRow(rowIdx, row, `Cantidad <= 0 (valor: "${row[mapping.shares] || 'vacío'}")`); continue; }
 
 				const isinRaw = mapping.isin !== undefined && mapping.isin !== -1 && mapping.isin < row.length ? row[mapping.isin] : '';
 				const isin = isValidISIN(isinRaw) ? isinRaw.trim().toUpperCase() : '';
@@ -784,7 +958,7 @@ const genericDetector: BrokerDetector = {
 				const currency = mapping.currency !== undefined && mapping.currency !== -1 && mapping.currency < row.length ? row[mapping.currency]?.trim() || 'EUR' : 'EUR';
 
 				if (!isin && !ticker) {
-					skipped++;
+					skipRow(rowIdx, row, 'Sin ISIN ni ticker válidos');
 					continue;
 				}
 
@@ -797,14 +971,14 @@ const genericDetector: BrokerDetector = {
 					currency: normalizeCurrency(currency) || 'EUR'
 				});
 			} catch {
-				skipped++;
+				skipRow(rowIdx, row, 'Error inesperado al procesar la fila');
 			}
 		}
 
 		// Agregar posiciones duplicadas (ej: múltiples compras del mismo activo)
 		positions = aggregateParsedPositions(positions);
 		
-		return { positions, warnings, skipped };
+		return { positions, warnings, skipped, skippedDetails };
 	}
 };
 
@@ -875,38 +1049,47 @@ export function importWithMapping(fileContent: string, mapping: MappingConfig): 
 
 /**
  * Punto de entrada principal: dado el contenido bruto de un archivo CSV,
-
  * detecta automáticamente el bróker y extrae las posiciones.
  */
 export function importFromCSV(fileContent: string): ImportResult {
-	const { headers, rows, delimiter } = parseCSV(fileContent);
+	const blocks = parseCSVBlocks(fileContent);
+	const delimiter = detectDelimiter(fileContent);
 	
-	if (headers.length === 0 || rows.length === 0) {
+	if (blocks.length === 0) {
 		return {
 			broker: { id: 'generic', name: 'Desconocido', icon: '❓', confidence: 0 },
 			positions: [],
 			warnings: ['El archivo está vacío o no tiene un formato CSV válido.'],
 			skippedRows: 0,
+			delimiter
 		};
 	}
 	
-	// Detectar el bróker con mayor confianza
+	// Detectar el bróker con mayor confianza recorriendo las cabeceras de todos los bloques
 	let bestDetector: BrokerDetector = genericDetector;
 	let bestConfidence = 0;
+	let bestBlock = blocks[0];
 	
 	for (const detector of ALL_DETECTORS) {
-		const confidence = detector.detect(headers);
-		if (confidence > bestConfidence) {
-			bestConfidence = confidence;
-			bestDetector = detector;
+		for (const block of blocks) {
+			const confidence = detector.detect(block.headers);
+			if (confidence > bestConfidence) {
+				bestConfidence = confidence;
+				bestDetector = detector;
+				bestBlock = block;
+			}
 		}
 	}
 	
 	// Parsear con el mejor detector
-	const { positions, warnings, skipped } = bestDetector.parse(headers, rows);
+	const { positions, warnings, skipped, skippedDetails } = bestDetector.parse(
+		bestBlock.headers,
+		bestBlock.rows,
+		blocks
+	);
 	
 	if (positions.length === 0 && skipped > 0) {
-		warnings.push(`No se pudo extraer ninguna posición de las ${rows.length} filas del archivo.`);
+		warnings.push(`No se pudo extraer ninguna posición de las ${bestBlock.rows.length} filas del bloque/archivo.`);
 	}
 	
 	return {
@@ -919,8 +1102,10 @@ export function importFromCSV(fileContent: string): ImportResult {
 		positions,
 		warnings,
 		skippedRows: skipped,
-		rawHeaders: headers,
-		rawRows: rows.slice(0, 10), // Guardar solo las primeras 10 para previsualización ligera
-		delimiter: delimiter,
+		skippedDetails,
+		rawHeaders: bestBlock.headers,
+		rawRows: bestBlock.rows.slice(0, 10),
+		delimiter,
+		blocks
 	};
 }

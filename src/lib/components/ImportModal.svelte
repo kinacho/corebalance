@@ -3,7 +3,7 @@
 	import { ui } from '$lib/stores/ui.svelte';
 	import { focusTrap } from '$lib/actions/focusTrap';
 	import { importFromCSV, importWithMapping, generateCsvSignature } from '$lib/importers';
-	import type { ImportResult, ParsedPosition, MappingConfig } from '$lib/importers';
+	import type { ImportResult, ParsedPosition, MappingConfig, SkippedDetail } from '$lib/importers';
 	import { ASSET_COLORS, ASSET_ICONS } from '$lib/constants';
 	import type { Asset, AssetCategory } from '$lib/types';
 	import { resolveAssetIcon } from '$lib/utils';
@@ -34,6 +34,8 @@
 	let importedCount = $state(0);
 	let activeSignature = $state<string>('');
 	let savedMapping = $state<MappingConfig | undefined>(undefined);
+	let showSkippedDetails = $state(false);
+	const skippedDetails = $derived(importResult?.skippedDetails ?? []);
 
 	// --- File Handling ---
 	function handleDragOver(e: DragEvent) { e.preventDefault(); isDragging = true; }
@@ -376,7 +378,26 @@
 					{#if importResult.skippedRows > 0}
 						<div class="import-summary-banner">
 							ℹ️ <strong>Resumen:</strong> Se importarán {importResult.positions.length} posiciones. Se han omitido {importResult.skippedRows} filas (como cabeceras, depósitos, comisiones o celdas vacías).
+							{#if skippedDetails.length > 0}
+								<button class="skipped-toggle" onclick={() => showSkippedDetails = !showSkippedDetails}>
+									{showSkippedDetails ? '▲ Ocultar detalle' : '▼ Ver filas omitidas'}
+								</button>
+							{/if}
 						</div>
+						{#if showSkippedDetails && skippedDetails.length > 0}
+							<div class="skipped-panel">
+								{#each skippedDetails.slice(0, 30) as detail}
+									<div class="skipped-row">
+										<span class="skipped-line">Línea {detail.rowNumber}</span>
+										<span class="skipped-preview">{detail.preview || '—'}</span>
+										<span class="skipped-reason">{detail.reason}</span>
+									</div>
+								{/each}
+								{#if skippedDetails.length > 30}
+									<p class="skipped-more">... y {skippedDetails.length - 30} filas más</p>
+								{/if}
+							</div>
+						{/if}
 					{/if}
 
 					<div class="select-all-row">
@@ -500,6 +521,19 @@
 	.guide-list li { font-size: 0.72rem; color: rgba(160, 160, 200, 0.6); }
 	.guide-list li strong { color: rgba(255, 255, 255, 0.8); }
 	.guide-note { font-size: 0.7rem; color: rgba(59, 130, 246, 0.8); margin: 0; font-weight: 600; }
+
+	/* Skipped Rows Panel */
+	.skipped-toggle { background: none; border: none; color: rgba(251, 191, 36, 0.7); font-size: 0.65rem; font-weight: 700; cursor: pointer; padding: 0; margin-top: 0.35rem; display: block; }
+	.skipped-toggle:hover { color: #fbbf24; }
+	.skipped-panel { background: rgba(0,0,0,.25); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 0.5rem; margin-top: 0.4rem; display: flex; flex-direction: column; gap: 0.2rem; max-height: 180px; overflow-y: auto; }
+	.skipped-panel::-webkit-scrollbar { width: 4px; }
+	.skipped-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,.08); border-radius: 2px; }
+	.skipped-row { display: grid; grid-template-columns: 3.5rem 1fr auto; gap: 0.4rem; align-items: baseline; padding: 0.2rem 0.3rem; border-radius: 6px; }
+	.skipped-row:hover { background: rgba(255,255,255,.03); }
+	.skipped-line { font-size: 0.6rem; color: rgba(160,160,200,.4); font-family: 'Monaco','Menlo',monospace; flex-shrink: 0; }
+	.skipped-preview { font-size: 0.62rem; color: rgba(160,160,200,.55); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+	.skipped-reason { font-size: 0.6rem; color: rgba(251,191,36,.55); font-style: italic; flex-shrink: 0; max-width: 130px; text-align: right; }
+	.skipped-more { font-size: 0.6rem; color: rgba(160,160,200,.3); margin: 0.25rem 0 0; text-align: center; }
 
 	/* Resolving */
 	.resolving-state { text-align:center; padding:3rem 1rem; }

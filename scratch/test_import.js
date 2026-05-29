@@ -4,7 +4,7 @@ import { dirname, join } from 'path';
 import { importFromCSV } from '../src/lib/importers/index.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const csvPath = join(__dirname, '..', 'training', 'Transactions.csv');
+const csvPath = join(__dirname, '..', 'training', 'Account.csv');
 const csv = readFileSync(csvPath, 'utf-8');
 
 try {

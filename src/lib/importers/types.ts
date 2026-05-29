@@ -45,6 +45,16 @@ export interface ParsedPosition {
 	currency: string;
 }
 
+/** Detalle de una fila omitida durante el parseo */
+export interface SkippedDetail {
+	/** Número de fila (basado en 1, sin contar cabecera) */
+	rowNumber: number;
+	/** Dato principal de la fila (nombre del activo o primeros valores) */
+	preview: string;
+	/** Motivo por el que se omitió la fila */
+	reason: string;
+}
+
 /** Configuración de mapeo manual de columnas para CSVs genéricos */
 export interface MappingConfig {
 	isin?: number;
@@ -53,6 +63,12 @@ export interface MappingConfig {
 	shares: number;
 	avgCost?: number;
 	currency?: number;
+}
+
+export interface CSVBlock {
+	name: string;
+	headers: string[];
+	rows: string[][];
 }
 
 /** Resultado completo de un parseo de importación */
@@ -65,10 +81,30 @@ export interface ImportResult {
 	warnings: string[];
 	/** Número de filas que no se pudieron parsear */
 	skippedRows: number;
+	/** Detalle de las filas omitidas (motivo por fila) */
+	skippedDetails?: SkippedDetail[];
 	/** Cabeceras crudas del CSV para previsualización */
 	rawHeaders?: string[];
 	/** Primeras filas del CSV para previsualización */
 	rawRows?: string[][];
 	/** Delimitador detectado */
 	delimiter?: string;
+	/** Bloques detectados (para formatos multi-tabla) */
+	blocks?: CSVBlock[];
 }
+
+/** Tipo de operación de transacción */
+export type TransactionType = 'BUY' | 'SELL';
+
+/** Una transacción individual extraída de un historial de bróker */
+export interface Transaction {
+	date: Date;
+	type: TransactionType;
+	isin?: string;
+	ticker?: string;
+	name: string;
+	shares: number;
+	price: number;
+	currency: string;
+}
+
