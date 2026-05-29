@@ -10,6 +10,7 @@ export type ColumnRole =
 	| 'price'
 	| 'currency'
 	| 'date'
+	| 'type'
 	| 'ignored';
 
 /** Análisis detallado de una columna */
@@ -63,6 +64,8 @@ export interface MappingConfig {
 	shares: number;
 	avgCost?: number;
 	currency?: number;
+	date?: number;
+	type?: number;
 }
 
 export interface CSVBlock {

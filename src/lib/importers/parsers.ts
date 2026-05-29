@@ -20,7 +20,13 @@ interface BrokerDetector {
 	/** Devuelve confianza 0-1 de que las cabeceras pertenecen a este bróker */
 	detect: (headers: string[]) => number;
 	/** Parsea las filas del CSV para este bróker */
-	parse: (headers: string[], rows: string[][], blocks?: CSVBlock[]) => { positions: ParsedPosition[]; warnings: string[]; skipped: number; skippedDetails: SkippedDetail[] };
+	parse: (headers: string[], rows: string[][], blocks?: CSVBlock[]) => { 
+		positions: ParsedPosition[]; 
+		warnings: string[]; 
+		skipped: number; 
+		skippedDetails: SkippedDetail[];
+		totalTransactions?: number;
+	};
 }
 
 // ─── DEGIRO Account Statement ───────────────────────────────────────────
@@ -139,32 +145,29 @@ const degiroAccountStatementDetector: BrokerDetector = {
 	icon: '🟠',
 	detect(headers) {
 		const normalized = headers.map(normalizeHeader);
-		const joined = normalized.join(' ');
-
-		// DEGIRO Account Statement exports have these specific headers:
-		// ES: "Fecha,Hora,Fecha valor,Producto,ISIN,Descripción,Tipo,Variación,,Saldo,,ID Orden"
-		// EN: "Date,Time,Value date,Product,ISIN,Description,FX,Change,,Balance,"
-		// NL: "Datum,Tijd,Valutadatum,Product,ISIN,Omschrijving,FX,Mutatie,,Saldo,"
-		const accountMarkers = [
-			'fecha valor', 'value date', 'valutadatum',
-			'descripcion', 'description', 'omschrijving',
-			'variacion', 'change', 'mutatie',
-			'saldo', 'balance',
-			'id orden', 'order id',
-			'tipo',  // column in ES export
-		];
-		const matches = accountMarkers.filter(m => joined.includes(m)).length;
-
-		// Need at least 3 account-specific markers + also product/isin to confirm it's DEGIRO
-		const hasCoreFields = joined.includes('isin') || joined.includes('producto') || joined.includes('product');
-		const hasDescription = joined.includes('descripcion') || joined.includes('description') || joined.includes('omschrijving');
-		// ES export has 'hora' (time) — strong signal
-		const hasHora = joined.includes('hora') || joined.includes('tijd') || joined.includes('time');
-
-		if (hasCoreFields && hasDescription && hasHora && matches >= 3) return 0.98;
-		if (hasCoreFields && hasDescription && matches >= 3) return 0.97;
-		if (hasCoreFields && hasDescription && matches >= 2) return 0.85;
-
+		
+		const hasExactMatch = (term: string) => normalized.includes(term);
+		
+		const hasDate = hasExactMatch('fecha') || hasExactMatch('date') || hasExactMatch('datum');
+		const hasTime = hasExactMatch('hora') || hasExactMatch('time') || hasExactMatch('tijd');
+		const hasDescription = hasExactMatch('descripcion') || hasExactMatch('description') || hasExactMatch('omschrijving');
+		const hasIsin = hasExactMatch('isin');
+		const hasProduct = hasExactMatch('producto') || hasExactMatch('product');
+		
+		if (hasDate && hasTime && hasDescription && hasIsin && hasProduct) {
+			return 0.99;
+		}
+		
+		let exactCount = 0;
+		if (hasDate) exactCount++;
+		if (hasTime) exactCount++;
+		if (hasDescription) exactCount++;
+		if (hasIsin) exactCount++;
+		if (hasProduct) exactCount++;
+		
+		if (exactCount >= 4) return 0.95;
+		if (exactCount >= 3) return 0.7;
+		
 		return 0;
 	},
 	parse(headers, rows) {
@@ -268,11 +271,11 @@ const degiroAccountStatementDetector: BrokerDetector = {
 		// Consolidar posiciones usando el agregador cronológico de coste medio ponderado
 		const positions = reduceTransactionsToPositions(transactions);
 
-		if (positions.length === 0 && rows.length > 0) {
+		if (positions.length === 0 && rows.length > 0 && transactions.length === 0) {
 			warnings.push('No se encontraron operaciones de compra/venta en el extracto de cuenta. Asegúrate de que el CSV contiene transacciones con formato "Compra/Venta X Nombre@Precio DIVISA (ISIN)".');
 		}
 
-		return { positions, warnings, skipped, skippedDetails };
+		return { positions, warnings, skipped, skippedDetails, totalTransactions: transactions.length };
 	}
 };
 
@@ -284,21 +287,30 @@ const degiroDetector: BrokerDetector = {
 	icon: '🟠',
 	detect(headers) {
 		const normalized = headers.map(normalizeHeader);
-		const joined = normalized.join(' ');
 		
-		// DEGIRO transaction exports (Dutch/English/Spanish)
-		const degiroMarkers = ['producto', 'product', 'isin', 'cantidad', 'aantal', 'quantity',
-			'koers', 'precio', 'bolsa', 'beurs', 'exchange', 'valor local', 'lokale waarde'];
-		const matches = degiroMarkers.filter(m => joined.includes(m)).length;
+		const hasExactMatch = (term: string) => normalized.includes(term);
 		
-		if (matches >= 3) return 0.95;
-		if (matches >= 2) return 0.7;
+		const hasIsin = hasExactMatch('isin');
+		const hasProduct = hasExactMatch('producto') || hasExactMatch('product');
+		const hasQuantity = hasExactMatch('cantidad') || hasExactMatch('aantal') || hasExactMatch('quantity');
+		const hasPrice = hasExactMatch('precio') || hasExactMatch('koers') || hasExactMatch('price') || hasExactMatch('precio de');
+		const hasClosing = hasExactMatch('precio de cierre') || hasExactMatch('slotkoers') || hasExactMatch('closing price') || hasExactMatch('precio de');
 		
-		// DEGIRO Portfolio export
-		const portfolioMarkers = ['producto', 'product', 'isin', 'cantidad', 'tamaño', 'size',
-			'precio de cierre', 'slotkoers', 'closing price', 'valor en eur'];
-		const portfolioMatches = portfolioMarkers.filter(m => joined.includes(m)).length;
-		if (portfolioMatches >= 3) return 0.9;
+		if (hasIsin && hasProduct && hasQuantity && hasPrice) {
+			return 0.98;
+		}
+		
+		if (hasIsin && hasProduct && hasQuantity && hasClosing) {
+			return 0.95;
+		}
+		
+		let exactCount = 0;
+		if (hasIsin) exactCount++;
+		if (hasProduct) exactCount++;
+		if (hasQuantity) exactCount++;
+		if (hasPrice || hasClosing) exactCount++;
+		
+		if (exactCount >= 3) return 0.8;
 		
 		return 0;
 	},
@@ -550,7 +562,7 @@ const trading212Detector: BrokerDetector = {
 		}
 
 		const consolidated = reduceTransactionsToPositions(transactions);
-		return { positions: consolidated, warnings, skipped, skippedDetails };
+		return { positions: consolidated, warnings, skipped, skippedDetails, totalTransactions: transactions.length };
 	}
 };
 
@@ -877,7 +889,7 @@ const myinvestorDetector: BrokerDetector = {
 		}
 		
 		const consolidated = reduceTransactionsToPositions(transactions);
-		return { positions: consolidated, warnings, skipped, skippedDetails };
+		return { positions: consolidated, warnings, skipped, skippedDetails, totalTransactions: transactions.length };
 	}
 };
 
@@ -911,7 +923,204 @@ function aggregateParsedPositions(positions: ParsedPosition[]): ParsedPosition[]
 	return Array.from(map.values());
 }
 
-// ─── Parser Genérico ────────────────────────────────────────────────────
+// ─── Parser Genérico y Agregación Contable ──────────────────────────────
+
+/**
+ * Parsea un CSV genérico aplicando la configuración de mapeo especificada.
+ * Soporta tanto instantáneas de posiciones estáticas como historiales de transacciones cronológicas.
+ */
+export function parseGenericCSVWithMapping(
+	headers: string[],
+	rows: string[][],
+	mapping: MappingConfig
+): { positions: ParsedPosition[]; warnings: string[]; skipped: number; skippedDetails: SkippedDetail[] } {
+	let skipped = 0;
+	const skippedDetails: SkippedDetail[] = [];
+	const warnings: string[] = [];
+
+	const skipRow = (rowIdx: number, row: string[], reason: string) => {
+		skipped++;
+		skippedDetails.push({
+			rowNumber: rowIdx + 1,
+			preview: row.filter(Boolean).slice(0, 3).join(' | '),
+			reason,
+		});
+	};
+
+	// 1. Detectar si el mapping contiene columna de fecha para flujo transaccional
+	const isTransactional = mapping.date !== undefined && mapping.date !== -1 && mapping.date < headers.length;
+
+	if (isTransactional) {
+		const transactions: Transaction[] = [];
+
+		for (const [rowIdx, row] of rows.entries()) {
+			try {
+				let sharesRaw = parseNumber(row[mapping.shares]);
+				let unitPrice = 0;
+				let type: TransactionType = 'BUY';
+				let typeDetected = false;
+				let parsedFromDesc = false;
+
+				// 1. Intentar parsear si hay formato descriptivo "Buy 3 @ 134.85 USD" en alguna celda (ej. Saxo, DEGIRO)
+				for (const cell of row) {
+					if (cell && cell.includes('@')) {
+						const match = cell.match(/^(Buy|Sell|Koop|Verkoop|Kop|Salj|Köp|Sälj)\s+([\d.,]+)\s*@\s*([\d.,]+)/i);
+						if (match) {
+							const [, action, qtyStr, priceStr] = match;
+							type = /^(buy|compra|koop|kop|köp)$/i.test(action) ? 'BUY' : 'SELL';
+							sharesRaw = parseNumber(qtyStr);
+							unitPrice = parseNumber(priceStr);
+							typeDetected = true;
+							parsedFromDesc = true;
+							break;
+						}
+					}
+				}
+
+				if (sharesRaw === 0) {
+					skipRow(rowIdx, row, 'Cantidad es 0');
+					continue;
+				}
+
+				const isinRaw = mapping.isin !== undefined && mapping.isin !== -1 && mapping.isin < row.length ? row[mapping.isin] : '';
+				let isin = isValidISIN(isinRaw) ? isinRaw.trim().toUpperCase() : '';
+				let ticker = mapping.ticker !== undefined && mapping.ticker !== -1 && mapping.ticker < row.length ? row[mapping.ticker]?.trim() : undefined;
+				const name = mapping.name !== undefined && mapping.name !== -1 && mapping.name < row.length ? row[mapping.name]?.trim() : (ticker || isin || 'Activo desconocido');
+
+				if (!isin && name) {
+					const ext = extractISIN(name);
+					if (ext) isin = ext;
+				}
+
+				// Inferir ticker si no existe (para criptomonedas como Relai, Bitvavo)
+				let inferredTicker = ticker;
+				if (!isin && !inferredTicker) {
+					for (let i = 0; i < headers.length; i++) {
+						const h = headers[i].toLowerCase();
+						if (h.includes('btc') || h.includes('bitcoin')) { inferredTicker = 'BTC'; break; }
+						if (h.includes('eth') || h.includes('ethereum')) { inferredTicker = 'ETH'; break; }
+						if (h.includes('sol') || h.includes('solana')) { inferredTicker = 'SOL'; break; }
+						if (h.includes('usdt')) { inferredTicker = 'USDT'; break; }
+						if (h.includes('cro')) { inferredTicker = 'CRO'; break; }
+					}
+					if (!inferredTicker) {
+						for (const cell of row) {
+							if (cell) {
+								const upperCell = cell.toUpperCase();
+								if (upperCell.includes('BTC/') || upperCell.includes('/BTC')) { inferredTicker = 'BTC'; break; }
+								if (upperCell.includes('ETH/') || upperCell.includes('/ETH')) { inferredTicker = 'ETH'; break; }
+								if (upperCell.includes('SOL/') || upperCell.includes('/SOL')) { inferredTicker = 'SOL'; break; }
+							}
+						}
+					}
+				}
+
+				if (!isin && !inferredTicker) {
+					skipRow(rowIdx, row, 'Fila sin identificador (ISIN o Ticker) válido');
+					continue;
+				}
+
+				// Detección de tipo BUY/SELL si no se parseó de la descripción
+				if (!typeDetected) {
+					if (mapping.type !== undefined && mapping.type !== -1 && mapping.type < row.length) {
+						const typeRaw = row[mapping.type]?.trim().toLowerCase() || '';
+
+						const buyKeywords = ['buy', 'compra', 'suscripcion', 'aportacion', 'adquirir', 'in', 'deposit', 'receive', 'incoming', 'koop', 'staking', 'stake reward', 'lockup reward', 'converted', 'dividend'];
+						const sellKeywords = ['sell', 'venta', 'reembolso', 'salida', 'out', 'withdrawal', 'send', 'outgoing', 'verkoop'];
+
+						if (buyKeywords.some(kw => typeRaw.includes(kw))) {
+							type = 'BUY';
+							typeDetected = true;
+						} else if (sellKeywords.some(kw => typeRaw.includes(kw))) {
+							type = 'SELL';
+							typeDetected = true;
+						}
+					}
+				}
+
+				// Failsafe por signo de cantidad
+				if (!typeDetected && sharesRaw < 0) {
+					type = 'SELL';
+					typeDetected = true;
+				}
+
+				const finalShares = Math.abs(sharesRaw);
+				const dateStr = mapping.date !== undefined && mapping.date !== -1 && mapping.date < row.length ? row[mapping.date] : '';
+				const date = dateStr ? new Date(dateStr) : new Date();
+				const finalDate = isNaN(date.getTime()) ? new Date() : date;
+
+				if (!parsedFromDesc) {
+					const priceOrTotal = mapping.avgCost !== undefined && mapping.avgCost !== -1 && mapping.avgCost < row.length ? parseNumber(row[mapping.avgCost]) : 0;
+					unitPrice = Math.abs(priceOrTotal);
+				}
+
+				const currencyRaw = mapping.currency !== undefined && mapping.currency !== -1 && mapping.currency < row.length ? row[mapping.currency] : 'EUR';
+				const currency = normalizeCurrency(currencyRaw) || 'EUR';
+
+				transactions.push({
+					date: finalDate,
+					type,
+					isin: isin || undefined,
+					ticker: inferredTicker,
+					name: name !== 'Activo desconocido' ? name : (inferredTicker || isin || 'Activo'),
+					shares: finalShares,
+					price: unitPrice,
+					currency
+				});
+			} catch {
+				skipRow(rowIdx, row, 'Error inesperado al parsear la transacción');
+			}
+		}
+
+		const positions = reduceTransactionsToPositions(transactions);
+		return { positions, warnings, skipped, skippedDetails };
+	} else {
+		// 2. Flujo instantánea de posiciones (Static positions list)
+		let positions: ParsedPosition[] = [];
+
+		for (const [rowIdx, row] of rows.entries()) {
+			try {
+				const shares = parseNumber(row[mapping.shares]);
+				if (shares <= 0) {
+					skipRow(rowIdx, row, `Cantidad <= 0 (valor: "${row[mapping.shares] || 'vacío'}")`);
+					continue;
+				}
+
+				const isinRaw = mapping.isin !== undefined && mapping.isin !== -1 && mapping.isin < row.length ? row[mapping.isin] : '';
+				let isin = isValidISIN(isinRaw) ? isinRaw.trim().toUpperCase() : '';
+				const ticker = mapping.ticker !== undefined && mapping.ticker !== -1 && mapping.ticker < row.length ? row[mapping.ticker]?.trim() : undefined;
+				const name = mapping.name !== undefined && mapping.name !== -1 && mapping.name < row.length ? row[mapping.name]?.trim() : (ticker || isin || 'Activo desconocido');
+
+				if (!isin && name) {
+					const ext = extractISIN(name);
+					if (ext) isin = ext;
+				}
+
+				if (!isin && !ticker) {
+					skipRow(rowIdx, row, 'Fila sin identificador (ISIN o Ticker) válido');
+					continue;
+				}
+
+				const avgCost = mapping.avgCost !== undefined && mapping.avgCost !== -1 && mapping.avgCost < row.length ? parseNumber(row[mapping.avgCost]) : 0;
+				const currency = mapping.currency !== undefined && mapping.currency !== -1 && mapping.currency < row.length ? row[mapping.currency]?.trim() || 'EUR' : 'EUR';
+
+				positions.push({
+					isin,
+					ticker,
+					name,
+					shares,
+					avgCost: Math.abs(avgCost),
+					currency: normalizeCurrency(currency) || 'EUR'
+				});
+			} catch {
+				skipRow(rowIdx, row, 'Error inesperado al parsear la posición');
+			}
+		}
+
+		positions = aggregateParsedPositions(positions);
+		return { positions, warnings, skipped, skippedDetails };
+	}
+}
 
 const genericDetector: BrokerDetector = {
 	id: 'generic',
@@ -921,64 +1130,15 @@ const genericDetector: BrokerDetector = {
 		const normalized = headers.map(normalizeHeader);
 		const joined = normalized.join(' ');
 		
-		// Buscar campos mínimos: algún identificador + alguna cantidad
 		const hasIdentifier = ['isin', 'ticker', 'symbol', 'codigo'].some(m => joined.includes(m));
-		const hasQuantity = ['shares', 'quantity', 'cantidad', 'participaciones', 'units', 'titulos', 'position'].some(m => joined.includes(m));
+		const hasQuantity = ['shares', 'quantity', 'cantidad', 'participaciones', 'units', 'titulos', 'position', 'antal'].some(m => joined.includes(m));
 		
 		return (hasIdentifier && hasQuantity) ? 0.3 : 0;
 	},
 	parse(headers, rows) {
 		const analysis = analyzeColumns(headers, rows);
 		const mapping = suggestMappingFromAnalysis(analysis);
-		
-		let positions: ParsedPosition[] = [];
-		const warnings: string[] = [];
-		let skipped = 0;
-		const skippedDetails: SkippedDetail[] = [];
-
-		const skipRow = (rowIdx: number, row: string[], reason: string) => {
-			skipped++;
-			skippedDetails.push({
-				rowNumber: rowIdx + 1,
-				preview: row.filter(Boolean).slice(0, 3).join(' | '),
-				reason,
-			});
-		};
-		
-		for (const [rowIdx, row] of rows.entries()) {
-			try {
-				const shares = parseNumber(row[mapping.shares]);
-				if (shares <= 0) { skipRow(rowIdx, row, `Cantidad <= 0 (valor: "${row[mapping.shares] || 'vacío'}")`); continue; }
-
-				const isinRaw = mapping.isin !== undefined && mapping.isin !== -1 && mapping.isin < row.length ? row[mapping.isin] : '';
-				const isin = isValidISIN(isinRaw) ? isinRaw.trim().toUpperCase() : '';
-				const ticker = mapping.ticker !== undefined && mapping.ticker !== -1 && mapping.ticker < row.length ? row[mapping.ticker]?.trim() : undefined;
-				const name = mapping.name !== undefined && mapping.name !== -1 && mapping.name < row.length ? row[mapping.name]?.trim() : (ticker || isin || 'Activo desconocido');
-				const avgCost = mapping.avgCost !== undefined && mapping.avgCost !== -1 && mapping.avgCost < row.length ? parseNumber(row[mapping.avgCost]) : 0;
-				const currency = mapping.currency !== undefined && mapping.currency !== -1 && mapping.currency < row.length ? row[mapping.currency]?.trim() || 'EUR' : 'EUR';
-
-				if (!isin && !ticker) {
-					skipRow(rowIdx, row, 'Sin ISIN ni ticker válidos');
-					continue;
-				}
-
-				positions.push({
-					isin,
-					ticker,
-					name,
-					shares,
-					avgCost,
-					currency: normalizeCurrency(currency) || 'EUR'
-				});
-			} catch {
-				skipRow(rowIdx, row, 'Error inesperado al procesar la fila');
-			}
-		}
-
-		// Agregar posiciones duplicadas (ej: múltiples compras del mismo activo)
-		positions = aggregateParsedPositions(positions);
-		
-		return { positions, warnings, skipped, skippedDetails };
+		return parseGenericCSVWithMapping(headers, rows, mapping);
 	}
 };
 
@@ -998,48 +1158,14 @@ const ALL_DETECTORS: BrokerDetector[] = [
  */
 export function importWithMapping(fileContent: string, mapping: MappingConfig): ImportResult {
 	const { headers, rows, delimiter } = parseCSV(fileContent);
-	let positions: ParsedPosition[] = [];
-	const warnings: string[] = [];
-	let skipped = 0;
-
-	for (const row of rows) {
-		try {
-			const shares = parseNumber(row[mapping.shares]);
-			if (shares === 0) { skipped++; continue; }
-
-			const isinRaw = mapping.isin !== undefined ? row[mapping.isin] : '';
-			const isin = isValidISIN(isinRaw) ? isinRaw.trim().toUpperCase() : '';
-			const ticker = mapping.ticker !== undefined ? row[mapping.ticker]?.trim() : undefined;
-			const name = mapping.name !== undefined ? row[mapping.name]?.trim() : (ticker || isin || 'Activo desconocido');
-			const avgCost = mapping.avgCost !== undefined ? parseNumber(row[mapping.avgCost]) : 0;
-			const currency = mapping.currency !== undefined ? row[mapping.currency]?.trim() || 'EUR' : 'EUR';
-
-			if (!isin && !ticker) {
-				skipped++;
-				continue;
-			}
-
-			positions.push({
-				isin,
-				ticker,
-				name,
-				shares,
-				avgCost,
-				currency
-			});
-		} catch {
-			skipped++;
-		}
-	}
-
-	// Agregar posiciones duplicadas
-	positions = aggregateParsedPositions(positions);
+	const { positions, warnings, skipped, skippedDetails } = parseGenericCSVWithMapping(headers, rows, mapping);
 
 	return {
 		broker: { id: 'generic', name: 'Mapeo Manual', icon: '⚙️', confidence: 1 },
 		positions,
 		warnings,
 		skippedRows: skipped,
+		skippedDetails,
 		rawHeaders: headers,
 		rawRows: rows.slice(0, 10),
 		delimiter
@@ -1082,14 +1208,39 @@ export function importFromCSV(fileContent: string): ImportResult {
 	}
 	
 	// Parsear con el mejor detector
-	const { positions, warnings, skipped, skippedDetails } = bestDetector.parse(
+	let result = bestDetector.parse(
 		bestBlock.headers,
 		bestBlock.rows,
 		blocks
 	);
 	
-	if (positions.length === 0 && skipped > 0) {
-		warnings.push(`No se pudo extraer ninguna posición de las ${bestBlock.rows.length} filas del bloque/archivo.`);
+	// Failsafe: Si el detector seleccionado no es genérico, pero ha devuelto 0 posiciones
+	// en un archivo que sí contiene filas, lo tratamos como un falso positivo y recurrimos
+	// al importador genérico inteligente.
+	// NOTA: Si el detector devuelve totalTransactions > 0, significa que SÍ entendió el archivo
+	// pero que las posiciones netas son 0 (ej: todo vendido), por lo que NO debemos caer al genérico.
+	if (bestDetector.id !== 'generic' && result.positions.length === 0 && bestBlock.rows.length > 0 && (result.totalTransactions ?? 0) === 0) {
+		const genericResult = genericDetector.parse(bestBlock.headers, bestBlock.rows, blocks);
+		if (genericResult.positions.length > 0) {
+			return {
+				broker: { id: 'generic', name: 'CSV Genérico', icon: '📄', confidence: 0.1 },
+				positions: genericResult.positions,
+				warnings: [
+					...result.warnings,
+					`El detector automático sugirió '${bestDetector.name}' pero no pudo extraer activos de la tabla. Se ha utilizado el importador genérico como alternativa de respaldo.`
+				],
+				skippedRows: genericResult.skipped,
+				skippedDetails: genericResult.skippedDetails,
+				rawHeaders: bestBlock.headers,
+				rawRows: bestBlock.rows.slice(0, 10),
+				delimiter,
+				blocks
+			};
+		}
+	}
+	
+	if (result.positions.length === 0 && result.skipped > 0) {
+		result.warnings.push(`No se pudo extraer ninguna posición de las ${bestBlock.rows.length} filas del bloque/archivo.`);
 	}
 	
 	return {
@@ -1099,10 +1250,10 @@ export function importFromCSV(fileContent: string): ImportResult {
 			icon: bestDetector.icon,
 			confidence: bestConfidence,
 		},
-		positions,
-		warnings,
-		skippedRows: skipped,
-		skippedDetails,
+		positions: result.positions,
+		warnings: result.warnings,
+		skippedRows: result.skipped,
+		skippedDetails: result.skippedDetails,
 		rawHeaders: bestBlock.headers,
 		rawRows: bestBlock.rows.slice(0, 10),
 		delimiter,

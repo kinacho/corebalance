@@ -19,7 +19,9 @@
 		ticker: -1,
 		name: -1,
 		avgCost: -1,
-		currency: -1
+		currency: -1,
+		date: -1,
+		type: -1
 	});
 
 	$effect(() => {
@@ -34,6 +36,8 @@
 		if (mapping.name === -1) mapping.name = initialMapping?.name ?? suggestion.name ?? -1;
 		if (mapping.avgCost === -1) mapping.avgCost = initialMapping?.avgCost ?? suggestion.avgCost ?? -1;
 		if (mapping.currency === -1) mapping.currency = initialMapping?.currency ?? suggestion.currency ?? -1;
+		if (mapping.date === -1) mapping.date = initialMapping?.date ?? suggestion.date ?? -1;
+		if (mapping.type === -1) mapping.type = initialMapping?.type ?? suggestion.type ?? -1;
 	});
 
 	const calculatedScore = $derived.by(() => {
@@ -43,7 +47,7 @@
 		let totalScore = 0;
 		let count = 0;
 
-		const checkScore = (role: 'quantity' | 'isin' | 'ticker' | 'name' | 'price' | 'currency', colIdx: number | undefined) => {
+		const checkScore = (role: 'quantity' | 'isin' | 'ticker' | 'name' | 'price' | 'currency' | 'date' | 'type', colIdx: number | undefined) => {
 			if (colIdx !== undefined && colIdx !== -1 && colIdx < analysis.length) {
 				totalScore += analysis[colIdx].roleScores[role] || 0;
 				count++;
@@ -56,6 +60,8 @@
 		checkScore('name', mapping.name);
 		checkScore('price', mapping.avgCost);
 		checkScore('currency', mapping.currency);
+		checkScore('date', mapping.date);
+		checkScore('type', mapping.type);
 
 		return count > 0 ? totalScore / count : 0;
 	});
@@ -71,7 +77,9 @@
 				ticker: mapping.ticker === -1 ? undefined : mapping.ticker,
 				name: mapping.name === -1 ? undefined : mapping.name,
 				avgCost: mapping.avgCost === -1 ? undefined : mapping.avgCost,
-				currency: mapping.currency === -1 ? undefined : mapping.currency
+				currency: mapping.currency === -1 ? undefined : mapping.currency,
+				date: mapping.date === -1 ? undefined : mapping.date,
+				type: mapping.type === -1 ? undefined : mapping.type
 			};
 			onConfirm(finalMapping);
 		}
@@ -149,6 +157,26 @@
 			<label for="col-currency">Divisa</label>
 			<select id="col-currency" bind:value={mapping.currency}>
 				<option value={-1}>Auto (EUR)</option>
+				{#each headers as header, i}
+					<option value={i}>{header}</option>
+				{/each}
+			</select>
+		</div>
+
+		<div class="mapping-field" class:active={mapping.date !== -1}>
+			<label for="col-date">Fecha (Historiales)</label>
+			<select id="col-date" bind:value={mapping.date}>
+				<option value={-1}>No disponible (Posición simple)</option>
+				{#each headers as header, i}
+					<option value={i}>{header}</option>
+				{/each}
+			</select>
+		</div>
+
+		<div class="mapping-field" class:active={mapping.type !== -1}>
+			<label for="col-type">Tipo Operación (Buy/Sell)</label>
+			<select id="col-type" bind:value={mapping.type}>
+				<option value={-1}>Auto (Signo / Compra)</option>
 				{#each headers as header, i}
 					<option value={i}>{header}</option>
 				{/each}

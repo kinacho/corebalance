@@ -347,6 +347,8 @@ export function looksLikeTickerValue(value: string): boolean {
 	if (!/^[A-Z0-9.\-]+$/.test(v)) return false;
 	if (v.length > 8) return false;
 	if (looksLikeIsinValue(v)) return false;
+	if (/^[0-9.,\-]+$/.test(v)) return false; // No debe ser un número puro
+	if (!/[A-Z]/.test(v)) return false; // Debe tener al menos una letra
 	return true;
 }
 
@@ -354,15 +356,14 @@ export function looksLikeTickerValue(value: string): boolean {
 export function looksLikeNumericValue(value: string): boolean {
 	const v = value.trim();
 	if (!v) return false;
-	const cleaned = v.replace(/[^\d.,-]/g, '');
-	if (!cleaned || cleaned === '-') return false;
-	return /\d/.test(cleaned);
+	return /^[+-]?[\d.,\s$€£¥]+$/.test(v);
 }
 
 /** Comprueba si una cadena de texto parece representar una fecha */
 export function looksLikeDateValue(value: string): boolean {
 	const v = value.trim();
 	if (!v) return false;
+	if (/^[a-fA-F0-9]{16,40}$/.test(v)) return false; // Evitar hashes alfanuméricos largos
 	if (/^\d{1,4}[-/.]\d{1,2}[-/.]\d{1,4}(\s+\d{2}:\d{2}(:\d{2})?)?$/.test(v)) return true;
 	const ts = Date.parse(v);
 	return !isNaN(ts);
@@ -385,6 +386,7 @@ export function analyzeColumns(headers: string[], rows: string[][]): ColumnAnaly
 			price: 0,
 			currency: 0,
 			date: 0,
+			type: 0,
 			ignored: 0
 		};
 
@@ -418,13 +420,13 @@ export function analyzeColumns(headers: string[], rows: string[][]): ColumnAnaly
 			}
 			const numRatio = numCount / sampleValues.length;
 			let qtyScore = 0;
-			if (/\b(shares|quantity|cantidad|participaciones|units|posicion|position|size|tamaño|volumen|volume|titulos)\b/i.test(normalized)) qtyScore += 0.5;
+			if (/\b(shares|quantity|cantidad|participaciones|units|posicion|position|size|tamaño|volumen|volume|titulos|acciones|antal|amount|importe|fiat|n|no|num)\b/i.test(normalized)) qtyScore += 0.5;
 			if (numRatio > 0.8) qtyScore += 0.4;
 			scores.quantity = qtyScore;
 
 			// 4. Precio
 			let priceScore = 0;
-			if (/\b(price|precio|avg|average|cost|coste|valor|value|importe|monto|amount)\b/i.test(normalized)) priceScore += 0.5;
+			if (/\b(price|precio|avg|average|cost|coste|valor|value|importe|monto|amount|kurs)\b/i.test(normalized)) priceScore += 0.5;
 			if (numRatio > 0.8) priceScore += 0.3;
 			const currencySymbolCount = sampleValues.filter(v => /[\$€£]/.test(v)).length;
 			if (currencySymbolCount / sampleValues.length > 0.5) priceScore += 0.2;
@@ -451,7 +453,7 @@ export function analyzeColumns(headers: string[], rows: string[][]): ColumnAnaly
 			}
 			const textRatio = textCount / sampleValues.length;
 			let nameScore = 0;
-			if (/\b(name|nombre|producto|product|descripcion|description|asset|activo|security|instrumento|instrument)\b/i.test(normalized)) nameScore += 0.5;
+			if (/\b(name|nombre|producto|product|descripcion|description|asset|activo|security|instrumento|instrument|vardepapper)\b/i.test(normalized)) nameScore += 0.5;
 			if (textRatio > 0.6) nameScore += 0.5;
 			scores.name = nameScore;
 
@@ -462,9 +464,36 @@ export function analyzeColumns(headers: string[], rows: string[][]): ColumnAnaly
 			}
 			const dateRatio = dateCount / sampleValues.length;
 			let dateScore = 0;
-			if (/\b(date|fecha|datum|tijd|time|hora)\b/i.test(normalized)) dateScore += 0.5;
+			if (/\b(date|fecha|datum|tijd|time|hora|timestamp)\b/i.test(normalized)) dateScore += 0.5;
 			if (dateRatio > 0.8) dateScore += 0.5;
 			scores.date = dateScore;
+
+			// 8. Tipo de operación (BUY/SELL)
+			let typeCount = 0;
+			for (const val of sampleValues) {
+				const v = val.trim().toLowerCase();
+				if (v === 'buy' || v === 'sell' || v === 'compra' || v === 'venta' || v === 'suscripcion' || v === 'reembolso' || v === 'trade' || v === 'deposit' || v === 'withdrawal' || v === 'staking' || v === 'transfer' || v === 'kop' || v === 'salj') {
+					typeCount++;
+				}
+			}
+			const typeRatio = typeCount / sampleValues.length;
+			let typeScore = 0;
+			if (/\b(type|tipo|action|operation|operacion|event|eventos|category|categoria|transaction type|activity|typ av transaktion|transaktie|buy\s*sell|buy|sell|direction)\b/i.test(normalized)) typeScore += 0.5;
+			if (typeRatio > 0.4) typeScore += 0.5;
+			scores.type = typeScore;
+
+			// 9. Heurística para columnas descriptivas con '@' (ej. Saxo Bank, DEGIRO)
+			let atCount = 0;
+			for (const val of sampleValues) {
+				if (/@/.test(val) && /\b(buy|sell|koop|verkoop|kop|salj|compra|venta)\b/i.test(val)) {
+					atCount++;
+				}
+			}
+			if (atCount > 0) {
+				scores.quantity = Math.max(scores.quantity, 0.85);
+				scores.price = Math.max(scores.price, 0.85);
+				scores.type = Math.max(scores.type, 0.8);
+			}
 		}
 
 		return {
@@ -504,7 +533,9 @@ export function suggestMappingFromAnalysis(analysis: ColumnAnalysis[]): MappingC
 		ticker: pickBest('ticker') !== -1 ? pickBest('ticker') : undefined,
 		name: pickBest('name') !== -1 ? pickBest('name') : undefined,
 		avgCost: pickBest('price') !== -1 ? pickBest('price') : undefined,
-		currency: pickBest('currency') !== -1 ? pickBest('currency') : undefined
+		currency: pickBest('currency') !== -1 ? pickBest('currency') : undefined,
+		date: pickBest('date') !== -1 ? pickBest('date') : undefined,
+		type: pickBest('type') !== -1 ? pickBest('type') : undefined
 	};
 }
 
