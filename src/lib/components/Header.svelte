@@ -97,7 +97,17 @@
 </script>
 
 <header class="dashboard-header" class:scrolled={scrolled}>
-	<div class="header-left">
+	<button 
+		class="header-left" 
+		onclick={() => {
+			if (window.location.pathname.startsWith('/dashboard')) {
+				// Already on dashboard, do nothing or explicitly reload/navigate to root of dashboard
+				return;
+			}
+			window.location.href = '/';
+		}}
+		aria-label="Ir a inicio"
+	>
 		<picture>
 			<source srcset="/logo.webp" type="image/webp" />
 			<img src="/logo.png" alt="CoreBalance Logo" class="logo-img" width="32" height="32" fetchpriority="high" loading="eager" />
@@ -106,7 +116,7 @@
 			<h1 class="logo-title">CoreBalance</h1>
 			<p class="logo-subtitle">{portfolio.targetLabel}</p>
 		</div>
-	</div>
+	</button>
 
 	<div class="header-right">
 		{#if timestamp}
@@ -397,6 +407,16 @@
 		gap: 0.75rem;
 		min-width: 0;
 		flex: 1;
+		
+		/* Button reset */
+		background: transparent;
+		border: none;
+		padding: 0;
+		margin: 0;
+		cursor: pointer;
+		text-align: left;
+		font: inherit;
+		color: inherit;
 	}
 
 	.logo-group {

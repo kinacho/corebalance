@@ -26,13 +26,13 @@
 
 <nav class="navbar" class:scrolled={isScrolled}>
   <div class="nav-container">
-    <div class="nav-brand">
+    <button class="nav-brand" onclick={() => goto('/')} aria-label="Volver a inicio">
       <picture>
         <source srcset="/logo.webp" type="image/webp" />
         <img src="/logo.png" alt="CoreBalance" class="logo" width="32" height="32" fetchpriority="high" loading="eager" />
       </picture>
       <span class="brand-name">CoreBalance</span>
-    </div>
+    </button>
 
     <!-- Menú Desktop Links -->
     <div class="nav-links">
@@ -139,6 +139,16 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
+    
+    /* Button reset */
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    text-align: left;
+    font: inherit;
+    color: inherit;
   }
 
   .logo {

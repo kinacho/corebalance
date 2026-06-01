@@ -13,7 +13,7 @@
       answer: "A diferencia de otras apps, CoreBalance es 'Local-First'. Tus datos financieros se guardan exclusivamente en tu navegador (IndexedDB). No hay servidores que guarden tu cartera, ni necesitas vincular tus cuentas bancarias."
     },
     {
-      question: "¿Es compatible con MyInvestor o Indexa Capital?",
+      question: "¿Es compatible con la mayoría de brókers y comercializadoras?",
       answer: "Sí, es el complemento perfecto. Puedes importar tu cartera mediante CSV o introducir tus posiciones manualmente para calcular el rebalanceo exacto que necesitas ejecutar en tu comercializadora."
     }
   ];
