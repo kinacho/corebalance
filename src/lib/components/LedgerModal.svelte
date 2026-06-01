@@ -60,6 +60,28 @@
 		}
 	});
 
+	// Estado local para el string de la fecha y evitar problemas con el picker en móvil
+	let dateStr = $state(formatDate());
+	
+	// Sincronizar dateStr -> newTx.date (usando UTC para evitar saltos de día por zona horaria)
+	$effect(() => {
+		if (dateStr) {
+			const [y, m, d] = dateStr.split('-').map(Number);
+			const newTimestamp = new Date(Date.UTC(y, m - 1, d)).getTime();
+			if (newTx.date !== newTimestamp) {
+				newTx.date = newTimestamp;
+			}
+		}
+	});
+
+	// Sincronizar newTx.date -> dateStr (cuando se resetea el form o cambia externamente)
+	$effect(() => {
+		if (newTx.date) {
+			const s = formatDate(new Date(newTx.date));
+			if (dateStr !== s) dateStr = s;
+		}
+	});
+
 	const ledgerSummary = $derived(portfolio.ledgerHoldings[asset.ticker] || { shares: 0, avgCost: 0 });
 
 	function toggleMode() {
@@ -201,7 +223,7 @@
 								</div>
 								<div class="form-group">
 									<label for="tx-date">Fecha</label>
-									<input id="tx-date" type="date" value={new Date(newTx.date || 0).toISOString().split('T')[0]} onchange={(e) => newTx.date = new Date(e.currentTarget.value).getTime()} />
+									<input id="tx-date" type="date" bind:value={dateStr} />
 								</div>
 							</div>
 

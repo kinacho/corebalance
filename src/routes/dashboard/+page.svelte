@@ -167,6 +167,16 @@
     const handleTourStep = (e: Event) => {
       const customEvent = e as CustomEvent;
       if (customEvent.detail && customEvent.detail.target) {
+        if (customEvent.detail.target === 'manage') {
+          showManageAssets = true;
+          return;
+        }
+
+        if (customEvent.detail.target === 'close-all') {
+          showManageAssets = false;
+          return;
+        }
+
         if (window.innerWidth < 1024) {
           // Cambiamos la pestaña pero indicamos que es por el tour para no disparar el scroll automático
           activeTab = customEvent.detail.target;

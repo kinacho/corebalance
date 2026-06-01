@@ -623,10 +623,11 @@
 											<button class="action-ter" onclick={() => startEditTer(asset)} title={asset.ticker.startsWith('CASH-') ? 'Configurar cuenta' : 'Editar TER'}>
 												{asset.ticker.startsWith('CASH-') ? 'Config' : 'TER'}
 											</button>
-											<button 
-												class="action-ledger" 
+											<button
+												id="tour-ledger"
+												class="action-ledger"
 												class:active={portfolio.holdings[asset.ticker]?.useLedger}
-												onclick={() => openLedger(asset)} 
+												onclick={() => openLedger(asset)}
 												title="Libro de transacciones"
 											>
 												📜 Ledger
@@ -692,7 +693,7 @@
 						{/each}
 					</div>
 
-					<button class="add-asset-btn" onclick={() => openSearch(section.id)}>
+					<button id="tour-add-asset" class="add-asset-btn" onclick={() => openSearch(section.id)}>
 						<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">
 							<line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
 						</svg>
@@ -703,7 +704,7 @@
 
 			<!-- Import CSV Button -->
 			<div class="import-section">
-				<button class="import-csv-btn" onclick={() => showImport = true}>
+				<button id="tour-import-csv" class="import-csv-btn" onclick={() => showImport = true}>
 					<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
 						<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
 					</svg>

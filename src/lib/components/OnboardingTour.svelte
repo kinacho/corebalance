@@ -10,6 +10,11 @@
       prevBtnText: '⬅ Anterior',
       doneBtnText: '¡Empezar!',
       popoverClass: 'corebalance-tour-theme',
+      onDestroyed: () => {
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('tour-step', { detail: { target: 'close-all' } }));
+        }
+      },
       steps: [
         {
           element: '#tour-welcome',
@@ -102,10 +107,52 @@
         {
           element: '#tour-manage-btn',
           popover: {
-            title: 'Control de Pesos de Precisión',
+            title: 'Configuración de Cartera',
             description: 'Ajusta tus objetivos con precisión decimal. Usa los candados para fijar activos y deja que el algoritmo autocompense el resto automáticamente.',
             side: "bottom",
             align: 'end'
+          }
+        },
+        {
+          element: '#tour-add-asset',
+          popover: {
+            title: 'Personaliza tus Activos',
+            description: 'Añade fondos, ETFs o acciones. Puedes arrastrarlos para moverlos entre categorías (Core, Satélite o Acciones).',
+            side: "top",
+            align: 'center'
+          },
+          onHighlightStarted: () => {
+            if (typeof window !== 'undefined') {
+              window.dispatchEvent(new CustomEvent('tour-step', { detail: { target: 'manage' } }));
+            }
+          }
+        },
+        {
+          element: '#tour-ledger',
+          popover: {
+            title: 'Libro de Transacciones (Ledger)',
+            description: 'Activa el modo Ledger para llevar un registro real de tus compras y ventas. Calcularemos tu coste medio y plusvalías automáticamente.',
+            side: "bottom",
+            align: 'center'
+          },
+          onHighlightStarted: () => {
+            if (typeof window !== 'undefined') {
+              window.dispatchEvent(new CustomEvent('tour-step', { detail: { target: 'manage' } }));
+            }
+          }
+        },
+        {
+          element: '#tour-import-csv',
+          popover: {
+            title: 'Importación Inteligente 📥',
+            description: 'No metas los datos a mano. Sube tus extractos de DEGIRO, MyInvestor o Trading 212 y nosotros haremos el trabajo sucio.',
+            side: "top",
+            align: 'center'
+          },
+          onHighlightStarted: () => {
+            if (typeof window !== 'undefined') {
+              window.dispatchEvent(new CustomEvent('tour-step', { detail: { target: 'manage' } }));
+            }
           }
         }
       ]

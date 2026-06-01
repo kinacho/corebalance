@@ -153,20 +153,18 @@ const degiroAccountStatementDetector: BrokerDetector = {
 		const hasDescription = hasExactMatch('descripcion') || hasExactMatch('description') || hasExactMatch('omschrijving');
 		const hasIsin = hasExactMatch('isin');
 		const hasProduct = hasExactMatch('producto') || hasExactMatch('product');
+		const hasQuantity = hasExactMatch('numero') || hasExactMatch('cantidad') || hasExactMatch('aantal');
 		
+		// Si tiene columna de cantidad numérica directa (Número/Cantidad), es más probable que sea el de Transacciones
+		if (hasQuantity) return 0;
+
 		if (hasDate && hasTime && hasDescription && hasIsin && hasProduct) {
 			return 0.99;
 		}
 		
-		let exactCount = 0;
-		if (hasDate) exactCount++;
-		if (hasTime) exactCount++;
-		if (hasDescription) exactCount++;
-		if (hasIsin) exactCount++;
-		if (hasProduct) exactCount++;
-		
-		if (exactCount >= 4) return 0.95;
-		if (exactCount >= 3) return 0.7;
+		if (hasDescription && (hasIsin || hasProduct) && hasDate) {
+			return 0.8;
+		}
 		
 		return 0;
 	},
@@ -292,7 +290,7 @@ const degiroDetector: BrokerDetector = {
 		
 		const hasIsin = hasExactMatch('isin');
 		const hasProduct = hasExactMatch('producto') || hasExactMatch('product');
-		const hasQuantity = hasExactMatch('cantidad') || hasExactMatch('aantal') || hasExactMatch('quantity');
+		const hasQuantity = hasExactMatch('cantidad') || hasExactMatch('aantal') || hasExactMatch('quantity') || hasExactMatch('numero') || hasExactMatch('number');
 		const hasPrice = hasExactMatch('precio') || hasExactMatch('koers') || hasExactMatch('price') || hasExactMatch('precio de');
 		const hasClosing = hasExactMatch('precio de cierre') || hasExactMatch('slotkoers') || hasExactMatch('closing price') || hasExactMatch('precio de');
 		
