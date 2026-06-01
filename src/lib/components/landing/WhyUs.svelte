@@ -1,30 +1,25 @@
 <script lang="ts">
+  import { LL } from '$lib/i18n/i18n-svelte';
 </script>
 
 <section id="why-us" class="why-us">
   <div class="container">
     <div class="content-grid">
       <div class="text-content">
-        <span class="eyebrow">La historia</span>
-        <h2>Por qué creé <span class="text-gradient">CoreBalance</span></h2>
+        <span class="eyebrow">{$LL.why_us.eyebrow()}</span>
+        <h2>{$LL.why_us.title()} <span class="text-gradient">CoreBalance</span></h2>
         <div class="story">
+          <p>{$LL.why_us.story_p1()}</p>
           <p>
-            Como inversor indexado, me pasaba horas cada mes peleándome con hojas de cálculo para calcular 
-            cuánto debía aportar a cada fondo para mantener mi estrategia 90/10 o 80/20.
+            {@html $LL.why_us.story_p2({ highlight: `<span class="text-highlight">${$LL.why_us.story_p2_highlight()}</span>` })}
           </p>
-          <p>
-            Buscaba una herramienta que fuera <span class="text-highlight">sencilla, rápida y privada</span>.
-            No quería dar mis contraseñas bancarias a terceros ni pagar cuotas mensuales por algo que debería ser básico.
-          </p>          <p>
-            Así nació CoreBalance: una herramienta creada por un inversor para inversores. Sin florituras innecesarias, 
-            centrada en lo que de verdad importa: mantener el rumbo de tu estrategia de inversión.
-          </p>
+          <p>{$LL.why_us.story_p3()}</p>
         </div>
         <div class="signature">
           <div class="avatar">KN</div>
           <div class="author">
             <strong>kinacho</strong>
-            <span>Creador de CoreBalance</span>
+            <span>{$LL.why_us.author_role()}</span>
           </div>
         </div>
       </div>
@@ -32,16 +27,16 @@
         <div class="experience-card">
           <div class="exp-header">
             <span class="exp-icon">✨</span>
-            <h3>Experiencia Nativa</h3>
+            <h3>{$LL.why_us.exp_native_title()}</h3>
           </div>
-          <p>Diseñado para sentirse como una app nativa en tu móvil, pero con la facilidad de acceso de una web.</p>
+          <p>{$LL.why_us.exp_native_desc()}</p>
         </div>
         <div class="experience-card">
           <div class="exp-header">
             <span class="exp-icon">🛠️</span>
-            <h3>Evolución Constante</h3>
+            <h3>{$LL.why_us.exp_evolution_title()}</h3>
           </div>
-          <p>Añadimos mejoras cada semana basadas en el feedback real de la comunidad de inversores.</p>
+          <p>{$LL.why_us.exp_evolution_desc()}</p>
         </div>
       </div>
     </div>
@@ -111,7 +106,7 @@
     -webkit-text-fill-color: transparent;
   }
 
-  .text-highlight {
+  :global(.text-highlight) {
     color: #3b82f6;
     font-weight: 700;
   }

@@ -1,6 +1,37 @@
-import type { Handle } from '@sveltejs/kit';
+import type { Handle, RequestEvent } from '@sveltejs/kit';
+import { detectLocale } from '$lib/i18n/i18n-util';
+import { loadLocaleAsync } from '$lib/i18n/i18n-util.async';
+import { setLocale } from '$lib/i18n/i18n-svelte';
+import {
+	initAcceptLanguageHeaderDetector,
+	initRequestCookiesDetector,
+} from 'typesafe-i18n/detectors';
+import type { Locales } from '$lib/i18n/i18n-types';
+
+const getLocale = (event: RequestEvent): Locales => {
+	// 1. Mirar cookie guardada por el usuario
+	const langCookie = event.cookies.get('lang');
+	if (langCookie) {
+		// Pasamos la cookie formateada como cadena 'key=value' que espera el detector de cookies de typesafe-i18n
+		const fromCookie = detectLocale(initRequestCookiesDetector({ cookies: `lang=${langCookie}` }));
+		if (fromCookie) return fromCookie as Locales;
+	}
+
+	// 2. Mirar Accept-Language del navegador
+	const fromHeader = detectLocale(initAcceptLanguageHeaderDetector(event.request));
+	if (fromHeader) return fromHeader as Locales;
+
+	// 3. Fallback
+	return 'es';
+};
 
 export const handle: Handle = async ({ event, resolve }) => {
+	const locale = getLocale(event);
+
+	await loadLocaleAsync(locale);
+	setLocale(locale);
+	event.locals.locale = locale;
+
 	const response = await resolve(event);
 
 	// --- Cabeceras de Seguridad ---

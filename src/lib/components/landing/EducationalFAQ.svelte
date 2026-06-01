@@ -1,22 +1,24 @@
 <script lang="ts">
-  const faqs = [
+  import { LL } from '$lib/i18n/i18n-svelte';
+
+  const faqs = $derived([
     {
-      question: "¿Qué es el rebalanceo de cartera?",
-      answer: "Es el proceso de ajustar los pesos de tus activos para volver a tu estrategia inicial. Con el tiempo, unos activos suben más que otros, alterando tu nivel de riesgo. Rebalancear te obliga a vender caro y comprar barato de forma disciplinada."
+      question: $LL.faq.q1_q(),
+      answer: $LL.faq.q1_a()
     },
     {
-      question: "¿Cuándo es necesario rebalancear?",
-      answer: "Existen dos estrategias comunes: por calendario (ej. cada 6 meses) o por bandas de desviación (ej. cuando un activo se desvía más de un 5% de su peso objetivo). CoreBalance te ayuda a identificar estos momentos al instante."
+      question: $LL.faq.q2_q(),
+      answer: $LL.faq.q2_a()
     },
     {
-      question: "¿Cómo garantiza CoreBalance mi privacidad?",
-      answer: "A diferencia de otras apps, CoreBalance es 'Local-First'. Tus datos financieros se guardan exclusivamente en tu navegador (IndexedDB). No hay servidores que guarden tu cartera, ni necesitas vincular tus cuentas bancarias."
+      question: $LL.faq.q3_q(),
+      answer: $LL.faq.q3_a()
     },
     {
-      question: "¿Es compatible con MyInvestor o Indexa Capital?",
-      answer: "Sí, es el complemento perfecto. Puedes importar tu cartera mediante CSV o introducir tus posiciones manualmente para calcular el rebalanceo exacto que necesitas ejecutar en tu comercializadora."
+      question: $LL.faq.q4_q(),
+      answer: $LL.faq.q4_a()
     }
-  ];
+  ]);
 
   let openIndex = $state<number | null>(null);
 
@@ -25,7 +27,7 @@
   }
 
   // Generar JSON-LD para Google
-  const faqSchema = {
+  const faqSchema = $derived({
     "@context": "https://schema.org",
     "@type": "FAQPage",
     "mainEntity": faqs.map(faq => ({
@@ -36,9 +38,9 @@
         "text": faq.answer
       }
     }))
-  };
+  });
 
-  const faqSchemaString = JSON.stringify(faqSchema);
+  const faqSchemaString = $derived(JSON.stringify(faqSchema));
 </script>
 
 <svelte:head>
@@ -50,32 +52,34 @@
     <div class="grid">
       <!-- Lado Educativo -->
       <div class="educational-content">
-        <span class="eyebrow">Guía Rápida</span>
-        <h2>Inversión Inteligente: <span class="text-gradient">El Rebalanceo</span></h2>
+        <span class="eyebrow">{$LL.faq.eyebrow()}</span>
+        <h2>{$LL.faq.title()} <span class="text-gradient">{$LL.faq.title_gradient()}</span></h2>
         <div class="edu-body">
           <p>
-            El rebalanceo no es solo una tarea técnica, es la <strong>estrategia de defensa</strong> más potente del inversor indexado. 
-            Su objetivo no es maximizar el beneficio a corto plazo, sino <strong>controlar el riesgo</strong>.
+            {@html $LL.faq.subtitle({ 
+              bold: `<strong>${$LL.faq.subtitle_bold()}</strong>`,
+              bold2: `<strong>${$LL.faq.subtitle_bold2()}</strong>`
+            })}
           </p>
           <div class="edu-card">
             <div class="edu-card-icon">📈</div>
             <div class="edu-card-text">
-              <h3>Vende caro, compra barato</h3>
-              <p>Al rebalancear, trasladas beneficios de los activos que han sobre-rendido hacia aquellos que están infravalorados respecto a tu plan inicial.</p>
+              <h3>{$LL.faq.card1_title()}</h3>
+              <p>{$LL.faq.card1_desc()}</p>
             </div>
           </div>
           <div class="edu-card">
             <div class="edu-card-icon">🛡️</div>
             <div class="edu-card-text">
-              <h3>Mantén tu perfil de riesgo</h3>
-              <p>Si tu plan es 80% acciones y 20% bonos, y las acciones suben hasta el 90%, tu cartera es ahora mucho más volátil de lo que decidiste originalmente.</p>
+              <h3>{$LL.faq.card2_title()}</h3>
+              <p>{$LL.faq.card2_desc()}</p>
             </div>
           </div>
           <div class="edu-card">
             <div class="edu-card-icon">⚖️</div>
             <div class="edu-card-text">
-              <h3>Traspasos en España</h3>
-              <p>Recuerda que en España los traspasos entre fondos de inversión están exentos de tributación, lo que hace que el rebalanceo sea fiscalmente ultra-eficiente.</p>
+              <h3>{$LL.faq.card3_title()}</h3>
+              <p>{$LL.faq.card3_desc()}</p>
             </div>
           </div>
         </div>
@@ -84,8 +88,8 @@
       <!-- Lado FAQ -->
       <div class="faq-content">
         <div class="faq-header">
-          <span class="eyebrow">FAQ</span>
-          <h3>Preguntas Frecuentes</h3>
+          <span class="eyebrow">{$LL.faq.faq_eyebrow()}</span>
+          <h3>{$LL.faq.faq_title()}</h3>
         </div>
         <div class="faq-list">
           {#each faqs as faq, i}

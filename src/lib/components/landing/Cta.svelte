@@ -1,6 +1,7 @@
 <script lang="ts">
   import { portfolio } from '$lib/stores/portfolio.svelte';
   import { goto } from '$app/navigation';
+  import { LL } from '$lib/i18n/i18n-svelte';
   let { onStart = () => {} } = $props();
 
   function startDemo() {
@@ -12,16 +13,16 @@
 <section class="cta-section">
   <div class="container">
     <div class="cta-card">
-      <h2>Empieza a optimizar tu cartera <span class="text-gradient">hoy mismo</span></h2>
-      <p>Únete a cientos de inversores que ya confían en CoreBalance para gestionar su patrimonio.</p>
+      <h2>{$LL.cta.title()} <span class="text-gradient">{$LL.cta.title_gradient()}</span></h2>
+      <p>{$LL.cta.subtitle()}</p>
       <div class="cta-actions">
-        <button class="btn-primary btn-lg" onclick={() => onStart()} aria-label="Empezar gratis a rebalancear tu cartera con CoreBalance">
-          Empezar gratis
+        <button class="btn-primary btn-lg" onclick={() => onStart()} aria-label={$LL.nav.aria_start_free()}>
+          {$LL.landing.cta_primary()}
         </button>
         <button class="btn-demo-cta" onclick={() => startDemo()}>
-          Probar Demo Interactiva
+          {$LL.landing.cta_demo()}
         </button>
-        <span class="no-credit">No requiere tarjeta de crédito · 100% Privado</span>
+        <span class="no-credit">{$LL.cta.no_credit()}</span>
       </div>
     </div>
   </div>

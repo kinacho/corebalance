@@ -1,32 +1,34 @@
 <script lang="ts">
-  const steps = [
+  import { LL } from '$lib/i18n/i18n-svelte';
+
+  const steps = $derived([
     {
       num: 1,
-      title: "Configura tus fondos objetivo",
-      desc: "Entra en CoreBalance y añade tus fondos indexados o ETFs con sus porcentajes objetivo de asignación de activos (ej. 80% MSCI World y 20% Renta Fija Global)."
+      title: $LL.how_to_rebalance.step1_title(),
+      desc: $LL.how_to_rebalance.step1_desc()
     },
     {
       num: 2,
-      title: "Introduce tus posiciones actuales",
-      desc: "Registra el saldo o número de participaciones actuales que posees en MyInvestor (o tu comercializadora preferida) para cada activo de tu cartera."
+      title: $LL.how_to_rebalance.step2_title(),
+      desc: $LL.how_to_rebalance.step2_desc()
     },
     {
       num: 3,
-      title: "Calcula la aportación o ajuste",
-      desc: "Introduce el importe de tu aportación periódica mensual o marca la opción para ajustar tus pesos actuales. CoreBalance calculará las compras necesarias al céntimo."
+      title: $LL.how_to_rebalance.step3_title(),
+      desc: $LL.how_to_rebalance.step3_desc()
     },
     {
       num: 4,
-      title: "Ejecuta los traspasos o compras gratis",
-      desc: "Sigue las instrucciones calculadas por CoreBalance y realiza las compras o traspasos (exentos de impuestos en España) directamente en tu cuenta de MyInvestor."
+      title: $LL.how_to_rebalance.step4_title(),
+      desc: $LL.how_to_rebalance.step4_desc()
     }
-  ];
+  ]);
 
-  const howToSchema = {
+  const howToSchema = $derived({
     "@context": "https://schema.org",
     "@type": "HowTo",
-    "name": "¿Cómo rebalancear mi cartera de MyInvestor gratis?",
-    "description": "Aprende a rebalancear tu cartera de fondos indexados o ETFs de MyInvestor gratis usando CoreBalance paso a paso de forma privada y local-first.",
+    "name": $LL.how_to_rebalance.title() + " " + $LL.how_to_rebalance.title_gradient(),
+    "description": $LL.how_to_rebalance.subtitle(),
     "totalTime": "PT5M",
     "step": steps.map((step) => ({
       "@type": "HowToStep",
@@ -34,9 +36,9 @@
       "text": step.desc,
       "url": "https://corebalance.app/#guia-rebalanceo"
     }))
-  };
+  });
 
-  const howToSchemaString = JSON.stringify(howToSchema);
+  const howToSchemaString = $derived(JSON.stringify(howToSchema));
 </script>
 
 <svelte:head>
@@ -46,10 +48,10 @@
 <section id="guia-rebalanceo" class="howto-section">
   <div class="container">
     <div class="section-header">
-      <span class="eyebrow">Guía de Optimización</span>
-      <h2>¿Cómo rebalancear mi cartera de <span class="text-gradient">MyInvestor gratis</span>?</h2>
+      <span class="eyebrow">{$LL.how_to_rebalance.eyebrow()}</span>
+      <h2>{$LL.how_to_rebalance.title()} <span class="text-gradient">{$LL.how_to_rebalance.title_gradient()}</span>?</h2>
       <p class="section-desc">
-        Aprende el proceso paso a paso para optimizar tu asset allocation de forma manual, privada y 100% libre de costes con nuestra calculadora.
+        {$LL.how_to_rebalance.subtitle()}
       </p>
     </div>
 
@@ -70,9 +72,12 @@
     <div class="howto-note">
       <div class="note-icon">💡</div>
       <div class="note-content">
-        <h4>Optimización Fiscal Inteligente</h4>
+        <h4>{$LL.how_to_rebalance.note_title()}</h4>
         <p>
-          En España, el rebalanceo mediante <strong>traspasos</strong> entre fondos indexados está <strong>exento de tributación</strong> (diferimiento fiscal). CoreBalance te indica las compras óptimas para que aproveches esta ventaja al máximo sin pagar peajes fiscales innecesarios.
+          {@html $LL.how_to_rebalance.note_desc({ 
+            link: `<strong>${$LL.how_to_rebalance.note_link()}</strong>`,
+            bold: `<strong>${$LL.how_to_rebalance.note_bold()}</strong>`
+          })}
         </p>
       </div>
     </div>

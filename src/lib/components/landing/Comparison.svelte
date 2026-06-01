@@ -1,50 +1,52 @@
 <script lang="ts">
-  const comparison = [
+  import { LL } from '$lib/i18n/i18n-svelte';
+
+  const comparison = $derived([
     {
-      feature: "Actualización de precios",
-      excel: "Manual (tedioso)",
-      others: "Retrasada / Pago",
-      corebalance: "Automática y Gratis",
+      feature: $LL.comparison.item_prices_title(),
+      excel: $LL.comparison.item_prices_excel(),
+      others: $LL.comparison.item_prices_others(),
+      corebalance: $LL.comparison.item_prices_core(),
       highlight: true
     },
     {
-      feature: "Cálculo de rebalanceo",
-      excel: "Fórmulas complejas",
-      others: "Básico",
-      corebalance: "Optimizado",
+      feature: $LL.comparison.item_calc_title(),
+      excel: $LL.comparison.item_calc_excel(),
+      others: $LL.comparison.item_calc_others(),
+      corebalance: $LL.comparison.item_calc_core(),
       highlight: true
     },
     {
-      feature: "Privacidad",
-      excel: "Local, pero expuesta",
-      others: "Venden tus datos",
-      corebalance: "Tus datos son tuyos",
+      feature: $LL.comparison.item_privacy_title(),
+      excel: $LL.comparison.item_privacy_excel(),
+      others: $LL.comparison.item_privacy_others(),
+      corebalance: $LL.comparison.item_privacy_core(),
       highlight: true
     },
     {
-      feature: "Facilidad de uso",
-      excel: "Sólo para expertos",
-      others: "Compleja",
-      corebalance: "Intuitiva",
+      feature: $LL.comparison.item_ease_title(),
+      excel: $LL.comparison.item_ease_excel(),
+      others: $LL.comparison.item_ease_others(),
+      corebalance: $LL.comparison.item_ease_core(),
       highlight: true
     }
-  ];
+  ]);
 </script>
 
 <section class="comparison">
   <div class="container">
     <div class="section-header">
-      <h2>La alternativa a <span class="text-gradient">Portfolio Performance</span> y Excel</h2>
-      <p>CoreBalance es la herramienta gratuita, rápida y privada que hace el trabajo sucio por ti, para que te centres en lo que importa: tu libertad financiera.</p>
+      <h2>{$LL.comparison.title()} <span class="text-gradient">{$LL.comparison.title_gradient()}</span> {$LL.comparison.title_and()}</h2>
+      <p>{$LL.comparison.subtitle()}</p>
     </div>
 
     <div class="table-container">
       <table>
         <thead>
           <tr>
-            <th>Funcionalidad</th>
-            <th>Excel / Google Sheets</th>
-            <th>Otras Apps</th>
+            <th>{$LL.comparison.col_feature()}</th>
+            <th>{$LL.comparison.col_excel()}</th>
+            <th>{$LL.comparison.col_others()}</th>
             <th class="active-col">CoreBalance</th>
           </tr>
         </thead>

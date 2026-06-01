@@ -3,6 +3,8 @@
   import { fade } from 'svelte/transition';
   import { portfolio } from '$lib/stores/portfolio.svelte';
   import { goto } from '$app/navigation';
+  import LanguageSwitcher from '$lib/components/LanguageSwitcher.svelte';
+  import { LL } from '$lib/i18n/i18n-svelte';
 
   let { onStart = () => {} } = $props();
   let isScrolled = $state(false);
@@ -36,24 +38,27 @@
 
     <!-- Menú Desktop Links -->
     <div class="nav-links">
-      <a href="/#features" aria-label="Ir a la sección de características de CoreBalance">Características</a>
-      <a href="/#how-it-works" aria-label="Ver cómo funciona el rebalanceo de carteras">Cómo funciona</a>
-      <a href="/#why-us" aria-label="Conocer la historia y por qué usar CoreBalance">Por qué CoreBalance</a>
-      <a href="/#educational" aria-label="Ver preguntas frecuentes sobre inversión pasiva y rebalanceo">FAQ</a>
+      <a href="/#features" aria-label={$LL.nav.aria_features()}>{$LL.nav.features()}</a>
+      <a href="/#how-it-works" aria-label={$LL.nav.aria_how_it_works()}>{$LL.nav.how_it_works()}</a>
+      <a href="/#why-us" aria-label={$LL.nav.aria_why_us()}>{$LL.nav.why_us()}</a>
+      <a href="/#educational" aria-label={$LL.nav.aria_faq()}>{$LL.nav.faq()}</a>
     </div>
 
     <!-- Menú Desktop Acciones -->
     <div class="nav-actions">
+      <div class="lang-container">
+        <LanguageSwitcher />
+      </div>
       {#if portfolio.user && portfolio.hasAnyHoldings}
-        <button class="btn-primary" onclick={() => goto('/dashboard')} aria-label="Ir a tu panel de control de inversiones">
-          Ir al Dashboard
+        <button class="btn-primary" onclick={() => goto('/dashboard')} aria-label={$LL.nav.aria_dashboard()}>
+          {$LL.nav.dashboard()}
         </button>
       {:else}
-        <button class="btn-demo" onclick={() => startDemo()} aria-label="Probar demostración interactiva de rebalanceo de cartera">
-          Probar Demo
+        <button class="btn-demo" onclick={() => startDemo()} aria-label={$LL.nav.aria_demo()}>
+          {$LL.nav.demo()}
         </button>
-        <button class="btn-primary" onclick={() => onStart()} aria-label="Empezar a rebalancear tu cartera gratis">
-          Empezar gratis
+        <button class="btn-primary" onclick={() => onStart()} aria-label={$LL.nav.aria_start_free()}>
+          {$LL.nav.start_free()}
         </button>
       {/if}
     </div>
@@ -62,7 +67,7 @@
     <button 
       class="menu-toggle" 
       onclick={() => isMobileMenuOpen = !isMobileMenuOpen} 
-      aria-label={isMobileMenuOpen ? "Cerrar menú de navegación" : "Abrir menú de navegación"}
+      aria-label={isMobileMenuOpen ? $LL.nav.aria_menu_close() : $LL.nav.aria_menu_open()}
       aria-expanded={isMobileMenuOpen}
     >
       <span class="hamburger-bar" class:open={isMobileMenuOpen}></span>
@@ -74,22 +79,25 @@
 {#if isMobileMenuOpen}
   <div class="mobile-menu" transition:fade={{ duration: 150 }}>
     <div class="mobile-menu-links">
-      <a href="/#features" onclick={() => isMobileMenuOpen = false} aria-label="Ir a la sección de características de CoreBalance">Características</a>
-      <a href="/#how-it-works" onclick={() => isMobileMenuOpen = false} aria-label="Ver cómo funciona el rebalanceo de carteras">Cómo funciona</a>
-      <a href="/#why-us" onclick={() => isMobileMenuOpen = false} aria-label="Conocer la historia y por qué usar CoreBalance">Por qué CoreBalance</a>
-      <a href="/#educational" onclick={() => isMobileMenuOpen = false} aria-label="Ver preguntas frecuentes sobre inversión pasiva y rebalanceo">FAQ</a>
+      <a href="/#features" onclick={() => isMobileMenuOpen = false} aria-label={$LL.nav.aria_features()}>{$LL.nav.features()}</a>
+      <a href="/#how-it-works" onclick={() => isMobileMenuOpen = false} aria-label={$LL.nav.aria_how_it_works()}>{$LL.nav.how_it_works()}</a>
+      <a href="/#why-us" onclick={() => isMobileMenuOpen = false} aria-label={$LL.nav.aria_why_us()}>{$LL.nav.why_us()}</a>
+      <a href="/#educational" onclick={() => isMobileMenuOpen = false} aria-label={$LL.nav.aria_faq()}>{$LL.nav.faq()}</a>
     </div>
     <div class="mobile-menu-actions">
+      <div class="mobile-lang">
+        <LanguageSwitcher />
+      </div>
       {#if portfolio.user && portfolio.hasAnyHoldings}
-        <button class="btn-primary w-full" onclick={() => { isMobileMenuOpen = false; goto('/dashboard'); }} aria-label="Ir a tu panel de control de inversiones">
-          Ir al Dashboard
+        <button class="btn-primary w-full" onclick={() => { isMobileMenuOpen = false; goto('/dashboard'); }} aria-label={$LL.nav.aria_dashboard()}>
+          {$LL.nav.dashboard()}
         </button>
       {:else}
-        <button class="btn-demo w-full" onclick={() => { isMobileMenuOpen = false; startDemo(); }} aria-label="Probar demostración interactiva de rebalanceo de cartera">
-          Probar Demo
+        <button class="btn-demo w-full" onclick={() => { isMobileMenuOpen = false; startDemo(); }} aria-label={$LL.nav.aria_demo()}>
+          {$LL.nav.demo()}
         </button>
-        <button class="btn-primary w-full" onclick={() => { isMobileMenuOpen = false; onStart(); }} aria-label="Empezar a rebalancear tu cartera gratis">
-          Empezar gratis
+        <button class="btn-primary w-full" onclick={() => { isMobileMenuOpen = false; onStart(); }} aria-label={$LL.nav.aria_start_free()}>
+          {$LL.nav.start_free()}
         </button>
       {/if}
     </div>
@@ -179,6 +187,13 @@
   .nav-actions {
     display: none;
     gap: 0.75rem;
+    align-items: center;
+  }
+
+  .lang-container {
+    margin-right: 0.25rem;
+    display: flex;
+    align-items: center;
   }
 
   @media (min-width: 768px) {
@@ -334,6 +349,12 @@
     gap: 1rem;
     margin-top: auto;
     padding-bottom: 2rem;
+  }
+
+  .mobile-lang {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 0.5rem;
   }
 
   .w-full {

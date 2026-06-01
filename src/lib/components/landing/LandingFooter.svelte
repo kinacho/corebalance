@@ -1,6 +1,7 @@
 <script lang="ts">
   import { portfolio } from '$lib/stores/portfolio.svelte';
   import { ui } from '$lib/stores/ui.svelte';
+  import { LL } from '$lib/i18n/i18n-svelte';
 </script>
 
 <footer class="landing-footer">
@@ -14,45 +15,45 @@
           </picture>
           <span class="brand-name">CoreBalance</span>
         </div>
-        <p>Tu centro de mandos para una gestión de activos inteligente y equilibrada.</p>
+        <p>{$LL.footer.tagline()}</p>
       </div>
 
       <div class="links-col">
-        <h3>Producto</h3>
+        <h3>{$LL.nav.product()}</h3>
         <ul>
-          <li><a href="/#features">Características</a></li>
-          <li><a href="/#how-it-works">Cómo funciona</a></li>
-          <li><a href="/#why-us">Por qué CoreBalance</a></li>
+          <li><a href="/#features">{$LL.nav.features()}</a></li>
+          <li><a href="/#how-it-works">{$LL.nav.how_it_works()}</a></li>
+          <li><a href="/#why-us">{$LL.nav.why_us()}</a></li>
         </ul>
       </div>
 
       <div class="links-col">
-        <h3>Legal</h3>
+        <h3>{$LL.nav.legal()}</h3>
         <ul>
-          <li><a href="/privacy">Privacidad</a></li>
-          <li><a href="/terms">Términos</a></li>
-          <li><a href="/cookies">Cookies</a></li>
+          <li><a href="/privacy">{$LL.footer.privacy()}</a></li>
+          <li><a href="/terms">{$LL.footer.terms()}</a></li>
+          <li><a href="/cookies">{$LL.footer.cookies()}</a></li>
         </ul>
       </div>
 
       <div class="links-col">
-        <h3>Comunidad</h3>
+        <h3>{$LL.nav.community()}</h3>
         <ul>
           <li>
             <button 
               class="footer-btn" 
               onclick={() => { ui.supportType = 'bug'; ui.showSupportModal = true; }}
             >
-              Reportar un error
+              {$LL.footer.report_bug()}
             </button>
           </li>
-          <li><a href="https://paypal.me/kinacho" target="_blank" rel="noopener noreferrer">Apoya el proyecto</a></li>
+          <li><a href="https://paypal.me/kinacho" target="_blank" rel="noopener noreferrer">{$LL.footer.support_project()}</a></li>
           <li>
             <button 
               class="footer-btn" 
               onclick={() => { ui.supportType = 'contact'; ui.showSupportModal = true; }}
             >
-              Contacto
+              {$LL.footer.contact()}
             </button>
           </li>
         </ul>
@@ -61,9 +62,9 @@
 
 
     <div class="footer-bottom">
-      <p>© {new Date().getFullYear()} CoreBalance. Hecho con ❤️ para la comunidad inversora.</p>
+      <p>© {new Date().getFullYear()} CoreBalance. {$LL.footer.made_with()}</p>
       <div class="legal-notice">
-        CoreBalance es una herramienta informativa. No constituye asesoramiento financiero.
+        {$LL.footer.legal_notice()}
       </div>
     </div>
   </div>

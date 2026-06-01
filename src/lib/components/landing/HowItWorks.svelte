@@ -1,29 +1,31 @@
 <script lang="ts">
-  const steps = [
+  import { LL } from '$lib/i18n/i18n-svelte';
+
+  const steps = $derived([
     {
       number: "01",
-      title: "Define tu estrategia",
-      description: "Elige tus fondos o ETFs y asigna el peso ideal para cada uno (ej. 70% MSCI World, 30% Emerging Markets)."
+      title: $LL.how_it_works.step1_title(),
+      description: $LL.how_it_works.step1_desc()
     },
     {
       number: "02",
-      title: "Registra tus posiciones",
-      description: "Introduce tus participaciones actuales o importa tu historial de transacciones desde tu broker."
+      title: $LL.how_it_works.step2_title(),
+      description: $LL.how_it_works.step2_desc()
     },
     {
       number: "03",
-      title: "Rebalancea",
-      description: "Indica cuánto vas a invertir este mes y CoreBalance te dirá exactamente cuánto comprar de cada activo."
+      title: $LL.how_it_works.step3_title(),
+      description: $LL.how_it_works.step3_desc()
     }
-  ];
+  ]);
 </script>
 
 <section id="how-it-works" class="how-it-works">
   <div class="container">
     <div class="section-header">
-      <span class="eyebrow">Proceso</span>
-      <h2>Tu rebalanceo en <span class="text-gradient">3 pasos</span></h2>
-      <p>Sin fórmulas complejas ni errores de cálculo. Directo al grano.</p>
+      <span class="eyebrow">{$LL.how_it_works.eyebrow()}</span>
+      <h2>{$LL.how_it_works.title()} <span class="text-gradient">{$LL.how_it_works.title_gradient()}</span></h2>
+      <p>{$LL.how_it_works.subtitle()}</p>
     </div>
 
     <div class="steps-grid">

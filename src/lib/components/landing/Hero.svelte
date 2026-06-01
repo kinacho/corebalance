@@ -1,30 +1,35 @@
 <script lang="ts">
   import { portfolio } from '$lib/stores/portfolio.svelte';
   import { goto } from '$app/navigation';
+  import { LL } from '$lib/i18n/i18n-svelte';
+
   let { onStart = () => {} } = $props();
 </script>
 
 <section class="hero">
   <div class="hero-content">
     <div class="reveal">
-      <span class="badge">Disponible para Web, iOS y Android</span>
+      <div class="badge">{$LL.landing.badge()}</div>
       <h1>
-        Rebalancea tu cartera de <span class="text-gradient">ETFs y Fondos Indexados</span>
+        {$LL.landing.hero_title_1()} <span class="text-gradient">{$LL.landing.hero_title_gradient()}</span>
       </h1>
       <p class="subtitle">
-        La calculadora definitiva para el inversor indexado. Calcula tu rebalanceo en segundos, 
-        optimiza tus aportaciones y mantén tu estrategia bajo control de forma local y privada.
+        {$LL.landing.hero_subtitle()}
       </p>
+      
       <div class="cta-group">
-        <button class="btn-primary btn-lg" onclick={() => onStart()} aria-label="Empezar gratis a rebalancear tu cartera con CoreBalance">
-          Empezar gratis
-        </button>
-        <button class="btn-demo" onclick={() => { portfolio.loadDemoData(); goto('/dashboard'); }} aria-label="Probar demo interactiva con una cartera indexada de ejemplo">
-          Probar Demo Interactiva
-        </button>
-        <a href="#how-it-works" class="btn-text" aria-label="Ver explicación de cómo funciona el rebalanceo de carteras">Ver cómo funciona →</a>
+        <div class="main-ctas">
+          <button class="btn-primary btn-lg" onclick={() => onStart()} aria-label={$LL.nav.aria_start_free()}>
+            {$LL.landing.cta_primary()}
+          </button>
+          <button class="btn-demo" onclick={() => { portfolio.loadDemoData(); goto('/dashboard'); }} aria-label={$LL.nav.aria_demo()}>
+            {$LL.landing.cta_demo()}
+          </button>
+        </div>
+        <div class="secondary-ctas">
+          <a href="#how-it-works" class="btn-text" aria-label={$LL.nav.aria_cta_how()}>{$LL.landing.cta_how()}</a>
+        </div>
       </div>
-
     </div>
 
     <div class="hero-mockup-container reveal">
@@ -33,7 +38,7 @@
           <div class="dots"><span></span><span></span><span></span></div>
           <div class="address-bar">corebalance.app/dashboard</div>
         </div>
-        <div class="mockup-content">
+        <div class="mockup-body">
           <div class="mockup-sidebar">
             <div class="sidebar-item active"></div>
             <div class="sidebar-item"></div>
@@ -41,58 +46,58 @@
           </div>
           <div class="mockup-main">
             <div class="mockup-stats">
-              <div class="mock-stat">
-                <span class="label">Capital Total</span>
-                <span class="value">45.230€</span>
+              <div class="stat-card">
+                <span class="label">{$LL.landing.mock_capital()}</span>
+                <span class="value">€45,280.00</span>
               </div>
-              <div class="mock-stat">
-                <span class="label">Rentabilidad</span>
-                <span class="value positive">+12.4%</span>
-              </div>
-              <div class="mock-stat highlight">
-                <span class="label">Estado</span>
-                <span class="value">Rebalancear</span>
+              <div class="stat-card">
+                <span class="label">{$LL.landing.mock_return()}</span>
+                <span class="value success">+12.4%</span>
               </div>
             </div>
-            
-            <div class="mockup-grid">
-              <div class="mock-chart-container">
-                <div class="mock-donut">
-                  <div class="donut-segment" style="--color: #3b82f6; --offset: 0; --size: 70;"></div>
-                  <div class="donut-segment" style="--color: #10b981; --offset: 70; --size: 20;"></div>
-                  <div class="donut-segment" style="--color: #f59e0b; --offset: 90; --size: 10;"></div>
-                  <div class="donut-center"></div>
-                </div>
+            <div class="mockup-list">
+              <div class="list-header">
+                <span>{$LL.dashboard.portfolio()}</span>
+                <span>{$LL.landing.mock_status()}</span>
               </div>
-              
-              <div class="mock-assets">
-                <div class="mock-asset">
-                  <span class="icon">🌐</span>
-                  <div class="info">
+              <div class="list-item">
+                <div class="asset">
+                  <div class="asset-icon">🌍</div>
+                  <div class="asset-info">
                     <span class="name">MSCI World</span>
-                    <div class="progress"><div class="fill" style="width: 75%"></div></div>
+                    <span class="ticker">IWDA.L</span>
                   </div>
-                  <span class="badge buy">COMPRAR</span>
                 </div>
-                <div class="mock-asset">
-                  <span class="icon">🇺🇸</span>
-                  <div class="info">
-                    <span class="name">S&P 500</span>
-                    <div class="progress"><div class="fill" style="width: 92%"></div></div>
+                <span class="badge ok">{$LL.landing.mock_ok()}</span>
+              </div>
+              <div class="list-item warning">
+                <div class="asset">
+                  <div class="asset-icon">🌋</div>
+                  <div class="asset-info">
+                    <span class="name">Emerging Mkts</span>
+                    <span class="ticker">EMIM.L</span>
                   </div>
-                  <span class="badge ok">OK</span>
                 </div>
-                <div class="mock-asset">
-                  <span class="icon">🧾</span>
-                  <div class="info">
-                    <span class="name">Bonds</span>
-                    <div class="progress"><div class="fill" style="width: 110%"></div></div>
-                  </div>
-                  <span class="badge sell">VENDER</span>
-                </div>
+                <span class="rebalance-tag buy">{$LL.landing.mock_buy()}</span>
               </div>
             </div>
           </div>
+        </div>
+      </div>
+      
+      <!-- Floating elements -->
+      <div class="floating-card c1">
+        <div class="c-icon">⚖️</div>
+        <div class="c-text">
+          <span>{$LL.landing.mock_rebalance()}</span>
+          <strong>100% Optimized</strong>
+        </div>
+      </div>
+      <div class="floating-card c2">
+        <div class="c-icon">🔒</div>
+        <div class="c-text">
+          <span>Privacy</span>
+          <strong>Local-First</strong>
         </div>
       </div>
     </div>
@@ -150,389 +155,312 @@
   }
 
   .subtitle {
-    font-size: clamp(1.1rem, 2vw, 1.25rem);
-    color: rgba(160, 160, 200, 0.6);
+    font-size: 1.25rem;
+    color: rgba(160, 160, 200, 0.7);
     line-height: 1.6;
-    margin-bottom: 2.5rem;
+    margin-bottom: 3rem;
     max-width: 540px;
   }
 
   .cta-group {
     display: flex;
-    flex-wrap: wrap;
-    gap: 1.25rem;
-    align-items: center;
+    flex-direction: column;
+    gap: 1.5rem;
   }
 
-  @media (max-width: 640px) {
-    .cta-group {
-      flex-direction: column;
-      align-items: stretch;
-      gap: 1rem;
-    }
-    
-    .btn-text {
-      text-align: center;
-      padding: 0.5rem;
-    }
+  .main-ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
   }
 
   .btn-lg {
-    padding: 1rem 2rem;
+    padding: 1.1rem 2.5rem;
     font-size: 1.1rem;
+    border-radius: 16px;
+    font-weight: 700;
   }
 
   .btn-primary {
-    background: var(--accent-blue, #3b82f6);
-    color: white;
+    background: #3b82f6;
+    color: #fff;
     border: none;
-    border-radius: 14px;
-    font-weight: 700;
     cursor: pointer;
     transition: all 0.2s ease;
-    text-align: center;
   }
 
   .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
   }
 
   .btn-demo {
-    background: rgba(139, 92, 246, 0.1);
-    color: #a78bfa;
-    border: 1px solid rgba(139, 92, 246, 0.3);
-    padding: 1rem 2rem;
-    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1.1rem 2rem;
+    border-radius: 16px;
     font-weight: 700;
-    font-size: 1.1rem;
     cursor: pointer;
     transition: all 0.2s ease;
-    text-align: center;
   }
 
   .btn-demo:hover {
-    background: rgba(139, 92, 246, 0.2);
-    color: #c4b5fd;
-    border-color: rgba(139, 92, 246, 0.5);
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.2);
   }
 
   .btn-text {
-    color: #fff;
+    color: rgba(160, 160, 200, 0.6);
     text-decoration: none;
+    font-size: 0.95rem;
     font-weight: 600;
-    transition: opacity 0.2s ease;
+    transition: color 0.2s ease;
   }
 
   .btn-text:hover {
-    opacity: 0.8;
+    color: #fff;
   }
 
-  /* --- Mockup Refined --- */
+  /* Mockup Visuals */
   .hero-mockup-container {
-    perspective: 1200px;
     position: relative;
     width: 100%;
-    overflow: hidden;
-    padding: 2rem 0;
   }
 
   .hero-mockup {
     background: #0f0f14;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 24px;
-    box-shadow: 0 30px 100px rgba(0, 0, 0, 0.8), 0 0 50px rgba(59, 130, 246, 0.1);
+    border-radius: 20px;
     overflow: hidden;
-    transform: rotateX(8deg) rotateY(-15deg) rotateZ(2deg);
-    transition: transform 0.8s cubic-bezier(0.2, 0, 0.2, 1);
-    max-width: 580px;
-    margin: 0 auto;
-    width: 100%;
-  }
-
-  .hero-mockup:hover {
-    transform: rotateX(2deg) rotateY(-5deg) rotateZ(0deg) scale(1.02);
-  }
-
-  @media (max-width: 1024px) {
-    .hero-mockup {
-      transform: none;
-      max-width: 500px;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .hero-mockup {
-      border-radius: 16px;
-    }
-    
-    .mockup-header {
-      padding: 0 0.75rem;
-      gap: 0.75rem;
-    }
-    
-    .address-bar {
-      font-size: 0.65rem;
-    }
-    
-    .mockup-content {
-      height: auto;
-      min-height: 400px;
-    }
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+    aspect-ratio: 16/10;
+    display: flex;
+    flex-direction: column;
   }
 
   .mockup-header {
-    height: 48px;
+    height: 36px;
     background: rgba(255, 255, 255, 0.03);
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     display: flex;
     align-items: center;
-    padding: 0 1.25rem;
+    padding: 0 1rem;
     gap: 1.5rem;
   }
 
   .dots {
     display: flex;
-    gap: 8px;
+    gap: 0.4rem;
   }
 
   .dots span {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.1);
   }
 
   .address-bar {
-    flex: 1;
-    height: 28px;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 8px;
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Monaco', monospace;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    padding: 2px 1rem;
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.3);
+    flex-grow: 1;
+    max-width: 240px;
+    text-align: center;
   }
 
-  .mockup-content {
-    height: 440px;
-    display: flex;
+  .mockup-body {
+    flex-grow: 1;
+    display: grid;
+    grid-template-columns: 50px 1fr;
   }
 
   .mockup-sidebar {
-    width: 48px;
-    background: rgba(255, 255, 255, 0.01);
-    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    border-right: 1px solid rgba(255, 255, 255, 0.03);
     padding: 1rem 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1.5rem;
-  }
-
-  @media (max-width: 480px) {
-    .mockup-sidebar {
-      width: 40px;
-    }
+    gap: 1rem;
   }
 
   .sidebar-item {
-    width: 20px;
-    height: 20px;
-    border-radius: 5px;
-    background: rgba(255, 255, 255, 0.05);
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.03);
   }
 
   .sidebar-item.active {
-    background: #3b82f6;
-    box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+    background: rgba(59, 130, 246, 0.2);
+    border: 1px solid rgba(59, 130, 246, 0.3);
   }
 
   .mockup-main {
-    flex: 1;
-    padding: 1.25rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-    background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.05), transparent);
-    overflow: hidden;
+    padding: 1.5rem;
   }
 
   .mockup-stats {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.5rem;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
   }
 
-  @media (max-width: 400px) {
-    .mockup-stats {
-      grid-template-columns: repeat(2, 1fr);
-    }
-    .mock-stat:last-child {
-      display: none;
-    }
-  }
-
-  .mock-stat {
-    padding: 0.5rem;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 10px;
+  .stat-card {
+    background: rgba(255, 255, 255, 0.02);
+    padding: 0.75rem;
+    border-radius: 12px;
     display: flex;
     flex-direction: column;
-    gap: 0.15rem;
   }
 
-  .mock-stat .label {
-    font-size: 0.5rem;
-    color: rgba(255, 255, 255, 0.4);
+  .stat-card .label {
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.3);
     text-transform: uppercase;
+  }
+
+  .stat-card .value {
+    font-size: 1rem;
     font-weight: 700;
   }
 
-  .mock-stat .value {
-    font-size: 0.75rem;
-    font-weight: 800;
-    color: #fff;
-  }
-
-  .mock-stat.highlight .value {
-    color: #f59e0b;
-  }
-
-  .mock-stat .positive {
+  .stat-card .value.success {
     color: #10b981;
   }
 
-  .mockup-grid {
-    display: grid;
-    grid-template-columns: 120px 1fr;
-    gap: 1rem;
-    align-items: center;
+  .mockup-list {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    padding: 0.75rem;
   }
 
-  @media (max-width: 480px) {
-    .mockup-grid {
-      grid-template-columns: 1fr;
-      justify-items: center;
-      text-align: center;
-    }
-    
-    .mock-donut {
-      width: 100px;
-      height: 100px;
-    }
-    
-    .donut-center {
-      inset: 20px;
-    }
-  }
-
-  .mock-chart-container {
+  .list-header {
     display: flex;
-    justify-content: center;
-  }
-
-  .mock-donut {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    position: relative;
-    background: conic-gradient(
-      #3b82f6 0% 70%,
-      #10b981 70% 90%,
-      #f59e0b 90% 100%
-    );
-  }
-
-  .donut-center {
-    position: absolute;
-    inset: 20px;
-    background: #0f0f14;
-    border-radius: 50%;
-    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
-  }
-
-  .mock-assets {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    width: 100%;
-  }
-
-  .mock-asset {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 10px;
-    transition: background 0.2s;
-  }
-
-  .mock-asset .icon {
-    font-size: 1rem;
-    width: 28px;
-    height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(0,0,0,0.2);
-    border-radius: 6px;
-  }
-
-  .mock-asset .info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    text-align: left;
-  }
-
-  .mock-asset .name {
+    justify-content: space-between;
     font-size: 0.65rem;
-    font-weight: 700;
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(255, 255, 255, 0.2);
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
   }
 
-  .mock-asset .progress {
-    height: 3px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 2px;
-    width: 100%;
+  .list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
   }
 
-  .mock-asset .fill {
-    height: 100%;
+  .asset {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+  }
+
+  .asset-icon {
+    width: 32px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+  }
+
+  .asset-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .asset-info .name {
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .asset-info .ticker {
+    font-size: 0.6rem;
+    color: rgba(255, 255, 255, 0.3);
+  }
+
+  .badge.ok {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    border: none;
+    font-size: 0.6rem;
+    padding: 2px 8px;
+    margin: 0;
+  }
+
+  .rebalance-tag.buy {
     background: #3b82f6;
-    border-radius: 2px;
-  }
-
-  .mock-asset:nth-child(2) .fill { background: #10b981; }
-  .mock-asset:nth-child(3) .fill { background: #f59e0b; }
-
-  .mock-asset .badge {
-    font-size: 0.5rem;
-    font-weight: 900;
-    padding: 1px 4px;
+    color: #fff;
+    font-size: 0.6rem;
+    padding: 2px 8px;
     border-radius: 4px;
-    margin-bottom: 0;
+    font-weight: 800;
   }
 
-  .badge.buy { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
-  .badge.ok { background: rgba(16, 185, 129, 0.2); color: #34d399; }
-  .badge.sell { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+  /* Floating cards */
+  .floating-card {
+    position: absolute;
+    background: rgba(20, 20, 25, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.75rem 1rem;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  }
+
+  .floating-card .c-icon {
+    font-size: 1.5rem;
+  }
+
+  .floating-card .c-text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .floating-card .c-text span {
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  .floating-card .c-text strong {
+    font-size: 0.85rem;
+  }
+
+  .c1 {
+    top: -20px;
+    right: -20px;
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .c2 {
+    bottom: 20px;
+    left: -40px;
+    animation: float 8s ease-in-out infinite reverse;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
 
   .reveal {
-    animation: reveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: fadeInUp 0.8s ease-out forwards;
   }
 
-  @keyframes reveal {
+  @keyframes fadeInUp {
     from {
       opacity: 0;
       transform: translateY(20px);
@@ -543,4 +471,3 @@
     }
   }
 </style>
-

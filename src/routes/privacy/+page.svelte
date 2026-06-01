@@ -2,6 +2,7 @@
   import LandingNavBar from '$lib/components/landing/LandingNavBar.svelte';
   import LandingFooter from '$lib/components/landing/LandingFooter.svelte';
   import { onMount } from 'svelte';
+  import { LL } from '$lib/i18n/i18n-svelte';
 
   const lastUpdate = new Intl.DateTimeFormat('es-ES', { 
     day: 'numeric', 
@@ -11,7 +12,7 @@
 </script>
 
 <svelte:head>
-  <title>Política de Privacidad — CoreBalance</title>
+  <title>{$LL.footer.privacy()} — CoreBalance</title>
   <meta name="description" content="Consulta nuestra política de privacidad. En CoreBalance priorizamos tu seguridad y privacidad utilizando almacenamiento local por defecto." />
 </svelte:head>
 

@@ -1,44 +1,46 @@
 <script lang="ts">
-  const features = [
+  import { LL } from '$lib/i18n/i18n-svelte';
+
+  const features = $derived([
     {
-      title: "Rebalanceo Inteligente",
-      description: "Calcula exactamente cuánto comprar de cada activo para volver a tu estrategia ideal.",
+      title: $LL.features.item_rebalance_title(),
+      description: $LL.features.item_rebalance_desc(),
       icon: "⚖️"
     },
     {
-      title: "Seguimiento en Tiempo Real",
-      description: "Precios actualizados automáticamente para que siempre sepas el valor de tu cartera.",
+      title: $LL.features.item_tracking_title(),
+      description: $LL.features.item_tracking_desc(),
       icon: "📈"
     },
     {
-      title: "Privacidad por Diseño",
-      description: "Tus datos son tuyos. Modo incógnito para mostrar tu cartera sin revelar cifras sensibles.",
+      title: $LL.features.item_privacy_title(),
+      description: $LL.features.item_privacy_desc(),
       icon: "🔒"
     },
     {
-      title: "Simulador de Crisis",
-      description: "¿Qué pasaría si el mercado cae un 30%? Prepárate mentalmente para la volatilidad.",
+      title: $LL.features.item_crisis_title(),
+      description: $LL.features.item_crisis_desc(),
       icon: "📉"
     },
     {
-      title: "Proyecciones a Futuro",
-      description: "Visualiza cómo crecerá tu patrimonio basándote en tus aportaciones y rentabilidad esperada.",
+      title: $LL.features.item_projections_title(),
+      description: $LL.features.item_projections_desc(),
       icon: "🚀"
     },
     {
-      title: "Multi-Broker",
-      description: "Importa tus operaciones desde MyInvestor, DeGiro, Interactive Brokers y más.",
+      title: $LL.features.item_broker_title(),
+      description: $LL.features.item_broker_desc(),
       icon: "💼"
     }
-  ];
+  ]);
 </script>
 
 <section id="features" class="features">
   <div class="container">
     <div class="section-header">
-      <span class="eyebrow">Características</span>
-      <h2>Todo lo que necesitas para tu <span class="text-gradient">inversión pasiva</span></h2>
-      <p>CoreBalance está diseñado para simplificar la vida del inversor indexado de largo plazo.</p>
+      <span class="eyebrow">{$LL.features.eyebrow()}</span>
+      <h2>{$LL.features.title()} <span class="text-gradient">{$LL.features.title_gradient()}</span></h2>
+      <p>{$LL.features.subtitle()}</p>
     </div>
 
     <div class="features-grid">

@@ -9,11 +9,12 @@
   import EducationalFAQ from './EducationalFAQ.svelte';
   import Cta from './Cta.svelte';
   import LandingFooter from './LandingFooter.svelte';
+  import { LL } from '$lib/i18n/i18n-svelte';
 
   let { onStart = () => {} } = $props();
 
   // Schema.org JSON-LD
-  const schemaData = {
+  const schemaData = $derived({
     "@context": "https://schema.org",
     "@graph": [
       {
@@ -27,13 +28,12 @@
           "price": "0",
           "priceCurrency": "EUR"
         },
-        "description": "Rebalanceador de carteras de ETFs y fondos indexados, local-first, gratuito y sin registro. Calcula exactamente cuánto comprar o vender de cada activo para mantener tu asset allocation.",
+        "description": $LL.seo.description(),
         "featureList": [
-          "Cálculo de rebalanceo automático",
-          "Optimización con aportaciones periódicas",
-          "Importación CSV desde MyInvestor, DEGIRO, Trading 212, Interactive Brokers",
-          "Local-first: datos almacenados en IndexedDB, sin servidores externos",
-          "Historial de rebalanceos"
+          $LL.features.item_rebalance_title(),
+          $LL.features.item_projections_title(),
+          $LL.features.item_broker_desc(),
+          $LL.features.item_privacy_desc()
         ]
       },
       {
@@ -45,18 +45,18 @@
         ]
       }
     ]
-  };
+  });
 
-  const schemaString = JSON.stringify(schemaData);
+  const schemaString = $derived(JSON.stringify(schemaData));
   </script>
 
   <svelte:head>
-  <title>CoreBalance — Rebalancea tu cartera de ETFs y Fondos Indexados</title>
-  <meta name="description" content="La herramienta definitiva para el inversor indexado. Calcula tu rebalanceo en segundos, optimiza tu cartera y mantén tu estrategia bajo control." />
+  <title>{$LL.seo.title()}</title>
+  <meta name="description" content={$LL.seo.description()} />
 
   <!-- Open Graph -->
-  <meta property="og:title" content="CoreBalance — Rebalancea tu cartera de ETFs" />
-  <meta property="og:description" content="Gestiona tu cartera de fondos indexados y ETFs con rebalanceo inteligente y seguimiento en tiempo real." />
+  <meta property="og:title" content={$LL.seo.og_title()} />
+  <meta property="og:description" content={$LL.seo.og_description()} />
   <meta property="og:image" content="https://corebalance.app/og-image-landing.png" />
 
   {@html `<script type="application/ld+json">${schemaString}</script>`}
