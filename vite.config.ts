@@ -20,11 +20,6 @@ export default defineConfig({
 			devOptions: {
 				enabled: true
 			},
-			workbox: {
-				globDirectory: '.svelte-kit/output',
-				globPatterns: ['client/**/*.{js,css,html,ico,png,svg,webp}'],
-				globIgnores: ['server/**', 'prerendered/**']
-			},
 			manifest: {
 				name: 'CoreBalance — Portfolio Dashboard',
 				short_name: 'CoreBalance',

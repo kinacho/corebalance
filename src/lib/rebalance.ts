@@ -27,9 +27,10 @@ export function calculatePortfolioState(
 		const fxRate = pData?.fxRate ?? 1;
 		
 		const totalValue = h * p * fxRate;
-		const totalCost = h * (avg * fxRate);
-		const profit = totalValue - totalCost;
-		const profitPercent = totalCost > 0 ? profit / totalCost : 0;
+		const isManual = asset.manualInterestRate !== undefined;
+		const totalCost = isManual ? totalValue : h * (avg * fxRate);
+		const profit = isManual ? 0 : totalValue - totalCost;
+		const profitPercent = isManual ? 0 : (totalCost > 0 ? profit / totalCost : 0);
 		
 		const changePercent = asset.manualInterestRate !== undefined ? (asset.manualInterestRate * 100 / 365) : (pData?.change ?? 0);
 		const dailyChangeValue = totalValue * (changePercent / 100);

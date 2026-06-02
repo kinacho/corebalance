@@ -37,6 +37,39 @@
 	
 	let showAddForm = $state(false);
 	
+	let showDatePicker = $state(false);
+	let pickerStep = $state<'day' | 'month' | 'year'>('day');
+	let pickerViewDate = $state(new Date());
+
+	function openDatePicker() {
+		pickerViewDate = new Date(newTx.date || Date.now());
+		pickerStep = 'day';
+		showDatePicker = true;
+	}
+
+	function selectYear(y: number) {
+		pickerViewDate = new Date(y, pickerViewDate.getMonth(), 1);
+		pickerStep = 'month';
+	}
+
+	function selectMonth(m: number) {
+		pickerViewDate = new Date(pickerViewDate.getFullYear(), m, 1);
+		pickerStep = 'day';
+	}
+
+	function selectDay(d: number) {
+		newTx.date = new Date(pickerViewDate.getFullYear(), pickerViewDate.getMonth(), d).getTime();
+		showDatePicker = false;
+	}
+
+	function getDaysInMonth(year: number, month: number) {
+		return new Date(year, month + 1, 0).getDate();
+	}
+
+	function getFirstDayOfWeek(year: number, month: number) {
+		return (new Date(year, month, 1).getDay() + 6) % 7;
+	}
+	
 	// Usar $derived para que los valores por defecto del formulario reaccionen al cambio de activo
 	const defaultPrice = $derived(portfolio.prices[asset.ticker]?.price || 0);
 	const defaultCurrency = $derived(portfolio.prices[asset.ticker]?.currency || ui.baseCurrency);
@@ -57,28 +90,6 @@
 		if (showAddForm || asset.ticker) {
 			newTx.price = defaultPrice;
 			newTx.currency = defaultCurrency;
-		}
-	});
-
-	// Estado local para el string de la fecha y evitar problemas con el picker en móvil
-	let dateStr = $state(formatDate());
-	
-	// Sincronizar dateStr -> newTx.date (usando UTC para evitar saltos de día por zona horaria)
-	$effect(() => {
-		if (dateStr) {
-			const [y, m, d] = dateStr.split('-').map(Number);
-			const newTimestamp = new Date(Date.UTC(y, m - 1, d)).getTime();
-			if (newTx.date !== newTimestamp) {
-				newTx.date = newTimestamp;
-			}
-		}
-	});
-
-	// Sincronizar newTx.date -> dateStr (cuando se resetea el form o cambia externamente)
-	$effect(() => {
-		if (newTx.date) {
-			const s = formatDate(new Date(newTx.date));
-			if (dateStr !== s) dateStr = s;
 		}
 	});
 
@@ -221,9 +232,84 @@
 										<option value="transfer">Traspaso</option>
 									</select>
 								</div>
-								<div class="form-group">
+								<div class="form-group" style="position: relative;">
 									<label for="tx-date">Fecha</label>
-									<input id="tx-date" type="date" bind:value={dateStr} />
+									<input
+										id="tx-date"
+										type="text"
+										readonly
+										value={new Date(newTx.date || Date.now()).toLocaleDateString('es-ES')}
+										onclick={openDatePicker}
+										style="cursor: pointer;"
+									/>
+
+									{#if showDatePicker}
+										<!-- svelte-ignore a11y_no_static_element_interactions -->
+										<div 
+											class="date-picker-backdrop" 
+											onclick={() => showDatePicker = false}
+											onkeydown={(e) => e.key === 'Escape' && (showDatePicker = false)}
+											role="presentation"
+										></div>
+										<div class="date-picker">
+
+											{#if pickerStep === 'day'}
+												<div class="picker-header">
+													<button onclick={() => { pickerViewDate = new Date(pickerViewDate.getFullYear(), pickerViewDate.getMonth() - 1, 1); }}>‹</button>
+													<button class="picker-title" onclick={() => pickerStep = 'month'}>
+														{pickerViewDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}
+													</button>
+													<button onclick={() => { pickerViewDate = new Date(pickerViewDate.getFullYear(), pickerViewDate.getMonth() + 1, 1); }}>›</button>
+												</div>
+												<div class="picker-weekdays">
+													{#each ['L','M','X','J','V','S','D'] as d}<span>{d}</span>{/each}
+												</div>
+												<div class="picker-days">
+													{#each Array(getFirstDayOfWeek(pickerViewDate.getFullYear(), pickerViewDate.getMonth())).fill(null) as _}
+														<span></span>
+													{/each}
+													{#each Array(getDaysInMonth(pickerViewDate.getFullYear(), pickerViewDate.getMonth())).fill(0).map((_, i) => i + 1) as day}
+														<button
+															class="day-btn"
+															class:selected={new Date(newTx.date || 0).toDateString() === new Date(pickerViewDate.getFullYear(), pickerViewDate.getMonth(), day).toDateString()}
+															onclick={() => selectDay(day)}
+														>{day}</button>
+													{/each}
+												</div>
+
+											{:else if pickerStep === 'month'}
+												<div class="picker-header">
+													<button onclick={() => { pickerViewDate = new Date(pickerViewDate.getFullYear() - 1, pickerViewDate.getMonth(), 1); }}>‹</button>
+													<button class="picker-title" onclick={() => pickerStep = 'year'}>{pickerViewDate.getFullYear()}</button>
+													<button onclick={() => { pickerViewDate = new Date(pickerViewDate.getFullYear() + 1, pickerViewDate.getMonth(), 1); }}>›</button>
+												</div>
+												<div class="picker-months">
+													{#each ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'] as m, i}
+														<button
+															class="month-btn"
+															class:selected={pickerViewDate.getMonth() === i}
+															onclick={() => selectMonth(i)}
+														>{m}</button>
+													{/each}
+												</div>
+
+											{:else if pickerStep === 'year'}
+												<div class="picker-header">
+													<span class="picker-title">Selecciona año</span>
+												</div>
+												<div class="picker-years">
+													{#each Array(12).fill(0).map((_, i) => new Date().getFullYear() - 5 + i) as year}
+														<button
+															class="year-btn"
+															class:selected={pickerViewDate.getFullYear() === year}
+															onclick={() => selectYear(year)}
+														>{year}</button>
+													{/each}
+												</div>
+											{/if}
+
+										</div>
+									{/if}
 								</div>
 							</div>
 
@@ -627,4 +713,80 @@
 		color: rgba(255,255,255,0.4) !important;
 		margin-top: 1rem;
 	}
+
+	.date-picker-backdrop {
+		position: fixed;
+		inset: 0;
+		z-index: 10;
+	}
+	.date-picker {
+		position: absolute;
+		top: calc(100% + 4px);
+		left: 0;
+		z-index: 11;
+		background: #0a0a18;
+		border: 1px solid rgba(255,255,255,0.15);
+		border-radius: 12px;
+		padding: 0.75rem;
+		width: 240px;
+		box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+	}
+	.picker-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 0.5rem;
+	}
+	.picker-header button {
+		background: none;
+		border: none;
+		color: #fff;
+		cursor: pointer;
+		padding: 0.25rem 0.5rem;
+		border-radius: 6px;
+		font-size: 1rem;
+	}
+	.picker-header button:hover { background: rgba(255,255,255,0.08); }
+	.picker-title { font-weight: 600; font-size: 0.85rem; text-transform: capitalize; flex: 1; text-align: center; }
+	.picker-weekdays {
+		display: grid;
+		grid-template-columns: repeat(7, 1fr);
+		text-align: center;
+		font-size: 0.65rem;
+		color: rgba(255,255,255,0.3);
+		margin-bottom: 0.25rem;
+	}
+	.picker-days {
+		display: grid;
+		grid-template-columns: repeat(7, 1fr);
+		gap: 2px;
+	}
+	.day-btn {
+		aspect-ratio: 1;
+		border-radius: 6px;
+		font-size: 0.75rem;
+		color: rgba(255,255,255,0.8);
+		background: none;
+		border: none;
+		cursor: pointer;
+	}
+	.day-btn:hover { background: rgba(255,255,255,0.1); }
+	.day-btn.selected { background: #3b82f6; color: #fff; font-weight: 700; }
+	.picker-months, .picker-years {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 4px;
+	}
+	.month-btn, .year-btn {
+		padding: 0.4rem;
+		border-radius: 6px;
+		font-size: 0.8rem;
+		color: rgba(255,255,255,0.8);
+		background: none;
+		border: none;
+		cursor: pointer;
+		text-align: center;
+	}
+	.month-btn:hover, .year-btn:hover { background: rgba(255,255,255,0.1); }
+	.month-btn.selected, .year-btn.selected { background: #3b82f6; color: #fff; font-weight: 700; }
 </style>
