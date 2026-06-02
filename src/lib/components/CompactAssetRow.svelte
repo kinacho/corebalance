@@ -149,22 +149,30 @@
 			class:positive={((perfFilter === 'YTD' ? position.ytdChangePercent : perfFilter === 'MTD' ? position.mtdChangePercent : position.oneMonthChangePercent) ?? 0) > 0} 
 			class:negative={((perfFilter === 'YTD' ? position.ytdChangePercent : perfFilter === 'MTD' ? position.mtdChangePercent : position.oneMonthChangePercent) ?? 0) < 0}
 			onclick={() => {
+				if (position.asset.manualInterestRate !== undefined) return;
 				if (perfFilter === 'YTD') perfFilter = 'MTD';
 				else if (perfFilter === 'MTD') perfFilter = '1M';
 				else perfFilter = 'YTD';
 			}}
+			style={position.asset.manualInterestRate !== undefined ? 'cursor: default' : ''}
 		>
 			<span class="perf-label">
-				{perfFilter}
-				<svg class="perf-icon" viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="3">
-					<path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
-				</svg>
+				{position.asset.manualInterestRate !== undefined ? 'TIN' : perfFilter}
+				{#if position.asset.manualInterestRate === undefined}
+					<svg class="perf-icon" viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="3">
+						<path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+					</svg>
+				{/if}
 			</span>
 			<div class="perf-values">
 				<span class="perf-pct">
-					{((perfFilter === 'YTD' ? position.ytdChangePercent : perfFilter === 'MTD' ? position.mtdChangePercent : position.oneMonthChangePercent) !== undefined) 
-						? (((perfFilter === 'YTD' ? position.ytdChangePercent : perfFilter === 'MTD' ? position.mtdChangePercent : position.oneMonthChangePercent) ?? 0) > 0 ? '+' : '') + formatPercent((perfFilter === 'YTD' ? position.ytdChangePercent : perfFilter === 'MTD' ? position.mtdChangePercent : position.oneMonthChangePercent) ?? 0) 
-						: '--'}
+					{#if position.asset.manualInterestRate !== undefined}
+						{formatPercent(position.asset.manualInterestRate)}
+					{:else}
+						{((perfFilter === 'YTD' ? position.ytdChangePercent : perfFilter === 'MTD' ? position.mtdChangePercent : position.oneMonthChangePercent) !== undefined) 
+							? (((perfFilter === 'YTD' ? position.ytdChangePercent : perfFilter === 'MTD' ? position.mtdChangePercent : position.oneMonthChangePercent) ?? 0) > 0 ? '+' : '') + formatPercent((perfFilter === 'YTD' ? position.ytdChangePercent : perfFilter === 'MTD' ? position.mtdChangePercent : position.oneMonthChangePercent) ?? 0) 
+							: '--'}
+					{/if}
 				</span>
 			</div>
 		</button>

@@ -1,12 +1,18 @@
 <script lang="ts">
   import LandingNavBar from '$lib/components/landing/LandingNavBar.svelte';
   import LandingFooter from '$lib/components/landing/LandingFooter.svelte';
+  import { ui } from '$lib/stores/ui.svelte';
 
   const lastUpdate = new Intl.DateTimeFormat('es-ES', { 
     day: 'numeric', 
     month: 'long', 
     year: 'numeric' 
   }).format(new Date());
+
+  function openContact() {
+    ui.supportType = 'contact';
+    ui.showSupportModal = true;
+  }
 </script>
 
 <svelte:head>
@@ -93,7 +99,10 @@
 
       <section>
         <h2>8. Contacto</h2>
-        <p>Si tiene dudas sobre estos términos, puede contactarme en: <strong>soporte@corebalance.app</strong>.</p>
+        <p>
+          Si tiene dudas sobre estos términos, puede contactarme a través del 
+          <button class="contact-link" onclick={openContact}>formulario de contacto</button>.
+        </p>
       </section>
     </div>
   </main>
@@ -176,5 +185,20 @@
 
   strong {
     color: #fff;
+  }
+
+  .contact-link {
+    background: none;
+    border: none;
+    color: var(--accent-blue, #3b82f6);
+    text-decoration: underline;
+    font: inherit;
+    cursor: pointer;
+    padding: 0;
+    font-weight: 700;
+  }
+
+  .contact-link:hover {
+    color: #60a5fa;
   }
 </style>

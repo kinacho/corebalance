@@ -1,6 +1,7 @@
 <script lang="ts">
   import LandingNavBar from '$lib/components/landing/LandingNavBar.svelte';
   import LandingFooter from '$lib/components/landing/LandingFooter.svelte';
+  import { ui } from '$lib/stores/ui.svelte';
   import { onMount } from 'svelte';
 
   const lastUpdate = new Intl.DateTimeFormat('es-ES', { 
@@ -8,6 +9,11 @@
     month: 'long', 
     year: 'numeric' 
   }).format(new Date());
+
+  function openContact() {
+    ui.supportType = 'contact';
+    ui.showSupportModal = true;
+  }
 </script>
 
 <svelte:head>
@@ -27,7 +33,7 @@
         <h2>1. Responsable del Tratamiento</h2>
         <p>
           El responsable del tratamiento de sus datos personales es un desarrollador individual con residencia en España. 
-          Puede contactar conmigo a través del email: <strong>soporte@corebalance.app</strong>.
+          Puede contactar conmigo a través del <button class="contact-link" onclick={openContact}>formulario de contacto</button>.
         </p>
       </section>
 
@@ -88,7 +94,7 @@
           <li><strong>Portabilidad:</strong> Descargar sus datos en un formato legible.</li>
           <li><strong>Oposición y Limitación:</strong> En casos específicos previstos por la ley.</li>
         </ul>
-        <p>Para ejercer estos derechos, envíe un email a <strong>soporte@corebalance.app</strong>.</p>
+        <p>Para ejercer estos derechos, utilice el <button class="contact-link" onclick={openContact}>formulario de contacto</button>.</p>
       </section>
 
       <section>
@@ -162,5 +168,20 @@
 
   strong {
     color: #fff;
+  }
+
+  .contact-link {
+    background: none;
+    border: none;
+    color: var(--accent-blue, #3b82f6);
+    text-decoration: underline;
+    font: inherit;
+    cursor: pointer;
+    padding: 0;
+    font-weight: 700;
+  }
+
+  .contact-link:hover {
+    color: #60a5fa;
   }
 </style>

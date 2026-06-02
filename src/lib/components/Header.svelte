@@ -688,8 +688,8 @@
 	}
 
 	.currency-select {
-		background: rgba(255, 255, 255, 0.06);
-		border: 1px solid rgba(255, 255, 255, 0.1);
+		background: #1a1a2e;
+		border: 1px solid rgba(255, 255, 255, 0.15);
 		border-radius: 8px;
 		padding: 0.3rem 0.5rem;
 		font-size: 0.8rem;
@@ -697,6 +697,11 @@
 		color: #ffffff;
 		cursor: pointer;
 		outline: none;
+	}
+
+	.currency-select option {
+		background: #1a1a2e;
+		color: #ffffff;
 	}
 
 	/* Auth Notifications */

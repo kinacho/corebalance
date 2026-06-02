@@ -653,7 +653,7 @@ export class PortfolioStore {
 		];
 
 		this.satelliteAssets = [
-			{ ticker: 'CASH-DEMO', name: 'Cuenta Remunerada (Demo)', isin: '', targetWeight: 0, category: 'satellite', color: '#6366f1', icon: resolveAssetIcon('CASH-DEMO', 'Cuenta Remunerada (Demo)'), ter: 0 }
+			{ ticker: 'CASH-DEMO', name: 'Cuenta Remunerada (Demo)', isin: '', targetWeight: 0, category: 'satellite', color: '#6366f1', icon: resolveAssetIcon('CASH-DEMO', 'Cuenta Remunerada (Demo)'), ter: 0, manualInterestRate: 0.03 }
 		];
 
 		this.holdings = {

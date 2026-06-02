@@ -554,7 +554,9 @@
 											<span class="asset-name">{asset.name}</span>
 											<span class="asset-ticker-meta">
 												{asset.ticker}
-												{#if asset.ter > 0}
+												{#if asset.manualInterestRate !== undefined}
+													<span class="asset-ter-badge">{formatPercent(asset.manualInterestRate)} TIN</span>
+												{:else if asset.ter > 0}
 													<span class="asset-ter-badge">{formatPercent(asset.ter)} TER</span>
 												{/if}
 											</span>
@@ -575,19 +577,21 @@
 															placeholder="Nombre"
 														/>
 													</div>
-													<div class="edit-field-group">
-														<label class="ter-label" for="ter-{asset.ticker}">TER %</label>
-														<input
-															id="ter-{asset.ticker}"
-															type="number"
-															class="ter-input"
-															bind:value={editTer}
-															onwheel={(e) => e.preventDefault()}
-															min="0"
-															step="0.01"
-															inputmode="decimal"
-														/>
-													</div>
+													{#if asset.manualInterestRate === undefined}
+														<div class="edit-field-group">
+															<label class="ter-label" for="ter-{asset.ticker}">TER %</label>
+															<input
+																id="ter-{asset.ticker}"
+																type="number"
+																class="ter-input"
+																bind:value={editTer}
+																onwheel={(e) => e.preventDefault()}
+																min="0"
+																step="0.01"
+																inputmode="decimal"
+															/>
+														</div>
+													{/if}
 													{#if asset.ticker.startsWith('CASH-')}
 														<div class="edit-field-group">
 															<label class="ter-label" for="int-{asset.ticker}">INT %</label>
