@@ -4,6 +4,7 @@
 	import Toast from '$lib/components/Toast.svelte';
 	import InstallPrompt from '$lib/components/InstallPrompt.svelte';
 	import SupportModal from '$lib/components/SupportModal.svelte';
+	import ChangelogModal from '$lib/components/ChangelogModal.svelte';
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { ui } from '$lib/stores/ui.svelte';
 	import { onMount } from 'svelte';
@@ -86,3 +87,7 @@
 <Toast />
 <InstallPrompt />
 <SupportModal />
+
+{#if ui.showChangelog}
+	<ChangelogModal onClose={() => ui.showChangelog = false} />
+{/if}

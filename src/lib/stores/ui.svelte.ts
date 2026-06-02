@@ -22,6 +22,9 @@ class UIStore {
 	showSupportModal = $state(false);
 	supportType = $state<'bug' | 'contact'>('contact');
 
+	// Changelog Modal State
+	showChangelog = $state(false);
+
 	constructor() {
 		if (typeof localStorage !== 'undefined') {
 			const saved = localStorage.getItem('corebalance_currency');

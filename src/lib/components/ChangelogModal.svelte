@@ -13,6 +13,19 @@
 	});
 const releases = [
 	{
+		version: 'v1.6.1',
+		date: '2 de Junio, 2026',
+		badge: 'Refinamiento y UX',
+		badgeColor: '#10b981',
+		changes: [
+			'🏦 **Lógica de Cuentas Remuneradas:** Los activos con interés manual ahora integran sus ganancias diarias en el capital total y cambio global, eliminando distorsiones en el beneficio histórico.',
+			'📅 **Nuevo Date Picker Personalizado:** Reemplazo del selector nativo por uno de tres niveles (Día/Mes/Año) optimizado para móviles y navegación persistente.',
+			'✨ **Refinamiento de UI:** Mejorada la visibilidad del selector de moneda en modo oscuro y ocultación inteligente del TER en activos donde no aplica.',
+			'🔒 **Privacidad Legal:** Actualización de las páginas de Términos y Privacidad para usar el canal oficial de soporte en lugar de emails en texto plano.',
+			'🛠️ **Correcciones Técnicas:** Resuelto el warning de PWA en build, eliminados errores de TypeScript en el motor de rebalanceo y corregidos avisos de accesibilidad (A11y).'
+		]
+	},
+	{
 		version: 'v1.6.0',
 		date: '24 de Mayo, 2026',
 		badge: 'Nueva Landing Page',

@@ -23,6 +23,14 @@
           <li><a href="/#features">Características</a></li>
           <li><a href="/#how-it-works">Cómo funciona</a></li>
           <li><a href="/#why-us">Por qué CoreBalance</a></li>
+          <li>
+            <button 
+              class="footer-btn" 
+              onclick={() => ui.showChangelog = true}
+            >
+              Novedades
+            </button>
+          </li>
         </ul>
       </div>
 
