@@ -186,10 +186,140 @@ const en: Translation = {
   },
   // Dashboard
   dashboard: {
-    total_value: 'Total value',
-    daily_change: "Today's change",
+    total_value_label: 'Global Capital',
+    invested_label: 'Invested',
+    returns_label: 'Returns',
+    daily_change_label: "Today's Change",
+    efficiency_label: 'Efficiency (TER)',
     portfolio: 'Portfolio',
     add_asset: 'Add asset',
+    per_year: '/year',
+    isin: 'ISIN',
+    ter: 'TER',
+    holdings: 'Holdings',
+    cash_balance: 'Cash balance',
+    avg_cost: 'Avg Cost',
+    price: 'Price',
+    value_total: 'Total Value',
+    today: 'Today',
+    ytd: 'YTD',
+    mtd: 'MTD',
+    month_1: '1M',
+    total: 'Total',
+    estimated_cost: 'Est. Cost',
+    last_update: 'Updated: {date|dateTime}',
+    total_value: 'Total value: {value|currency}',
+    daily_change: "Today's change: {value|percent}",
+    // Standalone formatters
+    currency: '{0|currency}',
+    percent: '{0|percent}',
+    dateTime: '{0|dateTime}',
+    shortDate: '{0|shortDate}',
+    compactNumber: '{0|compactNumber}',
+  },
+  privacy: {
+    title: 'Privacy Policy',
+    updated: 'Last updated: {date|shortDate}',
+    seo_desc: 'Consult our privacy policy. At CoreBalance, we prioritize your security and privacy by using local storage by default.',
+    sections: {
+      s1_title: '1. Data Controller',
+      s1_content: 'The data controller of your personal data is an individual developer based in Spain. You can contact me via email at: <strong>soporte@corebalance.app</strong>.',
+      s2_title: '2. Data we collect',
+      s2_content: 'For the operation of CoreBalance, we process the following categories of data:',
+      s2_list: [
+        '<strong>Identification Data:</strong> Email address (provided through Google Auth or direct registration in Firebase).',
+        '<strong>Session Data:</strong> Unique user identifiers, last access date, and session tokens managed by Firebase Authentication.',
+        '<strong>Financial Data:</strong> Information about assets, holdings, purchase prices, and portfolio objectives voluntarily entered by the user.'
+      ],
+      s3_title: '3. Purpose of Processing',
+      s3_content: 'Your data is processed exclusively to:',
+      s3_list: [
+        'Allow you to access and use the CoreBalance application.',
+        'Synchronize your portfolio across different devices.',
+        'Perform the requested rebalancing calculations and financial projections.',
+        'Maintain the security of your account and prevent unauthorized access.'
+      ],
+      s4_title: '4. Legal Basis',
+      s4_content: 'We process your data based on the <strong>performance of a contract</strong> (the Terms and Conditions you accept when using the app) and your <strong>explicit consent</strong> when registering and uploading your financial information.',
+      s5_title: '5. Recipients and Service Providers',
+      s5_content: 'We do not sell or share your data with third parties. However, we use essential infrastructure providers:',
+      s5_list: [
+        '<strong>Google Firebase (Ireland/USA):</strong> Hosting, database (Firestore), and authentication. Google complies with EU Standard Contractual Clauses for international transfers.',
+        '<strong>Vercel (USA):</strong> Application deployment.'
+      ],
+      s6_title: '6. Data Retention',
+      s6_content: 'We will retain your data as long as your account remains active. If you decide to delete your account, your personal and financial data will be deleted from our active databases immediately (except for residual backups that are deleted in automatic 30-day cycles).',
+      s7_title: '7. Your Rights',
+      s7_content: 'As a user in the EU, you are covered by the GDPR to exercise your rights of:',
+      s7_list: [
+        '<strong>Access:</strong> Know what data we have.',
+        '<strong>Rectification:</strong> Correct erroneous data.',
+        '<strong>Erasure (Right to be forgotten):</strong> Request the deletion of your data.',
+        '<strong>Portability:</strong> Download your data in a readable format.',
+        '<strong>Opposition and Limitation:</strong> In specific cases provided by law.'
+      ],
+      s7_contact: 'To exercise these rights, send an email to <strong>soporte@corebalance.app</strong>.',
+      s8_title: '8. Security',
+      s8_content: 'CoreBalance uses advanced technical security measures provided by Firebase, including encryption in transit (SSL/TLS) and at rest.'
+    }
+  },
+  terms: {
+    title: 'Terms and Conditions of Use',
+    updated: 'Last updated: {date|shortDate}',
+    seo_desc: 'Read our terms and conditions of use. Learn about the conditions under which you can use the CoreBalance rebalancing tool.',
+    sections: {
+      s1_title: '1. Description of Service',
+      s1_content: 'CoreBalance is a web tool designed to help individual investors manage, analyze, and rebalance their portfolios of index funds, ETFs, and other financial assets. The service allows for the registration of positions, calculation of contributions needed to maintain a specific strategy, and visualization of performance metrics.',
+      s2_title: '2. Legal Notice and Limitation of Liability',
+      s2_disclaimer_title: 'IMPORTANT:',
+      s2_disclaimer_content: 'CoreBalance DOES NOT constitute financial, investment, or tax advice.',
+      s2_content: 'All information shown is purely indicative and educational. Calculations are based on data entered by the user and market prices that may suffer from delays or inaccuracies.',
+      s2_content2: 'The owner of the application is not responsible for any financial loss, erroneous investment decision, or damage resulting from the use of this tool. You always invest at your own risk.',
+      s3_title: '3. Use of the Application',
+      s3_content: 'By using CoreBalance, you agree to:',
+      s3_list: [
+        'Provide truthful information when registering your assets.',
+        'Not use the platform for illicit or fraudulent purposes.',
+        'Not attempt to breach the security of the application or engage in reverse engineering.'
+      ],
+      s4_title: '4. Intellectual Property',
+      s4_content: 'The source code (excluding open-source libraries), design, CoreBalance brand, and original content are the exclusive property of its creator. Total or partial reproduction of the software for commercial purposes without express authorization is prohibited.',
+      s5_title: '5. Registration and Accounts',
+      s5_content: 'Access to synchronization features requires creating an account through Google or email. You are responsible for maintaining the confidentiality of your session. We reserve the right to suspend accounts that violate these terms.',
+      s6_title: '6. Modifications',
+      s6_content: 'I reserve the right to modify the service or these terms at any time to adapt to new functionalities or legislative changes. Continued use of the app after a change implies acceptance of the new terms.',
+      s7_title: '7. Applicable Law and Jurisdiction',
+      s7_content: 'These terms are governed by <strong>Spanish legislation</strong>. For any legal controversy, the parties submit to the courts and tribunals of the owner\'s city of residence in Spain, waiving any other jurisdiction.',
+      s8_title: '8. Contact',
+      s8_content: 'If you have questions about these terms, you can contact me at: <strong>soporte@corebalance.app</strong>.'
+    }
+  },
+  cookies: {
+    title: 'Cookies Policy',
+    updated: 'Last updated: {date|shortDate}',
+    seo_desc: 'Consult our cookies policy. Learn which cookies we use to ensure security and technical functionality in CoreBalance.',
+    sections: {
+      s1_title: '1. What is a cookie?',
+      s1_content: 'A cookie is a small text file that is stored in your browser when you visit almost any website. Its purpose is for the website to remember your visit when you return to browse that page.',
+      s2_title: '2. Cookies used in CoreBalance',
+      s2_content: 'Following the guidelines of the Spanish Data Protection Agency and European regulations, we detail the use of cookies made by this website. CoreBalance uses a <strong>minimal intrusion</strong> policy.',
+      s2_subtitle: 'Technical and Strictly Necessary Cookies',
+      s2_content2: 'These cookies are essential for the operation of the app and do not require your prior consent according to the ePrivacy Directive (exception for services requested by the user).',
+      s2_table_headers: ['Cookie', 'Origin', 'Purpose', 'Duration'],
+      s2_table_data: [
+        { name: '__session / firebase_auth', origin: 'Google Firebase', purpose: 'Maintain the authenticated user session.', duration: 'Session / Persistent' },
+        { name: 'bypassLanding', origin: 'CoreBalance (sessionStorage)', purpose: 'Remember that the user has requested to enter the dashboard in the current tab.', duration: 'Session' }
+      ],
+      s3_title: '3. Third-party and Analytical Cookies',
+      s3_content: 'CoreBalance <strong>does not use</strong> advertising, behavioral tracking, or third-party marketing cookies.',
+      s3_content2: 'We may use basic analytical tools provided by <strong>Vercel Analytics</strong> or <strong>Speed Insights</strong> to measure website performance. These tools are configured to be as respectful of privacy as possible, using mostly aggregated and anonymous data.',
+      s4_title: '4. How to disable cookies',
+      s4_content: 'You can restrict, block, or delete CoreBalance cookies using your browser. The procedure is different in each browser:',
+      s4_list: ['Chrome', 'Edge', 'Firefox', 'Safari'],
+      s4_note: 'Note that if you disable technical cookies, it is possible that you may not be able to log in or use the main functions of the application.',
+      s5_title: '5. Additional Notes',
+      s5_content: 'Neither this website nor its legal representatives are responsible for the content or veracity of the privacy policies that the third parties mentioned in this cookie policy (like Google) may have.'
+    }
   },
   common: {
     loading: 'Loading...',

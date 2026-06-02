@@ -1,17 +1,14 @@
 <script lang="ts">
   import LandingNavBar from '$lib/components/landing/LandingNavBar.svelte';
   import LandingFooter from '$lib/components/landing/LandingFooter.svelte';
+  import { LL } from '$lib/i18n/i18n-svelte';
 
-  const lastUpdate = new Intl.DateTimeFormat('es-ES', { 
-    day: 'numeric', 
-    month: 'long', 
-    year: 'numeric' 
-  }).format(new Date());
+  const lastUpdateDate = new Date();
 </script>
 
 <svelte:head>
-  <title>Política de Cookies — CoreBalance</title>
-  <meta name="description" content="Consulta nuestra política de cookies. Conoce qué cookies utilizamos para garantizar la seguridad y funcionalidad técnica en CoreBalance." />
+  <title>{$LL.cookies.title()} — CoreBalance</title>
+  <meta name="description" content={$LL.cookies.seo_desc()} />
 </svelte:head>
 
 <div class="legal-page">
@@ -19,90 +16,64 @@
 
   <main class="legal-content">
     <div class="container">
-      <h1>Política de Cookies</h1>
-      <p class="update-date">Última actualización: {lastUpdate}</p>
+      <h1>{$LL.cookies.title()}</h1>
+      <p class="update-date">{$LL.cookies.updated({ date: lastUpdateDate })}</p>
 
       <section>
-        <h2>1. ¿Qué es una cookie?</h2>
-        <p>
-          Una cookie es un pequeño fichero de texto que se almacena en su navegador cuando visita casi cualquier página web. 
-          Su utilidad es que la web sea capaz de recordar su visita cuando vuelva a navegar por esa página.
-        </p>
+        <h2>{$LL.cookies.sections.s1_title()}</h2>
+        <p>{$LL.cookies.sections.s1_content()}</p>
       </section>
 
       <section>
-        <h2>2. Cookies utilizadas en CoreBalance</h2>
-        <p>
-          Siguiendo las directrices de la Agencia Española de Protección de Datos y la normativa europea, procedemos a detallar 
-          el uso de cookies que hace esta web. CoreBalance utiliza una política de <strong>mínima intrusión</strong>.
-        </p>
+        <h2>{$LL.cookies.sections.s2_title()}</h2>
+        <p>{@html $LL.cookies.sections.s2_content()}</p>
 
-        <h3>Cookies Técnicas y Estrictamente Necesarias</h3>
-        <p>
-          Estas cookies son esenciales para el funcionamiento de la app y no requieren su consentimiento previo según la 
-          Directiva ePrivacy (excepción para servicios solicitados por el usuario).
-        </p>
+        <h3>{$LL.cookies.sections.s2_subtitle()}</h3>
+        <p>{$LL.cookies.sections.s2_content2()}</p>
         <div class="table-container">
           <table>
             <thead>
               <tr>
-                <th>Cookie</th>
-                <th>Origen</th>
-                <th>Finalidad</th>
-                <th>Duración</th>
+                {#each $LL.cookies.sections.s2_table_headers() as header}
+                  <th>{header}</th>
+                {/each}
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>__session / firebase_auth</td>
-                <td>Google Firebase</td>
-                <td>Mantener la sesión del usuario autenticado.</td>
-                <td>Sesión / Persistente</td>
-              </tr>
-              <tr>
-                <td>bypassLanding</td>
-                <td>CoreBalance (sessionStorage)</td>
-                <td>Recordar que el usuario ha solicitado entrar al dashboard en la pestaña actual.</td>
-                <td>Sesión</td>
-              </tr>
+              {#each $LL.cookies.sections.s2_table_data() as row}
+                <tr>
+                  <td>{row.name}</td>
+                  <td>{row.origin}</td>
+                  <td>{row.purpose}</td>
+                  <td>{row.duration}</td>
+                </tr>
+              {/each}
             </tbody>
           </table>
         </div>
       </section>
 
       <section>
-        <h2>3. Cookies de Terceros y Analítica</h2>
-        <p>
-          CoreBalance <strong>no utiliza</strong> cookies de publicidad, seguimiento comportamental ni marketing de terceros.
-        </p>
-        <p>
-          Podemos utilizar herramientas de analítica básica proporcionadas por <strong>Vercel Analytics</strong> o 
-          <strong>Speed Insights</strong> para medir el rendimiento de la web. Estas herramientas están configuradas para ser 
-          lo más respetuosas posible con la privacidad, utilizando en su mayoría datos agregados y anónimos.
-        </p>
+        <h2>{$LL.cookies.sections.s3_title()}</h2>
+        <p>{@html $LL.cookies.sections.s3_content()}</p>
+        <p>{@html $LL.cookies.sections.s3_content2()}</p>
       </section>
 
       <section>
-        <h2>4. Cómo desactivar las cookies</h2>
-        <p>
-          Usted puede restringir, bloquear o borrar las cookies de CoreBalance utilizando su navegador. En cada navegador 
-          la operativa es diferente:
-        </p>
+        <h2>{$LL.cookies.sections.s4_title()}</h2>
+        <p>{$LL.cookies.sections.s4_content()}</p>
         <ul>
-          <li><a href="https://support.google.com/chrome/answer/95647?hl=es" target="_blank" rel="noopener noreferrer">Chrome</a></li>
-          <li><a href="https://support.microsoft.com/es-es/microsoft-edge/eliminar-las-cookies-en-microsoft-edge-63491102-8316-6551-34a1-5360f35352c2" target="_blank" rel="noopener noreferrer">Edge</a></li>
-          <li><a href="https://support.mozilla.org/es/kb/habilitar-y-deshabilitar-cookies-sitios-web-rastrear-preferencias" target="_blank" rel="noopener noreferrer">Firefox</a></li>
-          <li><a href="https://support.apple.com/es-es/guide/safari/sfri11471/mac" target="_blank" rel="noopener noreferrer">Safari</a></li>
+          <li><a href="https://support.google.com/chrome/answer/95647?hl=es" target="_blank" rel="noopener noreferrer">{$LL.cookies.sections.s4_list()[0]}</a></li>
+          <li><a href="https://support.microsoft.com/es-es/microsoft-edge/eliminar-las-cookies-en-microsoft-edge-63491102-8316-6551-34a1-5360f35352c2" target="_blank" rel="noopener noreferrer">{$LL.cookies.sections.s4_list()[1]}</a></li>
+          <li><a href="https://support.mozilla.org/es/kb/habilitar-y-deshabilitar-cookies-sitios-web-rastrear-preferencias" target="_blank" rel="noopener noreferrer">{$LL.cookies.sections.s4_list()[2]}</a></li>
+          <li><a href="https://support.apple.com/es-es/guide/safari/sfri11471/mac" target="_blank" rel="noopener noreferrer">{$LL.cookies.sections.s4_list()[3]}</a></li>
         </ul>
-        <p><em>Tenga en cuenta que si desactiva las cookies técnicas, es posible que no pueda iniciar sesión ni usar las funciones principales de la aplicación.</em></p>
+        <p><em>{$LL.cookies.sections.s4_note()}</em></p>
       </section>
 
       <section>
-        <h2>5. Notas Adicionales</h2>
-        <p>
-          Ni esta web ni sus representantes legales se hacen responsables ni del contenido ni de la veracidad de las 
-          políticas de privacidad que puedan tener los terceros mencionados en esta política de cookies (como Google).
-        </p>
+        <h2>{$LL.cookies.sections.s5_title()}</h2>
+        <p>{$LL.cookies.sections.s5_content()}</p>
       </section>
     </div>
   </main>

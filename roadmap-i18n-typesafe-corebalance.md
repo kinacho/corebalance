@@ -241,7 +241,7 @@ Prioriza por visibilidad pública y SEO primero, luego la app autenticada:
 | 1 | Landing pública | `Hero.svelte`, `LandingNavBar.svelte`, meta tags | ✅ COMPLETADO |
 | 2 | Landing pública | Features, Comparison, WhyUs, HowItWorks, Footer | ✅ COMPLETADO |
 | 3 | Landing pública | Páginas legales (Privacy, Terms, Cookies) | ⏳ EN PROCESO (SEO OK) |
-| 4 | App autenticada | Dashboard principal, KPIs | 📅 PENDIENTE |
+| 4 | App autenticada | Dashboard principal, KPIs | ✅ COMPLETADO (HeroSummary) |
 | 5 | App autenticada | Formularios (añadir activo, importar, ledger) | 📅 PENDIENTE |
 | 6 | App autenticada | Mensajes de error, estados vacíos, toasts | 📅 PENDIENTE |
 
@@ -289,6 +289,6 @@ Verifica que el script `build` en `package.json` **no** incluya `typesafe-i18n` 
 | `src/routes/+layout.ts` | Crear/actualizar para hidratar locale en cliente | ✅ |
 | `src/lib/i18n/es/index.ts` | Crear con traducciones base en español | ✅ |
 | `src/lib/i18n/en/index.ts` | Crear con traducciones en inglés | ✅ |
-| `src/lib/i18n/formatters.ts` | Editar con formatters de moneda/número | 📅 PENDIENTE |
+| `src/lib/i18n/formatters.ts` | Editar con formatters de moneda/número | ✅ |
 | `src/lib/components/LanguageSwitcher.svelte` | Crear componente selector de idioma | ✅ |
-| Todos los `.svelte` con texto | Migrar usando `$LL.<clave>()` | 📅 30% COMPLETADO (LANDING OK) |
+| Todos los `.svelte` con texto | Migrar usando `$LL.<clave>()` | 📅 40% COMPLETADO (LANDING & SUMMARY OK) |

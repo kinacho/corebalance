@@ -1,19 +1,14 @@
 <script lang="ts">
   import LandingNavBar from '$lib/components/landing/LandingNavBar.svelte';
   import LandingFooter from '$lib/components/landing/LandingFooter.svelte';
-  import { onMount } from 'svelte';
   import { LL } from '$lib/i18n/i18n-svelte';
 
-  const lastUpdate = new Intl.DateTimeFormat('es-ES', { 
-    day: 'numeric', 
-    month: 'long', 
-    year: 'numeric' 
-  }).format(new Date());
+  const lastUpdateDate = new Date();
 </script>
 
 <svelte:head>
-  <title>{$LL.footer.privacy()} — CoreBalance</title>
-  <meta name="description" content="Consulta nuestra política de privacidad. En CoreBalance priorizamos tu seguridad y privacidad utilizando almacenamiento local por defecto." />
+  <title>{$LL.privacy.title()} — CoreBalance</title>
+  <meta name="description" content={$LL.privacy.seo_desc()} />
 </svelte:head>
 
 <div class="legal-page">
@@ -21,83 +16,68 @@
 
   <main class="legal-content">
     <div class="container">
-      <h1>Política de Privacidad</h1>
-      <p class="update-date">Última actualización: {lastUpdate}</p>
+      <h1>{$LL.privacy.title()}</h1>
+      <p class="update-date">{$LL.privacy.updated({ date: lastUpdateDate })}</p>
 
       <section>
-        <h2>1. Responsable del Tratamiento</h2>
-        <p>
-          El responsable del tratamiento de sus datos personales es un desarrollador individual con residencia en España. 
-          Puede contactar conmigo a través del email: <strong>soporte@corebalance.app</strong>.
-        </p>
+        <h2>{$LL.privacy.sections.s1_title()}</h2>
+        <p>{@html $LL.privacy.sections.s1_content()}</p>
       </section>
 
       <section>
-        <h2>2. Datos que recogemos</h2>
-        <p>Para el funcionamiento de CoreBalance, tratamos las siguientes categorías de datos:</p>
+        <h2>{$LL.privacy.sections.s2_title()}</h2>
+        <p>{$LL.privacy.sections.s2_content()}</p>
         <ul>
-          <li><strong>Datos de Identificación:</strong> Correo electrónico (facilitado a través de Google Auth o registro directo en Firebase).</li>
-          <li><strong>Datos de Sesión:</strong> Identificadores únicos de usuario, fecha de último acceso y tokens de sesión gestionados por Firebase Authentication.</li>
-          <li><strong>Datos Financieros:</strong> Información sobre activos, participaciones, precios de compra y objetivos de cartera introducidos voluntariamente por el usuario.</li>
+          {#each $LL.privacy.sections.s2_list() as item}
+            <li>{@html item}</li>
+          {/each}
         </ul>
       </section>
 
       <section>
-        <h2>3. Finalidad del Tratamiento</h2>
-        <p>Sus datos son tratados exclusivamente para:</p>
+        <h2>{$LL.privacy.sections.s3_title()}</h2>
+        <p>{$LL.privacy.sections.s3_content()}</p>
         <ul>
-          <li>Permitirle el acceso y uso de la aplicación CoreBalance.</li>
-          <li>Sincronizar su cartera entre diferentes dispositivos.</li>
-          <li>Realizar los cálculos de rebalanceo y proyecciones financieras solicitadas.</li>
-          <li>Mantener la seguridad de su cuenta y prevenir accesos no autorizados.</li>
+          {#each $LL.privacy.sections.s3_list() as item}
+            <li>{item}</li>
+          {/each}
         </ul>
       </section>
 
       <section>
-        <h2>4. Base Legal</h2>
-        <p>
-          Tratamos sus datos en base a la <strong>ejecución de un contrato</strong> (los Términos y Condiciones que acepta al usar la app) 
-          y su <strong>consentimiento explícito</strong> al registrarse y subir su información financiera.
-        </p>
+        <h2>{$LL.privacy.sections.s4_title()}</h2>
+        <p>{@html $LL.privacy.sections.s4_content()}</p>
       </section>
 
       <section>
-        <h2>5. Destinatarios y Proveedores de Servicios</h2>
-        <p>No vendemos ni cedemos sus datos a terceros. Sin embargo, utilizamos proveedores de infraestructura esenciales:</p>
+        <h2>{$LL.privacy.sections.s5_title()}</h2>
+        <p>{$LL.privacy.sections.s5_content()}</p>
         <ul>
-          <li><strong>Google Firebase (Irlanda/EE.UU.):</strong> Hosting, base de datos (Firestore) y autenticación. Google cumple con las Cláusulas Contractuales Tipo de la UE para transferencias internacionales.</li>
-          <li><strong>Vercel (EE.UU.):</strong> Despliegue de la aplicación.</li>
+          {#each $LL.privacy.sections.s5_list() as item}
+            <li>{@html item}</li>
+          {/each}
         </ul>
       </section>
 
       <section>
-        <h2>6. Retención de Datos</h2>
-        <p>
-          Conservaremos sus datos mientras mantenga su cuenta activa. Si decide eliminar su cuenta, sus datos personales 
-          y financieros serán borrados de nuestras bases de datos activas inmediatamente (salvo copias de seguridad residuales 
-          que se eliminan en ciclos automáticos de 30 días).
-        </p>
+        <h2>{$LL.privacy.sections.s6_title()}</h2>
+        <p>{$LL.privacy.sections.s6_content()}</p>
       </section>
 
       <section>
-        <h2>7. Sus Derechos</h2>
-        <p>Como usuario en la UE, le ampara el RGPD para ejercer sus derechos de:</p>
+        <h2>{$LL.privacy.sections.s7_title()}</h2>
+        <p>{$LL.privacy.sections.s7_content()}</p>
         <ul>
-          <li><strong>Acceso:</strong> Saber qué datos tenemos.</li>
-          <li><strong>Rectificación:</strong> Corregir datos erróneos.</li>
-          <li><strong>Supresión (Derecho al Olvido):</strong> Solicitar el borrado de sus datos.</li>
-          <li><strong>Portabilidad:</strong> Descargar sus datos en un formato legible.</li>
-          <li><strong>Oposición y Limitación:</strong> En casos específicos previstos por la ley.</li>
+          {#each $LL.privacy.sections.s7_list() as item}
+            <li>{@html item}</li>
+          {/each}
         </ul>
-        <p>Para ejercer estos derechos, envíe un email a <strong>soporte@corebalance.app</strong>.</p>
+        <p>{@html $LL.privacy.sections.s7_contact()}</p>
       </section>
 
       <section>
-        <h2>8. Seguridad</h2>
-        <p>
-          CoreBalance utiliza medidas de seguridad técnicas avanzadas proporcionadas por Firebase, incluyendo cifrado 
-          en tránsito (SSL/TLS) y en reposo.
-        </p>
+        <h2>{$LL.privacy.sections.s8_title()}</h2>
+        <p>{$LL.privacy.sections.s8_content()}</p>
       </section>
     </div>
   </main>
@@ -161,7 +141,7 @@
     margin-bottom: 0.5rem;
   }
 
-  strong {
+  :global(strong) {
     color: #fff;
   }
 </style>

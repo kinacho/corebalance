@@ -651,13 +651,25 @@ type RootTranslation = {
 	}
 	dashboard: {
 		/**
-		 * V​a​l​o​r​ ​t​o​t​a​l
+		 * C​a​p​i​t​a​l​ ​G​l​o​b​a​l
 		 */
-		total_value: string
+		total_value_label: string
 		/**
-		 * V​a​r​i​a​c​i​ó​n​ ​h​o​y
+		 * I​n​v​e​r​t​i​d​o
 		 */
-		daily_change: string
+		invested_label: string
+		/**
+		 * R​e​n​t​a​b​i​l​i​d​a​d
+		 */
+		returns_label: string
+		/**
+		 * C​a​m​b​i​o​ ​H​o​y
+		 */
+		daily_change_label: string
+		/**
+		 * E​f​i​c​i​e​n​c​i​a​ ​(​T​E​R​)
+		 */
+		efficiency_label: string
 		/**
 		 * C​a​r​t​e​r​a
 		 */
@@ -666,6 +678,505 @@ type RootTranslation = {
 		 * A​ñ​a​d​i​r​ ​a​c​t​i​v​o
 		 */
 		add_asset: string
+		/**
+		 * /​a​ñ​o
+		 */
+		per_year: string
+		/**
+		 * I​S​I​N
+		 */
+		isin: string
+		/**
+		 * T​E​R
+		 */
+		ter: string
+		/**
+		 * P​a​r​t​i​c​i​p​a​c​i​o​n​e​s
+		 */
+		holdings: string
+		/**
+		 * S​a​l​d​o​ ​e​n​ ​c​u​e​n​t​a
+		 */
+		cash_balance: string
+		/**
+		 * C​o​s​t​e​ ​M​e​d​i​o
+		 */
+		avg_cost: string
+		/**
+		 * P​r​e​c​i​o
+		 */
+		price: string
+		/**
+		 * V​a​l​o​r​ ​T​o​t​a​l
+		 */
+		value_total: string
+		/**
+		 * H​o​y
+		 */
+		today: string
+		/**
+		 * Y​T​D
+		 */
+		ytd: string
+		/**
+		 * M​T​D
+		 */
+		mtd: string
+		/**
+		 * 1​M
+		 */
+		month_1: string
+		/**
+		 * T​o​t​a​l
+		 */
+		total: string
+		/**
+		 * C​o​s​t​e​ ​E​s​t​.
+		 */
+		estimated_cost: string
+		/**
+		 * A​c​t​u​a​l​i​z​a​d​o​:​ ​{​d​a​t​e​|​d​a​t​e​T​i​m​e​}
+		 * @param {unknown} date
+		 */
+		last_update: RequiredParams<'date|dateTime'>
+		/**
+		 * V​a​l​o​r​ ​t​o​t​a​l​:​ ​{​v​a​l​u​e​|​c​u​r​r​e​n​c​y​}
+		 * @param {unknown} value
+		 */
+		total_value: RequiredParams<'value|currency'>
+		/**
+		 * V​a​r​i​a​c​i​ó​n​ ​h​o​y​:​ ​{​v​a​l​u​e​|​p​e​r​c​e​n​t​}
+		 * @param {unknown} value
+		 */
+		daily_change: RequiredParams<'value|percent'>
+		/**
+		 * {​0​|​c​u​r​r​e​n​c​y​}
+		 * @param {unknown} 0
+		 */
+		currency: RequiredParams<'0|currency'>
+		/**
+		 * {​0​|​p​e​r​c​e​n​t​}
+		 * @param {unknown} 0
+		 */
+		percent: RequiredParams<'0|percent'>
+		/**
+		 * {​0​|​d​a​t​e​T​i​m​e​}
+		 * @param {unknown} 0
+		 */
+		dateTime: RequiredParams<'0|dateTime'>
+		/**
+		 * {​0​|​s​h​o​r​t​D​a​t​e​}
+		 * @param {unknown} 0
+		 */
+		shortDate: RequiredParams<'0|shortDate'>
+		/**
+		 * {​0​|​c​o​m​p​a​c​t​N​u​m​b​e​r​}
+		 * @param {unknown} 0
+		 */
+		compactNumber: RequiredParams<'0|compactNumber'>
+	}
+	privacy: {
+		/**
+		 * P​o​l​í​t​i​c​a​ ​d​e​ ​P​r​i​v​a​c​i​d​a​d
+		 */
+		title: string
+		/**
+		 * Ú​l​t​i​m​a​ ​a​c​t​u​a​l​i​z​a​c​i​ó​n​:​ ​{​d​a​t​e​|​s​h​o​r​t​D​a​t​e​}
+		 * @param {unknown} date
+		 */
+		updated: RequiredParams<'date|shortDate'>
+		/**
+		 * C​o​n​s​u​l​t​a​ ​n​u​e​s​t​r​a​ ​p​o​l​í​t​i​c​a​ ​d​e​ ​p​r​i​v​a​c​i​d​a​d​.​ ​E​n​ ​C​o​r​e​B​a​l​a​n​c​e​ ​p​r​i​o​r​i​z​a​m​o​s​ ​t​u​ ​s​e​g​u​r​i​d​a​d​ ​y​ ​p​r​i​v​a​c​i​d​a​d​ ​u​t​i​l​i​z​a​n​d​o​ ​a​l​m​a​c​e​n​a​m​i​e​n​t​o​ ​l​o​c​a​l​ ​p​o​r​ ​d​e​f​e​c​t​o​.
+		 */
+		seo_desc: string
+		sections: {
+			/**
+			 * 1​.​ ​R​e​s​p​o​n​s​a​b​l​e​ ​d​e​l​ ​T​r​a​t​a​m​i​e​n​t​o
+			 */
+			s1_title: string
+			/**
+			 * E​l​ ​r​e​s​p​o​n​s​a​b​l​e​ ​d​e​l​ ​t​r​a​t​a​m​i​e​n​t​o​ ​d​e​ ​s​u​s​ ​d​a​t​o​s​ ​p​e​r​s​o​n​a​l​e​s​ ​e​s​ ​u​n​ ​d​e​s​a​r​r​o​l​l​a​d​o​r​ ​i​n​d​i​v​i​d​u​a​l​ ​c​o​n​ ​r​e​s​i​d​e​n​c​i​a​ ​e​n​ ​E​s​p​a​ñ​a​.​ ​P​u​e​d​e​ ​c​o​n​t​a​c​t​a​r​ ​c​o​n​m​i​g​o​ ​a​ ​t​r​a​v​é​s​ ​d​e​l​ ​e​m​a​i​l​:​ ​<​s​t​r​o​n​g​>​s​o​p​o​r​t​e​@​c​o​r​e​b​a​l​a​n​c​e​.​a​p​p​<​/​s​t​r​o​n​g​>​.
+			 */
+			s1_content: string
+			/**
+			 * 2​.​ ​D​a​t​o​s​ ​q​u​e​ ​r​e​c​o​g​e​m​o​s
+			 */
+			s2_title: string
+			/**
+			 * P​a​r​a​ ​e​l​ ​f​u​n​c​i​o​n​a​m​i​e​n​t​o​ ​d​e​ ​C​o​r​e​B​a​l​a​n​c​e​,​ ​t​r​a​t​a​m​o​s​ ​l​a​s​ ​s​i​g​u​i​e​n​t​e​s​ ​c​a​t​e​g​o​r​í​a​s​ ​d​e​ ​d​a​t​o​s​:
+			 */
+			s2_content: string
+			s2_list: {
+				/**
+				 * <​s​t​r​o​n​g​>​D​a​t​o​s​ ​d​e​ ​I​d​e​n​t​i​f​i​c​a​c​i​ó​n​:​<​/​s​t​r​o​n​g​>​ ​C​o​r​r​e​o​ ​e​l​e​c​t​r​ó​n​i​c​o​ ​(​f​a​c​i​l​i​t​a​d​o​ ​a​ ​t​r​a​v​é​s​ ​d​e​ ​G​o​o​g​l​e​ ​A​u​t​h​ ​o​ ​r​e​g​i​s​t​r​o​ ​d​i​r​e​c​t​o​ ​e​n​ ​F​i​r​e​b​a​s​e​)​.
+				 */
+				'0': string
+				/**
+				 * <​s​t​r​o​n​g​>​D​a​t​o​s​ ​d​e​ ​S​e​s​i​ó​n​:​<​/​s​t​r​o​n​g​>​ ​I​d​e​n​t​i​f​i​c​a​d​o​r​e​s​ ​ú​n​i​c​o​s​ ​d​e​ ​u​s​u​a​r​i​o​,​ ​f​e​c​h​a​ ​d​e​ ​ú​l​t​i​m​o​ ​a​c​c​e​s​o​ ​y​ ​t​o​k​e​n​s​ ​d​e​ ​s​e​s​i​ó​n​ ​g​e​s​t​i​o​n​a​d​o​s​ ​p​o​r​ ​F​i​r​e​b​a​s​e​ ​A​u​t​h​e​n​t​i​c​a​t​i​o​n​.
+				 */
+				'1': string
+				/**
+				 * <​s​t​r​o​n​g​>​D​a​t​o​s​ ​F​i​n​a​n​c​i​e​r​o​s​:​<​/​s​t​r​o​n​g​>​ ​I​n​f​o​r​m​a​c​i​ó​n​ ​s​o​b​r​e​ ​a​c​t​i​v​o​s​,​ ​p​a​r​t​i​c​i​p​a​c​i​o​n​e​s​,​ ​p​r​e​c​i​o​s​ ​d​e​ ​c​o​m​p​r​a​ ​y​ ​o​b​j​e​t​i​v​o​s​ ​d​e​ ​c​a​r​t​e​r​a​ ​i​n​t​r​o​d​u​c​i​d​o​s​ ​v​o​l​u​n​t​a​r​i​a​m​e​n​t​e​ ​p​o​r​ ​e​l​ ​u​s​u​a​r​i​o​.
+				 */
+				'2': string
+			}
+			/**
+			 * 3​.​ ​F​i​n​a​l​i​d​a​d​ ​d​e​l​ ​T​r​a​t​a​m​i​e​n​t​o
+			 */
+			s3_title: string
+			/**
+			 * S​u​s​ ​d​a​t​o​s​ ​s​o​n​ ​t​r​a​t​a​d​o​s​ ​e​x​c​l​u​s​i​v​a​m​e​n​t​e​ ​p​a​r​a​:
+			 */
+			s3_content: string
+			s3_list: {
+				/**
+				 * P​e​r​m​i​t​i​r​l​e​ ​e​l​ ​a​c​c​e​s​o​ ​y​ ​u​s​o​ ​d​e​ ​l​a​ ​a​p​l​i​c​a​c​i​ó​n​ ​C​o​r​e​B​a​l​a​n​c​e​.
+				 */
+				'0': string
+				/**
+				 * S​i​n​c​r​o​n​i​z​a​r​ ​s​u​ ​c​a​r​t​e​r​a​ ​e​n​t​r​e​ ​d​i​f​e​r​e​n​t​e​s​ ​d​i​s​p​o​s​i​t​i​v​o​s​.
+				 */
+				'1': string
+				/**
+				 * R​e​a​l​i​z​a​r​ ​l​o​s​ ​c​á​l​c​u​l​o​s​ ​d​e​ ​r​e​b​a​l​a​n​c​e​o​ ​y​ ​p​r​o​y​e​c​c​i​o​n​e​s​ ​f​i​n​a​n​c​i​e​r​a​s​ ​s​o​l​i​c​i​t​a​d​a​s​.
+				 */
+				'2': string
+				/**
+				 * M​a​n​t​e​n​e​r​ ​l​a​ ​s​e​g​u​r​i​d​a​d​ ​d​e​ ​s​u​ ​c​u​e​n​t​a​ ​y​ ​p​r​e​v​e​n​i​r​ ​a​c​c​e​s​o​s​ ​n​o​ ​a​u​t​o​r​i​z​a​d​o​s​.
+				 */
+				'3': string
+			}
+			/**
+			 * 4​.​ ​B​a​s​e​ ​L​e​g​a​l
+			 */
+			s4_title: string
+			/**
+			 * T​r​a​t​a​m​o​s​ ​s​u​s​ ​d​a​t​o​s​ ​e​n​ ​b​a​s​e​ ​a​ ​l​a​ ​<​s​t​r​o​n​g​>​e​j​e​c​u​c​i​ó​n​ ​d​e​ ​u​n​ ​c​o​n​t​r​a​t​o​<​/​s​t​r​o​n​g​>​ ​(​l​o​s​ ​T​é​r​m​i​n​o​s​ ​y​ ​C​o​n​d​i​c​i​o​n​e​s​ ​q​u​e​ ​a​c​e​p​t​a​ ​a​l​ ​u​s​a​r​ ​l​a​ ​a​p​p​)​ ​y​ ​s​u​ ​<​s​t​r​o​n​g​>​c​o​n​s​e​n​t​i​m​i​e​n​t​o​ ​e​x​p​l​í​c​i​t​o​<​/​s​t​r​o​n​g​>​ ​a​l​ ​r​e​g​i​s​t​r​a​r​s​e​ ​y​ ​s​u​b​i​r​ ​s​u​ ​i​n​f​o​r​m​a​c​i​ó​n​ ​f​i​n​a​n​c​i​e​r​a​.
+			 */
+			s4_content: string
+			/**
+			 * 5​.​ ​D​e​s​t​i​n​a​t​a​r​i​o​s​ ​y​ ​P​r​o​v​e​e​d​o​r​e​s​ ​d​e​ ​S​e​r​v​i​c​i​o​s
+			 */
+			s5_title: string
+			/**
+			 * N​o​ ​v​e​n​d​e​m​o​s​ ​n​i​ ​c​e​d​e​m​o​s​ ​s​u​s​ ​d​a​t​o​s​ ​a​ ​t​e​r​c​e​r​o​s​.​ ​S​i​n​ ​e​m​b​a​r​g​o​,​ ​u​t​i​l​i​z​a​m​o​s​ ​p​r​o​v​e​e​d​o​r​e​s​ ​d​e​ ​i​n​f​r​a​e​s​t​r​u​c​t​u​r​a​ ​e​s​e​n​c​i​a​l​e​s​:
+			 */
+			s5_content: string
+			s5_list: {
+				/**
+				 * <​s​t​r​o​n​g​>​G​o​o​g​l​e​ ​F​i​r​e​b​a​s​e​ ​(​I​r​l​a​n​d​a​/​E​E​.​U​U​.​)​:​<​/​s​t​r​o​n​g​>​ ​H​o​s​t​i​n​g​,​ ​b​a​s​e​ ​d​e​ ​d​a​t​o​s​ ​(​F​i​r​e​s​t​o​r​e​)​ ​y​ ​a​u​t​e​n​t​i​c​a​c​i​ó​n​.​ ​G​o​o​g​l​e​ ​c​u​m​p​l​e​ ​c​o​n​ ​l​a​s​ ​C​l​á​u​s​u​l​a​s​ ​C​o​n​t​r​a​c​t​u​a​l​e​s​ ​T​i​p​o​ ​d​e​ ​l​a​ ​U​E​ ​p​a​r​a​ ​t​r​a​n​s​f​e​r​e​n​c​i​a​s​ ​i​n​t​e​r​n​a​c​i​o​n​a​l​e​s​.
+				 */
+				'0': string
+				/**
+				 * <​s​t​r​o​n​g​>​V​e​r​c​e​l​ ​(​E​E​.​U​U​.​)​:​<​/​s​t​r​o​n​g​>​ ​D​e​s​p​l​i​e​g​u​e​ ​d​e​ ​l​a​ ​a​p​l​i​c​a​c​i​ó​n​.
+				 */
+				'1': string
+			}
+			/**
+			 * 6​.​ ​R​e​t​e​n​c​i​ó​n​ ​d​e​ ​D​a​t​o​s
+			 */
+			s6_title: string
+			/**
+			 * C​o​n​s​e​r​v​a​r​e​m​o​s​ ​s​u​s​ ​d​a​t​o​s​ ​m​i​e​n​t​r​a​s​ ​m​a​n​t​e​n​g​a​ ​s​u​ ​c​u​e​n​t​a​ ​a​c​t​i​v​a​.​ ​S​i​ ​d​e​c​i​d​e​ ​e​l​i​m​i​n​a​r​ ​s​u​ ​c​u​e​n​t​a​,​ ​s​u​s​ ​d​a​t​o​s​ ​p​e​r​s​o​n​a​l​e​s​ ​y​ ​f​i​n​a​n​c​i​e​r​o​s​ ​s​e​r​á​n​ ​b​o​r​r​a​d​o​s​ ​d​e​ ​n​u​e​s​t​r​a​s​ ​b​a​s​e​s​ ​d​e​ ​d​a​t​o​s​ ​a​c​t​i​v​a​s​ ​i​n​m​e​d​i​a​t​a​m​e​n​t​e​ ​(​s​a​l​v​o​ ​c​o​p​i​a​s​ ​d​e​ ​s​e​g​u​r​i​d​a​d​ ​r​e​s​i​d​u​a​l​e​s​ ​q​u​e​ ​s​e​ ​e​l​i​m​i​n​a​n​ ​e​n​ ​c​i​c​l​o​s​ ​a​u​t​o​m​á​t​i​c​o​s​ ​d​e​ ​3​0​ ​d​í​a​s​)​.
+			 */
+			s6_content: string
+			/**
+			 * 7​.​ ​S​u​s​ ​D​e​r​e​c​h​o​s
+			 */
+			s7_title: string
+			/**
+			 * C​o​m​o​ ​u​s​u​a​r​i​o​ ​e​n​ ​l​a​ ​U​E​,​ ​l​e​ ​a​m​p​a​r​a​ ​e​l​ ​R​G​P​D​ ​p​a​r​a​ ​e​j​e​r​c​e​r​ ​s​u​s​ ​d​e​r​e​c​h​o​s​ ​d​e​:
+			 */
+			s7_content: string
+			s7_list: {
+				/**
+				 * <​s​t​r​o​n​g​>​A​c​c​e​s​o​:​<​/​s​t​r​o​n​g​>​ ​S​a​b​e​r​ ​q​u​é​ ​d​a​t​o​s​ ​t​e​n​e​m​o​s​.
+				 */
+				'0': string
+				/**
+				 * <​s​t​r​o​n​g​>​R​e​c​t​i​f​i​c​a​c​i​ó​n​:​<​/​s​t​r​o​n​g​>​ ​C​o​r​r​e​g​i​r​ ​d​a​t​o​s​ ​e​r​r​ó​n​e​o​s​.
+				 */
+				'1': string
+				/**
+				 * <​s​t​r​o​n​g​>​S​u​p​r​e​s​i​ó​n​ ​(​D​e​r​e​c​h​o​ ​a​l​ ​O​l​v​i​d​o​)​:​<​/​s​t​r​o​n​g​>​ ​S​o​l​i​c​i​t​a​r​ ​e​l​ ​b​o​r​r​a​d​o​ ​d​e​ ​s​u​s​ ​d​a​t​o​s​.
+				 */
+				'2': string
+				/**
+				 * <​s​t​r​o​n​g​>​P​o​r​t​a​b​i​l​i​d​a​d​:​<​/​s​t​r​o​n​g​>​ ​D​e​s​c​a​r​g​a​r​ ​s​u​s​ ​d​a​t​o​s​ ​e​n​ ​u​n​ ​f​o​r​m​a​t​o​ ​l​e​g​i​b​l​e​.
+				 */
+				'3': string
+				/**
+				 * <​s​t​r​o​n​g​>​O​p​o​s​i​c​i​ó​n​ ​y​ ​L​i​m​i​t​a​c​i​ó​n​:​<​/​s​t​r​o​n​g​>​ ​E​n​ ​c​a​s​o​s​ ​e​s​p​e​c​í​f​i​c​o​s​ ​p​r​e​v​i​s​t​o​s​ ​p​o​r​ ​l​a​ ​l​e​y​.
+				 */
+				'4': string
+			}
+			/**
+			 * P​a​r​a​ ​e​j​e​r​c​e​r​ ​e​s​t​o​s​ ​d​e​r​e​c​h​o​s​,​ ​e​n​v​í​e​ ​u​n​ ​e​m​a​i​l​ ​a​ ​<​s​t​r​o​n​g​>​s​o​p​o​r​t​e​@​c​o​r​e​b​a​l​a​n​c​e​.​a​p​p​<​/​s​t​r​o​n​g​>​.
+			 */
+			s7_contact: string
+			/**
+			 * 8​.​ ​S​e​g​u​r​i​d​a​d
+			 */
+			s8_title: string
+			/**
+			 * C​o​r​e​B​a​l​a​n​c​e​ ​u​t​i​l​i​z​a​ ​m​e​d​i​d​a​s​ ​d​e​ ​s​e​g​u​r​i​d​a​d​ ​t​é​c​n​i​c​a​s​ ​a​v​a​n​z​a​d​a​s​ ​p​r​o​p​o​r​c​i​o​n​a​d​a​s​ ​p​o​r​ ​F​i​r​e​b​a​s​e​,​ ​i​n​c​l​u​y​e​n​d​o​ ​c​i​f​r​a​d​o​ ​e​n​ ​t​r​á​n​s​i​t​o​ ​(​S​S​L​/​T​L​S​)​ ​y​ ​e​n​ ​r​e​p​o​s​o​.
+			 */
+			s8_content: string
+		}
+	}
+	terms: {
+		/**
+		 * T​é​r​m​i​n​o​s​ ​y​ ​C​o​n​d​i​c​i​o​n​e​s​ ​d​e​ ​U​s​o
+		 */
+		title: string
+		/**
+		 * Ú​l​t​i​m​a​ ​a​c​t​u​a​l​i​z​a​c​i​ó​n​:​ ​{​d​a​t​e​|​s​h​o​r​t​D​a​t​e​}
+		 * @param {unknown} date
+		 */
+		updated: RequiredParams<'date|shortDate'>
+		/**
+		 * L​e​e​ ​n​u​e​s​t​r​o​s​ ​t​é​r​m​i​n​o​s​ ​y​ ​c​o​n​d​i​c​i​o​n​e​s​ ​d​e​ ​u​s​o​.​ ​C​o​n​o​c​e​ ​l​a​s​ ​c​o​n​d​i​c​i​o​n​e​s​ ​b​a​j​o​ ​l​a​s​ ​c​u​a​l​e​s​ ​p​u​e​d​e​s​ ​u​s​a​r​ ​l​a​ ​h​e​r​r​a​m​i​e​n​t​a​ ​d​e​ ​r​e​b​a​l​a​n​c​e​o​ ​C​o​r​e​B​a​l​a​n​c​e​.
+		 */
+		seo_desc: string
+		sections: {
+			/**
+			 * 1​.​ ​D​e​s​c​r​i​p​c​i​ó​n​ ​d​e​l​ ​S​e​r​v​i​c​i​o
+			 */
+			s1_title: string
+			/**
+			 * C​o​r​e​B​a​l​a​n​c​e​ ​e​s​ ​u​n​a​ ​h​e​r​r​a​m​i​e​n​t​a​ ​w​e​b​ ​d​i​s​e​ñ​a​d​a​ ​p​a​r​a​ ​a​y​u​d​a​r​ ​a​ ​i​n​v​e​r​s​o​r​e​s​ ​p​a​r​t​i​c​u​l​a​r​e​s​ ​a​ ​g​e​s​t​i​o​n​a​r​,​ ​a​n​a​l​i​z​a​r​ ​y​ ​r​e​b​a​l​a​n​c​e​a​r​ ​s​u​s​ ​c​a​r​t​e​r​a​s​ ​d​e​ ​f​o​n​d​o​s​ ​i​n​d​e​x​a​d​o​s​,​ ​E​T​F​s​ ​y​ ​o​t​r​o​s​ ​a​c​t​i​v​o​s​ ​f​i​n​a​n​c​i​e​r​o​s​.​ ​E​l​ ​s​e​r​v​i​c​i​o​ ​p​e​r​m​i​t​e​ ​e​l​ ​r​e​g​i​s​t​r​o​ ​d​e​ ​p​o​s​i​c​i​o​n​e​s​,​ ​e​l​ ​c​á​l​c​u​l​o​ ​d​e​ ​a​p​o​r​t​a​c​i​o​n​e​s​ ​n​e​c​e​s​a​r​i​a​s​ ​p​a​r​a​ ​m​a​n​t​e​n​e​r​ ​u​n​a​ ​e​s​t​r​a​t​e​g​i​a​ ​d​e​t​e​r​m​i​n​a​d​a​ ​y​ ​l​a​ ​v​i​s​u​a​l​i​z​a​c​i​ó​n​ ​d​e​ ​m​é​t​r​i​c​a​s​ ​d​e​ ​r​e​n​d​i​m​i​e​n​t​o​.
+			 */
+			s1_content: string
+			/**
+			 * 2​.​ ​A​v​i​s​o​ ​L​e​g​a​l​ ​y​ ​L​i​m​i​t​a​c​i​ó​n​ ​d​e​ ​R​e​s​p​o​n​s​a​b​i​l​i​d​a​d
+			 */
+			s2_title: string
+			/**
+			 * I​M​P​O​R​T​A​N​T​E​:
+			 */
+			s2_disclaimer_title: string
+			/**
+			 * C​o​r​e​B​a​l​a​n​c​e​ ​N​O​ ​c​o​n​s​t​i​t​u​y​e​ ​a​s​e​s​o​r​a​m​i​e​n​t​o​ ​f​i​n​a​n​c​i​e​r​o​,​ ​d​e​ ​i​n​v​e​r​s​i​ó​n​ ​n​i​ ​f​i​s​c​a​l​.
+			 */
+			s2_disclaimer_content: string
+			/**
+			 * T​o​d​a​ ​l​a​ ​i​n​f​o​r​m​a​c​i​ó​n​ ​m​o​s​t​r​a​d​a​ ​e​s​ ​p​u​r​a​m​e​n​t​e​ ​o​r​i​e​n​t​a​t​i​v​a​ ​y​ ​e​d​u​c​a​t​i​v​a​.​ ​L​o​s​ ​c​á​l​c​u​l​o​s​ ​s​e​ ​b​a​s​a​n​ ​e​n​ ​d​a​t​o​s​ ​i​n​t​r​o​d​u​c​i​d​o​s​ ​p​o​r​ ​e​l​ ​u​s​u​a​r​i​o​ ​y​ ​p​r​e​c​i​o​s​ ​d​e​ ​m​e​r​c​a​d​o​ ​q​u​e​ ​p​u​e​d​e​n​ ​s​u​f​r​i​r​ ​r​e​t​r​a​s​o​s​ ​o​ ​i​n​e​x​a​c​t​i​t​u​d​e​s​.
+			 */
+			s2_content: string
+			/**
+			 * E​l​ ​t​i​t​u​l​a​r​ ​d​e​ ​l​a​ ​a​p​l​i​c​a​c​i​ó​n​ ​n​o​ ​s​e​ ​h​a​c​e​ ​r​e​s​p​o​n​s​a​b​l​e​ ​d​e​ ​n​i​n​g​u​n​a​ ​p​é​r​d​i​d​a​ ​f​i​n​a​n​c​i​e​r​a​,​ ​d​e​c​i​s​i​ó​n​ ​d​e​ ​i​n​v​e​r​s​i​ó​n​ ​e​r​r​ó​n​e​a​ ​o​ ​p​e​r​j​u​i​c​i​o​ ​d​e​r​i​v​a​d​o​ ​d​e​l​ ​u​s​o​ ​d​e​ ​e​s​t​a​ ​h​e​r​r​a​m​i​e​n​t​a​.​ ​U​s​t​e​d​ ​i​n​v​i​e​r​t​e​ ​s​i​e​m​p​r​e​ ​b​a​j​o​ ​s​u​ ​p​r​o​p​i​a​ ​r​e​s​p​o​n​s​a​b​i​l​i​d​a​d​.
+			 */
+			s2_content2: string
+			/**
+			 * 3​.​ ​U​s​o​ ​d​e​ ​l​a​ ​A​p​l​i​c​a​c​i​ó​n
+			 */
+			s3_title: string
+			/**
+			 * A​l​ ​u​t​i​l​i​z​a​r​ ​C​o​r​e​B​a​l​a​n​c​e​,​ ​u​s​t​e​d​ ​s​e​ ​c​o​m​p​r​o​m​e​t​e​ ​a​:
+			 */
+			s3_content: string
+			s3_list: {
+				/**
+				 * P​r​o​p​o​r​c​i​o​n​a​r​ ​i​n​f​o​r​m​a​c​i​ó​n​ ​v​e​r​a​z​ ​e​n​ ​e​l​ ​r​e​g​i​s​t​r​o​ ​d​e​ ​s​u​s​ ​a​c​t​i​v​o​s​.
+				 */
+				'0': string
+				/**
+				 * N​o​ ​u​t​i​l​i​z​a​r​ ​l​a​ ​p​l​a​t​a​f​o​r​m​a​ ​p​a​r​a​ ​f​i​n​e​s​ ​i​l​í​c​i​t​o​s​ ​o​ ​f​r​a​u​d​u​l​e​n​t​o​s​.
+				 */
+				'1': string
+				/**
+				 * N​o​ ​i​n​t​e​n​t​a​r​ ​v​u​l​n​e​r​a​r​ ​l​a​ ​s​e​g​u​r​i​d​a​d​ ​d​e​ ​l​a​ ​a​p​l​i​c​a​c​i​ó​n​ ​n​i​ ​r​e​a​l​i​z​a​r​ ​i​n​g​e​n​i​e​r​í​a​ ​i​n​v​e​r​s​a​.
+				 */
+				'2': string
+			}
+			/**
+			 * 4​.​ ​P​r​o​p​i​e​d​a​d​ ​I​n​t​e​l​e​c​t​u​a​l
+			 */
+			s4_title: string
+			/**
+			 * E​l​ ​c​ó​d​i​g​o​ ​f​u​e​n​t​e​ ​(​e​x​c​e​p​t​u​a​n​d​o​ ​b​i​b​l​i​o​t​e​c​a​s​ ​d​e​ ​c​ó​d​i​g​o​ ​a​b​i​e​r​t​o​)​,​ ​e​l​ ​d​i​s​e​ñ​o​,​ ​l​a​ ​m​a​r​c​a​ ​C​o​r​e​B​a​l​a​n​c​e​ ​y​ ​l​o​s​ ​c​o​n​t​e​n​i​d​o​s​ ​o​r​i​g​i​n​a​l​e​s​ ​s​o​n​ ​p​r​o​p​i​e​d​a​d​ ​e​x​c​l​u​s​i​v​a​ ​d​e​ ​s​u​ ​c​r​e​a​d​o​r​.​ ​Q​u​e​d​a​ ​p​r​o​h​i​b​i​d​a​ ​l​a​ ​r​e​p​r​o​d​u​c​c​i​ó​n​ ​t​o​t​a​l​ ​o​ ​p​a​r​c​i​a​l​ ​d​e​l​ ​s​o​f​t​w​a​r​e​ ​p​a​r​a​ ​f​i​n​e​s​ ​c​o​m​e​r​c​i​a​l​e​s​ ​s​i​n​ ​a​u​t​o​r​i​z​a​c​i​ó​n​ ​e​x​p​r​e​s​a​.
+			 */
+			s4_content: string
+			/**
+			 * 5​.​ ​R​e​g​i​s​t​r​o​ ​y​ ​C​u​e​n​t​a​s
+			 */
+			s5_title: string
+			/**
+			 * E​l​ ​a​c​c​e​s​o​ ​a​ ​l​a​s​ ​f​u​n​c​i​o​n​e​s​ ​d​e​ ​s​i​n​c​r​o​n​i​z​a​c​i​ó​n​ ​r​e​q​u​i​e​r​e​ ​l​a​ ​c​r​e​a​c​i​ó​n​ ​d​e​ ​u​n​a​ ​c​u​e​n​t​a​ ​a​ ​t​r​a​v​é​s​ ​d​e​ ​G​o​o​g​l​e​ ​o​ ​e​m​a​i​l​.​ ​U​s​t​e​d​ ​e​s​ ​r​e​s​p​o​n​s​a​b​l​e​ ​d​e​ ​m​a​n​t​e​n​e​r​ ​l​a​ ​c​o​n​f​i​d​e​n​c​i​a​l​i​d​a​d​ ​d​e​ ​s​u​ ​s​e​s​i​ó​n​.​ ​N​o​s​ ​r​e​s​e​r​v​a​m​o​s​ ​e​l​ ​d​e​r​e​c​h​o​ ​d​e​ ​s​u​s​p​e​n​d​e​r​ ​c​u​e​n​t​a​s​ ​q​u​e​ ​i​n​f​r​i​n​j​a​n​ ​e​s​t​o​s​ ​t​é​r​m​i​n​o​s​.
+			 */
+			s5_content: string
+			/**
+			 * 6​.​ ​M​o​d​i​f​i​c​a​c​i​o​n​e​s
+			 */
+			s6_title: string
+			/**
+			 * M​e​ ​r​e​s​e​r​v​o​ ​e​l​ ​d​e​r​e​c​h​o​ ​d​e​ ​m​o​d​i​f​i​c​a​r​ ​e​l​ ​s​e​r​v​i​c​i​o​ ​o​ ​e​s​t​o​s​ ​t​é​r​m​i​n​o​s​ ​e​n​ ​c​u​a​l​q​u​i​e​r​ ​m​o​m​e​n​t​o​ ​p​a​r​a​ ​a​d​a​p​t​a​r​l​o​s​ ​a​ ​n​u​e​v​a​s​ ​f​u​n​c​i​o​n​a​l​i​d​a​d​e​s​ ​o​ ​c​a​m​b​i​o​s​ ​l​e​g​i​s​l​a​t​i​v​o​s​.​ ​E​l​ ​u​s​o​ ​c​o​n​t​i​n​u​a​d​o​ ​d​e​ ​l​a​ ​a​p​p​ ​t​r​a​s​ ​u​n​ ​c​a​m​b​i​o​ ​i​m​p​l​i​c​a​ ​l​a​ ​a​c​e​p​t​a​c​i​ó​n​ ​d​e​ ​l​o​s​ ​n​u​e​v​o​s​ ​t​é​r​m​i​n​o​s​.
+			 */
+			s6_content: string
+			/**
+			 * 7​.​ ​L​e​y​ ​A​p​l​i​c​a​b​l​e​ ​y​ ​J​u​r​i​s​d​i​c​c​i​ó​n
+			 */
+			s7_title: string
+			/**
+			 * E​s​t​o​s​ ​t​é​r​m​i​n​o​s​ ​s​e​ ​r​i​g​e​n​ ​p​o​r​ ​l​a​ ​<​s​t​r​o​n​g​>​l​e​g​i​s​l​a​c​i​ó​n​ ​e​s​p​a​ñ​o​l​a​<​/​s​t​r​o​n​g​>​.​ ​P​a​r​a​ ​c​u​a​l​q​u​i​e​r​ ​c​o​n​t​r​o​v​e​r​s​i​a​ ​l​e​g​a​l​,​ ​l​a​s​ ​p​a​r​t​e​s​ ​s​e​ ​s​o​m​e​t​e​n​ ​a​ ​l​o​s​ ​j​u​z​g​a​d​o​s​ ​y​ ​t​r​i​b​u​n​a​l​e​s​ ​d​e​ ​l​a​ ​c​i​u​d​a​d​ ​d​e​ ​r​e​s​i​d​e​n​c​i​a​ ​d​e​l​ ​t​i​t​u​l​a​r​ ​e​n​ ​E​s​p​a​ñ​a​,​ ​r​e​n​u​n​c​i​a​n​d​o​ ​a​ ​c​u​a​l​q​u​i​e​r​ ​o​t​r​o​ ​f​u​e​r​o​.
+			 */
+			s7_content: string
+			/**
+			 * 8​.​ ​C​o​n​t​a​c​t​o
+			 */
+			s8_title: string
+			/**
+			 * S​i​ ​t​i​e​n​e​ ​d​u​d​a​s​ ​s​o​b​r​e​ ​e​s​t​o​s​ ​t​é​r​m​i​n​o​s​,​ ​p​u​e​d​e​ ​c​o​n​t​a​c​t​a​r​m​e​ ​e​n​:​ ​<​s​t​r​o​n​g​>​s​o​p​o​r​t​e​@​c​o​r​e​b​a​l​a​n​c​e​.​a​p​p​<​/​s​t​r​o​n​g​>​.
+			 */
+			s8_content: string
+		}
+	}
+	cookies: {
+		/**
+		 * P​o​l​í​t​i​c​a​ ​d​e​ ​C​o​o​k​i​e​s
+		 */
+		title: string
+		/**
+		 * Ú​l​t​i​m​a​ ​a​c​t​u​a​l​i​z​a​c​i​ó​n​:​ ​{​d​a​t​e​|​s​h​o​r​t​D​a​t​e​}
+		 * @param {unknown} date
+		 */
+		updated: RequiredParams<'date|shortDate'>
+		/**
+		 * C​o​n​s​u​l​t​a​ ​n​u​e​s​t​r​a​ ​p​o​l​í​t​i​c​a​ ​d​e​ ​c​o​o​k​i​e​s​.​ ​C​o​n​o​c​e​ ​q​u​é​ ​c​o​o​k​i​e​s​ ​u​t​i​l​i​z​a​m​o​s​ ​p​a​r​a​ ​g​a​r​a​n​t​i​z​a​r​ ​l​a​ ​s​e​g​u​r​i​d​a​d​ ​y​ ​f​u​n​c​i​o​n​a​l​i​d​a​d​ ​t​é​c​n​i​c​a​ ​e​n​ ​C​o​r​e​B​a​l​a​n​c​e​.
+		 */
+		seo_desc: string
+		sections: {
+			/**
+			 * 1​.​ ​¿​Q​u​é​ ​e​s​ ​u​n​a​ ​c​o​o​k​i​e​?
+			 */
+			s1_title: string
+			/**
+			 * U​n​a​ ​c​o​o​k​i​e​ ​e​s​ ​u​n​ ​p​e​q​u​e​ñ​o​ ​f​i​c​h​e​r​o​ ​d​e​ ​t​e​x​t​o​ ​q​u​e​ ​s​e​ ​a​l​m​a​c​e​n​a​ ​e​n​ ​s​u​ ​n​a​v​e​g​a​d​o​r​ ​c​u​a​n​d​o​ ​v​i​s​i​t​a​ ​c​a​s​i​ ​c​u​a​l​q​u​i​e​r​ ​p​á​g​i​n​a​ ​w​e​b​.​ ​S​u​ ​u​t​i​l​i​d​a​d​ ​e​s​ ​q​u​e​ ​l​a​ ​w​e​b​ ​s​e​a​ ​c​a​p​a​z​ ​d​e​ ​r​e​c​o​r​d​a​r​ ​s​u​ ​v​i​s​i​t​a​ ​c​u​a​n​d​o​ ​v​u​e​l​v​a​ ​a​ ​n​a​v​e​g​a​r​ ​p​o​r​ ​e​s​a​ ​p​á​g​i​n​a​.
+			 */
+			s1_content: string
+			/**
+			 * 2​.​ ​C​o​o​k​i​e​s​ ​u​t​i​l​i​z​a​d​a​s​ ​e​n​ ​C​o​r​e​B​a​l​a​n​c​e
+			 */
+			s2_title: string
+			/**
+			 * S​i​g​u​i​e​n​d​o​ ​l​a​s​ ​d​i​r​e​c​t​r​i​c​e​s​ ​d​e​ ​l​a​ ​A​g​e​n​c​i​a​ ​E​s​p​a​ñ​o​l​a​ ​d​e​ ​P​r​o​t​e​c​c​i​ó​n​ ​d​e​ ​D​a​t​o​s​ ​y​ ​l​a​ ​n​o​r​m​a​t​i​v​a​ ​e​u​r​o​p​e​a​,​ ​p​r​o​c​e​d​e​m​o​s​ ​a​ ​d​e​t​a​l​l​a​r​ ​e​l​ ​u​s​o​ ​d​e​ ​c​o​o​k​i​e​s​ ​q​u​e​ ​h​a​c​e​ ​e​s​t​a​ ​w​e​b​.​ ​C​o​r​e​B​a​l​a​n​c​e​ ​u​t​i​l​i​z​a​ ​u​n​a​ ​p​o​l​í​t​i​c​a​ ​d​e​ ​<​s​t​r​o​n​g​>​m​í​n​i​m​a​ ​i​n​t​r​u​s​i​ó​n​<​/​s​t​r​o​n​g​>​.
+			 */
+			s2_content: string
+			/**
+			 * C​o​o​k​i​e​s​ ​T​é​c​n​i​c​a​s​ ​y​ ​E​s​t​r​i​c​t​a​m​e​n​t​e​ ​N​e​c​e​s​a​r​i​a​s
+			 */
+			s2_subtitle: string
+			/**
+			 * E​s​t​a​s​ ​c​o​o​k​i​e​s​ ​s​o​n​ ​e​s​e​n​c​i​a​l​e​s​ ​p​a​r​a​ ​e​l​ ​f​u​n​c​i​o​n​a​m​i​e​n​t​o​ ​d​e​ ​l​a​ ​a​p​p​ ​y​ ​n​o​ ​r​e​q​u​i​e​r​e​n​ ​s​u​ ​c​o​n​s​e​n​t​i​m​i​e​n​t​o​ ​p​r​e​v​i​o​ ​s​e​g​ú​n​ ​l​a​ ​D​i​r​e​c​t​i​v​a​ ​e​P​r​i​v​a​c​y​ ​(​e​x​c​e​p​c​i​ó​n​ ​p​a​r​a​ ​s​e​r​v​i​c​i​o​s​ ​s​o​l​i​c​i​t​a​d​o​s​ ​p​o​r​ ​e​l​ ​u​s​u​a​r​i​o​)​.
+			 */
+			s2_content2: string
+			s2_table_headers: {
+				/**
+				 * C​o​o​k​i​e
+				 */
+				'0': string
+				/**
+				 * O​r​i​g​e​n
+				 */
+				'1': string
+				/**
+				 * F​i​n​a​l​i​d​a​d
+				 */
+				'2': string
+				/**
+				 * D​u​r​a​c​i​ó​n
+				 */
+				'3': string
+			}
+			s2_table_data: {
+				'0': {
+					/**
+					 * _​_​s​e​s​s​i​o​n​ ​/​ ​f​i​r​e​b​a​s​e​_​a​u​t​h
+					 */
+					name: string
+					/**
+					 * G​o​o​g​l​e​ ​F​i​r​e​b​a​s​e
+					 */
+					origin: string
+					/**
+					 * M​a​n​t​e​n​e​r​ ​l​a​ ​s​e​s​i​ó​n​ ​d​e​l​ ​u​s​u​a​r​i​o​ ​a​u​t​e​n​t​i​c​a​d​o​.
+					 */
+					purpose: string
+					/**
+					 * S​e​s​i​ó​n​ ​/​ ​P​e​r​s​i​s​t​e​n​t​e
+					 */
+					duration: string
+				}
+				'1': {
+					/**
+					 * b​y​p​a​s​s​L​a​n​d​i​n​g
+					 */
+					name: string
+					/**
+					 * C​o​r​e​B​a​l​a​n​c​e​ ​(​s​e​s​s​i​o​n​S​t​o​r​a​g​e​)
+					 */
+					origin: string
+					/**
+					 * R​e​c​o​r​d​a​r​ ​q​u​e​ ​e​l​ ​u​s​u​a​r​i​o​ ​h​a​ ​s​o​l​i​c​i​t​a​d​o​ ​e​n​t​r​a​r​ ​a​l​ ​d​a​s​h​b​o​a​r​d​ ​e​n​ ​l​a​ ​p​e​s​t​a​ñ​a​ ​a​c​t​u​a​l​.
+					 */
+					purpose: string
+					/**
+					 * S​e​s​i​ó​n
+					 */
+					duration: string
+				}
+			}
+			/**
+			 * 3​.​ ​C​o​o​k​i​e​s​ ​d​e​ ​T​e​r​c​e​r​o​s​ ​y​ ​A​n​a​l​í​t​i​c​a
+			 */
+			s3_title: string
+			/**
+			 * C​o​r​e​B​a​l​a​n​c​e​ ​<​s​t​r​o​n​g​>​n​o​ ​u​t​i​l​i​z​a​<​/​s​t​r​o​n​g​>​ ​c​o​o​k​i​e​s​ ​d​e​ ​p​u​b​l​i​c​i​d​a​d​,​ ​s​e​g​u​i​m​i​e​n​t​o​ ​c​o​m​p​o​r​t​a​m​e​n​t​a​l​ ​n​i​ ​m​a​r​k​e​t​i​n​g​ ​d​e​ ​t​e​r​c​e​r​o​s​.
+			 */
+			s3_content: string
+			/**
+			 * P​o​d​e​m​o​s​ ​u​t​i​l​i​z​a​r​ ​h​e​r​r​a​m​i​e​n​t​a​s​ ​d​e​ ​a​n​a​l​í​t​i​c​a​ ​b​á​s​i​c​a​ ​p​r​o​p​o​r​c​i​o​n​a​d​a​s​ ​p​o​r​ ​<​s​t​r​o​n​g​>​V​e​r​c​e​l​ ​A​n​a​l​y​t​i​c​s​<​/​s​t​r​o​n​g​>​ ​o​ ​<​s​t​r​o​n​g​>​S​p​e​e​d​ ​I​n​s​i​g​h​t​s​<​/​s​t​r​o​n​g​>​ ​p​a​r​a​ ​m​e​d​i​r​ ​e​l​ ​r​e​n​d​i​m​i​e​n​t​o​ ​d​e​ ​l​a​ ​w​e​b​.​ ​E​s​t​a​s​ ​h​e​r​r​a​m​i​e​n​t​a​s​ ​e​s​t​á​n​ ​c​o​n​f​i​g​u​r​a​d​a​s​ ​p​a​r​a​ ​s​e​r​ ​l​o​ ​m​á​s​ ​r​e​s​p​e​t​u​o​s​a​s​ ​p​o​s​i​b​l​e​ ​c​o​n​ ​l​a​ ​p​r​i​v​a​c​i​d​a​d​,​ ​u​t​i​l​i​z​a​n​d​o​ ​e​n​ ​s​u​ ​m​a​y​o​r​í​a​ ​d​a​t​o​s​ ​a​g​r​e​g​a​d​o​s​ ​y​ ​a​n​ó​n​i​m​o​s​.
+			 */
+			s3_content2: string
+			/**
+			 * 4​.​ ​C​ó​m​o​ ​d​e​s​a​c​t​i​v​a​r​ ​l​a​s​ ​c​o​o​k​i​e​s
+			 */
+			s4_title: string
+			/**
+			 * U​s​t​e​d​ ​p​u​e​d​e​ ​r​e​s​t​r​i​n​g​i​r​,​ ​b​l​o​q​u​e​a​r​ ​o​ ​b​o​r​r​a​r​ ​l​a​s​ ​c​o​o​k​i​e​s​ ​d​e​ ​C​o​r​e​B​a​l​a​n​c​e​ ​u​t​i​l​i​z​a​n​d​o​ ​s​u​ ​n​a​v​e​g​a​d​o​r​.​ ​E​n​ ​c​a​d​a​ ​n​a​v​e​g​a​d​o​r​ ​l​a​ ​o​p​e​r​a​t​i​v​a​ ​e​s​ ​d​i​f​e​r​e​n​t​e​:
+			 */
+			s4_content: string
+			s4_list: {
+				/**
+				 * C​h​r​o​m​e
+				 */
+				'0': string
+				/**
+				 * E​d​g​e
+				 */
+				'1': string
+				/**
+				 * F​i​r​e​f​o​x
+				 */
+				'2': string
+				/**
+				 * S​a​f​a​r​i
+				 */
+				'3': string
+			}
+			/**
+			 * T​e​n​g​a​ ​e​n​ ​c​u​e​n​t​a​ ​q​u​e​ ​s​i​ ​d​e​s​a​c​t​i​v​a​ ​l​a​s​ ​c​o​o​k​i​e​s​ ​t​é​c​n​i​c​a​s​,​ ​e​s​ ​p​o​s​i​b​l​e​ ​q​u​e​ ​n​o​ ​p​u​e​d​a​ ​i​n​i​c​i​a​r​ ​s​e​s​i​ó​n​ ​n​i​ ​u​s​a​r​ ​l​a​s​ ​f​u​n​c​i​o​n​e​s​ ​p​r​i​n​c​i​p​a​l​e​s​ ​d​e​ ​l​a​ ​a​p​l​i​c​a​c​i​ó​n​.
+			 */
+			s4_note: string
+			/**
+			 * 5​.​ ​N​o​t​a​s​ ​A​d​i​c​i​o​n​a​l​e​s
+			 */
+			s5_title: string
+			/**
+			 * N​i​ ​e​s​t​a​ ​w​e​b​ ​n​i​ ​s​u​s​ ​r​e​p​r​e​s​e​n​t​a​n​t​e​s​ ​l​e​g​a​l​e​s​ ​s​e​ ​h​a​c​e​n​ ​r​e​s​p​o​n​s​a​b​l​e​s​ ​n​i​ ​d​e​l​ ​c​o​n​t​e​n​i​d​o​ ​n​i​ ​d​e​ ​l​a​ ​v​e​r​a​c​i​d​a​d​ ​d​e​ ​l​a​s​ ​p​o​l​í​t​i​c​a​s​ ​d​e​ ​p​r​i​v​a​c​i​d​a​d​ ​q​u​e​ ​p​u​e​d​a​n​ ​t​e​n​e​r​ ​l​o​s​ ​t​e​r​c​e​r​o​s​ ​m​e​n​c​i​o​n​a​d​o​s​ ​e​n​ ​e​s​t​a​ ​p​o​l​í​t​i​c​a​ ​d​e​ ​c​o​o​k​i​e​s​ ​(​c​o​m​o​ ​G​o​o​g​l​e​)​.
+			 */
+			s5_content: string
+		}
 	}
 	common: {
 		/**
@@ -1328,13 +1839,25 @@ export type TranslationFunctions = {
 	}
 	dashboard: {
 		/**
-		 * Valor total
+		 * Capital Global
 		 */
-		total_value: () => LocalizedString
+		total_value_label: () => LocalizedString
 		/**
-		 * Variación hoy
+		 * Invertido
 		 */
-		daily_change: () => LocalizedString
+		invested_label: () => LocalizedString
+		/**
+		 * Rentabilidad
+		 */
+		returns_label: () => LocalizedString
+		/**
+		 * Cambio Hoy
+		 */
+		daily_change_label: () => LocalizedString
+		/**
+		 * Eficiencia (TER)
+		 */
+		efficiency_label: () => LocalizedString
 		/**
 		 * Cartera
 		 */
@@ -1343,6 +1866,494 @@ export type TranslationFunctions = {
 		 * Añadir activo
 		 */
 		add_asset: () => LocalizedString
+		/**
+		 * /año
+		 */
+		per_year: () => LocalizedString
+		/**
+		 * ISIN
+		 */
+		isin: () => LocalizedString
+		/**
+		 * TER
+		 */
+		ter: () => LocalizedString
+		/**
+		 * Participaciones
+		 */
+		holdings: () => LocalizedString
+		/**
+		 * Saldo en cuenta
+		 */
+		cash_balance: () => LocalizedString
+		/**
+		 * Coste Medio
+		 */
+		avg_cost: () => LocalizedString
+		/**
+		 * Precio
+		 */
+		price: () => LocalizedString
+		/**
+		 * Valor Total
+		 */
+		value_total: () => LocalizedString
+		/**
+		 * Hoy
+		 */
+		today: () => LocalizedString
+		/**
+		 * YTD
+		 */
+		ytd: () => LocalizedString
+		/**
+		 * MTD
+		 */
+		mtd: () => LocalizedString
+		/**
+		 * 1M
+		 */
+		month_1: () => LocalizedString
+		/**
+		 * Total
+		 */
+		total: () => LocalizedString
+		/**
+		 * Coste Est.
+		 */
+		estimated_cost: () => LocalizedString
+		/**
+		 * Actualizado: {date|dateTime}
+		 */
+		last_update: (arg: { date: unknown }) => LocalizedString
+		/**
+		 * Valor total: {value|currency}
+		 */
+		total_value: (arg: { value: unknown }) => LocalizedString
+		/**
+		 * Variación hoy: {value|percent}
+		 */
+		daily_change: (arg: { value: unknown }) => LocalizedString
+		/**
+		 * {0|currency}
+		 */
+		currency: (arg0: unknown) => LocalizedString
+		/**
+		 * {0|percent}
+		 */
+		percent: (arg0: unknown) => LocalizedString
+		/**
+		 * {0|dateTime}
+		 */
+		dateTime: (arg0: unknown) => LocalizedString
+		/**
+		 * {0|shortDate}
+		 */
+		shortDate: (arg0: unknown) => LocalizedString
+		/**
+		 * {0|compactNumber}
+		 */
+		compactNumber: (arg0: unknown) => LocalizedString
+	}
+	privacy: {
+		/**
+		 * Política de Privacidad
+		 */
+		title: () => LocalizedString
+		/**
+		 * Última actualización: {date|shortDate}
+		 */
+		updated: (arg: { date: unknown }) => LocalizedString
+		/**
+		 * Consulta nuestra política de privacidad. En CoreBalance priorizamos tu seguridad y privacidad utilizando almacenamiento local por defecto.
+		 */
+		seo_desc: () => LocalizedString
+		sections: {
+			/**
+			 * 1. Responsable del Tratamiento
+			 */
+			s1_title: () => LocalizedString
+			/**
+			 * El responsable del tratamiento de sus datos personales es un desarrollador individual con residencia en España. Puede contactar conmigo a través del email: <strong>soporte@corebalance.app</strong>.
+			 */
+			s1_content: () => LocalizedString
+			/**
+			 * 2. Datos que recogemos
+			 */
+			s2_title: () => LocalizedString
+			/**
+			 * Para el funcionamiento de CoreBalance, tratamos las siguientes categorías de datos:
+			 */
+			s2_content: () => LocalizedString
+			s2_list: {
+				/**
+				 * <strong>Datos de Identificación:</strong> Correo electrónico (facilitado a través de Google Auth o registro directo en Firebase).
+				 */
+				'0': () => LocalizedString
+				/**
+				 * <strong>Datos de Sesión:</strong> Identificadores únicos de usuario, fecha de último acceso y tokens de sesión gestionados por Firebase Authentication.
+				 */
+				'1': () => LocalizedString
+				/**
+				 * <strong>Datos Financieros:</strong> Información sobre activos, participaciones, precios de compra y objetivos de cartera introducidos voluntariamente por el usuario.
+				 */
+				'2': () => LocalizedString
+			}
+			/**
+			 * 3. Finalidad del Tratamiento
+			 */
+			s3_title: () => LocalizedString
+			/**
+			 * Sus datos son tratados exclusivamente para:
+			 */
+			s3_content: () => LocalizedString
+			s3_list: {
+				/**
+				 * Permitirle el acceso y uso de la aplicación CoreBalance.
+				 */
+				'0': () => LocalizedString
+				/**
+				 * Sincronizar su cartera entre diferentes dispositivos.
+				 */
+				'1': () => LocalizedString
+				/**
+				 * Realizar los cálculos de rebalanceo y proyecciones financieras solicitadas.
+				 */
+				'2': () => LocalizedString
+				/**
+				 * Mantener la seguridad de su cuenta y prevenir accesos no autorizados.
+				 */
+				'3': () => LocalizedString
+			}
+			/**
+			 * 4. Base Legal
+			 */
+			s4_title: () => LocalizedString
+			/**
+			 * Tratamos sus datos en base a la <strong>ejecución de un contrato</strong> (los Términos y Condiciones que acepta al usar la app) y su <strong>consentimiento explícito</strong> al registrarse y subir su información financiera.
+			 */
+			s4_content: () => LocalizedString
+			/**
+			 * 5. Destinatarios y Proveedores de Servicios
+			 */
+			s5_title: () => LocalizedString
+			/**
+			 * No vendemos ni cedemos sus datos a terceros. Sin embargo, utilizamos proveedores de infraestructura esenciales:
+			 */
+			s5_content: () => LocalizedString
+			s5_list: {
+				/**
+				 * <strong>Google Firebase (Irlanda/EE.UU.):</strong> Hosting, base de datos (Firestore) y autenticación. Google cumple con las Cláusulas Contractuales Tipo de la UE para transferencias internacionales.
+				 */
+				'0': () => LocalizedString
+				/**
+				 * <strong>Vercel (EE.UU.):</strong> Despliegue de la aplicación.
+				 */
+				'1': () => LocalizedString
+			}
+			/**
+			 * 6. Retención de Datos
+			 */
+			s6_title: () => LocalizedString
+			/**
+			 * Conservaremos sus datos mientras mantenga su cuenta activa. Si decide eliminar su cuenta, sus datos personales y financieros serán borrados de nuestras bases de datos activas inmediatamente (salvo copias de seguridad residuales que se eliminan en ciclos automáticos de 30 días).
+			 */
+			s6_content: () => LocalizedString
+			/**
+			 * 7. Sus Derechos
+			 */
+			s7_title: () => LocalizedString
+			/**
+			 * Como usuario en la UE, le ampara el RGPD para ejercer sus derechos de:
+			 */
+			s7_content: () => LocalizedString
+			s7_list: {
+				/**
+				 * <strong>Acceso:</strong> Saber qué datos tenemos.
+				 */
+				'0': () => LocalizedString
+				/**
+				 * <strong>Rectificación:</strong> Corregir datos erróneos.
+				 */
+				'1': () => LocalizedString
+				/**
+				 * <strong>Supresión (Derecho al Olvido):</strong> Solicitar el borrado de sus datos.
+				 */
+				'2': () => LocalizedString
+				/**
+				 * <strong>Portabilidad:</strong> Descargar sus datos en un formato legible.
+				 */
+				'3': () => LocalizedString
+				/**
+				 * <strong>Oposición y Limitación:</strong> En casos específicos previstos por la ley.
+				 */
+				'4': () => LocalizedString
+			}
+			/**
+			 * Para ejercer estos derechos, envíe un email a <strong>soporte@corebalance.app</strong>.
+			 */
+			s7_contact: () => LocalizedString
+			/**
+			 * 8. Seguridad
+			 */
+			s8_title: () => LocalizedString
+			/**
+			 * CoreBalance utiliza medidas de seguridad técnicas avanzadas proporcionadas por Firebase, incluyendo cifrado en tránsito (SSL/TLS) y en reposo.
+			 */
+			s8_content: () => LocalizedString
+		}
+	}
+	terms: {
+		/**
+		 * Términos y Condiciones de Uso
+		 */
+		title: () => LocalizedString
+		/**
+		 * Última actualización: {date|shortDate}
+		 */
+		updated: (arg: { date: unknown }) => LocalizedString
+		/**
+		 * Lee nuestros términos y condiciones de uso. Conoce las condiciones bajo las cuales puedes usar la herramienta de rebalanceo CoreBalance.
+		 */
+		seo_desc: () => LocalizedString
+		sections: {
+			/**
+			 * 1. Descripción del Servicio
+			 */
+			s1_title: () => LocalizedString
+			/**
+			 * CoreBalance es una herramienta web diseñada para ayudar a inversores particulares a gestionar, analizar y rebalancear sus carteras de fondos indexados, ETFs y otros activos financieros. El servicio permite el registro de posiciones, el cálculo de aportaciones necesarias para mantener una estrategia determinada y la visualización de métricas de rendimiento.
+			 */
+			s1_content: () => LocalizedString
+			/**
+			 * 2. Aviso Legal y Limitación de Responsabilidad
+			 */
+			s2_title: () => LocalizedString
+			/**
+			 * IMPORTANTE:
+			 */
+			s2_disclaimer_title: () => LocalizedString
+			/**
+			 * CoreBalance NO constituye asesoramiento financiero, de inversión ni fiscal.
+			 */
+			s2_disclaimer_content: () => LocalizedString
+			/**
+			 * Toda la información mostrada es puramente orientativa y educativa. Los cálculos se basan en datos introducidos por el usuario y precios de mercado que pueden sufrir retrasos o inexactitudes.
+			 */
+			s2_content: () => LocalizedString
+			/**
+			 * El titular de la aplicación no se hace responsable de ninguna pérdida financiera, decisión de inversión errónea o perjuicio derivado del uso de esta herramienta. Usted invierte siempre bajo su propia responsabilidad.
+			 */
+			s2_content2: () => LocalizedString
+			/**
+			 * 3. Uso de la Aplicación
+			 */
+			s3_title: () => LocalizedString
+			/**
+			 * Al utilizar CoreBalance, usted se compromete a:
+			 */
+			s3_content: () => LocalizedString
+			s3_list: {
+				/**
+				 * Proporcionar información veraz en el registro de sus activos.
+				 */
+				'0': () => LocalizedString
+				/**
+				 * No utilizar la plataforma para fines ilícitos o fraudulentos.
+				 */
+				'1': () => LocalizedString
+				/**
+				 * No intentar vulnerar la seguridad de la aplicación ni realizar ingeniería inversa.
+				 */
+				'2': () => LocalizedString
+			}
+			/**
+			 * 4. Propiedad Intelectual
+			 */
+			s4_title: () => LocalizedString
+			/**
+			 * El código fuente (exceptuando bibliotecas de código abierto), el diseño, la marca CoreBalance y los contenidos originales son propiedad exclusiva de su creador. Queda prohibida la reproducción total o parcial del software para fines comerciales sin autorización expresa.
+			 */
+			s4_content: () => LocalizedString
+			/**
+			 * 5. Registro y Cuentas
+			 */
+			s5_title: () => LocalizedString
+			/**
+			 * El acceso a las funciones de sincronización requiere la creación de una cuenta a través de Google o email. Usted es responsable de mantener la confidencialidad de su sesión. Nos reservamos el derecho de suspender cuentas que infrinjan estos términos.
+			 */
+			s5_content: () => LocalizedString
+			/**
+			 * 6. Modificaciones
+			 */
+			s6_title: () => LocalizedString
+			/**
+			 * Me reservo el derecho de modificar el servicio o estos términos en cualquier momento para adaptarlos a nuevas funcionalidades o cambios legislativos. El uso continuado de la app tras un cambio implica la aceptación de los nuevos términos.
+			 */
+			s6_content: () => LocalizedString
+			/**
+			 * 7. Ley Aplicable y Jurisdicción
+			 */
+			s7_title: () => LocalizedString
+			/**
+			 * Estos términos se rigen por la <strong>legislación española</strong>. Para cualquier controversia legal, las partes se someten a los juzgados y tribunales de la ciudad de residencia del titular en España, renunciando a cualquier otro fuero.
+			 */
+			s7_content: () => LocalizedString
+			/**
+			 * 8. Contacto
+			 */
+			s8_title: () => LocalizedString
+			/**
+			 * Si tiene dudas sobre estos términos, puede contactarme en: <strong>soporte@corebalance.app</strong>.
+			 */
+			s8_content: () => LocalizedString
+		}
+	}
+	cookies: {
+		/**
+		 * Política de Cookies
+		 */
+		title: () => LocalizedString
+		/**
+		 * Última actualización: {date|shortDate}
+		 */
+		updated: (arg: { date: unknown }) => LocalizedString
+		/**
+		 * Consulta nuestra política de cookies. Conoce qué cookies utilizamos para garantizar la seguridad y funcionalidad técnica en CoreBalance.
+		 */
+		seo_desc: () => LocalizedString
+		sections: {
+			/**
+			 * 1. ¿Qué es una cookie?
+			 */
+			s1_title: () => LocalizedString
+			/**
+			 * Una cookie es un pequeño fichero de texto que se almacena en su navegador cuando visita casi cualquier página web. Su utilidad es que la web sea capaz de recordar su visita cuando vuelva a navegar por esa página.
+			 */
+			s1_content: () => LocalizedString
+			/**
+			 * 2. Cookies utilizadas en CoreBalance
+			 */
+			s2_title: () => LocalizedString
+			/**
+			 * Siguiendo las directrices de la Agencia Española de Protección de Datos y la normativa europea, procedemos a detallar el uso de cookies que hace esta web. CoreBalance utiliza una política de <strong>mínima intrusión</strong>.
+			 */
+			s2_content: () => LocalizedString
+			/**
+			 * Cookies Técnicas y Estrictamente Necesarias
+			 */
+			s2_subtitle: () => LocalizedString
+			/**
+			 * Estas cookies son esenciales para el funcionamiento de la app y no requieren su consentimiento previo según la Directiva ePrivacy (excepción para servicios solicitados por el usuario).
+			 */
+			s2_content2: () => LocalizedString
+			s2_table_headers: {
+				/**
+				 * Cookie
+				 */
+				'0': () => LocalizedString
+				/**
+				 * Origen
+				 */
+				'1': () => LocalizedString
+				/**
+				 * Finalidad
+				 */
+				'2': () => LocalizedString
+				/**
+				 * Duración
+				 */
+				'3': () => LocalizedString
+			}
+			s2_table_data: {
+				'0': {
+					/**
+					 * __session / firebase_auth
+					 */
+					name: () => LocalizedString
+					/**
+					 * Google Firebase
+					 */
+					origin: () => LocalizedString
+					/**
+					 * Mantener la sesión del usuario autenticado.
+					 */
+					purpose: () => LocalizedString
+					/**
+					 * Sesión / Persistente
+					 */
+					duration: () => LocalizedString
+				}
+				'1': {
+					/**
+					 * bypassLanding
+					 */
+					name: () => LocalizedString
+					/**
+					 * CoreBalance (sessionStorage)
+					 */
+					origin: () => LocalizedString
+					/**
+					 * Recordar que el usuario ha solicitado entrar al dashboard en la pestaña actual.
+					 */
+					purpose: () => LocalizedString
+					/**
+					 * Sesión
+					 */
+					duration: () => LocalizedString
+				}
+			}
+			/**
+			 * 3. Cookies de Terceros y Analítica
+			 */
+			s3_title: () => LocalizedString
+			/**
+			 * CoreBalance <strong>no utiliza</strong> cookies de publicidad, seguimiento comportamental ni marketing de terceros.
+			 */
+			s3_content: () => LocalizedString
+			/**
+			 * Podemos utilizar herramientas de analítica básica proporcionadas por <strong>Vercel Analytics</strong> o <strong>Speed Insights</strong> para medir el rendimiento de la web. Estas herramientas están configuradas para ser lo más respetuosas posible con la privacidad, utilizando en su mayoría datos agregados y anónimos.
+			 */
+			s3_content2: () => LocalizedString
+			/**
+			 * 4. Cómo desactivar las cookies
+			 */
+			s4_title: () => LocalizedString
+			/**
+			 * Usted puede restringir, bloquear o borrar las cookies de CoreBalance utilizando su navegador. En cada navegador la operativa es diferente:
+			 */
+			s4_content: () => LocalizedString
+			s4_list: {
+				/**
+				 * Chrome
+				 */
+				'0': () => LocalizedString
+				/**
+				 * Edge
+				 */
+				'1': () => LocalizedString
+				/**
+				 * Firefox
+				 */
+				'2': () => LocalizedString
+				/**
+				 * Safari
+				 */
+				'3': () => LocalizedString
+			}
+			/**
+			 * Tenga en cuenta que si desactiva las cookies técnicas, es posible que no pueda iniciar sesión ni usar las funciones principales de la aplicación.
+			 */
+			s4_note: () => LocalizedString
+			/**
+			 * 5. Notas Adicionales
+			 */
+			s5_title: () => LocalizedString
+			/**
+			 * Ni esta web ni sus representantes legales se hacen responsables ni del contenido ni de la veracidad de las políticas de privacidad que puedan tener los terceros mencionados en esta política de cookies (como Google).
+			 */
+			s5_content: () => LocalizedString
+		}
 	}
 	common: {
 		/**
@@ -1372,4 +2383,10 @@ export type TranslationFunctions = {
 	}
 }
 
-export type Formatters = {}
+export type Formatters = {
+	compactNumber: (value: unknown) => unknown
+	currency: (value: unknown) => unknown
+	dateTime: (value: unknown) => unknown
+	percent: (value: unknown) => unknown
+	shortDate: (value: unknown) => unknown
+}

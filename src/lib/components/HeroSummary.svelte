@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { portfolio } from '$lib/stores/portfolio.svelte';
-	import { formatEUR, formatPercent } from '$lib/utils';
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
+	import { LL } from '$lib/i18n/i18n-svelte';
 
 	// Tweened values for smooth counting
 	const tweenedGlobalCapital = tweened(0, { duration: 1000, easing: cubicOut });
@@ -22,26 +22,26 @@
 	<section id="tour-global-summary" class="hero-summary glass" aria-label="Resumen de capital">
 		<div class="hero-primary">
 
-			<span class="summary-label">Capital Global</span>
-			<div class="summary-value privacy-blur">{formatEUR($tweenedGlobalCapital)}</div>
+			<span class="summary-label">{$LL.dashboard.total_value_label()}</span>
+			<div class="summary-value privacy-blur">{$LL.dashboard.currency($tweenedGlobalCapital)}</div>
 			{#if portfolio.satelliteState.totalCapital > 0 || portfolio.stockState.totalCapital > 0}
 				<div class="capital-breakdown">
 					<div class="breakdown-item">
 						<span>{portfolio.targetLabel}:</span>
-						<strong style="color: #fff" class="privacy-blur">{formatEUR(portfolio.portfolioState.totalCapital)}</strong>
+						<strong style="color: #fff" class="privacy-blur">{$LL.dashboard.currency(portfolio.portfolioState.totalCapital)}</strong>
 					</div>
 					{#if portfolio.stockState.totalCapital > 0}
 						<span class="breakdown-divider">|</span>
 						<div class="breakdown-item">
 							<span>Acc:</span>
-							<strong style="color: #fff" class="privacy-blur">{formatEUR(portfolio.stockState.totalCapital)}</strong>
+							<strong style="color: #fff" class="privacy-blur">{$LL.dashboard.currency(portfolio.stockState.totalCapital)}</strong>
 						</div>
 					{/if}
 					{#if portfolio.satelliteState.totalCapital > 0}
 						<span class="breakdown-divider">|</span>
 						<div class="breakdown-item">
 							<span>Cons:</span>
-							<strong style="color: #fff" class="privacy-blur">{formatEUR(portfolio.satelliteState.totalCapital)}</strong>
+							<strong style="color: #fff" class="privacy-blur">{$LL.dashboard.currency(portfolio.satelliteState.totalCapital)}</strong>
 						</div>
 					{/if}
 				</div>
@@ -50,31 +50,31 @@
 
 		<div class="hero-metrics">
 			<div class="metric-card">
-				<span class="metric-label">Invertido</span>
-				<span class="metric-value privacy-blur">{formatEUR($tweenedGlobalInvested)}</span>
+				<span class="metric-label">{$LL.dashboard.invested_label()}</span>
+				<span class="metric-value privacy-blur">{$LL.dashboard.currency($tweenedGlobalInvested)}</span>
 			</div>
 			
 			<div class="metric-card" class:positive={portfolio.globalProfit > 0} class:negative={portfolio.globalProfit < 0}>
-				<span class="metric-label">Rentabilidad</span>
+				<span class="metric-label">{$LL.dashboard.returns_label()}</span>
 				<div class="metric-row">
-					<span class="metric-value privacy-blur">{formatEUR($tweenedGlobalProfit)}</span>
-					<span class="metric-badge">{formatPercent(portfolio.globalProfitPercent)}</span>
+					<span class="metric-value privacy-blur">{$LL.dashboard.currency($tweenedGlobalProfit)}</span>
+					<span class="metric-badge">{$LL.dashboard.percent(portfolio.globalProfitPercent)}</span>
 				</div>
 			</div>
 
 			<div class="metric-card" class:positive={portfolio.globalDailyChangeValue > 0} class:negative={portfolio.globalDailyChangeValue < 0}>
-				<span class="metric-label">Cambio Hoy</span>
+				<span class="metric-label">{$LL.dashboard.daily_change_label()}</span>
 				<div class="metric-row">
-					<span class="metric-value privacy-blur">{$tweenedDailyChange > 0 ? '+' : ''}{formatEUR($tweenedDailyChange)}</span>
-					<span class="metric-badge">{portfolio.globalDailyChangeValue > 0 ? '+' : ''}{formatPercent(portfolio.globalDailyChangePercent)}</span>
+					<span class="metric-value privacy-blur">{$tweenedDailyChange > 0 ? '+' : ''}{$LL.dashboard.currency($tweenedDailyChange)}</span>
+					<span class="metric-badge">{portfolio.globalDailyChangeValue > 0 ? '+' : ''}{$LL.dashboard.percent(portfolio.globalDailyChangePercent)}</span>
 				</div>
 			</div>
 
 			<div class="metric-card efficiency">
-				<span class="metric-label">Eficiencia (TER)</span>
+				<span class="metric-label">{$LL.dashboard.efficiency_label()}</span>
 				<div class="metric-row">
-					<span class="metric-value">{formatPercent(portfolio.globalWeightedAverageTer)}</span>
-					<span class="metric-badge neutral privacy-blur">{formatEUR(portfolio.globalAnnualCost)}/año</span>
+					<span class="metric-value">{$LL.dashboard.percent(portfolio.globalWeightedAverageTer)}</span>
+					<span class="metric-badge neutral privacy-blur">{$LL.dashboard.currency(portfolio.globalAnnualCost)}{$LL.dashboard.per_year()}</span>
 				</div>
 			</div>
 		</div>
@@ -85,7 +85,7 @@
 					{#each portfolio.portfolioState.positions as pos}
 						<div class="asset-pill" style="--accent: {pos.asset.color}">
 							<span class="pill-dot"></span>
-							<span class="pill-text">{formatPercent(pos.currentWeight)}</span>
+							<span class="pill-text">{$LL.dashboard.percent(pos.currentWeight)}</span>
 						</div>
 					{/each}
 				</div>

@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import type { PortfolioPosition, HoldingData } from '$lib/types';
-	import { formatCurrency, formatPrice, formatPercent, isMarketOpen, formatDateTime } from '$lib/utils';
+	import { isMarketOpen } from '$lib/utils';
 	import LedgerModal from './LedgerModal.svelte';
+	import { LL } from '$lib/i18n/i18n-svelte';
 
 	interface Props {
 		position: PortfolioPosition;
@@ -130,29 +131,29 @@
 				</div>
 				<div class="asset-meta">
 					{#if isCash}
-						<span class="asset-ter" title="Interés Anual Remunerado">{formatPercent(position.asset.manualInterestRate ?? 0)} TIN</span>
+						<span class="asset-ter" title="Interés Anual Remunerado">{$LL.dashboard.percent(position.asset.manualInterestRate ?? 0)} TIN</span>
 					{:else}
 						<span class="asset-isin">{position.asset.isin}</span>
 						<span class="asset-divider">•</span>
-						<span class="asset-ter" title="Total Expense Ratio">{formatPercent(position.asset.ter)} TER</span>
+						<span class="asset-ter" title="Total Expense Ratio">{$LL.dashboard.percent(position.asset.ter)} TER</span>
 					{/if}
 					{#if position.lastUpdate && !isCash}
 						<span class="asset-divider">•</span>
-						<span class="asset-time">{formatDateTime(position.lastUpdate)}</span>
+						<span class="asset-time">{$LL.dashboard.last_update({ date: new Date(position.lastUpdate) })}</span>
 					{/if}
 				</div>
 			</div>
 		</div>
 		<div class="header-right-info" style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.4rem;">
 			<div class="target-badge">
-				{position.asset.targetWeight * 100 % 1 === 0 ? formatPercent(position.asset.targetWeight, 0) : formatPercent(position.asset.targetWeight, 1)}
+				{position.asset.targetWeight * 100 % 1 === 0 ? $LL.dashboard.percent(position.asset.targetWeight) : $LL.dashboard.percent(position.asset.targetWeight)}
 			</div>
 			{#if isCrypto && portfolio.btcPrice > 0}
 				<div class="btc-spot-price" class:eth={position.asset.ticker.includes('ETH')}>
 					<span class="live-dot"></span>
 					<span class="btc-label">{position.asset.ticker.includes('ETH') ? 'ETH' : 'BTC'}:</span>
 					<span class="btc-value">
-						{formatCurrency(position.asset.ticker.includes('ETH') ? portfolio.prices['ETH-EUR']?.price || 0 : portfolio.btcPrice, 'EUR')}
+						{$LL.dashboard.currency(position.asset.ticker.includes('ETH') ? portfolio.prices['ETH-EUR']?.price || 0 : portfolio.btcPrice)}
 					</span>
 				</div>
 			{/if}
@@ -163,7 +164,7 @@
 		<div class="inputs-grid" style={isCash ? 'grid-template-columns: 1fr;' : ''}>
 			<div class="input-field" style={isCash ? 'grid-column: span 2;' : ''}>
 				<label class="field-label" for="holdings-{position.asset.ticker}">
-					{isCash ? 'Saldo en cuenta' : 'Participaciones'}
+					{isCash ? $LL.dashboard.cash_balance() : $LL.dashboard.holdings()}
 				</label>
 				<div class="input-wrapper">
 					<input
@@ -187,7 +188,7 @@
 			
 			{#if !isCash}
 				<div class="input-field">
-					<label class="field-label" for="avgcost-{position.asset.ticker}">Coste Medio</label>
+					<label class="field-label" for="avgcost-{position.asset.ticker}">{$LL.dashboard.avg_cost()}</label>
 					<div class="input-wrapper">
 						<input
 							id="avgcost-{position.asset.ticker}"
@@ -214,10 +215,10 @@
 		<div class="metrics-row" style={isCash ? 'grid-template-columns: repeat(3, 1fr);' : ''}>
 			{#if !isCash}
 				<div class="metric">
-					<span class="metric-label">Precio</span>
+					<span class="metric-label">{$LL.dashboard.price()}</span>
 					<div class="metric-content">
 						{#if position.unitPrice > 0}
-							<span class="metric-value">{formatPrice(portfolio.prices[position.asset.ticker]?.price || 0, assetCurrency)}</span>
+							<span class="metric-value">{$LL.dashboard.currency(portfolio.prices[position.asset.ticker]?.price || 0)}</span>
 						{:else}
 							<input 
 								type="number" 
@@ -234,19 +235,19 @@
 				</div>
 			{/if}
 			<div class="metric">
-				<span class="metric-label">{isCash ? 'Capital' : 'Valor Total'}</span>
+				<span class="metric-label">{isCash ? $LL.dashboard.value_total() : $LL.dashboard.value_total()}</span>
 				<div class="metric-content">
-					<span class="metric-value highlight privacy-blur">{formatCurrency(position.totalValue, 'EUR')}</span>
+					<span class="metric-value highlight privacy-blur">{$LL.dashboard.currency(position.totalValue)}</span>
 				</div>
 			</div>
 			<div class="metric pnl-metric" class:positive={position.dailyChangePercent > 0} class:negative={position.dailyChangePercent < 0}>
-				<span class="metric-label">Hoy</span>
+				<span class="metric-label">{$LL.dashboard.today()}</span>
 				<div class="metric-content">
 					<span class="metric-value privacy-blur">
-						{position.dailyChangeValue > 0 ? '+' : ''}{formatCurrency(position.dailyChangeValue, 'EUR')}
+						{position.dailyChangeValue > 0 ? '+' : ''}{$LL.dashboard.currency(position.dailyChangeValue)}
 					</span>
 					<span class="profit-tag">
-						{position.dailyChangePercent > 0 ? '+' : ''}{formatPercent(position.dailyChangePercent)}
+						{position.dailyChangePercent > 0 ? '+' : ''}{$LL.dashboard.percent(position.dailyChangePercent)}
 					</span>
 				</div>
 			</div>
@@ -274,30 +275,30 @@
 				<div class="metric-content">
 					<span class="profit-tag" style="margin-left: 0;">
 						{currentPerfValue !== undefined 
-							? ((currentPerfValue ?? 0) > 0 ? '+' : '') + formatPercent(currentPerfValue ?? 0) 
+							? ((currentPerfValue ?? 0) > 0 ? '+' : '') + $LL.dashboard.percent(currentPerfValue ?? 0) 
 							: '--'}
 					</span>
 				</div>
 			</button>
 			{#if !isCash}
 				<div class="metric pnl-metric" class:positive={position.profit > 0} class:negative={position.profit < 0}>
-					<span class="metric-label">Total</span>
+					<span class="metric-label">{$LL.dashboard.total()}</span>
 					<div class="metric-content">
 						<span class="metric-value privacy-blur">
-							{position.profit > 0 ? '+' : ''}{formatCurrency(position.profit, 'EUR')}
+							{position.profit > 0 ? '+' : ''}{$LL.dashboard.currency(position.profit)}
 						</span>
 						<span class="profit-tag">
-							{position.profit > 0 ? '+' : ''}{formatPercent(position.profitPercent)}
+							{position.profit > 0 ? '+' : ''}{$LL.dashboard.percent(position.profitPercent)}
 						</span>
 					</div>
 				</div>
 			{/if}
 			{#if position.asset.ter > 0 && !isCash}
 				<div class="metric cost-metric">
-					<span class="metric-label">Coste Est.</span>
+					<span class="metric-label">{$LL.dashboard.estimated_cost()}</span>
 					<div class="metric-content">
-						<span class="metric-value privacy-blur">{formatCurrency(position.totalValue * position.asset.ter, 'EUR')}</span>
-						<span class="cost-period">/año</span>
+						<span class="metric-value privacy-blur">{$LL.dashboard.currency(position.totalValue * position.asset.ter)}</span>
+						<span class="cost-period">{$LL.dashboard.per_year()}</span>
 					</div>
 				</div>
 			{/if}
@@ -307,12 +308,12 @@
 		<div class="weight-track-wrapper">
 			<div class="weight-info">
 				<span class="current-weight" data-level={deviationLevel}>
-					{formatPercent(position.currentWeight)}
+					{$LL.dashboard.percent(position.currentWeight)}
 				</span>
 				{#if position.asset.targetWeight > 0}
 					<span class="deviation-tag" data-level={deviationLevel}>
 						{position.deviation > 0.001 ? '▴' : position.deviation < -0.001 ? '▾' : ''}
-						{deviationSign}{formatPercent(position.deviation)}
+						{deviationSign}{$LL.dashboard.percent(position.deviation)}
 					</span>
 				{/if}
 			</div>
@@ -325,7 +326,7 @@
 					<div
 						class="target-marker"
 						style="left: {(position.asset.targetWeight > 0 ? position.asset.targetWeight : position.currentWeight) * 100}%"
-						title={position.asset.targetWeight > 0 ? `Objetivo: ${formatPercent(position.asset.targetWeight)}` : 'Sin objetivo'}
+						title={position.asset.targetWeight > 0 ? `Objetivo: ${$LL.dashboard.percent(position.asset.targetWeight)}` : 'Sin objetivo'}
 					></div>
 				</div>
 			</div>
