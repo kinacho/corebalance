@@ -24,6 +24,14 @@
           <li><a href="/#features">{$LL.nav.features()}</a></li>
           <li><a href="/#how-it-works">{$LL.nav.how_it_works()}</a></li>
           <li><a href="/#why-us">{$LL.nav.why_us()}</a></li>
+          <li>
+            <button 
+              class="footer-btn" 
+              onclick={() => ui.showChangelog = true}
+            >
+              {$LL.nav.changelog()}
+            </button>
+          </li>
         </ul>
       </div>
 

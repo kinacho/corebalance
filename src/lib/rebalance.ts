@@ -26,14 +26,17 @@ export function calculatePortfolioState(
 		const p = pData?.price ?? 0;
 		const fxRate = pData?.fxRate ?? 1;
 		
-		const totalValue = h * p * fxRate;
-		const totalCost = h * (avg * fxRate);
-		const profit = totalValue - totalCost;
-		const profitPercent = totalCost > 0 ? profit / totalCost : 0;
+		const totalValueBase = h * p * fxRate;
+		const isManual = asset.manualInterestRate !== undefined;
 		
 		const changePercent = asset.manualInterestRate !== undefined ? (asset.manualInterestRate * 100 / 365) : (pData?.change ?? 0);
-		const dailyChangeValue = totalValue * (changePercent / 100);
+		const dailyChangeValue = totalValueBase * (changePercent / 100);
 		const dailyChangePercent = changePercent / 100;
+
+		const totalValue = isManual ? (totalValueBase + dailyChangeValue) : totalValueBase;
+		const totalCost = isManual ? totalValue : h * (avg * fxRate);
+		const profit = isManual ? 0 : totalValue - totalCost;
+		const profitPercent = isManual ? 0 : (totalCost > 0 ? profit / totalCost : 0);
 		
 		return { 
 			asset, 
@@ -84,10 +87,7 @@ export function calculatePortfolioState(
 	});
 
 	// Calcular cambios diarios agregados
-	const dailyChangeValue = rawPositions.reduce((sum, pos) => {
-		const changePercent = prices[pos.asset.ticker]?.change || 0;
-		return sum + (pos.totalValue * (changePercent / 100));
-	}, 0);
+	const dailyChangeValue = rawPositions.reduce((sum, pos) => sum + pos.dailyChangeValue, 0);
 
 	const dailyChangePercent = totalCapital > 0 ? (dailyChangeValue / totalCapital) : 0;
 

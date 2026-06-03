@@ -68,7 +68,6 @@
   // --- State ---
   let activeTab = $state<TabId>("assets");
   let showManageAssets = $state(false);
-  let showChangelog = $state(false);
   let tabsEl = $state<HTMLElement | null>(null);
   let scrollAnchor = $state<HTMLElement | null>(null);
   let tourComponent = $state<any>(null);
@@ -417,15 +416,11 @@
         </div>
 
         <div class="footer-copyright">
-          <p>© {new Date().getFullYear()} CoreBalance · Hecho con ❤️ para la comunidad inversora · <button class="changelog-badge-btn" onclick={() => showChangelog = true} title="Ver historial de cambios">v1.6.0 🚀</button> · <button class="tour-repeat-btn" onclick={restartTour} title="Repetir tutorial de bienvenida">🎓 Tutorial</button></p>
+          <p>© {new Date().getFullYear()} CoreBalance · Hecho con ❤️ para la comunidad inversora · <button class="changelog-badge-btn" onclick={() => ui.showChangelog = true} title="Ver historial de cambios">v1.6.1 🚀</button> · <button class="tour-repeat-btn" onclick={restartTour} title="Repetir tutorial de bienvenida">🎓 Tutorial</button></p>
         </div>
       </footer>
     </main>
   </div>
-
-  {#if showChangelog}
-    <ChangelogModal onClose={() => showChangelog = false} />
-  {/if}
 {/if}
 
 

@@ -293,7 +293,7 @@
 					</div>
 				</div>
 			{/if}
-			{#if position.asset.ter > 0 && !isCash}
+			{#if position.asset.ter > 0 && !isCash && position.asset.manualInterestRate === undefined}
 				<div class="metric cost-metric">
 					<span class="metric-label">{$LL.dashboard.estimated_cost()}</span>
 					<div class="metric-content">

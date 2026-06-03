@@ -2,8 +2,20 @@
   import LandingNavBar from '$lib/components/landing/LandingNavBar.svelte';
   import LandingFooter from '$lib/components/landing/LandingFooter.svelte';
   import { LL } from '$lib/i18n/i18n-svelte';
+  import { ui } from '$lib/stores/ui.svelte';
 
   const lastUpdateDate = new Date();
+
+  function openContact() {
+    ui.supportType = 'contact';
+    ui.showSupportModal = true;
+  }
+
+  const contactLinkBtn = $derived(`<button class="contact-link" data-action="contact">${$LL.common.contact_form()}</button>`);
+
+  function handleContactClick(e: MouseEvent) {
+    if ((e.target as HTMLElement).dataset?.action === 'contact') openContact();
+  }
 </script>
 
 <svelte:head>
@@ -21,7 +33,9 @@
 
       <section>
         <h2>{$LL.privacy.sections.s1_title()}</h2>
-        <p>{@html $LL.privacy.sections.s1_content()}</p>
+        <!-- svelte-ignore a11y_click_events_have_key_events -->
+        <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+        <p onclick={handleContactClick}>{@html $LL.privacy.sections.s1_content({ contactLink: contactLinkBtn })}</p>
       </section>
 
       <section>
@@ -72,7 +86,9 @@
             <li>{@html itemFn()}</li>
           {/each}
         </ul>
-        <p>{@html $LL.privacy.sections.s7_contact()}</p>
+        <!-- svelte-ignore a11y_click_events_have_key_events -->
+        <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+        <p onclick={handleContactClick}>{@html $LL.privacy.sections.s7_contact({ contactLink: contactLinkBtn })}</p>
       </section>
 
       <section>
@@ -143,5 +159,20 @@
 
   :global(strong) {
     color: #fff;
+  }
+
+  :global(.contact-link) {
+    background: none;
+    border: none;
+    color: var(--accent-blue, #3b82f6);
+    text-decoration: underline;
+    font: inherit;
+    cursor: pointer;
+    padding: 0;
+    font-weight: 700;
+  }
+
+  :global(.contact-link:hover) {
+    color: #60a5fa;
   }
 </style>
