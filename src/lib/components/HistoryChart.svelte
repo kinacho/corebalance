@@ -109,7 +109,7 @@
 				}
 			}
 
-			chart.update('none');
+			chart.update();
 		}
 	});
 
@@ -136,36 +136,44 @@
 						borderColor: '#ffffff',
 						backgroundColor: createGradient('rgba(255, 255, 255, 1)', 0.1),
 						fill: true,
-						tension: 0.4,
+						tension: 0.45,
 						pointRadius: 0,
 						borderWidth: 3,
+						borderCapStyle: 'round',
+						borderJoinStyle: 'round',
 					},
 					{
 						label: 'Principal',
 						data: [],
 						borderColor: '#3b82f6',
 						fill: false,
-						tension: 0.4,
+						tension: 0.45,
 						pointRadius: 0,
 						borderWidth: 2,
+						borderCapStyle: 'round',
+						borderJoinStyle: 'round',
 					},
 					{
 						label: 'Acciones',
 						data: [],
 						borderColor: '#10b981',
 						fill: false,
-						tension: 0.4,
+						tension: 0.45,
 						pointRadius: 0,
 						borderWidth: 2,
+						borderCapStyle: 'round',
+						borderJoinStyle: 'round',
 					},
 					{
 						label: 'Conservadora',
 						data: [],
 						borderColor: '#f59e0b',
 						fill: false,
-						tension: 0.4,
+						tension: 0.45,
 						pointRadius: 0,
 						borderWidth: 2,
+						borderCapStyle: 'round',
+						borderJoinStyle: 'round',
 					},
 					{
 						label: 'Invertido',
@@ -176,6 +184,8 @@
 						pointRadius: 0,
 						fill: false,
 						tension: 0,
+						borderCapStyle: 'round',
+						borderJoinStyle: 'round',
 					}
 				]
 			},
@@ -208,6 +218,31 @@
 									: formatEUR(yValue);
 								return ` ${label}: ${value}`;
 							}
+						}
+					}
+				},
+				animation: {
+					// Efecto de dibujo a mano alzada (progresivo)
+					x: {
+						type: 'number',
+						easing: 'easeInOutQuart',
+						duration: 20, // Duración por punto
+						from: NaN, 
+						delay(ctx: any) {
+							if (ctx.type !== 'data' || ctx.xStarted) return 0;
+							ctx.xStarted = true;
+							return ctx.index * 20;
+						}
+					},
+					y: {
+						type: 'number',
+						easing: 'easeInOutQuart',
+						duration: 20,
+						from: (ctx: any) => ctx.chart.scales.y.getPixelForValue(ctx.chart.scales.y.min),
+						delay(ctx: any) {
+							if (ctx.type !== 'data' || ctx.yStarted) return 0;
+							ctx.yStarted = true;
+							return ctx.index * 20;
 						}
 					}
 				},
