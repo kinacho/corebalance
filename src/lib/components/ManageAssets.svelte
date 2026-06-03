@@ -4,6 +4,7 @@
 	import type { Asset, AssetCategory } from '$lib/types';
 	import { formatPercent } from '$lib/utils';
 	import { focusTrap } from '$lib/actions/focusTrap';
+	import { LL } from '$lib/i18n/i18n-svelte';
 	import { onMount, onDestroy } from 'svelte';
 	import AssetSearch from './AssetSearch.svelte';
 	import ImportModal from './ImportModal.svelte';
@@ -199,7 +200,7 @@
 
 		if (activeTouchTicker && touchTargetSectionId) {
 			moveAssetSafely(activeTouchTicker, touchTargetSectionId);
-			ui.addToast('Activo reclasificado', 'success');
+			ui.addToast($LL.toasts.asset_reclassified(), 'success');
 			ui.hapticFeedback('medium');
 		}
 
@@ -213,15 +214,15 @@
 	}
 
 	function handleSave() {
-		ui.addToast('Cartera guardada correctamente', 'success');
+		ui.addToast($LL.toasts.portfolio_saved(), 'success');
 		ui.hapticFeedback('heavy');
 		onClose();
 	}
 
 	const sections = $derived([
-		{ id: 'core' as AssetCategory, label: 'Cartera Principal', assets: portfolio.coreAssets, description: 'Activos con peso objetivo para rebalanceo', showWeights: true },
-		{ id: 'stocks' as AssetCategory, label: 'Acciones Individuales', assets: portfolio.stockAssets, description: 'Acciones y posiciones especulativas', showWeights: false },
-		{ id: 'satellite' as AssetCategory, label: 'Cartera Conservadora', assets: portfolio.satelliteAssets, description: 'Renta fija, monetarios, mixtos', showWeights: false }
+		{ id: 'core' as AssetCategory, label: $LL.manage.title_core(), assets: portfolio.coreAssets, description: $LL.manage.desc_core(), showWeights: true },
+		{ id: 'stocks' as AssetCategory, label: $LL.manage.title_stocks(), assets: portfolio.stockAssets, description: $LL.manage.desc_stocks(), showWeights: false },
+		{ id: 'satellite' as AssetCategory, label: $LL.manage.title_satellite(), assets: portfolio.satelliteAssets, description: $LL.manage.desc_satellite(), showWeights: false }
 	]);
 
 	/** Peso total del Core (debe sumar 100%) */
@@ -283,7 +284,7 @@
 
 		const otherFreeAssets = assets.filter(a => a.ticker !== ticker && !lockedAssets[a.ticker]);
 		if (otherFreeAssets.length === 0) {
-			ui.addToast('No hay activos libres para compensar el ajuste de peso', 'error');
+			ui.addToast($LL.toasts.no_free_assets(), 'error');
 			return;
 		}
 
@@ -357,12 +358,12 @@
 	}
 
 	function confirmRemove(asset: Asset) {
-		if (confirm(`¿Eliminar "${asset.name}" (${asset.ticker}) de tu cartera?`)) {
+		if (confirm($LL.manage.confirm_delete({ name: asset.name, ticker: asset.ticker }))) {
 			if (asset.category === 'core') {
 				handleWeightChange(asset.ticker, 0);
 			}
 			portfolio.removeAsset(asset.ticker);
-			ui.addToast('Activo eliminado', 'info');
+			ui.addToast($LL.toasts.asset_deleted(), 'info');
 			ui.hapticFeedback('medium');
 		}
 	}
@@ -407,15 +408,15 @@
 	<LedgerModal asset={ledgerAsset} onClose={() => { showLedger = false; ledgerAsset = null; }} />
 {/if}
 
-<div class="manage-overlay" role="dialog" aria-modal="true" aria-label="Gestionar activos">
-	<button class="manage-backdrop" onclick={handleCancel} aria-label="Cerrar"></button>
+<div class="manage-overlay" role="dialog" aria-modal="true" aria-label={$LL.manage.title()}>
+	<button class="manage-backdrop" onclick={handleCancel} aria-label={$LL.common.cancel()}></button>
 	<div class="manage-panel" use:focusTrap>
 		<div class="manage-header">
 			<div>
-				<h2 class="manage-title">⚙️ Gestionar Cartera</h2>
-				<p class="manage-subtitle">Añade, elimina y configura los activos de tu portfolio</p>
+				<h2 class="manage-title">⚙️ {$LL.manage.title()}</h2>
+				<p class="manage-subtitle">{$LL.manage.subtitle()}</p>
 			</div>
-			<button class="close-btn" onclick={handleCancel} aria-label="Cancelar">
+			<button class="close-btn" onclick={handleCancel} aria-label={$LL.common.cancel()}>
 				<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
 					<path d="M18 6L6 18M6 6l12 12" />
 				</svg>
@@ -425,7 +426,7 @@
 		<div 
 			class="manage-body"
 			role="region"
-			aria-label="Panel de gestión de activos"
+			aria-label={$LL.manage.title()}
 			bind:this={scrollContainer}
 			ondragover={handleScrollDragOver}
 		>
@@ -434,7 +435,7 @@
 					class="section-block"
 					data-section-id={section.id}
 					role="region"
-					aria-label="Zona para soltar activos en {section.label}"
+					aria-label={section.label}
 					ondragover={(e) => {
 						e.preventDefault();
 						if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
@@ -468,11 +469,11 @@
 						</div>
 						{#if section.showWeights}
 							<div class="weight-controls">
-								<button class="equalize-btn" onclick={equalizeWeights} title="Repartir equitativamente">
+								<button class="equalize-btn" onclick={equalizeWeights} title={$LL.manage.btn_equalize_title()}>
 									<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
 										<line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="18" x2="21" y2="18" />
 									</svg>
-									Igualar
+									{$LL.manage.btn_equalize()}
 								</button>
 								<div class="weight-indicator" class:valid={coreWeightValid} class:invalid={!coreWeightValid && coreWeightTotal > 0}>
 									<span class="weight-sum">{roundDec(coreWeightTotal * 100, 1)}%</span>
@@ -520,7 +521,7 @@
 										draggable="true"
 										role="button"
 										tabindex="0"
-										aria-label="Arrastrar para mover {asset.name}"
+										aria-label={$LL.manage.tooltip_move()}
 										ondragstart={(e) => {
 											if (e.dataTransfer) {
 												e.dataTransfer.setData('text/plain', asset.ticker);
@@ -565,18 +566,18 @@
 											<div class="ter-edit-inline">
 												<div class="edit-fields-stack">
 													<div class="edit-field-group">
-														<label class="ter-label" for="name-{asset.ticker}">Nombre</label>
+														<label class="ter-label" for="name-{asset.ticker}">{$LL.manage.label_name()}</label>
 														<input
 															id="name-{asset.ticker}"
 															type="text"
 															class="ter-input"
 															style="width: 120px;"
 															bind:value={editName}
-															placeholder="Nombre"
+															placeholder={$LL.manage.label_name()}
 														/>
 													</div>
 													<div class="edit-field-group">
-														<label class="ter-label" for="ter-{asset.ticker}">TER %</label>
+														<label class="ter-label" for="ter-{asset.ticker}">{$LL.manage.label_ter()}</label>
 														<input
 															id="ter-{asset.ticker}"
 															type="number"
@@ -590,7 +591,7 @@
 													</div>
 													{#if asset.ticker.startsWith('CASH-')}
 														<div class="edit-field-group">
-															<label class="ter-label" for="int-{asset.ticker}">INT %</label>
+															<label class="ter-label" for="int-{asset.ticker}">{$LL.manage.label_int()}</label>
 															<input
 																id="int-{asset.ticker}"
 																type="number"
@@ -614,26 +615,26 @@
 												class="action-move"
 												value={section.id}
 												onchange={(e) => moveAssetSafely(asset.ticker, e.currentTarget.value as any)}
-												title="Mover a otra cartera"
+												title={$LL.manage.tooltip_move()}
 											>
-												<option value="core">P.</option>
-												<option value="satellite">C.</option>
-												<option value="stocks">A.</option>
+												<option value="core">{$LL.manage.option_core_short()}</option>
+												<option value="satellite">{$LL.manage.option_satellite_short()}</option>
+												<option value="stocks">{$LL.manage.option_stocks_short()}</option>
 											</select>
-											<button class="action-ter" onclick={() => startEditTer(asset)} title={asset.ticker.startsWith('CASH-') ? 'Configurar cuenta' : 'Editar TER'}>
-												{asset.ticker.startsWith('CASH-') ? 'Config' : 'TER'}
+											<button class="action-ter" onclick={() => startEditTer(asset)} title={asset.ticker.startsWith('CASH-') ? $LL.manage.tooltip_config() : $LL.manage.tooltip_ter()}>
+												{asset.ticker.startsWith('CASH-') ? $LL.manage.btn_config() : $LL.manage.btn_ter()}
 											</button>
 											<button
 												id="tour-ledger"
 												class="action-ledger"
 												class:active={portfolio.holdings[asset.ticker]?.useLedger}
 												onclick={() => openLedger(asset)}
-												title="Libro de transacciones"
+												title={$LL.ledger.title_history()}
 											>
-												📜 Ledger
+												📜 {$LL.manage.btn_ledger()}
 											</button>
 										{/if}
-										<button class="action-delete" onclick={() => confirmRemove(asset)} title="Eliminar">
+										<button class="action-delete" onclick={() => confirmRemove(asset)} title={$LL.common.delete()}>
 											<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
 												<polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
 											</svg>
@@ -649,7 +650,7 @@
 											class="lock-btn" 
 											class:is-locked={lockedAssets[asset.ticker]}
 											onclick={() => toggleLock(asset.ticker)}
-											title={lockedAssets[asset.ticker] ? 'Desbloquear peso' : 'Bloquear peso'}
+											title={lockedAssets[asset.ticker] ? $LL.manage.unlock_weight() : $LL.manage.lock_weight()}
 										>
 											{#if lockedAssets[asset.ticker]}
 												<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
@@ -697,7 +698,7 @@
 						<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">
 							<line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
 						</svg>
-						Añadir activo
+						{$LL.dashboard.add_asset()}
 					</button>
 				</div>
 			{/each}
@@ -708,7 +709,7 @@
 					<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
 						<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
 					</svg>
-					Importar desde CSV (Beta)
+					{$LL.import.title()} (Beta)
 				</button>
 				<p class="import-hint">DEGIRO · Trading 212 · Interactive Brokers · MyInvestor</p>
 			</div>
@@ -721,7 +722,7 @@
 					<polyline points="17 21 17 13 7 13 7 21"></polyline>
 					<polyline points="7 3 7 8 15 8"></polyline>
 				</svg>
-				Guardar Cartera y Volver
+				{$LL.manage.btn_save()}
 			</button>
 		</div>
 	</div>

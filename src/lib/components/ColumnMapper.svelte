@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { MappingConfig } from '$lib/importers';
 	import { normalizeHeader, analyzeColumns, suggestMappingFromAnalysis } from '$lib/importers/csv-utils';
+	import { LL } from '$lib/i18n/i18n-svelte';
 
 	interface Props {
 		headers: string[];
@@ -88,15 +89,15 @@
 
 <div class="mapper-container">
 	<div class="mapper-info">
-		<p class="mapper-hint">Asigna cada campo a una columna de tu archivo para que podamos importar los datos correctamente.</p>
+		<p class="mapper-hint">{$LL.import.mapper_hint()}</p>
 		
 		{#if calculatedScore > 0}
 			<div class="score-indicator" class:low={calculatedScore < 0.6} class:high={calculatedScore >= 0.8}>
-				Cobertura estimada del mapeo: <strong>{Math.round(calculatedScore * 100)}%</strong>. 
+				{@html $LL.import.mapper_coverage({ score: Math.round(calculatedScore * 100) })} 
 				{#if calculatedScore < 0.6}
-					⚠️ Algunas columnas podrían no coincidir del todo. Por favor, revísalas.
+					{$LL.import.mapper_warning()}
 				{:else}
-					✓ Todo parece correcto.
+					{$LL.import.mapper_success()}
 				{/if}
 			</div>
 		{/if}
@@ -104,9 +105,9 @@
 
 	<div class="mapping-grid">
 		<div class="mapping-field" class:required={true} class:active={mapping.isin !== -1}>
-			<label for="col-isin">ISIN</label>
+			<label for="col-isin">{$LL.import.col_isin()}</label>
 			<select id="col-isin" bind:value={mapping.isin}>
-				<option value={-1}>No disponible</option>
+				<option value={-1}>{$LL.import.col_not_available()}</option>
 				{#each headers as header, i}
 					<option value={i}>{header}</option>
 				{/each}
@@ -114,9 +115,9 @@
 		</div>
 
 		<div class="mapping-field" class:active={mapping.ticker !== -1}>
-			<label for="col-ticker">Ticker / Símbolo</label>
+			<label for="col-ticker">{$LL.import.col_ticker()}</label>
 			<select id="col-ticker" bind:value={mapping.ticker}>
-				<option value={-1}>No disponible</option>
+				<option value={-1}>{$LL.import.col_not_available()}</option>
 				{#each headers as header, i}
 					<option value={i}>{header}</option>
 				{/each}
@@ -124,9 +125,9 @@
 		</div>
 
 		<div class="mapping-field" class:required={true} class:active={mapping.shares !== -1}>
-			<label for="col-shares">Cantidad (Acciones)</label>
+			<label for="col-shares">{$LL.import.col_shares()}</label>
 			<select id="col-shares" bind:value={mapping.shares}>
-				<option value={-1}>Seleccionar columna...</option>
+				<option value={-1}>{$LL.import.col_select()}</option>
 				{#each headers as header, i}
 					<option value={i}>{header}</option>
 				{/each}
@@ -134,9 +135,9 @@
 		</div>
 
 		<div class="mapping-field" class:active={mapping.name !== -1}>
-			<label for="col-name">Nombre Activo</label>
+			<label for="col-name">{$LL.import.col_name()}</label>
 			<select id="col-name" bind:value={mapping.name}>
-				<option value={-1}>Auto-generar</option>
+				<option value={-1}>{$LL.import.col_auto_generate()}</option>
 				{#each headers as header, i}
 					<option value={i}>{header}</option>
 				{/each}
@@ -144,9 +145,9 @@
 		</div>
 
 		<div class="mapping-field" class:active={mapping.avgCost !== -1}>
-			<label for="col-cost">Precio Medio / Coste</label>
+			<label for="col-cost">{$LL.import.col_cost()}</label>
 			<select id="col-cost" bind:value={mapping.avgCost}>
-				<option value={-1}>No disponible (0)</option>
+				<option value={-1}>{$LL.import.col_not_available_zero()}</option>
 				{#each headers as header, i}
 					<option value={i}>{header}</option>
 				{/each}
@@ -154,9 +155,9 @@
 		</div>
 
 		<div class="mapping-field" class:active={mapping.currency !== -1}>
-			<label for="col-currency">Divisa</label>
+			<label for="col-currency">{$LL.import.col_currency()}</label>
 			<select id="col-currency" bind:value={mapping.currency}>
-				<option value={-1}>Auto (EUR)</option>
+				<option value={-1}>{$LL.import.col_auto_eur()}</option>
 				{#each headers as header, i}
 					<option value={i}>{header}</option>
 				{/each}
@@ -164,9 +165,9 @@
 		</div>
 
 		<div class="mapping-field" class:active={mapping.date !== -1}>
-			<label for="col-date">Fecha (Historiales)</label>
+			<label for="col-date">{$LL.import.col_date()}</label>
 			<select id="col-date" bind:value={mapping.date}>
-				<option value={-1}>No disponible (Posición simple)</option>
+				<option value={-1}>{$LL.import.col_not_available_simple()}</option>
 				{#each headers as header, i}
 					<option value={i}>{header}</option>
 				{/each}
@@ -174,9 +175,9 @@
 		</div>
 
 		<div class="mapping-field" class:active={mapping.type !== -1}>
-			<label for="col-type">Tipo Operación (Buy/Sell)</label>
+			<label for="col-type">{$LL.import.col_type()}</label>
 			<select id="col-type" bind:value={mapping.type}>
-				<option value={-1}>Auto (Signo / Compra)</option>
+				<option value={-1}>{$LL.import.col_auto_buy()}</option>
 				{#each headers as header, i}
 					<option value={i}>{header}</option>
 				{/each}
@@ -185,7 +186,7 @@
 	</div>
 
 	<div class="preview-table-container">
-		<p class="preview-title">Vista previa de los datos:</p>
+		<p class="preview-title">{$LL.import.preview_title()}</p>
 		<div class="preview-scroll">
 			<table class="preview-table">
 				<thead>
@@ -209,9 +210,9 @@
 	</div>
 
 	<div class="mapper-actions">
-		<button class="btn-secondary" onclick={onBack}>Atrás</button>
+		<button class="btn-secondary" onclick={onBack}>{$LL.import.btn_back()}</button>
 		<button class="btn-primary" onclick={handleConfirm} disabled={!isValid}>
-			Continuar
+			{$LL.import.btn_continue()}
 		</button>
 	</div>
 </div>

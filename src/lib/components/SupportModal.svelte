@@ -3,6 +3,7 @@
 	import { ui } from '$lib/stores/ui.svelte';
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { focusTrap } from '$lib/actions/focusTrap';
+	import { LL } from '$lib/i18n/i18n-svelte';
 
 	let email = $state(portfolio.user?.email || '');
 	let subject = $state('');
@@ -11,13 +12,13 @@
 	let isSuccess = $state(false);
 
 	const type = $derived(ui.supportType);
-	const title = $derived(type === 'bug' ? 'Reportar un error' : 'Contacto');
+	const title = $derived(type === 'bug' ? $LL.support.title_bug() : $LL.support.title_contact());
 	const icon = $derived(type === 'bug' ? '🪲' : '✉️');
 
 	async function handleSubmit(e: SubmitEvent) {
 		e.preventDefault();
 		if (!email || !subject || !message) {
-			ui.addToast('Por favor, rellena todos los campos', 'error');
+			ui.addToast($LL.toasts.fill_all_fields(), 'error');
 			return;
 		}
 
@@ -52,7 +53,7 @@
 				throw new Error('Error en el servidor');
 			}
 		} catch (error) {
-			ui.addToast('Error al enviar el mensaje. Inténtalo de nuevo.', 'error');
+			ui.addToast($LL.toasts.send_error(), 'error');
 		} finally {
 			isSending = false;
 		}
@@ -84,7 +85,7 @@
 			transition:scale={{ duration: 300, start: 0.95 }}
 			onclick={(e) => e.stopPropagation()}
 		>
-			<button class="btn-close" onclick={() => ui.showSupportModal = false} aria-label="Cerrar">
+			<button class="btn-close" onclick={() => ui.showSupportModal = false} aria-label={$LL.common.close()}>
 				<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none">
 					<line x1="18" y1="6" x2="6" y2="18"></line>
 					<line x1="6" y1="6" x2="18" y2="18"></line>
@@ -94,21 +95,21 @@
 			{#if isSuccess}
 				<div class="success-view" in:fly={{ y: 20, duration: 400 }}>
 					<div class="success-icon">✨</div>
-					<h3>¡Mensaje enviado!</h3>
-					<p>Gracias por tu feedback. Nos pondremos en contacto contigo pronto en <strong>{email}</strong>.</p>
+					<h3>{$LL.support.message_sent()}</h3>
+					<p>{@html $LL.support.thanks_feedback({ email: `<strong>${email}</strong>` })}</p>
 				</div>
 			{:else}
 				<div class="modal-header">
 					<div class="header-icon">{icon}</div>
 					<div class="header-text">
 						<h2>{title}</h2>
-						<p>Cuéntanos qué necesitas y te responderemos lo antes posible.</p>
+						<p>{$LL.support.subtitle()}</p>
 					</div>
 				</div>
 
 				<form class="support-form" onsubmit={handleSubmit}>
 					<div class="form-group">
-						<label for="email">Tu Email</label>
+						<label for="email">{$LL.support.label_email()}</label>
 						<input 
 							type="email" 
 							id="email" 
@@ -120,23 +121,23 @@
 					</div>
 
 					<div class="form-group">
-						<label for="subject">Asunto</label>
+						<label for="subject">{$LL.support.label_subject()}</label>
 						<input 
 							type="text" 
 							id="subject" 
 							bind:value={subject} 
-							placeholder={type === 'bug' ? '¿Qué error has encontrado?' : '¿En qué podemos ayudarte?'}
+							placeholder={type === 'bug' ? $LL.support.placeholder_subject_bug() : $LL.support.placeholder_subject_contact()}
 							required
 							disabled={isSending}
 						/>
 					</div>
 
 					<div class="form-group">
-						<label for="message">Descripción</label>
+						<label for="message">{$LL.support.label_description()}</label>
 						<textarea 
 							id="message" 
 							bind:value={message} 
-							placeholder={type === 'bug' ? 'Describe los pasos para reproducir el error...' : 'Escribe aquí tu mensaje...'}
+							placeholder={type === 'bug' ? $LL.support.placeholder_description_bug() : $LL.support.placeholder_description_contact()}
 							rows="5"
 							required
 							disabled={isSending}
@@ -146,9 +147,9 @@
 					<button type="submit" class="btn-submit" disabled={isSending}>
 						{#if isSending}
 							<div class="spinner"></div>
-							Enviando...
+							{$LL.support.sending()}
 						{:else}
-							Enviar mensaje
+							{$LL.support.btn_send()}
 						{/if}
 					</button>
 				</form>

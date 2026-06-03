@@ -2,6 +2,7 @@
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { ui } from '$lib/stores/ui.svelte';
 	import { focusTrap } from '$lib/actions/focusTrap';
+	import { LL } from '$lib/i18n/i18n-svelte';
 	import { importFromCSV, importWithMapping, generateCsvSignature } from '$lib/importers';
 	import type { ImportResult, ParsedPosition, MappingConfig, SkippedDetail } from '$lib/importers';
 	import { ASSET_COLORS, ASSET_ICONS } from '$lib/constants';
@@ -56,11 +57,11 @@
 
 	function processFile(file: File) {
 		if (!file.name.match(/\.(csv|txt|tsv)$/i)) {
-			ui.addToast('Solo se aceptan archivos CSV, TSV o TXT', 'error');
+			ui.addToast($LL.toasts.invalid_file_type(), 'error');
 			return;
 		}
 		if (file.size > 1 * 1024 * 1024) {
-			ui.addToast('El archivo es demasiado grande (máx. 1 MB)', 'error');
+			ui.addToast($LL.toasts.file_too_large(), 'error');
 			return;
 		}
 
@@ -76,7 +77,7 @@
 
 			if (result.broker.id !== 'generic' && result.broker.confidence >= 0.7) {
 				// Bróker detectado correctamente, saltar el paso de mapeo
-				ui.addToast(`Bróker detectado: ${result.broker.name}`, 'success');
+				ui.addToast($LL.toasts.broker_detected({ brokerName: result.broker.name }), 'success');
 				startResolution(result);
 			} else {
 				// Bróker desconocido, requiere mapeo manual
@@ -86,7 +87,7 @@
 						const saved = localStorage.getItem('csv_mapping_' + activeSignature);
 						if (saved) {
 							savedMapping = JSON.parse(saved);
-							ui.addToast('Se ha cargado tu mapeo anterior para este formato', 'success');
+							ui.addToast($LL.toasts.mapping_loaded(), 'success');
 						} else {
 							savedMapping = undefined;
 						}
@@ -115,7 +116,7 @@
 
 	function startResolution(result: ImportResult) {
 		if (result.positions.length === 0) {
-			ui.addToast('No se encontraron posiciones en el archivo', 'error');
+			ui.addToast($LL.toasts.no_positions_found(), 'error');
 			step = 'upload';
 			return;
 		}
@@ -151,7 +152,7 @@
 			resolvedMap = map;
 			step = 'preview';
 		} catch (e) {
-			resolveError = e instanceof Error ? e.message : 'Error de conexión';
+			resolveError = e instanceof Error ? e.message : $LL.common.error_generic();
 			step = 'preview'; // Still show what we have
 		}
 	}
@@ -221,8 +222,8 @@
 		// (Actualmente el código asigna targetWeight: 0 a los nuevos, pero validamos por si acaso)
 		
 		if (weightsByCategory[targetCategory] > 1.0001) {
-			const catNames = { core: 'Principal', satellite: 'Conservadora', stocks: 'Acciones' };
-			ui.addToast(`La cartera ${catNames[targetCategory]} ya suma ${(weightsByCategory[targetCategory] * 100).toFixed(0)}%. Ajusta los pesos antes de importar más activos.`, 'error');
+			const catNames = { core: $LL.manage.option_core_short(), satellite: $LL.manage.option_satellite_short(), stocks: $LL.manage.option_stocks_short() };
+			ui.addToast($LL.toasts.category_weight_limit({ catName: catNames[targetCategory], weight: (weightsByCategory[targetCategory] * 100).toFixed(0) }), 'error');
 			return;
 		}
 		// --- End Validation ---
@@ -278,23 +279,23 @@
 
 <svelte:window onkeydown={handleKeydown} />
 
-<div class="import-overlay" role="dialog" aria-modal="true" aria-label="Importar cartera">
-	<button class="import-backdrop" onclick={onClose} aria-label="Cerrar"></button>
+<div class="import-overlay" role="dialog" aria-modal="true" aria-label={$LL.import.title()}>
+	<button class="import-backdrop" onclick={onClose} aria-label={$LL.common.close()}></button>
 	<div class="import-panel" use:focusTrap>
 		<!-- Header -->
 		<div class="import-header">
 			<div>
-				<h2 class="import-title">📥 Importar Cartera <span class="beta-badge">Beta</span></h2>
+				<h2 class="import-title">📥 {$LL.import.title()} <span class="beta-badge">Beta</span></h2>
 				<p class="import-subtitle">
-					{#if step === 'upload'}Sube el CSV de tu bróker
-					{:else if step === 'mapping'}Configura las columnas de tu archivo
-					{:else if step === 'resolving'}Buscando activos en Yahoo Finance...
-					{:else if step === 'preview'}Revisa y confirma las posiciones
-					{:else}¡Importación completada!
+					{#if step === 'upload'}{$LL.import.subtitle_upload()}
+					{:else if step === 'mapping'}{$LL.import.subtitle_mapping()}
+					{:else if step === 'resolving'}{$LL.import.subtitle_resolving()}
+					{:else if step === 'preview'}{$LL.import.subtitle_preview()}
+					{:else}{$LL.import.subtitle_done()}
 					{/if}
 				</p>
 			</div>
-			<button class="close-btn" onclick={onClose} aria-label="Cerrar">
+			<button class="close-btn" onclick={onClose} aria-label={$LL.common.close()}>
 				<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12" /></svg>
 			</button>
 		</div>
@@ -306,26 +307,26 @@
 					ondragover={handleDragOver} ondragleave={handleDragLeave} ondrop={handleDrop}
 					role="button" tabindex="0">
 					<div class="upload-icon">📂</div>
-					<p class="upload-title">Arrastra tu archivo CSV aquí</p>
-					<p class="upload-hint">o haz clic para seleccionarlo</p>
+					<p class="upload-title">{$LL.import.upload_title()}</p>
+					<p class="upload-hint">{$LL.import.upload_hint()}</p>
 					<input type="file" accept=".csv,.tsv,.txt" class="file-input" onchange={handleFileInput} />
 				</div>
 				<div class="broker-badges">
-					<span class="broker-badge">CSV Universal (Mapeo Manual)</span>
+					<span class="broker-badge">CSV Universal ({$LL.import.subtitle_mapping()})</span>
 				</div>
 
 				<div class="import-guide">
-					<h3 class="guide-title">¿Qué archivo necesito?</h3>
-					<p class="guide-text">Puedes importar el CSV de <strong>cualquier bróker</strong>. Solo asegúrate de que el archivo contenga al menos estas columnas:</p>
+					<h3 class="guide-title">{$LL.import.guide_title()}</h3>
+					<p class="guide-text">{@html $LL.import.guide_text({ bold: `<strong>${$LL.import.guide_text_bold()}</strong>` })}</p>
 					<ul class="guide-list">
-						<li><strong>Identificador:</strong> ISIN (ej: IE00B4L5Y983) o Ticker (ej: VOO).</li>
-						<li><strong>Cantidad:</strong> Número de acciones o participaciones.</li>
-						<li><strong>Precio/Coste (Opcional):</strong> Para calcular tu rentabilidad.</li>
+						<li><strong>{$LL.import.guide_col_id()}</strong>{$LL.import.guide_col_id_desc()}</li>
+						<li><strong>{$LL.import.guide_col_shares()}</strong>{$LL.import.guide_col_shares_desc()}</li>
+						<li><strong>{$LL.import.guide_col_cost()}</strong>{$LL.import.guide_col_cost_desc()}</li>
 					</ul>
-					<p class="guide-note">💡 Tras subirlo, tú mismo indicarás qué columna es cada dato.</p>
+					<p class="guide-note">{$LL.import.guide_note()}</p>
 				</div>
 
-				<p class="privacy-note">🔒 Tu archivo se procesa 100% en tu navegador. No se sube a ningún servidor.</p>
+				<p class="privacy-note">{$LL.import.privacy_note()}</p>
 
 			<!-- STEP 2: Mapping -->
 			{:else if step === 'mapping'}
@@ -343,8 +344,8 @@
 			{:else if step === 'resolving'}
 				<div class="resolving-state">
 					<div class="resolving-spinner"></div>
-					<p>Identificando {importResult?.positions.length ?? 0} activos...</p>
-					<p class="resolving-hint">Buscando tickers en Yahoo Finance</p>
+					<p>{$LL.import.resolving_count({ count: importResult?.positions.length ?? 0 })}</p>
+					<p class="resolving-hint">{$LL.import.resolving_hint()}</p>
 				</div>
 
 			<!-- STEP 3: Preview -->
@@ -353,20 +354,20 @@
 					<div class="preview-header-row">
 						<div class="broker-detected">
 							<span>📄</span>
-							<span class="broker-name">Activos Identificados</span>
+							<span class="broker-name">{$LL.import.assets_identified()}</span>
 						</div>
 						<div class="category-picker">
-							<label for="import-category">Añadir a:</label>
+							<label for="import-category">{$LL.import.add_to()}</label>
 							<select id="import-category" bind:value={targetCategory}>
-								<option value="core">Cartera Principal</option>
-								<option value="satellite">Cartera Conservadora</option>
-								<option value="stocks">Acciones</option>
+								<option value="core">{$LL.manage.title_core()}</option>
+								<option value="satellite">{$LL.manage.title_satellite()}</option>
+								<option value="stocks">{$LL.manage.title_stocks()}</option>
 							</select>
 						</div>
 					</div>
 
 					{#if resolveError}
-						<div class="resolve-warning">⚠️ {resolveError} — Algunos activos podrían no haberse encontrado.</div>
+						<div class="resolve-warning">⚠️ {resolveError} — {$LL.import.warnings_resolve()}</div>
 					{/if}
 
 					{#if importResult.warnings.length > 0}
@@ -377,10 +378,10 @@
 
 					{#if importResult.skippedRows > 0}
 						<div class="import-summary-banner">
-							ℹ️ <strong>Resumen:</strong> Se importarán {importResult.positions.length} posiciones. Se han omitido {importResult.skippedRows} filas (como cabeceras, depósitos, comisiones o celdas vacías).
+							ℹ️ <strong>Resumen:</strong> {$LL.import.summary_banner({ positions: importResult.positions.length, skipped: importResult.skippedRows })}
 							{#if skippedDetails.length > 0}
 								<button class="skipped-toggle" onclick={() => showSkippedDetails = !showSkippedDetails}>
-									{showSkippedDetails ? '▲ Ocultar detalle' : '▼ Ver filas omitidas'}
+									{showSkippedDetails ? $LL.import.btn_hide_details() : $LL.import.btn_show_details()}
 								</button>
 							{/if}
 						</div>
@@ -388,13 +389,13 @@
 							<div class="skipped-panel">
 								{#each skippedDetails.slice(0, 30) as detail}
 									<div class="skipped-row">
-										<span class="skipped-line">Línea {detail.rowNumber}</span>
+										<span class="skipped-line">{$LL.import.skipped_line({ row: detail.rowNumber })}</span>
 										<span class="skipped-preview">{detail.preview || '—'}</span>
 										<span class="skipped-reason">{detail.reason}</span>
 									</div>
 								{/each}
 								{#if skippedDetails.length > 30}
-									<p class="skipped-more">... y {skippedDetails.length - 30} filas más</p>
+									<p class="skipped-more">{$LL.import.skipped_more({ count: skippedDetails.length - 30 })}</p>
 								{/if}
 							</div>
 						{/if}
@@ -402,9 +403,9 @@
 
 					<div class="select-all-row">
 						<button class="select-all-btn" onclick={toggleAll}>
-							{selectedPositions.size === importResult.positions.length ? '☑' : '☐'} Seleccionar todo
+							{selectedPositions.size === importResult.positions.length ? '☑' : '☐'} {$LL.import.select_all()}
 						</button>
-						<span class="selected-count">{selectedCount} de {importResult.positions.length} seleccionados</span>
+						<span class="selected-count">{$LL.import.selected_count({ selected: selectedCount, total: importResult.positions.length })}</span>
 					</div>
 
 					<div class="positions-list">
@@ -422,10 +423,10 @@
 											{#if ticker}
 												<span class="pos-ticker">{ticker}</span>
 											{:else}
-												<span class="pos-no-ticker">❌ No encontrado</span>
+												<span class="pos-no-ticker">❌ {$LL.import.not_found()}</span>
 											{/if}
 											{#if pos.isin}<span class="pos-isin">{pos.isin}</span>{/if}
-											{#if alreadyExists}<span class="pos-exists">⟳ Actualizar</span>{/if}
+											{#if alreadyExists}<span class="pos-exists">⟳ {$LL.import.update_badge()}</span>{/if}
 										</span>
 									</div>
 									<div class="pos-numbers">
@@ -436,7 +437,7 @@
 								{#if !ticker || isSelected}
 									<div class="manual-ticker-edit">
 										<input type="text" 
-											placeholder="Ticker Yahoo (ej: IWDA.AS)"
+											placeholder={$LL.import.placeholder_ticker()}
 											value={ticker || ''}
 											onchange={(e) => {
 												const val = (e.target as HTMLInputElement).value.toUpperCase().trim();
@@ -461,8 +462,8 @@
 			{:else if step === 'done'}
 				<div class="done-state">
 					<div class="done-icon">✅</div>
-					<p class="done-title">{importedCount} activos importados</p>
-					<p class="done-hint">Los precios se actualizarán automáticamente en unos segundos.</p>
+					<p class="done-title">{$LL.import.done_title({ count: importedCount })}</p>
+					<p class="done-hint">{$LL.import.done_hint()}</p>
 				</div>
 			{/if}
 		</div>
@@ -472,15 +473,15 @@
 			{#if step === 'preview'}
 				<button class="btn-import" onclick={confirmImport} disabled={resolvableCount === 0}>
 					<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-					Importar {resolvableCount} activos
+					{$LL.import.btn_import_assets({ count: resolvableCount })}
 				</button>
 			{:else if step === 'done'}
 				<button class="btn-import" onclick={onClose}>
 					<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-					Cerrar
+					{$LL.common.close()}
 				</button>
 			{:else if step === 'upload'}
-				<button class="btn-cancel" onclick={onClose}>Cancelar</button>
+				<button class="btn-cancel" onclick={onClose}>{$LL.common.cancel()}</button>
 			{/if}
 		</div>
 	</div>

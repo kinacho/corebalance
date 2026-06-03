@@ -28,8 +28,8 @@
         <h2>{$LL.privacy.sections.s2_title()}</h2>
         <p>{$LL.privacy.sections.s2_content()}</p>
         <ul>
-          {#each $LL.privacy.sections.s2_list() as item}
-            <li>{@html item}</li>
+          {#each Object.values($LL.privacy.sections.s2_list) as itemFn}
+            <li>{@html itemFn()}</li>
           {/each}
         </ul>
       </section>
@@ -38,8 +38,8 @@
         <h2>{$LL.privacy.sections.s3_title()}</h2>
         <p>{$LL.privacy.sections.s3_content()}</p>
         <ul>
-          {#each $LL.privacy.sections.s3_list() as item}
-            <li>{item}</li>
+          {#each Object.values($LL.privacy.sections.s3_list) as itemFn}
+            <li>{itemFn()}</li>
           {/each}
         </ul>
       </section>
@@ -53,8 +53,8 @@
         <h2>{$LL.privacy.sections.s5_title()}</h2>
         <p>{$LL.privacy.sections.s5_content()}</p>
         <ul>
-          {#each $LL.privacy.sections.s5_list() as item}
-            <li>{@html item}</li>
+          {#each Object.values($LL.privacy.sections.s5_list) as itemFn}
+            <li>{@html itemFn()}</li>
           {/each}
         </ul>
       </section>
@@ -68,8 +68,8 @@
         <h2>{$LL.privacy.sections.s7_title()}</h2>
         <p>{$LL.privacy.sections.s7_content()}</p>
         <ul>
-          {#each $LL.privacy.sections.s7_list() as item}
-            <li>{@html item}</li>
+          {#each Object.values($LL.privacy.sections.s7_list) as itemFn}
+            <li>{@html itemFn()}</li>
           {/each}
         </ul>
         <p>{@html $LL.privacy.sections.s7_contact()}</p>

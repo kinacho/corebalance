@@ -1,6 +1,11 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/svelte';
 import HeroSummary from './HeroSummary.svelte';
+import { loadLocale } from '$lib/i18n/i18n-util.sync';
+import { setLocale } from '$lib/i18n/i18n-svelte';
+
+loadLocale('es');
+setLocale('es');
 
 // Mock the global portfolio store to avoid Firebase and environment variable issues
 vi.mock('$lib/stores/portfolio.svelte', () => {

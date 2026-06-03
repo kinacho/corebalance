@@ -37,8 +37,8 @@
         <h2>{$LL.terms.sections.s3_title()}</h2>
         <p>{$LL.terms.sections.s3_content()}</p>
         <ul>
-          {#each $LL.terms.sections.s3_list() as item}
-            <li>{item}</li>
+          {#each Object.values($LL.terms.sections.s3_list) as itemFn}
+            <li>{itemFn()}</li>
           {/each}
         </ul>
       </section>

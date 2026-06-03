@@ -34,18 +34,18 @@
           <table>
             <thead>
               <tr>
-                {#each $LL.cookies.sections.s2_table_headers() as header}
-                  <th>{header}</th>
+                {#each Object.values($LL.cookies.sections.s2_table_headers) as headerFn}
+                  <th>{headerFn()}</th>
                 {/each}
               </tr>
             </thead>
             <tbody>
-              {#each $LL.cookies.sections.s2_table_data() as row}
+              {#each Object.values($LL.cookies.sections.s2_table_data) as row}
                 <tr>
-                  <td>{row.name}</td>
-                  <td>{row.origin}</td>
-                  <td>{row.purpose}</td>
-                  <td>{row.duration}</td>
+                  <td>{row.name()}</td>
+                  <td>{row.origin()}</td>
+                  <td>{row.purpose()}</td>
+                  <td>{row.duration()}</td>
                 </tr>
               {/each}
             </tbody>
@@ -63,10 +63,10 @@
         <h2>{$LL.cookies.sections.s4_title()}</h2>
         <p>{$LL.cookies.sections.s4_content()}</p>
         <ul>
-          <li><a href="https://support.google.com/chrome/answer/95647?hl=es" target="_blank" rel="noopener noreferrer">{$LL.cookies.sections.s4_list()[0]}</a></li>
-          <li><a href="https://support.microsoft.com/es-es/microsoft-edge/eliminar-las-cookies-en-microsoft-edge-63491102-8316-6551-34a1-5360f35352c2" target="_blank" rel="noopener noreferrer">{$LL.cookies.sections.s4_list()[1]}</a></li>
-          <li><a href="https://support.mozilla.org/es/kb/habilitar-y-deshabilitar-cookies-sitios-web-rastrear-preferencias" target="_blank" rel="noopener noreferrer">{$LL.cookies.sections.s4_list()[2]}</a></li>
-          <li><a href="https://support.apple.com/es-es/guide/safari/sfri11471/mac" target="_blank" rel="noopener noreferrer">{$LL.cookies.sections.s4_list()[3]}</a></li>
+          <li><a href="https://support.google.com/chrome/answer/95647?hl=es" target="_blank" rel="noopener noreferrer">{$LL.cookies.sections.s4_list['0']()}</a></li>
+          <li><a href="https://support.microsoft.com/es-es/microsoft-edge/eliminar-las-cookies-en-microsoft-edge-63491102-8316-6551-34a1-5360f35352c2" target="_blank" rel="noopener noreferrer">{$LL.cookies.sections.s4_list['1']()}</a></li>
+          <li><a href="https://support.mozilla.org/es/kb/habilitar-y-deshabilitar-cookies-sitios-web-rastrear-preferencias" target="_blank" rel="noopener noreferrer">{$LL.cookies.sections.s4_list['2']()}</a></li>
+          <li><a href="https://support.apple.com/es-es/guide/safari/sfri11471/mac" target="_blank" rel="noopener noreferrer">{$LL.cookies.sections.s4_list['3']()}</a></li>
         </ul>
         <p><em>{$LL.cookies.sections.s4_note()}</em></p>
       </section>
@@ -181,7 +181,4 @@
     color: rgba(255, 255, 255, 0.8);
   }
 
-  strong {
-    color: #fff;
-  }
 </style>

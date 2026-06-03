@@ -5,6 +5,7 @@
 	import { formatEUR, formatCurrency, formatDate } from '$lib/utils';
 	import { fade, slide, fly } from 'svelte/transition';
 	import { onMount, onDestroy } from 'svelte';
+	import { LL } from '$lib/i18n/i18n-svelte';
 
 	interface Props {
 		asset: Asset;
@@ -92,7 +93,7 @@
 
 	function addTransaction() {
 		if (!newTx.shares || newTx.shares <= 0) {
-			ui.addToast('Las participaciones deben ser mayores a 0', 'error');
+			ui.addToast($LL.toasts.shares_greater_than_zero(), 'error');
 			return;
 		}
 
@@ -111,7 +112,7 @@
 
 		portfolio.addTransaction(tx);
 		showAddForm = false;
-		ui.addToast('Transacción añadida', 'success');
+		ui.addToast($LL.toasts.transaction_added(), 'success');
 		ui.hapticFeedback('medium');
 		
 		// Reset form a valores por defecto reactivos
@@ -128,19 +129,19 @@
 	}
 
 	function removeTx(id: string) {
-		if (confirm('¿Eliminar esta transacción?')) {
+		if (confirm($LL.ledger.confirm_delete())) {
 			portfolio.removeTransaction(id);
-			ui.addToast('Transacción eliminada', 'info');
+			ui.addToast($LL.toasts.transaction_deleted(), 'info');
 		}
 	}
 
-	const typeLabels: Record<TransactionType, string> = {
-		buy: 'Compra',
-		sell: 'Venta',
-		dividend: 'Dividendo',
-		transfer: 'Traspaso',
-		initial_balance: 'Saldo Inicial'
-	};
+	const typeLabels = $derived<Record<TransactionType, string>>({
+		buy: $LL.ledger.type_buy(),
+		sell: $LL.ledger.type_sell(),
+		dividend: $LL.ledger.type_dividend(),
+		transfer: $LL.ledger.type_transfer(),
+		initial_balance: $LL.ledger.type_initial_balance()
+	});
 
 	const typeColors: Record<TransactionType, string> = {
 		buy: '#10b981',
@@ -152,7 +153,7 @@
 </script>
 
 <div class="ledger-overlay" transition:fade={{ duration: 150 }}>
-	<button class="ledger-backdrop" onclick={onClose} aria-label="Cerrar modal"></button>
+	<button class="ledger-backdrop" onclick={onClose} aria-label={$LL.common.close()}></button>
 	
 	<div class="ledger-panel" transition:fly={{ y: 20, duration: 200 }}>
 		<div class="ledger-header" style="--accent: {asset.color}">
@@ -170,41 +171,41 @@
 			<!-- Ledger Toggle -->
 			<div class="mode-selector" class:active={useLedger}>
 				<div class="mode-info">
-					<span class="mode-title">{useLedger ? '✅ Modo Ledger Activo' : '⚪ Modo Manual'}</span>
+					<span class="mode-title">{useLedger ? '✅ ' + $LL.ledger.active() : '⚪ ' + $LL.ledger.manual()}</span>
 					<p class="mode-desc">
 						{#if useLedger}
-							Las participaciones se calculan sumando las transacciones.
+							{$LL.ledger.desc_active()}
 						{:else}
-							Usando participaciones y precio medio introducidos a mano.
+							{$LL.ledger.desc_manual()}
 						{/if}
 					</p>
 				</div>
 				<button class="toggle-btn" onclick={toggleMode}>
-					{useLedger ? 'Desactivar' : 'Activar Ledger'}
+					{useLedger ? $LL.ledger.btn_deactivate() : $LL.ledger.btn_activate()}
 				</button>
 			</div>
 
 			{#if useLedger}
 				<div class="stats-grid" in:slide>
 					<div class="stat-card">
-						<span class="stat-label">Participaciones</span>
+						<span class="stat-label">{$LL.ledger.label_shares()}</span>
 						<span class="stat-value">{ledgerSummary.shares.toLocaleString()}</span>
 					</div>
 					<div class="stat-card">
-						<span class="stat-label">Precio Medio</span>
+						<span class="stat-label">{$LL.dashboard.avg_cost()}</span>
 						<span class="stat-value">{formatEUR(ledgerSummary.avgCost)}</span>
 					</div>
 					<div class="stat-card">
-						<span class="stat-label">Capital Total</span>
+						<span class="stat-label">{$LL.dashboard.value_total()}</span>
 						<span class="stat-value">{formatEUR(ledgerSummary.shares * (portfolio.prices[asset.ticker]?.price || 0))}</span>
 					</div>
 				</div>
 
 				<div class="transactions-section">
 					<div class="section-header">
-						<h3>Historial de Operaciones</h3>
+						<h3>{$LL.ledger.title_history()}</h3>
 						<button class="add-tx-btn" onclick={() => showAddForm = !showAddForm}>
-							{showAddForm ? 'Cancelar' : '+ Añadir'}
+							{showAddForm ? $LL.common.cancel() : $LL.ledger.btn_add_tx()}
 						</button>
 					</div>
 
@@ -212,53 +213,53 @@
 						<div class="add-tx-form" transition:slide>
 							<div class="form-row">
 								<div class="form-group">
-									<label for="tx-type">Tipo</label>
+									<label for="tx-type">{$LL.ledger.label_type()}</label>
 									<select id="tx-type" bind:value={newTx.type}>
-										<option value="buy">Compra</option>
-										<option value="sell">Venta</option>
-										<option value="dividend">Dividendo</option>
-										<option value="initial_balance">Saldo Inicial</option>
-										<option value="transfer">Traspaso</option>
+										<option value="buy">{$LL.ledger.type_buy()}</option>
+										<option value="sell">{$LL.ledger.type_sell()}</option>
+										<option value="dividend">{$LL.ledger.type_dividend()}</option>
+										<option value="initial_balance">{$LL.ledger.type_initial_balance()}</option>
+										<option value="transfer">{$LL.ledger.type_transfer()}</option>
 									</select>
 								</div>
 								<div class="form-group">
-									<label for="tx-date">Fecha</label>
+									<label for="tx-date">{$LL.ledger.label_date()}</label>
 									<input id="tx-date" type="date" bind:value={dateStr} />
 								</div>
 							</div>
 
 							<div class="form-row">
 								<div class="form-group">
-									<label for="tx-shares">Participaciones</label>
+									<label for="tx-shares">{$LL.ledger.label_shares()}</label>
 									<input id="tx-shares" type="number" step="0.001" bind:value={newTx.shares} />
 								</div>
 								<div class="form-group">
-									<label for="tx-price">Precio Unit.</label>
+									<label for="tx-price">{$LL.ledger.label_price()}</label>
 									<input id="tx-price" type="number" step="0.0001" bind:value={newTx.price} />
 								</div>
 							</div>
 
 							<div class="form-row">
 								<div class="form-group">
-									<label for="tx-fees">Comisiones</label>
+									<label for="tx-fees">{$LL.ledger.label_fees()}</label>
 									<input id="tx-fees" type="number" step="0.01" bind:value={newTx.fees} />
 								</div>
 								<div class="form-group">
-									<label for="tx-currency">Divisa / FX</label>
+									<label for="tx-currency">{$LL.ledger.label_currency()}</label>
 									<div class="fx-group">
 										<input id="tx-currency" type="text" class="currency-input" bind:value={newTx.currency} maxlength="3" />
-										<input type="number" step="0.0001" class="fx-input" bind:value={newTx.fxRate} title="Tipo de cambio a EUR" />
+										<input type="number" step="0.0001" class="fx-input" bind:value={newTx.fxRate} title={$LL.ledger.title_fx_rate()} />
 									</div>
 								</div>
 							</div>
 
-							<button class="submit-tx-btn" onclick={addTransaction}>Guardar Transacción</button>
+							<button class="submit-tx-btn" onclick={addTransaction}>{$LL.ledger.btn_save_tx()}</button>
 						</div>
 					{/if}
 
 					<div class="tx-list">
 						{#if transactions.length === 0}
-							<div class="empty-state">No hay transacciones registradas</div>
+							<div class="empty-state">{$LL.ledger.empty_history()}</div>
 						{:else}
 							{#each transactions as tx (tx.id)}
 								<div class="tx-item" in:slide>
@@ -280,8 +281,8 @@
 			{:else}
 				<div class="manual-notice">
 					<div class="notice-icon">ℹ️</div>
-					<p>Estás usando el <b>Modo Manual</b>. Los datos de este activo se gestionan desde la pantalla anterior.</p>
-					<p class="notice-sub">Activa el <b>Modo Ledger</b> si quieres llevar un registro detallado de tus compras y ventas para calcular automáticamente el coste medio y las plusvalías.</p>
+					<p>{@html $LL.ledger.notice_manual({ bold: `<b>${$LL.ledger.notice_manual_bold()}</b>` })}</p>
+					<p class="notice-sub">{@html $LL.ledger.notice_manual_sub({ bold: `<b>${$LL.ledger.notice_manual_sub_bold()}</b>` })}</p>
 				</div>
 			{/if}
 		</div>

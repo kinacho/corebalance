@@ -1,3 +1,5 @@
+import { get } from 'svelte/store';
+import { LL } from '$lib/i18n/i18n-svelte';
 import { DEFAULT_CORE_ASSETS, DEFAULT_SATELLITE_ASSETS, DEFAULT_STOCK_ASSETS, STORAGE_KEY_HOLDINGS, STORAGE_KEY_CONTRIBUTION, STORAGE_KEY_ASSETS, STORAGE_KEY_PRICES } from '$lib/constants';
 import type { Asset, AssetCategory, HoldingData, HoldingsMap, PortfolioState, PriceData, RebalanceResult, Transaction } from '$lib/types';
 import { calculatePortfolioState, calculateRebalance } from '$lib/rebalance';
@@ -550,7 +552,7 @@ export class PortfolioStore {
 		a.click();
 		document.body.removeChild(a);
 		URL.revokeObjectURL(url);
-		ui.addToast('Cartera exportada correctamente', 'success');
+		ui.addToast(get(LL).toasts.portfolio_exported(), 'success');
 	}
 
 	reset() {

@@ -3,6 +3,7 @@
 	import { storageProvider } from '$lib/db';
 	import { onMount, onDestroy } from 'svelte';
 	import * as QRCode from 'qrcode';
+	import { LL } from '$lib/i18n/i18n-svelte';
 	import { formatDate, validateImportData } from '../utils';
 
 	interface Props {
@@ -50,11 +51,11 @@
 
 	async function generateSyncQR() {
 		qrState = 'generating';
-		qrStatus = 'Preparando datos...';
+		qrStatus = $LL.sync.qr_preparing();
 		qrCodeUrl = null;
 
 		try {
-			if (!storageProvider.getAllData) throw new Error('Exportación no soportada.');
+			if (!storageProvider.getAllData) throw new Error($LL.sync.status_export_not_supported());
 
 			const data = await storageProvider.getAllData();
 			const json = JSON.stringify(data);
@@ -64,7 +65,7 @@
 			// Max length for reliable scanning on screens is ~2000 chars
 			if (syncUrl.length > 2000) {
 				qrState = 'error';
-				qrStatus = `Datos muy extensos (${(json.length / 1024).toFixed(1)} KB). La cámara no podrá leer un QR tan denso. Usa "Archivo JSON".`;
+				qrStatus = $LL.sync.qr_too_large({ size: (json.length / 1024).toFixed(1) });
 				return;
 			}
 
@@ -76,17 +77,17 @@
 			});
 
 			qrState = 'ready';
-			qrStatus = 'Escanea este QR con la cámara de tu móvil.';
+			qrStatus = $LL.sync.qr_scanned();
 		} catch (e: any) {
 			qrState = 'error';
-			qrStatus = `Error: ${e.message}`;
+			qrStatus = $LL.sync.qr_error({ error: e.message });
 		}
 	}
 
 	// File Handling
 	async function handleExport() {
 		if (!storageProvider.getAllData) {
-			fileStatus = 'Exportación no soportada en este modo.';
+			fileStatus = $LL.sync.status_export_not_supported();
 			return;
 		}
 		try {
@@ -100,9 +101,9 @@
 			a.click();
 			document.body.removeChild(a);
 			URL.revokeObjectURL(url);
-			fileStatus = '¡Archivo descargado con éxito!';
+			fileStatus = $LL.sync.status_export_success();
 		} catch (e: any) {
-			fileStatus = `Error al exportar: ${e.message}`;
+			fileStatus = $LL.sync.status_export_error({ error: e.message });
 		}
 	}
 
@@ -111,7 +112,7 @@
 		const file = target.files?.[0];
 		if (!file) return;
 
-		fileStatus = 'Leyendo archivo...';
+		fileStatus = $LL.sync.status_reading();
 		const reader = new FileReader();
 		reader.onload = async (e) => {
 			try {
@@ -119,20 +120,20 @@
 				const data = JSON.parse(content);
 				
 				if (!validateImportData(data)) {
-					throw new Error('El archivo no tiene un formato de CoreBalance válido.');
+					throw new Error($LL.sync.status_invalid_format());
 				}
 				
 				if (!storageProvider.importAllData) {
-					throw new Error('Importación no soportada en este modo.');
+					throw new Error($LL.sync.status_not_supported());
 				}
 				
 				await storageProvider.importAllData(data);
-				fileStatus = '¡Datos importados con éxito! Recargando...';
+				fileStatus = $LL.sync.status_success_reload();
 				setTimeout(() => {
 					window.location.reload();
 				}, 1500);
 			} catch (err: any) {
-				fileStatus = `Error al importar: ${err.message}`;
+				fileStatus = $LL.sync.status_import_error({ error: err.message });
 			}
 		};
 		reader.readAsText(file);
@@ -153,7 +154,7 @@
 	onkeydown={(e) => (e.key === 'Enter' || e.key === ' ') && e.target === e.currentTarget && onClose()}
 	role="button"
 	tabindex="0"
-	aria-label="Cerrar modal"
+	aria-label={$LL.common.close()}
 >
 	<div 
 		class="modal-content" 
@@ -161,29 +162,29 @@
 		onkeydown={(e) => e.stopPropagation()}
 		role="presentation"
 	>
-		<button class="close-btn" onclick={onClose} aria-label="Cerrar">
+		<button class="close-btn" onclick={onClose} aria-label={$LL.common.close()}>
 			<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
 				<line x1="18" y1="6" x2="6" y2="18"></line>
 				<line x1="6" y1="6" x2="18" y2="18"></line>
 			</svg>
 		</button>
 		
-		<h2 class="modal-title">Sincronización Local</h2>
-		<p class="modal-subtitle">Tus datos viven en este navegador. Elige cómo sincronizarlos.</p>
-
+		<h2 class="modal-title">{$LL.sync.title()}</h2>
+		<p class="modal-subtitle">{$LL.sync.subtitle()}</p>
+ 
 		<div class="tabs">
 			<button class="tab-btn" class:active={activeTab === 'file'} onclick={() => switchTab('file')}>
-				Archivo JSON
+				{$LL.sync.tab_json()}
 			</button>
 			<button class="tab-btn" class:active={activeTab === 'p2p'} onclick={() => switchTab('p2p')}>
-				Código QR (P2P)
+				{$LL.sync.tab_qr()}
 			</button>
 		</div>
 
 		<div class="tab-content">
 			{#if activeTab === 'file'}
 				<div class="file-section" in:slide={{ duration: 200 }}>
-					<p class="section-desc">Exporta un archivo de respaldo o restaura uno existente de forma manual.</p>
+					<p class="section-desc">{$LL.sync.desc_json()}</p>
 					
 					<div class="actions-grid">
 						<button class="action-btn export-btn" onclick={handleExport}>
@@ -192,16 +193,16 @@
 								<polyline points="7 10 12 15 17 10"></polyline>
 								<line x1="12" y1="15" x2="12" y2="3"></line>
 							</svg>
-							Descargar Backup
+							{$LL.sync.btn_download()}
 						</button>
-
+ 
 						<button class="action-btn import-btn" onclick={() => fileInput?.click()}>
 							<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
 								<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
 								<polyline points="17 8 12 3 7 8"></polyline>
 								<line x1="12" y1="3" x2="12" y2="15"></line>
 							</svg>
-							Restaurar Backup
+							{$LL.sync.btn_restore()}
 						</button>
 						<input 
 							type="file" 
@@ -217,7 +218,7 @@
 				</div>
 			{:else if activeTab === 'p2p'}
 				<div class="p2p-section" in:slide={{ duration: 200 }}>
-					<p class="section-desc">Transfiere tus datos a otro dispositivo al instante. Sin servidores, sin esperas.</p>
+					<p class="section-desc">{$LL.sync.desc_p2p()}</p>
 					
 					<div class="qr-container">
 						{#if qrCodeUrl}
@@ -225,7 +226,7 @@
 						{:else if qrState === 'error'}
 							<div class="qr-skeleton">⚠️</div>
 						{:else}
-							<div class="qr-skeleton">Generando...</div>
+							<div class="qr-skeleton">{$LL.common.loading()}</div>
 						{/if}
 					</div>
 
@@ -233,15 +234,15 @@
 						<div class="qr-instructions">
 							<div class="qr-step">
 								<span class="step-num">1</span>
-								<span>Abre la <strong>cámara</strong> de tu móvil</span>
+								<span>{@html $LL.sync.step_1({ bold: `<strong>${$LL.sync.step_1_bold()}</strong>` })}</span>
 							</div>
 							<div class="qr-step">
 								<span class="step-num">2</span>
-								<span>Apunta al código QR de arriba</span>
+								<span>{$LL.sync.step_2()}</span>
 							</div>
 							<div class="qr-step">
 								<span class="step-num">3</span>
-								<span>Toca el enlace — se abrirá la app y se importará solo</span>
+								<span>{$LL.sync.step_3()}</span>
 							</div>
 						</div>
 					{/if}
@@ -256,19 +257,19 @@
 					{#if qrState === 'error'}
 						<div class="p2p-actions">
 							<button class="action-btn retry-btn" onclick={generateSyncQR}>
-								Reintentar
+								{$LL.common.retry()}
 							</button>
 						</div>
 					{/if}
 
 					<div class="p2p-actions">
-						<div class="divider"><span>o también</span></div>
+						<div class="divider"><span>{$LL.sync.p2p_or()}</span></div>
 						<button class="action-btn receive-btn" onclick={() => window.location.href = '/sync'}>
 							<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
 								<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
 								<circle cx="12" cy="13" r="4"></circle>
 							</svg>
-							Escanear desde este dispositivo
+							{$LL.sync.btn_scan()}
 						</button>
 					</div>
 				</div>
@@ -590,10 +591,6 @@
 		font-size: 0.85rem;
 		color: rgba(255, 255, 255, 0.7);
 		text-align: left;
-	}
-
-	.qr-step strong {
-		color: #3b82f6;
 	}
 
 	.step-num {

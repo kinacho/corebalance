@@ -1203,6 +1203,772 @@ type RootTranslation = {
 		 * E​l​i​m​i​n​a​r
 		 */
 		'delete': string
+		/**
+		 * C​e​r​r​a​r
+		 */
+		close: string
+	}
+	support: {
+		/**
+		 * R​e​p​o​r​t​a​r​ ​u​n​ ​e​r​r​o​r
+		 */
+		title_bug: string
+		/**
+		 * C​o​n​t​a​c​t​o
+		 */
+		title_contact: string
+		/**
+		 * ¡​M​e​n​s​a​j​e​ ​e​n​v​i​a​d​o​!
+		 */
+		message_sent: string
+		/**
+		 * G​r​a​c​i​a​s​ ​p​o​r​ ​t​u​ ​f​e​e​d​b​a​c​k​.​ ​N​o​s​ ​p​o​n​d​r​e​m​o​s​ ​e​n​ ​c​o​n​t​a​c​t​o​ ​c​o​n​t​i​g​o​ ​p​r​o​n​t​o​ ​e​n​ ​{​e​m​a​i​l​}​.
+		 * @param {string} email
+		 */
+		thanks_feedback: RequiredParams<'email'>
+		/**
+		 * C​u​é​n​t​a​n​o​s​ ​q​u​é​ ​n​e​c​e​s​i​t​a​s​ ​y​ ​t​e​ ​r​e​s​p​o​n​d​e​r​e​m​o​s​ ​l​o​ ​a​n​t​e​s​ ​p​o​s​i​b​l​e​.
+		 */
+		subtitle: string
+		/**
+		 * T​u​ ​E​m​a​i​l
+		 */
+		label_email: string
+		/**
+		 * A​s​u​n​t​o
+		 */
+		label_subject: string
+		/**
+		 * ¿​Q​u​é​ ​e​r​r​o​r​ ​h​a​s​ ​e​n​c​o​n​t​r​a​d​o​?
+		 */
+		placeholder_subject_bug: string
+		/**
+		 * ¿​E​n​ ​q​u​é​ ​p​o​d​e​m​o​s​ ​a​y​u​d​a​r​t​e​?
+		 */
+		placeholder_subject_contact: string
+		/**
+		 * D​e​s​c​r​i​p​c​i​ó​n
+		 */
+		label_description: string
+		/**
+		 * D​e​s​c​r​i​b​e​ ​l​o​s​ ​p​a​s​o​s​ ​p​a​r​a​ ​r​e​p​r​o​d​u​c​i​r​ ​e​l​ ​e​r​r​o​r​.​.​.
+		 */
+		placeholder_description_bug: string
+		/**
+		 * E​s​c​r​i​b​e​ ​a​q​u​í​ ​t​u​ ​m​e​n​s​a​j​e​.​.​.
+		 */
+		placeholder_description_contact: string
+		/**
+		 * E​n​v​i​a​r​ ​m​e​n​s​a​j​e
+		 */
+		btn_send: string
+		/**
+		 * E​n​v​i​a​n​d​o​.​.​.
+		 */
+		sending: string
+	}
+	sync: {
+		/**
+		 * S​i​n​c​r​o​n​i​z​a​c​i​ó​n​ ​L​o​c​a​l
+		 */
+		title: string
+		/**
+		 * T​u​s​ ​d​a​t​o​s​ ​v​i​v​e​n​ ​e​n​ ​e​s​t​e​ ​n​a​v​e​g​a​d​o​r​.​ ​E​l​i​g​e​ ​c​ó​m​o​ ​s​i​n​c​r​o​n​i​z​a​r​l​o​s​.
+		 */
+		subtitle: string
+		/**
+		 * A​r​c​h​i​v​o​ ​J​S​O​N
+		 */
+		tab_json: string
+		/**
+		 * C​ó​d​i​g​o​ ​Q​R​ ​(​P​2​P​)
+		 */
+		tab_qr: string
+		/**
+		 * E​x​p​o​r​t​a​ ​u​n​ ​a​r​c​h​i​v​o​ ​d​e​ ​r​e​s​p​a​l​d​o​ ​o​ ​r​e​s​t​a​u​r​a​ ​u​n​o​ ​e​x​i​s​t​e​n​t​e​ ​d​e​ ​f​o​r​m​a​ ​m​a​n​u​a​l​.
+		 */
+		desc_json: string
+		/**
+		 * D​e​s​c​a​r​g​a​r​ ​B​a​c​k​u​p
+		 */
+		btn_download: string
+		/**
+		 * R​e​s​t​a​u​r​a​r​ ​B​a​c​k​u​p
+		 */
+		btn_restore: string
+		/**
+		 * L​e​y​e​n​d​o​ ​a​r​c​h​i​v​o​.​.​.
+		 */
+		status_reading: string
+		/**
+		 * E​l​ ​a​r​c​h​i​v​o​ ​n​o​ ​t​i​e​n​e​ ​u​n​ ​f​o​r​m​a​t​o​ ​d​e​ ​C​o​r​e​B​a​l​a​n​c​e​ ​v​á​l​i​d​o​.
+		 */
+		status_invalid_format: string
+		/**
+		 * I​m​p​o​r​t​a​c​i​ó​n​ ​n​o​ ​s​o​p​o​r​t​a​d​a​ ​e​n​ ​e​s​t​e​ ​m​o​d​o​.
+		 */
+		status_not_supported: string
+		/**
+		 * ¡​D​a​t​o​s​ ​i​m​p​o​r​t​a​d​o​s​ ​c​o​n​ ​é​x​i​t​o​!​ ​R​e​c​a​r​g​a​n​d​o​.​.​.
+		 */
+		status_success_reload: string
+		/**
+		 * E​x​p​o​r​t​a​c​i​ó​n​ ​n​o​ ​s​o​p​o​r​t​a​d​a​ ​e​n​ ​e​s​t​e​ ​m​o​d​o​.
+		 */
+		status_export_not_supported: string
+		/**
+		 * ¡​A​r​c​h​i​v​o​ ​d​e​s​c​a​r​g​a​d​o​ ​c​o​n​ ​é​x​i​t​o​!
+		 */
+		status_export_success: string
+		/**
+		 * E​r​r​o​r​ ​a​l​ ​e​x​p​o​r​t​a​r​:​ ​{​e​r​r​o​r​}
+		 * @param {string} error
+		 */
+		status_export_error: RequiredParams<'error'>
+		/**
+		 * E​r​r​o​r​ ​a​l​ ​i​m​p​o​r​t​a​r​:​ ​{​e​r​r​o​r​}
+		 * @param {string} error
+		 */
+		status_import_error: RequiredParams<'error'>
+		/**
+		 * T​r​a​n​s​f​i​e​r​e​ ​t​u​s​ ​d​a​t​o​s​ ​a​ ​o​t​r​o​ ​d​i​s​p​o​s​i​t​i​v​o​ ​a​l​ ​i​n​s​t​a​n​t​e​.​ ​S​i​n​ ​s​e​r​v​i​d​o​r​e​s​,​ ​s​i​n​ ​e​s​p​e​r​a​s​.
+		 */
+		desc_p2p: string
+		/**
+		 * P​r​e​p​a​r​a​n​d​o​ ​d​a​t​o​s​.​.​.
+		 */
+		qr_preparing: string
+		/**
+		 * D​a​t​o​s​ ​m​u​y​ ​e​x​t​e​n​s​o​s​ ​(​{​s​i​z​e​}​ ​K​B​)​.​ ​L​a​ ​c​á​m​a​r​a​ ​n​o​ ​p​o​d​r​á​ ​l​e​e​r​ ​u​n​ ​Q​R​ ​t​a​n​ ​d​e​n​s​o​.​ ​U​s​a​ ​"​A​r​c​h​i​v​o​ ​J​S​O​N​"​.
+		 * @param {string} size
+		 */
+		qr_too_large: RequiredParams<'size'>
+		/**
+		 * E​s​c​a​n​e​a​ ​e​s​t​e​ ​Q​R​ ​c​o​n​ ​l​a​ ​c​á​m​a​r​a​ ​d​e​ ​t​u​ ​m​ó​v​i​l​.
+		 */
+		qr_scanned: string
+		/**
+		 * E​r​r​o​r​:​ ​{​e​r​r​o​r​}
+		 * @param {string} error
+		 */
+		qr_error: RequiredParams<'error'>
+		/**
+		 * A​b​r​e​ ​l​a​ ​{​b​o​l​d​}​ ​d​e​ ​t​u​ ​m​ó​v​i​l
+		 * @param {string} bold
+		 */
+		step_1: RequiredParams<'bold'>
+		/**
+		 * c​á​m​a​r​a
+		 */
+		step_1_bold: string
+		/**
+		 * A​p​u​n​t​a​ ​a​l​ ​c​ó​d​i​g​o​ ​Q​R​ ​d​e​ ​a​r​r​i​b​a
+		 */
+		step_2: string
+		/**
+		 * T​o​c​a​ ​e​l​ ​e​n​l​a​c​e​ ​—​ ​s​e​ ​a​b​r​i​r​á​ ​l​a​ ​a​p​p​ ​y​ ​s​e​ ​i​m​p​o​r​t​a​r​á​ ​s​o​l​o
+		 */
+		step_3: string
+		/**
+		 * o​ ​t​a​m​b​i​é​n
+		 */
+		p2p_or: string
+		/**
+		 * E​s​c​a​n​e​a​r​ ​d​e​s​d​e​ ​e​s​t​e​ ​d​i​s​p​o​s​i​t​i​v​o
+		 */
+		btn_scan: string
+	}
+	ledger: {
+		/**
+		 * M​o​d​o​ ​L​e​d​g​e​r​ ​A​c​t​i​v​o
+		 */
+		active: string
+		/**
+		 * M​o​d​o​ ​M​a​n​u​a​l
+		 */
+		manual: string
+		/**
+		 * L​a​s​ ​p​a​r​t​i​c​i​p​a​c​i​o​n​e​s​ ​s​e​ ​c​a​l​c​u​l​a​n​ ​s​u​m​a​n​d​o​ ​l​a​s​ ​t​r​a​n​s​a​c​c​i​o​n​e​s​.
+		 */
+		desc_active: string
+		/**
+		 * U​s​a​n​d​o​ ​p​a​r​t​i​c​i​p​a​c​i​o​n​e​s​ ​y​ ​p​r​e​c​i​o​ ​m​e​d​i​o​ ​i​n​t​r​o​d​u​c​i​d​o​s​ ​a​ ​m​a​n​o​.
+		 */
+		desc_manual: string
+		/**
+		 * D​e​s​a​c​t​i​v​a​r
+		 */
+		btn_deactivate: string
+		/**
+		 * A​c​t​i​v​a​r​ ​L​e​d​g​e​r
+		 */
+		btn_activate: string
+		/**
+		 * +​ ​A​ñ​a​d​i​r
+		 */
+		btn_add_tx: string
+		/**
+		 * G​u​a​r​d​a​r​ ​T​r​a​n​s​a​c​c​i​ó​n
+		 */
+		btn_save_tx: string
+		/**
+		 * H​i​s​t​o​r​i​a​l​ ​d​e​ ​O​p​e​r​a​c​i​o​n​e​s
+		 */
+		title_history: string
+		/**
+		 * N​o​ ​h​a​y​ ​t​r​a​n​s​a​c​c​i​o​n​e​s​ ​r​e​g​i​s​t​r​a​d​a​s
+		 */
+		empty_history: string
+		/**
+		 * E​s​t​á​s​ ​u​s​a​n​d​o​ ​e​l​ ​{​b​o​l​d​}​.​ ​L​o​s​ ​d​a​t​o​s​ ​d​e​ ​e​s​t​e​ ​a​c​t​i​v​o​ ​s​e​ ​g​e​s​t​i​o​n​a​n​ ​d​e​s​d​e​ ​l​a​ ​p​a​n​t​a​l​l​a​ ​a​n​t​e​r​i​o​r​.
+		 * @param {string} bold
+		 */
+		notice_manual: RequiredParams<'bold'>
+		/**
+		 * M​o​d​o​ ​M​a​n​u​a​l
+		 */
+		notice_manual_bold: string
+		/**
+		 * A​c​t​i​v​a​ ​e​l​ ​{​b​o​l​d​}​ ​s​i​ ​q​u​i​e​r​e​s​ ​l​l​e​v​a​r​ ​u​n​ ​r​e​g​i​s​t​r​o​ ​d​e​t​a​l​l​a​d​o​ ​d​e​ ​t​u​s​ ​c​o​m​p​r​a​s​ ​y​ ​v​e​n​t​a​s​ ​p​a​r​a​ ​c​a​l​c​u​l​a​r​ ​a​u​t​o​m​á​t​i​c​a​m​e​n​t​e​ ​e​l​ ​c​o​s​t​e​ ​m​e​d​i​o​ ​y​ ​l​a​s​ ​p​l​u​s​v​a​l​í​a​s​.
+		 * @param {string} bold
+		 */
+		notice_manual_sub: RequiredParams<'bold'>
+		/**
+		 * M​o​d​o​ ​L​e​d​g​e​r
+		 */
+		notice_manual_sub_bold: string
+		/**
+		 * ¿​E​l​i​m​i​n​a​r​ ​e​s​t​a​ ​t​r​a​n​s​a​c​c​i​ó​n​?
+		 */
+		confirm_delete: string
+		/**
+		 * C​o​m​p​r​a
+		 */
+		type_buy: string
+		/**
+		 * V​e​n​t​a
+		 */
+		type_sell: string
+		/**
+		 * D​i​v​i​d​e​n​d​o
+		 */
+		type_dividend: string
+		/**
+		 * T​r​a​s​p​a​s​o
+		 */
+		type_transfer: string
+		/**
+		 * S​a​l​d​o​ ​I​n​i​c​i​a​l
+		 */
+		type_initial_balance: string
+		/**
+		 * T​i​p​o
+		 */
+		label_type: string
+		/**
+		 * F​e​c​h​a
+		 */
+		label_date: string
+		/**
+		 * P​a​r​t​i​c​i​p​a​c​i​o​n​e​s
+		 */
+		label_shares: string
+		/**
+		 * P​r​e​c​i​o​ ​U​n​i​t​.
+		 */
+		label_price: string
+		/**
+		 * C​o​m​i​s​i​o​n​e​s
+		 */
+		label_fees: string
+		/**
+		 * D​i​v​i​s​a​ ​/​ ​F​X
+		 */
+		label_currency: string
+		/**
+		 * T​i​p​o​ ​d​e​ ​c​a​m​b​i​o​ ​a​ ​E​U​R
+		 */
+		title_fx_rate: string
+	}
+	manage: {
+		/**
+		 * G​e​s​t​i​o​n​a​r​ ​C​a​r​t​e​r​a
+		 */
+		title: string
+		/**
+		 * A​ñ​a​d​e​,​ ​e​l​i​m​i​n​a​ ​y​ ​c​o​n​f​i​g​u​r​a​ ​l​o​s​ ​a​c​t​i​v​o​s​ ​d​e​ ​t​u​ ​p​o​r​t​f​o​l​i​o
+		 */
+		subtitle: string
+		/**
+		 * I​g​u​a​l​a​r
+		 */
+		btn_equalize: string
+		/**
+		 * R​e​p​a​r​t​i​r​ ​e​q​u​i​t​a​t​i​v​a​m​e​n​t​e
+		 */
+		btn_equalize_title: string
+		/**
+		 * C​a​r​t​e​r​a​ ​P​r​i​n​c​i​p​a​l
+		 */
+		title_core: string
+		/**
+		 * A​c​t​i​v​o​s​ ​c​o​n​ ​p​e​s​o​ ​o​b​j​e​t​i​v​o​ ​p​a​r​a​ ​r​e​b​a​l​a​n​c​e​o
+		 */
+		desc_core: string
+		/**
+		 * A​c​c​i​o​n​e​s​ ​I​n​d​i​v​i​d​u​a​l​e​s
+		 */
+		title_stocks: string
+		/**
+		 * A​c​c​i​o​n​e​s​ ​y​ ​p​o​s​i​c​i​o​n​e​s​ ​e​s​p​e​c​u​l​a​t​i​v​a​s
+		 */
+		desc_stocks: string
+		/**
+		 * C​a​r​t​e​r​a​ ​C​o​n​s​e​r​v​a​d​o​r​a
+		 */
+		title_satellite: string
+		/**
+		 * R​e​n​t​a​ ​f​i​j​a​,​ ​m​o​n​e​t​a​r​i​o​s​,​ ​m​i​x​t​o​s
+		 */
+		desc_satellite: string
+		/**
+		 * G​u​a​r​d​a​r​ ​C​a​r​t​e​r​a​ ​y​ ​V​o​l​v​e​r
+		 */
+		btn_save: string
+		/**
+		 * ¿​E​l​i​m​i​n​a​r​ ​"​{​n​a​m​e​}​"​ ​(​{​t​i​c​k​e​r​}​)​ ​d​e​ ​t​u​ ​c​a​r​t​e​r​a​?
+		 * @param {string} name
+		 * @param {string} ticker
+		 */
+		confirm_delete: RequiredParams<'name' | 'ticker'>
+		/**
+		 * N​o​m​b​r​e
+		 */
+		label_name: string
+		/**
+		 * T​E​R​ ​%
+		 */
+		label_ter: string
+		/**
+		 * I​N​T​ ​%
+		 */
+		label_int: string
+		/**
+		 * C​o​n​f​i​g​u​r​a​r​ ​c​u​e​n​t​a
+		 */
+		tooltip_config: string
+		/**
+		 * E​d​i​t​a​r​ ​T​E​R
+		 */
+		tooltip_ter: string
+		/**
+		 * C​o​n​f​i​g
+		 */
+		btn_config: string
+		/**
+		 * T​E​R
+		 */
+		btn_ter: string
+		/**
+		 * L​e​d​g​e​r
+		 */
+		btn_ledger: string
+		/**
+		 * P​.
+		 */
+		option_core_short: string
+		/**
+		 * C​.
+		 */
+		option_satellite_short: string
+		/**
+		 * A​.
+		 */
+		option_stocks_short: string
+		/**
+		 * M​o​v​e​r​ ​a​ ​o​t​r​a​ ​c​a​r​t​e​r​a
+		 */
+		tooltip_move: string
+		/**
+		 * B​l​o​q​u​e​a​r​ ​p​e​s​o
+		 */
+		lock_weight: string
+		/**
+		 * D​e​s​b​l​o​q​u​e​a​r​ ​p​e​s​o
+		 */
+		unlock_weight: string
+	}
+	search: {
+		/**
+		 * A​ñ​a​d​i​r​ ​A​c​t​i​v​o
+		 */
+		title: string
+		/**
+		 * B​u​s​c​a​ ​e​n​ ​Y​a​h​o​o​ ​F​i​n​a​n​c​e​ ​→​ ​{​c​a​t​e​g​o​r​y​}
+		 * @param {string} category
+		 */
+		subtitle: RequiredParams<'category'>
+		/**
+		 * B​u​s​c​a​r​ ​p​o​r​ ​n​o​m​b​r​e​,​ ​t​i​c​k​e​r​ ​o​ ​I​S​I​N​.​.​.
+		 */
+		placeholder: string
+		/**
+		 * N​o​ ​s​e​ ​e​n​c​o​n​t​r​a​r​o​n​ ​r​e​s​u​l​t​a​d​o​s​ ​p​a​r​a​ ​"​{​q​u​e​r​y​}​"
+		 * @param {string} query
+		 */
+		no_results: RequiredParams<'query'>
+		/**
+		 * P​r​u​e​b​a​ ​c​o​n​ ​o​t​r​o​ ​n​o​m​b​r​e​,​ ​t​i​c​k​e​r​ ​o​ ​I​S​I​N
+		 */
+		no_results_hint: string
+		/**
+		 * E​s​c​r​i​b​e​ ​a​l​ ​m​e​n​o​s​ ​2​ ​c​a​r​a​c​t​e​r​e​s​ ​p​a​r​a​ ​b​u​s​c​a​r
+		 */
+		hint_chars: string
+		/**
+		 * E​j​:​ ​"​M​S​C​I​ ​W​o​r​l​d​"​,​ ​"​A​A​P​L​"​,​ ​"​I​E​0​0​B​4​L​5​Y​9​8​3​"
+		 */
+		hint_examples: string
+		/**
+		 * C​r​e​a​r​ ​"​{​q​u​e​r​y​}​"​ ​c​o​m​o​ ​s​a​l​d​o​ ​e​n​ ​e​f​e​c​t​i​v​o
+		 * @param {string} query
+		 */
+		btn_manual: RequiredParams<'query'>
+		/**
+		 * L​i​s​t​o​,​ ​v​o​l​v​e​r​ ​a​ ​l​a​ ​c​a​r​t​e​r​a
+		 */
+		btn_done: string
+		/**
+		 * A​ñ​a​d​i​d​o
+		 */
+		badge_added: string
+		/**
+		 * A​ñ​a​d​i​r
+		 */
+		badge_add: string
+	}
+	'import': {
+		/**
+		 * I​m​p​o​r​t​a​r​ ​C​a​r​t​e​r​a
+		 */
+		title: string
+		/**
+		 * S​u​b​e​ ​e​l​ ​C​S​V​ ​d​e​ ​t​u​ ​b​r​ó​k​e​r
+		 */
+		subtitle_upload: string
+		/**
+		 * C​o​n​f​i​g​u​r​a​ ​l​a​s​ ​c​o​l​u​m​n​a​s​ ​d​e​ ​t​u​ ​a​r​c​h​i​v​o
+		 */
+		subtitle_mapping: string
+		/**
+		 * B​u​s​c​a​n​d​o​ ​a​c​t​i​v​o​s​ ​e​n​ ​Y​a​h​o​o​ ​F​i​n​a​n​c​e​.​.​.
+		 */
+		subtitle_resolving: string
+		/**
+		 * R​e​v​i​s​a​ ​y​ ​c​o​n​f​i​r​m​a​ ​l​a​s​ ​p​o​s​i​c​i​o​n​e​s
+		 */
+		subtitle_preview: string
+		/**
+		 * ¡​I​m​p​o​r​t​a​c​i​ó​n​ ​c​o​m​p​l​e​t​a​d​a​!
+		 */
+		subtitle_done: string
+		/**
+		 * A​r​r​a​s​t​r​a​ ​t​u​ ​a​r​c​h​i​v​o​ ​C​S​V​ ​a​q​u​í
+		 */
+		upload_title: string
+		/**
+		 * o​ ​h​a​z​ ​c​l​i​c​ ​p​a​r​a​ ​s​e​l​e​c​c​i​o​n​a​r​l​o
+		 */
+		upload_hint: string
+		/**
+		 * ¿​Q​u​é​ ​a​r​c​h​i​v​o​ ​n​e​c​e​s​i​t​o​?
+		 */
+		guide_title: string
+		/**
+		 * P​u​e​d​e​s​ ​i​m​p​o​r​t​a​r​ ​e​l​ ​C​S​V​ ​d​e​ ​{​b​o​l​d​}​.​ ​S​o​l​o​ ​a​s​e​g​ú​r​a​t​e​ ​d​e​ ​q​u​e​ ​e​l​ ​a​r​c​h​i​v​o​ ​c​o​n​t​e​n​g​a​ ​a​l​ ​m​e​n​o​s​ ​e​s​t​a​s​ ​c​o​l​u​m​n​a​s​:
+		 * @param {string} bold
+		 */
+		guide_text: RequiredParams<'bold'>
+		/**
+		 * c​u​a​l​q​u​i​e​r​ ​b​r​ó​k​e​r
+		 */
+		guide_text_bold: string
+		/**
+		 * I​d​e​n​t​i​f​i​c​a​d​o​r​:
+		 */
+		guide_col_id: string
+		/**
+		 *  ​I​S​I​N​ ​(​e​j​:​ ​I​E​0​0​B​4​L​5​Y​9​8​3​)​ ​o​ ​T​i​c​k​e​r​ ​(​e​j​:​ ​V​O​O​)​.
+		 */
+		guide_col_id_desc: string
+		/**
+		 * C​a​n​t​i​d​a​d​:
+		 */
+		guide_col_shares: string
+		/**
+		 *  ​N​ú​m​e​r​o​ ​d​e​ ​a​c​c​i​o​n​e​s​ ​o​ ​p​a​r​t​i​c​i​p​a​c​i​o​n​e​s​.
+		 */
+		guide_col_shares_desc: string
+		/**
+		 * P​r​e​c​i​o​/​C​o​s​t​e​ ​(​O​p​c​i​o​n​a​l​)​:
+		 */
+		guide_col_cost: string
+		/**
+		 *  ​P​a​r​a​ ​c​a​l​c​u​l​a​r​ ​t​u​ ​r​e​n​t​a​b​i​l​i​d​a​d​.
+		 */
+		guide_col_cost_desc: string
+		/**
+		 * �​�​ ​T​r​a​s​ ​s​u​b​i​r​l​o​,​ ​t​ú​ ​m​i​s​m​o​ ​i​n​d​i​c​a​r​á​s​ ​q​u​é​ ​c​o​l​u​m​n​a​ ​e​s​ ​c​a​d​a​ ​d​a​t​o​.
+		 */
+		guide_note: string
+		/**
+		 * �​�​ ​T​u​ ​a​r​c​h​i​v​o​ ​s​e​ ​p​r​o​c​e​s​a​ ​1​0​0​%​ ​e​n​ ​t​u​ ​n​a​v​e​g​a​d​o​r​.​ ​N​o​ ​s​e​ ​s​u​b​e​ ​a​ ​n​i​n​g​ú​n​ ​s​e​r​v​i​d​o​r​.
+		 */
+		privacy_note: string
+		/**
+		 * I​d​e​n​t​i​f​i​c​a​n​d​o​ ​{​c​o​u​n​t​}​ ​a​c​t​i​v​o​s​.​.​.
+		 * @param {number} count
+		 */
+		resolving_count: RequiredParams<'count'>
+		/**
+		 * B​u​s​c​a​n​d​o​ ​t​i​c​k​e​r​s​ ​e​n​ ​Y​a​h​o​o​ ​F​i​n​a​n​c​e
+		 */
+		resolving_hint: string
+		/**
+		 * A​c​t​i​v​o​s​ ​I​d​e​n​t​i​f​i​c​a​d​o​s
+		 */
+		assets_identified: string
+		/**
+		 * A​ñ​a​d​i​r​ ​a​:
+		 */
+		add_to: string
+		/**
+		 * A​l​g​u​n​o​s​ ​a​c​t​i​v​o​s​ ​p​o​d​r​í​a​n​ ​n​o​ ​h​a​b​e​r​s​e​ ​e​n​c​o​n​t​r​a​d​o​.
+		 */
+		warnings_resolve: string
+		/**
+		 * S​e​ ​i​m​p​o​r​t​a​r​á​n​ ​{​p​o​s​i​t​i​o​n​s​}​ ​p​o​s​i​c​i​o​n​e​s​.​ ​S​e​ ​h​a​n​ ​o​m​i​t​i​d​o​ ​{​s​k​i​p​p​e​d​}​ ​f​i​l​a​s​ ​(​c​o​m​o​ ​c​a​b​e​c​e​r​a​s​,​ ​d​e​p​ó​s​i​t​o​s​,​ ​c​o​m​i​s​i​o​n​e​s​ ​o​ ​c​e​l​d​a​s​ ​v​a​c​í​a​s​)​.
+		 * @param {number} positions
+		 * @param {number} skipped
+		 */
+		summary_banner: RequiredParams<'positions' | 'skipped'>
+		/**
+		 * ▲​ ​O​c​u​l​t​a​r​ ​d​e​t​a​l​l​e
+		 */
+		btn_hide_details: string
+		/**
+		 * ▼​ ​V​e​r​ ​f​i​l​a​s​ ​o​m​i​t​i​d​a​s
+		 */
+		btn_show_details: string
+		/**
+		 * L​í​n​e​a​ ​{​r​o​w​}
+		 * @param {number} row
+		 */
+		skipped_line: RequiredParams<'row'>
+		/**
+		 * .​.​.​ ​y​ ​{​c​o​u​n​t​}​ ​f​i​l​a​s​ ​m​á​s
+		 * @param {number} count
+		 */
+		skipped_more: RequiredParams<'count'>
+		/**
+		 * S​e​l​e​c​c​i​o​n​a​r​ ​t​o​d​o
+		 */
+		select_all: string
+		/**
+		 * {​s​e​l​e​c​t​e​d​}​ ​d​e​ ​{​t​o​t​a​l​}​ ​s​e​l​e​c​c​i​o​n​a​d​o​s
+		 * @param {number} selected
+		 * @param {number} total
+		 */
+		selected_count: RequiredParams<'selected' | 'total'>
+		/**
+		 * N​o​ ​e​n​c​o​n​t​r​a​d​o
+		 */
+		not_found: string
+		/**
+		 * A​c​t​u​a​l​i​z​a​r
+		 */
+		update_badge: string
+		/**
+		 * T​i​c​k​e​r​ ​Y​a​h​o​o​ ​(​e​j​:​ ​I​W​D​A​.​A​S​)
+		 */
+		placeholder_ticker: string
+		/**
+		 * {​c​o​u​n​t​}​ ​a​c​t​i​v​o​s​ ​i​m​p​o​r​t​a​d​o​s
+		 * @param {number} count
+		 */
+		done_title: RequiredParams<'count'>
+		/**
+		 * L​o​s​ ​p​r​e​c​i​o​s​ ​s​e​ ​a​c​t​u​a​l​i​z​a​r​á​n​ ​a​u​t​o​m​á​t​i​c​a​m​e​n​t​e​ ​e​n​ ​u​n​o​s​ ​s​e​g​u​n​d​o​s​.
+		 */
+		done_hint: string
+		/**
+		 * I​m​p​o​r​t​a​r​ ​{​c​o​u​n​t​}​ ​a​c​t​i​v​o​s
+		 * @param {number} count
+		 */
+		btn_import_assets: RequiredParams<'count'>
+		/**
+		 * A​s​i​g​n​a​ ​c​a​d​a​ ​c​a​m​p​o​ ​a​ ​u​n​a​ ​c​o​l​u​m​n​a​ ​d​e​ ​t​u​ ​a​r​c​h​i​v​o​ ​p​a​r​a​ ​q​u​e​ ​p​o​d​a​m​o​s​ ​i​m​p​o​r​t​a​r​ ​l​o​s​ ​d​a​t​o​s​ ​c​o​r​r​e​c​t​a​m​e​n​t​e​.
+		 */
+		mapper_hint: string
+		/**
+		 * C​o​b​e​r​t​u​r​a​ ​e​s​t​i​m​a​d​a​ ​d​e​l​ ​m​a​p​e​o​:​ ​{​s​c​o​r​e​}​%​.
+		 * @param {number} score
+		 */
+		mapper_coverage: RequiredParams<'score'>
+		/**
+		 * ⚠​️​ ​A​l​g​u​n​a​s​ ​c​o​l​u​m​n​a​s​ ​p​o​d​r​í​a​n​ ​n​o​ ​c​o​i​n​c​i​d​i​r​ ​d​e​l​ ​t​o​d​o​.​ ​P​o​r​ ​f​a​v​o​r​,​ ​r​e​v​í​s​a​l​a​s​.
+		 */
+		mapper_warning: string
+		/**
+		 * ✓​ ​T​o​d​o​ ​p​a​r​e​c​e​ ​c​o​r​r​e​c​t​o​.
+		 */
+		mapper_success: string
+		/**
+		 * N​o​ ​d​i​s​p​o​n​i​b​l​e
+		 */
+		col_not_available: string
+		/**
+		 * S​e​l​e​c​c​i​o​n​a​r​ ​c​o​l​u​m​n​a​.​.​.
+		 */
+		col_select: string
+		/**
+		 * A​u​t​o​-​g​e​n​e​r​a​r
+		 */
+		col_auto_generate: string
+		/**
+		 * N​o​ ​d​i​s​p​o​n​i​b​l​e​ ​(​0​)
+		 */
+		col_not_available_zero: string
+		/**
+		 * A​u​t​o​ ​(​E​U​R​)
+		 */
+		col_auto_eur: string
+		/**
+		 * N​o​ ​d​i​s​p​o​n​i​b​l​e​ ​(​P​o​s​i​c​i​ó​n​ ​s​i​m​p​l​e​)
+		 */
+		col_not_available_simple: string
+		/**
+		 * A​u​t​o​ ​(​S​i​g​n​o​ ​/​ ​C​o​m​p​r​a​)
+		 */
+		col_auto_buy: string
+		/**
+		 * I​S​I​N
+		 */
+		col_isin: string
+		/**
+		 * T​i​c​k​e​r​ ​/​ ​S​í​m​b​o​l​o
+		 */
+		col_ticker: string
+		/**
+		 * C​a​n​t​i​d​a​d​ ​(​A​c​c​i​o​n​e​s​)
+		 */
+		col_shares: string
+		/**
+		 * N​o​m​b​r​e​ ​A​c​t​i​v​o
+		 */
+		col_name: string
+		/**
+		 * P​r​e​c​i​o​ ​M​e​d​i​o​ ​/​ ​C​o​s​t​e
+		 */
+		col_cost: string
+		/**
+		 * D​i​v​i​s​a
+		 */
+		col_currency: string
+		/**
+		 * F​e​c​h​a​ ​(​H​i​s​t​o​r​i​a​l​e​s​)
+		 */
+		col_date: string
+		/**
+		 * T​i​p​o​ ​O​p​e​r​a​c​i​ó​n​ ​(​B​u​y​/​S​e​l​l​)
+		 */
+		col_type: string
+		/**
+		 * V​i​s​t​a​ ​p​r​e​v​i​a​ ​d​e​ ​l​o​s​ ​d​a​t​o​s​:
+		 */
+		preview_title: string
+		/**
+		 * A​t​r​á​s
+		 */
+		btn_back: string
+		/**
+		 * C​o​n​t​i​n​u​a​r
+		 */
+		btn_continue: string
+	}
+	toasts: {
+		/**
+		 * C​a​r​t​e​r​a​ ​e​x​p​o​r​t​a​d​a​ ​c​o​r​r​e​c​t​a​m​e​n​t​e
+		 */
+		portfolio_exported: string
+		/**
+		 * P​o​r​ ​f​a​v​o​r​,​ ​r​e​l​l​e​n​a​ ​t​o​d​o​s​ ​l​o​s​ ​c​a​m​p​o​s
+		 */
+		fill_all_fields: string
+		/**
+		 * E​r​r​o​r​ ​a​l​ ​e​n​v​i​a​r​ ​e​l​ ​m​e​n​s​a​j​e​.​ ​I​n​t​é​n​t​a​l​o​ ​d​e​ ​n​u​e​v​o​.
+		 */
+		send_error: string
+		/**
+		 * A​c​t​i​v​o​ ​r​e​c​l​a​s​i​f​i​c​a​d​o
+		 */
+		asset_reclassified: string
+		/**
+		 * C​a​r​t​e​r​a​ ​g​u​a​r​d​a​d​a​ ​c​o​r​r​e​c​t​a​m​e​n​t​e
+		 */
+		portfolio_saved: string
+		/**
+		 * N​o​ ​h​a​y​ ​a​c​t​i​v​o​s​ ​l​i​b​r​e​s​ ​p​a​r​a​ ​c​o​m​p​e​n​s​a​r​ ​e​l​ ​a​j​u​s​t​e​ ​d​e​ ​p​e​s​o
+		 */
+		no_free_assets: string
+		/**
+		 * A​c​t​i​v​o​ ​e​l​i​m​i​n​a​d​o
+		 */
+		asset_deleted: string
+		/**
+		 * L​a​s​ ​p​a​r​t​i​c​i​p​a​c​i​o​n​e​s​ ​d​e​b​e​n​ ​s​e​r​ ​m​a​y​o​r​e​s​ ​a​ ​0
+		 */
+		shares_greater_than_zero: string
+		/**
+		 * T​r​a​n​s​a​c​c​i​ó​n​ ​a​ñ​a​d​i​d​a
+		 */
+		transaction_added: string
+		/**
+		 * T​r​a​n​s​a​c​c​i​ó​n​ ​e​l​i​m​i​n​a​d​a
+		 */
+		transaction_deleted: string
+		/**
+		 * S​o​l​o​ ​s​e​ ​a​c​e​p​t​a​n​ ​a​r​c​h​i​v​o​s​ ​C​S​V​,​ ​T​S​V​ ​o​ ​T​X​T
+		 */
+		invalid_file_type: string
+		/**
+		 * E​l​ ​a​r​c​h​i​v​o​ ​e​s​ ​d​e​m​a​s​i​a​d​o​ ​g​r​a​n​d​e​ ​(​m​á​x​.​ ​1​ ​M​B​)
+		 */
+		file_too_large: string
+		/**
+		 * B​r​ó​k​e​r​ ​d​e​t​e​c​t​a​d​o​:​ ​{​b​r​o​k​e​r​N​a​m​e​}
+		 * @param {string} brokerName
+		 */
+		broker_detected: RequiredParams<'brokerName'>
+		/**
+		 * S​e​ ​h​a​ ​c​a​r​g​a​d​o​ ​t​u​ ​m​a​p​e​o​ ​a​n​t​e​r​i​o​r​ ​p​a​r​a​ ​e​s​t​e​ ​f​o​r​m​a​t​o
+		 */
+		mapping_loaded: string
+		/**
+		 * N​o​ ​s​e​ ​e​n​c​o​n​t​r​a​r​o​n​ ​p​o​s​i​c​i​o​n​e​s​ ​e​n​ ​e​l​ ​a​r​c​h​i​v​o
+		 */
+		no_positions_found: string
+		/**
+		 * L​a​ ​c​a​r​t​e​r​a​ ​{​c​a​t​N​a​m​e​}​ ​y​a​ ​s​u​m​a​ ​{​w​e​i​g​h​t​}​%​.​ ​A​j​u​s​t​a​ ​l​o​s​ ​p​e​s​o​s​ ​a​n​t​e​s​ ​d​e​ ​i​m​p​o​r​t​a​r​ ​m​á​s​ ​a​c​t​i​v​o​s​.
+		 * @param {string} catName
+		 * @param {string} weight
+		 */
+		category_weight_limit: RequiredParams<'catName' | 'weight'>
+		/**
+		 * "​{​a​s​s​e​t​N​a​m​e​}​"​ ​a​ñ​a​d​i​d​o​ ​c​o​r​r​e​c​t​a​m​e​n​t​e
+		 * @param {string} assetName
+		 */
+		asset_added: RequiredParams<'assetName'>
 	}
 }
 
@@ -2380,6 +3146,744 @@ export type TranslationFunctions = {
 		 * Eliminar
 		 */
 		'delete': () => LocalizedString
+		/**
+		 * Cerrar
+		 */
+		close: () => LocalizedString
+	}
+	support: {
+		/**
+		 * Reportar un error
+		 */
+		title_bug: () => LocalizedString
+		/**
+		 * Contacto
+		 */
+		title_contact: () => LocalizedString
+		/**
+		 * ¡Mensaje enviado!
+		 */
+		message_sent: () => LocalizedString
+		/**
+		 * Gracias por tu feedback. Nos pondremos en contacto contigo pronto en {email}.
+		 */
+		thanks_feedback: (arg: { email: string }) => LocalizedString
+		/**
+		 * Cuéntanos qué necesitas y te responderemos lo antes posible.
+		 */
+		subtitle: () => LocalizedString
+		/**
+		 * Tu Email
+		 */
+		label_email: () => LocalizedString
+		/**
+		 * Asunto
+		 */
+		label_subject: () => LocalizedString
+		/**
+		 * ¿Qué error has encontrado?
+		 */
+		placeholder_subject_bug: () => LocalizedString
+		/**
+		 * ¿En qué podemos ayudarte?
+		 */
+		placeholder_subject_contact: () => LocalizedString
+		/**
+		 * Descripción
+		 */
+		label_description: () => LocalizedString
+		/**
+		 * Describe los pasos para reproducir el error...
+		 */
+		placeholder_description_bug: () => LocalizedString
+		/**
+		 * Escribe aquí tu mensaje...
+		 */
+		placeholder_description_contact: () => LocalizedString
+		/**
+		 * Enviar mensaje
+		 */
+		btn_send: () => LocalizedString
+		/**
+		 * Enviando...
+		 */
+		sending: () => LocalizedString
+	}
+	sync: {
+		/**
+		 * Sincronización Local
+		 */
+		title: () => LocalizedString
+		/**
+		 * Tus datos viven en este navegador. Elige cómo sincronizarlos.
+		 */
+		subtitle: () => LocalizedString
+		/**
+		 * Archivo JSON
+		 */
+		tab_json: () => LocalizedString
+		/**
+		 * Código QR (P2P)
+		 */
+		tab_qr: () => LocalizedString
+		/**
+		 * Exporta un archivo de respaldo o restaura uno existente de forma manual.
+		 */
+		desc_json: () => LocalizedString
+		/**
+		 * Descargar Backup
+		 */
+		btn_download: () => LocalizedString
+		/**
+		 * Restaurar Backup
+		 */
+		btn_restore: () => LocalizedString
+		/**
+		 * Leyendo archivo...
+		 */
+		status_reading: () => LocalizedString
+		/**
+		 * El archivo no tiene un formato de CoreBalance válido.
+		 */
+		status_invalid_format: () => LocalizedString
+		/**
+		 * Importación no soportada en este modo.
+		 */
+		status_not_supported: () => LocalizedString
+		/**
+		 * ¡Datos importados con éxito! Recargando...
+		 */
+		status_success_reload: () => LocalizedString
+		/**
+		 * Exportación no soportada en este modo.
+		 */
+		status_export_not_supported: () => LocalizedString
+		/**
+		 * ¡Archivo descargado con éxito!
+		 */
+		status_export_success: () => LocalizedString
+		/**
+		 * Error al exportar: {error}
+		 */
+		status_export_error: (arg: { error: string }) => LocalizedString
+		/**
+		 * Error al importar: {error}
+		 */
+		status_import_error: (arg: { error: string }) => LocalizedString
+		/**
+		 * Transfiere tus datos a otro dispositivo al instante. Sin servidores, sin esperas.
+		 */
+		desc_p2p: () => LocalizedString
+		/**
+		 * Preparando datos...
+		 */
+		qr_preparing: () => LocalizedString
+		/**
+		 * Datos muy extensos ({size} KB). La cámara no podrá leer un QR tan denso. Usa "Archivo JSON".
+		 */
+		qr_too_large: (arg: { size: string }) => LocalizedString
+		/**
+		 * Escanea este QR con la cámara de tu móvil.
+		 */
+		qr_scanned: () => LocalizedString
+		/**
+		 * Error: {error}
+		 */
+		qr_error: (arg: { error: string }) => LocalizedString
+		/**
+		 * Abre la {bold} de tu móvil
+		 */
+		step_1: (arg: { bold: string }) => LocalizedString
+		/**
+		 * cámara
+		 */
+		step_1_bold: () => LocalizedString
+		/**
+		 * Apunta al código QR de arriba
+		 */
+		step_2: () => LocalizedString
+		/**
+		 * Toca el enlace — se abrirá la app y se importará solo
+		 */
+		step_3: () => LocalizedString
+		/**
+		 * o también
+		 */
+		p2p_or: () => LocalizedString
+		/**
+		 * Escanear desde este dispositivo
+		 */
+		btn_scan: () => LocalizedString
+	}
+	ledger: {
+		/**
+		 * Modo Ledger Activo
+		 */
+		active: () => LocalizedString
+		/**
+		 * Modo Manual
+		 */
+		manual: () => LocalizedString
+		/**
+		 * Las participaciones se calculan sumando las transacciones.
+		 */
+		desc_active: () => LocalizedString
+		/**
+		 * Usando participaciones y precio medio introducidos a mano.
+		 */
+		desc_manual: () => LocalizedString
+		/**
+		 * Desactivar
+		 */
+		btn_deactivate: () => LocalizedString
+		/**
+		 * Activar Ledger
+		 */
+		btn_activate: () => LocalizedString
+		/**
+		 * + Añadir
+		 */
+		btn_add_tx: () => LocalizedString
+		/**
+		 * Guardar Transacción
+		 */
+		btn_save_tx: () => LocalizedString
+		/**
+		 * Historial de Operaciones
+		 */
+		title_history: () => LocalizedString
+		/**
+		 * No hay transacciones registradas
+		 */
+		empty_history: () => LocalizedString
+		/**
+		 * Estás usando el {bold}. Los datos de este activo se gestionan desde la pantalla anterior.
+		 */
+		notice_manual: (arg: { bold: string }) => LocalizedString
+		/**
+		 * Modo Manual
+		 */
+		notice_manual_bold: () => LocalizedString
+		/**
+		 * Activa el {bold} si quieres llevar un registro detallado de tus compras y ventas para calcular automáticamente el coste medio y las plusvalías.
+		 */
+		notice_manual_sub: (arg: { bold: string }) => LocalizedString
+		/**
+		 * Modo Ledger
+		 */
+		notice_manual_sub_bold: () => LocalizedString
+		/**
+		 * ¿Eliminar esta transacción?
+		 */
+		confirm_delete: () => LocalizedString
+		/**
+		 * Compra
+		 */
+		type_buy: () => LocalizedString
+		/**
+		 * Venta
+		 */
+		type_sell: () => LocalizedString
+		/**
+		 * Dividendo
+		 */
+		type_dividend: () => LocalizedString
+		/**
+		 * Traspaso
+		 */
+		type_transfer: () => LocalizedString
+		/**
+		 * Saldo Inicial
+		 */
+		type_initial_balance: () => LocalizedString
+		/**
+		 * Tipo
+		 */
+		label_type: () => LocalizedString
+		/**
+		 * Fecha
+		 */
+		label_date: () => LocalizedString
+		/**
+		 * Participaciones
+		 */
+		label_shares: () => LocalizedString
+		/**
+		 * Precio Unit.
+		 */
+		label_price: () => LocalizedString
+		/**
+		 * Comisiones
+		 */
+		label_fees: () => LocalizedString
+		/**
+		 * Divisa / FX
+		 */
+		label_currency: () => LocalizedString
+		/**
+		 * Tipo de cambio a EUR
+		 */
+		title_fx_rate: () => LocalizedString
+	}
+	manage: {
+		/**
+		 * Gestionar Cartera
+		 */
+		title: () => LocalizedString
+		/**
+		 * Añade, elimina y configura los activos de tu portfolio
+		 */
+		subtitle: () => LocalizedString
+		/**
+		 * Igualar
+		 */
+		btn_equalize: () => LocalizedString
+		/**
+		 * Repartir equitativamente
+		 */
+		btn_equalize_title: () => LocalizedString
+		/**
+		 * Cartera Principal
+		 */
+		title_core: () => LocalizedString
+		/**
+		 * Activos con peso objetivo para rebalanceo
+		 */
+		desc_core: () => LocalizedString
+		/**
+		 * Acciones Individuales
+		 */
+		title_stocks: () => LocalizedString
+		/**
+		 * Acciones y posiciones especulativas
+		 */
+		desc_stocks: () => LocalizedString
+		/**
+		 * Cartera Conservadora
+		 */
+		title_satellite: () => LocalizedString
+		/**
+		 * Renta fija, monetarios, mixtos
+		 */
+		desc_satellite: () => LocalizedString
+		/**
+		 * Guardar Cartera y Volver
+		 */
+		btn_save: () => LocalizedString
+		/**
+		 * ¿Eliminar "{name}" ({ticker}) de tu cartera?
+		 */
+		confirm_delete: (arg: { name: string, ticker: string }) => LocalizedString
+		/**
+		 * Nombre
+		 */
+		label_name: () => LocalizedString
+		/**
+		 * TER %
+		 */
+		label_ter: () => LocalizedString
+		/**
+		 * INT %
+		 */
+		label_int: () => LocalizedString
+		/**
+		 * Configurar cuenta
+		 */
+		tooltip_config: () => LocalizedString
+		/**
+		 * Editar TER
+		 */
+		tooltip_ter: () => LocalizedString
+		/**
+		 * Config
+		 */
+		btn_config: () => LocalizedString
+		/**
+		 * TER
+		 */
+		btn_ter: () => LocalizedString
+		/**
+		 * Ledger
+		 */
+		btn_ledger: () => LocalizedString
+		/**
+		 * P.
+		 */
+		option_core_short: () => LocalizedString
+		/**
+		 * C.
+		 */
+		option_satellite_short: () => LocalizedString
+		/**
+		 * A.
+		 */
+		option_stocks_short: () => LocalizedString
+		/**
+		 * Mover a otra cartera
+		 */
+		tooltip_move: () => LocalizedString
+		/**
+		 * Bloquear peso
+		 */
+		lock_weight: () => LocalizedString
+		/**
+		 * Desbloquear peso
+		 */
+		unlock_weight: () => LocalizedString
+	}
+	search: {
+		/**
+		 * Añadir Activo
+		 */
+		title: () => LocalizedString
+		/**
+		 * Busca en Yahoo Finance → {category}
+		 */
+		subtitle: (arg: { category: string }) => LocalizedString
+		/**
+		 * Buscar por nombre, ticker o ISIN...
+		 */
+		placeholder: () => LocalizedString
+		/**
+		 * No se encontraron resultados para "{query}"
+		 */
+		no_results: (arg: { query: string }) => LocalizedString
+		/**
+		 * Prueba con otro nombre, ticker o ISIN
+		 */
+		no_results_hint: () => LocalizedString
+		/**
+		 * Escribe al menos 2 caracteres para buscar
+		 */
+		hint_chars: () => LocalizedString
+		/**
+		 * Ej: "MSCI World", "AAPL", "IE00B4L5Y983"
+		 */
+		hint_examples: () => LocalizedString
+		/**
+		 * Crear "{query}" como saldo en efectivo
+		 */
+		btn_manual: (arg: { query: string }) => LocalizedString
+		/**
+		 * Listo, volver a la cartera
+		 */
+		btn_done: () => LocalizedString
+		/**
+		 * Añadido
+		 */
+		badge_added: () => LocalizedString
+		/**
+		 * Añadir
+		 */
+		badge_add: () => LocalizedString
+	}
+	'import': {
+		/**
+		 * Importar Cartera
+		 */
+		title: () => LocalizedString
+		/**
+		 * Sube el CSV de tu bróker
+		 */
+		subtitle_upload: () => LocalizedString
+		/**
+		 * Configura las columnas de tu archivo
+		 */
+		subtitle_mapping: () => LocalizedString
+		/**
+		 * Buscando activos en Yahoo Finance...
+		 */
+		subtitle_resolving: () => LocalizedString
+		/**
+		 * Revisa y confirma las posiciones
+		 */
+		subtitle_preview: () => LocalizedString
+		/**
+		 * ¡Importación completada!
+		 */
+		subtitle_done: () => LocalizedString
+		/**
+		 * Arrastra tu archivo CSV aquí
+		 */
+		upload_title: () => LocalizedString
+		/**
+		 * o haz clic para seleccionarlo
+		 */
+		upload_hint: () => LocalizedString
+		/**
+		 * ¿Qué archivo necesito?
+		 */
+		guide_title: () => LocalizedString
+		/**
+		 * Puedes importar el CSV de {bold}. Solo asegúrate de que el archivo contenga al menos estas columnas:
+		 */
+		guide_text: (arg: { bold: string }) => LocalizedString
+		/**
+		 * cualquier bróker
+		 */
+		guide_text_bold: () => LocalizedString
+		/**
+		 * Identificador:
+		 */
+		guide_col_id: () => LocalizedString
+		/**
+		 *  ISIN (ej: IE00B4L5Y983) o Ticker (ej: VOO).
+		 */
+		guide_col_id_desc: () => LocalizedString
+		/**
+		 * Cantidad:
+		 */
+		guide_col_shares: () => LocalizedString
+		/**
+		 *  Número de acciones o participaciones.
+		 */
+		guide_col_shares_desc: () => LocalizedString
+		/**
+		 * Precio/Coste (Opcional):
+		 */
+		guide_col_cost: () => LocalizedString
+		/**
+		 *  Para calcular tu rentabilidad.
+		 */
+		guide_col_cost_desc: () => LocalizedString
+		/**
+		 * 💡 Tras subirlo, tú mismo indicarás qué columna es cada dato.
+		 */
+		guide_note: () => LocalizedString
+		/**
+		 * 🔒 Tu archivo se procesa 100% en tu navegador. No se sube a ningún servidor.
+		 */
+		privacy_note: () => LocalizedString
+		/**
+		 * Identificando {count} activos...
+		 */
+		resolving_count: (arg: { count: number }) => LocalizedString
+		/**
+		 * Buscando tickers en Yahoo Finance
+		 */
+		resolving_hint: () => LocalizedString
+		/**
+		 * Activos Identificados
+		 */
+		assets_identified: () => LocalizedString
+		/**
+		 * Añadir a:
+		 */
+		add_to: () => LocalizedString
+		/**
+		 * Algunos activos podrían no haberse encontrado.
+		 */
+		warnings_resolve: () => LocalizedString
+		/**
+		 * Se importarán {positions} posiciones. Se han omitido {skipped} filas (como cabeceras, depósitos, comisiones o celdas vacías).
+		 */
+		summary_banner: (arg: { positions: number, skipped: number }) => LocalizedString
+		/**
+		 * ▲ Ocultar detalle
+		 */
+		btn_hide_details: () => LocalizedString
+		/**
+		 * ▼ Ver filas omitidas
+		 */
+		btn_show_details: () => LocalizedString
+		/**
+		 * Línea {row}
+		 */
+		skipped_line: (arg: { row: number }) => LocalizedString
+		/**
+		 * ... y {count} filas más
+		 */
+		skipped_more: (arg: { count: number }) => LocalizedString
+		/**
+		 * Seleccionar todo
+		 */
+		select_all: () => LocalizedString
+		/**
+		 * {selected} de {total} seleccionados
+		 */
+		selected_count: (arg: { selected: number, total: number }) => LocalizedString
+		/**
+		 * No encontrado
+		 */
+		not_found: () => LocalizedString
+		/**
+		 * Actualizar
+		 */
+		update_badge: () => LocalizedString
+		/**
+		 * Ticker Yahoo (ej: IWDA.AS)
+		 */
+		placeholder_ticker: () => LocalizedString
+		/**
+		 * {count} activos importados
+		 */
+		done_title: (arg: { count: number }) => LocalizedString
+		/**
+		 * Los precios se actualizarán automáticamente en unos segundos.
+		 */
+		done_hint: () => LocalizedString
+		/**
+		 * Importar {count} activos
+		 */
+		btn_import_assets: (arg: { count: number }) => LocalizedString
+		/**
+		 * Asigna cada campo a una columna de tu archivo para que podamos importar los datos correctamente.
+		 */
+		mapper_hint: () => LocalizedString
+		/**
+		 * Cobertura estimada del mapeo: {score}%.
+		 */
+		mapper_coverage: (arg: { score: number }) => LocalizedString
+		/**
+		 * ⚠️ Algunas columnas podrían no coincidir del todo. Por favor, revísalas.
+		 */
+		mapper_warning: () => LocalizedString
+		/**
+		 * ✓ Todo parece correcto.
+		 */
+		mapper_success: () => LocalizedString
+		/**
+		 * No disponible
+		 */
+		col_not_available: () => LocalizedString
+		/**
+		 * Seleccionar columna...
+		 */
+		col_select: () => LocalizedString
+		/**
+		 * Auto-generar
+		 */
+		col_auto_generate: () => LocalizedString
+		/**
+		 * No disponible (0)
+		 */
+		col_not_available_zero: () => LocalizedString
+		/**
+		 * Auto (EUR)
+		 */
+		col_auto_eur: () => LocalizedString
+		/**
+		 * No disponible (Posición simple)
+		 */
+		col_not_available_simple: () => LocalizedString
+		/**
+		 * Auto (Signo / Compra)
+		 */
+		col_auto_buy: () => LocalizedString
+		/**
+		 * ISIN
+		 */
+		col_isin: () => LocalizedString
+		/**
+		 * Ticker / Símbolo
+		 */
+		col_ticker: () => LocalizedString
+		/**
+		 * Cantidad (Acciones)
+		 */
+		col_shares: () => LocalizedString
+		/**
+		 * Nombre Activo
+		 */
+		col_name: () => LocalizedString
+		/**
+		 * Precio Medio / Coste
+		 */
+		col_cost: () => LocalizedString
+		/**
+		 * Divisa
+		 */
+		col_currency: () => LocalizedString
+		/**
+		 * Fecha (Historiales)
+		 */
+		col_date: () => LocalizedString
+		/**
+		 * Tipo Operación (Buy/Sell)
+		 */
+		col_type: () => LocalizedString
+		/**
+		 * Vista previa de los datos:
+		 */
+		preview_title: () => LocalizedString
+		/**
+		 * Atrás
+		 */
+		btn_back: () => LocalizedString
+		/**
+		 * Continuar
+		 */
+		btn_continue: () => LocalizedString
+	}
+	toasts: {
+		/**
+		 * Cartera exportada correctamente
+		 */
+		portfolio_exported: () => LocalizedString
+		/**
+		 * Por favor, rellena todos los campos
+		 */
+		fill_all_fields: () => LocalizedString
+		/**
+		 * Error al enviar el mensaje. Inténtalo de nuevo.
+		 */
+		send_error: () => LocalizedString
+		/**
+		 * Activo reclasificado
+		 */
+		asset_reclassified: () => LocalizedString
+		/**
+		 * Cartera guardada correctamente
+		 */
+		portfolio_saved: () => LocalizedString
+		/**
+		 * No hay activos libres para compensar el ajuste de peso
+		 */
+		no_free_assets: () => LocalizedString
+		/**
+		 * Activo eliminado
+		 */
+		asset_deleted: () => LocalizedString
+		/**
+		 * Las participaciones deben ser mayores a 0
+		 */
+		shares_greater_than_zero: () => LocalizedString
+		/**
+		 * Transacción añadida
+		 */
+		transaction_added: () => LocalizedString
+		/**
+		 * Transacción eliminada
+		 */
+		transaction_deleted: () => LocalizedString
+		/**
+		 * Solo se aceptan archivos CSV, TSV o TXT
+		 */
+		invalid_file_type: () => LocalizedString
+		/**
+		 * El archivo es demasiado grande (máx. 1 MB)
+		 */
+		file_too_large: () => LocalizedString
+		/**
+		 * Bróker detectado: {brokerName}
+		 */
+		broker_detected: (arg: { brokerName: string }) => LocalizedString
+		/**
+		 * Se ha cargado tu mapeo anterior para este formato
+		 */
+		mapping_loaded: () => LocalizedString
+		/**
+		 * No se encontraron posiciones en el archivo
+		 */
+		no_positions_found: () => LocalizedString
+		/**
+		 * La cartera {catName} ya suma {weight}%. Ajusta los pesos antes de importar más activos.
+		 */
+		category_weight_limit: (arg: { catName: string, weight: string }) => LocalizedString
+		/**
+		 * "{assetName}" añadido correctamente
+		 */
+		asset_added: (arg: { assetName: string }) => LocalizedString
 	}
 }
 

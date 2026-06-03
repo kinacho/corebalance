@@ -3,6 +3,7 @@
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { ui } from '$lib/stores/ui.svelte';
 	import { focusTrap } from '$lib/actions/focusTrap';
+	import { LL } from '$lib/i18n/i18n-svelte';
 	import { ASSET_COLORS, ASSET_ICONS } from '$lib/constants';
 	import type { Asset, AssetCategory, SearchResult } from '$lib/types';
 	import { resolveAssetIcon } from '$lib/utils';
@@ -25,11 +26,11 @@
 		if (searchInputEl) searchInputEl.focus();
 	});
 
-	const categoryLabels: Record<AssetCategory, string> = {
-		core: 'Cartera Principal',
-		satellite: 'Cartera Conservadora',
-		stocks: 'Acciones'
-	};
+	const categoryLabels = $derived<Record<AssetCategory, string>>({
+		core: $LL.manage.title_core(),
+		satellite: $LL.manage.title_satellite(),
+		stocks: $LL.manage.title_stocks()
+	});
 
 	function handleInput(e: Event) {
 		const value = (e.target as HTMLInputElement).value;
@@ -59,7 +60,7 @@
 				results = data.results || [];
 			}
 		} catch (e) {
-			searchError = 'Error de conexión';
+			searchError = $LL.common.error_generic();
 			results = [];
 		} finally {
 			searching = false;
@@ -90,7 +91,7 @@
 		};
 
 		portfolio.addAsset(asset);
-		ui.addToast(`"${result.name}" añadido correctamente`, 'success');
+		ui.addToast($LL.toasts.asset_added({ assetName: result.name }), 'success');
 		ui.hapticFeedback('medium');
 		// Eliminado el onClose() para permitir añadir varios
 	}
@@ -102,18 +103,18 @@
 
 <svelte:window onkeydown={handleKeydown} />
 
-<div class="search-overlay" role="dialog" aria-modal="true" aria-label="Buscar activo">
-	<button class="search-backdrop" onclick={onClose} aria-label="Cerrar"></button>
+<div class="search-overlay" role="dialog" aria-modal="true" aria-label={$LL.search.title()}>
+	<button class="search-backdrop" onclick={onClose} aria-label={$LL.common.cancel()}></button>
 	<div class="search-panel" use:focusTrap>
 		<div class="search-header">
 			<div class="search-title-row">
 				<span class="search-icon">🔍</span>
 				<div>
-					<h2 class="search-title">Añadir Activo</h2>
-					<p class="search-subtitle">Busca en Yahoo Finance → {categoryLabels[category]}</p>
+					<h2 class="search-title">{$LL.search.title()}</h2>
+					<p class="search-subtitle">{$LL.search.subtitle({ category: categoryLabels[category] })}</p>
 				</div>
 			</div>
-			<button class="close-btn" onclick={onClose} aria-label="Cerrar">
+			<button class="close-btn" onclick={onClose} aria-label={$LL.common.cancel()}>
 				<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
 					<path d="M18 6L6 18M6 6l12 12" />
 				</svg>
@@ -127,7 +128,7 @@
 			<input
 				type="text"
 				class="search-input"
-				placeholder="Buscar por nombre, ticker o ISIN..."
+				placeholder={$LL.search.placeholder()}
 				value={query}
 				oninput={handleInput}
 				bind:this={searchInputEl}
@@ -170,9 +171,9 @@
 						</div>
 						<div class="result-action">
 							{#if alreadyAdded}
-								<span class="already-badge">✓ Añadido</span>
+								<span class="already-badge">✓ {$LL.search.badge_added()}</span>
 							{:else}
-								<span class="add-badge">+ Añadir</span>
+								<span class="add-badge">+ {$LL.search.badge_add()}</span>
 							{/if}
 						</div>
 					</button>
@@ -180,17 +181,17 @@
 			{:else if query.length >= 2 && !searching}
 				<div class="search-empty">
 					<span class="empty-icon">📭</span>
-					<p>No se encontraron resultados para "{query}"</p>
-					<p class="empty-hint">Prueba con otro nombre, ticker o ISIN</p>
+					<p>{$LL.search.no_results({ query })}</p>
+					<p class="empty-hint">{$LL.search.no_results_hint()}</p>
 				</div>
 			{:else}
 				<div class="search-hint">
 					<span class="hint-icon">💡</span>
-					<p>Escribe al menos 2 caracteres para buscar</p>
-					<p class="hint-examples">Ej: "MSCI World", "AAPL", "IE00B4L5Y983"</p>
+					<p>{$LL.search.hint_chars()}</p>
+					<p class="hint-examples">{$LL.search.hint_examples()}</p>
 
 					<button class="btn-manual-add" onclick={() => {
-						const name = query.trim() || 'Cuenta Remunerada';
+						const name = query.trim() || 'Cuenta Manual';
 						const ticker = 'CASH-' + Math.random().toString(36).substring(2, 7).toUpperCase();
 						addResult({
 							ticker,
@@ -199,7 +200,7 @@
 							exchange: 'Manual'
 						});
 					}}>
-						<span class="plus">➕</span> Crear "{query || 'Cuenta Manual'}" como saldo en efectivo
+						<span class="plus">➕</span> {$LL.search.btn_manual({ query: query || 'Cuenta Manual' })}
 					</button>
 				</div>
 			{/if}
@@ -210,7 +211,7 @@
 				<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
 					<polyline points="20 6 9 17 4 12"></polyline>
 				</svg>
-				Listo, volver a la cartera
+				{$LL.search.btn_done()}
 			</button>
 		</div>
 	</div>
