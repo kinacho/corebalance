@@ -10,13 +10,10 @@ export default defineConfig({
 		tailwindcss(),
 		imagetools(),
 		sveltekit(),
-		visualizer({
-			emitFile: true,
-			filename: 'stats.html'
-		}),
+		...(process.env.ANALYZE === 'true' ? [visualizer({ emitFile: true, filename: 'stats.html' })] : []),
 		SvelteKitPWA({
 			registerType: 'autoUpdate',
-			injectRegister: 'auto',
+			injectRegister: 'script-defer',
 			devOptions: {
 				enabled: true
 			},
@@ -60,9 +57,12 @@ export default defineConfig({
 				manualChunks: (id) => {
 					if (id.includes('node_modules')) {
 						if (id.includes('firebase')) return 'firebase';
-						if (id.includes('svelte')) return 'vendor';
-						return 'dependencies';
+						if (id.includes('@sveltejs') || id.includes('svelte')) return 'vendor-svelte';
+						if (id.includes('chart') || id.includes('d3') || id.includes('recharts')) return 'vendor-charts';
+						return 'vendor';
 					}
+					if (id.includes('/routes/(landing)') || id.includes('/routes/+page')) return 'landing';
+					if (id.includes('/routes/dashboard')) return 'dashboard';
 				}
 			}
 		}

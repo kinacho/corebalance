@@ -35,7 +35,7 @@
   ]);
 </script>
 
-<section id="features" class="features">
+<section id="features" class="features" style="min-height: 800px;">
   <div class="container">
     <div class="section-header">
       <span class="eyebrow">{$LL.features.eyebrow()}</span>
