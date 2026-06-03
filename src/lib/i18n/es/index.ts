@@ -537,6 +537,26 @@ const es = {
     category_weight_limit: 'La cartera {catName:string} ya suma {weight:string}%. Ajusta los pesos antes de importar más activos.',
     asset_added: '"{assetName:string}" añadido correctamente',
   },
+  // Header dropdown & settings
+  header: {
+    title_config: 'Configuración de la App',
+    user_settings: 'Configuración',
+    base_currency: 'Moneda Base',
+    language: 'Idioma',
+    export_json: 'Exportar JSON (Offline)',
+    logout: 'Cerrar sesión',
+    delete_account: 'Eliminar mi cuenta',
+    login_google: 'Iniciar sesión con Google',
+    loading: 'Cargando...',
+    default_user: 'Inversor',
+    welcome: '¡Bienvenido de nuevo!',
+    session_closed: 'Sesión cerrada correctamente',
+    portfolio_config: 'Configuración de Cartera',
+    sync_devices: 'Sincronizar Dispositivos',
+    show_values: 'Mostrar valores',
+    hide_values: 'Ocultar valores',
+    update_prices: 'Actualizar precios',
+  },
 } satisfies BaseTranslation;
 
 export default es;

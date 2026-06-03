@@ -1981,6 +1981,76 @@ type RootTranslation = {
 		 */
 		asset_added: RequiredParams<'assetName'>
 	}
+	header: {
+		/**
+		 * C​o​n​f​i​g​u​r​a​c​i​ó​n​ ​d​e​ ​l​a​ ​A​p​p
+		 */
+		title_config: string
+		/**
+		 * C​o​n​f​i​g​u​r​a​c​i​ó​n
+		 */
+		user_settings: string
+		/**
+		 * M​o​n​e​d​a​ ​B​a​s​e
+		 */
+		base_currency: string
+		/**
+		 * I​d​i​o​m​a
+		 */
+		language: string
+		/**
+		 * E​x​p​o​r​t​a​r​ ​J​S​O​N​ ​(​O​f​f​l​i​n​e​)
+		 */
+		export_json: string
+		/**
+		 * C​e​r​r​a​r​ ​s​e​s​i​ó​n
+		 */
+		logout: string
+		/**
+		 * E​l​i​m​i​n​a​r​ ​m​i​ ​c​u​e​n​t​a
+		 */
+		delete_account: string
+		/**
+		 * I​n​i​c​i​a​r​ ​s​e​s​i​ó​n​ ​c​o​n​ ​G​o​o​g​l​e
+		 */
+		login_google: string
+		/**
+		 * C​a​r​g​a​n​d​o​.​.​.
+		 */
+		loading: string
+		/**
+		 * I​n​v​e​r​s​o​r
+		 */
+		default_user: string
+		/**
+		 * ¡​B​i​e​n​v​e​n​i​d​o​ ​d​e​ ​n​u​e​v​o​!
+		 */
+		welcome: string
+		/**
+		 * S​e​s​i​ó​n​ ​c​e​r​r​a​d​a​ ​c​o​r​r​e​c​t​a​m​e​n​t​e
+		 */
+		session_closed: string
+		/**
+		 * C​o​n​f​i​g​u​r​a​c​i​ó​n​ ​d​e​ ​C​a​r​t​e​r​a
+		 */
+		portfolio_config: string
+		/**
+		 * S​i​n​c​r​o​n​i​z​a​r​ ​D​i​s​p​o​s​i​t​i​v​o​s
+		 */
+		sync_devices: string
+		/**
+		 * M​o​s​t​r​a​r​ ​v​a​l​o​r​e​s
+		 */
+		show_values: string
+		/**
+		 * O​c​u​l​t​a​r​ ​v​a​l​o​r​e​s
+		 */
+		hide_values: string
+		/**
+		 * A​c​t​u​a​l​i​z​a​r​ ​p​r​e​c​i​o​s
+		 */
+		update_prices: string
+	}
 }
 
 export type TranslationFunctions = {
@@ -3903,6 +3973,76 @@ export type TranslationFunctions = {
 		 * "{assetName}" añadido correctamente
 		 */
 		asset_added: (arg: { assetName: string }) => LocalizedString
+	}
+	header: {
+		/**
+		 * Configuración de la App
+		 */
+		title_config: () => LocalizedString
+		/**
+		 * Configuración
+		 */
+		user_settings: () => LocalizedString
+		/**
+		 * Moneda Base
+		 */
+		base_currency: () => LocalizedString
+		/**
+		 * Idioma
+		 */
+		language: () => LocalizedString
+		/**
+		 * Exportar JSON (Offline)
+		 */
+		export_json: () => LocalizedString
+		/**
+		 * Cerrar sesión
+		 */
+		logout: () => LocalizedString
+		/**
+		 * Eliminar mi cuenta
+		 */
+		delete_account: () => LocalizedString
+		/**
+		 * Iniciar sesión con Google
+		 */
+		login_google: () => LocalizedString
+		/**
+		 * Cargando...
+		 */
+		loading: () => LocalizedString
+		/**
+		 * Inversor
+		 */
+		default_user: () => LocalizedString
+		/**
+		 * ¡Bienvenido de nuevo!
+		 */
+		welcome: () => LocalizedString
+		/**
+		 * Sesión cerrada correctamente
+		 */
+		session_closed: () => LocalizedString
+		/**
+		 * Configuración de Cartera
+		 */
+		portfolio_config: () => LocalizedString
+		/**
+		 * Sincronizar Dispositivos
+		 */
+		sync_devices: () => LocalizedString
+		/**
+		 * Mostrar valores
+		 */
+		show_values: () => LocalizedString
+		/**
+		 * Ocultar valores
+		 */
+		hide_values: () => LocalizedString
+		/**
+		 * Actualizar precios
+		 */
+		update_prices: () => LocalizedString
 	}
 }
 

@@ -5,6 +5,9 @@
 	import { onMount } from 'svelte';
 	import { formatDateTime } from '$lib/utils';
 	import SyncModal from './SyncModal.svelte';
+	import { setLocale, locale, LL } from '$lib/i18n/i18n-svelte';
+	import { loadLocaleAsync } from '$lib/i18n/i18n-util.async';
+	import type { Locales } from '$lib/i18n/i18n-types';
 
 
 	interface Props {
@@ -53,10 +56,10 @@
 
 		const currentUserUid = portfolio.user?.uid || null;
 		if (lastUserUid === null && currentUserUid) {
-			showNotification(`¡Bienvenido de nuevo!`);
+			showNotification($LL.header.welcome());
 			imgError = false;
 		} else if (lastUserUid && currentUserUid === null) {
-			showNotification(`Sesión cerrada correctamente`, 'info');
+			showNotification($LL.header.session_closed(), 'info');
 		}
 		lastUserUid = currentUserUid;
 	});
@@ -123,7 +126,7 @@
 			<div class="timestamp">
 				<span class="timestamp-dot" class:pulse={loading}></span>
 				<span class="timestamp-text">
-					{loading ? 'Cargando...' : formattedTime}
+					{loading ? $LL.header.loading() : formattedTime}
 				</span>
 			</div>
 		{/if}
@@ -133,8 +136,8 @@
 				id="tour-manage-btn"
 				class="action-btn"
 				onclick={onManageAssets}
-				title="Configuración de Cartera"
-				aria-label="Configuración de Cartera"
+				title={$LL.header.portfolio_config()}
+				aria-label={$LL.header.portfolio_config()}
 			>
 				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 					<line x1="4" y1="21" x2="4" y2="14" />
@@ -152,8 +155,8 @@
 			<button
 				class="action-btn sync-btn"
 				onclick={() => showSyncModal = true}
-				title="Sincronizar Dispositivos"
-				aria-label="Sincronizar Dispositivos"
+				title={$LL.header.sync_devices()}
+				aria-label={$LL.header.sync_devices()}
 			>
 				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 					<rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
@@ -166,7 +169,7 @@
 			<button
 				class="action-btn"
 				onclick={onTogglePrivacy}
-				title={isPrivate ? 'Mostrar valores' : 'Ocultar valores'}
+				title={isPrivate ? $LL.header.show_values() : $LL.header.hide_values()}
 				aria-label="Alternar privacidad"
 			>
 				{#if isPrivate}
@@ -187,7 +190,7 @@
 				class:loading={loading}
 				onclick={onRefresh}
 				disabled={loading}
-				aria-label="Actualizar precios"
+				aria-label={$LL.header.update_prices()}
 			>
 				<svg
 					class="refresh-icon"
@@ -217,7 +220,7 @@
 						class="action-btn user-btn" 
 						class:auth-loading={authLoading}
 						onclick={toggleUserMenu}
-						title="Configuración de la App"
+						title={$LL.header.title_config()}
 					>
 						{#if portfolio.user?.photoURL && !imgError}
 							<img 
@@ -256,7 +259,7 @@
 							onclick={(e) => e.stopPropagation()}
 						>
 							<div class="dropdown-header">
-								<span class="user-name">{portfolio.user ? (portfolio.user.displayName || 'Inversor') : 'Configuración'}</span>
+								<span class="user-name">{portfolio.user ? (portfolio.user.displayName || $LL.header.default_user()) : $LL.header.user_settings()}</span>
 								{#if portfolio.user?.email}
 									<span class="user-email">{portfolio.user.email}</span>
 								{/if}
@@ -264,7 +267,7 @@
 							<div class="dropdown-divider"></div>
 							
 							<div class="dropdown-setting">
-								<label for="currency-select" class="setting-label">Moneda Base</label>
+								<label for="currency-select" class="setting-label">{$LL.header.base_currency()}</label>
 								<select 
 									id="currency-select" 
 									class="currency-select"
@@ -280,6 +283,24 @@
 								</select>
 							</div>
 
+							<div class="dropdown-setting">
+								<label for="language-select" class="setting-label">{$LL.header.language()}</label>
+								<select 
+									id="language-select" 
+									class="currency-select"
+									value={$locale}
+									onchange={async (e) => {
+										const newLocale = (e.target as HTMLSelectElement).value as Locales;
+										await loadLocaleAsync(newLocale);
+										setLocale(newLocale);
+										document.cookie = `lang=${newLocale}; path=/; max-age=31536000; SameSite=Lax`;
+									}}
+								>
+									<option value="es">🇪🇸 ES</option>
+									<option value="en">🇬🇧 EN</option>
+								</select>
+							</div>
+
 							<div class="dropdown-divider"></div>
 							<button 
 								class="dropdown-item" 
@@ -289,7 +310,7 @@
 								<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none">
 									<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
 								</svg>
-								Exportar JSON (Offline)
+								{$LL.header.export_json()}
 							</button>
 
 							<div class="dropdown-divider"></div>
@@ -305,7 +326,7 @@
 										<polyline points="16 17 21 12 16 7"></polyline>
 										<line x1="21" y1="12" x2="9" y2="12"></line>
 									</svg>
-									Cerrar sesión
+									{$LL.header.logout()}
 								</button>
 
 								{#if !portfolio.isLocal}
@@ -322,7 +343,7 @@
 											<line x1="10" y1="11" x2="10" y2="17"></line>
 											<line x1="14" y1="11" x2="14" y2="17"></line>
 										</svg>
-										Eliminar mi cuenta
+										{$LL.header.delete_account()}
 									</button>
 								{/if}
 							{:else}
@@ -334,12 +355,11 @@
 								>
 									<svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
 										<path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.18 1-.78 1.85-1.63 2.42v2.01h2.64c1.54-1.42 2.43-3.5 2.43-5.44z" fill="#4285F4"/>
-										<path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.47-2.69c-.96.65-2.2.1.35-3.81.1-1.04-.3-1.92-.8-2.63h-2.73v4.13h5.36c-.22 1.1-.87 2.03-1.81 2.65l3.52 2.73c2.06-1.9 3.24-4.7 3.24-7.94 0-.54-.05-1.08-.14-1.61H12v3.05h5.42c-.23 1.2-.91 2.22-1.93 2.92l3.01 2.33c1.76-1.63 2.78-4.04 2.78-6.91 0-.58-.05-1.16-.16-1.72H12v3.25h5.45c-.24 1.25-.97 2.31-2.06 3.03l3.22 2.5C20.6 18.52 22 15.5 22 12c0-.71-.05-1.42-.14-2.11H12v2.36h5.59c-.24 1.3-.99 2.4-2.12 3.15l3.27 2.53C20.8 15.9 22 12.2 22 8c0-.7-.05-1.4-.14-2.07H12v2.24h5.68c-.25 1.34-1.04 2.48-2.22 3.26l3.35 2.59c2.01-1.85 3.19-4.57 3.19-7.85 0-.74-.06-1.48-.18-2.2H12v4.51h6.12c-.26 1.41-1.12 2.6-2.35 3.42l3.47 2.69c2.02-1.86 3.19-4.6 3.19-7.88 0-.8-.07-1.58-.2-2.34H12v4.79h6.35c-.27 1.48-1.22 2.72-2.55 3.59l3.63 2.81c2.11-1.95 3.32-4.83 3.32-8.25 0-.85-.08-1.68-.22-2.48H12v5.07h6.61c-.28 1.56-1.33 2.86-2.79 3.78l3.8 2.94c2.21-2.04 3.48-5.06 3.48-8.63 0-.91-.09-1.8-.24-2.66H12v5.35h6.92c-.3 1.63-1.48 3-3.08 3.99l4.01 3.11c2.33-2.15 3.68-5.34 3.68-9.12 0-.98-.11-1.92-.31-2.83H12v5.71h7.32c-.32 1.74-1.67 3.2-3.46 4.25l4.32 3.34c2.51-2.32 3.96-5.75 3.96-9.8 0-1.05-.12-2.07-.35-3.05H12v6.18h7.91c-.34 1.88-1.93 3.46-4.04 4.59l4.8 3.71c2.79-2.58 4.39-6.39 4.39-10.89 0-1.14-.15-2.25-.43-3.32H12v6.86h8.77c-.38 2.08-2.4 3.82-5.02 5.07l5.63 4.35c3.27-3.02 5.15-7.48 5.15-12.75 0-1.27-.18-2.51-.52-3.71H12v7.83H22.56z" fill="#4285F4"/>
-										<path d="M12 23c4.03 0 5.86-1.34 7.28-2.66l-3.47-2.69c-.96.65-2.2.1.35-3.81.1-1.04-.3-1.92-.8-2.63H12v4.13h5.36c-.22 1.1-.87 2.03-1.81 2.65l3.52 2.73c2.06-1.9 3.24-4.7 3.24-7.94 0-.54-.05-1.08-.14-1.61H12v3.05h5.42c-.23 1.2-.91 2.22-1.93 2.92l3.01 2.33c1.76-1.63 2.78-4.04 2.78-6.91 0-.58-.05-1.16-.16-1.72H12v3.25h5.45c-.24 1.25-.97 2.31-2.06 3.03l3.22 2.5C20.6 18.52 22 15.5 22 12c0-.71-.05-1.42-.14-2.11H12v2.36h5.59c-.24 1.3-.99 2.4-2.12 3.15l3.27 2.53C20.8 15.9 22 12.2 22 8c0-.7-.05-1.4-.14-2.07H12v2.24h5.68c-.25 1.34-1.04 2.48-2.22 3.26l3.35 2.59c2.01-1.85 3.19-4.57 3.19-7.85 0-.74-.06-1.48-.18-2.2H12v4.51h6.12c-.26 1.41-1.12 2.6-2.35 3.42l3.47 2.69c2.02-1.86 3.19-4.6 3.19-7.88 0-.8-.07-1.58-.2-2.34H12v4.79h6.35c-.27 1.48-1.22 2.72-2.55 3.59l3.63 2.81c2.11-1.95 3.32-4.83 3.32-8.25 0-.85-.08-1.68-.22-2.48H12v5.07h6.61c-.28 1.56-1.33 2.86-2.79 3.78l3.8 2.94c2.21-2.04 3.48-5.06 3.48-8.63 0-.91-.09-1.8-.24-2.66H12v5.35h6.92c-.3 1.63-1.48 3-3.08 3.99l4.01 3.11c2.33-2.15 3.68-5.34 3.68-9.12 0-.98-.11-1.92-.31-2.83H12v5.71h7.32c-.32 1.74-1.67 3.2-3.46 4.25l4.32 3.34c2.51-2.32 3.96-5.75 3.96-9.8 0-1.05-.12-2.07-.35-3.05H12v6.18h7.91c-.34 1.88-1.93 3.46-4.04 4.59l4.8 3.71c2.79-2.58 4.39-6.39 4.39-10.89 0-1.14-.15-2.25-.43-3.32H12v6.86h8.77c-.38 2.08-2.4 3.82-5.02 5.07l5.63 4.35c3.27-3.02 5.15-7.48 5.15-12.75 0-1.27-.18-2.51-.52-3.71H12v7.83c0 3.92 2.65 6.42 5.62 6.42a6.3 6.3 0 0 0 3.51-1.18L21.1 21.1A8.47 8.47 0 0 1 12 23z" fill="#34A853"/>
+										<path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.47-2.69c-.96.65-2.2.1.35-3.81.1-1.04-.3-1.92-.8-2.63h-2.73v4.13h5.36c-.22 1.1-.87 2.03-1.81 2.65l3.52 2.73c2.06-1.9 3.24-4.7 3.24-7.94 0-.54-.05-1.08-.14-1.61H12v3.05h5.42c-.23 1.2-.91 2.22-1.93 2.92l3.01 2.33c1.76-1.63 2.78-4.04 2.78-6.91 0-.58-.05-1.16-.16-1.72H12v3.25h5.45c-.24 1.25-.97 2.31-2.06 3.03l3.22 2.5C20.6 18.52 22 15.5 22 12c0-.71-.05-1.42-.14-2.11H12v2.36h5.59c-.24 1.3-.99 2.4-2.12 3.15l3.27 2.53C20.8 15.9 22 12.2 22 8c0-.7-.05-1.4-.14-2.07H12v2.24h5.68c-.25 1.34-1.04 2.48-2.22 3.26l3.35 2.59c2.01-1.85 3.19-4.57 3.19-7.85 0-.74-.06-1.48-.18-2.2H12v4.51h6.12c-.26 1.41-1.12 2.6-2.35 3.42l3.47 2.69c2.02-1.86 3.19-4.6 3.19-7.88 0-.8-.07-1.58-.2-2.34H12v4.79h6.35c-.27 1.48-1.22 2.72-2.55 3.59l3.63 2.81c2.11-1.95 3.32-4.83 3.32-8.25 0-.85-.08-1.68-.22-2.48H12v5.07h6.61c-.28 1.56-1.33 2.86-2.79 3.78l3.8 2.94c2.21-2.04 3.48-5.06 3.48-8.63 0-.91-.09-1.8-.24-2.66H12v5.35h6.92c-.3 1.63-1.48 3-3.08 3.99l4.01 3.11c2.33-2.15 3.68-5.34 3.68-9.12 0-.98-.11-1.92-.31-2.83H12v5.71h7.32c-.32 1.74-1.67 3.2-3.46 4.25l4.32 3.34c2.51-2.32 3.96-5.75 3.96-9.8 0-1.05-.12-2.07-.35-3.05H12v6.18h7.91c-.34 1.88-1.93 3.46-4.04 4.59l4.8 3.71c2.79-2.58 4.39-6.39 4.39-10.89 0-1.14-.15-2.25-.43-3.32H12v6.86h8.77c-.38 2.08-2.4 3.82-5.02 5.07l5.63 4.35c3.27-3.02 5.15-7.48 5.15-12.75 0-1.27-.18-2.51-.52-3.71H12v7.83c0 3.92 2.65 6.42 5.62 6.42a6.3 6.3 0 0 0 3.51-1.18L21.1 21.1A8.47 8.47 0 0 1 12 23z" fill="#34A853"/>
 										<path d="M5.13 14.75a7.98 7.98 0 0 1-.45-2.75c0-.98.17-1.91.45-2.75L1.51 6.5C.55 8.12 0 10 0 12s.55 3.88 1.51 5.5l3.62-2.75z" fill="#FBBC05"/>
 										<path d="M12 4.75c1.67 0 3.13.58 4.31 1.69l3.22-3.22C17.58 1.41 15.01 0 12 0 7.31 0 3.3 2.68 1.51 6.5l3.62 2.75c.85-2.53 3.22-4.5 5.87-4.5z" fill="#EA4335"/>
 									</svg>
-									Iniciar sesión con Google
+									{$LL.header.login_google()}
 								</button>
 							{/if}
 						</div>

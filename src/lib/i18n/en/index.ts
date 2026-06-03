@@ -535,6 +535,26 @@ const en: Translation = {
     category_weight_limit: 'The portfolio {catName} already sums {weight}%. Adjust weights before importing more assets.',
     asset_added: '"{assetName}" added successfully',
   },
+  // Header dropdown & settings
+  header: {
+    title_config: 'App Settings',
+    user_settings: 'Settings',
+    base_currency: 'Base Currency',
+    language: 'Language',
+    export_json: 'Export JSON (Offline)',
+    logout: 'Log out',
+    delete_account: 'Delete my account',
+    login_google: 'Sign in with Google',
+    loading: 'Loading...',
+    default_user: 'Investor',
+    welcome: 'Welcome back!',
+    session_closed: 'Logged out successfully',
+    portfolio_config: 'Portfolio Settings',
+    sync_devices: 'Sync Devices',
+    show_values: 'Show values',
+    hide_values: 'Hide values',
+    update_prices: 'Update prices',
+  },
 };
 
 export default en;
