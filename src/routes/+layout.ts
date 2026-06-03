@@ -9,8 +9,8 @@ export const load: LayoutLoad = async ({ data }) => {
 	const locale = data.locale;
 
 	if (browser) {
-		await loadLocaleAsync(locale);
-		setLocale(locale);
+		// No await here to prevent blocking the UI
+		loadLocaleAsync(locale).then(() => setLocale(locale));
 	}
 
 	return data;
