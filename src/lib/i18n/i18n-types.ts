@@ -2019,6 +2019,30 @@ type RootTranslation = {
 		 */
 		chart_historic_title: string
 		/**
+		 * T​o​t​a​l
+		 */
+		chart_label_total: string
+		/**
+		 * P​r​i​n​c​i​p​a​l
+		 */
+		chart_label_core: string
+		/**
+		 * A​c​c​i​o​n​e​s
+		 */
+		chart_label_stocks: string
+		/**
+		 * C​o​n​s​e​r​v​a​d​o​r​a
+		 */
+		chart_label_satellite: string
+		/**
+		 * I​n​v​e​r​t​i​d​o
+		 */
+		chart_label_invested: string
+		/**
+		 * R​e​n​d​i​m​i​e​n​t​o​ ​(​%​)
+		 */
+		chart_performance_pct: string
+		/**
 		 * <​s​t​r​o​n​g​>​A​v​i​s​o​ ​L​e​g​a​l​:​<​/​s​t​r​o​n​g​>​ ​C​o​r​e​B​a​l​a​n​c​e​ ​e​s​ ​u​n​a​ ​h​e​r​r​a​m​i​e​n​t​a​ ​p​u​r​a​m​e​n​t​e​ ​i​n​f​o​r​m​a​t​i​v​a​ ​y​ ​e​d​u​c​a​t​i​v​a​.​ ​N​o​ ​c​o​n​s​t​i​t​u​y​e​ ​a​s​e​s​o​r​a​m​i​e​n​t​o​ ​f​i​n​a​n​c​i​e​r​o​,​ ​d​e​ ​i​n​v​e​r​s​i​ó​n​ ​n​i​ ​f​i​s​c​a​l​.​ ​L​o​s​ ​d​a​t​o​s​ ​m​o​s​t​r​a​d​o​s​ ​p​u​e​d​e​n​ ​s​u​f​r​i​r​ ​r​e​t​r​a​s​o​s​ ​o​ ​s​e​r​ ​i​n​e​x​a​c​t​o​s​.​ ​E​l​ ​d​e​s​a​r​r​o​l​l​a​d​o​r​ ​n​o​ ​s​e​ ​h​a​c​e​ ​r​e​s​p​o​n​s​a​b​l​e​ ​d​e​ ​p​o​s​i​b​l​e​s​ ​p​é​r​d​i​d​a​s​ ​f​i​n​a​n​c​i​e​r​a​s​ ​d​e​r​i​v​a​d​a​s​ ​d​e​l​ ​u​s​o​ ​d​e​ ​e​s​t​a​ ​a​p​l​i​c​a​c​i​ó​n​.​ ​I​n​v​i​e​r​t​e​ ​s​i​e​m​p​r​e​ ​b​a​j​o​ ​t​u​ ​p​r​o​p​i​a​ ​r​e​s​p​o​n​s​a​b​i​l​i​d​a​d​.
 		 */
 		legal_disclaimer: string
@@ -4793,6 +4817,30 @@ export type TranslationFunctions = {
 		 * Evolución del Patrimonio
 		 */
 		chart_historic_title: () => LocalizedString
+		/**
+		 * Total
+		 */
+		chart_label_total: () => LocalizedString
+		/**
+		 * Principal
+		 */
+		chart_label_core: () => LocalizedString
+		/**
+		 * Acciones
+		 */
+		chart_label_stocks: () => LocalizedString
+		/**
+		 * Conservadora
+		 */
+		chart_label_satellite: () => LocalizedString
+		/**
+		 * Invertido
+		 */
+		chart_label_invested: () => LocalizedString
+		/**
+		 * Rendimiento (%)
+		 */
+		chart_performance_pct: () => LocalizedString
 		/**
 		 * <strong>Aviso Legal:</strong> CoreBalance es una herramienta puramente informativa y educativa. No constituye asesoramiento financiero, de inversión ni fiscal. Los datos mostrados pueden sufrir retrasos o ser inexactos. El desarrollador no se hace responsable de posibles pérdidas financieras derivadas del uso de esta aplicación. Invierte siempre bajo tu propia responsabilidad.
 		 */

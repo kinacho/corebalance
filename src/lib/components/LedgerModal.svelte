@@ -5,7 +5,7 @@
 	import { formatEUR, formatCurrency, formatDate } from '$lib/utils';
 	import { fade, slide, fly } from 'svelte/transition';
 	import { onMount, onDestroy } from 'svelte';
-	import { LL } from '$lib/i18n/i18n-svelte';
+	import { LL, locale } from '$lib/i18n/i18n-svelte';
 
 	interface Props {
 		asset: Asset;
@@ -239,7 +239,7 @@
 										id="tx-date"
 										type="text"
 										readonly
-										value={new Date(newTx.date || Date.now()).toLocaleDateString('es-ES')}
+										value={new Date(newTx.date || Date.now()).toLocaleDateString($locale === 'es' ? 'es-ES' : 'en-US')}
 										onclick={openDatePicker}
 										style="cursor: pointer;"
 									/>
@@ -258,12 +258,12 @@
 												<div class="picker-header">
 													<button onclick={() => { pickerViewDate = new Date(pickerViewDate.getFullYear(), pickerViewDate.getMonth() - 1, 1); }}>‹</button>
 													<button class="picker-title" onclick={() => pickerStep = 'month'}>
-														{pickerViewDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}
+														{pickerViewDate.toLocaleDateString($locale === 'es' ? 'es-ES' : 'en-US', { month: 'long', year: 'numeric' })}
 													</button>
 													<button onclick={() => { pickerViewDate = new Date(pickerViewDate.getFullYear(), pickerViewDate.getMonth() + 1, 1); }}>›</button>
 												</div>
 												<div class="picker-weekdays">
-													{#each ['L','M','X','J','V','S','D'] as d}<span>{d}</span>{/each}
+													{#each ($locale === 'es' ? ['L','M','X','J','V','S','D'] : ['M','T','W','T','F','S','S']) as d}<span>{d}</span>{/each}
 												</div>
 												<div class="picker-days">
 													{#each Array(getFirstDayOfWeek(pickerViewDate.getFullYear(), pickerViewDate.getMonth())).fill(null) as _}

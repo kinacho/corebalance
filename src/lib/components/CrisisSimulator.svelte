@@ -3,7 +3,7 @@
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { formatEUR, formatCurrency } from '$lib/utils';
 	import { Chart, type ChartConfiguration } from 'chart.js/auto';
-	import { LL } from '$lib/i18n/i18n-svelte';
+	import { LL, locale } from '$lib/i18n/i18n-svelte';
 
 	import { fade, fly } from 'svelte/transition';
 	import { tweened } from 'svelte/motion';
@@ -117,7 +117,8 @@
 		if (months < 0) return $LL.crisis_simulator.never();
 		const d = new Date();
 		d.setMonth(d.getMonth() + months);
-		return d.toLocaleDateString('es-ES', { month: 'short', year: '2-digit' });
+		const loc = $locale === 'es' ? 'es-ES' : 'en-US';
+		return d.toLocaleDateString(loc, { month: 'short', year: '2-digit' });
 	}
 
 	// --- Chart Logic ---

@@ -1,12 +1,28 @@
 import { ui } from './stores/ui.svelte';
+import { get } from 'svelte/store';
+import { locale as localeStore } from './i18n/i18n-svelte';
 
 /** Formatea un número según la moneda especificada (2 decimales por defecto para totales) */
 export function formatCurrency(value: number, currency: string = 'EUR', decimals = 2): string {
-	let locale = 'es-ES';
-	if (currency === 'USD') locale = 'en-US';
-	if (currency === 'GBP') locale = 'en-GB';
+	let formatLocale = 'es-ES';
+	if (currency === 'USD') {
+		formatLocale = 'en-US';
+	} else if (currency === 'GBP') {
+		formatLocale = 'en-GB';
+	} else {
+		try {
+			const activeLoc = get(localeStore);
+			if (activeLoc === 'en') {
+				formatLocale = 'en-US';
+			} else {
+				formatLocale = 'es-ES';
+			}
+		} catch {
+			formatLocale = 'es-ES';
+		}
+	}
 
-	return new Intl.NumberFormat(locale, {
+	return new Intl.NumberFormat(formatLocale, {
 		style: 'currency',
 		currency: currency,
 		minimumFractionDigits: decimals,
@@ -90,7 +106,16 @@ export function formatDate(date: Date = new Date()): string {
 /** Formatea una fecha y hora como DD/MM HH:mm */
 export function formatDateTime(date: Date | number | string): string {
 	const d = new Date(date);
-	return d.toLocaleString('es-ES', {
+	let formatLocale = 'es-ES';
+	try {
+		const activeLoc = get(localeStore);
+		if (activeLoc === 'en') {
+			formatLocale = 'en-US';
+		}
+	} catch {
+		// fallback
+	}
+	return d.toLocaleString(formatLocale, {
 		day: '2-digit',
 		month: '2-digit',
 		hour: '2-digit',

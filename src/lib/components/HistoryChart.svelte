@@ -3,6 +3,7 @@
 	import Chart from 'chart.js/auto';
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { formatEUR } from '$lib/utils';
+	import { LL, locale } from '$lib/i18n/i18n-svelte';
 
 	let canvas: HTMLCanvasElement;
 	let chart: Chart;
@@ -54,7 +55,8 @@
 			
 			chart.data.labels = history.map((p: any, i: number) => {
 				const date = new Date(p.date);
-				return date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }).replace('.', '');
+				const loc = $locale === 'es' ? 'es-ES' : 'en-US';
+				return date.toLocaleDateString(loc, { day: '2-digit', month: 'short' }).replace('.', '');
 			});
 
 			const transform = (val: number, firstVal: number) => {
@@ -63,6 +65,13 @@
 				}
 				return val;
 			};
+
+			// Actualizar etiquetas según idioma
+			chart.data.datasets[0].label = $LL.db.chart_label_total();
+			chart.data.datasets[1].label = $LL.db.chart_label_core();
+			chart.data.datasets[2].label = $LL.db.chart_label_stocks();
+			chart.data.datasets[3].label = $LL.db.chart_label_satellite();
+			chart.data.datasets[4].label = $LL.db.chart_label_invested();
 
 			// Dataset 0: Total
 			chart.data.datasets[0].data = history.map((p: any) => transform(p.total, first.total));
@@ -93,7 +102,7 @@
 				const yAxis = chart.options.scales.y as any;
 				if (viewMode === 'percent') {
 					yAxis.ticks.callback = (value: number) => portfolio.isPrivate ? '****' : value.toFixed(1) + '%';
-					yAxis.title = { display: true, text: 'Rendimiento (%)', color: 'rgba(255,255,255,0.3)', font: { size: 10 } };
+					yAxis.title = { display: true, text: $LL.db.chart_performance_pct(), color: 'rgba(255,255,255,0.3)', font: { size: 10 } };
 				} else {
 					yAxis.ticks.callback = (value: number) => portfolio.isPrivate ? '****' : formatEUR(value);
 					yAxis.title = { display: false };
@@ -245,7 +254,7 @@
 				onclick={() => toggleDataset('Total')}
 			>
 				<span class="dot total"></span>
-				<span class="label">Total</span>
+				<span class="label">{$LL.db.chart_label_total()}</span>
 			</button>
 			<button 
 				class="legend-item" 
@@ -253,7 +262,7 @@
 				onclick={() => toggleDataset('Principal')}
 			>
 				<span class="dot core"></span>
-				<span class="label">Principal</span>
+				<span class="label">{$LL.db.chart_label_core()}</span>
 			</button>
 			<button 
 				class="legend-item" 
@@ -261,7 +270,7 @@
 				onclick={() => toggleDataset('Acciones')}
 			>
 				<span class="dot stocks"></span>
-				<span class="label">Acciones</span>
+				<span class="label">{$LL.db.chart_label_stocks()}</span>
 			</button>
 			<button 
 				class="legend-item" 
@@ -269,7 +278,7 @@
 				onclick={() => toggleDataset('Conservadora')}
 			>
 				<span class="dot satellite"></span>
-				<span class="label">Conservadora</span>
+				<span class="label">{$LL.db.chart_label_satellite()}</span>
 			</button>
 			{#if viewMode === 'value'}
 				<button 
@@ -278,7 +287,7 @@
 					onclick={() => toggleDataset('Invertido')}
 				>
 					<span class="line invested"></span>
-					<span class="label">Invertido</span>
+					<span class="label">{$LL.db.chart_label_invested()}</span>
 				</button>
 			{/if}
 		</div>
