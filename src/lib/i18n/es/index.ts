@@ -43,6 +43,7 @@ const es = {
     aria_menu_open: 'Abrir menú de navegación',
     aria_menu_close: 'Cerrar menú de navegación',
     aria_cta_how: 'Ver explicación de cómo funciona el rebalanceo de carteras',
+    changelog: 'Novedades',
   },
   // Features
   features: {
@@ -225,7 +226,7 @@ const es = {
     seo_desc: 'Consulta nuestra política de privacidad. En CoreBalance priorizamos tu seguridad y privacidad utilizando almacenamiento local por defecto.',
     sections: {
       s1_title: '1. Responsable del Tratamiento',
-      s1_content: 'El responsable del tratamiento de sus datos personales es un desarrollador individual con residencia en España. Puede contactar conmigo a través del email: <strong>soporte@corebalance.app</strong>.',
+      s1_content: 'El responsable del tratamiento de sus datos personales es un desarrollador individual con residencia en España. Puede contactar conmigo a través del {contactLink:string}.',
       s2_title: '2. Datos que recogemos',
       s2_content: 'Para el funcionamiento de CoreBalance, tratamos las siguientes categorías de datos:',
       s2_list: [
@@ -260,7 +261,7 @@ const es = {
         '<strong>Portabilidad:</strong> Descargar sus datos en un formato legible.',
         '<strong>Oposición y Limitación:</strong> En casos específicos previstos por la ley.'
       ],
-      s7_contact: 'Para ejercer estos derechos, envíe un email a <strong>soporte@corebalance.app</strong>.',
+      s7_contact: 'Para ejercer estos derechos, utilice el {contactLink:string}.',
       s8_title: '8. Seguridad',
       s8_content: 'CoreBalance utiliza medidas de seguridad técnicas avanzadas proporcionadas por Firebase, incluyendo cifrado en tránsito (SSL/TLS) y en reposo.'
     }
@@ -293,7 +294,7 @@ const es = {
       s7_title: '7. Ley Aplicable y Jurisdicción',
       s7_content: 'Estos términos se rigen por la <strong>legislación española</strong>. Para cualquier controversia legal, las partes se someten a los juzgados y tribunales de la ciudad de residencia del titular en España, renunciando a cualquier otro fuero.',
       s8_title: '8. Contacto',
-      s8_content: 'Si tiene dudas sobre estos términos, puede contactarme en: <strong>soporte@corebalance.app</strong>.'
+      s8_content: 'Si tiene dudas sobre estos términos, puede contactarme a través del {contactLink:string}.'
     }
   },
   cookies: {
@@ -332,6 +333,7 @@ const es = {
     cancel: 'Cancelar',
     delete: 'Eliminar',
     close: 'Cerrar',
+    contact_form: 'formulario de contacto',
   },
   // Support
   support: {

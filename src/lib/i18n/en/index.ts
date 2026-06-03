@@ -41,6 +41,7 @@ const en: Translation = {
     aria_menu_open: 'Open navigation menu',
     aria_menu_close: 'Close navigation menu',
     aria_cta_how: 'See explanation of how portfolio rebalancing works',
+    changelog: "What's New",
   },
   // Features
   features: {
@@ -223,7 +224,7 @@ const en: Translation = {
     seo_desc: 'Consult our privacy policy. At CoreBalance, we prioritize your security and privacy by using local storage by default.',
     sections: {
       s1_title: '1. Data Controller',
-      s1_content: 'The data controller of your personal data is an individual developer based in Spain. You can contact me via email at: <strong>soporte@corebalance.app</strong>.',
+      s1_content: 'The data controller of your personal data is an individual developer based in Spain. You can contact me through the {contactLink}.',
       s2_title: '2. Data we collect',
       s2_content: 'For the operation of CoreBalance, we process the following categories of data:',
       s2_list: [
@@ -258,7 +259,7 @@ const en: Translation = {
         '<strong>Portability:</strong> Download your data in a readable format.',
         '<strong>Opposition and Limitation:</strong> In specific cases provided by law.'
       ],
-      s7_contact: 'To exercise these rights, send an email to <strong>soporte@corebalance.app</strong>.',
+      s7_contact: 'To exercise these rights, use the {contactLink}.',
       s8_title: '8. Security',
       s8_content: 'CoreBalance uses advanced technical security measures provided by Firebase, including encryption in transit (SSL/TLS) and at rest.'
     }
@@ -291,7 +292,7 @@ const en: Translation = {
       s7_title: '7. Applicable Law and Jurisdiction',
       s7_content: 'These terms are governed by <strong>Spanish legislation</strong>. For any legal controversy, the parties submit to the courts and tribunals of the owner\'s city of residence in Spain, waiving any other jurisdiction.',
       s8_title: '8. Contact',
-      s8_content: 'If you have questions about these terms, you can contact me at: <strong>soporte@corebalance.app</strong>.'
+      s8_content: 'If you have questions about these terms, you can contact me via the {contactLink}.'
     }
   },
   cookies: {
@@ -330,6 +331,7 @@ const en: Translation = {
     cancel: 'Cancel',
     delete: 'Delete',
     close: 'Close',
+    contact_form: 'contact form',
   },
   // Support
   support: {

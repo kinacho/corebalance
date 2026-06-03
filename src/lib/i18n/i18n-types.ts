@@ -165,6 +165,10 @@ type RootTranslation = {
 		 * V​e​r​ ​e​x​p​l​i​c​a​c​i​ó​n​ ​d​e​ ​c​ó​m​o​ ​f​u​n​c​i​o​n​a​ ​e​l​ ​r​e​b​a​l​a​n​c​e​o​ ​d​e​ ​c​a​r​t​e​r​a​s
 		 */
 		aria_cta_how: string
+		/**
+		 * N​o​v​e​d​a​d​e​s
+		 */
+		changelog: string
 	}
 	features: {
 		/**
@@ -795,9 +799,10 @@ type RootTranslation = {
 			 */
 			s1_title: string
 			/**
-			 * E​l​ ​r​e​s​p​o​n​s​a​b​l​e​ ​d​e​l​ ​t​r​a​t​a​m​i​e​n​t​o​ ​d​e​ ​s​u​s​ ​d​a​t​o​s​ ​p​e​r​s​o​n​a​l​e​s​ ​e​s​ ​u​n​ ​d​e​s​a​r​r​o​l​l​a​d​o​r​ ​i​n​d​i​v​i​d​u​a​l​ ​c​o​n​ ​r​e​s​i​d​e​n​c​i​a​ ​e​n​ ​E​s​p​a​ñ​a​.​ ​P​u​e​d​e​ ​c​o​n​t​a​c​t​a​r​ ​c​o​n​m​i​g​o​ ​a​ ​t​r​a​v​é​s​ ​d​e​l​ ​e​m​a​i​l​:​ ​<​s​t​r​o​n​g​>​s​o​p​o​r​t​e​@​c​o​r​e​b​a​l​a​n​c​e​.​a​p​p​<​/​s​t​r​o​n​g​>​.
+			 * E​l​ ​r​e​s​p​o​n​s​a​b​l​e​ ​d​e​l​ ​t​r​a​t​a​m​i​e​n​t​o​ ​d​e​ ​s​u​s​ ​d​a​t​o​s​ ​p​e​r​s​o​n​a​l​e​s​ ​e​s​ ​u​n​ ​d​e​s​a​r​r​o​l​l​a​d​o​r​ ​i​n​d​i​v​i​d​u​a​l​ ​c​o​n​ ​r​e​s​i​d​e​n​c​i​a​ ​e​n​ ​E​s​p​a​ñ​a​.​ ​P​u​e​d​e​ ​c​o​n​t​a​c​t​a​r​ ​c​o​n​m​i​g​o​ ​a​ ​t​r​a​v​é​s​ ​d​e​l​ ​{​c​o​n​t​a​c​t​L​i​n​k​}​.
+			 * @param {string} contactLink
 			 */
-			s1_content: string
+			s1_content: RequiredParams<'contactLink'>
 			/**
 			 * 2​.​ ​D​a​t​o​s​ ​q​u​e​ ​r​e​c​o​g​e​m​o​s
 			 */
@@ -911,9 +916,10 @@ type RootTranslation = {
 				'4': string
 			}
 			/**
-			 * P​a​r​a​ ​e​j​e​r​c​e​r​ ​e​s​t​o​s​ ​d​e​r​e​c​h​o​s​,​ ​e​n​v​í​e​ ​u​n​ ​e​m​a​i​l​ ​a​ ​<​s​t​r​o​n​g​>​s​o​p​o​r​t​e​@​c​o​r​e​b​a​l​a​n​c​e​.​a​p​p​<​/​s​t​r​o​n​g​>​.
+			 * P​a​r​a​ ​e​j​e​r​c​e​r​ ​e​s​t​o​s​ ​d​e​r​e​c​h​o​s​,​ ​u​t​i​l​i​c​e​ ​e​l​ ​{​c​o​n​t​a​c​t​L​i​n​k​}​.
+			 * @param {string} contactLink
 			 */
-			s7_contact: string
+			s7_contact: RequiredParams<'contactLink'>
 			/**
 			 * 8​.​ ​S​e​g​u​r​i​d​a​d
 			 */
@@ -1026,9 +1032,10 @@ type RootTranslation = {
 			 */
 			s8_title: string
 			/**
-			 * S​i​ ​t​i​e​n​e​ ​d​u​d​a​s​ ​s​o​b​r​e​ ​e​s​t​o​s​ ​t​é​r​m​i​n​o​s​,​ ​p​u​e​d​e​ ​c​o​n​t​a​c​t​a​r​m​e​ ​e​n​:​ ​<​s​t​r​o​n​g​>​s​o​p​o​r​t​e​@​c​o​r​e​b​a​l​a​n​c​e​.​a​p​p​<​/​s​t​r​o​n​g​>​.
+			 * S​i​ ​t​i​e​n​e​ ​d​u​d​a​s​ ​s​o​b​r​e​ ​e​s​t​o​s​ ​t​é​r​m​i​n​o​s​,​ ​p​u​e​d​e​ ​c​o​n​t​a​c​t​a​r​m​e​ ​a​ ​t​r​a​v​é​s​ ​d​e​l​ ​{​c​o​n​t​a​c​t​L​i​n​k​}​.
+			 * @param {string} contactLink
 			 */
-			s8_content: string
+			s8_content: RequiredParams<'contactLink'>
 		}
 	}
 	cookies: {
@@ -1207,6 +1214,10 @@ type RootTranslation = {
 		 * C​e​r​r​a​r
 		 */
 		close: string
+		/**
+		 * f​o​r​m​u​l​a​r​i​o​ ​d​e​ ​c​o​n​t​a​c​t​o
+		 */
+		contact_form: string
 	}
 	support: {
 		/**
@@ -2124,6 +2135,10 @@ export type TranslationFunctions = {
 		 * Ver explicación de cómo funciona el rebalanceo de carteras
 		 */
 		aria_cta_how: () => LocalizedString
+		/**
+		 * Novedades
+		 */
+		changelog: () => LocalizedString
 	}
 	features: {
 		/**
@@ -2740,9 +2755,9 @@ export type TranslationFunctions = {
 			 */
 			s1_title: () => LocalizedString
 			/**
-			 * El responsable del tratamiento de sus datos personales es un desarrollador individual con residencia en España. Puede contactar conmigo a través del email: <strong>soporte@corebalance.app</strong>.
+			 * El responsable del tratamiento de sus datos personales es un desarrollador individual con residencia en España. Puede contactar conmigo a través del {contactLink}.
 			 */
-			s1_content: () => LocalizedString
+			s1_content: (arg: { contactLink: string }) => LocalizedString
 			/**
 			 * 2. Datos que recogemos
 			 */
@@ -2856,9 +2871,9 @@ export type TranslationFunctions = {
 				'4': () => LocalizedString
 			}
 			/**
-			 * Para ejercer estos derechos, envíe un email a <strong>soporte@corebalance.app</strong>.
+			 * Para ejercer estos derechos, utilice el {contactLink}.
 			 */
-			s7_contact: () => LocalizedString
+			s7_contact: (arg: { contactLink: string }) => LocalizedString
 			/**
 			 * 8. Seguridad
 			 */
@@ -2970,9 +2985,9 @@ export type TranslationFunctions = {
 			 */
 			s8_title: () => LocalizedString
 			/**
-			 * Si tiene dudas sobre estos términos, puede contactarme en: <strong>soporte@corebalance.app</strong>.
+			 * Si tiene dudas sobre estos términos, puede contactarme a través del {contactLink}.
 			 */
-			s8_content: () => LocalizedString
+			s8_content: (arg: { contactLink: string }) => LocalizedString
 		}
 	}
 	cookies: {
@@ -3150,6 +3165,10 @@ export type TranslationFunctions = {
 		 * Cerrar
 		 */
 		close: () => LocalizedString
+		/**
+		 * formulario de contacto
+		 */
+		contact_form: () => LocalizedString
 	}
 	support: {
 		/**
