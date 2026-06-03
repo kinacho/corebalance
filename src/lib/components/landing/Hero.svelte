@@ -221,7 +221,17 @@
 
   @media (min-width: 1024px) {
     .hero-content {
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.18fr);
+      gap: 3rem;
+      align-items: center;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .hero-content {
+      max-width: 1360px;
+      grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.22fr);
+      gap: 3.5rem;
     }
   }
 
@@ -645,10 +655,13 @@
   /* ── Desktop scaling overrides (≥1024px) ── */
   @media (min-width: 1024px) {
     .hero-mockup-container {
-      padding: 32px 56px 32px 8px;
+      padding: 28px 48px 28px 0;
+      min-width: 0;
     }
 
     .hero-mockup {
+      aspect-ratio: unset;
+      min-height: 400px;
       border-radius: 20px;
       box-shadow:
         0 0 0 1px rgba(255, 255, 255, 0.05),
@@ -685,46 +698,46 @@
     .mockup-main { padding: 18px 22px; gap: 11px; }
 
     /* Capital */
-    .topbar-value { font-size: 1.75rem; }
-    .topbar-cents { font-size: 1rem; }
-    .topbar-label { font-size: 0.65rem; }
-    .topbar-sublabel { font-size: 0.6rem; }
+    .topbar-value { font-size: 2rem; }
+    .topbar-cents { font-size: 1.1rem; }
+    .topbar-label { font-size: 0.72rem; }
+    .topbar-sublabel { font-size: 0.66rem; }
 
-    .change-pill { font-size: 0.82rem; padding: 4px 10px; }
-    .change-pill svg { width: 12px; height: 12px; }
+    .change-pill { font-size: 0.9rem; padding: 5px 12px; }
+    .change-pill svg { width: 13px; height: 13px; }
 
     /* Sparkline */
-    .sparkline-container { height: 52px; }
-    .sparkline { height: 46px; }
-    .sparkline-labels { font-size: 0.6rem; }
+    .sparkline-container { height: 58px; }
+    .sparkline { height: 52px; }
+    .sparkline-labels { font-size: 0.66rem; }
 
     /* Divider */
-    .section-divider { font-size: 0.65rem; padding-bottom: 6px; }
+    .section-divider { font-size: 0.72rem; padding-bottom: 7px; }
 
     /* Asset rows */
-    .asset-row { padding: 8px 10px; border-radius: 11px; }
+    .asset-row { padding: 9px 12px; border-radius: 11px; }
 
-    .asset-icon { width: 36px; height: 36px; border-radius: 10px; }
-    .asset-icon svg { width: 17px; height: 17px; }
+    .asset-icon { width: 40px; height: 40px; border-radius: 10px; }
+    .asset-icon svg { width: 18px; height: 18px; }
 
-    .asset-name { font-size: 0.88rem; }
-    .asset-ticker { font-size: 0.66rem; }
-    .asset-value { font-size: 0.82rem; }
+    .asset-name { font-size: 0.95rem; }
+    .asset-ticker { font-size: 0.72rem; }
+    .asset-value { font-size: 0.9rem; }
 
-    .status-pill { font-size: 0.64rem; padding: 3px 9px; }
+    .status-pill { font-size: 0.7rem; padding: 4px 10px; }
 
     /* Floating cards */
-    .floating-card { padding: 12px 18px; border-radius: 16px; gap: 12px; }
+    .floating-card { padding: 14px 20px; border-radius: 16px; gap: 12px; }
 
-    .c-icon-wrap { width: 36px; height: 36px; border-radius: 10px; }
-    .c-icon-wrap svg { width: 18px; height: 18px; }
+    .c-icon-wrap { width: 40px; height: 40px; border-radius: 10px; }
+    .c-icon-wrap svg { width: 20px; height: 20px; }
 
-    .c-text span   { font-size: 0.68rem; }
-    .c-text strong { font-size: 0.95rem; }
+    .c-text span   { font-size: 0.74rem; }
+    .c-text strong { font-size: 1.05rem; }
 
-    .c1 { top: -10px; right: -10px; }
-    .c2 { bottom: 14px; left: -18px; }
-    .c3 { right: -18px; }
+    .c1 { top: -12px; right: -12px; }
+    .c2 { bottom: 16px; left: -20px; }
+    .c3 { right: -20px; }
 
     /* Mockup glow más pronunciado en desktop */
     .mockup-glow {
@@ -738,36 +751,66 @@
   /* ── Large desktop (≥1280px) — aún más grande ── */
   @media (min-width: 1280px) {
     .hero-mockup-container {
-      padding: 36px 64px 36px 8px;
+      padding: 32px 56px 32px 0;
     }
 
-    .mockup-header { height: 52px; padding: 0 20px; }
+    .hero-mockup {
+      min-height: 460px;
+      border-radius: 22px;
+    }
+
+    .mockup-header { height: 54px; padding: 0 20px; }
     .dot { width: 12px; height: 12px; }
-    .address-bar { font-size: 0.75rem; max-width: 280px; }
+    .address-bar { font-size: 0.8rem; max-width: 300px; padding: 5px 16px; }
 
-    .mockup-body { grid-template-columns: 62px 1fr; }
-    .sidebar-logo { width: 36px; height: 36px; }
-    .sidebar-item { width: 38px; height: 38px; }
+    .mockup-body { grid-template-columns: 66px 1fr; }
+    .sidebar-logo { width: 38px; height: 38px; }
+    .sidebar-item { width: 40px; height: 40px; }
+    .sidebar-item svg { width: 18px; height: 18px; }
 
-    .mockup-main { padding: 22px 26px; gap: 13px; }
+    .mockup-main { padding: 24px 28px; gap: 14px; }
 
-    .topbar-value { font-size: 2.1rem; }
-    .topbar-cents { font-size: 1.15rem; }
+    .topbar-value { font-size: 2.35rem; }
+    .topbar-cents { font-size: 1.25rem; }
+    .topbar-label { font-size: 0.78rem; }
 
-    .change-pill { font-size: 0.9rem; padding: 5px 12px; }
+    .change-pill { font-size: 0.98rem; padding: 6px 14px; }
 
-    .sparkline-container { height: 60px; }
-    .sparkline { height: 54px; }
+    .sparkline-container { height: 68px; }
+    .sparkline { height: 62px; }
 
-    .asset-row { padding: 10px 12px; }
-    .asset-icon { width: 40px; height: 40px; }
-    .asset-name { font-size: 0.95rem; }
-    .asset-ticker { font-size: 0.7rem; }
-    .asset-value { font-size: 0.88rem; }
-    .status-pill { font-size: 0.68rem; padding: 4px 10px; }
+    .asset-row { padding: 11px 14px; }
+    .asset-icon { width: 44px; height: 44px; }
+    .asset-icon svg { width: 20px; height: 20px; }
+    .asset-name { font-size: 1.02rem; }
+    .asset-ticker { font-size: 0.76rem; }
+    .asset-value { font-size: 0.96rem; }
+    .status-pill { font-size: 0.74rem; padding: 4px 11px; }
 
-    .floating-card { padding: 14px 20px; }
-    .c-text strong { font-size: 1.02rem; }
+    .floating-card { padding: 16px 22px; }
+    .c-icon-wrap { width: 44px; height: 44px; }
+    .c-text span { font-size: 0.78rem; }
+    .c-text strong { font-size: 1.12rem; }
+
+    .c1 { top: -14px; right: -14px; }
+    .c2 { bottom: 18px; left: -24px; }
+    .c3 { right: -24px; }
+  }
+
+  /* ── Extra large desktop (≥1536px) ── */
+  @media (min-width: 1536px) {
+    .hero-content {
+      max-width: 1440px;
+      gap: 4rem;
+    }
+
+    .hero-mockup {
+      min-height: 500px;
+    }
+
+    .topbar-value { font-size: 2.55rem; }
+    .sparkline-container { height: 74px; }
+    .sparkline { height: 68px; }
   }
 
 </style>
