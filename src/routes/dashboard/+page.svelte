@@ -21,6 +21,7 @@
   import { browser } from "$app/environment";
   import { goto, beforeNavigate } from "$app/navigation";
   import { navigating } from "$app/stores";
+  import { LL } from '$lib/i18n/i18n-svelte';
 
   // --- Auto-Exit Demo on Navigation ---
   beforeNavigate(({ to }) => {
@@ -107,12 +108,12 @@
         color: "#3b82f6",
       },
       {
-        name: "Acciones",
+        name: $LL.db.reclassify_stocks(),
         value: portfolio.stockState.totalCapital,
         color: "#10b981",
       },
       {
-        name: "Conservadora",
+        name: $LL.db.reclassify_satellite(),
         value: portfolio.satelliteState.totalCapital,
         color: "#f59e0b",
       },
@@ -260,11 +261,11 @@
         <div class="error-banner" role="alert">
           <span class="error-icon">⚠️</span>
           <div class="error-text">
-            <strong>Error de conexión</strong>
+            <strong>{$LL.db.error_connection_title()}</strong>
             <p>{portfolio.error}</p>
           </div>
           <button class="error-retry" onclick={() => portfolio.fetchPrices()}
-            >Reintentar</button
+            >{$LL.common.retry()}</button
           >
         </div>
       {/if}
@@ -295,7 +296,7 @@
         class:tab-hidden={activeTab !== "charts"}
       >
         <div class="section-header">
-          <h3 class="section-title">Evolución del Patrimonio</h3>
+          <h3 class="section-title">{$LL.db.chart_historic_title()}</h3>
         </div>
         <HistoryChart />
       </section>
@@ -307,19 +308,19 @@
       >
         <div class="charts-row-card card">
           <div class="charts-mobile-hint">
-            <span>← Desliza para ver más →</span>
+            <span>{$LL.db.swipe_hint()}</span>
           </div>
           <div class="charts-grid">
             <div class="chart-box">
-              <h4 class="chart-label">Estrategia actual</h4>
+              <h4 class="chart-label">{$LL.db.chart_actual_strategy()}</h4>
               <DonutChart data={coreActualChartData} />
             </div>
             <div class="chart-box">
-              <h4 class="chart-label">Peso Global (Categorías)</h4>
+              <h4 class="chart-label">{$LL.db.chart_global_weight()}</h4>
               <DonutChart data={categoryChartData} />
             </div>
             <div class="chart-box">
-              <h4 class="chart-label">Detalle Global</h4>
+              <h4 class="chart-label">{$LL.db.chart_global_detail()}</h4>
               <DonutChart data={detailedChartData} />
             </div>
           </div>
@@ -331,14 +332,14 @@
         <!-- Assets Column -->
         <section id="tour-portfolio-categories" class="assets-section" class:tab-hidden={activeTab !== "assets"}>
           <PortfolioSection
-            title={`Cartera Principal (${portfolio.targetLabel})`}
+            title={`${$LL.db.reclassify_core()} (${portfolio.targetLabel})`}
             portfolioState={portfolio.portfolioState}
             loading={portfolio.loading}
             skeletonCount={portfolio.coreAssets.length || 3}
           />
 
           <PortfolioSection
-            title="Acciones Individuales"
+            title={$LL.db.reclassify_stocks()}
             portfolioState={portfolio.stockState}
             loading={portfolio.loading}
             skeletonCount={portfolio.stockAssets.length || 2}
@@ -346,7 +347,7 @@
           />
 
           <PortfolioSection
-            title="Cartera Conservadora"
+            title={$LL.db.reclassify_satellite()}
             portfolioState={portfolio.satelliteState}
             loading={portfolio.loading}
             skeletonCount={portfolio.satelliteAssets.length || 2}
@@ -387,20 +388,20 @@
               </picture>
               <span class="footer-title">CoreBalance</span>
             </div>
-            <p class="footer-tagline">Tu centro de mandos para una gestión de activos inteligente y equilibrada.</p>
+            <p class="footer-tagline">{$LL.db.footer_tagline()}</p>
             <div class="footer-links">
               <button 
                 class="footer-link-btn" 
                 onclick={() => { ui.supportType = 'bug'; ui.showSupportModal = true; }}
               >
-                <span class="link-icon">🪲</span> Reportar un error
+                <span class="link-icon">🪲</span> {$LL.footer.report_bug()}
               </button>
               <span class="link-separator">•</span>
               <button 
                 class="footer-link-btn" 
                 onclick={() => { ui.supportType = 'contact'; ui.showSupportModal = true; }}
               >
-                <span class="link-icon">✉️</span> Contacto
+                <span class="link-icon">✉️</span> {$LL.footer.contact()}
               </button>
             </div>
 
@@ -412,11 +413,11 @@
         </div>
 
         <div class="footer-legal">
-          <p><strong>Aviso Legal:</strong> CoreBalance es una herramienta puramente informativa y educativa. No constituye asesoramiento financiero, de inversión ni fiscal. Los datos mostrados pueden sufrir retrasos o ser inexactos. El desarrollador no se hace responsable de posibles pérdidas financieras derivadas del uso de esta aplicación. Invierte siempre bajo tu propia responsabilidad.</p>
+          <p>{@html $LL.db.legal_disclaimer()}</p>
         </div>
 
         <div class="footer-copyright">
-          <p>© {new Date().getFullYear()} CoreBalance · Hecho con ❤️ para la comunidad inversora · <button class="changelog-badge-btn" onclick={() => ui.showChangelog = true} title="Ver historial de cambios">v1.6.1 🚀</button> · <button class="tour-repeat-btn" onclick={restartTour} title="Repetir tutorial de bienvenida">🎓 Tutorial</button></p>
+          <p>© {new Date().getFullYear()} CoreBalance · {$LL.db.footer_made_with()} · <button class="changelog-badge-btn" onclick={() => ui.showChangelog = true} title="Ver historial de cambios">{$LL.db.changelog_trigger()}</button> · <button class="tour-repeat-btn" onclick={restartTour} title="Repetir tutorial de bienvenida">{$LL.db.tutorial_trigger()}</button></p>
         </div>
       </footer>
     </main>

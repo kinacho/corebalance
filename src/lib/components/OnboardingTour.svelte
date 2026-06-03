@@ -2,13 +2,16 @@
   import { onMount } from "svelte";
   import { driver } from "driver.js";
   import "driver.js/dist/driver.css";
+  import { get } from 'svelte/store';
+  import { LL } from '$lib/i18n/i18n-svelte';
   
   export function startTour() {
+    const t = get(LL);
     const driverObj = driver({
       showProgress: true,
-      nextBtnText: 'Siguiente ➔',
-      prevBtnText: '⬅ Anterior',
-      doneBtnText: '¡Empezar!',
+      nextBtnText: t.tour.btn_next(),
+      prevBtnText: t.tour.btn_prev(),
+      doneBtnText: t.tour.btn_done(),
       popoverClass: 'corebalance-tour-theme',
       onDestroyed: () => {
         if (typeof window !== 'undefined') {
@@ -19,8 +22,8 @@
         {
           element: '#tour-welcome',
           popover: {
-            title: '¡Bienvenido a CoreBalance! 🚀',
-            description: 'Tu centro de mando para una inversión inteligente. Vamos a mostrarte cómo optimizar tu cartera en menos de 1 minuto.',
+            title: t.tour.steps.welcome.title(),
+            description: t.tour.steps.welcome.description(),
             side: "bottom",
             align: 'start'
           }
@@ -28,8 +31,8 @@
         {
           element: '#tour-sync-auth',
           popover: {
-            title: 'Sincronización Total',
-            description: 'Mantén tus datos seguros y sincronizados entre dispositivos mediante Google Auth o exportación local cifrada.',
+            title: t.tour.steps.sync.title(),
+            description: t.tour.steps.sync.description(),
             side: "bottom",
             align: 'end'
           }
@@ -37,8 +40,8 @@
         {
           element: '#tour-global-summary',
           popover: {
-            title: 'Visión de Alto Nivel',
-            description: 'Monitoriza tu Patrimonio Neto, Capital Invertido y Rentabilidad Total de un vistazo con datos actualizados en tiempo real.',
+            title: t.tour.steps.summary.title(),
+            description: t.tour.steps.summary.description(),
             side: "bottom",
             align: 'center'
           },
@@ -51,8 +54,8 @@
         {
           element: '#tour-portfolio-categories',
           popover: {
-            title: 'Estrategia Multicartera 🏦',
-            description: 'Gestiona tu estrategia Core (90%), Satélite (5%) y Efectivo (5%) de forma independiente pero integrada.',
+            title: t.tour.steps.categories.title(),
+            description: t.tour.steps.categories.description(),
             side: "top",
             align: 'center'
           },
@@ -65,8 +68,8 @@
         {
           element: '#tour-rebalance',
           popover: {
-            title: 'Inyección Óptima de Capital ✨',
-            description: 'Nuestra calculadora matemática te indica exactamente qué activos comprar para restaurar tus pesos ideales, minimizando las desviaciones.',
+            title: t.tour.steps.rebalance.title(),
+            description: t.tour.steps.rebalance.description(),
             side: "top",
             align: 'center'
           },
@@ -79,8 +82,8 @@
         {
           element: '#tour-projections',
           popover: {
-            title: 'Proyecciones de Interés Compuesto',
-            description: 'Simula el crecimiento de tu riqueza a largo plazo. Ahora puedes elegir entre usar tu capital real o uno personalizado para ver diferentes escenarios.',
+            title: t.tour.steps.projections.title(),
+            description: t.tour.steps.projections.description(),
             side: "top",
             align: 'center'
           },
@@ -93,8 +96,8 @@
         {
           element: '#tour-crisis',
           popover: {
-            title: 'Simulador de Crisis Históricas 📉',
-            description: 'Pon a prueba tu temple financiero. Analiza cómo se comportaría tu cartera en crisis reales como el 2008 o el COVID-19 y el impacto del DCA.',
+            title: t.tour.steps.crisis.title(),
+            description: t.tour.steps.crisis.description(),
             side: "top",
             align: 'center'
           },
@@ -107,8 +110,8 @@
         {
           element: '#tour-manage-btn',
           popover: {
-            title: 'Configuración de Cartera',
-            description: 'Ajusta tus objetivos con precisión decimal. Usa los candados para fijar activos y deja que el algoritmo autocompense el resto automáticamente.',
+            title: t.tour.steps.manage_btn.title(),
+            description: t.tour.steps.manage_btn.description(),
             side: "bottom",
             align: 'end'
           }
@@ -116,8 +119,8 @@
         {
           element: '#tour-add-asset',
           popover: {
-            title: 'Personaliza tus Activos',
-            description: 'Añade fondos, ETFs o acciones. Puedes arrastrarlos para moverlos entre categorías (Core, Satélite o Acciones).',
+            title: t.tour.steps.add_asset.title(),
+            description: t.tour.steps.add_asset.description(),
             side: "top",
             align: 'center'
           },
@@ -130,8 +133,8 @@
         {
           element: '#tour-ledger',
           popover: {
-            title: 'Libro de Transacciones (Ledger)',
-            description: 'Activa el modo Ledger para llevar un registro real de tus compras y ventas. Calcularemos tu coste medio y plusvalías automáticamente.',
+            title: t.tour.steps.ledger.title(),
+            description: t.tour.steps.ledger.description(),
             side: "bottom",
             align: 'center'
           },
@@ -144,8 +147,8 @@
         {
           element: '#tour-import-csv',
           popover: {
-            title: 'Importación Inteligente 📥',
-            description: 'No metas los datos a mano. Sube tus extractos de DEGIRO, MyInvestor o Trading 212 y nosotros haremos el trabajo sucio.',
+            title: t.tour.steps.import_csv.title(),
+            description: t.tour.steps.import_csv.description(),
             side: "top",
             align: 'center'
           },

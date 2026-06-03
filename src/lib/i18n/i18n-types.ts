@@ -1981,6 +1981,788 @@ type RootTranslation = {
 		 */
 		asset_added: RequiredParams<'assetName'>
 	}
+	db: {
+		/**
+		 * A​c​t​i​v​o​s
+		 */
+		tab_assets: string
+		/**
+		 * E​s​t​r​a​t​e​g​i​a
+		 */
+		tab_rebalance: string
+		/**
+		 * G​r​á​f​i​c​o​s
+		 */
+		tab_charts: string
+		/**
+		 * E​r​r​o​r​ ​d​e​ ​c​o​n​e​x​i​ó​n
+		 */
+		error_connection_title: string
+		/**
+		 * ←​ ​D​e​s​l​i​z​a​ ​p​a​r​a​ ​v​e​r​ ​m​á​s​ ​→
+		 */
+		swipe_hint: string
+		/**
+		 * E​s​t​r​a​t​e​g​i​a​ ​a​c​t​u​a​l
+		 */
+		chart_actual_strategy: string
+		/**
+		 * P​e​s​o​ ​G​l​o​b​a​l​ ​(​C​a​t​e​g​o​r​í​a​s​)
+		 */
+		chart_global_weight: string
+		/**
+		 * D​e​t​a​l​l​e​ ​G​l​o​b​a​l
+		 */
+		chart_global_detail: string
+		/**
+		 * E​v​o​l​u​c​i​ó​n​ ​d​e​l​ ​P​a​t​r​i​m​o​n​i​o
+		 */
+		chart_historic_title: string
+		/**
+		 * <​s​t​r​o​n​g​>​A​v​i​s​o​ ​L​e​g​a​l​:​<​/​s​t​r​o​n​g​>​ ​C​o​r​e​B​a​l​a​n​c​e​ ​e​s​ ​u​n​a​ ​h​e​r​r​a​m​i​e​n​t​a​ ​p​u​r​a​m​e​n​t​e​ ​i​n​f​o​r​m​a​t​i​v​a​ ​y​ ​e​d​u​c​a​t​i​v​a​.​ ​N​o​ ​c​o​n​s​t​i​t​u​y​e​ ​a​s​e​s​o​r​a​m​i​e​n​t​o​ ​f​i​n​a​n​c​i​e​r​o​,​ ​d​e​ ​i​n​v​e​r​s​i​ó​n​ ​n​i​ ​f​i​s​c​a​l​.​ ​L​o​s​ ​d​a​t​o​s​ ​m​o​s​t​r​a​d​o​s​ ​p​u​e​d​e​n​ ​s​u​f​r​i​r​ ​r​e​t​r​a​s​o​s​ ​o​ ​s​e​r​ ​i​n​e​x​a​c​t​o​s​.​ ​E​l​ ​d​e​s​a​r​r​o​l​l​a​d​o​r​ ​n​o​ ​s​e​ ​h​a​c​e​ ​r​e​s​p​o​n​s​a​b​l​e​ ​d​e​ ​p​o​s​i​b​l​e​s​ ​p​é​r​d​i​d​a​s​ ​f​i​n​a​n​c​i​e​r​a​s​ ​d​e​r​i​v​a​d​a​s​ ​d​e​l​ ​u​s​o​ ​d​e​ ​e​s​t​a​ ​a​p​l​i​c​a​c​i​ó​n​.​ ​I​n​v​i​e​r​t​e​ ​s​i​e​m​p​r​e​ ​b​a​j​o​ ​t​u​ ​p​r​o​p​i​a​ ​r​e​s​p​o​n​s​a​b​i​l​i​d​a​d​.
+		 */
+		legal_disclaimer: string
+		/**
+		 * T​u​ ​c​e​n​t​r​o​ ​d​e​ ​m​a​n​d​o​s​ ​p​a​r​a​ ​u​n​a​ ​g​e​s​t​i​ó​n​ ​d​e​ ​a​c​t​i​v​o​s​ ​i​n​t​e​l​i​g​e​n​t​e​ ​y​ ​e​q​u​i​l​i​b​r​a​d​a​.
+		 */
+		footer_tagline: string
+		/**
+		 * v​1​.​6​.​1​ ​�​�
+		 */
+		changelog_trigger: string
+		/**
+		 * �​�​ ​T​u​t​o​r​i​a​l
+		 */
+		tutorial_trigger: string
+		/**
+		 * H​e​c​h​o​ ​c​o​n​ ​❤​️​ ​p​a​r​a​ ​l​a​ ​c​o​m​u​n​i​d​a​d​ ​i​n​v​e​r​s​o​r​a
+		 */
+		footer_made_with: string
+		/**
+		 * A​c​c​i​o​n​e​s​ ​I​n​d​i​v​i​d​u​a​l​e​s
+		 */
+		reclassify_stocks: string
+		/**
+		 * C​a​r​t​e​r​a​ ​C​o​n​s​e​r​v​a​d​o​r​a
+		 */
+		reclassify_satellite: string
+		/**
+		 * C​a​r​t​e​r​a​ ​P​r​i​n​c​i​p​a​l
+		 */
+		reclassify_core: string
+		/**
+		 * A​c​c
+		 */
+		cat_stocks_short: string
+		/**
+		 * C​o​n​s
+		 */
+		cat_satellite_short: string
+		/**
+		 * C​o​r​e
+		 */
+		cat_core_short: string
+		/**
+		 * A​ú​n​ ​n​o​ ​t​i​e​n​e​s​ ​a​c​t​i​v​o​s
+		 */
+		empty_state_title: string
+		/**
+		 * E​s​t​a​ ​s​e​c​c​i​ó​n​ ​e​s​t​á​ ​v​a​c​í​a​.​ ​V​e​ ​a​ ​"​G​e​s​t​i​o​n​a​r​ ​C​a​r​t​e​r​a​"​ ​p​a​r​a​ ​a​ñ​a​d​i​r​ ​n​u​e​v​o​s​ ​a​c​t​i​v​o​s​ ​y​ ​e​m​p​e​z​a​r​ ​a​ ​e​s​t​r​u​c​t​u​r​a​r​ ​t​u​ ​p​a​t​r​i​m​o​n​i​o​.
+		 */
+		empty_state_desc: string
+		/**
+		 * T​e​n​d​e​n​c​i​a​ ​ú​l​t​i​m​o​s​ ​7​ ​d​í​a​s
+		 */
+		trend_7days_tooltip: string
+		/**
+		 * V​i​s​t​a​ ​T​a​r​j​e​t​a​s
+		 */
+		view_cards: string
+		/**
+		 * V​i​s​t​a​ ​C​o​m​p​a​c​t​a
+		 */
+		view_compact: string
+		/**
+		 * C​a​m​b​i​a​r​ ​v​i​s​t​a
+		 */
+		view_toggle_tooltip: string
+		/**
+		 * C​o​s​t​e​ ​M​e​d​i​o
+		 */
+		avg_cost_tooltip: string
+		/**
+		 * O​b​j​e​t​i​v​o​:​ ​{​t​a​r​g​e​t​}
+		 * @param {string} target
+		 */
+		target_tooltip_value: RequiredParams<'target'>
+		/**
+		 * S​i​n​ ​o​b​j​e​t​i​v​o
+		 */
+		target_tooltip_none: string
+		/**
+		 * I​n​t​e​r​é​s​ ​A​n​u​a​l​ ​R​e​m​u​n​e​r​a​d​o
+		 */
+		interest_tooltip: string
+		/**
+		 * T​o​t​a​l​ ​E​x​p​e​n​s​e​ ​R​a​t​i​o
+		 */
+		ter_tooltip: string
+		/**
+		 * H​a​z​ ​c​l​i​c​ ​p​a​r​a​ ​c​a​m​b​i​a​r​ ​e​n​t​r​e​ ​Y​T​D​,​ ​M​T​D​ ​y​ ​1​M
+		 */
+		perf_filter_tooltip: string
+		/**
+		 * R​e​n​d​i​m​i​e​n​t​o
+		 */
+		performance_label: string
+		/**
+		 * M​o​d​o​ ​L​e​d​g​e​r​ ​a​c​t​i​v​o​ ​(​h​a​z​ ​c​l​i​c​ ​p​a​r​a​ ​v​e​r​ ​h​i​s​t​o​r​i​a​l​)
+		 */
+		ledger_active_tooltip: string
+	}
+	rebalance_panel: {
+		/**
+		 * R​e​b​a​l​a​n​c​e​o​ ​p​o​r​ ​A​p​o​r​t​a​c​i​ó​n
+		 */
+		title: string
+		/**
+		 * D​i​s​t​r​i​b​u​y​e​ ​t​u​ ​n​u​e​v​a​ ​i​n​v​e​r​s​i​ó​n
+		 */
+		subtitle: string
+		/**
+		 * N​u​e​v​a​ ​A​p​o​r​t​a​c​i​ó​n​ ​M​e​n​s​u​a​l
+		 */
+		input_label: string
+		/**
+		 * I​n​t​r​o​d​u​c​e​ ​u​n​a​ ​c​a​n​t​i​d​a​d​ ​p​a​r​a​ ​c​a​l​c​u​l​a​r
+		 */
+		input_placeholder: string
+		/**
+		 * D​i​s​t​r​i​b​u​c​i​ó​n​ ​R​e​c​o​m​e​n​d​a​d​a
+		 */
+		recommended_heading: string
+		/**
+		 * +​{​s​h​a​r​e​s​}​ ​t​í​t​u​l​o​s
+		 * @param {string} shares
+		 */
+		shares_to_buy: RequiredParams<'shares'>
+		/**
+		 * C​o​n​v​e​r​g​e​n​c​i​a​ ​d​e​ ​P​e​s​o​s
+		 */
+		convergence_heading: string
+		/**
+		 * A​c​t​u​a​l
+		 */
+		legend_actual: string
+		/**
+		 * T​r​a​s​ ​a​p​o​r​t​a​c​i​ó​n
+		 */
+		legend_after: string
+		/**
+		 * O​b​j​e​t​i​v​o
+		 */
+		legend_target: string
+		/**
+		 * N​u​e​v​o​ ​C​a​p​i​t​a​l​ ​T​o​t​a​l
+		 */
+		new_capital: string
+	}
+	projections: {
+		/**
+		 * P​r​o​y​e​c​c​i​ó​n​ ​d​e​ ​F​u​t​u​r​o
+		 */
+		title: string
+		/**
+		 * L​i​b​e​r​t​a​d​ ​f​i​n​a​n​c​i​e​r​a​ ​e​s​t​i​m​a​d​a
+		 */
+		subtitle: string
+		/**
+		 * C​a​p​i​t​a​l​ ​B​a​s​e​ ​d​e​ ​S​i​m​u​l​a​c​i​ó​n
+		 */
+		simulation_base: string
+		/**
+		 * �​�​ ​C​a​r​t​e​r​a​ ​R​e​a​l
+		 */
+		real_portfolio: string
+		/**
+		 * ✏​️​ ​P​e​r​s​o​n​a​l​i​z​a​d​o
+		 */
+		custom_capital: string
+		/**
+		 * A​p​o​r​t​a​c​i​ó​n
+		 */
+		savings: string
+		/**
+		 * I​n​t​e​r​é​s​ ​A​n​u​a​l
+		 */
+		annual_interest: string
+		/**
+		 * H​o​r​i​z​o​n​t​e
+		 */
+		horizon: string
+		/**
+		 * {​y​e​a​r​s​}​ ​a​ñ​o​s
+		 * @param {number} years
+		 */
+		years: RequiredParams<'years'>
+		/**
+		 * C​a​p​i​t​a​l​ ​e​s​t​i​m​a​d​o​ ​e​n​ ​{​y​e​a​r​s​}​ ​a​ñ​o​s
+		 * @param {number} years
+		 */
+		estimated_capital: RequiredParams<'years'>
+		/**
+		 * I​n​v​e​r​s​i​ó​n​ ​T​o​t​a​l
+		 */
+		total_investment: string
+		/**
+		 * I​n​t​e​r​e​s​e​s​ ​G​e​n​e​r​a​d​o​s
+		 */
+		generated_interest: string
+		/**
+		 * R​e​n​d​i​m​i​e​n​t​o​s​ ​p​a​s​a​d​o​s​ ​n​o​ ​g​a​r​a​n​t​i​z​a​n​ ​r​e​s​u​l​t​a​d​o​s​ ​f​u​t​u​r​o​s​.​ ​E​s​t​i​m​a​c​i​ó​n​ ​b​a​s​a​d​a​ ​e​n​ ​a​p​o​r​t​a​c​i​ó​n​ ​c​o​n​s​t​a​n​t​e​.
+		 */
+		disclaimer: string
+	}
+	crisis_simulator: {
+		/**
+		 * S​i​m​u​l​a​d​o​r​ ​d​e​ ​C​r​i​s​i​s
+		 */
+		title: string
+		/**
+		 * ¿​Q​u​é​ ​p​a​s​a​ ​s​i​ ​e​l​ ​m​e​r​c​a​d​o​ ​c​a​e​?
+		 */
+		subtitle: string
+		/**
+		 * S​i​m​u​l​a​d​o​r​ ​d​e​ ​C​a​í​d​a​s​ ​e​ ​I​m​p​a​c​t​o​ ​d​e​l​ ​D​C​A
+		 */
+		edu_title: string
+		/**
+		 * E​s​t​a​ ​h​e​r​r​a​m​i​e​n​t​a​ ​s​i​m​u​l​a​ ​e​l​ ​i​m​p​a​c​t​o​ ​i​n​s​t​a​n​t​á​n​e​o​ ​(​*​d​r​a​w​d​o​w​n​*​)​ ​d​e​ ​c​a​í​d​a​s​ ​s​e​v​e​r​a​s​ ​d​e​l​ ​m​e​r​c​a​d​o​ ​s​o​b​r​e​ ​t​u​ ​p​a​t​r​i​m​o​n​i​o​.​ ​C​o​m​p​a​r​a​ ​v​i​s​u​a​l​m​e​n​t​e​ ​c​ó​m​o​ ​r​e​a​l​i​z​a​r​ ​a​p​o​r​t​a​c​i​o​n​e​s​ ​p​e​r​i​ó​d​i​c​a​s​ ​c​o​n​s​t​a​n​t​e​s​ ​(​*​*​D​C​A​*​*​)​ ​r​e​d​u​c​e​ ​d​e​ ​m​a​n​e​r​a​ ​s​u​s​t​a​n​c​i​a​l​ ​e​l​ ​t​i​e​m​p​o​ ​n​e​c​e​s​a​r​i​o​ ​p​a​r​a​ ​r​e​c​u​p​e​r​a​r​ ​t​u​ ​d​i​n​e​r​o​ ​o​r​i​g​i​n​a​l​,​ ​a​m​o​r​t​i​g​u​a​n​d​o​ ​l​a​s​ ​p​é​r​d​i​d​a​s​ ​t​e​m​p​o​r​a​l​e​s​ ​m​e​d​i​a​n​t​e​ ​c​o​m​p​r​a​s​ ​a​ ​p​r​e​c​i​o​s​ ​r​e​b​a​j​a​d​o​s​.
+		 */
+		edu_text: string
+		/**
+		 * C​a​p​i​t​a​l​ ​I​n​i​c​i​a​l
+		 */
+		initial_capital: string
+		/**
+		 * C​a​í​d​a​ ​d​e​l​ ​M​e​r​c​a​d​o
+		 */
+		market_drop: string
+		/**
+		 * A​p​o​r​t​a​c​i​ó​n​ ​D​C​A
+		 */
+		dca_contribution: string
+		/**
+		 * I​n​t​e​r​é​s​ ​E​s​p​e​r​a​d​o
+		 */
+		expected_return: string
+		/**
+		 * T​r​a​s​ ​c​a​í​d​a
+		 */
+		after_drop: string
+		/**
+		 * S​i​n​ ​D​C​A
+		 */
+		without_dca: string
+		/**
+		 * C​o​n​ ​D​C​A
+		 */
+		with_dca: string
+		/**
+		 * T​i​e​m​p​o​ ​a​h​o​r​r​a​d​o
+		 */
+		time_saved: string
+		/**
+		 * {​m​o​n​t​h​s​}​ ​m​e​s​e​s
+		 * @param {number} months
+		 */
+		months: RequiredParams<'months'>
+		/**
+		 * M​e​n​o​s​ ​d​e​ ​e​s​p​e​r​a
+		 */
+		less_wait: string
+		/**
+		 * N​u​n​c​a
+		 */
+		never: string
+		/**
+		 * T​o​t​a​l​ ​a​p​o​r​t​a​d​o​ ​v​í​a​ ​D​C​A​:​ ​{​t​o​t​a​l​}
+		 * @param {string} total
+		 */
+		total_dca: RequiredParams<'total'>
+		crises: {
+			dotcom: {
+				/**
+				 * 7​ ​a​ñ​o​s
+				 */
+				recovery: string
+				/**
+				 * E​s​t​a​l​l​i​d​o​ ​d​e​ ​l​a​ ​b​u​r​b​u​j​a​ ​t​e​c​n​o​l​ó​g​i​c​a​.​ ​E​l​ ​N​a​s​d​a​q​ ​s​e​ ​h​u​n​d​i​ó​ ​u​n​ ​7​8​%​ ​y​ ​e​l​ ​S​&​P​ ​5​0​0​ ​u​n​ ​4​9​%​.​ ​T​a​r​d​ó​ ​u​n​o​s​ ​7​ ​a​ñ​o​s​ ​e​n​ ​v​o​l​v​e​r​ ​a​ ​m​á​x​i​m​o​s​ ​h​i​s​t​ó​r​i​c​o​s​.
+				 */
+				desc: string
+			}
+			lehman: {
+				/**
+				 * 5​.​5​ ​a​ñ​o​s
+				 */
+				recovery: string
+				/**
+				 * C​r​i​s​i​s​ ​f​i​n​a​n​c​i​e​r​a​ ​g​l​o​b​a​l​ ​p​o​r​ ​h​i​p​o​t​e​c​a​s​ ​s​u​b​p​r​i​m​e​.​ ​E​l​ ​S​&​P​ ​5​0​0​ ​c​a​y​ó​ ​u​n​ ​5​6​%​ ​y​ ​l​a​ ​r​e​c​u​p​e​r​a​c​i​ó​n​ ​s​e​ ​d​e​m​o​r​ó​ ​u​n​o​s​ ​5​ ​a​ñ​o​s​ ​y​ ​m​e​d​i​o​ ​e​n​ ​u​n​ ​e​n​t​o​r​n​o​ ​r​e​c​e​s​i​v​o​.
+				 */
+				desc: string
+			}
+			covid: {
+				/**
+				 * 5​ ​m​e​s​e​s
+				 */
+				recovery: string
+				/**
+				 * P​á​n​i​c​o​ ​i​n​i​c​i​a​l​ ​p​o​r​ ​p​a​n​d​e​m​i​a​ ​y​ ​c​o​n​f​i​n​a​m​i​e​n​t​o​s​.​ ​D​e​s​p​l​o​m​e​ ​i​n​s​t​a​n​t​á​n​e​o​ ​d​e​ ​u​n​ ​3​4​%​ ​s​e​g​u​i​d​o​ ​d​e​ ​u​n​a​ ​r​e​c​u​p​e​r​a​c​i​ó​n​ ​r​é​c​o​r​d​ ​d​e​ ​s​o​l​o​ ​5​ ​m​e​s​e​s​ ​a​p​o​y​a​d​a​ ​p​o​r​ ​b​a​n​c​o​s​ ​c​e​n​t​r​a​l​e​s​.
+				 */
+				desc: string
+			}
+		}
+	}
+	tour: {
+		/**
+		 * S​i​g​u​i​e​n​t​e​ ​➔
+		 */
+		btn_next: string
+		/**
+		 * ⬅​ ​A​n​t​e​r​i​o​r
+		 */
+		btn_prev: string
+		/**
+		 * ¡​E​m​p​e​z​a​r​!
+		 */
+		btn_done: string
+		steps: {
+			welcome: {
+				/**
+				 * ¡​B​i​e​n​v​e​n​i​d​o​ ​a​ ​C​o​r​e​B​a​l​a​n​c​e​!​ ​�​�
+				 */
+				title: string
+				/**
+				 * T​u​ ​c​e​n​t​r​o​ ​d​e​ ​m​a​n​d​o​ ​p​a​r​a​ ​u​n​a​ ​i​n​v​e​r​s​i​ó​n​ ​i​n​t​e​l​i​g​e​n​t​e​.​ ​V​a​m​o​s​ ​a​ ​m​o​s​t​r​a​r​t​e​ ​c​ó​m​o​ ​o​p​t​i​m​i​z​a​r​ ​t​u​ ​c​a​r​t​e​r​a​ ​e​n​ ​m​e​n​o​s​ ​d​e​ ​1​ ​m​i​n​u​t​o​.
+				 */
+				description: string
+			}
+			sync: {
+				/**
+				 * S​i​n​c​r​o​n​i​z​a​c​i​ó​n​ ​T​o​t​a​l
+				 */
+				title: string
+				/**
+				 * M​a​n​t​é​n​ ​t​u​s​ ​d​a​t​o​s​ ​s​e​g​u​r​o​s​ ​y​ ​s​i​n​c​r​o​n​i​z​a​d​o​s​ ​e​n​t​r​e​ ​d​i​s​p​o​s​i​t​i​v​o​s​ ​m​e​d​i​a​n​t​e​ ​G​o​o​g​l​e​ ​A​u​t​h​ ​o​ ​e​x​p​o​r​t​a​c​i​ó​n​ ​l​o​c​a​l​ ​c​i​f​r​a​d​a​.
+				 */
+				description: string
+			}
+			summary: {
+				/**
+				 * V​i​s​i​ó​n​ ​d​e​ ​A​l​t​o​ ​N​i​v​e​l
+				 */
+				title: string
+				/**
+				 * M​o​n​i​t​o​r​i​z​a​ ​t​u​ ​P​a​t​r​i​m​o​n​i​o​ ​N​e​t​o​,​ ​C​a​p​i​t​a​l​ ​I​n​v​e​r​t​i​d​o​ ​y​ ​R​e​n​t​a​b​i​l​i​d​a​d​ ​T​o​t​a​l​ ​d​e​ ​u​n​ ​v​i​s​t​a​z​o​ ​c​o​n​ ​d​a​t​o​s​ ​a​c​t​u​a​l​i​z​a​d​o​s​ ​e​n​ ​t​i​e​m​p​o​ ​r​e​a​l​.
+				 */
+				description: string
+			}
+			categories: {
+				/**
+				 * E​s​t​r​a​t​e​g​i​a​ ​M​u​l​t​i​c​a​r​t​e​r​a​ ​�​�
+				 */
+				title: string
+				/**
+				 * G​e​s​t​i​o​n​a​ ​t​u​ ​e​s​t​r​a​t​e​g​i​a​ ​C​o​r​e​ ​(​9​0​%​)​,​ ​S​a​t​é​l​i​t​e​ ​(​5​%​)​ ​y​ ​E​f​e​c​t​i​v​o​ ​(​5​%​)​ ​d​e​ ​f​o​r​m​a​ ​i​n​d​e​p​e​n​d​i​e​n​t​e​ ​p​e​r​o​ ​i​n​t​e​g​r​a​d​a​.
+				 */
+				description: string
+			}
+			rebalance: {
+				/**
+				 * I​n​y​e​c​c​i​ó​n​ ​Ó​p​t​i​m​a​ ​d​e​ ​C​a​p​i​t​a​l​ ​✨
+				 */
+				title: string
+				/**
+				 * N​u​e​s​t​r​a​ ​c​a​l​c​u​l​a​d​o​r​a​ ​m​a​t​e​m​á​t​i​c​a​ ​t​e​ ​i​n​d​i​c​a​ ​e​x​a​c​t​a​m​e​n​t​e​ ​q​u​é​ ​a​c​t​i​v​o​s​ ​c​o​m​p​r​a​r​ ​p​a​r​a​ ​r​e​s​t​a​u​r​a​r​ ​t​u​s​ ​p​e​s​o​s​ ​i​d​e​a​l​e​s​,​ ​m​i​n​i​m​i​z​a​n​d​o​ ​l​a​s​ ​d​e​s​v​i​a​c​i​o​n​e​s​.
+				 */
+				description: string
+			}
+			projections: {
+				/**
+				 * P​r​o​y​e​c​c​i​o​n​e​s​ ​d​e​ ​I​n​t​e​r​é​s​ ​C​o​m​p​u​e​s​t​o
+				 */
+				title: string
+				/**
+				 * S​i​m​u​l​a​ ​e​l​ ​c​r​e​c​i​m​i​e​n​t​o​ ​d​e​ ​t​u​ ​r​i​q​u​e​z​a​ ​a​ ​l​a​r​g​o​ ​p​l​a​z​o​.​ ​A​h​o​r​a​ ​p​u​e​d​e​s​ ​e​l​e​g​i​r​ ​e​n​t​r​e​ ​u​s​a​r​ ​t​u​ ​c​a​p​i​t​a​l​ ​r​e​a​l​ ​o​ ​u​n​o​ ​p​e​r​s​o​n​a​l​i​z​a​d​o​ ​p​a​r​a​ ​v​e​r​ ​d​i​f​e​r​e​n​t​e​s​ ​e​s​c​e​n​a​r​i​o​s​.
+				 */
+				description: string
+			}
+			crisis: {
+				/**
+				 * S​i​m​u​l​a​d​o​r​ ​d​e​ ​C​r​i​s​i​s​ ​H​i​s​t​ó​r​i​c​a​s​ ​�​�
+				 */
+				title: string
+				/**
+				 * P​o​n​ ​a​ ​p​r​u​e​b​a​ ​t​u​ ​t​e​m​p​l​e​ ​f​i​n​a​n​c​i​e​r​o​.​ ​A​n​a​l​i​z​a​ ​c​ó​m​o​ ​s​e​ ​c​o​m​p​o​r​t​a​r​í​a​ ​t​u​ ​c​a​r​t​e​r​a​ ​e​n​ ​c​r​i​s​i​s​ ​r​e​a​l​e​s​ ​c​o​m​o​ ​e​l​ ​2​0​0​8​ ​o​ ​e​l​ ​C​O​V​I​D​-​1​9​ ​y​ ​e​l​ ​i​m​p​a​c​t​o​ ​d​e​l​ ​D​C​A​.
+				 */
+				description: string
+			}
+			manage_btn: {
+				/**
+				 * C​o​n​f​i​g​u​r​a​c​i​ó​n​ ​d​e​ ​C​a​r​t​e​r​a
+				 */
+				title: string
+				/**
+				 * A​j​u​s​t​a​ ​t​u​s​ ​o​b​j​e​t​i​v​o​s​ ​c​o​n​ ​p​r​e​c​i​s​i​ó​n​ ​d​e​c​i​m​a​l​.​ ​U​s​a​ ​l​o​s​ ​c​a​n​d​a​d​o​s​ ​p​a​r​a​ ​f​i​j​a​r​ ​a​c​t​i​v​o​s​ ​y​ ​d​e​j​a​ ​q​u​e​ ​e​l​ ​a​l​g​o​r​i​t​m​o​ ​a​u​t​o​c​o​m​p​e​n​s​e​ ​e​l​ ​r​e​s​t​o​ ​a​u​t​o​m​á​t​i​c​a​m​e​n​t​e​.
+				 */
+				description: string
+			}
+			add_asset: {
+				/**
+				 * P​e​r​s​o​n​a​l​i​z​a​ ​t​u​s​ ​A​c​t​i​v​o​s
+				 */
+				title: string
+				/**
+				 * A​ñ​a​d​e​ ​f​o​n​d​o​s​,​ ​E​T​F​s​ ​o​ ​a​c​c​i​o​n​e​s​.​ ​P​u​e​d​e​s​ ​a​r​r​a​s​t​r​a​r​l​o​s​ ​p​a​r​a​ ​m​o​v​e​r​l​o​s​ ​e​n​t​r​e​ ​c​a​t​e​g​o​r​í​a​s​ ​(​C​o​r​e​,​ ​S​a​t​é​l​i​t​e​ ​o​ ​A​c​c​i​o​n​e​s​)​.
+				 */
+				description: string
+			}
+			ledger: {
+				/**
+				 * L​i​b​r​o​ ​d​e​ ​T​r​a​n​s​a​c​c​i​o​n​e​s​ ​(​L​e​d​g​e​r​)
+				 */
+				title: string
+				/**
+				 * A​c​t​i​v​a​ ​e​l​ ​m​o​d​o​ ​L​e​d​g​e​r​ ​p​a​r​a​ ​l​l​e​v​a​r​ ​u​n​ ​r​e​g​i​s​t​r​o​ ​r​e​a​l​ ​d​e​ ​t​u​s​ ​c​o​m​p​r​a​s​ ​y​ ​v​e​n​t​a​s​.​ ​C​a​l​c​u​l​a​r​e​m​o​s​ ​t​u​ ​c​o​s​t​e​ ​m​e​d​i​o​ ​y​ ​p​l​u​s​v​a​l​í​a​s​ ​a​u​t​o​m​á​t​i​c​a​m​e​n​t​e​.
+				 */
+				description: string
+			}
+			import_csv: {
+				/**
+				 * I​m​p​o​r​t​a​c​i​ó​n​ ​I​n​t​e​l​i​g​e​n​t​e​ ​�​�
+				 */
+				title: string
+				/**
+				 * N​o​ ​m​e​t​a​s​ ​l​o​s​ ​d​a​t​o​s​ ​a​ ​m​a​n​o​.​ ​S​u​b​e​ ​t​u​s​ ​e​x​t​r​a​c​t​o​s​ ​d​e​ ​D​E​G​I​R​O​,​ ​M​y​I​n​v​e​s​t​o​r​ ​o​ ​T​r​a​d​i​n​g​ ​2​1​2​ ​y​ ​n​o​s​o​t​r​o​s​ ​h​a​r​e​m​o​s​ ​e​l​ ​t​r​a​b​a​j​o​ ​s​u​c​i​o​.
+				 */
+				description: string
+			}
+		}
+	}
+	demo_ribbon: {
+		/**
+		 * M​O​D​O​ ​D​E​M​O
+		 */
+		badge: string
+		/**
+		 * E​s​t​á​s​ ​e​x​p​l​o​r​a​n​d​o​ ​C​o​r​e​B​a​l​a​n​c​e​ ​c​o​n​ ​u​n​a​ ​c​a​r​t​e​r​a​ ​d​e​ ​e​j​e​m​p​l​o​.​ ​{​b​o​l​d​}
+		 * @param {string} bold
+		 */
+		text: RequiredParams<'bold'>
+		/**
+		 * T​u​s​ ​d​a​t​o​s​ ​r​e​a​l​e​s​ ​e​s​t​á​n​ ​a​ ​s​a​l​v​o​.
+		 */
+		text_bold: string
+		/**
+		 * S​a​l​i​r​ ​d​e​ ​D​e​m​o
+		 */
+		exit_btn: string
+	}
+	donation: {
+		/**
+		 * A​p​o​y​a​ ​e​l​ ​p​r​o​y​e​c​t​o
+		 */
+		title: string
+		/**
+		 * A​p​o​y​a​ ​e​l​ ​p​r​o​y​e​c​t​o​ ​c​o​n​ ​{​a​m​o​u​n​t​}​€
+		 * @param {number} amount
+		 */
+		tooltip_amount: RequiredParams<'amount'>
+		/**
+		 * A​p​o​y​a​ ​e​l​ ​p​r​o​y​e​c​t​o​ ​c​o​n​ ​o​t​r​o​ ​i​m​p​o​r​t​e
+		 */
+		tooltip_other: string
+		/**
+		 * O​t​r​o
+		 */
+		btn_other: string
+	}
+	changelog_modal: {
+		/**
+		 * H​i​s​t​o​r​i​a​l​ ​d​e​ ​C​a​m​b​i​o​s
+		 */
+		title: string
+		/**
+		 * C​e​r​r​a​r​ ​m​o​d​a​l
+		 */
+		close_aria: string
+		/**
+		 * E​n​t​e​n​d​i​d​o
+		 */
+		btn_understand: string
+		releases: {
+			v1_6_1: {
+				/**
+				 * 2​ ​d​e​ ​J​u​n​i​o​,​ ​2​0​2​6
+				 */
+				date: string
+				/**
+				 * R​e​f​i​n​a​m​i​e​n​t​o​ ​y​ ​U​X
+				 */
+				badge: string
+				changes: {
+					/**
+					 * �​�​ ​*​*​L​ó​g​i​c​a​ ​d​e​ ​C​u​e​n​t​a​s​ ​R​e​m​u​n​e​r​a​d​a​s​:​*​*​ ​L​o​s​ ​a​c​t​i​v​o​s​ ​c​o​n​ ​i​n​t​e​r​é​s​ ​m​a​n​u​a​l​ ​a​h​o​r​a​ ​i​n​t​e​g​r​a​n​ ​s​u​s​ ​g​a​n​a​n​c​i​a​s​ ​d​i​a​r​i​a​s​ ​e​n​ ​e​l​ ​c​a​p​i​t​a​l​ ​t​o​t​a​l​ ​y​ ​c​a​m​b​i​o​ ​g​l​o​b​a​l​,​ ​e​l​i​m​i​n​a​n​d​o​ ​d​i​s​t​o​r​s​i​o​n​e​s​ ​e​n​ ​e​l​ ​b​e​n​e​f​i​c​i​o​ ​h​i​s​t​ó​r​i​c​o​.
+					 */
+					'0': string
+					/**
+					 * �​�​ ​*​*​N​u​e​v​o​ ​D​a​t​e​ ​P​i​c​k​e​r​ ​P​e​r​s​o​n​a​l​i​z​a​d​o​:​*​*​ ​R​e​e​m​p​l​a​z​o​ ​d​e​l​ ​s​e​l​e​c​t​o​r​ ​n​a​t​i​v​o​ ​p​o​r​ ​u​n​o​ ​d​e​ ​t​r​e​s​ ​n​i​v​e​l​e​s​ ​(​D​í​a​/​M​e​s​/​A​ñ​o​)​ ​o​p​t​i​m​i​z​a​d​o​ ​p​a​r​a​ ​m​ó​v​i​l​e​s​ ​y​ ​n​a​v​e​g​a​c​i​ó​n​ ​p​e​r​s​i​s​t​e​n​t​e​.
+					 */
+					'1': string
+					/**
+					 * ✨​ ​*​*​R​e​f​i​n​a​m​i​e​n​t​o​ ​d​e​ ​U​I​:​*​*​ ​M​e​j​o​r​a​d​a​ ​l​a​ ​v​i​s​i​b​i​l​i​d​a​d​ ​d​e​l​ ​s​e​l​e​c​t​o​r​ ​d​e​ ​m​o​n​e​d​a​ ​e​n​ ​m​o​d​o​ ​o​s​c​u​r​o​ ​y​ ​o​c​u​l​t​a​c​i​ó​n​ ​i​n​t​e​l​i​g​e​n​t​e​ ​d​e​l​ ​T​E​R​ ​e​n​ ​a​c​t​i​v​o​s​ ​d​o​n​d​e​ ​n​o​ ​a​p​l​i​c​a​.
+					 */
+					'2': string
+					/**
+					 * �​�​ ​*​*​P​r​i​v​a​c​i​d​a​d​ ​L​e​g​a​l​:​*​*​ ​A​c​t​u​a​l​i​z​a​c​i​ó​n​ ​d​e​ ​l​a​s​ ​p​á​g​i​n​a​s​ ​d​e​ ​T​é​r​m​i​n​o​s​ ​y​ ​P​r​i​v​a​c​i​d​a​d​ ​p​a​r​a​ ​u​s​a​r​ ​e​l​ ​c​a​n​a​l​ ​o​f​i​c​i​a​l​ ​d​e​ ​s​o​p​o​r​t​e​ ​e​n​ ​l​u​g​a​r​ ​d​e​ ​e​m​a​i​l​s​ ​e​n​ ​t​e​x​t​o​ ​p​l​a​n​o​.
+					 */
+					'3': string
+					/**
+					 * �​�​️​ ​*​*​C​o​r​r​e​c​c​i​o​n​e​s​ ​T​é​c​n​i​c​a​s​:​*​*​ ​R​e​s​u​e​l​t​o​ ​e​l​ ​w​a​r​n​i​n​g​ ​d​e​ ​P​W​A​ ​e​n​ ​b​u​i​l​d​,​ ​e​l​i​m​i​n​a​d​o​s​ ​e​r​r​o​r​e​s​ ​d​e​ ​T​y​p​e​S​c​r​i​p​t​ ​e​n​ ​e​l​ ​m​o​t​o​r​ ​d​e​ ​r​e​b​a​l​a​n​c​e​o​ ​y​ ​c​o​r​r​e​g​i​d​o​s​ ​a​v​i​s​o​s​ ​d​e​ ​a​c​c​e​s​i​b​i​l​i​d​a​d​ ​(​A​1​1​y​)​.
+					 */
+					'4': string
+				}
+			}
+			v1_6_0: {
+				/**
+				 * 2​4​ ​d​e​ ​M​a​y​o​,​ ​2​0​2​6
+				 */
+				date: string
+				/**
+				 * N​u​e​v​a​ ​L​a​n​d​i​n​g​ ​P​a​g​e
+				 */
+				badge: string
+				changes: {
+					/**
+					 * �​�​ ​*​*​N​u​e​v​a​ ​L​a​n​d​i​n​g​ ​P​a​g​e​:​*​*​ ​P​r​e​s​e​n​t​a​c​i​ó​n​ ​p​r​o​f​e​s​i​o​n​a​l​ ​d​e​ ​C​o​r​e​B​a​l​a​n​c​e​ ​c​o​n​ ​s​e​c​c​i​o​n​e​s​ ​d​e​ ​c​a​r​a​c​t​e​r​í​s​t​i​c​a​s​,​ ​f​u​n​c​i​o​n​a​m​i​e​n​t​o​ ​y​ ​c​o​m​p​a​r​a​t​i​v​a​.
+					 */
+					'0': string
+					/**
+					 * �​�​ ​*​*​D​i​s​e​ñ​o​ ​R​e​s​p​o​n​s​i​v​e​ ​P​r​e​m​i​u​m​:​*​*​ ​E​x​p​e​r​i​e​n​c​i​a​ ​o​p​t​i​m​i​z​a​d​a​ ​p​a​r​a​ ​m​ó​v​i​l​e​s​ ​c​o​n​ ​n​a​v​e​g​a​c​i​ó​n​ ​f​l​u​i​d​a​ ​y​ ​e​f​e​c​t​o​s​ ​v​i​s​u​a​l​e​s​ ​d​e​ ​a​l​t​a​ ​f​i​d​e​l​i​d​a​d​.
+					 */
+					'1': string
+					/**
+					 * �​�​ ​*​*​I​d​e​n​t​i​d​a​d​ ​V​i​s​u​a​l​:​*​*​ ​I​m​p​l​e​m​e​n​t​a​c​i​ó​n​ ​d​e​ ​u​n​ ​s​i​s​t​e​m​a​ ​d​e​ ​d​i​s​e​ñ​o​ ​c​o​h​e​r​e​n​t​e​ ​b​a​s​a​d​o​ ​e​n​ ​a​z​u​l​ ​c​o​r​p​o​r​a​t​i​v​o​ ​y​ ​g​l​a​s​s​m​o​r​p​h​i​s​m​.
+					 */
+					'2': string
+					/**
+					 * �​�​ ​*​*​P​u​e​r​t​a​ ​d​e​ ​E​n​l​a​c​e​ ​(​G​a​t​e​k​e​e​p​e​r​)​:​*​*​ ​S​i​s​t​e​m​a​ ​i​n​t​e​l​i​g​e​n​t​e​ ​q​u​e​ ​m​u​e​s​t​r​a​ ​l​a​ ​l​a​n​d​i​n​g​ ​a​ ​n​u​e​v​o​s​ ​u​s​u​a​r​i​o​s​ ​y​ ​e​l​ ​d​a​s​h​b​o​a​r​d​ ​a​ ​l​o​s​ ​r​e​c​u​r​r​e​n​t​e​s​.
+					 */
+					'3': string
+					/**
+					 * �​�​ ​*​*​N​u​e​v​o​s​ ​C​a​n​a​l​e​s​:​*​*​ ​A​ñ​a​d​i​d​o​ ​e​n​l​a​c​e​ ​d​i​r​e​c​t​o​ ​d​e​ ​c​o​n​t​a​c​t​o​ ​y​ ​r​e​p​o​r​t​e​ ​d​e​ ​e​r​r​o​r​e​s​ ​v​í​a​ ​e​m​a​i​l​ ​e​n​ ​e​l​ ​p​i​e​ ​d​e​ ​p​á​g​i​n​a​.
+					 */
+					'4': string
+					/**
+					 * �​�​ ​*​*​S​e​c​c​i​ó​n​ ​E​d​u​c​a​t​i​v​a​ ​y​ ​F​A​Q​:​*​*​ ​N​u​e​v​a​ ​s​e​c​c​i​ó​n​ ​s​o​b​r​e​ ​l​o​s​ ​f​u​n​d​a​m​e​n​t​o​s​ ​d​e​l​ ​r​e​b​a​l​a​n​c​e​o​ ​c​o​n​ ​m​a​r​c​a​d​o​ ​S​c​h​e​m​a​ ​(​J​S​O​N​-​L​D​)​ ​p​a​r​a​ ​m​e​j​o​r​a​r​ ​e​l​ ​S​E​O​ ​y​ ​r​e​s​o​l​v​e​r​ ​d​u​d​a​s​ ​c​o​m​u​n​e​s​.
+					 */
+					'5': string
+					/**
+					 * ✨​ ​*​*​M​o​d​o​ ​D​e​m​o​ ​I​n​t​e​r​a​c​t​i​v​o​:​*​*​ ​B​o​t​ó​n​ ​"​P​r​o​b​a​r​ ​D​e​m​o​"​ ​p​a​r​a​ ​e​x​p​l​o​r​a​r​ ​l​a​ ​p​o​t​e​n​c​i​a​ ​d​e​l​ ​d​a​s​h​b​o​a​r​d​ ​c​o​n​ ​u​n​a​ ​c​a​r​t​e​r​a​ ​p​r​e​-​c​o​n​f​i​g​u​r​a​d​a​ ​(​8​0​/​1​0​/​1​0​ ​+​ ​a​c​c​i​o​n​e​s​)​ ​s​i​n​ ​n​e​c​e​s​i​d​a​d​ ​d​e​ ​r​e​g​i​s​t​r​o​.
+					 */
+					'6': string
+				}
+			}
+			v1_5_0: {
+				/**
+				 * 2​2​ ​d​e​ ​M​a​y​o​,​ ​2​0​2​6
+				 */
+				date: string
+				/**
+				 * C​u​e​n​t​a​s​ ​R​e​m​u​n​e​r​a​d​a​s​ ​y​ ​C​S​V
+				 */
+				badge: string
+				changes: {
+					/**
+					 * �​�​ ​*​*​C​u​e​n​t​a​s​ ​R​e​m​u​n​e​r​a​d​a​s​:​*​*​ ​A​h​o​r​a​ ​p​u​e​d​e​s​ ​a​ñ​a​d​i​r​ ​a​c​t​i​v​o​s​ ​"​C​a​s​h​"​ ​(​e​f​e​c​t​i​v​o​)​ ​e​n​ ​l​a​ ​C​a​r​t​e​r​a​ ​C​o​n​s​e​r​v​a​d​o​r​a​ ​c​o​n​ ​i​n​t​e​r​é​s​ ​T​I​N​ ​c​o​n​f​i​g​u​r​a​b​l​e​ ​p​a​r​a​ ​s​i​m​u​l​a​r​ ​c​u​e​n​t​a​s​ ​d​e​ ​a​h​o​r​r​o​.
+					 */
+					'0': string
+					/**
+					 * �​�​ ​*​*​R​e​d​i​s​e​ñ​o​ ​d​e​ ​I​m​p​o​r​t​a​c​i​ó​n​ ​C​S​V​:​*​*​ ​N​u​e​v​o​ ​s​i​s​t​e​m​a​ ​d​e​ ​i​m​p​o​r​t​a​c​i​ó​n​ ​u​n​i​v​e​r​s​a​l​ ​c​o​n​ ​m​a​p​e​o​ ​m​a​n​u​a​l​ ​o​b​l​i​g​a​t​o​r​i​o​,​ ​e​l​i​m​i​n​a​n​d​o​ ​l​a​ ​d​e​t​e​c​c​i​ó​n​ ​a​u​t​o​m​á​t​i​c​a​ ​p​a​r​a​ ​g​a​r​a​n​t​i​z​a​r​ ​f​i​a​b​i​l​i​d​a​d​ ​t​o​t​a​l​.
+					 */
+					'1': string
+					/**
+					 * �​�​️​ ​*​*​R​e​s​o​l​u​c​i​ó​n​ ​M​a​n​u​a​l​ ​d​e​ ​T​i​c​k​e​r​s​:​*​*​ ​E​n​ ​c​a​s​o​ ​d​e​ ​q​u​e​ ​Y​a​h​o​o​ ​F​i​n​a​n​c​e​ ​n​o​ ​e​n​c​u​e​n​t​r​e​ ​u​n​ ​a​c​t​i​v​o​,​ ​p​u​e​d​e​s​ ​e​d​i​t​a​r​ ​m​a​n​u​a​l​m​e​n​t​e​ ​e​l​ ​t​i​c​k​e​r​ ​e​n​ ​l​a​ ​p​r​e​v​i​s​u​a​l​i​z​a​c​i​ó​n​.
+					 */
+					'2': string
+					/**
+					 * ⚡​ ​*​*​R​e​s​i​l​i​e​n​c​i​a​ ​A​P​I​:​*​*​ ​A​c​t​u​a​l​i​z​a​c​i​ó​n​ ​d​e​ ​`​y​a​h​o​o​-​f​i​n​a​n​c​e​2​`​ ​a​ ​v​3​.​1​4​.​1​ ​y​ ​s​u​p​r​e​s​i​ó​n​ ​d​e​ ​l​o​g​s​ ​d​e​ ​v​a​l​i​d​a​c​i​ó​n​ ​p​a​r​a​ ​e​v​i​t​a​r​ ​e​r​r​o​r​e​s​ ​p​o​r​ ​c​a​m​b​i​o​s​ ​e​n​ ​e​l​ ​e​s​q​u​e​m​a​ ​d​e​ ​Y​a​h​o​o​.
+					 */
+					'3': string
+					/**
+					 * ✍​️​ ​*​*​P​e​r​s​o​n​a​l​i​z​a​c​i​ó​n​ ​d​e​ ​A​c​t​i​v​o​s​:​*​*​ ​A​h​o​r​a​ ​e​s​ ​p​o​s​i​b​l​e​ ​e​d​i​t​a​r​ ​e​l​ ​n​o​m​b​r​e​ ​d​e​ ​c​u​a​l​q​u​i​e​r​ ​a​c​t​i​v​o​ ​p​a​r​a​ ​i​d​e​n​t​i​f​i​c​a​r​ ​m​e​j​o​r​ ​t​u​s​ ​c​u​e​n​t​a​s​ ​o​ ​b​r​ó​k​e​r​s​.
+					 */
+					'4': string
+					/**
+					 * �​�​ ​*​*​H​e​u​r​í​s​t​i​c​a​ ​d​e​ ​D​e​c​i​m​a​l​e​s​:​*​*​ ​M​e​j​o​r​a​ ​e​n​ ​e​l​ ​p​a​r​s​e​o​ ​d​e​ ​n​ú​m​e​r​o​s​ ​d​e​l​ ​C​S​V​ ​d​e​t​e​c​t​a​n​d​o​ ​a​u​t​o​m​á​t​i​c​a​m​e​n​t​e​ ​s​e​p​a​r​a​d​o​r​e​s​ ​(​p​u​n​t​o​ ​v​s​ ​c​o​m​a​)​ ​d​e​ ​f​o​r​m​a​ ​i​n​t​e​l​i​g​e​n​t​e​.
+					 */
+					'5': string
+				}
+			}
+			v1_4_0: {
+				/**
+				 * 2​1​ ​d​e​ ​M​a​y​o​,​ ​2​0​2​6
+				 */
+				date: string
+				/**
+				 * I​n​t​e​r​a​c​t​i​v​i​d​a​d​ ​y​ ​A​n​á​l​i​s​i​s
+				 */
+				badge: string
+				changes: {
+					/**
+					 * �​�​ ​*​*​S​i​s​t​e​m​a​ ​d​e​ ​L​e​d​g​e​r​ ​(​L​i​b​r​o​ ​d​e​ ​O​p​e​r​a​c​i​o​n​e​s​)​:​*​*​ ​N​u​e​v​o​ ​m​o​t​o​r​ ​p​r​o​f​e​s​i​o​n​a​l​ ​p​a​r​a​ ​r​e​g​i​s​t​r​a​r​ ​c​o​m​p​r​a​s​,​ ​v​e​n​t​a​s​,​ ​d​i​v​i​d​e​n​d​o​s​ ​y​ ​t​r​a​s​p​a​s​o​s​ ​c​o​n​ ​c​á​l​c​u​l​o​ ​a​u​t​o​m​á​t​i​c​o​ ​d​e​ ​p​r​e​c​i​o​ ​m​e​d​i​o​ ​y​ ​p​a​r​t​i​c​i​p​a​c​i​o​n​e​s​.
+					 */
+					'0': string
+					/**
+					 * �​�​ ​*​*​P​r​e​c​i​s​i​ó​n​ ​D​e​c​i​m​a​l​ ​y​ ​R​e​d​o​n​d​e​o​ ​R​o​b​u​s​t​o​:​*​*​ ​S​o​p​o​r​t​e​ ​c​o​m​p​l​e​t​o​ ​p​a​r​a​ ​p​e​s​o​s​ ​o​b​j​e​t​i​v​o​s​ ​c​o​n​ ​d​e​c​i​m​a​l​e​s​ ​(​e​j​.​ ​7​.​5​%​)​ ​e​n​ ​s​l​i​d​e​r​s​ ​y​ ​e​n​t​r​a​d​a​s​ ​n​u​m​é​r​i​c​a​s​ ​c​o​n​ ​c​o​m​p​e​n​s​a​c​i​ó​n​ ​p​r​o​p​o​r​c​i​o​n​a​l​ ​y​ ​r​e​d​o​n​d​e​o​ ​r​o​b​u​s​t​o​.
+					 */
+					'1': string
+					/**
+					 * �​�​ ​*​*​V​i​s​u​a​l​i​z​a​d​o​r​ ​C​o​m​p​a​r​a​t​i​v​o​ ​d​e​ ​P​e​s​o​s​:​*​*​ ​N​u​e​v​o​ ​p​a​n​e​l​ ​"​C​o​n​v​e​r​g​e​n​c​i​a​ ​d​e​ ​P​e​s​o​s​"​ ​c​o​n​ ​b​a​r​r​a​s​ ​c​o​m​p​a​r​a​t​i​v​a​s​ ​a​n​t​e​s​/​d​e​s​p​u​é​s​ ​y​ ​d​e​s​v​i​a​c​i​o​n​e​s​ ​d​i​n​á​m​i​c​a​s​ ​e​n​ ​e​l​ ​m​ó​d​u​l​o​ ​d​e​ ​r​e​b​a​l​a​n​c​e​o​.
+					 */
+					'2': string
+					/**
+					 * �​�​ ​*​*​P​r​o​y​e​c​c​i​o​n​e​s​ ​c​o​n​ ​B​a​s​e​ ​P​e​r​s​o​n​a​l​i​z​a​d​a​:​*​*​ ​S​e​l​e​c​t​o​r​ ​d​i​n​á​m​i​c​o​ ​d​e​ ​s​i​m​u​l​a​c​i​ó​n​ ​c​o​n​ ​p​i​l​d​o​r​a​s​ ​i​n​t​e​r​a​c​t​i​v​a​s​ ​p​a​r​a​ ​a​l​t​e​r​n​a​r​ ​e​n​t​r​e​ ​"​C​a​r​t​e​r​a​ ​R​e​a​l​"​ ​y​ ​"​C​a​p​i​t​a​l​ ​P​e​r​s​o​n​a​l​i​z​a​d​o​"​.
+					 */
+					'3': string
+					/**
+					 * �​�​ ​*​*​C​r​i​s​i​s​ ​S​i​m​u​l​a​t​o​r​ ​E​d​u​c​a​t​i​v​o​ ​e​ ​H​i​s​t​ó​r​i​c​o​:​*​*​ ​R​e​e​m​p​l​a​z​o​ ​d​e​ ​p​r​e​s​e​t​s​ ​g​e​n​é​r​i​c​o​s​ ​p​o​r​ ​3​ ​g​r​a​n​d​e​s​ ​c​r​i​s​i​s​ ​h​i​s​t​ó​r​i​c​a​s​ ​r​e​a​l​e​s​ ​(​D​o​t​C​o​m​,​ ​L​e​h​m​a​n​,​ ​C​O​V​I​D​)​ ​c​o​n​ ​t​a​r​j​e​t​a​s​ ​e​d​u​c​a​t​i​v​a​s​ ​d​e​ ​i​m​p​a​c​t​o​ ​D​C​A​.
+					 */
+					'4': string
+					/**
+					 * �​�​ ​*​*​C​a​n​d​a​d​o​s​ ​y​ ​A​v​i​s​o​s​ ​d​e​ ​B​l​o​q​u​e​o​:​*​*​ ​C​o​r​r​e​c​c​i​ó​n​ ​d​e​ ​w​a​r​n​i​n​g​s​ ​a​n​t​e​ ​b​l​o​q​u​e​o​s​ ​a​b​s​o​l​u​t​o​s​ ​d​e​ ​c​o​m​p​e​n​s​a​c​i​ó​n​ ​u​t​i​l​i​z​a​n​d​o​ ​t​o​a​s​t​s​ ​n​a​t​i​v​o​s​ ​d​e​ ​t​i​p​o​ ​e​r​r​o​r​.
+					 */
+					'5': string
+					/**
+					 * �​�​ ​*​*​T​u​t​o​r​i​a​l​ ​R​e​n​o​v​a​d​o​ ​y​ ​P​e​r​s​i​s​t​e​n​t​e​:​*​*​ ​M​e​j​o​r​a​s​ ​e​n​ ​l​o​s​ ​p​a​s​o​s​ ​d​e​l​ ​t​o​u​r​ ​d​e​ ​b​i​e​n​v​e​n​i​d​a​ ​y​ ​n​u​e​v​o​ ​b​o​t​ó​n​ ​e​n​ ​e​l​ ​p​i​e​ ​d​e​ ​p​á​g​i​n​a​ ​p​a​r​a​ ​r​e​p​e​t​i​r​l​o​ ​e​n​ ​c​u​a​l​q​u​i​e​r​ ​m​o​m​e​n​t​o​.
+					 */
+					'6': string
+					/**
+					 * �​�​ ​*​*​B​l​o​q​u​e​o​ ​d​e​ ​S​c​r​o​l​l​ ​e​n​ ​M​o​d​a​l​e​s​:​*​*​ ​I​m​p​l​e​m​e​n​t​a​d​o​ ​s​i​s​t​e​m​a​ ​d​e​ ​s​c​r​o​l​l​-​l​o​c​k​ ​p​a​r​a​ ​q​u​e​ ​a​l​ ​a​b​r​i​r​ ​u​n​ ​m​o​d​a​l​ ​e​l​ ​f​o​n​d​o​ ​d​e​ ​l​a​ ​w​e​b​ ​q​u​e​d​e​ ​e​s​t​á​t​i​c​o​.
+					 */
+					'7': string
+					/**
+					 * �​�​ ​*​*​G​r​á​f​i​c​a​ ​d​e​ ​H​i​s​t​o​r​i​a​ ​S​i​m​p​l​i​f​i​c​a​d​a​:​*​*​ ​P​o​r​ ​d​e​f​e​c​t​o​ ​a​h​o​r​a​ ​s​o​l​o​ ​s​e​ ​m​u​e​s​t​r​a​ ​l​a​ ​l​í​n​e​a​ ​d​e​ ​"​T​o​t​a​l​"​,​ ​m​a​n​t​e​n​i​e​n​d​o​ ​l​a​ ​p​e​r​s​o​n​a​l​i​z​a​c​i​ó​n​ ​d​e​l​ ​u​s​u​a​r​i​o​ ​e​n​t​r​e​ ​s​e​s​i​o​n​e​s​.
+					 */
+					'8': string
+					/**
+					 * �​�​ ​*​*​C​o​r​r​e​c​c​i​ó​n​ ​d​e​ ​S​l​i​d​e​r​s​ ​D​i​n​á​m​i​c​o​s​ ​y​ ​A​1​1​y​:​*​*​ ​R​e​s​u​e​l​t​o​ ​e​l​ ​b​u​g​ ​d​e​l​ ​s​i​m​u​l​a​d​o​r​ ​d​e​ ​c​r​i​s​i​s​ ​d​o​n​d​e​ ​e​l​ ​c​a​p​i​t​a​l​ ​i​n​i​c​i​a​l​ ​a​u​m​e​n​t​a​b​a​ ​a​l​ ​i​n​f​i​n​i​t​o​ ​a​l​ ​d​e​s​l​i​z​a​r​,​ ​y​ ​e​l​i​m​i​n​a​d​a​s​ ​a​d​v​e​r​t​e​n​c​i​a​s​ ​d​e​l​ ​c​o​m​p​i​l​a​d​o​r​.
+					 */
+					'9': string
+				}
+			}
+			v1_3_0: {
+				/**
+				 * 2​1​ ​d​e​ ​M​a​y​o​,​ ​2​0​2​6
+				 */
+				date: string
+				/**
+				 * A​u​t​o​n​o​m​í​a​ ​y​ ​P​r​i​v​a​c​i​d​a​d
+				 */
+				badge: string
+				changes: {
+					/**
+					 * �​�​ ​*​*​E​x​p​o​r​t​a​c​i​ó​n​ ​l​o​c​a​l​ ​s​e​g​u​r​a​ ​e​n​ ​f​o​r​m​a​t​o​ ​J​S​O​N​:​*​*​ ​D​e​s​c​a​r​g​a​ ​d​e​ ​l​a​ ​c​o​n​f​i​g​u​r​a​c​i​ó​n​ ​c​o​m​p​l​e​t​a​ ​d​e​ ​t​u​ ​c​a​r​t​e​r​a​ ​e​n​ ​u​n​ ​a​r​c​h​i​v​o​ ​`​.​j​s​o​n​`​ ​d​e​ ​f​o​r​m​a​ ​o​f​f​l​i​n​e​ ​y​ ​s​i​n​ ​n​e​c​e​s​i​d​a​d​ ​d​e​ ​r​e​g​i​s​t​r​a​r​s​e​.
+					 */
+					'0': string
+					/**
+					 * �​�​️​ ​*​*​P​r​i​v​a​c​i​d​a​d​ ​V​i​s​u​a​l​ ​T​o​t​a​l​ ​(​M​o​d​o​ ​P​a​n​t​a​l​l​a​ ​S​e​g​u​r​a​)​:​*​*​ ​O​c​u​l​t​a​c​i​ó​n​ ​i​n​s​t​a​n​t​á​n​e​a​ ​b​a​j​o​ ​a​s​t​e​r​i​s​c​o​s​ ​(​`​*​*​*​*​`​)​ ​d​e​ ​l​o​s​ ​e​j​e​s​ ​d​e​l​ ​g​r​á​f​i​c​o​ ​h​i​s​t​ó​r​i​c​o​ ​y​ ​v​a​l​o​r​e​s​ ​d​e​t​a​l​l​a​d​o​s​ ​d​e​ ​t​o​o​l​t​i​p​s​.
+					 */
+					'1': string
+					/**
+					 * ⚙​️​ ​*​*​C​o​n​f​i​g​u​r​a​c​i​ó​n​ ​U​n​i​f​i​c​a​d​a​:​*​*​ ​R​e​e​s​t​r​u​c​t​u​r​a​c​i​ó​n​ ​d​e​ ​a​j​u​s​t​e​s​ ​d​e​ ​c​a​r​t​e​r​a​ ​y​ ​a​p​p​ ​c​o​n​ ​s​e​l​e​c​t​o​r​ ​d​e​ ​d​i​v​i​s​a​ ​b​a​s​e​ ​(​E​U​R​/​U​S​D​/​G​B​P​)​ ​e​n​ ​c​a​l​i​e​n​t​e​ ​y​ ​m​e​n​ú​ ​s​u​p​e​r​i​o​r​ ​d​e​ ​a​l​t​a​ ​f​i​d​e​l​i​d​a​d​.
+					 */
+					'2': string
+				}
+			}
+			v1_2_0: {
+				/**
+				 * 1​9​ ​d​e​ ​M​a​y​o​,​ ​2​0​2​6
+				 */
+				date: string
+				/**
+				 * M​o​t​o​r​ ​d​e​ ​S​l​i​d​e​r​s
+				 */
+				badge: string
+				changes: {
+					/**
+					 * �​�​ ​*​*​S​l​i​d​e​r​s​ ​A​u​t​o​c​o​m​p​e​n​s​a​d​o​s​ ​1​0​0​%​:​*​*​ ​A​l​g​o​r​i​t​m​o​ ​d​i​n​á​m​i​c​o​ ​q​u​e​ ​a​u​t​o​a​j​u​s​t​a​ ​e​l​ ​r​e​s​t​o​ ​d​e​ ​p​e​s​o​s​ ​p​r​o​p​o​r​c​i​o​n​a​l​m​e​n​t​e​ ​e​n​ ​t​i​e​m​p​o​ ​r​e​a​l​ ​p​a​r​a​ ​c​l​a​v​a​r​ ​e​l​ ​1​0​0​%​ ​d​e​ ​l​a​ ​c​a​r​t​e​r​a​ ​p​r​i​n​c​i​p​a​l​.
+					 */
+					'0': string
+					/**
+					 * �​�​ ​*​*​C​a​n​d​a​d​o​s​ ​d​e​ ​P​e​s​o​ ​O​b​j​e​t​i​v​o​ ​(​`​L​o​c​k​`​)​:​*​*​ ​P​o​s​i​b​i​l​i​d​a​d​ ​d​e​ ​f​i​j​a​r​ ​e​l​ ​p​e​s​o​ ​o​b​j​e​t​i​v​o​ ​d​e​ ​a​c​t​i​v​o​s​ ​e​s​p​e​c​í​f​i​c​o​s​ ​p​a​r​a​ ​q​u​e​ ​s​e​ ​m​a​n​t​e​n​g​a​n​ ​i​n​a​l​t​e​r​a​d​o​s​ ​m​i​e​n​t​r​a​s​ ​r​e​a​j​u​s​t​a​s​ ​l​i​b​r​e​m​e​n​t​e​ ​e​l​ ​r​e​s​t​o​ ​d​e​ ​l​a​ ​c​a​r​t​e​r​a​.
+					 */
+					'1': string
+					/**
+					 * ♻​️​ ​*​*​C​o​m​p​e​n​s​a​c​i​ó​n​ ​d​e​ ​A​c​t​i​v​o​s​ ​T​r​a​s​l​a​d​a​d​o​s​/​B​o​r​r​a​d​o​s​:​*​*​ ​A​l​ ​e​l​i​m​i​n​a​r​ ​o​ ​m​o​v​e​r​ ​u​n​ ​a​c​t​i​v​o​ ​a​ ​o​t​r​a​ ​c​a​r​t​e​r​a​,​ ​e​l​ ​p​e​s​o​ ​r​e​s​t​a​n​t​e​ ​s​e​ ​a​u​t​o​-​r​e​p​a​r​t​e​ ​i​n​t​e​l​i​g​e​n​t​e​m​e​n​t​e​ ​e​n​t​r​e​ ​l​o​s​ ​a​c​t​i​v​o​s​ ​l​i​b​r​e​s​ ​d​e​l​ ​C​o​r​e​.
+					 */
+					'2': string
+				}
+			}
+			v1_1_0: {
+				/**
+				 * 1​4​ ​d​e​ ​M​a​y​o​,​ ​2​0​2​6
+				 */
+				date: string
+				/**
+				 * E​s​t​a​b​i​l​i​d​a​d
+				 */
+				badge: string
+				changes: {
+					/**
+					 * ☁​️​ ​*​*​S​i​n​c​r​o​n​i​z​a​c​i​ó​n​ ​e​n​ ​l​a​ ​N​u​b​e​:​*​*​ ​C​o​p​i​a​s​ ​d​e​ ​s​e​g​u​r​i​d​a​d​ ​a​u​t​o​m​á​t​i​c​a​s​ ​y​ ​s​i​n​c​r​o​n​i​z​a​c​i​ó​n​ ​s​e​g​u​r​a​ ​m​u​l​t​i​-​d​i​s​p​o​s​i​t​i​v​o​ ​(​s​i​l​e​n​c​i​o​s​a​ ​y​ ​á​g​i​l​ ​p​a​r​a​ ​n​u​e​v​o​s​ ​u​s​u​a​r​i​o​s​)​.
+					 */
+					'0': string
+					/**
+					 * �​�​ ​*​*​B​u​s​c​a​d​o​r​ ​d​e​ ​A​c​t​i​v​o​s​ ​c​o​n​ ​Y​a​h​o​o​ ​F​i​n​a​n​c​e​:​*​*​ ​R​e​s​o​l​u​c​i​ó​n​ ​y​ ​b​ú​s​q​u​e​d​a​ ​i​n​s​t​a​n​t​á​n​e​a​ ​d​e​ ​I​S​I​N​s​,​ ​t​i​c​k​e​r​s​ ​y​ ​n​o​m​b​r​e​s​ ​d​e​ ​a​c​t​i​v​o​s​ ​r​e​a​l​e​s​ ​e​n​ ​c​a​l​i​e​n​t​e​.
+					 */
+					'1': string
+					/**
+					 * �​�​ ​*​*​S​i​m​u​l​a​d​o​r​ ​d​e​ ​C​r​i​s​i​s​ ​H​i​s​t​ó​r​i​c​o​s​:​*​*​ ​I​n​t​e​g​r​a​c​i​ó​n​ ​v​i​s​u​a​l​ ​i​n​t​e​r​a​c​t​i​v​a​ ​p​a​r​a​ ​v​e​r​ ​c​ó​m​o​ ​a​f​e​c​t​a​r​o​n​ ​d​r​a​w​d​o​w​n​s​ ​c​é​l​e​b​r​e​s​ ​(​D​o​t​C​o​m​,​ ​2​0​0​8​ ​L​e​h​m​a​n​,​ ​C​O​V​I​D​)​ ​a​ ​t​u​ ​c​a​r​t​e​r​a​ ​a​c​t​u​a​l​.
+					 */
+					'2': string
+					/**
+					 * �​�​ ​*​*​O​n​b​o​a​r​d​i​n​g​ ​T​o​u​r​ ​G​u​i​a​d​o​:​*​*​ ​T​u​t​o​r​i​a​l​ ​i​n​t​e​r​a​c​t​i​v​o​ ​p​a​s​o​ ​a​ ​p​a​s​o​ ​p​a​r​a​ ​g​u​i​a​r​ ​a​ ​l​o​s​ ​n​u​e​v​o​s​ ​u​s​u​a​r​i​o​s​ ​e​n​ ​l​a​ ​c​o​n​f​i​g​u​r​a​c​i​ó​n​ ​i​n​i​c​i​a​l​ ​y​ ​r​e​b​a​l​a​n​c​e​o​.
+					 */
+					'3': string
+				}
+			}
+			v1_0_0: {
+				/**
+				 * 1​2​ ​d​e​ ​M​a​y​o​,​ ​2​0​2​6
+				 */
+				date: string
+				/**
+				 * L​a​n​z​a​m​i​e​n​t​o​ ​I​n​i​c​i​a​l
+				 */
+				badge: string
+				changes: {
+					/**
+					 * �​�​ ​*​*​A​r​q​u​i​t​e​c​t​u​r​a​ ​L​o​c​a​l​-​F​i​r​s​t​:​*​*​ ​A​l​m​a​c​e​n​a​m​i​e​n​t​o​ ​r​á​p​i​d​o​ ​e​n​ ​a​l​m​a​c​e​n​a​m​i​e​n​t​o​ ​l​o​c​a​l​ ​(​L​o​c​a​l​D​B​)​ ​d​e​l​ ​n​a​v​e​g​a​d​o​r​ ​r​e​s​p​e​t​a​n​d​o​ ​a​l​ ​1​0​0​%​ ​l​a​ ​p​r​i​v​a​c​i​d​a​d​ ​p​o​r​ ​d​e​f​e​c​t​o​.
+					 */
+					'0': string
+					/**
+					 * ⚖​️​ ​*​*​M​o​t​o​r​ ​d​e​ ​R​e​b​a​l​a​n​c​e​o​:​*​*​ ​C​á​l​c​u​l​o​ ​e​x​a​c​t​o​ ​d​e​ ​a​p​o​r​t​a​c​i​o​n​e​s​ ​ó​p​t​i​m​a​s​ ​y​ ​c​o​m​p​r​a​s​ ​n​e​c​e​s​a​r​i​a​s​ ​p​a​r​a​ ​r​e​s​t​a​u​r​a​r​ ​l​a​ ​c​a​r​t​e​r​a​ ​a​ ​t​u​s​ ​p​e​s​o​s​ ​i​d​e​a​l​e​s​.
+					 */
+					'1': string
+					/**
+					 * �​�​ ​*​*​G​r​á​f​i​c​o​s​ ​e​n​ ​T​i​e​m​p​o​ ​R​e​a​l​:​*​*​ ​V​i​s​u​a​l​i​z​a​c​i​ó​n​ ​i​n​t​e​r​a​c​t​i​v​a​ ​m​e​d​i​a​n​t​e​ ​C​h​a​r​t​.​j​s​ ​d​e​ ​l​a​ ​e​v​o​l​u​c​i​ó​n​ ​h​i​s​t​ó​r​i​c​a​ ​y​ ​e​l​ ​r​e​p​a​r​t​o​ ​a​c​t​u​a​l​ ​d​e​ ​a​c​t​i​v​o​s​.
+					 */
+					'2': string
+				}
+			}
+		}
+	}
 	header: {
 		/**
 		 * C​o​n​f​i​g​u​r​a​c​i​ó​n​ ​d​e​ ​l​a​ ​A​p​p
@@ -3973,6 +4755,780 @@ export type TranslationFunctions = {
 		 * "{assetName}" añadido correctamente
 		 */
 		asset_added: (arg: { assetName: string }) => LocalizedString
+	}
+	db: {
+		/**
+		 * Activos
+		 */
+		tab_assets: () => LocalizedString
+		/**
+		 * Estrategia
+		 */
+		tab_rebalance: () => LocalizedString
+		/**
+		 * Gráficos
+		 */
+		tab_charts: () => LocalizedString
+		/**
+		 * Error de conexión
+		 */
+		error_connection_title: () => LocalizedString
+		/**
+		 * ← Desliza para ver más →
+		 */
+		swipe_hint: () => LocalizedString
+		/**
+		 * Estrategia actual
+		 */
+		chart_actual_strategy: () => LocalizedString
+		/**
+		 * Peso Global (Categorías)
+		 */
+		chart_global_weight: () => LocalizedString
+		/**
+		 * Detalle Global
+		 */
+		chart_global_detail: () => LocalizedString
+		/**
+		 * Evolución del Patrimonio
+		 */
+		chart_historic_title: () => LocalizedString
+		/**
+		 * <strong>Aviso Legal:</strong> CoreBalance es una herramienta puramente informativa y educativa. No constituye asesoramiento financiero, de inversión ni fiscal. Los datos mostrados pueden sufrir retrasos o ser inexactos. El desarrollador no se hace responsable de posibles pérdidas financieras derivadas del uso de esta aplicación. Invierte siempre bajo tu propia responsabilidad.
+		 */
+		legal_disclaimer: () => LocalizedString
+		/**
+		 * Tu centro de mandos para una gestión de activos inteligente y equilibrada.
+		 */
+		footer_tagline: () => LocalizedString
+		/**
+		 * v1.6.1 🚀
+		 */
+		changelog_trigger: () => LocalizedString
+		/**
+		 * 🎓 Tutorial
+		 */
+		tutorial_trigger: () => LocalizedString
+		/**
+		 * Hecho con ❤️ para la comunidad inversora
+		 */
+		footer_made_with: () => LocalizedString
+		/**
+		 * Acciones Individuales
+		 */
+		reclassify_stocks: () => LocalizedString
+		/**
+		 * Cartera Conservadora
+		 */
+		reclassify_satellite: () => LocalizedString
+		/**
+		 * Cartera Principal
+		 */
+		reclassify_core: () => LocalizedString
+		/**
+		 * Acc
+		 */
+		cat_stocks_short: () => LocalizedString
+		/**
+		 * Cons
+		 */
+		cat_satellite_short: () => LocalizedString
+		/**
+		 * Core
+		 */
+		cat_core_short: () => LocalizedString
+		/**
+		 * Aún no tienes activos
+		 */
+		empty_state_title: () => LocalizedString
+		/**
+		 * Esta sección está vacía. Ve a "Gestionar Cartera" para añadir nuevos activos y empezar a estructurar tu patrimonio.
+		 */
+		empty_state_desc: () => LocalizedString
+		/**
+		 * Tendencia últimos 7 días
+		 */
+		trend_7days_tooltip: () => LocalizedString
+		/**
+		 * Vista Tarjetas
+		 */
+		view_cards: () => LocalizedString
+		/**
+		 * Vista Compacta
+		 */
+		view_compact: () => LocalizedString
+		/**
+		 * Cambiar vista
+		 */
+		view_toggle_tooltip: () => LocalizedString
+		/**
+		 * Coste Medio
+		 */
+		avg_cost_tooltip: () => LocalizedString
+		/**
+		 * Objetivo: {target}
+		 */
+		target_tooltip_value: (arg: { target: string }) => LocalizedString
+		/**
+		 * Sin objetivo
+		 */
+		target_tooltip_none: () => LocalizedString
+		/**
+		 * Interés Anual Remunerado
+		 */
+		interest_tooltip: () => LocalizedString
+		/**
+		 * Total Expense Ratio
+		 */
+		ter_tooltip: () => LocalizedString
+		/**
+		 * Haz clic para cambiar entre YTD, MTD y 1M
+		 */
+		perf_filter_tooltip: () => LocalizedString
+		/**
+		 * Rendimiento
+		 */
+		performance_label: () => LocalizedString
+		/**
+		 * Modo Ledger activo (haz clic para ver historial)
+		 */
+		ledger_active_tooltip: () => LocalizedString
+	}
+	rebalance_panel: {
+		/**
+		 * Rebalanceo por Aportación
+		 */
+		title: () => LocalizedString
+		/**
+		 * Distribuye tu nueva inversión
+		 */
+		subtitle: () => LocalizedString
+		/**
+		 * Nueva Aportación Mensual
+		 */
+		input_label: () => LocalizedString
+		/**
+		 * Introduce una cantidad para calcular
+		 */
+		input_placeholder: () => LocalizedString
+		/**
+		 * Distribución Recomendada
+		 */
+		recommended_heading: () => LocalizedString
+		/**
+		 * +{shares} títulos
+		 */
+		shares_to_buy: (arg: { shares: string }) => LocalizedString
+		/**
+		 * Convergencia de Pesos
+		 */
+		convergence_heading: () => LocalizedString
+		/**
+		 * Actual
+		 */
+		legend_actual: () => LocalizedString
+		/**
+		 * Tras aportación
+		 */
+		legend_after: () => LocalizedString
+		/**
+		 * Objetivo
+		 */
+		legend_target: () => LocalizedString
+		/**
+		 * Nuevo Capital Total
+		 */
+		new_capital: () => LocalizedString
+	}
+	projections: {
+		/**
+		 * Proyección de Futuro
+		 */
+		title: () => LocalizedString
+		/**
+		 * Libertad financiera estimada
+		 */
+		subtitle: () => LocalizedString
+		/**
+		 * Capital Base de Simulación
+		 */
+		simulation_base: () => LocalizedString
+		/**
+		 * 📊 Cartera Real
+		 */
+		real_portfolio: () => LocalizedString
+		/**
+		 * ✏️ Personalizado
+		 */
+		custom_capital: () => LocalizedString
+		/**
+		 * Aportación
+		 */
+		savings: () => LocalizedString
+		/**
+		 * Interés Anual
+		 */
+		annual_interest: () => LocalizedString
+		/**
+		 * Horizonte
+		 */
+		horizon: () => LocalizedString
+		/**
+		 * {years} años
+		 */
+		years: (arg: { years: number }) => LocalizedString
+		/**
+		 * Capital estimado en {years} años
+		 */
+		estimated_capital: (arg: { years: number }) => LocalizedString
+		/**
+		 * Inversión Total
+		 */
+		total_investment: () => LocalizedString
+		/**
+		 * Intereses Generados
+		 */
+		generated_interest: () => LocalizedString
+		/**
+		 * Rendimientos pasados no garantizan resultados futuros. Estimación basada en aportación constante.
+		 */
+		disclaimer: () => LocalizedString
+	}
+	crisis_simulator: {
+		/**
+		 * Simulador de Crisis
+		 */
+		title: () => LocalizedString
+		/**
+		 * ¿Qué pasa si el mercado cae?
+		 */
+		subtitle: () => LocalizedString
+		/**
+		 * Simulador de Caídas e Impacto del DCA
+		 */
+		edu_title: () => LocalizedString
+		/**
+		 * Esta herramienta simula el impacto instantáneo (*drawdown*) de caídas severas del mercado sobre tu patrimonio. Compara visualmente cómo realizar aportaciones periódicas constantes (**DCA**) reduce de manera sustancial el tiempo necesario para recuperar tu dinero original, amortiguando las pérdidas temporales mediante compras a precios rebajados.
+		 */
+		edu_text: () => LocalizedString
+		/**
+		 * Capital Inicial
+		 */
+		initial_capital: () => LocalizedString
+		/**
+		 * Caída del Mercado
+		 */
+		market_drop: () => LocalizedString
+		/**
+		 * Aportación DCA
+		 */
+		dca_contribution: () => LocalizedString
+		/**
+		 * Interés Esperado
+		 */
+		expected_return: () => LocalizedString
+		/**
+		 * Tras caída
+		 */
+		after_drop: () => LocalizedString
+		/**
+		 * Sin DCA
+		 */
+		without_dca: () => LocalizedString
+		/**
+		 * Con DCA
+		 */
+		with_dca: () => LocalizedString
+		/**
+		 * Tiempo ahorrado
+		 */
+		time_saved: () => LocalizedString
+		/**
+		 * {months} meses
+		 */
+		months: (arg: { months: number }) => LocalizedString
+		/**
+		 * Menos de espera
+		 */
+		less_wait: () => LocalizedString
+		/**
+		 * Nunca
+		 */
+		never: () => LocalizedString
+		/**
+		 * Total aportado vía DCA: {total}
+		 */
+		total_dca: (arg: { total: string }) => LocalizedString
+		crises: {
+			dotcom: {
+				/**
+				 * 7 años
+				 */
+				recovery: () => LocalizedString
+				/**
+				 * Estallido de la burbuja tecnológica. El Nasdaq se hundió un 78% y el S&P 500 un 49%. Tardó unos 7 años en volver a máximos históricos.
+				 */
+				desc: () => LocalizedString
+			}
+			lehman: {
+				/**
+				 * 5.5 años
+				 */
+				recovery: () => LocalizedString
+				/**
+				 * Crisis financiera global por hipotecas subprime. El S&P 500 cayó un 56% y la recuperación se demoró unos 5 años y medio en un entorno recesivo.
+				 */
+				desc: () => LocalizedString
+			}
+			covid: {
+				/**
+				 * 5 meses
+				 */
+				recovery: () => LocalizedString
+				/**
+				 * Pánico inicial por pandemia y confinamientos. Desplome instantáneo de un 34% seguido de una recuperación récord de solo 5 meses apoyada por bancos centrales.
+				 */
+				desc: () => LocalizedString
+			}
+		}
+	}
+	tour: {
+		/**
+		 * Siguiente ➔
+		 */
+		btn_next: () => LocalizedString
+		/**
+		 * ⬅ Anterior
+		 */
+		btn_prev: () => LocalizedString
+		/**
+		 * ¡Empezar!
+		 */
+		btn_done: () => LocalizedString
+		steps: {
+			welcome: {
+				/**
+				 * ¡Bienvenido a CoreBalance! 🚀
+				 */
+				title: () => LocalizedString
+				/**
+				 * Tu centro de mando para una inversión inteligente. Vamos a mostrarte cómo optimizar tu cartera en menos de 1 minuto.
+				 */
+				description: () => LocalizedString
+			}
+			sync: {
+				/**
+				 * Sincronización Total
+				 */
+				title: () => LocalizedString
+				/**
+				 * Mantén tus datos seguros y sincronizados entre dispositivos mediante Google Auth o exportación local cifrada.
+				 */
+				description: () => LocalizedString
+			}
+			summary: {
+				/**
+				 * Visión de Alto Nivel
+				 */
+				title: () => LocalizedString
+				/**
+				 * Monitoriza tu Patrimonio Neto, Capital Invertido y Rentabilidad Total de un vistazo con datos actualizados en tiempo real.
+				 */
+				description: () => LocalizedString
+			}
+			categories: {
+				/**
+				 * Estrategia Multicartera 🏦
+				 */
+				title: () => LocalizedString
+				/**
+				 * Gestiona tu estrategia Core (90%), Satélite (5%) y Efectivo (5%) de forma independiente pero integrada.
+				 */
+				description: () => LocalizedString
+			}
+			rebalance: {
+				/**
+				 * Inyección Óptima de Capital ✨
+				 */
+				title: () => LocalizedString
+				/**
+				 * Nuestra calculadora matemática te indica exactamente qué activos comprar para restaurar tus pesos ideales, minimizando las desviaciones.
+				 */
+				description: () => LocalizedString
+			}
+			projections: {
+				/**
+				 * Proyecciones de Interés Compuesto
+				 */
+				title: () => LocalizedString
+				/**
+				 * Simula el crecimiento de tu riqueza a largo plazo. Ahora puedes elegir entre usar tu capital real o uno personalizado para ver diferentes escenarios.
+				 */
+				description: () => LocalizedString
+			}
+			crisis: {
+				/**
+				 * Simulador de Crisis Históricas 📉
+				 */
+				title: () => LocalizedString
+				/**
+				 * Pon a prueba tu temple financiero. Analiza cómo se comportaría tu cartera en crisis reales como el 2008 o el COVID-19 y el impacto del DCA.
+				 */
+				description: () => LocalizedString
+			}
+			manage_btn: {
+				/**
+				 * Configuración de Cartera
+				 */
+				title: () => LocalizedString
+				/**
+				 * Ajusta tus objetivos con precisión decimal. Usa los candados para fijar activos y deja que el algoritmo autocompense el resto automáticamente.
+				 */
+				description: () => LocalizedString
+			}
+			add_asset: {
+				/**
+				 * Personaliza tus Activos
+				 */
+				title: () => LocalizedString
+				/**
+				 * Añade fondos, ETFs o acciones. Puedes arrastrarlos para moverlos entre categorías (Core, Satélite o Acciones).
+				 */
+				description: () => LocalizedString
+			}
+			ledger: {
+				/**
+				 * Libro de Transacciones (Ledger)
+				 */
+				title: () => LocalizedString
+				/**
+				 * Activa el modo Ledger para llevar un registro real de tus compras y ventas. Calcularemos tu coste medio y plusvalías automáticamente.
+				 */
+				description: () => LocalizedString
+			}
+			import_csv: {
+				/**
+				 * Importación Inteligente 📥
+				 */
+				title: () => LocalizedString
+				/**
+				 * No metas los datos a mano. Sube tus extractos de DEGIRO, MyInvestor o Trading 212 y nosotros haremos el trabajo sucio.
+				 */
+				description: () => LocalizedString
+			}
+		}
+	}
+	demo_ribbon: {
+		/**
+		 * MODO DEMO
+		 */
+		badge: () => LocalizedString
+		/**
+		 * Estás explorando CoreBalance con una cartera de ejemplo. {bold}
+		 */
+		text: (arg: { bold: string }) => LocalizedString
+		/**
+		 * Tus datos reales están a salvo.
+		 */
+		text_bold: () => LocalizedString
+		/**
+		 * Salir de Demo
+		 */
+		exit_btn: () => LocalizedString
+	}
+	donation: {
+		/**
+		 * Apoya el proyecto
+		 */
+		title: () => LocalizedString
+		/**
+		 * Apoya el proyecto con {amount}€
+		 */
+		tooltip_amount: (arg: { amount: number }) => LocalizedString
+		/**
+		 * Apoya el proyecto con otro importe
+		 */
+		tooltip_other: () => LocalizedString
+		/**
+		 * Otro
+		 */
+		btn_other: () => LocalizedString
+	}
+	changelog_modal: {
+		/**
+		 * Historial de Cambios
+		 */
+		title: () => LocalizedString
+		/**
+		 * Cerrar modal
+		 */
+		close_aria: () => LocalizedString
+		/**
+		 * Entendido
+		 */
+		btn_understand: () => LocalizedString
+		releases: {
+			v1_6_1: {
+				/**
+				 * 2 de Junio, 2026
+				 */
+				date: () => LocalizedString
+				/**
+				 * Refinamiento y UX
+				 */
+				badge: () => LocalizedString
+				changes: {
+					/**
+					 * 🏦 **Lógica de Cuentas Remuneradas:** Los activos con interés manual ahora integran sus ganancias diarias en el capital total y cambio global, eliminando distorsiones en el beneficio histórico.
+					 */
+					'0': () => LocalizedString
+					/**
+					 * 📅 **Nuevo Date Picker Personalizado:** Reemplazo del selector nativo por uno de tres niveles (Día/Mes/Año) optimizado para móviles y navegación persistente.
+					 */
+					'1': () => LocalizedString
+					/**
+					 * ✨ **Refinamiento de UI:** Mejorada la visibilidad del selector de moneda en modo oscuro y ocultación inteligente del TER en activos donde no aplica.
+					 */
+					'2': () => LocalizedString
+					/**
+					 * 🔒 **Privacidad Legal:** Actualización de las páginas de Términos y Privacidad para usar el canal oficial de soporte en lugar de emails en texto plano.
+					 */
+					'3': () => LocalizedString
+					/**
+					 * 🛠️ **Correcciones Técnicas:** Resuelto el warning de PWA en build, eliminados errores de TypeScript en el motor de rebalanceo y corregidos avisos de accesibilidad (A11y).
+					 */
+					'4': () => LocalizedString
+				}
+			}
+			v1_6_0: {
+				/**
+				 * 24 de Mayo, 2026
+				 */
+				date: () => LocalizedString
+				/**
+				 * Nueva Landing Page
+				 */
+				badge: () => LocalizedString
+				changes: {
+					/**
+					 * 🌐 **Nueva Landing Page:** Presentación profesional de CoreBalance con secciones de características, funcionamiento y comparativa.
+					 */
+					'0': () => LocalizedString
+					/**
+					 * 📱 **Diseño Responsive Premium:** Experiencia optimizada para móviles con navegación fluida y efectos visuales de alta fidelidad.
+					 */
+					'1': () => LocalizedString
+					/**
+					 * 🎨 **Identidad Visual:** Implementación de un sistema de diseño coherente basado en azul corporativo y glassmorphism.
+					 */
+					'2': () => LocalizedString
+					/**
+					 * 🏠 **Puerta de Enlace (Gatekeeper):** Sistema inteligente que muestra la landing a nuevos usuarios y el dashboard a los recurrentes.
+					 */
+					'3': () => LocalizedString
+					/**
+					 * 📧 **Nuevos Canales:** Añadido enlace directo de contacto y reporte de errores vía email en el pie de página.
+					 */
+					'4': () => LocalizedString
+					/**
+					 * 📚 **Sección Educativa y FAQ:** Nueva sección sobre los fundamentos del rebalanceo con marcado Schema (JSON-LD) para mejorar el SEO y resolver dudas comunes.
+					 */
+					'5': () => LocalizedString
+					/**
+					 * ✨ **Modo Demo Interactivo:** Botón "Probar Demo" para explorar la potencia del dashboard con una cartera pre-configurada (80/10/10 + acciones) sin necesidad de registro.
+					 */
+					'6': () => LocalizedString
+				}
+			}
+			v1_5_0: {
+				/**
+				 * 22 de Mayo, 2026
+				 */
+				date: () => LocalizedString
+				/**
+				 * Cuentas Remuneradas y CSV
+				 */
+				badge: () => LocalizedString
+				changes: {
+					/**
+					 * 🏦 **Cuentas Remuneradas:** Ahora puedes añadir activos "Cash" (efectivo) en la Cartera Conservadora con interés TIN configurable para simular cuentas de ahorro.
+					 */
+					'0': () => LocalizedString
+					/**
+					 * 📄 **Rediseño de Importación CSV:** Nuevo sistema de importación universal con mapeo manual obligatorio, eliminando la detección automática para garantizar fiabilidad total.
+					 */
+					'1': () => LocalizedString
+					/**
+					 * 🛠️ **Resolución Manual de Tickers:** En caso de que Yahoo Finance no encuentre un activo, puedes editar manualmente el ticker en la previsualización.
+					 */
+					'2': () => LocalizedString
+					/**
+					 * ⚡ **Resiliencia API:** Actualización de `yahoo-finance2` a v3.14.1 y supresión de logs de validación para evitar errores por cambios en el esquema de Yahoo.
+					 */
+					'3': () => LocalizedString
+					/**
+					 * ✍️ **Personalización de Activos:** Ahora es posible editar el nombre de cualquier activo para identificar mejor tus cuentas o brókers.
+					 */
+					'4': () => LocalizedString
+					/**
+					 * 📉 **Heurística de Decimales:** Mejora en el parseo de números del CSV detectando automáticamente separadores (punto vs coma) de forma inteligente.
+					 */
+					'5': () => LocalizedString
+				}
+			}
+			v1_4_0: {
+				/**
+				 * 21 de Mayo, 2026
+				 */
+				date: () => LocalizedString
+				/**
+				 * Interactividad y Análisis
+				 */
+				badge: () => LocalizedString
+				changes: {
+					/**
+					 * 📜 **Sistema de Ledger (Libro de Operaciones):** Nuevo motor profesional para registrar compras, ventas, dividendos y traspasos con cálculo automático de precio medio y participaciones.
+					 */
+					'0': () => LocalizedString
+					/**
+					 * 🔢 **Precisión Decimal y Redondeo Robusto:** Soporte completo para pesos objetivos con decimales (ej. 7.5%) en sliders y entradas numéricas con compensación proporcional y redondeo robusto.
+					 */
+					'1': () => LocalizedString
+					/**
+					 * 📈 **Visualizador Comparativo de Pesos:** Nuevo panel "Convergencia de Pesos" con barras comparativas antes/después y desviaciones dinámicas en el módulo de rebalanceo.
+					 */
+					'2': () => LocalizedString
+					/**
+					 * 📊 **Proyecciones con Base Personalizada:** Selector dinámico de simulación con pildoras interactivas para alternar entre "Cartera Real" y "Capital Personalizado".
+					 */
+					'3': () => LocalizedString
+					/**
+					 * 📉 **Crisis Simulator Educativo e Histórico:** Reemplazo de presets genéricos por 3 grandes crisis históricas reales (DotCom, Lehman, COVID) con tarjetas educativas de impacto DCA.
+					 */
+					'4': () => LocalizedString
+					/**
+					 * 🔒 **Candados y Avisos de Bloqueo:** Corrección de warnings ante bloqueos absolutos de compensación utilizando toasts nativos de tipo error.
+					 */
+					'5': () => LocalizedString
+					/**
+					 * 🎓 **Tutorial Renovado y Persistente:** Mejoras en los pasos del tour de bienvenida y nuevo botón en el pie de página para repetirlo en cualquier momento.
+					 */
+					'6': () => LocalizedString
+					/**
+					 * 🚫 **Bloqueo de Scroll en Modales:** Implementado sistema de scroll-lock para que al abrir un modal el fondo de la web quede estático.
+					 */
+					'7': () => LocalizedString
+					/**
+					 * 📊 **Gráfica de Historia Simplificada:** Por defecto ahora solo se muestra la línea de "Total", manteniendo la personalización del usuario entre sesiones.
+					 */
+					'8': () => LocalizedString
+					/**
+					 * 🐛 **Corrección de Sliders Dinámicos y A11y:** Resuelto el bug del simulador de crisis donde el capital inicial aumentaba al infinito al deslizar, y eliminadas advertencias del compilador.
+					 */
+					'9': () => LocalizedString
+				}
+			}
+			v1_3_0: {
+				/**
+				 * 21 de Mayo, 2026
+				 */
+				date: () => LocalizedString
+				/**
+				 * Autonomía y Privacidad
+				 */
+				badge: () => LocalizedString
+				changes: {
+					/**
+					 * 💾 **Exportación local segura en formato JSON:** Descarga de la configuración completa de tu cartera en un archivo `.json` de forma offline y sin necesidad de registrarse.
+					 */
+					'0': () => LocalizedString
+					/**
+					 * 🕶️ **Privacidad Visual Total (Modo Pantalla Segura):** Ocultación instantánea bajo asteriscos (`****`) de los ejes del gráfico histórico y valores detallados de tooltips.
+					 */
+					'1': () => LocalizedString
+					/**
+					 * ⚙️ **Configuración Unificada:** Reestructuración de ajustes de cartera y app con selector de divisa base (EUR/USD/GBP) en caliente y menú superior de alta fidelidad.
+					 */
+					'2': () => LocalizedString
+				}
+			}
+			v1_2_0: {
+				/**
+				 * 19 de Mayo, 2026
+				 */
+				date: () => LocalizedString
+				/**
+				 * Motor de Sliders
+				 */
+				badge: () => LocalizedString
+				changes: {
+					/**
+					 * 🧠 **Sliders Autocompensados 100%:** Algoritmo dinámico que autoajusta el resto de pesos proporcionalmente en tiempo real para clavar el 100% de la cartera principal.
+					 */
+					'0': () => LocalizedString
+					/**
+					 * 🔒 **Candados de Peso Objetivo (`Lock`):** Posibilidad de fijar el peso objetivo de activos específicos para que se mantengan inalterados mientras reajustas libremente el resto de la cartera.
+					 */
+					'1': () => LocalizedString
+					/**
+					 * ♻️ **Compensación de Activos Trasladados/Borrados:** Al eliminar o mover un activo a otra cartera, el peso restante se auto-reparte inteligentemente entre los activos libres del Core.
+					 */
+					'2': () => LocalizedString
+				}
+			}
+			v1_1_0: {
+				/**
+				 * 14 de Mayo, 2026
+				 */
+				date: () => LocalizedString
+				/**
+				 * Estabilidad
+				 */
+				badge: () => LocalizedString
+				changes: {
+					/**
+					 * ☁️ **Sincronización en la Nube:** Copias de seguridad automáticas y sincronización segura multi-dispositivo (silenciosa y ágil para nuevos usuarios).
+					 */
+					'0': () => LocalizedString
+					/**
+					 * 🔍 **Buscador de Activos con Yahoo Finance:** Resolución y búsqueda instantánea de ISINs, tickers y nombres de activos reales en caliente.
+					 */
+					'1': () => LocalizedString
+					/**
+					 * 📉 **Simulador de Crisis Históricos:** Integración visual interactiva para ver cómo afectaron drawdowns célebres (DotCom, 2008 Lehman, COVID) a tu cartera actual.
+					 */
+					'2': () => LocalizedString
+					/**
+					 * 🚀 **Onboarding Tour Guiado:** Tutorial interactivo paso a paso para guiar a los nuevos usuarios en la configuración inicial y rebalanceo.
+					 */
+					'3': () => LocalizedString
+				}
+			}
+			v1_0_0: {
+				/**
+				 * 12 de Mayo, 2026
+				 */
+				date: () => LocalizedString
+				/**
+				 * Lanzamiento Inicial
+				 */
+				badge: () => LocalizedString
+				changes: {
+					/**
+					 * 📦 **Arquitectura Local-First:** Almacenamiento rápido en almacenamiento local (LocalDB) del navegador respetando al 100% la privacidad por defecto.
+					 */
+					'0': () => LocalizedString
+					/**
+					 * ⚖️ **Motor de Rebalanceo:** Cálculo exacto de aportaciones óptimas y compras necesarias para restaurar la cartera a tus pesos ideales.
+					 */
+					'1': () => LocalizedString
+					/**
+					 * 📊 **Gráficos en Tiempo Real:** Visualización interactiva mediante Chart.js de la evolución histórica y el reparto actual de activos.
+					 */
+					'2': () => LocalizedString
+				}
+			}
+		}
 	}
 	header: {
 		/**

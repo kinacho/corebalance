@@ -535,6 +535,269 @@ const en: Translation = {
     category_weight_limit: 'The portfolio {catName} already sums {weight}%. Adjust weights before importing more assets.',
     asset_added: '"{assetName}" added successfully',
   },
+  // Dashboard
+  db: {
+    tab_assets: 'Assets',
+    tab_rebalance: 'Rebalance',
+    tab_charts: 'Charts',
+    error_connection_title: 'Connection Error',
+    swipe_hint: '← Swipe to view more →',
+    chart_actual_strategy: 'Current strategy',
+    chart_global_weight: 'Global Weight (Categories)',
+    chart_global_detail: 'Global Detail',
+    chart_historic_title: 'Portfolio Performance',
+    legal_disclaimer: '<strong>Legal Disclaimer:</strong> CoreBalance is a purely informative and educational tool. It does not constitute financial, investment, or tax advice. The data displayed may be subject to delays or inaccuracies. The developer is not responsible for any financial losses resulting from the use of this application. Always invest at your own risk.',
+    footer_tagline: 'Your control center for smart and balanced asset management.',
+    changelog_trigger: 'v1.6.1 🚀',
+    tutorial_trigger: '🎓 Tutorial',
+    footer_made_with: 'Made with ❤️ for the investing community',
+    reclassify_stocks: 'Individual Stocks',
+    reclassify_satellite: 'Conservative Portfolio',
+    reclassify_core: 'Core Portfolio',
+    cat_stocks_short: 'Stocks',
+    cat_satellite_short: 'Conv',
+    cat_core_short: 'Core',
+    empty_state_title: 'No assets added yet',
+    empty_state_desc: 'This section is empty. Go to "Manage Portfolio" to add new assets and start structuring your wealth.',
+    trend_7days_tooltip: 'Trend last 7 days',
+    view_cards: 'Card View',
+    view_compact: 'Compact View',
+    view_toggle_tooltip: 'Toggle view',
+    avg_cost_tooltip: 'Average Cost',
+    target_tooltip_value: 'Target: {target}',
+    target_tooltip_none: 'No target weight',
+    interest_tooltip: 'Annual Interest Rate',
+    ter_tooltip: 'Total Expense Ratio',
+    perf_filter_tooltip: 'Click to switch between YTD, MTD, and 1M',
+    performance_label: 'Performance',
+    ledger_active_tooltip: 'Ledger mode active (click to view history)',
+  },
+  // Rebalance Panel
+  rebalance_panel: {
+    title: 'Rebalancing by Contribution',
+    subtitle: 'Distribute your new investment',
+    input_label: 'New Monthly Contribution',
+    input_placeholder: 'Enter an amount to calculate',
+    recommended_heading: 'Recommended Distribution',
+    shares_to_buy: '+{shares} shares',
+    convergence_heading: 'Weight Convergence',
+    legend_actual: 'Current',
+    legend_after: 'After contribution',
+    legend_target: 'Target',
+    new_capital: 'New Total Capital',
+  },
+  // Projections
+  projections: {
+    title: 'Future Projections',
+    subtitle: 'Estimated financial freedom',
+    simulation_base: 'Simulation Base Capital',
+    real_portfolio: '📊 Real Portfolio',
+    custom_capital: '✏️ Custom',
+    savings: 'Savings',
+    annual_interest: 'Annual Interest',
+    horizon: 'Horizon',
+    years: '{years} years',
+    estimated_capital: 'Estimated capital in {years} years',
+    total_investment: 'Total Investment',
+    generated_interest: 'Interests Generated',
+    disclaimer: 'Past performance does not guarantee future results. Estimate based on constant contribution.',
+  },
+  // Crisis Simulator
+  crisis_simulator: {
+    title: 'Crisis Simulator',
+    subtitle: 'What if the market crashes?',
+    edu_title: 'Crash Simulator & DCA Impact',
+    edu_text: 'This tool simulates the instantaneous impact (*drawdown*) of severe market crashes on your wealth. Visually compare how making constant periodic contributions (**DCA**) substantially reduces the time needed to recover your original money, cushioning temporary losses by buying at discounted prices.',
+    initial_capital: 'Initial Capital',
+    market_drop: 'Market Drop',
+    dca_contribution: 'DCA Contribution',
+    expected_return: 'Expected Interest',
+    after_drop: 'After crash',
+    without_dca: 'Without DCA',
+    with_dca: 'With DCA',
+    time_saved: 'Time saved',
+    months: '{months} months',
+    less_wait: 'Less waiting time',
+    never: 'Never',
+    total_dca: 'Total contributed via DCA: {total}',
+    crises: {
+      dotcom: {
+        recovery: '7 years',
+        desc: 'Tech bubble burst. The Nasdaq crashed 78% and the S&P 500 crashed 49%. It took about 7 years to return to historic highs.',
+      },
+      lehman: {
+        recovery: '5.5 years',
+        desc: 'Global financial crisis caused by subprime mortgages. The S&P 500 fell 56% and the recovery took about 5 and a half years in a recessionary environment.',
+      },
+      covid: {
+        recovery: '5 months',
+        desc: 'Initial panic from pandemic and lockdowns. Instantaneous 34% drop followed by a record recovery of only 5 months supported by central banks.',
+      },
+    },
+  },
+  // Onboarding Tour
+  tour: {
+    btn_next: 'Next ➔',
+    btn_prev: '⬅ Prev',
+    btn_done: 'Start!',
+    steps: {
+      welcome: {
+        title: 'Welcome to CoreBalance! 🚀',
+        description: 'Your control center for smart investing. Let us show you how to optimize your portfolio in less than 1 minute.',
+      },
+      sync: {
+        title: 'Total Sync',
+        description: 'Keep your data safe and synced between devices via Google Auth or encrypted local export.',
+      },
+      summary: {
+        title: 'High Level Overview',
+        description: 'Monitor your Net Worth, Invested Capital, and Total Performance at a glance with real-time updated data.',
+      },
+      categories: {
+        title: 'Multi-Portfolio Strategy 🏦',
+        description: 'Manage your Core (90%), Satellite (5%), and Cash (5%) strategies independently but in an integrated way.',
+      },
+      rebalance: {
+        title: 'Optimal Capital Injection ✨',
+        description: 'Our mathematical calculator tells you exactly which assets to buy to restore your ideal weights, minimizing deviations.',
+      },
+      projections: {
+        title: 'Compound Interest Projections',
+        description: 'Simulate long-term wealth growth. You can now choose between using your real capital or a custom one to see different scenarios.',
+      },
+      crisis: {
+        title: 'Historical Crisis Simulator 📉',
+        description: 'Test your financial grit. Analyze how your portfolio would behave in real crises like 2008 or COVID-19 and the impact of DCA.',
+      },
+      manage_btn: {
+        title: 'Portfolio Settings',
+        description: 'Adjust your targets with decimal precision. Use the locks to fix assets and let the algorithm auto-compensate the rest.',
+      },
+      add_asset: {
+        title: 'Customize Your Assets',
+        description: 'Add funds, ETFs, or stocks. You can drag them to move them between categories (Core, Satellite, or Stocks).',
+      },
+      ledger: {
+        title: 'Transaction Log (Ledger)',
+        description: 'Activate Ledger mode to keep a real record of your buys and sells. We will calculate your average cost and gains automatically.',
+      },
+      import_csv: {
+        title: 'Smart Import 📥',
+        description: 'Don\'t input data manually. Upload your statements from DEGIRO, MyInvestor, or Trading 212 and we will do the dirty work.',
+      },
+    },
+  },
+  // Demo Ribbon
+  demo_ribbon: {
+    badge: 'DEMO MODE',
+    text: 'You are exploring CoreBalance with a sample portfolio. {bold}',
+    text_bold: 'Your real data is safe.',
+    exit_btn: 'Exit Demo',
+  },
+  // Donation
+  donation: {
+    title: 'Support the project',
+    tooltip_amount: 'Support the project with {amount}€',
+    tooltip_other: 'Support the project with another amount',
+    btn_other: 'Other',
+  },
+  // Changelog Modal
+  changelog_modal: {
+    title: 'Changelog',
+    close_aria: 'Close modal',
+    btn_understand: 'Got it',
+    releases: {
+      v1_6_1: {
+        date: 'June 2, 2026',
+        badge: 'Refining & UX',
+        changes: [
+          '🏦 **Interest-Bearing Accounts:** Assets with manual interest now integrate their daily gains into total capital and global change, eliminating distortions in historical performance.',
+          '📅 **New Custom Date Picker:** Replaced the native selector with a three-level (Day/Month/Year) picker optimized for mobile and persistent navigation.',
+          '✨ **UI Refinements:** Improved visibility of the currency selector in dark mode and smart hiding of TER on assets where it does not apply.',
+          '🔒 **Legal Privacy:** Updated Terms and Privacy pages to use the official support channel instead of plain text emails.',
+          '🛠️ **Technical Fixes:** Resolved PWA warning in build, fixed TypeScript errors in the rebalancing engine, and corrected accessibility (A11y) notices.'
+        ]
+      },
+      v1_6_0: {
+        date: 'May 24, 2026',
+        badge: 'New Landing Page',
+        changes: [
+          '🌐 **New Landing Page:** Professional presentation of CoreBalance with features, how it works, and comparison sections.',
+          '📱 **Premium Responsive Design:** Optimized mobile experience with fluid navigation and high-fidelity visual effects.',
+          '🎨 **Visual Identity:** Coherent design system based on corporate blue and glassmorphism.',
+          '🏠 **Gatekeeper System:** Smart system that shows the landing page to new users and the dashboard to returning ones.',
+          '📧 **New Channels:** Direct links to contact and report bugs via email in the footer.',
+          '📚 **Educational Section & FAQ:** New section on the fundamentals of rebalancing with Schema (JSON-LD) markup for SEO and FAQ.',
+          '✨ **Interactive Demo Mode:** "Try Demo" button to explore the dashboard with a pre-configured portfolio (80/10/10 + stocks) without registering.'
+        ]
+      },
+      v1_5_0: {
+        date: 'May 22, 2026',
+        badge: 'Interest Accounts & CSV',
+        changes: [
+          '🏦 **Interest-Bearing Accounts:** You can now add "Cash" assets to the Conservative Portfolio with configurable interest (TIN) to simulate savings accounts.',
+          '📄 **CSV Import Redesign:** New universal import system with mandatory manual mapping, eliminating auto-detection to ensure total reliability.',
+          '🛠️ **Manual Ticker Resolution:** If Yahoo Finance cannot find an asset, you can manually edit the ticker in the preview step.',
+          '⚡ **API Resilience:** Updated `yahoo-finance2` to v3.14.1 and suppressed validation logs to avoid errors from Yahoo schema changes.',
+          '✍️ **Asset Customization:** You can now edit the name of any asset to easily identify your accounts or brokers.',
+          '📉 **Decimal Heuristics:** Improved CSV number parsing by dynamically detecting decimal separators (dot vs comma) in a smart way.'
+        ]
+      },
+      v1_4_0: {
+        date: 'May 21, 2026',
+        badge: 'Interactive & Analysis',
+        changes: [
+          '📜 **Transaction Ledger:** New professional ledger engine to record buys, sells, dividends, and transfers with automatic average cost and shares calculation.',
+          '🔢 **Decimal Precision & Robust Rounding:** Full support for target weights with decimals (e.g. 7.5%) in sliders and inputs with proportional compensation and robust rounding.',
+          '📈 **Weight Convergence Panel:** New "Weight Convergence" panel with comparative before/after bars and dynamic deviations in the rebalancing module.',
+          '📊 **Projections with Custom Base:** Dynamic simulation selector with interactive pills to switch between "Real Portfolio" and "Custom Capital".',
+          '📉 **Educational & Historical Crisis Simulator:** Replaced generic presets with 3 major historical crashes (DotCom, Lehman, COVID) with educational cards showing DCA impact.',
+          '🔒 **Locks & Lock Warnings:** Corrected warnings on absolute lock compensation using native error toasts.',
+          '🎓 **Renewed & Persistent Tutorial:** Improved onboarding steps and new button in the footer to restart the tutorial at any time.',
+          '🚫 **Modal Scroll Lock:** Implemented scroll-lock system so that when a modal is open, the background webpage remains static.',
+          '📊 **Simplified History Chart:** By default, only the "Total" line is shown, maintaining the user\'s choice between sessions.',
+          '🐛 **Dynamic Sliders & A11y Fixes:** Resolved the bug in the crisis simulator where initial capital increased to infinity on slide, and removed compiler warnings.'
+        ]
+      },
+      v1_3_0: {
+        date: 'May 21, 2026',
+        badge: 'Autonomy & Privacy',
+        changes: [
+          '💾 **Local Secure JSON Export:** Offline download of your complete portfolio configuration as a `.json` file, without registering.',
+          '🕶️ **Total Visual Privacy (Safe Screen Mode):** Instant obfuscation under asterisks (`****`) of historic chart axes and detailed tooltip values.',
+          '⚙️ **Unified Settings:** Reconfigured app and portfolio settings with hot-swappable base currency (EUR/USD/GBP) and premium top menu.'
+        ]
+      },
+      v1_2_0: {
+        date: 'May 19, 2026',
+        badge: 'Sliders Engine',
+        changes: [
+          '🧠 **100% Self-Compensating Sliders:** Dynamic algorithm that auto-adjusts other weights proportionally in real-time to match 100% of the core portfolio.',
+          '🔒 **Target Weight Locks (`Lock`):** Ability to lock the target weight of specific assets so they remain unchanged while adjusting others.',
+          '♻️ **Moved/Deleted Asset Compensation:** When deleting or moving an asset, the remaining weight is dynamically redistributed among the free Core assets.'
+        ]
+      },
+      v1_1_0: {
+        date: 'May 14, 2026',
+        badge: 'Stability',
+        changes: [
+          '☁️ **Cloud Synchronization:** Automatic backups and secure multi-device synchronization (silent and smooth for new users).',
+          '🔍 **Yahoo Finance Asset Search:** Instant lookup and resolution of ISINs, tickers, and real asset names on the fly.',
+          '📉 **Historical Crisis Simulator:** Interactive visual integration to see how famous drawdowns (DotCom, 2008 Lehman, COVID) affected your current portfolio.',
+          '🚀 **Guided Onboarding Tour:** Step-by-step interactive tutorial to guide new users in the initial setup and rebalancing.'
+        ]
+      },
+      v1_0_0: {
+        date: 'May 12, 2026',
+        badge: 'Initial Release',
+        changes: [
+          '📦 **Local-First Architecture:** Fast storage in the browser\'s local storage (LocalDB) respecting 100% privacy by default.',
+          '⚖️ **Rebalancing Engine:** Exact calculation of optimal contributions and necessary buys to restore the portfolio to your ideal weights.',
+          '📊 **Real-Time Charts:** Interactive visualization via Chart.js of historical evolution and current asset distribution.'
+        ]
+      }
+    }
+  },
   // Header dropdown & settings
   header: {
     title_config: 'App Settings',

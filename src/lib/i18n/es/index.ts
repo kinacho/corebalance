@@ -537,6 +537,269 @@ const es = {
     category_weight_limit: 'La cartera {catName:string} ya suma {weight:string}%. Ajusta los pesos antes de importar más activos.',
     asset_added: '"{assetName:string}" añadido correctamente',
   },
+  // Dashboard
+  db: {
+    tab_assets: 'Activos',
+    tab_rebalance: 'Estrategia',
+    tab_charts: 'Gráficos',
+    error_connection_title: 'Error de conexión',
+    swipe_hint: '← Desliza para ver más →',
+    chart_actual_strategy: 'Estrategia actual',
+    chart_global_weight: 'Peso Global (Categorías)',
+    chart_global_detail: 'Detalle Global',
+    chart_historic_title: 'Evolución del Patrimonio',
+    legal_disclaimer: '<strong>Aviso Legal:</strong> CoreBalance es una herramienta puramente informativa y educativa. No constituye asesoramiento financiero, de inversión ni fiscal. Los datos mostrados pueden sufrir retrasos o ser inexactos. El desarrollador no se hace responsable de posibles pérdidas financieras derivadas del uso de esta aplicación. Invierte siempre bajo tu propia responsabilidad.',
+    footer_tagline: 'Tu centro de mandos para una gestión de activos inteligente y equilibrada.',
+    changelog_trigger: 'v1.6.1 🚀',
+    tutorial_trigger: '🎓 Tutorial',
+    footer_made_with: 'Hecho con ❤️ para la comunidad inversora',
+    reclassify_stocks: 'Acciones Individuales',
+    reclassify_satellite: 'Cartera Conservadora',
+    reclassify_core: 'Cartera Principal',
+    cat_stocks_short: 'Acc',
+    cat_satellite_short: 'Cons',
+    cat_core_short: 'Core',
+    empty_state_title: 'Aún no tienes activos',
+    empty_state_desc: 'Esta sección está vacía. Ve a "Gestionar Cartera" para añadir nuevos activos y empezar a estructurar tu patrimonio.',
+    trend_7days_tooltip: 'Tendencia últimos 7 días',
+    view_cards: 'Vista Tarjetas',
+    view_compact: 'Vista Compacta',
+    view_toggle_tooltip: 'Cambiar vista',
+    avg_cost_tooltip: 'Coste Medio',
+    target_tooltip_value: 'Objetivo: {target:string}',
+    target_tooltip_none: 'Sin objetivo',
+    interest_tooltip: 'Interés Anual Remunerado',
+    ter_tooltip: 'Total Expense Ratio',
+    perf_filter_tooltip: 'Haz clic para cambiar entre YTD, MTD y 1M',
+    performance_label: 'Rendimiento',
+    ledger_active_tooltip: 'Modo Ledger activo (haz clic para ver historial)',
+  },
+  // Rebalance Panel
+  rebalance_panel: {
+    title: 'Rebalanceo por Aportación',
+    subtitle: 'Distribuye tu nueva inversión',
+    input_label: 'Nueva Aportación Mensual',
+    input_placeholder: 'Introduce una cantidad para calcular',
+    recommended_heading: 'Distribución Recomendada',
+    shares_to_buy: '+{shares:string} títulos',
+    convergence_heading: 'Convergencia de Pesos',
+    legend_actual: 'Actual',
+    legend_after: 'Tras aportación',
+    legend_target: 'Objetivo',
+    new_capital: 'Nuevo Capital Total',
+  },
+  // Projections
+  projections: {
+    title: 'Proyección de Futuro',
+    subtitle: 'Libertad financiera estimada',
+    simulation_base: 'Capital Base de Simulación',
+    real_portfolio: '📊 Cartera Real',
+    custom_capital: '✏️ Personalizado',
+    savings: 'Aportación',
+    annual_interest: 'Interés Anual',
+    horizon: 'Horizonte',
+    years: '{years:number} años',
+    estimated_capital: 'Capital estimado en {years:number} años',
+    total_investment: 'Inversión Total',
+    generated_interest: 'Intereses Generados',
+    disclaimer: 'Rendimientos pasados no garantizan resultados futuros. Estimación basada en aportación constante.',
+  },
+  // Crisis Simulator
+  crisis_simulator: {
+    title: 'Simulador de Crisis',
+    subtitle: '¿Qué pasa si el mercado cae?',
+    edu_title: 'Simulador de Caídas e Impacto del DCA',
+    edu_text: 'Esta herramienta simula el impacto instantáneo (*drawdown*) de caídas severas del mercado sobre tu patrimonio. Compara visualmente cómo realizar aportaciones periódicas constantes (**DCA**) reduce de manera sustancial el tiempo necesario para recuperar tu dinero original, amortiguando las pérdidas temporales mediante compras a precios rebajados.',
+    initial_capital: 'Capital Inicial',
+    market_drop: 'Caída del Mercado',
+    dca_contribution: 'Aportación DCA',
+    expected_return: 'Interés Esperado',
+    after_drop: 'Tras caída',
+    without_dca: 'Sin DCA',
+    with_dca: 'Con DCA',
+    time_saved: 'Tiempo ahorrado',
+    months: '{months:number} meses',
+    less_wait: 'Menos de espera',
+    never: 'Nunca',
+    total_dca: 'Total aportado vía DCA: {total:string}',
+    crises: {
+      dotcom: {
+        recovery: '7 años',
+        desc: 'Estallido de la burbuja tecnológica. El Nasdaq se hundió un 78% y el S&P 500 un 49%. Tardó unos 7 años en volver a máximos históricos.',
+      },
+      lehman: {
+        recovery: '5.5 años',
+        desc: 'Crisis financiera global por hipotecas subprime. El S&P 500 cayó un 56% y la recuperación se demoró unos 5 años y medio en un entorno recesivo.',
+      },
+      covid: {
+        recovery: '5 meses',
+        desc: 'Pánico inicial por pandemia y confinamientos. Desplome instantáneo de un 34% seguido de una recuperación récord de solo 5 meses apoyada por bancos centrales.',
+      },
+    },
+  },
+  // Onboarding Tour
+  tour: {
+    btn_next: 'Siguiente ➔',
+    btn_prev: '⬅ Anterior',
+    btn_done: '¡Empezar!',
+    steps: {
+      welcome: {
+        title: '¡Bienvenido a CoreBalance! 🚀',
+        description: 'Tu centro de mando para una inversión inteligente. Vamos a mostrarte cómo optimizar tu cartera en menos de 1 minuto.',
+      },
+      sync: {
+        title: 'Sincronización Total',
+        description: 'Mantén tus datos seguros y sincronizados entre dispositivos mediante Google Auth o exportación local cifrada.',
+      },
+      summary: {
+        title: 'Visión de Alto Nivel',
+        description: 'Monitoriza tu Patrimonio Neto, Capital Invertido y Rentabilidad Total de un vistazo con datos actualizados en tiempo real.',
+      },
+      categories: {
+        title: 'Estrategia Multicartera 🏦',
+        description: 'Gestiona tu estrategia Core (90%), Satélite (5%) y Efectivo (5%) de forma independiente pero integrada.',
+      },
+      rebalance: {
+        title: 'Inyección Óptima de Capital ✨',
+        description: 'Nuestra calculadora matemática te indica exactamente qué activos comprar para restaurar tus pesos ideales, minimizando las desviaciones.',
+      },
+      projections: {
+        title: 'Proyecciones de Interés Compuesto',
+        description: 'Simula el crecimiento de tu riqueza a largo plazo. Ahora puedes elegir entre usar tu capital real o uno personalizado para ver diferentes escenarios.',
+      },
+      crisis: {
+        title: 'Simulador de Crisis Históricas 📉',
+        description: 'Pon a prueba tu temple financiero. Analiza cómo se comportaría tu cartera en crisis reales como el 2008 o el COVID-19 y el impacto del DCA.',
+      },
+      manage_btn: {
+        title: 'Configuración de Cartera',
+        description: 'Ajusta tus objetivos con precisión decimal. Usa los candados para fijar activos y deja que el algoritmo autocompense el resto automáticamente.',
+      },
+      add_asset: {
+        title: 'Personaliza tus Activos',
+        description: 'Añade fondos, ETFs o acciones. Puedes arrastrarlos para moverlos entre categorías (Core, Satélite o Acciones).',
+      },
+      ledger: {
+        title: 'Libro de Transacciones (Ledger)',
+        description: 'Activa el modo Ledger para llevar un registro real de tus compras y ventas. Calcularemos tu coste medio y plusvalías automáticamente.',
+      },
+      import_csv: {
+        title: 'Importación Inteligente 📥',
+        description: 'No metas los datos a mano. Sube tus extractos de DEGIRO, MyInvestor o Trading 212 y nosotros haremos el trabajo sucio.',
+      },
+    },
+  },
+  // Demo Ribbon
+  demo_ribbon: {
+    badge: 'MODO DEMO',
+    text: 'Estás explorando CoreBalance con una cartera de ejemplo. {bold:string}',
+    text_bold: 'Tus datos reales están a salvo.',
+    exit_btn: 'Salir de Demo',
+  },
+  // Donation
+  donation: {
+    title: 'Apoya el proyecto',
+    tooltip_amount: 'Apoya el proyecto con {amount:number}€',
+    tooltip_other: 'Apoya el proyecto con otro importe',
+    btn_other: 'Otro',
+  },
+  // Changelog Modal
+  changelog_modal: {
+    title: 'Historial de Cambios',
+    close_aria: 'Cerrar modal',
+    btn_understand: 'Entendido',
+    releases: {
+      v1_6_1: {
+        date: '2 de Junio, 2026',
+        badge: 'Refinamiento y UX',
+        changes: [
+          '🏦 **Lógica de Cuentas Remuneradas:** Los activos con interés manual ahora integran sus ganancias diarias en el capital total y cambio global, eliminando distorsiones en el beneficio histórico.',
+          '📅 **Nuevo Date Picker Personalizado:** Reemplazo del selector nativo por uno de tres niveles (Día/Mes/Año) optimizado para móviles y navegación persistente.',
+          '✨ **Refinamiento de UI:** Mejorada la visibilidad del selector de moneda en modo oscuro y ocultación inteligente del TER en activos donde no aplica.',
+          '🔒 **Privacidad Legal:** Actualización de las páginas de Términos y Privacidad para usar el canal oficial de soporte en lugar de emails en texto plano.',
+          '🛠️ **Correcciones Técnicas:** Resuelto el warning de PWA en build, eliminados errores de TypeScript en el motor de rebalanceo y corregidos avisos de accesibilidad (A11y).'
+        ]
+      },
+      v1_6_0: {
+        date: '24 de Mayo, 2026',
+        badge: 'Nueva Landing Page',
+        changes: [
+          '🌐 **Nueva Landing Page:** Presentación profesional de CoreBalance con secciones de características, funcionamiento y comparativa.',
+          '📱 **Diseño Responsive Premium:** Experiencia optimizada para móviles con navegación fluida y efectos visuales de alta fidelidad.',
+          '🎨 **Identidad Visual:** Implementación de un sistema de diseño coherente basado en azul corporativo y glassmorphism.',
+          '🏠 **Puerta de Enlace (Gatekeeper):** Sistema inteligente que muestra la landing a nuevos usuarios y el dashboard a los recurrentes.',
+          '📧 **Nuevos Canales:** Añadido enlace directo de contacto y reporte de errores vía email en el pie de página.',
+          '📚 **Sección Educativa y FAQ:** Nueva sección sobre los fundamentos del rebalanceo con marcado Schema (JSON-LD) para mejorar el SEO y resolver dudas comunes.',
+          '✨ **Modo Demo Interactivo:** Botón "Probar Demo" para explorar la potencia del dashboard con una cartera pre-configurada (80/10/10 + acciones) sin necesidad de registro.'
+        ]
+      },
+      v1_5_0: {
+        date: '22 de Mayo, 2026',
+        badge: 'Cuentas Remuneradas y CSV',
+        changes: [
+          '🏦 **Cuentas Remuneradas:** Ahora puedes añadir activos "Cash" (efectivo) en la Cartera Conservadora con interés TIN configurable para simular cuentas de ahorro.',
+          '📄 **Rediseño de Importación CSV:** Nuevo sistema de importación universal con mapeo manual obligatorio, eliminando la detección automática para garantizar fiabilidad total.',
+          '🛠️ **Resolución Manual de Tickers:** En caso de que Yahoo Finance no encuentre un activo, puedes editar manualmente el ticker en la previsualización.',
+          '⚡ **Resiliencia API:** Actualización de `yahoo-finance2` a v3.14.1 y supresión de logs de validación para evitar errores por cambios en el esquema de Yahoo.',
+          '✍️ **Personalización de Activos:** Ahora es posible editar el nombre de cualquier activo para identificar mejor tus cuentas o brókers.',
+          '📉 **Heurística de Decimales:** Mejora en el parseo de números del CSV detectando automáticamente separadores (punto vs coma) de forma inteligente.'
+        ]
+      },
+      v1_4_0: {
+        date: '21 de Mayo, 2026',
+        badge: 'Interactividad y Análisis',
+        changes: [
+          '📜 **Sistema de Ledger (Libro de Operaciones):** Nuevo motor profesional para registrar compras, ventas, dividendos y traspasos con cálculo automático de precio medio y participaciones.',
+          '🔢 **Precisión Decimal y Redondeo Robusto:** Soporte completo para pesos objetivos con decimales (ej. 7.5%) en sliders y entradas numéricas con compensación proporcional y redondeo robusto.',
+          '📈 **Visualizador Comparativo de Pesos:** Nuevo panel "Convergencia de Pesos" con barras comparativas antes/después y desviaciones dinámicas en el módulo de rebalanceo.',
+          '📊 **Proyecciones con Base Personalizada:** Selector dinámico de simulación con pildoras interactivas para alternar entre "Cartera Real" y "Capital Personalizado".',
+          '📉 **Crisis Simulator Educativo e Histórico:** Reemplazo de presets genéricos por 3 grandes crisis históricas reales (DotCom, Lehman, COVID) con tarjetas educativas de impacto DCA.',
+          '🔒 **Candados y Avisos de Bloqueo:** Corrección de warnings ante bloqueos absolutos de compensación utilizando toasts nativos de tipo error.',
+          '🎓 **Tutorial Renovado y Persistente:** Mejoras en los pasos del tour de bienvenida y nuevo botón en el pie de página para repetirlo en cualquier momento.',
+          '🚫 **Bloqueo de Scroll en Modales:** Implementado sistema de scroll-lock para que al abrir un modal el fondo de la web quede estático.',
+          '📊 **Gráfica de Historia Simplificada:** Por defecto ahora solo se muestra la línea de "Total", manteniendo la personalización del usuario entre sesiones.',
+          '🐛 **Corrección de Sliders Dinámicos y A11y:** Resuelto el bug del simulador de crisis donde el capital inicial aumentaba al infinito al deslizar, y eliminadas advertencias del compilador.'
+        ]
+      },
+      v1_3_0: {
+        date: '21 de Mayo, 2026',
+        badge: 'Autonomía y Privacidad',
+        changes: [
+          '💾 **Exportación local segura en formato JSON:** Descarga de la configuración completa de tu cartera en un archivo `.json` de forma offline y sin necesidad de registrarse.',
+          '🕶️ **Privacidad Visual Total (Modo Pantalla Segura):** Ocultación instantánea bajo asteriscos (`****`) de los ejes del gráfico histórico y valores detallados de tooltips.',
+          '⚙️ **Configuración Unificada:** Reestructuración de ajustes de cartera y app con selector de divisa base (EUR/USD/GBP) en caliente y menú superior de alta fidelidad.'
+        ]
+      },
+      v1_2_0: {
+        date: '19 de Mayo, 2026',
+        badge: 'Motor de Sliders',
+        changes: [
+          '🧠 **Sliders Autocompensados 100%:** Algoritmo dinámico que autoajusta el resto de pesos proporcionalmente en tiempo real para clavar el 100% de la cartera principal.',
+          '🔒 **Candados de Peso Objetivo (`Lock`):** Posibilidad de fijar el peso objetivo de activos específicos para que se mantengan inalterados mientras reajustas libremente el resto de la cartera.',
+          '♻️ **Compensación de Activos Trasladados/Borrados:** Al eliminar o mover un activo a otra cartera, el peso restante se auto-reparte inteligentemente entre los activos libres del Core.'
+        ]
+      },
+      v1_1_0: {
+        date: '14 de Mayo, 2026',
+        badge: 'Estabilidad',
+        changes: [
+          '☁️ **Sincronización en la Nube:** Copias de seguridad automáticas y sincronización segura multi-dispositivo (silenciosa y ágil para nuevos usuarios).',
+          '🔍 **Buscador de Activos con Yahoo Finance:** Resolución y búsqueda instantánea de ISINs, tickers y nombres de activos reales en caliente.',
+          '📉 **Simulador de Crisis Históricos:** Integración visual interactiva para ver cómo afectaron drawdowns célebres (DotCom, 2008 Lehman, COVID) a tu cartera actual.',
+          '🚀 **Onboarding Tour Guiado:** Tutorial interactivo paso a paso para guiar a los nuevos usuarios en la configuración inicial y rebalanceo.'
+        ]
+      },
+      v1_0_0: {
+        date: '12 de Mayo, 2026',
+        badge: 'Lanzamiento Inicial',
+        changes: [
+          '📦 **Arquitectura Local-First:** Almacenamiento rápido en almacenamiento local (LocalDB) del navegador respetando al 100% la privacidad por defecto.',
+          '⚖️ **Motor de Rebalanceo:** Cálculo exacto de aportaciones óptimas y compras necesarias para restaurar la cartera a tus pesos ideales.',
+          '📊 **Gráficos en Tiempo Real:** Visualización interactiva mediante Chart.js de la evolución histórica y el reparto actual de activos.'
+        ]
+      }
+    }
+  },
   // Header dropdown & settings
   header: {
     title_config: 'Configuración de la App',

@@ -1,15 +1,16 @@
 <script lang="ts">
   import { portfolio } from '$lib/stores/portfolio.svelte';
   import { goto } from '$app/navigation';
+  import { LL } from '$lib/i18n/i18n-svelte';
 </script>
 
 {#if portfolio.isDemo}
   <div class="demo-ribbon">
     <div class="demo-content">
-      <span class="demo-badge">MODO DEMO</span>
-      <p>Estás explorando CoreBalance con una cartera de ejemplo. <strong>Tus datos reales están a salvo.</strong></p>
+      <span class="demo-badge">{$LL.demo_ribbon.badge()}</span>
+      <p>{@html $LL.demo_ribbon.text({ bold: `<strong>${$LL.demo_ribbon.text_bold()}</strong>` })}</p>
       <button class="exit-demo-btn" onclick={() => (portfolio as any).exitDemo()}>
-        Salir de Demo
+        {$LL.demo_ribbon.exit_btn()}
       </button>
     </div>
   </div>

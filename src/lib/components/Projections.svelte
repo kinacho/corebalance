@@ -3,6 +3,7 @@
 	import { formatEUR, formatPercent } from '$lib/utils';
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
+	import { LL } from '$lib/i18n/i18n-svelte';
 
 	// Parámetros de simulación
 	let expectedReturn = $state(7); // 7% anual por defecto
@@ -79,8 +80,8 @@
 		<div class="panel-info">
 			<div class="panel-icon">🚀</div>
 			<div class="panel-text">
-				<h2 class="panel-title">Proyección de Futuro</h2>
-				<p class="panel-subtitle">Libertad financiera estimada</p>
+				<h2 class="panel-title">{$LL.projections.title()}</h2>
+				<p class="panel-subtitle">{$LL.projections.subtitle()}</p>
 			</div>
 		</div>
 		<span class="chevron" class:rotated={!isOpen}>
@@ -96,7 +97,7 @@
 				<div class="controls-grid">
 					<div class="control-item full-width-capital">
 						<div class="control-header">
-							<span class="control-label">Capital Base de Simulación</span>
+							<span class="control-label">{$LL.projections.simulation_base()}</span>
 							<span class="control-value highlight">{formatEUR(useCustomBase ? customBase : portfolio.globalCapital)}</span>
 						</div>
 						<div class="capital-selector-pills">
@@ -105,14 +106,14 @@
 								class:active={!useCustomBase} 
 								onclick={() => useCustomBase = false}
 							>
-								📊 Cartera Real
+								{$LL.projections.real_portfolio()}
 							</button>
 							<button 
 								class="pill-btn" 
 								class:active={useCustomBase} 
 								onclick={() => useCustomBase = true}
 							>
-								✏️ Personalizado
+								{$LL.projections.custom_capital()}
 							</button>
 							
 							{#if useCustomBase}
@@ -132,22 +133,22 @@
 
 					<div class="control-item">
 						<div class="control-header">
-							<label class="control-label" for="savings-range">Aportación</label>
+							<label class="control-label" for="savings-range">{$LL.projections.savings()}</label>
 							<span class="control-value">{formatEUR(monthlySavings)}</span>
 						</div>
 						<input id="savings-range" type="range" min="0" max="5000" step="50" bind:value={monthlySavings} />
 					</div>
 					<div class="control-item">
 						<div class="control-header">
-							<label class="control-label" for="return-range">Interés Anual</label>
+							<label class="control-label" for="return-range">{$LL.projections.annual_interest()}</label>
 							<span class="control-value">{expectedReturn}%</span>
 						</div>
 						<input id="return-range" type="range" min="1" max="15" step="0.5" bind:value={expectedReturn} />
 					</div>
 					<div class="control-item">
 						<div class="control-header">
-							<label class="control-label" for="years-range">Horizonte</label>
-							<span class="control-value">{years} años</span>
+							<label class="control-label" for="years-range">{$LL.projections.horizon()}</label>
+							<span class="control-value">{$LL.projections.years({ years })}</span>
 						</div>
 						<input id="years-range" type="range" min="1" max="50" bind:value={years} />
 					</div>
@@ -155,17 +156,17 @@
 
 				<div class="results-card">
 					<div class="main-metric">
-						<span class="metric-label">Capital estimado en {years} años</span>
+						<span class="metric-label">{$LL.projections.estimated_capital({ years })}</span>
 						<span class="metric-value privacy-blur">{formatEUR($tweenedValue)}</span>
 					</div>
 					
 					<div class="sub-metrics">
 						<div class="metric-box">
-							<span class="sub-label">Inversión Total</span>
+							<span class="sub-label">{$LL.projections.total_investment()}</span>
 							<span class="sub-value privacy-blur">{formatEUR(projections.totalInvested)}</span>
 						</div>
 						<div class="metric-box success">
-							<span class="sub-label">Intereses Generados</span>
+							<span class="sub-label">{$LL.projections.generated_interest()}</span>
 							<span class="sub-value privacy-blur">+{formatEUR(projections.totalProfit)}</span>
 						</div>
 					</div>
@@ -184,7 +185,7 @@
 				</div>
 				
 				<footer class="legal-footer">
-					<p>Rendimientos pasados no garantizan resultados futuros. Estimación basada en aportación constante.</p>
+					<p>{$LL.projections.disclaimer()}</p>
 				</footer>
 			</div>
 		</div>

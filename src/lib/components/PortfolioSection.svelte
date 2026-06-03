@@ -5,6 +5,7 @@
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import type { PortfolioState } from '$lib/types';
 	import { formatEUR, formatPercent } from '$lib/utils';
+	import { LL } from '$lib/i18n/i18n-svelte';
 
 	interface Props {
 		title: string;
@@ -41,22 +42,22 @@
 	<div class="header-left-group">
 		<h3 class="section-title">{title}</h3>
 		{#if portfolioState.sparkline}
-			<div class="header-sparkline" title="Tendencia últimos 7 días">
+			<div class="header-sparkline" title={$LL.db.trend_7days_tooltip()}>
 				<Sparkline data={portfolioState.sparkline} />
 			</div>
 		{/if}
 		{#if portfolioState.totalCapital > 0}
 			<div class="header-badges">
-				<div class="header-badge daily" class:positive={portfolioState.dailyChangeValue > 0} class:negative={portfolioState.dailyChangeValue < 0} title="Cambio Hoy">
-					<span class="badge-label">Hoy</span>
+			<div class="header-badge daily" class:positive={portfolioState.dailyChangeValue > 0} class:negative={portfolioState.dailyChangeValue < 0} title={$LL.dashboard.today()}>
+					<span class="badge-label">{$LL.dashboard.today()}</span>
 					<span class="daily-arrow">
 						{portfolioState.dailyChangeValue > 0 ? '▲' : portfolioState.dailyChangeValue < 0 ? '▼' : '•'}
 					</span>
 					<span class="daily-percent">{formatPercent(Math.abs(portfolioState.dailyChangePercent))}</span>
 					<span class="daily-value privacy-blur">({formatEUR(portfolioState.dailyChangeValue)})</span>
 				</div>
-				<div class="header-badge total" class:positive={portfolioState.totalProfit > 0} class:negative={portfolioState.totalProfit < 0} title="Rentabilidad Total">
-					<span class="badge-label">Total</span>
+			<div class="header-badge total" class:positive={portfolioState.totalProfit > 0} class:negative={portfolioState.totalProfit < 0} title={$LL.dashboard.total()}>
+					<span class="badge-label">{$LL.dashboard.total()}</span>
 					<span class="daily-percent">{portfolioState.totalProfit > 0 ? '+' : ''}{formatPercent(portfolioState.totalProfitPercent)}</span>
 					<span class="daily-value privacy-blur">({portfolioState.totalProfit > 0 ? '+' : ''}{formatEUR(portfolioState.totalProfit)})</span>
 				</div>
@@ -80,17 +81,17 @@
 			</div>
 		{:else}
 			<div class="section-controls">
-				<button class="view-toggle-btn" onclick={(e) => { e.stopPropagation(); isCompactView = !isCompactView; }} title="Cambiar vista">
+				<button class="view-toggle-btn" onclick={(e) => { e.stopPropagation(); isCompactView = !isCompactView; }} title={$LL.db.view_toggle_tooltip()}>
 					{#if isCompactView}
 						<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
 							<rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect>
 						</svg>
-						Vista Tarjetas
+						{$LL.db.view_cards()}
 					{:else}
 						<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
 							<line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line>
 						</svg>
-						Vista Compacta
+						{$LL.db.view_compact()}
 					{/if}
 				</button>
 			</div>
@@ -111,8 +112,8 @@
 					<div class="empty-icon-wrap">
 						<span class="empty-icon">✨</span>
 					</div>
-					<h4 class="empty-title">Aún no tienes activos</h4>
-					<p class="empty-desc">Esta sección está vacía. Ve a "Gestionar Cartera" para añadir nuevos activos y empezar a estructurar tu patrimonio.</p>
+					<h4 class="empty-title">{$LL.db.empty_state_title()}</h4>
+					<p class="empty-desc">{$LL.db.empty_state_desc()}</p>
 				</div>
 			{:else}
 				<div class="cards-grid">

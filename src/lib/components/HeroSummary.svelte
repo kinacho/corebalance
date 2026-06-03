@@ -33,14 +33,14 @@
 					{#if portfolio.stockState.totalCapital > 0}
 						<span class="breakdown-divider">|</span>
 						<div class="breakdown-item">
-							<span>Acc:</span>
+							<span>{$LL.db.cat_stocks_short()}:</span>
 							<strong style="color: #fff" class="privacy-blur">{$LL.dashboard.currency(portfolio.stockState.totalCapital)}</strong>
 						</div>
 					{/if}
 					{#if portfolio.satelliteState.totalCapital > 0}
 						<span class="breakdown-divider">|</span>
 						<div class="breakdown-item">
-							<span>Cons:</span>
+							<span>{$LL.db.cat_satellite_short()}:</span>
 							<strong style="color: #fff" class="privacy-blur">{$LL.dashboard.currency(portfolio.satelliteState.totalCapital)}</strong>
 						</div>
 					{/if}

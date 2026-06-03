@@ -3,16 +3,17 @@
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { formatEUR, formatCurrency } from '$lib/utils';
 	import { Chart, type ChartConfiguration } from 'chart.js/auto';
+	import { LL } from '$lib/i18n/i18n-svelte';
 
 	import { fade, fly } from 'svelte/transition';
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 
-	const HISTORIC_CRISES = [
-		{ name: 'DotCom (2000)', drop: 49, recovery: '7 años', emoji: '💻', desc: 'Estallido de la burbuja tecnológica. El Nasdaq se hundió un 78% y el S&P 500 un 49%. Tardó unos 7 años en volver a máximos históricos.' },
-		{ name: 'Lehman (2008)', drop: 56, recovery: '5.5 años', emoji: '🏦', desc: 'Crisis financiera global por hipotecas subprime. El S&P 500 cayó un 56% y la recuperación se demoró unos 5 años y medio en un entorno recesivo.' },
-		{ name: 'COVID-19 (2020)', drop: 34, recovery: '5 meses', emoji: '🦠', desc: 'Pánico inicial por pandemia y confinamientos. Desplome instantáneo de un 34% seguido de una recuperación récord de solo 5 meses apoyada por bancos centrales.' }
-	];
+	const HISTORIC_CRISES = $derived([
+		{ name: 'DotCom (2000)', drop: 49, recovery: $LL.crisis_simulator.crises.dotcom.recovery(), emoji: '💻', desc: $LL.crisis_simulator.crises.dotcom.desc() },
+		{ name: 'Lehman (2008)', drop: 56, recovery: $LL.crisis_simulator.crises.lehman.recovery(), emoji: '🏦', desc: $LL.crisis_simulator.crises.lehman.desc() },
+		{ name: 'COVID-19 (2020)', drop: 34, recovery: $LL.crisis_simulator.crises.covid.recovery(), emoji: '🦠', desc: $LL.crisis_simulator.crises.covid.desc() }
+	]);
 
 	// --- State (Runes) ---
 	let initialCapital = $state(portfolio.globalCapital || 10000);
@@ -113,7 +114,7 @@
 
 
 	function getEstimatedDate(months: number) {
-		if (months < 0) return 'Nunca';
+		if (months < 0) return $LL.crisis_simulator.never();
 		const d = new Date();
 		d.setMonth(d.getMonth() + months);
 		return d.toLocaleDateString('es-ES', { month: 'short', year: '2-digit' });
@@ -223,8 +224,8 @@
 		<div class="panel-info">
 			<div class="panel-icon">📉</div>
 			<div class="panel-text">
-				<h2 class="panel-title">Simulador de Crisis</h2>
-				<p class="panel-subtitle">¿Qué pasa si el mercado cae?</p>
+				<h2 class="panel-title">{$LL.crisis_simulator.title()}</h2>
+				<p class="panel-subtitle">{$LL.crisis_simulator.subtitle()}</p>
 			</div>
 		</div>
 		<span class="chevron" class:rotated={!isOpen}>
@@ -242,9 +243,9 @@
 					<div class="edu-header">
 						<span class="edu-icon">⚙️</span>
 						<div class="edu-content">
-							<h4 class="edu-title">Simulador de Caídas e Impacto del DCA</h4>
+							<h4 class="edu-title">{$LL.crisis_simulator.edu_title()}</h4>
 							<p class="edu-text">
-								Esta herramienta simula el impacto instantáneo (*drawdown*) de caídas severas del mercado sobre tu patrimonio. Compara visualmente cómo realizar aportaciones periódicas constantes (**DCA**) reduce de manera sustancial el tiempo necesario para recuperar tu dinero original, amortiguando las pérdidas temporales mediante compras a precios rebajados.
+								{$LL.crisis_simulator.edu_text()}
 							</p>
 						</div>
 					</div>
@@ -253,7 +254,7 @@
 				<div class="controls-grid">
 					<div class="control-item">
 						<div class="control-header">
-							<label class="control-label" for="capital-range">Capital Inicial</label>
+							<label class="control-label" for="capital-range">{$LL.crisis_simulator.initial_capital()}</label>
 							<span class="control-value">{formatEUR(initialCapital)}</span>
 						</div>
 						<input id="capital-range" type="range" min="0" max={maxCapital} step="100" bind:value={initialCapital} oninput={() => hasManuallyEdited = true} />
@@ -262,7 +263,7 @@
 
 					<div class="control-item">
 						<div class="control-header">
-							<label class="control-label" for="drop">Caída del Mercado</label>
+							<label class="control-label" for="drop">{$LL.crisis_simulator.market_drop()}</label>
 							<span class="control-value highlight">-{dropPercent}%</span>
 						</div>
 						<input id="drop" type="range" min="5" max="90" step="5" bind:value={dropPercent} />
@@ -289,7 +290,7 @@
 
 					<div class="control-item">
 						<div class="control-header">
-							<label class="control-label" for="dca">Aportación DCA</label>
+							<label class="control-label" for="dca">{$LL.crisis_simulator.dca_contribution()}</label>
 							<span class="control-value">{formatEUR(monthlyDca)}</span>
 						</div>
 						<input id="dca" type="range" min="0" max="10000" step="50" bind:value={monthlyDca} oninput={() => hasManuallyEditedDca = true} />
@@ -297,7 +298,7 @@
 
 					<div class="control-item">
 						<div class="control-header">
-							<label class="control-label" for="return">Interés Esperado</label>
+							<label class="control-label" for="return">{$LL.crisis_simulator.expected_return()}</label>
 							<span class="control-value">{expectedReturn}%</span>
 						</div>
 						<input id="return" type="range" min="0" max="20" step="0.5" bind:value={expectedReturn} />
@@ -310,32 +311,32 @@
 
 				<div class="stats-grid">
 					<div class="stat-card highlight-red">
-						<span class="stat-label">Tras caída</span>
+						<span class="stat-label">{$LL.crisis_simulator.after_drop()}</span>
 						<span class="stat-value">{formatEUR($tValueAfterDrop)}</span>
 					</div>
 
 					<div class="stat-card">
-						<span class="stat-label">Sin DCA</span>
-						<span class="stat-value">{$tMonthsNoDca.toFixed(0)} <small>meses</small></span>
+						<span class="stat-label">{$LL.crisis_simulator.without_dca()}</span>
+						<span class="stat-value">{$tMonthsNoDca.toFixed(0)} <small>{$LL.crisis_simulator.months({ months: 0 }).replace('0 ', '')}</small></span>
 						<span class="stat-sub">{getEstimatedDate(Math.round($tMonthsNoDca))}</span>
 					</div>
 
 					<div class="stat-card highlight-green">
-						<span class="stat-label">Con DCA</span>
-						<span class="stat-value">{$tMonthsWithDca.toFixed(0)} <small>meses</small></span>
+						<span class="stat-label">{$LL.crisis_simulator.with_dca()}</span>
+						<span class="stat-value">{$tMonthsWithDca.toFixed(0)} <small>{$LL.crisis_simulator.months({ months: 0 }).replace('0 ', '')}</small></span>
 						<span class="stat-sub">{getEstimatedDate(Math.round($tMonthsWithDca))}</span>
 					</div>
 
 					<div class="stat-card">
-						<span class="stat-label">Tiempo ahorrado</span>
-						<span class="stat-value text-green">{$tTimeSaved.toFixed(0)} <small>meses</small></span>
-						<span class="stat-sub">Menos de espera</span>
+						<span class="stat-label">{$LL.crisis_simulator.time_saved()}</span>
+						<span class="stat-value text-green">{$tTimeSaved.toFixed(0)} <small>{$LL.crisis_simulator.months({ months: 0 }).replace('0 ', '')}</small></span>
+						<span class="stat-sub">{$LL.crisis_simulator.less_wait()}</span>
 					</div>
 				</div>
 
 
 				<footer class="legal-footer">
-					<p>Total aportado vía DCA: {formatEUR($tTotalDca)}</p>
+					<p>{$LL.crisis_simulator.total_dca({ total: formatEUR($tTotalDca) })}</p>
 				</footer>
 			</div>
 		</div>

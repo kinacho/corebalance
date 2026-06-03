@@ -2,6 +2,7 @@
 	import type { RebalanceResult } from '$lib/types';
 	import { formatEUR, formatPercent, formatShares } from '$lib/utils';
 	import { portfolio } from '$lib/stores/portfolio.svelte';
+	import { LL } from '$lib/i18n/i18n-svelte';
 
 	interface Props {
 		contribution: number;
@@ -54,8 +55,8 @@
 		<div class="panel-info">
 			<div class="panel-icon">💰</div>
 			<div class="panel-text">
-				<h2 class="panel-title">Rebalanceo por Aportación</h2>
-				<p class="panel-subtitle">Distribuye tu nueva inversión</p>
+				<h2 class="panel-title">{$LL.rebalance_panel.title()}</h2>
+				<p class="panel-subtitle">{$LL.rebalance_panel.subtitle()}</p>
 			</div>
 		</div>
 		<span class="chevron" class:rotated={!isOpen}>
@@ -70,7 +71,7 @@
 			<div class="content">
 				<div class="input-section">
 					<label class="input-label" for="contribution-input">
-						Nueva Aportación Mensual
+						{$LL.rebalance_panel.input_label()}
 					</label>
 					<div class="input-container">
 						<input
@@ -90,13 +91,13 @@
 						<span class="currency">€</span>
 					</div>
 					{#if !result || result.totalContribution === 0}
-						<p class="hint">Introduce una cantidad para calcular</p>
+						<p class="hint">{$LL.rebalance_panel.input_placeholder()}</p>
 					{/if}
 				</div>
 
 				{#if result && result.totalContribution > 0}
 					<div class="results-section">
-						<h3 class="section-heading">Distribución Recomendada</h3>
+						<h3 class="section-heading">{$LL.rebalance_panel.recommended_heading()}</h3>
 
 						<div class="alloc-list">
 							{#each result.allocations as alloc}
@@ -107,7 +108,7 @@
 
 											<span class="alloc-name">{alloc.asset.name}</span>
 											<span class="alloc-shares privacy-blur">
-												+{formatShares(alloc.sharesToBuy)} títulos
+												{$LL.rebalance_panel.shares_to_buy({ shares: formatShares(alloc.sharesToBuy) })}
 											</span>
 										</div>
 									</div>
@@ -121,7 +122,7 @@
 
 						<!-- Weight Comparison: Before vs After -->
 						<div class="weight-comparison">
-							<h4 class="comparison-heading">Convergencia de Pesos</h4>
+							<h4 class="comparison-heading">{$LL.rebalance_panel.convergence_heading()}</h4>
 							{#each result.allocations as alloc}
 								{@const currentW = currentWeightMap.get(alloc.asset.ticker) ?? 0}
 								{@const targetW = alloc.asset.targetWeight}
@@ -156,14 +157,14 @@
 								</div>
 							{/each}
 							<div class="comparison-legend">
-								<span class="legend-item"><span class="legend-dot before"></span>Actual</span>
-								<span class="legend-item"><span class="legend-dot after"></span>Tras aportación</span>
-								<span class="legend-item"><span class="legend-line"></span>Objetivo</span>
+								<span class="legend-item"><span class="legend-dot before"></span>{$LL.rebalance_panel.legend_actual()}</span>
+								<span class="legend-item"><span class="legend-dot after"></span>{$LL.rebalance_panel.legend_after()}</span>
+								<span class="legend-item"><span class="legend-line"></span>{$LL.rebalance_panel.legend_target()}</span>
 							</div>
 						</div>
 
 						<div class="total-summary">
-							<span class="total-label">Nuevo Capital Total</span>
+							<span class="total-label">{$LL.rebalance_panel.new_capital()}</span>
 							<span class="total-value privacy-blur">{formatEUR(result.newTotalCapital)}</span>
 						</div>
 					</div>
