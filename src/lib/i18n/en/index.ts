@@ -554,7 +554,7 @@ const en: Translation = {
     chart_performance_pct: 'Performance (%)',
     legal_disclaimer: '<strong>Legal Disclaimer:</strong> CoreBalance is a purely informative and educational tool. It does not constitute financial, investment, or tax advice. The data displayed may be subject to delays or inaccuracies. The developer is not responsible for any financial losses resulting from the use of this application. Always invest at your own risk.',
     footer_tagline: 'Your control center for smart and balanced asset management.',
-    changelog_trigger: 'v1.6.1 🚀',
+    changelog_trigger: 'v1.7.0 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Made with ❤️ for the investing community',
     reclassify_stocks: 'Individual Stocks',
@@ -577,6 +577,10 @@ const en: Translation = {
     perf_filter_tooltip: 'Click to switch between YTD, MTD, and 1M',
     performance_label: 'Performance',
     ledger_active_tooltip: 'Ledger mode active (click to view history)',
+    pwa_install_title: 'Install CoreBalance',
+    pwa_install_desc: 'Access faster as a native app.',
+    pwa_install_btn: 'Install',
+    pwa_install_later: 'Not now',
   },
   // Rebalance Panel
   rebalance_panel: {
@@ -713,6 +717,17 @@ const en: Translation = {
     close_aria: 'Close modal',
     btn_understand: 'Got it',
     releases: {
+      v1_7_0: {
+        date: 'June 3, 2026',
+        badge: 'Internationalization',
+        changes: [
+          '🌐 **Internationalization (i18n):** Implementation of native multi-language support (Spanish/English) across the entire platform using `typesafe-i18n`.',
+          '🌍 **Language Switcher:** New component in the header to instantly toggle between languages with persistent preference.',
+          '📄 **Translated Legal Routes:** Full localization of Terms of Service, Privacy Policy, and Cookies Policy.',
+          '🏠 **Global Landing Page:** The welcome page now automatically detects browser language and provides translated content.',
+          '🛠️ **Type-Safe Infrastructure:** Migration to a translation system with type safety to prevent missing keys or parameter errors.'
+        ]
+      },
       v1_6_1: {
         date: 'June 2, 2026',
         badge: 'Refining & UX',

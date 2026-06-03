@@ -2051,7 +2051,7 @@ type RootTranslation = {
 		 */
 		footer_tagline: string
 		/**
-		 * v​1​.​6​.​1​ ​�​�
+		 * v​1​.​7​.​0​ ​�​�
 		 */
 		changelog_trigger: string
 		/**
@@ -2143,6 +2143,22 @@ type RootTranslation = {
 		 * M​o​d​o​ ​L​e​d​g​e​r​ ​a​c​t​i​v​o​ ​(​h​a​z​ ​c​l​i​c​ ​p​a​r​a​ ​v​e​r​ ​h​i​s​t​o​r​i​a​l​)
 		 */
 		ledger_active_tooltip: string
+		/**
+		 * I​n​s​t​a​l​a​r​ ​C​o​r​e​B​a​l​a​n​c​e
+		 */
+		pwa_install_title: string
+		/**
+		 * A​c​c​e​d​e​ ​m​á​s​ ​r​á​p​i​d​o​ ​c​o​m​o​ ​a​p​p​ ​n​a​t​i​v​a​.
+		 */
+		pwa_install_desc: string
+		/**
+		 * I​n​s​t​a​l​a​r
+		 */
+		pwa_install_btn: string
+		/**
+		 * A​h​o​r​a​ ​n​o
+		 */
+		pwa_install_later: string
 	}
 	rebalance_panel: {
 		/**
@@ -2525,6 +2541,38 @@ type RootTranslation = {
 		 */
 		btn_understand: string
 		releases: {
+			v1_7_0: {
+				/**
+				 * 3​ ​d​e​ ​J​u​n​i​o​,​ ​2​0​2​6
+				 */
+				date: string
+				/**
+				 * I​n​t​e​r​n​a​c​i​o​n​a​l​i​z​a​c​i​ó​n
+				 */
+				badge: string
+				changes: {
+					/**
+					 * �​�​ ​*​*​I​n​t​e​r​n​a​c​i​o​n​a​l​i​z​a​c​i​ó​n​ ​(​i​1​8​n​)​:​*​*​ ​I​m​p​l​e​m​e​n​t​a​c​i​ó​n​ ​d​e​ ​s​o​p​o​r​t​e​ ​m​u​l​t​i​-​i​d​i​o​m​a​ ​n​a​t​i​v​o​ ​(​E​s​p​a​ñ​o​l​/​I​n​g​l​é​s​)​ ​e​n​ ​t​o​d​a​ ​l​a​ ​p​l​a​t​a​f​o​r​m​a​ ​u​t​i​l​i​z​a​n​d​o​ ​`​t​y​p​e​s​a​f​e​-​i​1​8​n​`​.
+					 */
+					'0': string
+					/**
+					 * �​�​ ​*​*​S​e​l​e​c​t​o​r​ ​d​e​ ​I​d​i​o​m​a​:​*​*​ ​N​u​e​v​o​ ​c​o​m​p​o​n​e​n​t​e​ ​e​n​ ​l​a​ ​c​a​b​e​c​e​r​a​ ​p​a​r​a​ ​a​l​t​e​r​n​a​r​ ​i​n​s​t​a​n​t​á​n​e​a​m​e​n​t​e​ ​e​n​t​r​e​ ​i​d​i​o​m​a​s​ ​c​o​n​ ​p​e​r​s​i​s​t​e​n​c​i​a​ ​d​e​ ​p​r​e​f​e​r​e​n​c​i​a​.
+					 */
+					'1': string
+					/**
+					 * �​�​ ​*​*​R​u​t​a​s​ ​L​e​g​a​l​e​s​ ​T​r​a​d​u​c​i​d​a​s​:​*​*​ ​L​o​c​a​l​i​z​a​c​i​ó​n​ ​c​o​m​p​l​e​t​a​ ​d​e​ ​l​o​s​ ​t​é​r​m​i​n​o​s​ ​d​e​ ​s​e​r​v​i​c​i​o​,​ ​p​o​l​í​t​i​c​a​ ​d​e​ ​p​r​i​v​a​c​i​d​a​d​ ​y​ ​c​o​o​k​i​e​s​.
+					 */
+					'2': string
+					/**
+					 * �​�​ ​*​*​L​a​n​d​i​n​g​ ​P​a​g​e​ ​G​l​o​b​a​l​:​*​*​ ​L​a​ ​p​á​g​i​n​a​ ​d​e​ ​b​i​e​n​v​e​n​i​d​a​ ​a​h​o​r​a​ ​d​e​t​e​c​t​a​ ​a​u​t​o​m​á​t​i​c​a​m​e​n​t​e​ ​e​l​ ​i​d​i​o​m​a​ ​d​e​l​ ​n​a​v​e​g​a​d​o​r​ ​y​ ​o​f​r​e​c​e​ ​c​o​n​t​e​n​i​d​o​ ​t​r​a​d​u​c​i​d​o​.
+					 */
+					'3': string
+					/**
+					 * �​�​️​ ​*​*​I​n​f​r​a​e​s​t​r​u​c​t​u​r​a​ ​T​i​p​a​d​a​:​*​*​ ​M​i​g​r​a​c​i​ó​n​ ​a​ ​u​n​ ​s​i​s​t​e​m​a​ ​d​e​ ​t​r​a​d​u​c​c​i​ó​n​ ​c​o​n​ ​s​e​g​u​r​i​d​a​d​ ​d​e​ ​t​i​p​o​s​ ​p​a​r​a​ ​e​v​i​t​a​r​ ​e​r​r​o​r​e​s​ ​d​e​ ​c​l​a​v​e​s​ ​i​n​e​x​i​s​t​e​n​t​e​s​ ​o​ ​p​a​r​á​m​e​t​r​o​s​ ​f​a​l​t​a​n​t​e​s​.
+					 */
+					'4': string
+				}
+			}
 			v1_6_1: {
 				/**
 				 * 2​ ​d​e​ ​J​u​n​i​o​,​ ​2​0​2​6
@@ -4850,7 +4898,7 @@ export type TranslationFunctions = {
 		 */
 		footer_tagline: () => LocalizedString
 		/**
-		 * v1.6.1 🚀
+		 * v1.7.0 🚀
 		 */
 		changelog_trigger: () => LocalizedString
 		/**
@@ -4941,6 +4989,22 @@ export type TranslationFunctions = {
 		 * Modo Ledger activo (haz clic para ver historial)
 		 */
 		ledger_active_tooltip: () => LocalizedString
+		/**
+		 * Instalar CoreBalance
+		 */
+		pwa_install_title: () => LocalizedString
+		/**
+		 * Accede más rápido como app nativa.
+		 */
+		pwa_install_desc: () => LocalizedString
+		/**
+		 * Instalar
+		 */
+		pwa_install_btn: () => LocalizedString
+		/**
+		 * Ahora no
+		 */
+		pwa_install_later: () => LocalizedString
 	}
 	rebalance_panel: {
 		/**
@@ -5316,6 +5380,38 @@ export type TranslationFunctions = {
 		 */
 		btn_understand: () => LocalizedString
 		releases: {
+			v1_7_0: {
+				/**
+				 * 3 de Junio, 2026
+				 */
+				date: () => LocalizedString
+				/**
+				 * Internacionalización
+				 */
+				badge: () => LocalizedString
+				changes: {
+					/**
+					 * 🌐 **Internacionalización (i18n):** Implementación de soporte multi-idioma nativo (Español/Inglés) en toda la plataforma utilizando `typesafe-i18n`.
+					 */
+					'0': () => LocalizedString
+					/**
+					 * 🌍 **Selector de Idioma:** Nuevo componente en la cabecera para alternar instantáneamente entre idiomas con persistencia de preferencia.
+					 */
+					'1': () => LocalizedString
+					/**
+					 * 📄 **Rutas Legales Traducidas:** Localización completa de los términos de servicio, política de privacidad y cookies.
+					 */
+					'2': () => LocalizedString
+					/**
+					 * 🏠 **Landing Page Global:** La página de bienvenida ahora detecta automáticamente el idioma del navegador y ofrece contenido traducido.
+					 */
+					'3': () => LocalizedString
+					/**
+					 * 🛠️ **Infraestructura Tipada:** Migración a un sistema de traducción con seguridad de tipos para evitar errores de claves inexistentes o parámetros faltantes.
+					 */
+					'4': () => LocalizedString
+				}
+			}
 			v1_6_1: {
 				/**
 				 * 2 de Junio, 2026

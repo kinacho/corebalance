@@ -556,7 +556,7 @@ const es = {
     chart_performance_pct: 'Rendimiento (%)',
     legal_disclaimer: '<strong>Aviso Legal:</strong> CoreBalance es una herramienta puramente informativa y educativa. No constituye asesoramiento financiero, de inversión ni fiscal. Los datos mostrados pueden sufrir retrasos o ser inexactos. El desarrollador no se hace responsable de posibles pérdidas financieras derivadas del uso de esta aplicación. Invierte siempre bajo tu propia responsabilidad.',
     footer_tagline: 'Tu centro de mandos para una gestión de activos inteligente y equilibrada.',
-    changelog_trigger: 'v1.6.1 🚀',
+    changelog_trigger: 'v1.7.0 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Hecho con ❤️ para la comunidad inversora',
     reclassify_stocks: 'Acciones Individuales',
@@ -579,6 +579,10 @@ const es = {
     perf_filter_tooltip: 'Haz clic para cambiar entre YTD, MTD y 1M',
     performance_label: 'Rendimiento',
     ledger_active_tooltip: 'Modo Ledger activo (haz clic para ver historial)',
+    pwa_install_title: 'Instalar CoreBalance',
+    pwa_install_desc: 'Accede más rápido como app nativa.',
+    pwa_install_btn: 'Instalar',
+    pwa_install_later: 'Ahora no',
   },
   // Rebalance Panel
   rebalance_panel: {
@@ -715,6 +719,17 @@ const es = {
     close_aria: 'Cerrar modal',
     btn_understand: 'Entendido',
     releases: {
+      v1_7_0: {
+        date: '3 de Junio, 2026',
+        badge: 'Internacionalización',
+        changes: [
+          '🌐 **Internacionalización (i18n):** Implementación de soporte multi-idioma nativo (Español/Inglés) en toda la plataforma utilizando `typesafe-i18n`.',
+          '🌍 **Selector de Idioma:** Nuevo componente en la cabecera para alternar instantáneamente entre idiomas con persistencia de preferencia.',
+          '📄 **Rutas Legales Traducidas:** Localización completa de los términos de servicio, política de privacidad y cookies.',
+          '🏠 **Landing Page Global:** La página de bienvenida ahora detecta automáticamente el idioma del navegador y ofrece contenido traducido.',
+          '🛠️ **Infraestructura Tipada:** Migración a un sistema de traducción con seguridad de tipos para evitar errores de claves inexistentes o parámetros faltantes.'
+        ]
+      },
       v1_6_1: {
         date: '2 de Junio, 2026',
         badge: 'Refinamiento y UX',

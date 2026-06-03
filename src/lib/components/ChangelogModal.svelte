@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { ui } from '$lib/stores/ui.svelte';
 	import { onMount, onDestroy } from 'svelte';
+	import { LL } from '$lib/i18n/i18n-svelte';
 
 	let { onClose }: { onClose: () => void } = $props();
 
@@ -11,113 +12,50 @@
 	onDestroy(() => {
 		document.body.classList.remove('modal-open');
 	});
-const releases = [
-	{
-		version: 'v1.6.1',
-		date: '2 de Junio, 2026',
-		badge: 'Refinamiento y UX',
-		badgeColor: '#10b981',
-		changes: [
-			'🏦 **Lógica de Cuentas Remuneradas:** Los activos con interés manual ahora integran sus ganancias diarias en el capital total y cambio global, eliminando distorsiones en el beneficio histórico.',
-			'📅 **Nuevo Date Picker Personalizado:** Reemplazo del selector nativo por uno de tres niveles (Día/Mes/Año) optimizado para móviles y navegación persistente.',
-			'✨ **Refinamiento de UI:** Mejorada la visibilidad del selector de moneda en modo oscuro y ocultación inteligente del TER en activos donde no aplica.',
-			'🔒 **Privacidad Legal:** Actualización de las páginas de Términos y Privacidad para usar el canal oficial de soporte en lugar de emails en texto plano.',
-			'🛠️ **Correcciones Técnicas:** Resuelto el warning de PWA en build, eliminados errores de TypeScript en el motor de rebalanceo y corregidos avisos de accesibilidad (A11y).'
-		]
-	},
-	{
-		version: 'v1.6.0',
-		date: '24 de Mayo, 2026',
-		badge: 'Nueva Landing Page',
-		badgeColor: '#8b5cf6',
-		changes: [
-			'🌐 **Nueva Landing Page:** Presentación profesional de CoreBalance con secciones de características, funcionamiento y comparativa.',
-			'📱 **Diseño Responsive Premium:** Experiencia optimizada para móviles con navegación fluida y efectos visuales de alta fidelidad.',
-			'🎨 **Identidad Visual:** Implementación de un sistema de diseño coherente basado en azul corporativo y glassmorphism.',
-			'🏠 **Puerta de Enlace (Gatekeeper):** Sistema inteligente que muestra la landing a nuevos usuarios y el dashboard a los recurrentes.',
-			'📧 **Nuevos Canales:** Añadido enlace directo de contacto y reporte de errores vía email en el pie de página.',
-			'📚 **Sección Educativa y FAQ:** Nueva sección sobre los fundamentos del rebalanceo con marcado Schema (JSON-LD) para mejorar el SEO y resolver dudas comunes.',
-			'✨ **Modo Demo Interactivo:** Botón "Probar Demo" para explorar la potencia del dashboard con una cartera pre-configurada (80/10/10 + acciones) sin necesidad de registro.'
-		]
-	},
-	{
-		version: 'v1.5.0',
-		date: '22 de Mayo, 2026',
-		badge: 'Cuentas Remuneradas y CSV',
-		badgeColor: '#eab308',
-		changes: [
-			'🏦 **Cuentas Remuneradas:** Ahora puedes añadir activos "Cash" (efectivo) en la Cartera Conservadora con interés TIN configurable para simular cuentas de ahorro.',
-			'📄 **Rediseño de Importación CSV:** Nuevo sistema de importación universal con mapeo manual obligatorio, eliminando la detección automática para garantizar fiabilidad total.',
-			'🛠️ **Resolución Manual de Tickers:** En caso de que Yahoo Finance no encuentre un activo, puedes editar manualmente el ticker en la previsualización.',
-			'⚡ **Resiliencia API:** Actualización de `yahoo-finance2` a v3.14.1 y supresión de logs de validación para evitar errores por cambios en el esquema de Yahoo.',
-			'✍️ **Personalización de Activos:** Ahora es posible editar el nombre de cualquier activo para identificar mejor tus cuentas o brókers.',
-			'📉 **Heurística de Decimales:** Mejora en el parseo de números del CSV detectando automáticamente separadores (punto vs coma) de forma inteligente.'
-		]
-	},
-	{
-		version: 'v1.4.0',
-		date: '21 de Mayo, 2026',
-		badge: 'Interactividad y Análisis',
-		badgeColor: '#a855f7',
-		changes: [
-			'📜 **Sistema de Ledger (Libro de Operaciones):** Nuevo motor profesional para registrar compras, ventas, dividendos y traspasos con cálculo automático de precio medio y participaciones.',
-			'🔢 **Precisión Decimal y Redondeo Robusto:** Soporte completo para pesos objetivos con decimales (ej. 7.5%) en sliders y entradas numéricas con compensación proporcional y redondeo robusto.',
-			'📈 **Visualizador Comparativo de Pesos:** Nuevo panel "Convergencia de Pesos" con barras comparativas antes/después y desviaciones dinámicas en el módulo de rebalanceo.',
-			'📊 **Proyecciones con Base Personalizada:** Selector dinámico de simulación con pildoras interactivas para alternar entre "Cartera Real" y "Capital Personalizado".',
-			'📉 **Crisis Simulator Educativo e Histórico:** Reemplazo de presets genéricos por 3 grandes crisis históricas reales (DotCom, Lehman, COVID) con tarjetas educativas de impacto DCA.',
-			'🔒 **Candados y Avisos de Bloqueo:** Corrección de warnings ante bloqueos absolutos de compensación utilizando toasts nativos de tipo error.',
-			'🎓 **Tutorial Renovado y Persistente:** Mejoras en los pasos del tour de bienvenida y nuevo botón en el pie de página para repetirlo en cualquier momento.',
-			'🚫 **Bloqueo de Scroll en Modales:** Implementado sistema de scroll-lock para que al abrir un modal el fondo de la web quede estático.',
-			'📊 **Gráfica de Historia Simplificada:** Por defecto ahora solo se muestra la línea de "Total", manteniendo la personalización del usuario entre sesiones.',
-			'🐛 **Corrección de Sliders Dinámicos y A11y:** Resuelto el bug del simulador de crisis donde el capital inicial aumentaba al infinito al deslizar, y eliminadas advertencias del compilador.'
-		]
-	},
-		{
-			version: 'v1.3.0',
-			date: '21 de Mayo, 2026',
-			badge: 'Autonomía y Privacidad',
-			badgeColor: '#10b981',
-			changes: [
-				'💾 **Exportación local segura en formato JSON:** Descarga de la configuración completa de tu cartera en un archivo `.json` de forma offline y sin necesidad de registrarse.',
-				'🕶️ **Privacidad Visual Total (Modo Pantalla Segura):** Ocultación instantánea bajo asteriscos (`****`) de los ejes del gráfico histórico y valores detallados de tooltips.',
-				'⚙️ **Configuración Unificada:** Reestructuración de ajustes de cartera y app con selector de divisa base (EUR/USD/GBP) en caliente y menú superior de alta fidelidad.'
-			]
-		},
-		{
-			version: 'v1.2.0',
-			date: '19 de Mayo, 2026',
-			badge: 'Motor de Sliders',
-			badgeColor: '#3b82f6',
-			changes: [
-				'🧠 **Sliders Autocompensados 100%:** Algoritmo dinámico que autoajusta el resto de pesos proporcionalmente en tiempo real para clavar el 100% de la cartera principal.',
-				'🔒 **Candados de Peso Objetivo (`Lock`):** Posibilidad de fijar el peso objetivo de activos específicos para que se mantengan inalterados mientras reajustas libremente el resto de la cartera.',
-				'♻️ **Compensación de Activos Trasladados/Borrados:** Al eliminar o mover un activo a otra cartera, el peso restante se auto-reparte inteligentemente entre los activos libres del Core.'
-			]
-		},
-		{
-			version: 'v1.1.0',
-			date: '14 de Mayo, 2026',
-			badge: 'Estabilidad',
-			badgeColor: '#3b82f6',
-			changes: [
-				'☁️ **Sincronización en la Nube:** Copias de seguridad automáticas y sincronización segura multi-dispositivo (silenciosa y ágil para nuevos usuarios).',
-				'🔍 **Buscador de Activos con Yahoo Finance:** Resolución y búsqueda instantánea de ISINs, tickers y nombres de activos reales en caliente.',
-				'📉 **Simulador de Crisis Históricos:** Integración visual interactiva para ver cómo afectaron drawdowns célebres (DotCom, 2008 Lehman, COVID) a tu cartera actual.',
-				'🚀 **Onboarding Tour Guiado:** Tutorial interactivo paso a paso para guiar a los nuevos usuarios en la configuración inicial y rebalanceo.'
-			]
-		},
-		{
-			version: 'v1.0.0',
-			date: '12 de Mayo, 2026',
-			badge: 'Lanzamiento Inicial',
-			badgeColor: '#8b5cf6',
-			changes: [
-				'📦 **Arquitectura Local-First:** Almacenamiento rápido en almacenamiento local (LocalDB) del navegador respetando al 100% la privacidad por defecto.',
-				'⚖️ **Motor de Rebalanceo:** Cálculo exacto de aportaciones óptimas y compras necesarias para restaurar la cartera a tus pesos ideales.',
-				'📊 **Gráficos en Tiempo Real:** Visualización interactiva mediante Chart.js de la evolución histórica y el reparto actual de activos.'
-			]
-		}
-	];
+
+	// Mapeo dinámico desde el diccionario de traducciones
+	const releaseVersions = [
+		'v1_7_0',
+		'v1_6_1',
+		'v1_6_0',
+		'v1_5_0',
+		'v1_4_0',
+		'v1_3_0',
+		'v1_2_0',
+		'v1_1_0',
+		'v1_0_0'
+	] as const;
+
+	const badgeColors: Record<string, string> = {
+		v1_7_0: '#3b82f6',
+		v1_6_1: '#10b981',
+		v1_6_0: '#8b5cf6',
+		v1_5_0: '#eab308',
+		v1_4_0: '#a855f7',
+		v1_3_0: '#10b981',
+		v1_2_0: '#3b82f6',
+		v1_1_0: '#3b82f6',
+		v1_0_0: '#8b5cf6'
+	};
+
+	const releases = $derived(
+		releaseVersions.map((v) => {
+			const releaseData = $LL.changelog_modal.releases[v];
+			// 'changes' es un objeto directo, no una función (según i18n-types)
+			const changesObj = releaseData.changes;
+			const changes = Object.keys(changesObj)
+				.sort((a, b) => Number(a) - Number(b))
+				.map((key) => (changesObj as any)[key]());
+
+			return {
+				version: v.replace('_', '.'),
+				date: releaseData.date(),
+				badge: releaseData.badge(),
+				badgeColor: badgeColors[v],
+				changes
+			};
+		})
+	);
 
 	function handleKeydown(e: KeyboardEvent) {
 		if (e.key === 'Escape') onClose();
