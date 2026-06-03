@@ -3,8 +3,6 @@
 	import SplashScreen from '$lib/components/SplashScreen.svelte';
 	import Toast from '$lib/components/Toast.svelte';
 	import InstallPrompt from '$lib/components/InstallPrompt.svelte';
-	import SupportModal from '$lib/components/SupportModal.svelte';
-	import ChangelogModal from '$lib/components/ChangelogModal.svelte';
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { ui } from '$lib/stores/ui.svelte';
 	import { onMount } from 'svelte';
@@ -14,6 +12,22 @@
 	import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
 
 	let { children } = $props();
+	let SupportModal = $state<any>(null);
+	let ChangelogModal = $state<any>(null);
+
+	// Carga diferida de modales
+	$effect(() => {
+		if (ui.showSupportModal && !SupportModal) {
+			import('$lib/components/SupportModal.svelte').then(m => SupportModal = m.default);
+		}
+	});
+
+	$effect(() => {
+		if (ui.showChangelog && !ChangelogModal) {
+			import('$lib/components/ChangelogModal.svelte').then(m => ChangelogModal = m.default);
+		}
+	});
+
 	let canonicalUrl = $derived(`https://corebalance.app${$page.url.pathname}`);
 
 	// Determinar de manera síncrona si hay datos locales o flag de bypass para evitar flashes en la redirección.
@@ -86,8 +100,11 @@
 
 <Toast />
 <InstallPrompt />
-<SupportModal />
 
-{#if ui.showChangelog}
+{#if ui.showSupportModal && SupportModal}
+	<SupportModal />
+{/if}
+
+{#if ui.showChangelog && ChangelogModal}
 	<ChangelogModal onClose={() => ui.showChangelog = false} />
 {/if}

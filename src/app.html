@@ -10,10 +10,7 @@
 		<meta name="apple-mobile-web-app-title" content="CoreBalance" />
 		<meta name="description" content="Dashboard de inversión personalizable con rebalanceo automático" />
 		<link rel="preload" href="/fonts/plus-jakarta-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
-		<link rel="preload" href="/fonts/plus-jakarta-sans-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
-		<link rel="preload" href="/fonts/plus-jakarta-sans-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
 		<link rel="preload" href="/fonts/plus-jakarta-sans-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
-		<link rel="preload" href="/fonts/plus-jakarta-sans-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
 		<link rel="stylesheet" href="/fonts/fonts.css" />
 		<link rel="apple-touch-icon" href="/pwa-192x192.png" />
 		<link rel="manifest" href="/manifest.webmanifest" />
@@ -73,28 +70,26 @@
 					<p style="font-size: 0.85rem; font-weight: 500; color: rgba(255, 255, 255, 0.4); margin: 0.5rem 0 0 0; text-transform: uppercase; letter-spacing: 0.15em;">Portfolio Dashboard</p>
 				</div>
 				<div style="width: 100%; height: 4px; background: rgba(255, 255, 255, 0.05); border-radius: 10px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.03);">
-					<div id="initial-bar" style="height: 100%; width: 0%; background: linear-gradient(90deg, #3b82f6, #60a5fa, #10b981); border-radius: 10px; transition: width 0.3s ease; box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);"></div>
+					<style>
+						@keyframes splashProgress {
+							0% { width: 0%; }
+							100% { width: 95%; }
+						}
+					</style>
+					<div id="initial-bar" style="height: 100%; width: 0%; background: linear-gradient(90deg, #3b82f6, #60a5fa, #10b981); border-radius: 10px; animation: splashProgress 4s cubic-bezier(0.1, 0, 0.2, 1) forwards; box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);"></div>
 				</div>
 			</div>
 		</div>
 
 		<script>
-			// Pequeña animación de barra mientras carga el JS
+			// Limpieza de splash cuando el JS esté listo
 			(function() {
-				const bar = document.getElementById('initial-bar');
-				let progress = 0;
-				const interval = setInterval(() => {
-					progress += Math.random() * 10;
-					if (progress > 90) clearInterval(interval);
-					if (bar) bar.style.width = progress + '%';
-				}, 150);
 				window.__hideInitialSplash = function() {
 					const splash = document.getElementById('initial-splash');
 					if (splash) {
 						splash.style.opacity = '0';
 						setTimeout(() => splash.remove(), 500);
 					}
-					clearInterval(interval);
 				};
 			})();
 		</script>

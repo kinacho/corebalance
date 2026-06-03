@@ -6,14 +6,10 @@
   import DonutChart from "$lib/components/DonutChart.svelte";
   import HistoryChart from "$lib/components/HistoryChart.svelte";
   import RebalancePanel from "$lib/components/RebalancePanel.svelte";
-  import ManageAssets from "$lib/components/ManageAssets.svelte";
   import Projections from "$lib/components/Projections.svelte";
   import CrisisSimulator from "$lib/components/CrisisSimulator.svelte";
   import PaypalDonation from "$lib/components/PaypalDonation.svelte";
 
-  import OnboardingTour from "$lib/components/OnboardingTour.svelte";
-  import ChangelogModal from "$lib/components/ChangelogModal.svelte";
-  import DemoRibbon from "$lib/components/DemoRibbon.svelte";
   import { portfolio } from "$lib/stores/portfolio.svelte";
   import { ui } from "$lib/stores/ui.svelte";
 
@@ -22,6 +18,11 @@
   import { goto, beforeNavigate } from "$app/navigation";
   import { navigating } from "$app/stores";
   import { LL } from '$lib/i18n/i18n-svelte';
+
+  // --- Lazy Components ---
+  let ManageAssets = $state<any>(null);
+  let OnboardingTour = $state<any>(null);
+  let DemoRibbon = $state<any>(null);
 
   // --- Auto-Exit Demo on Navigation ---
   beforeNavigate(({ to }) => {
@@ -73,7 +74,13 @@
   let scrollAnchor = $state<HTMLElement | null>(null);
   let tourComponent = $state<any>(null);
 
-  function restartTour() {
+  async function restartTour() {
+    if (!OnboardingTour) {
+      const m = await import("$lib/components/OnboardingTour.svelte");
+      OnboardingTour = m.default;
+      // Esperamos un pequeño delay para asegurar que el componente se monte y bindee 'tourComponent'
+      await new Promise(r => setTimeout(r, 50));
+    }
     if (tourComponent) {
       tourComponent.startTour();
     }
@@ -163,6 +170,11 @@
   onMount(() => {
     portfolio.fetchPrices();
 
+    // Cargar componentes pesados bajo demanda
+    import("$lib/components/ManageAssets.svelte").then(m => ManageAssets = m.default);
+    import("$lib/components/OnboardingTour.svelte").then(m => OnboardingTour = m.default);
+    import("$lib/components/DemoRibbon.svelte").then(m => DemoRibbon = m.default);
+
     // Listener para el Tour (cambio automático de pestañas en móvil)
     const handleTourStep = (e: Event) => {
       const customEvent = e as CustomEvent;
@@ -240,19 +252,23 @@
 
 {#if portfolio.isInitialized}
 
-  {#if showManageAssets}
+  {#if showManageAssets && ManageAssets}
     <ManageAssets onClose={() => (showManageAssets = false)} />
   {/if}
 
   <div class="app-container" class:privacy-mode={portfolio.isPrivate}>
-    <DemoRibbon />
+    {#if DemoRibbon}
+      <DemoRibbon />
+    {/if}
     <Header
       timestamp={portfolio.timestamp}
       onTogglePrivacy={() => portfolio.togglePrivacy()}
       onManageAssets={() => (showManageAssets = true)}
     />
 
-    <OnboardingTour bind:this={tourComponent} />
+    {#if OnboardingTour}
+      <OnboardingTour bind:this={tourComponent} />
+    {/if}
 
     <main class="main-content">
 

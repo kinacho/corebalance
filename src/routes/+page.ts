@@ -1,1 +1,1 @@
-export const load = () => ({});
+export const prerender = true;

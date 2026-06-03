@@ -81,26 +81,28 @@ async function fetchFTPrice(isin: string): Promise<{ price: number, change: numb
 }
 
 // --- Rate Limiting ---
-const rateLimitMap = new Map<string, number[]>();
 const RATE_LIMIT = 30;       // max requests
-const RATE_WINDOW = 60_000;  // por minuto
+const RATE_WINDOW = 60;      // segundos (1 minuto)
 const MAX_TICKERS = 50;
 const TICKER_REGEX = /^[A-Za-z0-9._=\-]{1,25}$/;
 
-function checkRateLimit(ip: string): boolean {
-	const now = Date.now();
-	const requests = rateLimitMap.get(ip) || [];
-	const recent = requests.filter(t => now - t < RATE_WINDOW);
-	if (recent.length >= RATE_LIMIT) return false;
-	recent.push(now);
-	rateLimitMap.set(ip, recent);
-	// Limpieza periódica para evitar memory leak
-	if (rateLimitMap.size > 1000) {
-		for (const [key, times] of rateLimitMap) {
-			if (times.every(t => now - t > RATE_WINDOW)) rateLimitMap.delete(key);
-		}
+async function checkRateLimit(ip: string): Promise<boolean> {
+	if (!redis) {
+		// Fallback local solo si Redis no está configurado (dev local)
+		return true;
 	}
-	return true;
+	
+	try {
+		const key = `rl:${ip}`;
+		const count = await redis.incr(key);
+		if (count === 1) {
+			await redis.expire(key, RATE_WINDOW);
+		}
+		return count <= RATE_LIMIT;
+	} catch (e) {
+		console.error("Error en Redis Rate Limit:", e);
+		return true; // Fallback permisivo ante fallos de Redis
+	}
 }
 
 export const GET: RequestHandler = async ({ url, getClientAddress }) => {
@@ -113,7 +115,7 @@ export const GET: RequestHandler = async ({ url, getClientAddress }) => {
 		clientIp = '127.0.0.1';
 	}
 	
-	if (!checkRateLimit(clientIp)) {
+	if (!(await checkRateLimit(clientIp))) {
 		return json({ error: 'Demasiadas peticiones. Inténtalo en un minuto.' }, { status: 429 });
 	}
 
@@ -183,6 +185,27 @@ for (const t of cashTickers) {
 	const startOfCurrentYear = new Date(Date.UTC(currentYear, 0, 1));
 	const dec20PrevYear = new Date(Date.UTC(currentYear - 1, 11, 20));
 
+	// Pre-verificar caché en paralelo para todos los tickers
+	const cacheCheckResults = await Promise.all(
+		realTickers.map(async (ticker) => {
+			const cached = await getCachedHistory(ticker) as any;
+			if (cached && (now - (cached.timestamp || 0) < CACHE_TTL_MS)) {
+				return { ticker, cached, isMiss: false };
+			}
+			return { ticker, isMiss: true };
+		})
+	);
+
+	const missTickers = cacheCheckResults.filter(r => r.isMiss).map(r => r.ticker);
+	const hitResults = cacheCheckResults.filter(r => !r.isMiss).map(r => ({
+		ticker: r.ticker,
+		quote: quoteMap.get(r.ticker),
+		sparkline: r.cached.sparkline,
+		ytd: r.cached.ytd,
+		mtd: r.cached.mtd,
+		oneMonth: r.cached.oneMonth
+	}));
+
 	// Crear función auxiliar para procesar en lotes y evitar Rate Limits en Vercel
 	const chunkArray = <T,>(arr: T[], size: number): T[][] => {
 		return Array.from({ length: Math.ceil(arr.length / size) }, (_, i) =>
@@ -190,8 +213,15 @@ for (const t of cashTickers) {
 		);
 	};
 
-	const chunks = chunkArray(realTickers, 3);
+	const chunks = chunkArray(missTickers, 3);
 	const results: PromiseSettledResult<{ ticker: string, quote: any, sparkline: number[], ytd: number | undefined, mtd: number | undefined, oneMonth: number | undefined }>[] = [];
+
+	// Añadir los hits de caché ya formateados como fulfilled
+	for (const hit of hitResults) {
+		if (hit.quote) {
+			results.push({ status: 'fulfilled', value: hit });
+		}
+	}
 
 	for (let i = 0; i < chunks.length; i++) {
 		const chunk = chunks[i];
@@ -205,90 +235,81 @@ for (const t of cashTickers) {
 				let mtd: number | undefined = undefined;
 				let oneMonth: number | undefined = undefined;
 
-				const cached = await getCachedHistory(ticker) as any;
-
-				if (cached && (now - (cached.timestamp || 0) < CACHE_TTL_MS)) {
-					sparkline = cached.sparkline;
-					if (cached.ytd !== undefined) ytd = cached.ytd;
-					mtd = cached.mtd;
-					oneMonth = cached.oneMonth;
-				} else {
-					try {
-						// Pedir desde el 20 de Dic del año anterior para asegurar que cogemos el último cierre
-						// Usamos period2: new Date() para forzar que la URL sea única y evitar que Vercel devuelva
-						// una respuesta cacheada antigua (ej. cuando antes pedíamos solo 7 días)
-						const queryOptions = { period1: dec20PrevYear, period2: new Date(), interval: '1d' as const };
-						const chart = await yahooFinance.chart(ticker, queryOptions);
+				try {
+					// Pedir desde el 20 de Dic del año anterior para asegurar que cogemos el último cierre
+					// Usamos period2: new Date() para forzar que la URL sea única y evitar que Vercel devuelva
+					// una respuesta cacheada antigua (ej. cuando antes pedíamos solo 7 días)
+					const queryOptions = { period1: dec20PrevYear, period2: new Date(), interval: '1d' as const };
+					const chart = await yahooFinance.chart(ticker, queryOptions);
+					
+					const validQuotes = chart.quotes.filter(q => q.close !== null);
+					sparkline = validQuotes.slice(-30).map(q => q.close) as number[];
+					
+					// Calcular métricas
+					if (validQuotes.length > 0) {
+						const currentPrice = quote.regularMarketPrice || (validQuotes[validQuotes.length - 1].close as number);
 						
-						const validQuotes = chart.quotes.filter(q => q.close !== null);
-						sparkline = validQuotes.slice(-30).map(q => q.close) as number[];
-						
-						// Calcular métricas
-						if (validQuotes.length > 0) {
-							const currentPrice = quote.regularMarketPrice || (validQuotes[validQuotes.length - 1].close as number);
-							
-							// 1. YTD
-							const prevYearQuotes = validQuotes.filter(q => new Date(q.date) < startOfCurrentYear);
-							if (prevYearQuotes.length > 0) {
-								const lastYearClose = prevYearQuotes[prevYearQuotes.length - 1].close as number;
-								if (lastYearClose > 0) ytd = ((currentPrice - lastYearClose) / lastYearClose) * 100;
-							} else {
-								const firstThisYear = validQuotes[0].close as number;
-								if (firstThisYear > 0) ytd = ((currentPrice - firstThisYear) / firstThisYear) * 100;
-							}
-
-							// 2. MTD (Month To Date)
-							const startOfCurrentMonth = new Date(Date.UTC(new Date().getFullYear(), new Date().getMonth(), 1));
-							const prevMonthQuotes = validQuotes.filter(q => new Date(q.date) < startOfCurrentMonth);
-							if (prevMonthQuotes.length > 0) {
-								const lastMonthClose = prevMonthQuotes[prevMonthQuotes.length - 1].close as number;
-								if (lastMonthClose > 0) mtd = ((currentPrice - lastMonthClose) / lastMonthClose) * 100;
-							}
-
-							// 3. 1M (Últimos 30 días naturales)
-							const oneMonthAgo = new Date();
-							oneMonthAgo.setDate(oneMonthAgo.getDate() - 30);
-							const oneMonthQuotes = validQuotes.filter(q => new Date(q.date) < oneMonthAgo);
-							if (oneMonthQuotes.length > 0) {
-								const oneMonthClose = oneMonthQuotes[oneMonthQuotes.length - 1].close as number;
-								if (oneMonthClose > 0) oneMonth = ((currentPrice - oneMonthClose) / oneMonthClose) * 100;
-							} else if (validQuotes.length > 0) {
-								// Fallback si no hay 30 días: usar el primer dato disponible
-								const firstClose = validQuotes[0].close as number;
-								if (firstClose > 0) oneMonth = ((currentPrice - firstClose) / firstClose) * 100;
-							}
+						// 1. YTD
+						const prevYearQuotes = validQuotes.filter(q => new Date(q.date) < startOfCurrentYear);
+						if (prevYearQuotes.length > 0) {
+							const lastYearClose = prevYearQuotes[prevYearQuotes.length - 1].close as number;
+							if (lastYearClose > 0) ytd = ((currentPrice - lastYearClose) / lastYearClose) * 100;
+						} else {
+							const firstThisYear = validQuotes[0].close as number;
+							if (firstThisYear > 0) ytd = ((currentPrice - firstThisYear) / firstThisYear) * 100;
 						}
 
-						// Fallback especial para Cripto ETPs que suelen no tener histórico en Yahoo
-						const isCryptoETP = ticker.includes('BTC') || ticker.includes('ETH') || ticker.includes('XS2940466316');
-						if (ytd === undefined && isCryptoETP) {
-							try {
-								const baseSymbol = (ticker.includes('ETH')) ? 'ETH-EUR' : 'BTC-EUR';
-								const cryptoChart = await yahooFinance.chart(baseSymbol, { period1: dec20PrevYear, period2: new Date(), interval: '1d' });
-								const cryptoQuotes = cryptoChart.quotes.filter(q => q.close !== null);
-								const cryptoPrevYearQuotes = cryptoQuotes.filter(q => new Date(q.date) < startOfCurrentYear);
-								
-								if (cryptoPrevYearQuotes.length > 0) {
-									const lastYearClose = cryptoPrevYearQuotes[cryptoPrevYearQuotes.length - 1].close as number;
-									const currentPrice = cryptoQuotes[cryptoQuotes.length - 1].close as number;
-									if (lastYearClose > 0) {
-										ytd = ((currentPrice - lastYearClose) / lastYearClose) * 100;
-									}
-								}
-							} catch (cryptoError) {
-								console.error(`Error fetching crypto fallback YTD for ${ticker}:`, cryptoError);
-							}
+						// 2. MTD (Month To Date)
+						const startOfCurrentMonth = new Date(Date.UTC(new Date().getFullYear(), new Date().getMonth(), 1));
+						const prevMonthQuotes = validQuotes.filter(q => new Date(q.date) < startOfCurrentMonth);
+						if (prevMonthQuotes.length > 0) {
+							const lastMonthClose = prevMonthQuotes[prevMonthQuotes.length - 1].close as number;
+							if (lastMonthClose > 0) mtd = ((currentPrice - lastMonthClose) / lastMonthClose) * 100;
 						}
-						
-						await setCachedHistory(ticker, { timestamp: now, sparkline, ytd, mtd, oneMonth });
-					} catch (e) {
-						console.error(`Error fetching history for ${ticker}:`, e);
-						const fallback = await getCachedHistory(ticker) as any;
-						sparkline = fallback?.sparkline || [];
-						ytd = fallback?.ytd ?? ytd;
-						mtd = fallback?.mtd;
-						oneMonth = fallback?.oneMonth;
+
+						// 3. 1M (Últimos 30 días naturales)
+						const oneMonthAgo = new Date();
+						oneMonthAgo.setDate(oneMonthAgo.getDate() - 30);
+						const oneMonthQuotes = validQuotes.filter(q => new Date(q.date) < oneMonthAgo);
+						if (oneMonthQuotes.length > 0) {
+							const oneMonthClose = oneMonthQuotes[oneMonthQuotes.length - 1].close as number;
+							if (oneMonthClose > 0) oneMonth = ((currentPrice - oneMonthClose) / oneMonthClose) * 100;
+						} else if (validQuotes.length > 0) {
+							// Fallback si no hay 30 días: usar el primer dato disponible
+							const firstClose = validQuotes[0].close as number;
+							if (firstClose > 0) oneMonth = ((currentPrice - firstClose) / firstClose) * 100;
+						}
 					}
+
+					// Fallback especial para Cripto ETPs que suelen no tener histórico en Yahoo
+					const isCryptoETP = ticker.includes('BTC') || ticker.includes('ETH') || ticker.includes('XS2940466316');
+					if (ytd === undefined && isCryptoETP) {
+						try {
+							const baseSymbol = (ticker.includes('ETH')) ? 'ETH-EUR' : 'BTC-EUR';
+							const cryptoChart = await yahooFinance.chart(baseSymbol, { period1: dec20PrevYear, period2: new Date(), interval: '1d' });
+							const cryptoQuotes = cryptoChart.quotes.filter(q => q.close !== null);
+							const cryptoPrevYearQuotes = cryptoQuotes.filter(q => new Date(q.date) < startOfCurrentYear);
+							
+							if (cryptoPrevYearQuotes.length > 0) {
+								const lastYearClose = cryptoPrevYearQuotes[cryptoPrevYearQuotes.length - 1].close as number;
+								const currentPrice = cryptoQuotes[cryptoQuotes.length - 1].close as number;
+								if (lastYearClose > 0) {
+									ytd = ((currentPrice - lastYearClose) / lastYearClose) * 100;
+								}
+							}
+						} catch (cryptoError) {
+							console.error(`Error fetching crypto fallback YTD for ${ticker}:`, cryptoError);
+						}
+					}
+					
+					await setCachedHistory(ticker, { timestamp: now, sparkline, ytd, mtd, oneMonth });
+				} catch (e) {
+					console.error(`Error fetching history for ${ticker}:`, e);
+					const fallback = await getCachedHistory(ticker) as any;
+					sparkline = fallback?.sparkline || [];
+					ytd = fallback?.ytd ?? ytd;
+					mtd = fallback?.mtd;
+					oneMonth = fallback?.oneMonth;
 				}
 
 				return { ticker, quote, sparkline, ytd, mtd, oneMonth };

@@ -158,7 +158,12 @@ export class PortfolioStore {
 	globalDailyChangeValue = $derived(this.portfolioState.dailyChangeValue + this.satelliteState.dailyChangeValue + this.stockState.dailyChangeValue);
 	globalDailyChangePercent = $derived(this.globalCapital > 0 ? this.globalDailyChangeValue / this.globalCapital : 0);
 
+	sparklineVersion = $state(0); // Incrementa solo cuando cambian los sparklines de la API
+
 	reconstructedHistory = $derived.by(() => {
+		// Dependencia explícita para forzar recalculo solo cuando cambian los sparklines
+		this.sparklineVersion; 
+		
 		const days = 30;
 		const historyPoints: any[] = [];
 		for (let i = 0; i < days; i++) {
@@ -244,14 +249,14 @@ export class PortfolioStore {
 			return;
 		}
 
+		// Paralelizar getRedirectResult con el listener de auth
 		if (!storageProvider.isLocal) {
-			try {
-				const { auth } = await import('$lib/firebase');
+			import('$lib/firebase').then(async ({ auth }) => {
 				if (auth) {
 					const { getRedirectResult } = await import('firebase/auth');
-					await getRedirectResult(auth);
+					getRedirectResult(auth).catch(e => console.error('Redirect result error:', e));
 				}
-			} catch (e) { console.error('Redirect result error:', e); }
+			}).catch(e => console.error('Firebase load error:', e));
 		}
 
 		this.authUnsubscribe = storageProvider.onAuthStateChanged(async (user) => {
@@ -267,38 +272,59 @@ export class PortfolioStore {
 			this.authReady = true;
 		}) as (() => void) | undefined;
 
-		// Reducimos el timeout de seguridad a 4s (era 8s)
+		// Reducimos el timeout de seguridad a 2s (era 4s)
 		setTimeout(() => {
 			if (!this.isInitialized) {
 				this.isInitialized = true;
 				this.loading = false;
 				this.authReady = true;
 			}
-		}, 4000);
+		}, 2000);
 	}
 
-	private pollingIntervalId: ReturnType<typeof setInterval> | undefined;
+	private pollingTimeoutId: ReturnType<typeof setTimeout> | undefined;
+	private consecutiveErrors = 0;
+	private basePollingInterval = 30000;
+	private maxPollingInterval = 300000; // 5 minutos
 	private visibilityHandler: (() => void) | undefined;
 	private authUnsubscribe: (() => void) | undefined;
 	private isFetching = false;
 
 	private initPolling() {
 		if (typeof window === 'undefined') return;
-		this.pollingIntervalId = setInterval(() => { 
-			if (document.visibilityState === 'visible' && !this.loading && this.hasAnyHoldings) {
-				this.fetchPrices(); 
-			}
-		}, 30000);
+		
+		const scheduleNext = (delay: number) => {
+			if (this.pollingTimeoutId) clearTimeout(this.pollingTimeoutId);
+			this.pollingTimeoutId = setTimeout(async () => {
+				if (document.visibilityState === 'visible' && !this.loading && this.hasAnyHoldings) {
+					await this.fetchPrices();
+				}
+				
+				// Calcular siguiente delay basándose en errores
+				let nextDelay = this.basePollingInterval;
+				if (this.consecutiveErrors > 0) {
+					nextDelay = Math.min(this.basePollingInterval * Math.pow(2, this.consecutiveErrors), this.maxPollingInterval);
+				}
+				scheduleNext(nextDelay);
+			}, delay);
+		};
+
+		// Iniciar ciclo
+		scheduleNext(this.basePollingInterval);
+
 		this.visibilityHandler = () => { 
-			if (document.visibilityState === 'visible' && !this.loading && this.hasAnyHoldings) {
-				this.fetchPrices(); 
+			if (document.visibilityState === 'visible') {
+				// Al volver a la pestaña, si llevamos mucho esperando o hubo errores, forzamos un fetch inmediato
+				if (!this.loading && this.hasAnyHoldings) {
+					this.fetchPrices(); 
+				}
 			}
 		};
 		document.addEventListener('visibilitychange', this.visibilityHandler);
 	}
 
 	private cleanupPolling() {
-		if (this.pollingIntervalId) clearInterval(this.pollingIntervalId);
+		if (this.pollingTimeoutId) clearTimeout(this.pollingTimeoutId);
 		if (this.visibilityHandler) document.removeEventListener('visibilitychange', this.visibilityHandler);
 		if (this.authUnsubscribe) this.authUnsubscribe();
 	}
@@ -493,9 +519,29 @@ export class PortfolioStore {
 			if (!tickerList) { this.isFetching = false; return; }
 			const response = await fetch(`/api/prices?tickers=${encodeURIComponent(tickerList)}&t=${Date.now()}`, { cache: 'no-store' });
 			if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
 			const data = await response.json();
+
+			// Detectar si los sparklines han cambiado para actualizar la versión del historial
+			let sparklinesChanged = false;
+			for (const ticker in data.prices) {
+				const newSpark = data.prices[ticker]?.sparkline;
+				const oldSpark = this.prices[ticker]?.sparkline;
+				if (newSpark && JSON.stringify(newSpark) !== JSON.stringify(oldSpark)) {
+					sparklinesChanged = true;
+					break;
+				}
+			}
+			if (sparklinesChanged) {
+				this.sparklineVersion++;
+			}
+
 			this.prices = data.prices || {};
 			this.timestamp = data.timestamp || new Date().toISOString();
+
+			// Resetear errores en éxito
+			this.consecutiveErrors = 0;
+
 			let assetsUpdated = false;
 			const updateAssetTers = (assets: Asset[]): Asset[] => {
 				return assets.map(asset => {
@@ -513,8 +559,14 @@ export class PortfolioStore {
 			if (assetsUpdated) this.saveToStorage();
 			if (typeof localStorage !== 'undefined') localStorage.setItem(STORAGE_KEY_PRICES, JSON.stringify(this.prices));
 			if (this.user) await this.updateHistoryPoints();
-		} catch (e) { console.error('Fetch prices error:', e); this.error = e instanceof Error ? e.message : 'Error de conexión'; } finally { this.isFetching = false; }
+		} catch (e) { 
+			console.error('Fetch prices error:', e); 
+			this.error = e instanceof Error ? e.message : 'Error de conexión'; 
+			// Incrementar errores para el backoff
+			this.consecutiveErrors++;
+		} finally { this.isFetching = false; }
 	}
+
 
 	updateHolding(ticker: string, data: Partial<HoldingData>) {
 		const current = this.holdings[ticker] ?? { shares: 0, avgCost: 0, useLedger: false };

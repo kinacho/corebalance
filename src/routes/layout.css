@@ -50,7 +50,17 @@
 	}
 
 	button, .asset-card, .tab-btn {
-		transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+		transition: 
+			background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+			border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+			box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+			opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+			transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+			filter 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	.asset-card {
+		contain: layout style;
 	}
 
 	button:active:not(:disabled), .asset-card:active {
@@ -75,12 +85,20 @@
 		animation: meshFlow 25s ease-in-out infinite alternate;
 		pointer-events: none;
 		transition: --bg-mesh-1 2s ease, --bg-mesh-2 2s ease, --bg-mesh-3 2s ease, --bg-mesh-4 2s ease, --bg-mesh-5 2s ease, --bg-mesh-6 2s ease;
+		will-change: transform;
 	}
 
 	@media (max-width: 768px) {
 		.background-mesh {
 			filter: blur(40px);
 			opacity: 0.8;
+			animation-duration: 40s; /* Más lenta en móvil */
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.background-mesh {
+			animation: none;
 		}
 	}
 
