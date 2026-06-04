@@ -5,8 +5,12 @@ import type { PricesResponse, PriceData } from '$lib/types';
 import { Redis } from '@upstash/redis';
 import { env } from '$env/dynamic/private';
 
-const redis = (env.KV_REST_API_URL && env.KV_REST_API_TOKEN)
-	? new Redis({ url: env.KV_REST_API_URL, token: env.KV_REST_API_TOKEN })
+// Soporte para variables con y sin prefijo (Vercel a veces añade prefijos según la integración)
+const redisUrl = env.KV_REST_API_URL || (env as any).corebalance_KV_REST_API_URL;
+const redisToken = env.KV_REST_API_TOKEN || (env as any).corebalance_KV_REST_API_TOKEN;
+
+const redis = (redisUrl && redisToken)
+	? new Redis({ url: redisUrl, token: redisToken })
 	: null;
 
 const yahooFinance = new YahooFinance({ 
