@@ -8,11 +8,10 @@
 		{ code: 'en', label: 'EN', flag: '🇬🇧' }
 	];
 
+	import { switchLocale } from '$lib/i18n/i18n-custom';
+
 	async function handleChange(newLocale: Locales) {
-		await loadLocaleAsync(newLocale);
-		setLocale(newLocale);
-		// Guardar preferencia en cookie (1 año)
-		document.cookie = `lang=${newLocale}; path=/; max-age=31536000; SameSite=Lax`;
+		await switchLocale(newLocale);
 	}
 </script>
 

@@ -5,8 +5,8 @@
 	import { onMount } from 'svelte';
 	import { formatDateTime } from '$lib/utils';
 	import SyncModal from './SyncModal.svelte';
-	import { setLocale, locale, LL } from '$lib/i18n/i18n-svelte';
-	import { loadLocaleAsync } from '$lib/i18n/i18n-util.async';
+	import { switchLocale } from '$lib/i18n/i18n-custom';
+	import { locale, LL } from '$lib/i18n/i18n-svelte';
 	import type { Locales } from '$lib/i18n/i18n-types';
 
 
@@ -289,12 +289,7 @@
 									id="language-select" 
 									class="currency-select"
 									value={$locale}
-									onchange={async (e) => {
-										const newLocale = (e.target as HTMLSelectElement).value as Locales;
-										await loadLocaleAsync(newLocale);
-										setLocale(newLocale);
-										document.cookie = `lang=${newLocale}; path=/; max-age=31536000; SameSite=Lax`;
-									}}
+									onchange={(e) => switchLocale((e.target as HTMLSelectElement).value as any)}
 								>
 									<option value="es">🇪🇸 ES</option>
 									<option value="en">🇬🇧 EN</option>

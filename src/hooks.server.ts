@@ -1,23 +1,23 @@
 import type { Handle, RequestEvent } from '@sveltejs/kit';
-import { locales } from '$lib/i18n/i18n-util';
+import { locales, detectLocale } from '$lib/i18n/i18n-util';
 import { loadLocaleAsync } from '$lib/i18n/i18n-util.async';
 import { setLocale } from '$lib/i18n/i18n-svelte';
 import {
 	initAcceptLanguageHeaderDetector,
-	initRequestCookiesDetector,
-	detectLocale as detectLocaleFn,
 } from 'typesafe-i18n/detectors';
 import type { Locales } from '$lib/i18n/i18n-types';
 
 const getLocale = (event: RequestEvent): Locales => {
-	// 1. Mirar cookie guardada por el usuario
-	const langCookie = event.cookies.get('lang');
-	if (langCookie && (langCookie === 'es' || langCookie === 'en')) {
-		return langCookie as Locales;
-	}
+	// 1. Detector de Cookies (usando SvelteKit event.cookies)
+	const cookieDetector = () => {
+		const lang = event.cookies.get('lang');
+		return lang ? [lang as Locales] : [];
+	};
+	// 2. Detector de Accept-Language header
+	const headerDetector = initAcceptLanguageHeaderDetector(event.request);
 
-	// 2. Mirar Accept-Language del navegador. Si no es español, fallback a inglés.
-	return detectLocaleFn('en', locales, initAcceptLanguageHeaderDetector(event.request));
+	// detectLocale usa 'es' como baseLocale (fallback) según i18n-util.ts
+	return detectLocale(cookieDetector, headerDetector);
 };
 
 export const handle: Handle = async ({ event, resolve }) => {
@@ -27,7 +27,9 @@ export const handle: Handle = async ({ event, resolve }) => {
 	setLocale(locale);
 	event.locals.locale = locale;
 
-	const response = await resolve(event);
+	const response = await resolve(event, {
+		transformPageChunk: ({ html }) => html.replace('%lang%', locale)
+	});
 
 	// --- Cabeceras de Seguridad ---
 	// SAMEORIGIN es necesario para que los iframes de Firebase Auth se comuniquen correctamente
