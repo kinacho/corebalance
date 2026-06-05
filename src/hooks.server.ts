@@ -8,16 +8,15 @@ import {
 import type { Locales } from '$lib/i18n/i18n-types';
 
 const getLocale = (event: RequestEvent): Locales => {
-	// 1. Detector de Cookies (usando SvelteKit event.cookies)
-	const cookieDetector = () => {
-		const lang = event.cookies.get('lang');
-		return lang ? [lang as Locales] : [];
-	};
-	// 2. Detector de Accept-Language header
-	const headerDetector = initAcceptLanguageHeaderDetector(event.request);
+	// 1. Prioridad: Cookie guardada
+	const langCookie = event.cookies.get('lang');
+	if (langCookie && locales.includes(langCookie as Locales)) {
+		return langCookie as Locales;
+	}
 
-	// detectLocale usa 'es' como baseLocale (fallback) según i18n-util.ts
-	return detectLocale(cookieDetector, headerDetector);
+	// 2. Detector de Accept-Language header (usa 'es' como baseLocale fallback)
+	const headerDetector = initAcceptLanguageHeaderDetector(event.request);
+	return detectLocale(headerDetector);
 };
 
 export const handle: Handle = async ({ event, resolve }) => {
@@ -26,6 +25,16 @@ export const handle: Handle = async ({ event, resolve }) => {
 	await loadLocaleAsync(locale);
 	setLocale(locale);
 	event.locals.locale = locale;
+
+	// Si no hay cookie, la fijamos para futuras peticiones (persistencia por defecto)
+	if (!event.cookies.get('lang')) {
+		event.cookies.set('lang', locale, {
+			path: '/',
+			maxAge: 60 * 60 * 24 * 365,
+			sameSite: 'lax',
+			httpOnly: false
+		});
+	}
 
 	const response = await resolve(event, {
 		transformPageChunk: ({ html }) => html.replace('%lang%', locale)
