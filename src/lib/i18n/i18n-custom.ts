@@ -13,8 +13,11 @@ export async function switchLocale(newLocale: Locales) {
 	setLocale(newLocale);
 	
 	if (browser) {
+		// 1. Guardar en localStorage (persistencia fuerte en el cliente)
+		localStorage.setItem('lang', newLocale);
+
 		try {
-			// Guardar preferencia en el servidor vía API
+			// 2. Guardar preferencia en el servidor vía API
 			await fetch('/api/lang', {
 				method: 'POST',
 				body: JSON.stringify({ locale: newLocale }),
