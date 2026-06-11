@@ -17,10 +17,16 @@ export default defineConfig({
 			devOptions: {
 				enabled: true
 			},
-			// Glob patterns explícitos: excluimos prerendered/** porque la app es 100% SSR
-			// sin rutas prerendeadas, lo que evita el warning de Workbox en el build.
+			// Usamos modifyURLPrefix para que @vite-pwa/sveltekit salte su buildGlobPatterns
+			// interna (que siempre inyecta prerendered/**). Con este flag activo, el plugin
+			// delega el control de los patrones completamente al usuario. Definimos sólo los
+			// assets del cliente (esta app es 100% SSR, sin páginas prerendeadas).
 			workbox: {
-				globPatterns: ['client/**/*.{js,css,html,ico,png,webp,woff2,svg,json}'],
+				globPatterns: [
+					'client/**/*.{js,css,html,ico,png,webp,woff2,svg,json,webmanifest}'
+				],
+				globIgnores: ['server/**'],
+				modifyURLPrefix: { 'client/': '/' },
 				navigateFallback: null
 			},
 			includeAssets: ['favicon.png', 'logo.webp', 'pwa-192x192.png', 'pwa-512x512.png'],
