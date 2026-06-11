@@ -222,4 +222,18 @@ export function escapeHtml(str: string): string {
 		.replace(/'/g, '&#39;');
 }
 
+/** Comprueba si el usuario tiene activos guardados en el almacenamiento local con participaciones mayores a 0 */
+export function hasLocalHoldingsData(): boolean {
+	if (typeof localStorage === 'undefined') return false;
+	try {
+		const saved = localStorage.getItem('corebalance_holdings_v2');
+		if (!saved) return false;
+		const parsed = JSON.parse(saved);
+		return Object.values(parsed).some((h: any) => h && h.shares > 0);
+	} catch {
+		return false;
+	}
+}
+
+
 

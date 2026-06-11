@@ -3,6 +3,7 @@
   import LandingPage from "$lib/components/landing/LandingPage.svelte";
   import { browser } from "$app/environment";
   import { goto } from "$app/navigation";
+  import { hasLocalHoldingsData } from "$lib/utils";
 
   // --- Gatekeeper Logic ---
   let bypassLanding = $state(browser ? sessionStorage.getItem('bypassLanding') === 'true' : false);
@@ -19,16 +20,7 @@
   }
 
   // Determinar de manera síncrona si hay datos locales guardados para evitar flashes de la landing en usuarios recurrentes.
-  const hasLocalHoldings = browser ? (() => {
-    try {
-      const saved = localStorage.getItem('corebalance_holdings_v2');
-      if (!saved) return false;
-      const parsed = JSON.parse(saved);
-      return Object.values(parsed).some((h: any) => h.shares > 0);
-    } catch {
-      return false;
-    }
-  })() : false;
+  const hasLocalHoldings = browser ? hasLocalHoldingsData() : false;
 
   $effect(() => {
     // Si la app ya inicializó, decidimos dónde mandarlo

@@ -1,7 +1,7 @@
 import { get } from 'svelte/store';
 import { LL } from '$lib/i18n/i18n-svelte';
 import { DEFAULT_CORE_ASSETS, DEFAULT_SATELLITE_ASSETS, DEFAULT_STOCK_ASSETS, STORAGE_KEY_HOLDINGS, STORAGE_KEY_CONTRIBUTION, STORAGE_KEY_ASSETS, STORAGE_KEY_PRICES } from '$lib/constants';
-import type { Asset, AssetCategory, HoldingData, HoldingsMap, PortfolioState, PriceData, RebalanceResult, Transaction } from '$lib/types';
+import type { Asset, AssetCategory, HoldingData, HoldingsMap, PortfolioPosition, PortfolioState, PriceData, RebalanceResult, Transaction } from '$lib/types';
 import { calculatePortfolioState, calculateRebalance } from '$lib/rebalance';
 import { storageProvider } from '$lib/db';
 import { formatDate, resolveAssetIcon } from '$lib/utils';
@@ -165,14 +165,14 @@ export class PortfolioStore {
 		this.sparklineVersion; 
 		
 		const days = 30;
-		const historyPoints: any[] = [];
+		const historyPoints: { date: string; total: number; core: number; stocks: number; satellite: number; }[] = [];
 		for (let i = 0; i < days; i++) {
 			const d = new Date();
 			d.setDate(d.getDate() - (days - 1 - i));
 			historyPoints.push({ date: formatDate(d), total: 0, core: 0, stocks: 0, satellite: 0 });
 		}
 
-		const processPositions = (positions: any[], key: 'core' | 'stocks' | 'satellite') => {
+		const processPositions = (positions: PortfolioPosition[], key: 'core' | 'stocks' | 'satellite') => {
 			positions.forEach(pos => {
 				const spark = pos.sparkline || [];
 				for (let i = 0; i < days; i++) {

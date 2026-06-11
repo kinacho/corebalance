@@ -18,6 +18,7 @@
   import { goto, beforeNavigate } from "$app/navigation";
   import { navigating } from "$app/stores";
   import { LL } from '$lib/i18n/i18n-svelte';
+  import type { PortfolioPosition } from '$lib/types';
 
   // --- Lazy Components ---
   let ManageAssets = $state<any>(null);
@@ -144,13 +145,13 @@
       ...portfolio.satelliteState.positions,
     ];
     return {
-      labels: allPositions.map((p: any) => p.asset.name),
-      values: allPositions.map((p: any) =>
+      labels: allPositions.map((p: PortfolioPosition) => p.asset.name),
+      values: allPositions.map((p: PortfolioPosition) =>
         portfolio.globalCapital > 0
           ? (p.totalValue / portfolio.globalCapital) * 100
           : 0,
       ),
-      colors: allPositions.map((p: any) => p.asset.color),
+      colors: allPositions.map((p: PortfolioPosition) => p.asset.color),
     };
   });
 
@@ -158,11 +159,11 @@
     const positions = portfolio.portfolioState.positions;
     const total = portfolio.portfolioState.totalCapital;
     return {
-      labels: positions.map((p: any) => p.asset.name),
-      values: positions.map((p: any) =>
+      labels: positions.map((p: PortfolioPosition) => p.asset.name),
+      values: positions.map((p: PortfolioPosition) =>
         total > 0 ? (p.totalValue / total) * 100 : 0,
       ),
-      colors: positions.map((p: any) => p.asset.color),
+      colors: positions.map((p: PortfolioPosition) => p.asset.color),
     };
   });
 

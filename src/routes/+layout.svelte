@@ -5,6 +5,7 @@
 	import InstallPrompt from '$lib/components/InstallPrompt.svelte';
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { ui } from '$lib/stores/ui.svelte';
+	import { hasLocalHoldingsData } from '$lib/utils';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { dev, browser } from '$app/environment';
@@ -31,16 +32,7 @@
 	let canonicalUrl = $derived(`https://corebalance.app${$page.url.pathname}`);
 
 	// Determinar de manera síncrona si hay datos locales o flag de bypass para evitar flashes en la redirección.
-	const hasLocalHoldings = browser ? (() => {
-		try {
-			const saved = localStorage.getItem('corebalance_holdings_v2');
-			if (!saved) return false;
-			const parsed = JSON.parse(saved);
-			return Object.values(parsed).some((h: any) => h.shares > 0);
-		} catch {
-			return false;
-		}
-	})() : false;
+	const hasLocalHoldings = browser ? hasLocalHoldingsData() : false;
 
 	const isBypassed = browser ? sessionStorage.getItem('bypassLanding') === 'true' : false;
 

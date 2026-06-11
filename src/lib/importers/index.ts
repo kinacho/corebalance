@@ -2,7 +2,7 @@ export type { BrokerId, BrokerInfo, ParsedPosition, ImportResult, MappingConfig,
 export { importFromCSV, importWithMapping } from './parsers';
 export { 
 	parseCSV, parseCSVBlocks, parseNumber, isValidISIN, extractISIN, detectHeaderRow,
-	normalizeHeaderName, normalizeCurrency, looksLikeIsinValue,
+	normalizeCurrency, looksLikeIsinValue,
 	looksLikeTickerValue, looksLikeNumericValue, looksLikeDateValue,
 	analyzeColumns, suggestMappingFromAnalysis, generateCsvSignature
 } from './csv-utils';

@@ -316,10 +316,6 @@ export function extractISIN(text: string): string | null {
 	return match ? match[1].toUpperCase() : null;
 }
 
-/** Alias para normalizeHeader alineado con el roadmap */
-export function normalizeHeaderName(raw: string): string {
-	return normalizeHeader(raw);
-}
 
 /** Normaliza códigos y símbolos de divisa comunes a formato estándar ISO de 3 letras */
 export function normalizeCurrency(value: string): string | null {
