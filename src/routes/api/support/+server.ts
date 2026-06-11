@@ -32,8 +32,6 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 		const cleanMessage = escapeHtml(message);
 		const cleanUserAgent = escapeHtml(userAgent);
 
-		recentRequests.set(ip, now);
-
 		await resend.emails.send({
 			from: 'CoreBalance Soporte <onboarding@resend.dev>',
 			to: env.SUPPORT_EMAIL || 'kino166@gmail.com',
