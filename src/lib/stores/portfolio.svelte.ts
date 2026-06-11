@@ -47,35 +47,42 @@ export class PortfolioStore {
 
 	// --- Derived State ---
 	ledgerHoldings = $derived.by(() => {
-		const result: Record<string, { shares: number; avgCost: number; totalCostRaw: number }> = {};
+		const result: Record<string, { shares: number; avgCost: number; totalCostRaw: number; totalCostBase: number }> = {};
 		const sorted = [...this.transactions].sort((a, b) => a.date - b.date);
 		for (const t of sorted) {
-			if (!result[t.ticker]) result[t.ticker] = { shares: 0, avgCost: 0, totalCostRaw: 0 };
+			if (!result[t.ticker]) result[t.ticker] = { shares: 0, avgCost: 0, totalCostRaw: 0, totalCostBase: 0 };
 			const pos = result[t.ticker];
 			if (t.type === 'buy' || t.type === 'initial_balance' || t.type === 'transfer') {
 				if (t.shares > 0) {
 					const txCostRaw = (t.shares * t.price) + (t.fees || 0); 
+					const txCostBase = txCostRaw * (t.fxRate || 1);
 					const newTotalCostRaw = pos.totalCostRaw + txCostRaw;
+					const newTotalCostBase = pos.totalCostBase + txCostBase;
 					const newShares = pos.shares + t.shares;
 					pos.avgCost = newShares > 0 ? newTotalCostRaw / newShares : 0;
 					pos.shares = newShares;
 					pos.totalCostRaw = newTotalCostRaw;
+					pos.totalCostBase = newTotalCostBase;
 				}
 			} else if (t.type === 'sell') {
 				if (pos.shares > 0) {
 					const ratio = Math.min(1, t.shares / pos.shares);
 					pos.totalCostRaw -= pos.totalCostRaw * ratio;
+					pos.totalCostBase -= pos.totalCostBase * ratio;
 					pos.shares = Math.max(0, pos.shares - t.shares);
 				}
 			} else if (t.type === 'dividend') {
 				const divAmountRaw = (t.shares * t.price) - (t.fees || 0);
+				const divAmountBase = divAmountRaw * (t.fxRate || 1);
 				pos.totalCostRaw -= divAmountRaw;
+				pos.totalCostBase -= divAmountBase;
 				pos.avgCost = pos.shares > 0 ? pos.totalCostRaw / pos.shares : 0;
 			}
 		}
 		for (const ticker in result) {
 			result[ticker].shares = Math.round(result[ticker].shares * 1000) / 1000;
 			result[ticker].avgCost = Math.round(result[ticker].avgCost * 1000) / 1000;
+			result[ticker].totalCostBase = Math.round(result[ticker].totalCostBase * 1000) / 1000;
 		}
 		return result;
 	});
@@ -87,6 +94,7 @@ export class PortfolioStore {
 				merged[ticker] = {
 					shares: this.ledgerHoldings[ticker].shares,
 					avgCost: this.ledgerHoldings[ticker].avgCost,
+					totalCostBase: this.ledgerHoldings[ticker].totalCostBase,
 					useLedger: true
 				};
 			}

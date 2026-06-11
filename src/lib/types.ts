@@ -109,6 +109,7 @@ export interface Transaction {
 export interface HoldingData {
 	shares: number;
 	avgCost: number;
+	totalCostBase?: number; // Coste total exacto en la divisa base (EUR) precalculado desde el Ledger
 	useLedger?: boolean; // Si es true, ignora estos campos y usa el historial de transacciones
 }
 

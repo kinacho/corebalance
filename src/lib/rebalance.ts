@@ -34,7 +34,7 @@ export function calculatePortfolioState(
 		const dailyChangePercent = changePercent / 100;
 
 		const totalValue = isManual ? (totalValueBase + dailyChangeValue) : totalValueBase;
-		const totalCost = isManual ? totalValue : shareCount * (averageCost * fxRate);
+		const totalCost = isManual ? totalValue : (data.totalCostBase !== undefined ? data.totalCostBase : shareCount * (averageCost * fxRate));
 		const profit = isManual ? 0 : totalValue - totalCost;
 		const profitPercent = isManual ? 0 : (totalCost > 0 ? profit / totalCost : 0);
 		

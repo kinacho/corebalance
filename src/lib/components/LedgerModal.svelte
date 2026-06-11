@@ -204,11 +204,11 @@
 					</div>
 					<div class="stat-card">
 						<span class="stat-label">{$LL.dashboard.avg_cost()}</span>
-						<span class="stat-value">{formatEUR(ledgerSummary.avgCost)}</span>
+						<span class="stat-value">{formatCurrency(ledgerSummary.avgCost, defaultCurrency)}</span>
 					</div>
 					<div class="stat-card">
 						<span class="stat-label">{$LL.dashboard.value_total()}</span>
-						<span class="stat-value">{formatEUR(ledgerSummary.shares * (portfolio.prices[asset.ticker]?.price || 0))}</span>
+						<span class="stat-value">{formatCurrency(ledgerSummary.shares * defaultPrice, defaultCurrency)}</span>
 					</div>
 				</div>
 
