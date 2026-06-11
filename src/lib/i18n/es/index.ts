@@ -536,6 +536,9 @@ const es = {
     no_positions_found: 'No se encontraron posiciones en el archivo',
     category_weight_limit: 'La cartera {catName:string} ya suma {weight:string}%. Ajusta los pesos antes de importar más activos.',
     asset_added: '"{assetName:string}" añadido correctamente',
+    save_error: 'Error al guardar los datos en la nube',
+    load_error: 'Error al cargar los datos desde la nube',
+    login_error: 'Error al iniciar sesión',
   },
   // Dashboard
   db: {

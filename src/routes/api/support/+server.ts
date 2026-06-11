@@ -2,28 +2,20 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { Resend } from 'resend';
 import { env } from '$env/dynamic/private';
+import { checkRateLimit } from '$lib/server/rateLimit';
+import { escapeHtml } from '$lib/utils';
 
 const resend = new Resend(env.RESEND_API_KEY);
 
-// Sencillo rate limiter en memoria
-const recentRequests = new Map<string, number>();
-const RATE_LIMIT_MS = 60000; // 1 minuto de cooldown
-
-function escapeHtml(str: string): string {
-	if (!str) return '';
-	return str
-		.replace(/&/g, '&amp;')
-		.replace(/</g, '&lt;')
-		.replace(/>/g, '&gt;')
-		.replace(/"/g, '&quot;')
-		.replace(/'/g, '&#39;');
-}
-
 export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 	const ip = getClientAddress();
-	const now = Date.now();
-
-	if (recentRequests.has(ip) && now - (recentRequests.get(ip) || 0) < RATE_LIMIT_MS) {
+	
+	const allowed = await checkRateLimit(ip, {
+		limit: 1,
+		windowSeconds: 60,
+		prefix: 'support'
+	});
+	if (!allowed) {
 		return json({ error: 'Demasiadas solicitudes. Por favor espera un minuto.' }, { status: 429 });
 	}
 

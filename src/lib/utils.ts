@@ -211,3 +211,15 @@ export function resolveAssetIcon(ticker: string = '', name: string = '', type: s
 	return '📈';
 }
 
+/** Escapa caracteres HTML para prevenir XSS */
+export function escapeHtml(str: string): string {
+	if (!str) return '';
+	return str
+		.replace(/&/g, '&amp;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;')
+		.replace(/"/g, '&quot;')
+		.replace(/'/g, '&#39;');
+}
+
+

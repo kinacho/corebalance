@@ -2,7 +2,7 @@ import type { StorageProvider, UserData, HistoryPoint } from './types';
 import type { Transaction } from '$lib/types';
 import { auth, db, googleProvider } from '$lib/firebase';
 import { onAuthStateChanged, signInWithPopup, signOut, type User } from 'firebase/auth';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, collection, getDocs, writeBatch, query, orderBy, deleteDoc, updateDoc, deleteField } from 'firebase/firestore';
 
 export class FirebaseStorage implements StorageProvider {
 	isLocal = false;
@@ -33,7 +33,44 @@ export class FirebaseStorage implements StorageProvider {
 	async saveTransactions(userId: string, items: Transaction[]): Promise<void> {
 		if (!db) return;
 		try {
-			await setDoc(doc(db, 'user_transactions', userId), { items }, { merge: true });
+			const subcollRef = collection(db, 'user_transactions', userId, 'items');
+			const snap = await getDocs(subcollRef);
+			const existingDocs = new Map<string, any>();
+			snap.forEach(d => {
+				existingDocs.set(d.id, d.data());
+			});
+
+			const newIds = new Set(items.map(item => item.id));
+			const ops: { type: 'set' | 'delete'; ref: any; data?: any }[] = [];
+
+			// 1. Delete documents that are no longer in items
+			for (const id of existingDocs.keys()) {
+				if (!newIds.has(id)) {
+					ops.push({ type: 'delete', ref: doc(db, 'user_transactions', userId, 'items', id) });
+				}
+			}
+
+			// 2. Add or update documents
+			for (const item of items) {
+				const existing = existingDocs.get(item.id);
+				if (!existing || JSON.stringify(existing) !== JSON.stringify(item)) {
+					ops.push({ type: 'set', ref: doc(db, 'user_transactions', userId, 'items', item.id), data: item });
+				}
+			}
+
+			// Execute in batches of 500
+			for (let i = 0; i < ops.length; i += 500) {
+				const chunk = ops.slice(i, i + 500);
+				const batch = writeBatch(db);
+				for (const op of chunk) {
+					if (op.type === 'delete') {
+						batch.delete(op.ref);
+					} else {
+						batch.set(op.ref, op.data);
+					}
+				}
+				await batch.commit();
+			}
 		} catch (e) {
 			console.error('Firestore transactions save error:', e);
 		}
@@ -42,10 +79,28 @@ export class FirebaseStorage implements StorageProvider {
 	async loadTransactions(userId: string): Promise<Transaction[]> {
 		if (!db) return [];
 		try {
-			const snap = await getDoc(doc(db, 'user_transactions', userId));
-			if (snap.exists()) {
-				const data = snap.data();
-				return data.items || [];
+			const subcollRef = collection(db, 'user_transactions', userId, 'items');
+			const q = query(subcollRef, orderBy('date', 'asc'));
+			const snap = await getDocs(q);
+
+			if (!snap.empty) {
+				const items: Transaction[] = [];
+				snap.forEach(d => {
+					items.push(d.data() as Transaction);
+				});
+				return items;
+			}
+
+			// Si la subcolección está vacía, comprobar si hay datos en el documento padre (migración)
+			const parentSnap = await getDoc(doc(db, 'user_transactions', userId));
+			if (parentSnap.exists()) {
+				const parentData = parentSnap.data();
+				const oldItems = parentData.items || [];
+				if (oldItems.length > 0) {
+					await this.saveTransactions(userId, oldItems);
+					await updateDoc(doc(db, 'user_transactions', userId), { items: deleteField() });
+					return oldItems;
+				}
 			}
 			return [];
 		} catch (e) {
@@ -151,9 +206,18 @@ export class FirebaseStorage implements StorageProvider {
 		
 		try {
 			// 1. Borrar datos de Firestore
-			const { deleteDoc, doc } = await import('firebase/firestore');
 			await deleteDoc(doc(db, 'user_data', userId));
 			await deleteDoc(doc(db, 'user_history', userId));
+			
+			// Borrar todos los documentos de la subcolección de transacciones
+			const subcollRef = collection(db, 'user_transactions', userId, 'items');
+			const subcollSnap = await getDocs(subcollRef);
+			const deletePromises: Promise<void>[] = [];
+			subcollSnap.forEach(d => {
+				deletePromises.push(deleteDoc(d.ref));
+			});
+			await Promise.all(deletePromises);
+			
 			await deleteDoc(doc(db, 'user_transactions', userId));
 			
 			// 2. Borrar el usuario de Firebase Auth

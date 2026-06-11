@@ -1,32 +1,12 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import YahooFinance from 'yahoo-finance2';
-
-const yahooFinance = new YahooFinance({ 
-	suppressNotices: ['yahooSurvey', 'ripHistorical'],
-	validation: { logErrors: false }
-});
+import { yahooFinance } from '$lib/server/yahoo';
+import { checkRateLimit } from '$lib/server/rateLimit';
 
 // --- Rate Limiting ---
-const searchRateLimitMap = new Map<string, number[]>();
 const SEARCH_RATE_LIMIT = 20;   // max requests
-const SEARCH_RATE_WINDOW = 60_000; // por minuto
+const SEARCH_RATE_WINDOW_SECS = 60; // por minuto
 const MAX_QUERY_LENGTH = 100;
-
-function checkSearchRateLimit(ip: string): boolean {
-	const now = Date.now();
-	const requests = searchRateLimitMap.get(ip) || [];
-	const recent = requests.filter(t => now - t < SEARCH_RATE_WINDOW);
-	if (recent.length >= SEARCH_RATE_LIMIT) return false;
-	recent.push(now);
-	searchRateLimitMap.set(ip, recent);
-	if (searchRateLimitMap.size > 1000) {
-		for (const [key, times] of searchRateLimitMap) {
-			if (times.every(t => now - t > SEARCH_RATE_WINDOW)) searchRateLimitMap.delete(key);
-		}
-	}
-	return true;
-}
 
 export interface SearchResult {
 	ticker: string;
@@ -44,7 +24,12 @@ export const GET: RequestHandler = async ({ url, getClientAddress }) => {
 	} catch (e) {
 		clientIp = '127.0.0.1';
 	}
-	if (!checkSearchRateLimit(clientIp)) {
+	const allowed = await checkRateLimit(clientIp, {
+		limit: SEARCH_RATE_LIMIT,
+		windowSeconds: SEARCH_RATE_WINDOW_SECS,
+		prefix: 'search'
+	});
+	if (!allowed) {
 		return json({ results: [], error: 'Demasiadas búsquedas. Inténtalo en un minuto.' }, { status: 429 });
 	}
 

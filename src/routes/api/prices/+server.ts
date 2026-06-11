@@ -1,22 +1,9 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import YahooFinance from 'yahoo-finance2';
 import type { PricesResponse, PriceData } from '$lib/types';
-import { Redis } from '@upstash/redis';
-import { env } from '$env/dynamic/private';
-
-// Soporte para variables con y sin prefijo (Vercel a veces añade prefijos según la integración)
-const redisUrl = env.KV_REST_API_URL || (env as any).corebalance_KV_REST_API_URL;
-const redisToken = env.KV_REST_API_TOKEN || (env as any).corebalance_KV_REST_API_TOKEN;
-
-const redis = (redisUrl && redisToken)
-	? new Redis({ url: redisUrl, token: redisToken })
-	: null;
-
-const yahooFinance = new YahooFinance({ 
-	suppressNotices: ['yahooSurvey', 'ripHistorical'],
-	validation: { logErrors: false }
-});
+import { redis } from '$lib/server/redis';
+import { yahooFinance } from '$lib/server/yahoo';
+import { checkRateLimit } from '$lib/server/rateLimit';
 
 // Fallback en memoria para desarrollo local si no hay KV configurado
 const historyCache: Record<string, { timestamp: number, sparkline: number[], ytd?: number, mtd?: number, oneMonth?: number }> = {};
@@ -90,25 +77,6 @@ const RATE_WINDOW = 60;      // segundos (1 minuto)
 const MAX_TICKERS = 50;
 const TICKER_REGEX = /^[A-Za-z0-9._=\-]{1,25}$/;
 
-async function checkRateLimit(ip: string): Promise<boolean> {
-	if (!redis) {
-		// Fallback local solo si Redis no está configurado (dev local)
-		return true;
-	}
-	
-	try {
-		const key = `rl:${ip}`;
-		const count = await redis.incr(key);
-		if (count === 1) {
-			await redis.expire(key, RATE_WINDOW);
-		}
-		return count <= RATE_LIMIT;
-	} catch (e) {
-		console.error("Error en Redis Rate Limit:", e);
-		return true; // Fallback permisivo ante fallos de Redis
-	}
-}
-
 export const GET: RequestHandler = async ({ url, getClientAddress }) => {
 	// --- Protección: Rate Limit ---
 	let clientIp = 'unknown';
@@ -119,7 +87,12 @@ export const GET: RequestHandler = async ({ url, getClientAddress }) => {
 		clientIp = '127.0.0.1';
 	}
 	
-	if (!(await checkRateLimit(clientIp))) {
+	const allowed = await checkRateLimit(clientIp, {
+		limit: RATE_LIMIT,
+		windowSeconds: RATE_WINDOW,
+		prefix: 'prices'
+	});
+	if (!allowed) {
 		return json({ error: 'Demasiadas peticiones. Inténtalo en un minuto.' }, { status: 429 });
 	}
 

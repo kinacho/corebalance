@@ -1,31 +1,11 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import YahooFinance from 'yahoo-finance2';
-
-const yahooFinance = new YahooFinance({ 
-	suppressNotices: ['yahooSurvey', 'ripHistorical'],
-	validation: { logErrors: false }
-});
+import { yahooFinance } from '$lib/server/yahoo';
+import { checkRateLimit } from '$lib/server/rateLimit';
 
 // Rate limiting
-const resolveLimitMap = new Map<string, number[]>();
 const RATE_LIMIT = 5;
-const RATE_WINDOW = 60_000;
-
-function checkResolveRateLimit(ip: string): boolean {
-	const now = Date.now();
-	const requests = resolveLimitMap.get(ip) || [];
-	const recent = requests.filter(t => now - t < RATE_WINDOW);
-	if (recent.length >= RATE_LIMIT) return false;
-	recent.push(now);
-	resolveLimitMap.set(ip, recent);
-	if (resolveLimitMap.size > 500) {
-		for (const [key, times] of resolveLimitMap) {
-			if (times.every(t => now - t > RATE_WINDOW)) resolveLimitMap.delete(key);
-		}
-	}
-	return true;
-}
+const RATE_WINDOW_SECS = 60;
 
 interface ResolveRequest {
 	/** ISINs a resolver */
@@ -51,7 +31,12 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 	let clientIp = 'unknown';
 	try { clientIp = getClientAddress(); } catch { clientIp = '127.0.0.1'; }
 	
-	if (!checkResolveRateLimit(clientIp)) {
+	const allowed = await checkRateLimit(clientIp, {
+		limit: RATE_LIMIT,
+		windowSeconds: RATE_WINDOW_SECS,
+		prefix: 'resolve'
+	});
+	if (!allowed) {
 		return json({ error: 'Demasiadas peticiones. Inténtalo en un minuto.' }, { status: 429 });
 	}
 	

@@ -343,7 +343,10 @@ export class PortfolioStore {
 			};
 			await storageProvider.saveUserData(this.user.uid, dataToSave);
 			if (storageProvider.saveTransactions) await storageProvider.saveTransactions(this.user.uid, $state.snapshot(this.transactions));
-		} catch (e) { console.error('Storage save error:', e); }
+		} catch (e) {
+			console.error('Storage save error:', e);
+			ui.addToast(get(LL).toasts.save_error(), 'error');
+		}
 	}
 
 	private async loadFromCloud() {
@@ -378,7 +381,10 @@ export class PortfolioStore {
 
 			// Tras cargar los activos del usuario, refrescamos precios si han cambiado los activos
 			await this.fetchPrices();
-		} catch (e) { console.error('Storage load error:', e); }
+		} catch (e) {
+			console.error('Storage load error:', e);
+			ui.addToast(get(LL).toasts.load_error(), 'error');
+		}
 	}
 
 	private async loadHistory() {
@@ -488,7 +494,12 @@ export class PortfolioStore {
 				await storageProvider.login();
 				if (typeof window !== 'undefined') window.location.reload();
 			}
-		} catch (e) { console.error('Error durante el login:', e); } finally { this.authLoading = false; }
+		} catch (e: any) {
+			console.error('Error durante el login:', e);
+			ui.addToast(get(LL).toasts.login_error(), 'error');
+		} finally {
+			this.authLoading = false;
+		}
 	}
 
 	async logout() {

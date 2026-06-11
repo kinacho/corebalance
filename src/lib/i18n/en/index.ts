@@ -534,6 +534,9 @@ const en: Translation = {
     no_positions_found: 'No positions found in the file',
     category_weight_limit: 'The portfolio {catName} already sums {weight}%. Adjust weights before importing more assets.',
     asset_added: '"{assetName}" added successfully',
+    save_error: 'Error saving data to the cloud',
+    load_error: 'Error loading data from the cloud',
+    login_error: 'Error logging in',
   },
   // Dashboard
   db: {

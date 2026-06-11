@@ -1980,6 +1980,18 @@ type RootTranslation = {
 		 * @param {string} assetName
 		 */
 		asset_added: RequiredParams<'assetName'>
+		/**
+		 * E​r​r​o​r​ ​a​l​ ​g​u​a​r​d​a​r​ ​l​o​s​ ​d​a​t​o​s​ ​e​n​ ​l​a​ ​n​u​b​e
+		 */
+		save_error: string
+		/**
+		 * E​r​r​o​r​ ​a​l​ ​c​a​r​g​a​r​ ​l​o​s​ ​d​a​t​o​s​ ​d​e​s​d​e​ ​l​a​ ​n​u​b​e
+		 */
+		load_error: string
+		/**
+		 * E​r​r​o​r​ ​a​l​ ​i​n​i​c​i​a​r​ ​s​e​s​i​ó​n
+		 */
+		login_error: string
 	}
 	db: {
 		/**
@@ -4827,6 +4839,18 @@ export type TranslationFunctions = {
 		 * "{assetName}" añadido correctamente
 		 */
 		asset_added: (arg: { assetName: string }) => LocalizedString
+		/**
+		 * Error al guardar los datos en la nube
+		 */
+		save_error: () => LocalizedString
+		/**
+		 * Error al cargar los datos desde la nube
+		 */
+		load_error: () => LocalizedString
+		/**
+		 * Error al iniciar sesión
+		 */
+		login_error: () => LocalizedString
 	}
 	db: {
 		/**

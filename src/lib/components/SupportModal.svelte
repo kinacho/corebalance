@@ -4,6 +4,7 @@
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { focusTrap } from '$lib/actions/focusTrap';
 	import { LL } from '$lib/i18n/i18n-svelte';
+	import { escapeHtml } from '$lib/utils';
 
 	let email = $state(portfolio.user?.email || '');
 	let subject = $state('');
@@ -96,7 +97,7 @@
 				<div class="success-view" in:fly={{ y: 20, duration: 400 }}>
 					<div class="success-icon">✨</div>
 					<h3>{$LL.support.message_sent()}</h3>
-					<p>{@html $LL.support.thanks_feedback({ email: `<strong>${email}</strong>` })}</p>
+					<p>{@html $LL.support.thanks_feedback({ email: `<strong>${escapeHtml(email)}</strong>` })}</p>
 				</div>
 			{:else}
 				<div class="modal-header">

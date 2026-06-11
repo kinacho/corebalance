@@ -40,3 +40,9 @@ training/myinvestor_movimientos.csv
 training/interactive_brokers_activity.csv
 training/degiro_transactions.csv
 training/degiro_account_statement.csv
+
+# Test inputs and scratch directories
+training_csv/
+scratch/
+training/*.png
+
