@@ -2063,7 +2063,7 @@ type RootTranslation = {
 		 */
 		footer_tagline: string
 		/**
-		 * v​1​.​7​.​0​ ​�​�
+		 * v​1​.​8​.​0​ ​�​�
 		 */
 		changelog_trigger: string
 		/**
@@ -2553,6 +2553,42 @@ type RootTranslation = {
 		 */
 		btn_understand: string
 		releases: {
+			v1_8_0: {
+				/**
+				 * 1​1​ ​d​e​ ​J​u​n​i​o​,​ ​2​0​2​6
+				 */
+				date: string
+				/**
+				 * M​o​d​o​ ​L​e​d​g​e​r​ ​y​ ​S​e​g​u​r​i​d​a​d
+				 */
+				badge: string
+				changes: {
+					/**
+					 * �​�​ ​*​*​L​i​b​r​o​ ​d​e​ ​T​r​a​n​s​a​c​c​i​o​n​e​s​ ​(​L​e​d​g​e​r​)​:​*​*​ ​N​u​e​v​o​ ​c​o​m​p​o​n​e​n​t​e​ ​`​L​e​d​g​e​r​M​o​d​a​l​`​ ​p​a​r​a​ ​r​e​g​i​s​t​r​a​r​ ​c​o​m​p​r​a​s​,​ ​v​e​n​t​a​s​,​ ​d​i​v​i​d​e​n​d​o​s​ ​y​ ​t​r​a​s​p​a​s​o​s​ ​p​o​r​ ​a​c​t​i​v​o​ ​d​e​ ​f​o​r​m​a​ ​d​e​t​a​l​l​a​d​a​.
+					 */
+					'0': string
+					/**
+					 * �​�​ ​*​*​M​o​t​o​r​ ​d​e​ ​R​e​b​a​l​a​n​c​e​o​:​*​*​ ​L​ó​g​i​c​a​ ​m​e​j​o​r​a​d​a​ ​d​e​ ​a​s​i​g​n​a​c​i​ó​n​ ​d​e​ ​a​c​t​i​v​o​s​ ​y​ ​t​i​e​n​d​a​ ​d​e​ ​e​s​t​a​d​o​ ​r​e​a​c​t​i​v​o​ ​p​a​r​a​ ​u​n​ ​c​á​l​c​u​l​o​ ​d​e​ ​a​p​o​r​t​a​c​i​o​n​e​s​ ​p​r​e​c​i​s​o​.
+					 */
+					'1': string
+					/**
+					 * ⚙​️​ ​*​*​I​m​p​o​r​t​a​c​i​ó​n​ ​C​S​V​ ​F​l​e​x​i​b​l​e​:​*​*​ ​N​u​e​v​a​s​ ​u​t​i​l​i​d​a​d​e​s​ ​d​e​ ​a​n​á​l​i​s​i​s​ ​s​i​n​t​á​c​t​i​c​o​ ​p​a​r​a​ ​i​m​p​o​r​t​a​r​ ​c​a​r​t​e​r​a​s​ ​d​e​ ​m​ú​l​t​i​p​l​e​s​ ​b​r​ó​k​e​r​s​ ​y​ ​m​a​p​e​a​r​ ​c​o​l​u​m​n​a​s​ ​d​e​ ​f​o​r​m​a​ ​p​e​r​s​o​n​a​l​i​z​a​d​a​.
+					 */
+					'2': string
+					/**
+					 * �​�​ ​*​*​S​e​g​u​r​i​d​a​d​ ​y​ ​B​a​c​k​e​n​d​:​*​*​ ​I​n​t​e​g​r​a​c​i​ó​n​ ​d​e​ ​F​i​r​e​b​a​s​e​ ​S​t​o​r​a​g​e​,​ ​l​i​m​i​t​a​c​i​ó​n​ ​d​e​ ​t​a​s​a​ ​c​o​n​ ​U​p​s​t​a​s​h​ ​R​e​d​i​s​ ​p​a​r​a​ ​A​P​I​s​ ​c​r​í​t​i​c​a​s​ ​y​ ​e​n​v​í​o​ ​d​e​ ​c​o​r​r​e​o​s​ ​d​e​ ​s​o​p​o​r​t​e​ ​v​í​a​ ​R​e​s​e​n​d​.
+					 */
+					'3': string
+					/**
+					 * �​�​ ​*​*​N​a​v​e​g​a​c​i​ó​n​ ​e​ ​I​n​t​e​r​f​a​z​:​*​*​ ​I​m​p​l​e​m​e​n​t​a​c​i​ó​n​ ​d​e​ ​r​e​d​i​r​e​c​c​i​ó​n​ ​d​e​ ​s​e​s​i​o​n​e​s​ ​y​ ​d​i​s​e​ñ​o​ ​d​e​l​ ​d​a​s​h​b​o​a​r​d​ ​i​n​t​e​g​r​a​d​o​ ​d​e​ ​f​o​r​m​a​ ​l​i​m​p​i​a​ ​c​o​n​ ​l​a​ ​l​a​n​d​i​n​g​ ​p​a​g​e​.
+					 */
+					'4': string
+					/**
+					 * ⚙​️​ ​*​*​A​j​u​s​t​e​s​ ​P​W​A​:​*​*​ ​C​o​n​f​i​g​u​r​a​c​i​ó​n​ ​o​p​t​i​m​i​z​a​d​a​ ​d​e​ ​S​e​r​v​i​c​e​ ​W​o​r​k​e​r​ ​p​a​r​a​ ​s​o​l​v​e​n​t​a​r​ ​a​d​v​e​r​t​e​n​c​i​a​s​ ​y​ ​m​e​j​o​r​a​r​ ​e​l​ ​f​u​n​c​i​o​n​a​m​i​e​n​t​o​ ​o​f​f​l​i​n​e​.
+					 */
+					'5': string
+				}
+			}
 			v1_7_0: {
 				/**
 				 * 3​ ​d​e​ ​J​u​n​i​o​,​ ​2​0​2​6
@@ -4926,7 +4962,7 @@ export type TranslationFunctions = {
 		 */
 		footer_tagline: () => LocalizedString
 		/**
-		 * v1.7.0 🚀
+		 * v1.8.0 🚀
 		 */
 		changelog_trigger: () => LocalizedString
 		/**
@@ -5408,6 +5444,42 @@ export type TranslationFunctions = {
 		 */
 		btn_understand: () => LocalizedString
 		releases: {
+			v1_8_0: {
+				/**
+				 * 11 de Junio, 2026
+				 */
+				date: () => LocalizedString
+				/**
+				 * Modo Ledger y Seguridad
+				 */
+				badge: () => LocalizedString
+				changes: {
+					/**
+					 * 📜 **Libro de Transacciones (Ledger):** Nuevo componente `LedgerModal` para registrar compras, ventas, dividendos y traspasos por activo de forma detallada.
+					 */
+					'0': () => LocalizedString
+					/**
+					 * 🧠 **Motor de Rebalanceo:** Lógica mejorada de asignación de activos y tienda de estado reactivo para un cálculo de aportaciones preciso.
+					 */
+					'1': () => LocalizedString
+					/**
+					 * ⚙️ **Importación CSV Flexible:** Nuevas utilidades de análisis sintáctico para importar carteras de múltiples brókers y mapear columnas de forma personalizada.
+					 */
+					'2': () => LocalizedString
+					/**
+					 * 🔒 **Seguridad y Backend:** Integración de Firebase Storage, limitación de tasa con Upstash Redis para APIs críticas y envío de correos de soporte vía Resend.
+					 */
+					'3': () => LocalizedString
+					/**
+					 * 🎨 **Navegación e Interfaz:** Implementación de redirección de sesiones y diseño del dashboard integrado de forma limpia con la landing page.
+					 */
+					'4': () => LocalizedString
+					/**
+					 * ⚙️ **Ajustes PWA:** Configuración optimizada de Service Worker para solventar advertencias y mejorar el funcionamiento offline.
+					 */
+					'5': () => LocalizedString
+				}
+			}
 			v1_7_0: {
 				/**
 				 * 3 de Junio, 2026
