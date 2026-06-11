@@ -50,7 +50,7 @@
 						const parsed = JSON.parse(saved);
 						hasData = Object.values(parsed).some(h => h.shares > 0);
 					}
-				} catch(e) {}
+				} catch(e) { console.warn('[CoreBalance] Error leyendo localStorage en splash:', e); }
 				const isBypassed = sessionStorage.getItem('bypassLanding') === 'true';
 				
 				// Solo queremos splash si vamos al dashboard o si vamos a redirigir desde la landing

@@ -6,7 +6,7 @@
 import type { BrokerInfo, ParsedPosition, ImportResult, MappingConfig, SkippedDetail, Transaction, TransactionType, CSVBlock } from './types';
 import {
 	parseCSV, parseCSVBlocks, detectDelimiter, parseNumber, normalizeHeader,
-	findField, isValidISIN, extractISIN,
+	findField, isValidISIN, extractISIN, createSkipRow,
 	analyzeColumns, suggestMappingFromAnalysis, normalizeCurrency
 } from './csv-utils';
 import { reduceTransactionsToPositions } from './aggregator';
@@ -171,17 +171,7 @@ const degiroAccountStatementDetector: BrokerDetector = {
 	parse(headers, rows) {
 		const transactions: Transaction[] = [];
 		const warnings: string[] = [];
-		let skipped = 0;
-		const skippedDetails: SkippedDetail[] = [];
-
-		const skipRow = (rowIdx: number, row: string[], reason: string) => {
-			skipped++;
-			skippedDetails.push({
-				rowNumber: rowIdx + 1,
-				preview: row.filter(Boolean).slice(0, 3).join(' | '),
-				reason,
-			});
-		};
+		const { skipRow, skipped: _skipped, skippedDetails } = createSkipRow();
 
 		for (const [rowIdx, row] of rows.entries()) {
 			try {
@@ -273,7 +263,7 @@ const degiroAccountStatementDetector: BrokerDetector = {
 			warnings.push('No se encontraron operaciones de compra/venta en el extracto de cuenta. Asegúrate de que el CSV contiene transacciones con formato "Compra/Venta X Nombre@Precio DIVISA (ISIN)".');
 		}
 
-		return { positions, warnings, skipped, skippedDetails, totalTransactions: transactions.length };
+		return { positions, warnings, skipped: _skipped, skippedDetails, totalTransactions: transactions.length };
 	}
 };
 
@@ -315,17 +305,7 @@ const degiroDetector: BrokerDetector = {
 	parse(headers, rows) {
 		const positions: ParsedPosition[] = [];
 		const warnings: string[] = [];
-		let skipped = 0;
-		const skippedDetails: SkippedDetail[] = [];
-
-		const skipRow = (rowIdx: number, row: string[], reason: string) => {
-			skipped++;
-			skippedDetails.push({
-				rowNumber: rowIdx + 1,
-				preview: row.filter(Boolean).slice(0, 3).join(' | '),
-				reason,
-			});
-		};
+		const { skipRow, skipped: getSkipped, skippedDetails } = createSkipRow();
 
 		// Intentar detectar si es un portfolio snapshot o transacciones buscando el campo de precio en las primeras filas
 		let closingPrice = '';
@@ -417,7 +397,7 @@ const degiroDetector: BrokerDetector = {
 				});
 			}
 
-			return { positions, warnings, skipped, skippedDetails };
+			return { positions, warnings, skipped: getSkipped, skippedDetails };
 		} else {
 			// Transaction history: usar transacciones + agregador cronológico
 			const transactions: Transaction[] = [];
@@ -476,7 +456,7 @@ const degiroDetector: BrokerDetector = {
 			}
 
 			const consolidated = reduceTransactionsToPositions(transactions);
-			return { positions: consolidated, warnings, skipped, skippedDetails };
+			return { positions: consolidated, warnings, skipped: getSkipped, skippedDetails };
 		}
 	}
 };
@@ -502,17 +482,7 @@ const trading212Detector: BrokerDetector = {
 	parse(headers, rows) {
 		const transactions: Transaction[] = [];
 		const warnings: string[] = [];
-		let skipped = 0;
-		const skippedDetails: SkippedDetail[] = [];
-
-		const skipRow = (rowIdx: number, row: string[], reason: string) => {
-			skipped++;
-			skippedDetails.push({
-				rowNumber: rowIdx + 1,
-				preview: row.filter(Boolean).slice(0, 3).join(' | '),
-				reason,
-			});
-		};
+		const { skipRow, skipped: getSkipped2, skippedDetails } = createSkipRow();
 		
 		for (const [rowIdx, row] of rows.entries()) {
 			try {
@@ -560,7 +530,7 @@ const trading212Detector: BrokerDetector = {
 		}
 
 		const consolidated = reduceTransactionsToPositions(transactions);
-		return { positions: consolidated, warnings, skipped, skippedDetails, totalTransactions: transactions.length };
+		return { positions: consolidated, warnings, skipped: getSkipped2, skippedDetails, totalTransactions: transactions.length };
 	}
 };
 
@@ -592,17 +562,7 @@ const ibDetector: BrokerDetector = {
 	parse(headers, rows, blocks) {
 		const positions: ParsedPosition[] = [];
 		const warnings: string[] = [];
-		let skipped = 0;
-		const skippedDetails: SkippedDetail[] = [];
-
-		const skipRow = (rowIdx: number, row: string[], reason: string) => {
-			skipped++;
-			skippedDetails.push({
-				rowNumber: rowIdx + 1,
-				preview: row.filter(Boolean).slice(0, 3).join(' | '),
-				reason,
-			});
-		};
+		const { skipRow, skipped: getSkipped3, skippedDetails } = createSkipRow();
 
 		// 1. Extraer mapeo de Símbolo a ISIN de todas partes del documento (ej: bloque Dividendos)
 		const symbolToIsinMap = new Map<string, string>();
@@ -764,7 +724,7 @@ const ibDetector: BrokerDetector = {
 			}
 		}
 
-		return { positions, warnings, skipped, skippedDetails };
+		return { positions, warnings, skipped: getSkipped3, skippedDetails };
 	}
 };
 
@@ -796,17 +756,7 @@ const myinvestorDetector: BrokerDetector = {
 	parse(headers, rows) {
 		const transactions: Transaction[] = [];
 		const warnings: string[] = [];
-		let skipped = 0;
-		const skippedDetails: SkippedDetail[] = [];
-
-		const skipRow = (rowIdx: number, row: string[], reason: string) => {
-			skipped++;
-			skippedDetails.push({
-				rowNumber: rowIdx + 1,
-				preview: row.filter(Boolean).slice(0, 3).join(' | '),
-				reason,
-			});
-		};
+		const { skipRow, skipped: getSkipped4, skippedDetails } = createSkipRow();
 		
 		for (const [rowIdx, row] of rows.entries()) {
 			try {
@@ -887,7 +837,7 @@ const myinvestorDetector: BrokerDetector = {
 		}
 		
 		const consolidated = reduceTransactionsToPositions(transactions);
-		return { positions: consolidated, warnings, skipped, skippedDetails, totalTransactions: transactions.length };
+		return { positions: consolidated, warnings, skipped: getSkipped4, skippedDetails, totalTransactions: transactions.length };
 	}
 };
 
@@ -932,18 +882,8 @@ export function parseGenericCSVWithMapping(
 	rows: string[][],
 	mapping: MappingConfig
 ): { positions: ParsedPosition[]; warnings: string[]; skipped: number; skippedDetails: SkippedDetail[] } {
-	let skipped = 0;
-	const skippedDetails: SkippedDetail[] = [];
+	const { skipRow, skipped: getSkipped5, skippedDetails } = createSkipRow();
 	const warnings: string[] = [];
-
-	const skipRow = (rowIdx: number, row: string[], reason: string) => {
-		skipped++;
-		skippedDetails.push({
-			rowNumber: rowIdx + 1,
-			preview: row.filter(Boolean).slice(0, 3).join(' | '),
-			reason,
-		});
-	};
 
 	// 1. Detectar si el mapping contiene columna de fecha para flujo transaccional
 	const isTransactional = mapping.date !== undefined && mapping.date !== -1 && mapping.date < headers.length;
@@ -1071,7 +1011,7 @@ export function parseGenericCSVWithMapping(
 		}
 
 		const positions = reduceTransactionsToPositions(transactions);
-		return { positions, warnings, skipped, skippedDetails };
+		return { positions, warnings, skipped: getSkipped5, skippedDetails };
 	} else {
 		// 2. Flujo instantánea de posiciones (Static positions list)
 		let positions: ParsedPosition[] = [];
@@ -1116,7 +1056,7 @@ export function parseGenericCSVWithMapping(
 		}
 
 		positions = aggregateParsedPositions(positions);
-		return { positions, warnings, skipped, skippedDetails };
+		return { positions, warnings, skipped: getSkipped5, skippedDetails };
 	}
 }
 

@@ -17,6 +17,13 @@ export default defineConfig({
 			devOptions: {
 				enabled: true
 			},
+			// Glob patterns explícitos: excluimos prerendered/** porque la app es 100% SSR
+			// sin rutas prerendeadas, lo que evita el warning de Workbox en el build.
+			workbox: {
+				globPatterns: ['client/**/*.{js,css,html,ico,png,webp,woff2,svg,json}'],
+				navigateFallback: null
+			},
+			includeAssets: ['favicon.png', 'logo.webp', 'pwa-192x192.png', 'pwa-512x512.png'],
 			manifest: {
 				name: 'CoreBalance — Portfolio Dashboard',
 				short_name: 'CoreBalance',

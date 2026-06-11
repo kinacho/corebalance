@@ -20,13 +20,13 @@ export function calculatePortfolioState(
 	// Calcular valor total de cada posición
 	const rawPositions = assets.map((asset) => {
 		const data = holdings[asset.ticker] ?? { shares: 0, avgCost: 0 };
-		const h = data.shares;
-		const avg = data.avgCost;
+		const shareCount = data.shares;
+		const averageCost = data.avgCost;
 		const pData = prices[asset.ticker];
-		const p = pData?.price ?? 0;
+		const currentPrice = pData?.price ?? 0;
 		const fxRate = pData?.fxRate ?? 1;
 		
-		const totalValueBase = h * p * fxRate;
+		const totalValueBase = shareCount * currentPrice * fxRate;
 		const isManual = asset.manualInterestRate !== undefined;
 		
 		const changePercent = asset.manualInterestRate !== undefined ? (asset.manualInterestRate * 100 / 365) : (pData?.change ?? 0);
@@ -34,16 +34,16 @@ export function calculatePortfolioState(
 		const dailyChangePercent = changePercent / 100;
 
 		const totalValue = isManual ? (totalValueBase + dailyChangeValue) : totalValueBase;
-		const totalCost = isManual ? totalValue : h * (avg * fxRate);
+		const totalCost = isManual ? totalValue : shareCount * (averageCost * fxRate);
 		const profit = isManual ? 0 : totalValue - totalCost;
 		const profitPercent = isManual ? 0 : (totalCost > 0 ? profit / totalCost : 0);
 		
 		return { 
 			asset, 
-			holdings: h, 
-			avgCost: avg,
+			holdings: shareCount, 
+			avgCost: averageCost,
 			totalCost,
-			unitPrice: p, 
+			unitPrice: currentPrice, 
 			totalValue,
 			profit,
 			profitPercent,

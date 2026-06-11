@@ -301,7 +301,15 @@
               onclick={() => switchTab(tab.id)}
             >
               <span class="tab-icon">{tab.icon}</span>
-              <span class="tab-label">{tab.label}</span>
+              <span class="tab-label">
+                {#if tab.id === 'assets'}
+                  {$LL.db.tab_assets()}
+                {:else if tab.id === 'rebalance'}
+                  {$LL.db.tab_rebalance()}
+                {:else}
+                  {$LL.db.tab_charts()}
+                {/if}
+              </span>
             </button>
           {/each}
         </nav>

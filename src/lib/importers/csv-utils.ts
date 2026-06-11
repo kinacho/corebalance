@@ -316,6 +316,29 @@ export function extractISIN(text: string): string | null {
 	return match ? match[1].toUpperCase() : null;
 }
 
+/**
+ * Crea una función `skipRow` con estado compartido para tracking de filas omitidas.
+ * Elimina la duplicación de esta lógica en cada parser de bróker.
+ *
+ * @example
+ * const { skipRow, skipped, skippedDetails } = createSkipRow();
+ */
+export function createSkipRow() {
+	let skipped = 0;
+	const skippedDetails: { rowNumber: number; preview: string; reason: string }[] = [];
+
+	function skipRow(rowIdx: number, row: string[], reason: string): void {
+		skipped++;
+		skippedDetails.push({
+			rowNumber: rowIdx + 1,
+			preview: row.filter(Boolean).slice(0, 3).join(' | '),
+			reason,
+		});
+	}
+
+	return { skipRow, get skipped() { return skipped; }, skippedDetails };
+}
+
 
 /** Normaliza códigos y símbolos de divisa comunes a formato estándar ISO de 3 letras */
 export function normalizeCurrency(value: string): string | null {
