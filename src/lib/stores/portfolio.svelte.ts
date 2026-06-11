@@ -405,7 +405,10 @@ export class PortfolioStore {
 					}
 				}
 			}
-		} catch (e) { console.error('History load error:', e); }
+		} catch (e) {
+			console.error('History load error:', e);
+			ui.addToast(get(LL).toasts.load_error(), 'error');
+		}
 	}
 
 	private async updateHistoryPoints() {
@@ -422,7 +425,12 @@ export class PortfolioStore {
 		newHistory.sort((a, b) => a.date.localeCompare(b.date));
 		if (newHistory.length > 365) newHistory = newHistory.slice(-365);
 		this.history = newHistory;
-		try { await storageProvider.saveHistory(this.user.uid, newHistory); } catch (e) { console.error('Update history error:', e); }
+		try {
+			await storageProvider.saveHistory(this.user.uid, newHistory);
+		} catch (e) {
+			console.error('Update history error:', e);
+			ui.addToast(get(LL).toasts.save_error(), 'error');
+		}
 	}
 
 	private saveToStorage() {

@@ -9,7 +9,8 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 			path: '/',
 			maxAge: 60 * 60 * 24 * 365, // 1 año
 			sameSite: 'lax',
-			httpOnly: false // Permitimos acceso desde JS si fuera necesario, aunque el store es preferible
+			httpOnly: false, // Permitimos acceso desde JS si fuera necesario, aunque el store es preferible
+			secure: true
 		});
 		return json({ success: true });
 	}

@@ -241,6 +241,21 @@ for (const t of cashTickers) {
 		}
 	}
 
+	// Pre-fetch all Financial Times prices in parallel to avoid sequential fetch delays
+	const ftTickersToFetch = results
+		.filter((r): r is PromiseFulfilledResult<any> => r.status === 'fulfilled')
+		.map(r => r.value.ticker)
+		.filter(ticker => RELIABLE_FT_MAPPINGS[ticker]);
+
+	const ftFetchResultsArray = await Promise.all(
+		ftTickersToFetch.map(async (ticker) => {
+			const isin = RELIABLE_FT_MAPPINGS[ticker];
+			const ftData = await fetchFTPrice(isin);
+			return { ticker, ftData };
+		})
+	);
+	const ftDataMap = new Map(ftFetchResultsArray.map(item => [item.ticker, item.ftData]));
+
 	for (const result of results) {
 		if (result.status === 'fulfilled') {
 			const { ticker, quote, sparkline, ytd: yahooYtd, mtd, oneMonth } = result.value;
@@ -250,7 +265,7 @@ for (const t of cashTickers) {
 
 			// Intentar obtener precio más actualizado de Financial Times para tickers problemáticos
 			if (RELIABLE_FT_MAPPINGS[ticker]) {
-				const ftData = await fetchFTPrice(RELIABLE_FT_MAPPINGS[ticker]);
+				const ftData = ftDataMap.get(ticker);
 				if (ftData) {
 					p = ftData.price;
 					change = ftData.change;
