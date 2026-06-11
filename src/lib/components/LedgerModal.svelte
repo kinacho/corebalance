@@ -333,7 +333,7 @@
 								<div class="form-group">
 									<label for="tx-currency">{$LL.ledger.label_currency()}</label>
 									<div class="fx-group">
-										<input id="tx-currency" type="text" class="currency-input" bind:value={newTx.currency} maxlength="3" />
+										<input id="tx-currency" type="text" class="currency-input" bind:value={newTx.currency} maxlength="3" disabled title="La divisa está determinada por el activo" />
 										<input type="number" step="0.0001" class="fx-input" bind:value={newTx.fxRate} title={$LL.ledger.title_fx_rate()} />
 									</div>
 								</div>
