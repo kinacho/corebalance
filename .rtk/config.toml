@@ -1,0 +1,10 @@
+# RTK configuration for CoreBalance on Windows
+[terminal]
+clean_output = true
+max_output_lines = 100
+windows_compatibility = true
+
+[filtering]
+enabled = true
+collapse_patterns = ["node_modules", "svelte-kit"]
+exclude_raw = ["npm install", "git status"]

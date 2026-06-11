@@ -1,0 +1,12 @@
+npm run dev
+npm run build
+npm run check
+npm run test
+npm run test:watch
+npx vitest
+npx playwright
+powershell.exe Get-ChildItem
+powershell.exe Select-String
+dir
+rg
+findstr

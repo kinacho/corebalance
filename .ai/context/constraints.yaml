@@ -1,0 +1,13 @@
+constraints:
+  technical:
+    - "No Unix-only commands (avoid raw ls, grep, find, cat, sed, xargs). Prefer Windows PowerShell / Node scripts."
+    - "Ensure Svelte 5 Runes standard is followed without falling back to Svelte 4 store patterns."
+    - "typesafe-i18n is used for translations; Spanish (es) is base, English (en) is translation source."
+  product:
+    - "No corporate or multi-seat/Jira features. Focus exclusively on personal finance and individual portfolios."
+    - "Offline-first capability must be maintained through Service Workers (PWA)."
+  performance:
+    - "Local state updates must have immediate UI response (under 100ms)."
+    - "Yahoo Finance pricing API queries must be cached in Upstash Redis to prevent rate limit triggers."
+  security:
+    - "Do not commit Firebase configuration secrets or Redis credentials. Always use Vite environment variables."

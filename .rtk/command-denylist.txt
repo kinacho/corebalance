@@ -1,0 +1,12 @@
+git commit
+git push
+git checkout
+git branch
+git merge
+git rebase
+grep
+sed
+awk
+xargs
+rm -rf
+del /q
