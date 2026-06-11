@@ -30,46 +30,13 @@ async function setCachedHistory(ticker: string, data: any) {
 	}
 }
 
-// Mapeo de tickers problemáticos en Yahoo a ISINs/Symbols de Financial Times para mayor fiabilidad
-const RELIABLE_FT_MAPPINGS: Record<string, string> = {
-	'0P0001XF40.F': 'IE000ZYRH0Q7', // BlackRock World
-	'0P0001XF3Z.F': 'IE000QAZP7L2', // BlackRock EM
-	'XS2940466316.SG': 'IB1T:FRA'   // BlackRock Bitcoin ETP (Frankfurt)
-};
-
-// Tickers que no existen en Yahoo Finance y se obtienen directamente de Financial Times
-const PURE_FT_TICKERS: Record<string, { name: string, currency: string }> = {
-	'IE00B2NXKW18': { name: 'Seilern World Growth EUR U R', currency: 'EUR' }
-};
-
-async function fetchFTPrice(isin: string): Promise<{ price: number, change: number, ytd?: number } | null> {
-	try {
-		const url = `https://markets.ft.com/data/funds/tearsheet/summary?s=${isin}:EUR`;
-		const controller = new AbortController();
-		const timeout = setTimeout(() => controller.abort(), 8000);
-		const res = await fetch(url, { cache: 'no-store', signal: controller.signal });
-		clearTimeout(timeout);
-		if (!res.ok) return null;
-		const html = await res.text();
-		
-		// Búsqueda del precio: aparece después de "Price (EUR)"
-		const priceMatch = html.match(/Price \(EUR\).*?mod-ui-data-list__value">([\d,.]+)/s);
-		// Búsqueda del cambio porcentual: aparece después de la barra "/"
-		const changeMatch = html.match(/\/ ([\d,.-]+)%/);
-		// Búsqueda del YTD: aparece en "Year to date"
-		const ytdMatch = html.match(/Year to date.*?([\d,.-]+)%/s);
-		
-		if (priceMatch) {
-			const price = parseFloat(priceMatch[1].replace(/,/g, ''));
-			const change = changeMatch ? parseFloat(changeMatch[1]) : 0;
-			const ytd = ytdMatch ? parseFloat(ytdMatch[1]) : undefined;
-			if (price > 0) return { price, change, ytd };
-		}
-	} catch (e) {
-		console.error(`Error fetching FT price for ${isin}:`, e);
-	}
-	return null;
-}
+import {
+	RELIABLE_FT_MAPPINGS,
+	PURE_FT_TICKERS,
+	fetchFTPrice,
+	correctSubunitCurrencies,
+	calculateHistoricalMetrics
+} from './priceHelpers';
 
 // --- Rate Limiting ---
 const RATE_LIMIT = 30;       // max requests
@@ -154,7 +121,7 @@ for (const t of cashTickers) {
 	}
 
 	// Crear un mapa de cotizaciones para acceso rápido
-	const quoteMap = new Map(quotesResult.map(q => [q.symbol, q]));
+	const quoteMap = new Map(quotesResult.map((q: any) => [q.symbol, q]));
 
 	// 2. Obtener los históricos (sparklines y YTD) usando caché individual
 	const now = Date.now();
@@ -222,40 +189,13 @@ for (const t of cashTickers) {
 					const validQuotes = chart.quotes.filter(q => q.close !== null);
 					sparkline = validQuotes.slice(-30).map(q => q.close) as number[];
 					
-					// Calcular métricas
+					// Calcular métricas usando helper
 					if (validQuotes.length > 0) {
 						const currentPrice = quote.regularMarketPrice || (validQuotes[validQuotes.length - 1].close as number);
-						
-						// 1. YTD
-						const prevYearQuotes = validQuotes.filter(q => new Date(q.date) < startOfCurrentYear);
-						if (prevYearQuotes.length > 0) {
-							const lastYearClose = prevYearQuotes[prevYearQuotes.length - 1].close as number;
-							if (lastYearClose > 0) ytd = ((currentPrice - lastYearClose) / lastYearClose) * 100;
-						} else {
-							const firstThisYear = validQuotes[0].close as number;
-							if (firstThisYear > 0) ytd = ((currentPrice - firstThisYear) / firstThisYear) * 100;
-						}
-
-						// 2. MTD (Month To Date)
-						const startOfCurrentMonth = new Date(Date.UTC(new Date().getFullYear(), new Date().getMonth(), 1));
-						const prevMonthQuotes = validQuotes.filter(q => new Date(q.date) < startOfCurrentMonth);
-						if (prevMonthQuotes.length > 0) {
-							const lastMonthClose = prevMonthQuotes[prevMonthQuotes.length - 1].close as number;
-							if (lastMonthClose > 0) mtd = ((currentPrice - lastMonthClose) / lastMonthClose) * 100;
-						}
-
-						// 3. 1M (Últimos 30 días naturales)
-						const oneMonthAgo = new Date();
-						oneMonthAgo.setDate(oneMonthAgo.getDate() - 30);
-						const oneMonthQuotes = validQuotes.filter(q => new Date(q.date) < oneMonthAgo);
-						if (oneMonthQuotes.length > 0) {
-							const oneMonthClose = oneMonthQuotes[oneMonthQuotes.length - 1].close as number;
-							if (oneMonthClose > 0) oneMonth = ((currentPrice - oneMonthClose) / oneMonthClose) * 100;
-						} else if (validQuotes.length > 0) {
-							// Fallback si no hay 30 días: usar el primer dato disponible
-							const firstClose = validQuotes[0].close as number;
-							if (firstClose > 0) oneMonth = ((currentPrice - firstClose) / firstClose) * 100;
-						}
+						const metrics = calculateHistoricalMetrics(validQuotes, currentPrice, quote.ytdReturn);
+						ytd = metrics.ytd;
+						mtd = metrics.mtd;
+						oneMonth = metrics.oneMonth;
 					}
 
 					// Fallback especial para Cripto ETPs que suelen no tener histórico en Yahoo
@@ -303,28 +243,10 @@ for (const t of cashTickers) {
 
 	for (const result of results) {
 		if (result.status === 'fulfilled') {
-			let { ticker, quote, sparkline, ytd: yahooYtd, mtd, oneMonth } = result.value;
-			let p = quote.regularMarketPrice;
+			const { ticker, quote, sparkline, ytd: yahooYtd, mtd, oneMonth } = result.value;
+			let { price: p, sparkline: correctedSparkline, currency } = correctSubunitCurrencies(quote.regularMarketPrice, sparkline, quote.currency ?? 'EUR');
 			let change = quote.regularMarketChangePercent;
 			let ytd = yahooYtd;
-			let currency = quote.currency ?? 'EUR';
-
-			// Corrección generalizada de divisas fraccionarias (ej: GBp = peniques, ZAc = centavos)
-			const SUBUNIT_DIVISOR = 100;
-			const KNOWN_SUBUNITS: Record<string, string> = {
-				'GBp': 'GBP',
-				'ZAc': 'ZAR',
-				'IEp': 'EUR',
-				'EUc': 'EUR',
-				'USc': 'USD'
-			};
-
-			if (KNOWN_SUBUNITS[currency] || (currency.length === 3 && currency.endsWith('p'))) {
-				const baseCurrency = KNOWN_SUBUNITS[currency] || (currency.substring(0, 2) + 'P');
-				p = (p ?? 0) / SUBUNIT_DIVISOR;
-				sparkline = sparkline.map(s => s / SUBUNIT_DIVISOR);
-				currency = baseCurrency;
-			}
 
 			// Intentar obtener precio más actualizado de Financial Times para tickers problemáticos
 			if (RELIABLE_FT_MAPPINGS[ticker]) {
@@ -347,11 +269,11 @@ for (const t of cashTickers) {
 			}
 
 			prices[ticker] = {
-				price: p ?? 0,
+				price: p,
 				currency: currency,
 				name: quote.shortName ?? quote.longName ?? ticker,
 				change: change ?? 0,
-				sparkline,
+				sparkline: correctedSparkline,
 				marketState: quote.marketState,
 				lastUpdate: quote.regularMarketTime ? new Date(quote.regularMarketTime).getTime() : undefined,
 				ytdChangePercent: ytd,

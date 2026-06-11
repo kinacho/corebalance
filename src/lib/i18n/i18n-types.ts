@@ -2877,6 +2877,10 @@ type RootTranslation = {
 		 */
 		delete_account: string
 		/**
+		 * ¿​E​S​T​Á​S​ ​S​E​G​U​R​O​?​ ​E​s​t​a​ ​a​c​c​i​ó​n​ ​e​s​ ​i​r​r​e​v​e​r​s​i​b​l​e​ ​y​ ​b​o​r​r​a​r​á​ ​t​o​d​o​s​ ​t​u​s​ ​a​c​t​i​v​o​s​ ​e​ ​h​i​s​t​o​r​i​a​l​ ​d​e​f​i​n​i​t​i​v​a​m​e​n​t​e​.
+		 */
+		delete_account_confirm: string
+		/**
 		 * I​n​i​c​i​a​r​ ​s​e​s​i​ó​n​ ​c​o​n​ ​G​o​o​g​l​e
 		 */
 		login_google: string
@@ -5727,6 +5731,10 @@ export type TranslationFunctions = {
 		 * Eliminar mi cuenta
 		 */
 		delete_account: () => LocalizedString
+		/**
+		 * ¿ESTÁS SEGURO? Esta acción es irreversible y borrará todos tus activos e historial definitivamente.
+		 */
+		delete_account_confirm: () => LocalizedString
 		/**
 		 * Iniciar sesión con Google
 		 */

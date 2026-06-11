@@ -48,6 +48,13 @@
 		if (event.key === 'Escape') showUserMenu = false;
 	}
 
+	function handleDeleteAccount() {
+		showUserMenu = false;
+		if (confirm($LL.header.delete_account_confirm())) {
+			portfolio.deleteAccount();
+		}
+	}
+
 	// Reaccionar a cambios de usuario para notificaciones
 	let lastUserUid = $state<string | null>(null);
 	$effect(() => {
@@ -330,7 +337,7 @@
 										class="dropdown-item delete-account" 
 										role="menuitem"
 										disabled={authLoading}
-										onclick={() => { portfolio.deleteAccount(); showUserMenu = false; }}
+										onclick={handleDeleteAccount}
 									>
 										<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none">
 											<polyline points="3 6 5 6 21 6"></polyline>

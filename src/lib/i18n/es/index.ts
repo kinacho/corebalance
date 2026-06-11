@@ -833,6 +833,7 @@ const es = {
     export_json: 'Exportar JSON (Offline)',
     logout: 'Cerrar sesión',
     delete_account: 'Eliminar mi cuenta',
+    delete_account_confirm: '¿ESTÁS SEGURO? Esta acción es irreversible y borrará todos tus activos e historial definitivamente.',
     login_google: 'Iniciar sesión con Google',
     loading: 'Cargando...',
     default_user: 'Inversor',

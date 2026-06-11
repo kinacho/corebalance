@@ -831,6 +831,7 @@ const en: Translation = {
     export_json: 'Export JSON (Offline)',
     logout: 'Log out',
     delete_account: 'Delete my account',
+    delete_account_confirm: 'ARE YOU SURE? This action is irreversible and will permanently delete all your assets and history.',
     login_google: 'Sign in with Google',
     loading: 'Loading...',
     default_user: 'Investor',

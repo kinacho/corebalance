@@ -7,6 +7,7 @@ import { storageProvider } from '$lib/db';
 import { formatDate, resolveAssetIcon } from '$lib/utils';
 import { ui } from '$lib/stores/ui.svelte';
 import { goto } from '$app/navigation';
+import { detectSparklineChange, applyTerUpdates } from '$lib/stores/priceUtils';
 
 export interface User { uid: string; displayName?: string | null; photoURL?: string | null; email?: string | null; }
 
@@ -494,7 +495,7 @@ export class PortfolioStore {
 				await storageProvider.login();
 				if (typeof window !== 'undefined') window.location.reload();
 			}
-		} catch (e: any) {
+		} catch (e: unknown) {
 			console.error('Error durante el login:', e);
 			ui.addToast(get(LL).toasts.login_error(), 'error');
 		} finally {
@@ -533,17 +534,7 @@ export class PortfolioStore {
 
 			const data = await response.json();
 
-			// Detectar si los sparklines han cambiado para actualizar la versión del historial
-			let sparklinesChanged = false;
-			for (const ticker in data.prices) {
-				const newSpark = data.prices[ticker]?.sparkline;
-				const oldSpark = this.prices[ticker]?.sparkline;
-				if (newSpark && JSON.stringify(newSpark) !== JSON.stringify(oldSpark)) {
-					sparklinesChanged = true;
-					break;
-				}
-			}
-			if (sparklinesChanged) {
+			if (detectSparklineChange(this.prices, data.prices)) {
 				this.sparklineVersion++;
 			}
 
@@ -553,21 +544,13 @@ export class PortfolioStore {
 			// Resetear errores en éxito
 			this.consecutiveErrors = 0;
 
-			let assetsUpdated = false;
-			const updateAssetTers = (assets: Asset[]): Asset[] => {
-				return assets.map(asset => {
-					const priceInfo = this.prices[asset.ticker];
-					if (priceInfo && priceInfo.ter !== undefined && priceInfo.ter > 0 && asset.ter === 0) {
-						assetsUpdated = true;
-						return { ...asset, ter: priceInfo.ter };
-					}
-					return asset;
-				});
-			};
-			this.coreAssets = updateAssetTers(this.coreAssets);
-			this.satelliteAssets = updateAssetTers(this.satelliteAssets);
-			this.stockAssets = updateAssetTers(this.stockAssets);
-			if (assetsUpdated) this.saveToStorage();
+			const core = applyTerUpdates(this.coreAssets, this.prices);
+			const satellite = applyTerUpdates(this.satelliteAssets, this.prices);
+			const stock = applyTerUpdates(this.stockAssets, this.prices);
+			this.coreAssets = core.assets;
+			this.satelliteAssets = satellite.assets;
+			this.stockAssets = stock.assets;
+			if (core.updated || satellite.updated || stock.updated) this.saveToStorage();
 			if (typeof localStorage !== 'undefined') localStorage.setItem(STORAGE_KEY_PRICES, JSON.stringify(this.prices));
 			if (this.user) await this.updateHistoryPoints();
 		} catch (e) { 
@@ -618,16 +601,15 @@ export class PortfolioStore {
 		ui.addToast(get(LL).toasts.portfolio_exported(), 'success');
 	}
 
+	/** Resets all portfolio data. Confirmation must be handled by the calling component. */
 	reset() {
-		if (confirm('¿Seguro que quieres borrar toda la cartera?')) {
-			this.holdings = {};
-			this.transactions = [];
-			this.contribution = 0;
-			if (typeof sessionStorage !== 'undefined') {
-				sessionStorage.removeItem('bypassLanding');
-			}
-			this.saveToStorage();
+		this.holdings = {};
+		this.transactions = [];
+		this.contribution = 0;
+		if (typeof sessionStorage !== 'undefined') {
+			sessionStorage.removeItem('bypassLanding');
 		}
+		this.saveToStorage();
 	}
 
 	addAsset(asset: Asset) {
@@ -765,15 +747,18 @@ export class PortfolioStore {
 		this.loadFromStorage();
 	}
 
+	/** Deletes the account permanently. Confirmation must be handled by the calling component. */
 	async deleteAccount() {
-		if (!confirm('¿ESTÁS SEGURO? Esta acción es irreversible y borrará todos tus activos e historial definitivamente.')) return;
 		this.authLoading = true;
 		try {
 			if (storageProvider.deleteAccount) {
 				await storageProvider.deleteAccount();
 				window.location.reload();
 			}
-		} catch (e: any) { alert(e.message || 'Error al eliminar la cuenta'); } finally { this.authLoading = false; }
+		} catch (e: unknown) {
+			const msg = e instanceof Error ? e.message : get(LL).toasts.load_error();
+			ui.addToast(msg, 'error');
+		} finally { this.authLoading = false; }
 	}
 }
 
