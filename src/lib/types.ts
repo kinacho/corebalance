@@ -111,6 +111,7 @@ export interface HoldingData {
 	avgCost: number;
 	totalCostBase?: number; // Coste total exacto en la divisa base (EUR) precalculado desde el Ledger
 	useLedger?: boolean; // Si es true, ignora estos campos y usa el historial de transacciones
+	accruedInterest?: number; // Intereses acumulados desde las transacciones del Ledger
 }
 
 /** Holdings almacenados en localStorage */

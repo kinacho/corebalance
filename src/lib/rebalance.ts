@@ -33,10 +33,27 @@ export function calculatePortfolioState(
 		const dailyChangeValue = totalValueBase * (changePercent / 100);
 		const dailyChangePercent = changePercent / 100;
 
-		const totalValue = isManual ? (totalValueBase + dailyChangeValue) : totalValueBase;
-		const totalCost = isManual ? totalValue : (data.totalCostBase !== undefined ? data.totalCostBase : shareCount * (averageCost * fxRate));
-		const profit = isManual ? 0 : totalValue - totalCost;
-		const profitPercent = isManual ? 0 : (totalCost > 0 ? profit / totalCost : 0);
+		let totalValue = totalValueBase;
+		let totalCost = data.totalCostBase !== undefined ? data.totalCostBase : shareCount * (averageCost * fxRate);
+		let profit = 0;
+		let profitPercent = 0;
+
+		if (isManual) {
+			if (data.accruedInterest !== undefined) {
+				totalValue = totalValueBase + data.accruedInterest;
+				profit = data.accruedInterest;
+				profitPercent = totalCost > 0 ? profit / totalCost : 0;
+			} else {
+				// Fallback para cuando no se usa Ledger
+				totalValue = totalValueBase + dailyChangeValue;
+				totalCost = totalValue;
+				profit = 0;
+				profitPercent = 0;
+			}
+		} else {
+			profit = totalValue - totalCost;
+			profitPercent = totalCost > 0 ? profit / totalCost : 0;
+		}
 		
 		return { 
 			asset, 

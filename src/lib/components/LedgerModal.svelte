@@ -75,6 +75,8 @@
 	const defaultPrice = $derived(portfolio.prices[asset.ticker]?.price || 0);
 	const defaultCurrency = $derived(portfolio.prices[asset.ticker]?.currency || ui.baseCurrency);
 
+	let editingTxId = $state<string | null>(null);
+
 	let newTx = $state<Partial<Transaction>>({
 		type: 'buy',
 		date: Date.now(),
@@ -88,7 +90,24 @@
 
 	// Inicializar valores cuando cambia el activo o se abre el formulario
 	$effect(() => {
-		if (showAddForm || asset.ticker) {
+		if (asset.ticker) {
+			editingTxId = null;
+			showAddForm = false;
+			newTx = {
+				type: 'buy',
+				date: Date.now(),
+				shares: 0,
+				price: defaultPrice,
+				currency: defaultCurrency,
+				fees: 0,
+				fxRate: 1,
+				notes: ''
+			};
+		}
+	});
+
+	$effect(() => {
+		if (showAddForm && !editingTxId) {
 			newTx.price = defaultPrice;
 			newTx.currency = defaultCurrency;
 		}
@@ -102,30 +121,61 @@
 		ui.hapticFeedback('medium');
 	}
 
-	function addTransaction() {
+	function cancelForm() {
+		showAddForm = false;
+		editingTxId = null;
+		newTx = {
+			type: 'buy',
+			date: Date.now(),
+			shares: 0,
+			price: defaultPrice,
+			currency: defaultCurrency,
+			fees: 0,
+			fxRate: 1,
+			notes: ''
+		};
+	}
+
+	function submitTransaction() {
 		if (!newTx.shares || newTx.shares <= 0) {
 			ui.addToast($LL.toasts.shares_greater_than_zero(), 'error');
 			return;
 		}
 
-		const tx: Transaction = {
-			id: crypto.randomUUID(),
-			ticker: asset.ticker,
-			type: newTx.type as TransactionType,
-			date: newTx.date || Date.now(),
-			shares: newTx.shares || 0,
-			price: newTx.price || 0,
-			currency: newTx.currency || 'EUR',
-			fees: newTx.fees || 0,
-			fxRate: newTx.fxRate || 1,
-			notes: newTx.notes
-		};
+		if (editingTxId) {
+			portfolio.updateTransaction(editingTxId, {
+				type: newTx.type as TransactionType,
+				date: newTx.date || Date.now(),
+				shares: newTx.shares || 0,
+				price: newTx.price || 0,
+				currency: newTx.currency || 'EUR',
+				fees: newTx.fees || 0,
+				fxRate: newTx.fxRate || 1,
+				notes: newTx.notes
+			});
+			ui.addToast('Transacción modificada con éxito', 'success');
+		} else {
+			const tx: Transaction = {
+				id: crypto.randomUUID(),
+				ticker: asset.ticker,
+				type: newTx.type as TransactionType,
+				date: newTx.date || Date.now(),
+				shares: newTx.shares || 0,
+				price: newTx.price || 0,
+				currency: newTx.currency || 'EUR',
+				fees: newTx.fees || 0,
+				fxRate: newTx.fxRate || 1,
+				notes: newTx.notes
+			};
 
-		portfolio.addTransaction(tx);
+			portfolio.addTransaction(tx);
+			ui.addToast($LL.toasts.transaction_added(), 'success');
+		}
+
 		showAddForm = false;
-		ui.addToast($LL.toasts.transaction_added(), 'success');
+		editingTxId = null;
 		ui.hapticFeedback('medium');
-		
+
 		// Reset form a valores por defecto reactivos
 		newTx = {
 			type: 'buy',
@@ -139,9 +189,28 @@
 		};
 	}
 
+	function startEdit(tx: Transaction) {
+		editingTxId = tx.id;
+		newTx = {
+			type: tx.type,
+			date: tx.date,
+			shares: tx.shares,
+			price: tx.price,
+			currency: tx.currency,
+			fees: tx.fees,
+			fxRate: tx.fxRate,
+			notes: tx.notes || ''
+		};
+		showAddForm = true;
+		ui.hapticFeedback('light');
+	}
+
 	function removeTx(id: string) {
 		if (confirm($LL.ledger.confirm_delete())) {
 			portfolio.removeTransaction(id);
+			if (editingTxId === id) {
+				cancelForm();
+			}
 			ui.addToast($LL.toasts.transaction_deleted(), 'info');
 		}
 	}
@@ -215,13 +284,16 @@
 				<div class="transactions-section">
 					<div class="section-header">
 						<h3>{$LL.ledger.title_history()}</h3>
-						<button class="add-tx-btn" onclick={() => showAddForm = !showAddForm}>
+						<button class="add-tx-btn" onclick={() => { if (showAddForm) { cancelForm(); } else { showAddForm = true; } }}>
 							{showAddForm ? $LL.common.cancel() : $LL.ledger.btn_add_tx()}
 						</button>
 					</div>
 
 					{#if showAddForm}
 						<div class="add-tx-form" transition:slide>
+							{#if editingTxId}
+								<h4 class="form-title">Editar Transacción</h4>
+							{/if}
 							<div class="form-row">
 								<div class="form-group">
 									<label for="tx-type">{$LL.ledger.label_type()}</label>
@@ -339,7 +411,9 @@
 								</div>
 							</div>
 
-							<button class="submit-tx-btn" onclick={addTransaction}>{$LL.ledger.btn_save_tx()}</button>
+							<button class="submit-tx-btn" onclick={submitTransaction}>
+								{editingTxId ? 'Guardar Cambios' : $LL.ledger.btn_save_tx()}
+							</button>
 						</div>
 					{/if}
 
@@ -348,7 +422,9 @@
 							<div class="empty-state">{$LL.ledger.empty_history()}</div>
 						{:else}
 							{#each transactions as tx (tx.id)}
-								<div class="tx-item" in:slide>
+								<!-- svelte-ignore a11y_click_events_have_key_events -->
+								<!-- svelte-ignore a11y_no_static_element_interactions -->
+								<div class="tx-item" class:tx-item-editing={editingTxId === tx.id} onclick={() => startEdit(tx)} in:slide>
 									<div class="tx-type-dot" style="background: {typeColors[tx.type]}"></div>
 									<div class="tx-main">
 										<span class="tx-type-label">{typeLabels[tx.type]}</span>
@@ -358,7 +434,7 @@
 										<span class="tx-shares">{tx.shares > 0 ? '+' : ''}{tx.shares}</span>
 										<span class="tx-price">{formatCurrency(tx.price, tx.currency)}</span>
 									</div>
-									<button class="tx-delete" onclick={() => removeTx(tx.id)}>✕</button>
+									<button class="tx-delete" onclick={(e) => { e.stopPropagation(); removeTx(tx.id); }}>✕</button>
 								</div>
 							{/each}
 						{/if}
@@ -570,6 +646,13 @@
 		gap: 1rem;
 	}
 
+	.form-title {
+		font-size: 0.85rem;
+		font-weight: 700;
+		color: #3b82f6;
+		margin: 0 0 0.25rem 0;
+	}
+
 	.form-row {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
@@ -630,6 +713,18 @@
 		display: flex;
 		align-items: center;
 		gap: 0.75rem;
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	.tx-item:hover {
+		background: rgba(255,255,255,0.06);
+		border-color: rgba(255,255,255,0.15);
+	}
+
+	.tx-item.tx-item-editing {
+		background: rgba(59, 130, 246, 0.15);
+		border-color: rgba(59, 130, 246, 0.4);
 	}
 
 	.tx-type-dot {

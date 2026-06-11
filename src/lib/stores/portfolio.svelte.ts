@@ -47,11 +47,27 @@ export class PortfolioStore {
 
 	// --- Derived State ---
 	ledgerHoldings = $derived.by(() => {
-		const result: Record<string, { shares: number; avgCost: number; totalCostRaw: number; totalCostBase: number }> = {};
+		const result: Record<string, { shares: number; avgCost: number; totalCostRaw: number; totalCostBase: number; accruedInterest: number; lastTxDate: number | null }> = {};
 		const sorted = [...this.transactions].sort((a, b) => a.date - b.date);
 		for (const t of sorted) {
-			if (!result[t.ticker]) result[t.ticker] = { shares: 0, avgCost: 0, totalCostRaw: 0, totalCostBase: 0 };
+			if (!result[t.ticker]) {
+				result[t.ticker] = { shares: 0, avgCost: 0, totalCostRaw: 0, totalCostBase: 0, accruedInterest: 0, lastTxDate: null };
+			}
 			const pos = result[t.ticker];
+
+			// Calcular interés acumulado hasta la fecha de esta transacción
+			const asset = this.coreAssets.find(a => a.ticker === t.ticker) ||
+			              this.satelliteAssets.find(a => a.ticker === t.ticker) ||
+			              this.stockAssets.find(a => a.ticker === t.ticker);
+			const rate = asset?.manualInterestRate || 0;
+
+			if (pos.lastTxDate !== null && pos.shares > 0 && rate > 0) {
+				const diffTime = Math.max(0, t.date - pos.lastTxDate);
+				const diffDays = diffTime / (1000 * 60 * 60 * 24);
+				pos.accruedInterest += pos.shares * (rate / 365) * diffDays;
+			}
+			pos.lastTxDate = t.date;
+
 			if (t.type === 'buy' || t.type === 'initial_balance' || t.type === 'transfer') {
 				if (t.shares > 0) {
 					const txCostRaw = (t.shares * t.price) + (t.fees || 0); 
@@ -79,10 +95,25 @@ export class PortfolioStore {
 				pos.avgCost = pos.shares > 0 ? pos.totalCostRaw / pos.shares : 0;
 			}
 		}
+
+		const today = Date.now();
 		for (const ticker in result) {
-			result[ticker].shares = Math.round(result[ticker].shares * 1000) / 1000;
-			result[ticker].avgCost = Math.round(result[ticker].avgCost * 1000) / 1000;
-			result[ticker].totalCostBase = Math.round(result[ticker].totalCostBase * 1000) / 1000;
+			const pos = result[ticker];
+			const asset = this.coreAssets.find(a => a.ticker === ticker) ||
+			              this.satelliteAssets.find(a => a.ticker === ticker) ||
+			              this.stockAssets.find(a => a.ticker === ticker);
+			const rate = asset?.manualInterestRate || 0;
+
+			if (pos.lastTxDate !== null && pos.shares > 0 && rate > 0) {
+				const diffTime = Math.max(0, today - pos.lastTxDate);
+				const diffDays = diffTime / (1000 * 60 * 60 * 24);
+				pos.accruedInterest += pos.shares * (rate / 365) * diffDays;
+			}
+
+			pos.shares = Math.round(pos.shares * 1000) / 1000;
+			pos.avgCost = Math.round(pos.avgCost * 1000) / 1000;
+			pos.totalCostBase = Math.round(pos.totalCostBase * 1000) / 1000;
+			pos.accruedInterest = Math.round(pos.accruedInterest * 1000) / 1000;
 		}
 		return result;
 	});
@@ -95,7 +126,8 @@ export class PortfolioStore {
 					shares: this.ledgerHoldings[ticker].shares,
 					avgCost: this.ledgerHoldings[ticker].avgCost,
 					totalCostBase: this.ledgerHoldings[ticker].totalCostBase,
-					useLedger: true
+					useLedger: true,
+					accruedInterest: this.ledgerHoldings[ticker].accruedInterest
 				};
 			}
 		}
@@ -183,6 +215,7 @@ export class PortfolioStore {
 
 		const processPositions = (positions: PortfolioPosition[], key: 'core' | 'stocks' | 'satellite') => {
 			positions.forEach(pos => {
+				if (pos.holdings <= 0 || pos.unitPrice <= 0) return;
 				const spark = pos.sparkline || [];
 				for (let i = 0; i < days; i++) {
 					const sparkIndex = spark.length - days + i;
