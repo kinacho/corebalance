@@ -4,10 +4,13 @@ import { setLocale } from '$lib/i18n/i18n-svelte';
 import { loadLocaleAsync } from '$lib/i18n/i18n-util.async';
 import type { Locales } from '$lib/i18n/i18n-types';
 
-export const load: LayoutLoad = async ({ data }) => {
+export const load: LayoutLoad = async ({ data, url }) => {
 	let locale = data?.locale;
 
-	if (browser) {
+	const isEnglishRoute = url.pathname.startsWith('/en/') || url.pathname === '/en';
+	if (isEnglishRoute) {
+		locale = 'en';
+	} else if (browser) {
 		// 1. Mirar localStorage (prioridad cliente)
 		const saved = localStorage.getItem('lang');
 		if (saved && (saved === 'es' || saved === 'en')) {
@@ -21,8 +24,8 @@ export const load: LayoutLoad = async ({ data }) => {
 
 	if (!locale) locale = 'es'; // Fallback final
 
-	await loadLocaleAsync(locale);
-	setLocale(locale);
+	await loadLocaleAsync(locale as Locales);
+	setLocale(locale as Locales);
 
 	return { ...data, locale };
 };

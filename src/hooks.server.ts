@@ -8,6 +8,11 @@ import {
 import type { Locales } from '$lib/i18n/i18n-types';
 
 const getLocale = (event: RequestEvent): Locales => {
+	// 0. Prioridad máxima: Ruta con prefijo /en
+	if (event.url.pathname.startsWith('/en/') || event.url.pathname === '/en') {
+		return 'en';
+	}
+
 	// 1. Prioridad: Cookie guardada
 	const langCookie = event.cookies.get('lang');
 	if (langCookie && locales.includes(langCookie as Locales)) {
