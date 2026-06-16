@@ -8,6 +8,7 @@ tags: [rebalanceo, gestion-riesgo, volatilidad, inversion-pasiva, bogleheads]
 lang: es
 canonical: "https://corebalance.app/blog/que-pasa-si-no-rebalanceo-cartera"
 ogImage: "/blog/og/que-pasa-si-no-rebalanceo-cartera.jpg"
+slugs: { es: 'que-pasa-si-no-rebalanceo-cartera', en: 'what-happens-if-you-dont-rebalance' }
 ---
 
 Uno de los mantras más populares de la inversión indexada o pasiva es la famosa frase: *“Comprar y no tocar nada”* (o en inglés, *buy and hold*). Muchos inversores interpretan esto al pie de la letra, asumiendo que tras elegir sus fondos indexados o ETFs iniciales, su única tarea durante los siguientes 20 años es aportar dinero y desentenderse por completo de la pantalla del bróker.

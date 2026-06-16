@@ -1,36 +1,32 @@
 <script lang="ts">
-  import LandingNavBar from '$lib/components/landing/LandingNavBar.svelte';
-  import LandingFooter from '$lib/components/landing/LandingFooter.svelte';
+  import { locale, LL } from '$lib/i18n/i18n-svelte';
   import type { Post } from '$lib/blog';
   import { goto } from '$app/navigation';
+  import LandingNavBar from '$lib/components/landing/LandingNavBar.svelte';
+  import LandingFooter from '$lib/components/landing/LandingFooter.svelte';
 
-  let { post } = $props<{
-    post: Post;
-  }>();
+  let { post }: { post: Post } = $props();
 
-  const lang = $derived(post.lang);
+  // Reaccionar al cambio global de idioma
+  const currentLang = $derived($locale);
 
-  const t = $derived(lang === 'en' ? {
-    back: 'Back to blog',
-    breadcrumbHome: 'Home',
+  // Usar $LL para las traducciones fijas que no están en el post
+  const t = $derived({
+    back: currentLang === 'es' ? 'Volver al blog' : 'Back to blog',
+    breadcrumbHome: currentLang === 'es' ? 'Inicio' : 'Home',
     breadcrumbBlog: 'Blog',
-    ctaTitle: 'Ready to rebalance your portfolio?',
-    ctaDesc: 'Enter your funds or ETFs, set your target percentages, and get the exact calculation instantly. Free, no signup required, and 100% private in your browser.',
-    ctaBtn: 'Try free calculator',
-    readTime: '3 min read'
-  } : {
-    back: 'Volver al blog',
-    breadcrumbHome: 'Inicio',
-    breadcrumbBlog: 'Blog',
-    ctaTitle: '¿Listo para rebalancear tu cartera?',
-    ctaDesc: 'Introduce tus fondos o ETFs, define tus porcentajes objetivo y obtén los cálculos exactos al instante. Gratis, sin registro y 100% privado en tu navegador.',
-    ctaBtn: 'Probar calculadora gratis',
-    readTime: '3 min de lectura'
+    ctaTitle: currentLang === 'es' ? '¿Listo para rebalancear tu cartera?' : 'Ready to rebalance your portfolio?',
+    ctaDesc: currentLang === 'es' 
+        ? 'Introduce tus fondos o ETFs, define tus porcentajes objetivo y obtén los cálculos exactos al instante. Gratis, sin registro y 100% privado en tu navegador.' 
+        : 'Enter your funds or ETFs, set your target percentages, and get the exact calculation instantly. Free, no signup required, and 100% private in your browser.',
+    ctaBtn: currentLang === 'es' ? 'Probar calculadora gratis' : 'Try free calculator',
+    readTime: currentLang === 'es' ? '3 min de lectura' : '3 min read',
+    authorPrefix: currentLang === 'es' ? 'Por' : 'By'
   });
 
   function formatPostDate(dateStr: string) {
     const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateStr).toLocaleDateString(lang === 'es' ? 'es-ES' : 'en-US', options);
+    return new Date(dateStr).toLocaleDateString(currentLang === 'es' ? 'es-ES' : 'en-US', options);
   }
 
   // Generamos el schema JSON-LD de Article
@@ -105,7 +101,7 @@
           <span class="separator-dot">·</span>
           <span>{t.readTime}</span>
           <span class="separator-dot">·</span>
-          <span class="author">Por {post.author}</span>
+          <span class="author">{t.authorPrefix} {post.author}</span>
         </div>
 
         <h1 class="post-title">{post.title}</h1>
@@ -279,83 +275,18 @@
     border-radius: 9999px;
   }
 
-  /* Estilos tipográficos premium para el cuerpo del Markdown */
   .markdown-body {
     line-height: 1.8;
     font-size: 1.1rem;
     color: rgba(255, 255, 255, 0.85);
   }
 
-  .markdown-body :global(p) {
-    margin-top: 0;
-    margin-bottom: 1.5rem;
-  }
+  .markdown-body :global(p) { margin-bottom: 1.5rem; }
+  .markdown-body :global(h2) { font-size: 1.6rem; font-weight: 700; margin: 2.5rem 0 1rem; color: #fff; }
+  .markdown-body :global(h3) { font-size: 1.3rem; font-weight: 700; margin: 2rem 0 1rem; color: #fff; }
+  .markdown-body :global(ul) { padding-left: 1.5rem; margin-bottom: 1.5rem; }
+  .markdown-body :global(a) { color: var(--accent-blue, #3b82f6); text-decoration: underline; font-weight: 600; }
 
-  .markdown-body :global(h2) {
-    font-size: 1.6rem;
-    font-weight: 700;
-    margin-top: 2.5rem;
-    margin-bottom: 1rem;
-    color: #fff;
-    letter-spacing: -0.01em;
-  }
-
-  .markdown-body :global(h3) {
-    font-size: 1.3rem;
-    font-weight: 700;
-    margin-top: 2rem;
-    margin-bottom: 1rem;
-    color: #fff;
-  }
-
-  .markdown-body :global(ul), .markdown-body :global(ol) {
-    margin-top: 0;
-    margin-bottom: 1.5rem;
-    padding-left: 1.5rem;
-  }
-
-  .markdown-body :global(li) {
-    margin-bottom: 0.5rem;
-  }
-
-  .markdown-body :global(blockquote) {
-    margin: 2rem 0;
-    padding: 1rem 1.5rem;
-    background: rgba(255, 255, 255, 0.02);
-    border-left: 4px solid var(--accent-blue, #3b82f6);
-    border-radius: 0 12px 12px 0;
-    font-style: italic;
-    color: rgba(255, 255, 255, 0.95);
-  }
-
-  .markdown-body :global(blockquote p) {
-    margin: 0;
-  }
-
-  .markdown-body :global(a) {
-    color: var(--accent-blue, #3b82f6);
-    text-decoration: underline;
-    font-weight: 600;
-    transition: color 0.2s ease;
-  }
-
-  .markdown-body :global(a:hover) {
-    color: #60a5fa;
-  }
-
-  .markdown-body :global(strong) {
-    color: #fff;
-    font-weight: 700;
-  }
-
-  .markdown-body :global(hr) {
-    border: 0;
-    height: 1px;
-    background: var(--border-subtle, rgba(255, 255, 255, 0.08));
-    margin: 3rem 0;
-  }
-
-  /* Estilos específicos del bloque de llamada a la acción (CTA) */
   .post-cta {
     margin-top: 4rem;
     background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
@@ -367,38 +298,6 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-  }
-
-  .cta-mesh {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 60%);
-    pointer-events: none;
-    z-index: 1;
-  }
-
-  .cta-content {
-    position: relative;
-    z-index: 2;
-    width: 100%;
-  }
-
-  .post-cta h3 {
-    font-size: 1.5rem;
-    font-weight: 800;
-    margin: 0 0 1rem;
-    color: #fff;
-    letter-spacing: -0.02em;
-  }
-
-  .post-cta p {
-    font-size: 0.95rem;
-    line-height: 1.6;
-    color: rgba(255, 255, 255, 0.7);
-    margin: 0 0 2rem;
   }
 
   .btn-cta {
@@ -414,49 +313,9 @@
     align-items: center;
     gap: 0.5rem;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2);
   }
 
-  .btn-cta:hover {
-    filter: brightness(1.1);
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.35);
-  }
-
-  .cta-arrow {
-    transition: transform 0.2s ease;
-  }
-
-  .btn-cta:hover .cta-arrow {
-    transform: translateX(3px);
-  }
-
-  /* Navegación inferior */
-  .post-back-nav {
-    display: flex;
-    justify-content: flex-start;
-  }
-
-  .btn-back {
-    color: var(--text-muted, rgba(160, 160, 200, 0.6));
-    text-decoration: none;
-    font-size: 0.95rem;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: color 0.2s ease;
-  }
-
-  .btn-back:hover {
-    color: #fff;
-  }
-
-  .back-arrow {
-    transition: transform 0.2s ease;
-  }
-
-  .btn-back:hover .back-arrow {
-    transform: translateX(-3px);
-  }
+  .post-back-nav { display: flex; justify-content: flex-start; margin-top: 2rem;}
+  .btn-back { color: var(--text-muted, rgba(160, 160, 200, 0.6)); text-decoration: none; font-size: 0.95rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: color 0.2s ease; }
+  .btn-back:hover { color: #fff; }
 </style>

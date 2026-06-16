@@ -10,6 +10,7 @@ export interface PostMetadata {
 	lang: 'es' | 'en';
 	canonical: string;
 	ogImage: string;
+	slugs: { es: string; en: string };
 }
 
 export interface Post extends PostMetadata {
@@ -26,7 +27,6 @@ const modules = import.meta.glob<{
 // Convertimos los módulos a una lista tipada de posts
 const postsList: Post[] = Object.entries(modules).map(([path, module]) => {
 	const parts = path.split('/');
-	// Estructura esperada: .../content/blog/[lang]/[slug].md
 	const lang = parts[parts.length - 2] as 'es' | 'en';
 	const slug = parts[parts.length - 1].replace('.md', '');
 
@@ -49,10 +49,24 @@ export function getPosts(lang: 'es' | 'en'): Post[] {
 }
 
 /**
- * Obtiene un post específico por su slug e idioma
+ * Obtiene un post específico por su slug e idioma.
+ * Si el post no existe en ese idioma, intenta buscar su equivalente mediante el campo 'slugs'.
  * @param slug El identificador del post
  * @param lang El idioma del post
  */
 export function getPost(slug: string, lang: 'es' | 'en'): Post | undefined {
-	return postsList.find((post) => post.slug === slug && post.lang === lang);
+	// 1. Buscar directamente por slug e idioma
+	let post = postsList.find((p) => p.slug === slug && p.lang === lang);
+	if (post) return post;
+
+	// 2. Si no, buscar el post original en el otro idioma y luego buscar su equivalente
+	const otherLang = lang === 'es' ? 'en' : 'es';
+	const originalPost = postsList.find((p) => p.slug === slug && p.lang === otherLang);
+
+	if (originalPost && originalPost.slugs) {
+		const targetSlug = originalPost.slugs[lang];
+		return postsList.find((p) => p.slug === targetSlug && p.lang === lang);
+	}
+
+	return undefined;
 }

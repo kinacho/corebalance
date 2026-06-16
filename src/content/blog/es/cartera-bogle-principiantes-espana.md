@@ -8,6 +8,7 @@ tags: [bogleheads, indexacion, fondos-indexados, finanzas-personales, principian
 lang: es
 canonical: "https://corebalance.app/blog/cartera-bogle-principiantes-espana"
 ogImage: "/blog/og/cartera-bogle-principiantes-espana.jpg"
+slugs: { es: 'cartera-bogle-principiantes-espana', en: 'bogleheads-portfolio-beginners' }
 ---
 
 La filosofía *Bogleheads* debe su nombre a **John C. Bogle**, fundador de la gestora Vanguard y creador del primer fondo indexado para inversores minoristas en 1976. Bogle revolucionó Wall Street al demostrar que, a largo plazo, intentar batir al mercado seleccionando acciones individuales o pagando a gestores activos es una batalla perdida para la inmensa mayoría de las personas.

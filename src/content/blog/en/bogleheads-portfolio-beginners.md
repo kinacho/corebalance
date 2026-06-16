@@ -8,6 +8,7 @@ tags: [bogleheads, indexing, index-funds, personal-finance, beginners]
 lang: en
 canonical: "https://corebalance.app/blog/bogleheads-portfolio-beginners"
 ogImage: "/blog/og/bogleheads-portfolio-beginners.jpg"
+slugs: { es: 'cartera-bogle-principiantes-espana', en: 'bogleheads-portfolio-beginners' }
 ---
 
 The *Bogleheads* philosophy is named after **John C. Bogle**, founder of Vanguard and creator of the first retail index mutual fund in 1976. Bogle revolutionized retail investing by proving that trying to beat the stock market by picking individual stocks or paying active managers is a losing battle for the vast majority of people over the long run.

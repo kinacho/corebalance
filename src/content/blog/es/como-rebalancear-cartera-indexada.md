@@ -8,6 +8,7 @@ tags: [rebalanceo, cartera, etfs, fondos-indexados, bogleheads]
 lang: es
 canonical: "https://corebalance.app/blog/como-rebalancear-cartera-indexada"
 ogImage: "/blog/og/como-rebalancear-cartera-indexada.jpg"
+slugs: { es: 'como-rebalancear-cartera-indexada', en: 'how-to-rebalance-indexed-portfolio' }
 ---
 
 El rebalanceo de cartera es una de las pocas tareas activas que requiere la inversión pasiva o indexada (a menudo llamada filosofía *Bogleheads*). Aunque el lema principal sea comprar, mantener y no tocar nada (*buy and hold*), la realidad es que el mercado fluctúa. Con el tiempo, estas fluctuaciones desalinean tu cartera de tu nivel de riesgo objetivo.

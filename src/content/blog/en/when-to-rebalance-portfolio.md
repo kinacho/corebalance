@@ -8,6 +8,7 @@ tags: [rebalancing, asset-allocation, bogleheads, strategy]
 lang: en
 canonical: "https://corebalance.app/blog/when-to-rebalance-portfolio"
 ogImage: "/blog/og/when-to-rebalance-portfolio.jpg"
+slugs: { es: 'cuando-rebalancear-cartera', en: 'when-to-rebalance-portfolio' }
 ---
 
 One of the most frequent debates within the index investing and Boglehead community is not *whether* you should rebalance your portfolio, but **when** to do it. Is it better to set a fixed date on the calendar (for example, every January 1st), or is it more efficient to monitor your funds' drift and act only when they cross a certain percentage threshold?

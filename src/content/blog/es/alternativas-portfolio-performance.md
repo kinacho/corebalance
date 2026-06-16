@@ -8,6 +8,7 @@ tags: [herramientas, portfolio-performance, alternativas, rebalanceo, excel]
 lang: es
 canonical: "https://corebalance.app/blog/alternativas-portfolio-performance"
 ogImage: "/blog/og/alternativas-portfolio-performance.jpg"
+slugs: { es: 'alternativas-portfolio-performance', en: 'portfolio-performance-alternatives' }
 ---
 
 Para los inversores particulares apasionados de las finanzas y el seguimiento al céntimo, **Portfolio Performance** ha sido durante años la herramienta de referencia de código abierto. Es un programa de escritorio robusto, gratuito y extremadamente potente que te permite calcular métricas como el TWR (Time-Weighted Return), el MWR (Money-Weighted Return) y graficar tu patrimonio.

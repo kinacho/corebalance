@@ -8,6 +8,7 @@ tags: [tools, excel, google-sheets, rebalancing, templates]
 lang: en
 canonical: "https://corebalance.app/blog/portfolio-rebalancing-excel-calculator"
 ogImage: "/blog/og/portfolio-rebalancing-excel-calculator.jpg"
+slugs: { es: 'calculadora-rebalanceo-cartera-excel', en: 'portfolio-rebalancing-excel-calculator' }
 ---
 
 When you decide to manage your own portfolio of index funds or ETFs independently (known as DIY or Do-It-Yourself investing), one of your first needs is to find a tool to crunch the numbers.

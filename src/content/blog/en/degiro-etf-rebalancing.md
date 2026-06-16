@@ -8,6 +8,7 @@ tags: [rebalancing, degiro, etfs, transaction-fees, taxes]
 lang: en
 canonical: "https://corebalance.app/blog/degiro-etf-rebalancing"
 ogImage: "/blog/og/degiro-etf-rebalancing.jpg"
+slugs: { es: 'rebalanceo-degiro-etfs', en: 'degiro-etf-rebalancing' }
 ---
 
 DeGiro is one of the most popular online brokers in Europe due to its **low fees** and user-friendly interface. Many retail investors choose DeGiro to build their long-term passive portfolios using **ETFs (exchange-traded funds)** instead of traditional mutual funds, attracted by the high liquidity and the vast selection of global index products.

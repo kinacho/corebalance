@@ -8,6 +8,7 @@ tags: [rebalanceo, asset-allocation, bogleheads, estrategia]
 lang: es
 canonical: "https://corebalance.app/blog/cuando-rebalancear-cartera"
 ogImage: "/blog/og/cuando-rebalancear-cartera.jpg"
+slugs: { es: 'cuando-rebalancear-cartera', en: 'when-to-rebalance-portfolio' }
 ---
 
 Uno de los debates más frecuentes dentro de la comunidad de inversores indexados y seguidores de John Bogle no es *si* se debe rebalancear la cartera, sino **cuándo** hacerlo. ¿Es mejor marcar un día fijo en el calendario (por ejemplo, cada 1 de enero) o es más eficiente vigilar las desviaciones de tus fondos y actuar solo cuando superen un determinado porcentaje?

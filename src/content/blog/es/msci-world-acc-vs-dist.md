@@ -8,6 +8,7 @@ tags: [etfs, msci-world, acumulacion, distribucion, fiscalidad]
 lang: es
 canonical: "https://corebalance.app/blog/msci-world-acc-vs-dist"
 ogImage: "/blog/og/msci-world-acc-vs-dist.jpg"
+slugs: { es: 'msci-world-acc-vs-dist', en: 'msci-world-accumulating-vs-distributing' }
 ---
 
 El índice **MSCI World** es la piedra angular de millones de carteras de inversión pasiva en todo el mundo. Al invertir en él, estás comprando una porción de las más de 1.500 mayores empresas de los 23 países con economías más desarrolladas del planeta.

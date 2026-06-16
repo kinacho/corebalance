@@ -8,6 +8,7 @@ tags: [tools, portfolio-performance, alternatives, rebalancing, spreadsheets]
 lang: en
 canonical: "https://corebalance.app/blog/portfolio-performance-alternatives"
 ogImage: "/blog/og/portfolio-performance-alternatives.jpg"
+slugs: { es: 'alternativas-portfolio-performance', en: 'portfolio-performance-alternatives' }
 ---
 
 For DIY investors who are passionate about personal finance and tracking every penny, **Portfolio Performance** has been the go-to open-source tool for years. It is a robust, free, and extremely powerful desktop application that allows you to calculate metrics like TWR (Time-Weighted Return), MWR (Money-Weighted Return), and graph your net worth.

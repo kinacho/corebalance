@@ -8,6 +8,7 @@ tags: [asset-allocation, cartera, finanzas-personales, renta-variable, renta-fij
 lang: es
 canonical: "https://corebalance.app/blog/que-es-asset-allocation"
 ogImage: "/blog/og/que-es-asset-allocation.jpg"
+slugs: { es: 'que-es-asset-allocation', en: 'what-is-asset-allocation' }
 ---
 
 Cuando nos adentramos en el mundo de la inversión personal, la mayoría de la gente comete el mismo error de principiante: dedicar todo su tiempo y energía a intentar seleccionar la "acción estrella" que se multiplicará por diez, o el fondo de inversión de moda con la mejor rentabilidad del último año.

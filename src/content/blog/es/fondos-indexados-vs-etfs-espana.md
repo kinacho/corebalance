@@ -8,6 +8,7 @@ tags: [fondos-indexados, etfs, fiscalidad, inversion-pasiva, comparativa]
 lang: es
 canonical: "https://corebalance.app/blog/fondos-indexados-vs-etfs-espana"
 ogImage: "/blog/og/fondos-indexados-vs-etfs-espana.jpg"
+slugs: { es: 'fondos-indexados-vs-etfs-espana', en: 'index-funds-vs-etfs-comparison' }
 ---
 
 A la hora de poner en práctica una estrategia de inversión pasiva global, la primera bifurcación del camino nos obliga a tomar una decisión técnica: **¿Debería utilizar fondos indexados tradicionales o ETFs (Exchange Traded Funds)?**

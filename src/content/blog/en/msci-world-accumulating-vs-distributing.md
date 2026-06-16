@@ -8,6 +8,7 @@ tags: [etfs, msci-world, accumulating, distributing, taxes]
 lang: en
 canonical: "https://corebalance.app/blog/msci-world-accumulating-vs-distributing"
 ogImage: "/blog/og/msci-world-accumulating-vs-distributing.jpg"
+slugs: { es: 'msci-world-acc-vs-dist', en: 'msci-world-accumulating-vs-distributing' }
 ---
 
 The **MSCI World** index is the cornerstone of millions of passive investment portfolios worldwide. By investing in it, you are buying a slice of over 1,500 of the largest companies across 23 developed markets.

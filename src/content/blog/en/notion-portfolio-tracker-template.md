@@ -8,6 +8,7 @@ tags: [resources, notion, markdown, templates, portfolio-tracker]
 lang: en
 canonical: "https://corebalance.app/blog/notion-portfolio-tracker-template"
 ogImage: "/blog/og/notion-portfolio-tracker-template.jpg"
+slugs: { es: 'plantilla-notion-seguimiento-cartera', en: 'notion-portfolio-tracker-template' }
 ---
 
 Keeping a financial journal or a structured log of your investments is one of the best habits you can build. It keeps you grounded during times of market volatility, reminds you of your long-term goals, and keeps your cost basis organized.

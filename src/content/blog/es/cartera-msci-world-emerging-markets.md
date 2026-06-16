@@ -8,6 +8,7 @@ tags: [cartera, msci-world, emerging-markets, fondos-indexados, asset-allocation
 lang: es
 canonical: "https://corebalance.app/blog/cartera-msci-world-emerging-markets"
 ogImage: "/blog/og/cartera-msci-world-emerging-markets.jpg"
+slugs: { es: 'cartera-msci-world-emerging-markets', en: 'msci-world-emerging-markets-80-20' }
 ---
 
 Diseñar una cartera de inversión puede parecer una tarea abrumadora. Entre miles de fondos de inversión, planes de pensiones y ETFs, es fácil caer en la parálisis por análisis. Sin embargo, una de las mayores revelaciones de la inversión indexada o pasiva es que **menos suele ser más**. 

@@ -8,6 +8,7 @@ tags: [rebalancing, risk-management, volatility, passive-investing, bogleheads]
 lang: en
 canonical: "https://corebalance.app/blog/what-happens-if-you-dont-rebalance"
 ogImage: "/blog/og/what-happens-if-you-dont-rebalance.jpg"
+slugs: { es: 'que-pasa-si-no-rebalanceo-cartera', en: 'what-happens-if-you-dont-rebalance' }
 ---
 
 One of the most popular mantras of index and passive investing is the famous phrase: *“Buy and hold.”* Many investors interpret this literally, assuming that once they select their initial index funds or ETFs, their only task for the next 20 years is to deposit money and completely forget about their broker's screen.

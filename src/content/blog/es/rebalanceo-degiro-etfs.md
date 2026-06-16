@@ -8,6 +8,7 @@ tags: [rebalanceo, degiro, etfs, comisiones, impuestos]
 lang: es
 canonical: "https://corebalance.app/blog/rebalanceo-degiro-etfs"
 ogImage: "/blog/og/rebalanceo-degiro-etfs.jpg"
+slugs: { es: 'rebalanceo-degiro-etfs', en: 'degiro-etf-rebalancing' }
 ---
 
 DeGiro es uno de los brókers online más populares de Europa debido a sus **bajas comisiones** y a su plataforma intuitiva. Muchos inversores particulares eligen DeGiro para construir sus carteras pasivas a largo plazo utilizando **ETFs (fondos cotizados)** en lugar de fondos indexados tradicionales, atraídos por la liquidez inmediata y la oferta de grandes gestoras mundiales.

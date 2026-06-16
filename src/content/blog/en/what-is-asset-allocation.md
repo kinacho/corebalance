@@ -8,6 +8,7 @@ tags: [asset-allocation, portfolio, personal-finance, equities, fixed-income]
 lang: en
 canonical: "https://corebalance.app/blog/what-is-asset-allocation"
 ogImage: "/blog/og/what-is-asset-allocation.jpg"
+slugs: { es: 'que-es-asset-allocation', en: 'what-is-asset-allocation' }
 ---
 
 When entering the world of personal investing, most beginners make the same mistake: they devote all their time and energy to picking the "next big stock" or chasing the hottest mutual fund with the best returns from last year.

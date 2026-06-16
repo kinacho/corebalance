@@ -8,6 +8,7 @@ tags: [rebalancing, portfolio, etfs, index-funds, bogleheads]
 lang: en
 canonical: "https://corebalance.app/blog/how-to-rebalance-indexed-portfolio"
 ogImage: "/blog/og/how-to-rebalance-indexed-portfolio.jpg"
+slugs: { es: 'como-rebalancear-cartera-indexada', en: 'how-to-rebalance-indexed-portfolio' }
 ---
 
 Rebalancing is one of the very few active tasks required in passive or index investing (often referred to as the *Bogleheads* philosophy). Although the main rule of passive investing is to buy, hold, and do nothing (*buy and hold*), the reality is that markets fluctuate. Over time, these fluctuations pull your portfolio away from your target asset allocation and risk level.

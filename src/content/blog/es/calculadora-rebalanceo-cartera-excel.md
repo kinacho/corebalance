@@ -8,6 +8,7 @@ tags: [herramientas, excel, google-sheets, rebalanceo, plantilla]
 lang: es
 canonical: "https://corebalance.app/blog/calculadora-rebalanceo-cartera-excel"
 ogImage: "/blog/og/calculadora-rebalanceo-cartera-excel.jpg"
+slugs: { es: 'calculadora-rebalanceo-cartera-excel', en: 'portfolio-rebalancing-excel-calculator' }
 ---
 
 Cuando decides gestionar tu propia cartera de fondos indexados o ETFs de forma independiente (lo que se conoce como inversión *DIY* o Do It Yourself), una de las primeras necesidades que te surge es encontrar una herramienta para hacer los números.

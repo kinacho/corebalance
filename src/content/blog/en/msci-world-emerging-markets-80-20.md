@@ -8,6 +8,7 @@ tags: [portfolio, msci-world, emerging-markets, index-funds, asset-allocation]
 lang: en
 canonical: "https://corebalance.app/blog/msci-world-emerging-markets-80-20"
 ogImage: "/blog/og/msci-world-emerging-markets-80-20.jpg"
+slugs: { es: 'cartera-msci-world-emerging-markets', en: 'msci-world-emerging-markets-80-20' }
 ---
 
 Designing an investment portfolio can feel overwhelming. With thousands of mutual funds, ETFs, and stocks to choose from, it is easy to fall into paralysis by analysis. However, one of the biggest revelations of passive index investing is that **less is usually more**.

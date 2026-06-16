@@ -8,6 +8,7 @@ tags: [recursos, notion, markdown, plantilla, seguimiento-cartera]
 lang: es
 canonical: "https://corebalance.app/blog/plantilla-notion-seguimiento-cartera"
 ogImage: "/blog/og/plantilla-notion-seguimiento-cartera.jpg"
+slugs: { es: 'plantilla-notion-seguimiento-cartera', en: 'notion-portfolio-tracker-template' }
 ---
 
 Llevar un diario financiero o un registro estructurado de tus inversiones es uno de los mejores hábitos que puedes adquirir. Te ayuda a mantener los pies en el suelo en momentos de volatilidad del mercado, te recuerda tus objetivos a largo plazo y mantiene organizados tus costes de adquisición.

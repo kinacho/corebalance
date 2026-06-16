@@ -8,6 +8,7 @@ tags: [index-funds, etfs, taxation, passive-investing, comparison]
 lang: en
 canonical: "https://corebalance.app/blog/index-funds-vs-etfs-comparison"
 ogImage: "/blog/og/index-funds-vs-etfs-comparison.jpg"
+slugs: { es: 'fondos-indexados-vs-etfs-espana', en: 'index-funds-vs-etfs-comparison' }
 ---
 
 When putting a global passive investment strategy into practice, the first fork in the road forces us to make a technical decision: **Should I use traditional index mutual funds or Exchange-Traded Funds (ETFs)?**
