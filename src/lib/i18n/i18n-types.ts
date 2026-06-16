@@ -2071,7 +2071,7 @@ type RootTranslation = {
 		 */
 		footer_tagline: string
 		/**
-		 * v​1​.​8​.​0​ ​�​�
+		 * v​1​.​8​.​1​ ​�​�
 		 */
 		changelog_trigger: string
 		/**
@@ -5010,7 +5010,7 @@ export type TranslationFunctions = {
 		 */
 		footer_tagline: () => LocalizedString
 		/**
-		 * v1.8.0 🚀
+		 * v1.8.1 🚀
 		 */
 		changelog_trigger: () => LocalizedString
 		/**
