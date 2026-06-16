@@ -15,18 +15,19 @@ export async function switchLocale(newLocale: Locales) {
 	if (browser) {
 		// 1. Guardar en localStorage (persistencia fuerte en el cliente)
 		localStorage.setItem('lang', newLocale);
+		
+		// 2. Actualizar la cookie inmediatamente para que las peticiones de SvelteKit la lleven
+		document.cookie = `lang=${newLocale}; path=/; max-age=31536000; SameSite=Lax`;
 
 		try {
-			// 2. Guardar preferencia en el servidor vía API
-			await fetch('/api/lang', {
+			// 3. Guardar preferencia en el servidor vía API (opcional pero recomendado)
+			fetch('/api/lang', {
 				method: 'POST',
 				body: JSON.stringify({ locale: newLocale }),
 				headers: { 'Content-Type': 'application/json' }
-			});
+			}).catch(e => console.error('Error saving locale via API:', e));
 		} catch (e) {
-			console.error('Error saving locale:', e);
-			// Fallback a cookie manual si falla el fetch
-			document.cookie = `lang=${newLocale}; path=/; max-age=31536000; SameSite=Lax`;
+			// Ignorar errores del fetch ya que la cookie ya está puesta
 		}
 
 		// Actualizar el atributo lang del HTML
