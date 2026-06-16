@@ -42,6 +42,7 @@
       <a href="/#how-it-works" aria-label={$LL.nav.aria_how_it_works()}>{$LL.nav.how_it_works()}</a>
       <a href="/#why-us" aria-label={$LL.nav.aria_why_us()}>{$LL.nav.why_us()}</a>
       <a href="/#educational" aria-label={$LL.nav.aria_faq()}>{$LL.nav.faq()}</a>
+      <a href="/blog" aria-label={$LL.nav.aria_blog()}>{$LL.nav.blog()}</a>
     </div>
 
     <!-- Menú Desktop Acciones -->
@@ -83,6 +84,7 @@
       <a href="/#how-it-works" onclick={() => isMobileMenuOpen = false} aria-label={$LL.nav.aria_how_it_works()}>{$LL.nav.how_it_works()}</a>
       <a href="/#why-us" onclick={() => isMobileMenuOpen = false} aria-label={$LL.nav.aria_why_us()}>{$LL.nav.why_us()}</a>
       <a href="/#educational" onclick={() => isMobileMenuOpen = false} aria-label={$LL.nav.aria_faq()}>{$LL.nav.faq()}</a>
+      <a href="/blog" onclick={() => isMobileMenuOpen = false} aria-label={$LL.nav.aria_blog()}>{$LL.nav.blog()}</a>
     </div>
     <div class="mobile-menu-actions">
       <div class="mobile-lang">

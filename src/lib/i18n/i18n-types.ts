@@ -90,6 +90,10 @@ type RootTranslation = {
 		 */
 		faq: string
 		/**
+		 * B​l​o​g
+		 */
+		blog: string
+		/**
 		 * I​r​ ​a​l​ ​D​a​s​h​b​o​a​r​d
 		 */
 		dashboard: string
@@ -141,6 +145,10 @@ type RootTranslation = {
 		 * V​e​r​ ​p​r​e​g​u​n​t​a​s​ ​f​r​e​c​u​e​n​t​e​s​ ​s​o​b​r​e​ ​i​n​v​e​r​s​i​ó​n​ ​p​a​s​i​v​a​ ​y​ ​r​e​b​a​l​a​n​c​e​o
 		 */
 		aria_faq: string
+		/**
+		 * I​r​ ​a​l​ ​b​l​o​g​ ​d​e​ ​i​n​v​e​r​s​i​ó​n​ ​d​e​ ​C​o​r​e​B​a​l​a​n​c​e
+		 */
+		aria_blog: string
 		/**
 		 * I​r​ ​a​ ​t​u​ ​p​a​n​e​l​ ​d​e​ ​c​o​n​t​r​o​l​ ​d​e​ ​i​n​v​e​r​s​i​o​n​e​s
 		 */
@@ -3036,6 +3044,10 @@ export type TranslationFunctions = {
 		 */
 		faq: () => LocalizedString
 		/**
+		 * Blog
+		 */
+		blog: () => LocalizedString
+		/**
 		 * Ir al Dashboard
 		 */
 		dashboard: () => LocalizedString
@@ -3087,6 +3099,10 @@ export type TranslationFunctions = {
 		 * Ver preguntas frecuentes sobre inversión pasiva y rebalanceo
 		 */
 		aria_faq: () => LocalizedString
+		/**
+		 * Ir al blog de inversión de CoreBalance
+		 */
+		aria_blog: () => LocalizedString
 		/**
 		 * Ir a tu panel de control de inversiones
 		 */

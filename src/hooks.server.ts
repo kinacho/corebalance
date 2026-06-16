@@ -8,11 +8,6 @@ import {
 import type { Locales } from '$lib/i18n/i18n-types';
 
 const getLocale = (event: RequestEvent): Locales => {
-	// 0. Prioridad máxima: Ruta con prefijo /en
-	if (event.url.pathname.startsWith('/en/') || event.url.pathname === '/en') {
-		return 'en';
-	}
-
 	// 1. Prioridad: Cookie guardada
 	const langCookie = event.cookies.get('lang');
 	if (langCookie && locales.includes(langCookie as Locales)) {
@@ -47,7 +42,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 	});
 
 	// --- Cabeceras de Seguridad ---
-	// SAMEORIGIN es necesario para que los iframes de Firebase Auth se comuniquen correctamente
 	response.headers.set('X-Frame-Options', 'SAMEORIGIN');
 	response.headers.set('X-Content-Type-Options', 'nosniff');
 	response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
@@ -65,7 +59,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 			"https://www.gstatic.com", 
 			"https://*.googleapis.com", 
 			"https://*.firebaseapp.com",
-			"https://va.vercel-scripts.com" // Añadido para Vercel Analytics / Speed Insights
+			"https://va.vercel-scripts.com"
 		],
 		'script-src-elem': [
 			"'self'", 
@@ -74,7 +68,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 			"https://www.gstatic.com", 
 			"https://*.googleapis.com", 
 			"https://*.firebaseapp.com",
-			"https://va.vercel-scripts.com" // Añadido para Vercel Analytics / Speed Insights
+			"https://va.vercel-scripts.com"
 		],
 		'connect-src': [
 			"'self'", 
@@ -84,7 +78,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 			"https://*.firebaseapp.com",
 			"https://securetoken.googleapis.com",
 			"https://identitytoolkit.googleapis.com",
-			"https://*.vercel-analytics.com" // Añadido para las métricas de Vercel
+			"https://*.vercel-analytics.com"
 		],
 		'img-src': ["'self'", "data:", "https:"],
 		'font-src': ["'self'", "https://fonts.gstatic.com"],
