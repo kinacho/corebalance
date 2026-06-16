@@ -6,7 +6,7 @@ updatedDate: "2026-06-16"
 author: "kinacho"
 tags: [tools, excel, google-sheets, rebalancing, templates]
 lang: en
-canonical: "https://corebalance.app/en/blog/portfolio-rebalancing-excel-calculator"
+canonical: "https://corebalance.app/blog/portfolio-rebalancing-excel-calculator"
 ogImage: "/blog/og/portfolio-rebalancing-excel-calculator.jpg"
 ---
 

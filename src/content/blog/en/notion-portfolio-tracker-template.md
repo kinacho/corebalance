@@ -6,7 +6,7 @@ updatedDate: "2026-06-16"
 author: "kinacho"
 tags: [resources, notion, markdown, templates, portfolio-tracker]
 lang: en
-canonical: "https://corebalance.app/en/blog/notion-portfolio-tracker-template"
+canonical: "https://corebalance.app/blog/notion-portfolio-tracker-template"
 ogImage: "/blog/og/notion-portfolio-tracker-template.jpg"
 ---
 

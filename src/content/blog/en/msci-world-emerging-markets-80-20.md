@@ -6,7 +6,7 @@ updatedDate: "2026-06-16"
 author: "kinacho"
 tags: [portfolio, msci-world, emerging-markets, index-funds, asset-allocation]
 lang: en
-canonical: "https://corebalance.app/en/blog/msci-world-emerging-markets-80-20"
+canonical: "https://corebalance.app/blog/msci-world-emerging-markets-80-20"
 ogImage: "/blog/og/msci-world-emerging-markets-80-20.jpg"
 ---
 

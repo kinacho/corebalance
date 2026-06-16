@@ -6,7 +6,7 @@ updatedDate: "2026-06-16"
 author: "kinacho"
 tags: [etfs, msci-world, accumulating, distributing, taxes]
 lang: en
-canonical: "https://corebalance.app/en/blog/msci-world-accumulating-vs-distributing"
+canonical: "https://corebalance.app/blog/msci-world-accumulating-vs-distributing"
 ogImage: "/blog/og/msci-world-accumulating-vs-distributing.jpg"
 ---
 

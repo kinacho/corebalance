@@ -6,7 +6,7 @@ updatedDate: "2026-06-16"
 author: "kinacho"
 tags: [tools, portfolio-performance, alternatives, rebalancing, spreadsheets]
 lang: en
-canonical: "https://corebalance.app/en/blog/portfolio-performance-alternatives"
+canonical: "https://corebalance.app/blog/portfolio-performance-alternatives"
 ogImage: "/blog/og/portfolio-performance-alternatives.jpg"
 ---
 

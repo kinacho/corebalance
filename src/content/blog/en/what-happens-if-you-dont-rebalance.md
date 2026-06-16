@@ -6,7 +6,7 @@ updatedDate: "2026-06-16"
 author: "kinacho"
 tags: [rebalancing, risk-management, volatility, passive-investing, bogleheads]
 lang: en
-canonical: "https://corebalance.app/en/blog/what-happens-if-you-dont-rebalance"
+canonical: "https://corebalance.app/blog/what-happens-if-you-dont-rebalance"
 ogImage: "/blog/og/what-happens-if-you-dont-rebalance.jpg"
 ---
 

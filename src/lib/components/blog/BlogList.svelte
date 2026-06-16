@@ -32,8 +32,7 @@
   }
 
   function navigateToPost(slug: string) {
-    const prefix = lang === 'es' ? '/blog/' : '/en/blog/';
-    goto(`${prefix}${slug}`);
+    goto(`/blog/${slug}`);
   }
 </script>
 

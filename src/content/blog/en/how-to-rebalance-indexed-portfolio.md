@@ -6,7 +6,7 @@ updatedDate: "2026-06-16"
 author: "kinacho"
 tags: [rebalancing, portfolio, etfs, index-funds, bogleheads]
 lang: en
-canonical: "https://corebalance.app/en/blog/how-to-rebalance-indexed-portfolio"
+canonical: "https://corebalance.app/blog/how-to-rebalance-indexed-portfolio"
 ogImage: "/blog/og/how-to-rebalance-indexed-portfolio.jpg"
 ---
 

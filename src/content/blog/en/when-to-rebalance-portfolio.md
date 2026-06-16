@@ -6,7 +6,7 @@ updatedDate: "2026-06-16"
 author: "kinacho"
 tags: [rebalancing, asset-allocation, bogleheads, strategy]
 lang: en
-canonical: "https://corebalance.app/en/blog/when-to-rebalance-portfolio"
+canonical: "https://corebalance.app/blog/when-to-rebalance-portfolio"
 ogImage: "/blog/og/when-to-rebalance-portfolio.jpg"
 ---
 

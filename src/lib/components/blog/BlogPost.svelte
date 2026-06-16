@@ -93,7 +93,7 @@
     <nav class="breadcrumb" aria-label="Breadcrumb">
       <a href="/">{t.breadcrumbHome}</a>
       <span class="separator">/</span>
-      <a href={lang === 'es' ? '/blog' : '/en/blog'}>{t.breadcrumbBlog}</a>
+      <a href="/blog">{t.breadcrumbBlog}</a>
       <span class="separator">/</span>
       <span class="current" aria-current="page">{post.title}</span>
     </nav>
@@ -140,7 +140,7 @@
     </article>
 
     <div class="post-back-nav">
-      <a href={lang === 'es' ? '/blog' : '/en/blog'} class="btn-back">
+      <a href="/blog" class="btn-back">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="back-arrow">
           <line x1="19" y1="12" x2="5" y2="12"></line>
           <polyline points="12 19 5 12 12 5"></polyline>

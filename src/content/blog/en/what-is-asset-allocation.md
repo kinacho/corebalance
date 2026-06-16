@@ -6,7 +6,7 @@ updatedDate: "2026-06-16"
 author: "kinacho"
 tags: [asset-allocation, portfolio, personal-finance, equities, fixed-income]
 lang: en
-canonical: "https://corebalance.app/en/blog/what-is-asset-allocation"
+canonical: "https://corebalance.app/blog/what-is-asset-allocation"
 ogImage: "/blog/og/what-is-asset-allocation.jpg"
 ---
 

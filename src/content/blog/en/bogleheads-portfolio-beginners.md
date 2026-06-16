@@ -6,7 +6,7 @@ updatedDate: "2026-06-16"
 author: "kinacho"
 tags: [bogleheads, indexing, index-funds, personal-finance, beginners]
 lang: en
-canonical: "https://corebalance.app/en/blog/bogleheads-portfolio-beginners"
+canonical: "https://corebalance.app/blog/bogleheads-portfolio-beginners"
 ogImage: "/blog/og/bogleheads-portfolio-beginners.jpg"
 ---
 

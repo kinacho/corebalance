@@ -6,7 +6,7 @@ updatedDate: "2026-06-16"
 author: "kinacho"
 tags: [etfs, ucits, iwda, vwce, comparison]
 lang: en
-canonical: "https://corebalance.app/en/blog/iwda-vs-vwce-comparison"
+canonical: "https://corebalance.app/blog/iwda-vs-vwce-comparison"
 ogImage: "/blog/og/iwda-vs-vwce-comparison.jpg"
 ---
 

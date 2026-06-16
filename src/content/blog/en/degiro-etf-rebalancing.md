@@ -6,7 +6,7 @@ updatedDate: "2026-06-16"
 author: "kinacho"
 tags: [rebalancing, degiro, etfs, transaction-fees, taxes]
 lang: en
-canonical: "https://corebalance.app/en/blog/degiro-etf-rebalancing"
+canonical: "https://corebalance.app/blog/degiro-etf-rebalancing"
 ogImage: "/blog/og/degiro-etf-rebalancing.jpg"
 ---
 

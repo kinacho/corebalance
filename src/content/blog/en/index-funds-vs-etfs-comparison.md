@@ -6,7 +6,7 @@ updatedDate: "2026-06-16"
 author: "kinacho"
 tags: [index-funds, etfs, taxation, passive-investing, comparison]
 lang: en
-canonical: "https://corebalance.app/en/blog/index-funds-vs-etfs-comparison"
+canonical: "https://corebalance.app/blog/index-funds-vs-etfs-comparison"
 ogImage: "/blog/og/index-funds-vs-etfs-comparison.jpg"
 ---
 
