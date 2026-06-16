@@ -1,17 +1,18 @@
-import { invalidateAll } from '$app/navigation';
+import { invalidateAll, invalidate } from '$app/navigation';
 import { setLocale } from './i18n-svelte';
 import { loadLocaleAsync } from './i18n-util.async';
 import type { Locales } from './i18n-types';
 import { browser } from '$app/environment';
 
 /**
- * Cambia el idioma de la aplicación de forma consistente
- * @param newLocale El nuevo idioma a establecer
+ * Cambia el idioma de la aplicación de forma global y persistente.
  */
 export async function switchLocale(newLocale: Locales) {
+	// Cargar las traducciones del nuevo idioma
 	await loadLocaleAsync(newLocale);
+	// Actualizar el store de i18n
 	setLocale(newLocale);
-	
+
 	if (browser) {
 		// 1. Guardar en localStorage (persistencia fuerte en el cliente)
 		localStorage.setItem('lang', newLocale);
@@ -32,7 +33,10 @@ export async function switchLocale(newLocale: Locales) {
 
 		// Actualizar el atributo lang del HTML
 		document.documentElement.lang = newLocale;
-		// Notificar a SvelteKit para que re-ejecute los load functions
-		await invalidateAll();
+		
+        // Notificar a SvelteKit que el locale ha cambiado para re-ejecutar loads dependientes
+		await invalidate('app:locale');
+        // Por seguridad invalidamos todo lo demás
+        await invalidateAll();
 	}
 }
