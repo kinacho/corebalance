@@ -112,19 +112,20 @@
     top: 0;
     left: 0;
     width: 100%;
-    height: 72px;
+    height: 76px;
     z-index: 1000;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
     border-bottom: 1px solid transparent;
+    background: transparent;
   }
 
   .navbar.scrolled {
-    background: rgba(5, 5, 10, 0.8);
+    background: rgba(5, 5, 10, 0.75);
     backdrop-filter: blur(20px) saturate(160%);
     -webkit-backdrop-filter: blur(20px) saturate(160%);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   }
 
   @media (max-width: 768px) {
@@ -136,21 +137,20 @@
   }
 
   .nav-container {
-    max-width: 1200px;
+    max-width: 1250px;
     margin: 0 auto;
     width: 100%;
-    padding: 0 1.5rem;
+    padding: 0 2rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 2rem; /* Espacio de seguridad para que los bloques principales nunca se toquen */
   }
 
   .nav-brand {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    
-    /* Button reset */
     background: transparent;
     border: none;
     padding: 0;
@@ -159,6 +159,7 @@
     text-align: left;
     font: inherit;
     color: inherit;
+    flex-shrink: 0; /* Evita que el logo se deforme o se achique */
   }
 
   .logo {
@@ -175,10 +176,12 @@
 
   .nav-links {
     display: none;
-    gap: 2rem;
+    gap: 2.25rem; /* Separación elegante y equilibrada entre las palabras */
+    align-items: center;
+    justify-content: center;
   }
 
-  @media (min-width: 1024px) {
+  @media (min-width: 1140px) { /* Subido de 1024px a 1140px para asegurar espacio en pantallas intermedias */
     .nav-links {
       display: flex;
     }
@@ -189,6 +192,8 @@
     text-decoration: none;
     font-size: 0.9rem;
     font-weight: 500;
+    letter-spacing: 0.01em;
+    white-space: nowrap; /* SOLUCIÓN AL BUG: Impide totalmente que los textos se rompan en 2 líneas */
     transition: color 0.2s ease;
   }
 
@@ -198,8 +203,9 @@
 
   .nav-actions {
     display: none;
-    gap: 0.75rem;
+    gap: 0.85rem;
     align-items: center;
+    flex-shrink: 0; /* Protege los botones de acción para que no se aplasten */
   }
 
   .lang-container {
@@ -214,29 +220,32 @@
     }
   }
 
+  /* COLOR ORIGINAL RESTAURADO (Azul) con acabados más pulidos */
   .btn-primary {
     background: var(--accent-blue, #3b82f6);
     color: white;
     border: none;
-    padding: 0.6rem 1.25rem;
+    padding: 0.6rem 1.35rem;
     border-radius: 12px;
     font-weight: 600;
     font-size: 0.9rem;
     cursor: pointer;
     transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
   }
 
   .btn-primary:hover {
     filter: brightness(1.1);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.35);
   }
 
+  /* COLOR ORIGINAL RESTAURADO (Violeta semi-transparente) */
   .btn-demo {
     background: rgba(139, 92, 246, 0.1);
     color: #a78bfa;
-    border: 1px solid rgba(139, 92, 246, 0.3);
-    padding: 0.6rem 1.25rem;
+    border: 1px solid rgba(139, 92, 246, 0.25);
+    padding: 0.6rem 1.35rem;
     border-radius: 12px;
     font-weight: 600;
     font-size: 0.9rem;
@@ -245,11 +254,11 @@
   }
 
   .btn-demo:hover {
-    background: rgba(139, 92, 246, 0.2);
+    background: rgba(139, 92, 246, 0.18);
     color: #c4b5fd;
-    border-color: rgba(139, 92, 246, 0.5);
+    border-color: rgba(139, 92, 246, 0.45);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
   }
 
   /* Hamburguesa Menú */
@@ -271,7 +280,7 @@
     background: rgba(255, 255, 255, 0.06);
   }
 
-  @media (min-width: 1024px) {
+  @media (min-width: 1140px) {
     .menu-toggle {
       display: none;
     }
@@ -296,27 +305,12 @@
     transition: all 0.3s ease;
   }
 
-  .hamburger-bar::before {
-    top: -6px;
-  }
+  .hamburger-bar::before { top: -6px; }
+  .hamburger-bar::after { top: 6px; }
 
-  .hamburger-bar::after {
-    top: 6px;
-  }
-
-  .hamburger-bar.open {
-    background: transparent;
-  }
-
-  .hamburger-bar.open::before {
-    transform: rotate(45deg);
-    top: 0;
-  }
-
-  .hamburger-bar.open::after {
-    transform: rotate(-45deg);
-    top: 0;
-  }
+  .hamburger-bar.open { background: transparent; }
+  .hamburger-bar.open::before { transform: rotate(45deg); top: 0; }
+  .hamburger-bar.open::after { transform: rotate(-45deg); top: 0; }
 
   /* Menú móvil desplegable */
   .mobile-menu {
