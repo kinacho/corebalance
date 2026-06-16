@@ -41,6 +41,8 @@ export const handle: Handle = async ({ event, resolve }) => {
 		transformPageChunk: ({ html }) => html.replace('%lang%', locale)
 	});
 
+	response.headers.set('Vary', 'Cookie');
+
 	// --- Cabeceras de Seguridad ---
 	response.headers.set('X-Frame-Options', 'SAMEORIGIN');
 	response.headers.set('X-Content-Type-Options', 'nosniff');

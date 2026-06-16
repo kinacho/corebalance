@@ -29,32 +29,34 @@
     return new Date(dateStr).toLocaleDateString(currentLang === 'es' ? 'es-ES' : 'en-US', options);
   }
 
-  // Generamos el schema JSON-LD de Article
-  const jsonLd = $derived({
-    '@context': 'https://schema.org',
-    '@type': 'BlogPosting',
-    'headline': post.title,
-    'description': post.description,
-    'image': post.ogImage.startsWith('http') ? post.ogImage : `https://corebalance.app${post.ogImage}`,
-    'datePublished': post.publishDate,
-    'dateModified': post.updatedDate,
-    'author': {
-      '@type': 'Person',
-      'name': post.author
+  // Generamos el schema JSON-LD de Article y Breadcrumb
+  const jsonLd = $derived([
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BlogPosting',
+      'headline': post.title,
+      'description': post.description,
+      'image': post.ogImage.startsWith('http') ? post.ogImage : `https://corebalance.app${post.ogImage}`,
+      'datePublished': post.publishDate,
+      'dateModified': post.updatedDate,
+      'author': { '@type': 'Person', 'name': post.author },
+      'publisher': {
+        '@type': 'Organization',
+        'name': 'CoreBalance',
+        'logo': { '@type': 'ImageObject', 'url': 'https://corebalance.app/logo.png' }
+      },
+      'mainEntityOfPage': { '@type': 'WebPage', '@id': post.canonical }
     },
-    'publisher': {
-      '@type': 'Organization',
-      'name': 'CoreBalance',
-      'logo': {
-        '@type': 'ImageObject',
-        'url': 'https://corebalance.app/logo.png'
-      }
-    },
-    'mainEntityOfPage': {
-      '@type': 'WebPage',
-      '@id': post.canonical
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      'itemListElement': [
+        { '@type': 'ListItem', 'position': 1, 'name': t.breadcrumbHome, 'item': 'https://corebalance.app/' },
+        { '@type': 'ListItem', 'position': 2, 'name': t.breadcrumbBlog, 'item': 'https://corebalance.app/blog' },
+        { '@type': 'ListItem', 'position': 3, 'name': post.title, 'item': post.canonical }
+      ]
     }
-  });
+  ]);
 
   const jsonLdString = $derived(JSON.stringify(jsonLd));
 
