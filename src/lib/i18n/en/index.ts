@@ -722,6 +722,17 @@ const en: Translation = {
     close_aria: 'Close modal',
     btn_understand: 'Got it',
     releases: {
+      v1_8_1: {
+        date: 'June 16, 2026',
+        badge: 'Blog & Dynamic SEO',
+        changes: [
+          '✍️ **Investment Blog:** Elegant and direct blog access from the landing page header with optimized SEO tags.',
+          '🌐 **Dynamic i18n:** Unified blog routes by removing `/en` prefixes. Content now switches instantly based on the selected language without duplicate route reloads.',
+          '🔄 **Language Stability:** Fixed a crash when switching languages while viewing a blog post, ensuring a smooth and persistent transition.',
+          '🗺️ **Dynamic Sitemap:** Search engine optimized `sitemap.xml` generation with all blog routes under a single unified structure.',
+          '🛠️ **Optimized Build:** Silenced Svelte 5 deprecation warnings during Markdown processing for a cleaner development log.'
+        ]
+      },
       v1_8_0: {
         date: 'June 11, 2026',
         badge: 'Ledger Mode & Security',

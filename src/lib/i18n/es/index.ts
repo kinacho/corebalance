@@ -724,6 +724,17 @@ const es = {
     close_aria: 'Cerrar modal',
     btn_understand: 'Entendido',
     releases: {
+      v1_8_1: {
+        date: '16 de Junio, 2026',
+        badge: 'Blog y SEO dinámico',
+        changes: [
+          '✍️ **Blog de Inversión:** Acceso directo y elegante al blog desde la cabecera de la landing page con etiquetas SEO optimizadas.',
+          '🌐 **i18n Dinámico:** Unificación de rutas del blog eliminando los prefijos `/en`. Ahora el contenido cambia instantáneamente según el idioma seleccionado sin recargar rutas duplicadas.',
+          '🔄 **Estabilidad del Idioma:** Corregido el error de carga al cambiar de idioma dentro de un artículo, garantizando una transición fluida y persistente.',
+          '🗺️ **Sitemap Dinámico:** Generación automática de `sitemap.xml` optimizada para motores de búsqueda con todas las rutas del blog bajo una estructura única.',
+          '🛠️ **Build Optimizado:** Silenciados avisos de depreciación de Svelte 5 en el procesado de Markdown para un log de desarrollo más limpio.'
+        ]
+      },
       v1_8_0: {
         date: '11 de Junio, 2026',
         badge: 'Modo Ledger y Seguridad',

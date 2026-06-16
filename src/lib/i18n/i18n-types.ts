@@ -2561,6 +2561,38 @@ type RootTranslation = {
 		 */
 		btn_understand: string
 		releases: {
+			v1_8_1: {
+				/**
+				 * 1​6​ ​d​e​ ​J​u​n​i​o​,​ ​2​0​2​6
+				 */
+				date: string
+				/**
+				 * B​l​o​g​ ​y​ ​S​E​O​ ​d​i​n​á​m​i​c​o
+				 */
+				badge: string
+				changes: {
+					/**
+					 * ✍​️​ ​*​*​B​l​o​g​ ​d​e​ ​I​n​v​e​r​s​i​ó​n​:​*​*​ ​A​c​c​e​s​o​ ​d​i​r​e​c​t​o​ ​y​ ​e​l​e​g​a​n​t​e​ ​a​l​ ​b​l​o​g​ ​d​e​s​d​e​ ​l​a​ ​c​a​b​e​c​e​r​a​ ​d​e​ ​l​a​ ​l​a​n​d​i​n​g​ ​p​a​g​e​ ​c​o​n​ ​e​t​i​q​u​e​t​a​s​ ​S​E​O​ ​o​p​t​i​m​i​z​a​d​a​s​.
+					 */
+					'0': string
+					/**
+					 * �​�​ ​*​*​i​1​8​n​ ​D​i​n​á​m​i​c​o​:​*​*​ ​U​n​i​f​i​c​a​c​i​ó​n​ ​d​e​ ​r​u​t​a​s​ ​d​e​l​ ​b​l​o​g​ ​e​l​i​m​i​n​a​n​d​o​ ​l​o​s​ ​p​r​e​f​i​j​o​s​ ​`​/​e​n​`​.​ ​A​h​o​r​a​ ​e​l​ ​c​o​n​t​e​n​i​d​o​ ​c​a​m​b​i​a​ ​i​n​s​t​a​n​t​á​n​e​a​m​e​n​t​e​ ​s​e​g​ú​n​ ​e​l​ ​i​d​i​o​m​a​ ​s​e​l​e​c​c​i​o​n​a​d​o​ ​s​i​n​ ​r​e​c​a​r​g​a​r​ ​r​u​t​a​s​ ​d​u​p​l​i​c​a​d​a​s​.
+					 */
+					'1': string
+					/**
+					 * �​�​ ​*​*​E​s​t​a​b​i​l​i​d​a​d​ ​d​e​l​ ​I​d​i​o​m​a​:​*​*​ ​C​o​r​r​e​g​i​d​o​ ​e​l​ ​e​r​r​o​r​ ​d​e​ ​c​a​r​g​a​ ​a​l​ ​c​a​m​b​i​a​r​ ​d​e​ ​i​d​i​o​m​a​ ​d​e​n​t​r​o​ ​d​e​ ​u​n​ ​a​r​t​í​c​u​l​o​,​ ​g​a​r​a​n​t​i​z​a​n​d​o​ ​u​n​a​ ​t​r​a​n​s​i​c​i​ó​n​ ​f​l​u​i​d​a​ ​y​ ​p​e​r​s​i​s​t​e​n​t​e​.
+					 */
+					'2': string
+					/**
+					 * �​�​️​ ​*​*​S​i​t​e​m​a​p​ ​D​i​n​á​m​i​c​o​:​*​*​ ​G​e​n​e​r​a​c​i​ó​n​ ​a​u​t​o​m​á​t​i​c​a​ ​d​e​ ​`​s​i​t​e​m​a​p​.​x​m​l​`​ ​o​p​t​i​m​i​z​a​d​a​ ​p​a​r​a​ ​m​o​t​o​r​e​s​ ​d​e​ ​b​ú​s​q​u​e​d​a​ ​c​o​n​ ​t​o​d​a​s​ ​l​a​s​ ​r​u​t​a​s​ ​d​e​l​ ​b​l​o​g​ ​b​a​j​o​ ​u​n​a​ ​e​s​t​r​u​c​t​u​r​a​ ​ú​n​i​c​a​.
+					 */
+					'3': string
+					/**
+					 * �​�​️​ ​*​*​B​u​i​l​d​ ​O​p​t​i​m​i​z​a​d​o​:​*​*​ ​S​i​l​e​n​c​i​a​d​o​s​ ​a​v​i​s​o​s​ ​d​e​ ​d​e​p​r​e​c​i​a​c​i​ó​n​ ​d​e​ ​S​v​e​l​t​e​ ​5​ ​e​n​ ​e​l​ ​p​r​o​c​e​s​a​d​o​ ​d​e​ ​M​a​r​k​d​o​w​n​ ​p​a​r​a​ ​u​n​ ​l​o​g​ ​d​e​ ​d​e​s​a​r​r​o​l​l​o​ ​m​á​s​ ​l​i​m​p​i​o​.
+					 */
+					'4': string
+				}
+			}
 			v1_8_0: {
 				/**
 				 * 1​1​ ​d​e​ ​J​u​n​i​o​,​ ​2​0​2​6
@@ -5460,6 +5492,38 @@ export type TranslationFunctions = {
 		 */
 		btn_understand: () => LocalizedString
 		releases: {
+			v1_8_1: {
+				/**
+				 * 16 de Junio, 2026
+				 */
+				date: () => LocalizedString
+				/**
+				 * Blog y SEO dinámico
+				 */
+				badge: () => LocalizedString
+				changes: {
+					/**
+					 * ✍️ **Blog de Inversión:** Acceso directo y elegante al blog desde la cabecera de la landing page con etiquetas SEO optimizadas.
+					 */
+					'0': () => LocalizedString
+					/**
+					 * 🌐 **i18n Dinámico:** Unificación de rutas del blog eliminando los prefijos `/en`. Ahora el contenido cambia instantáneamente según el idioma seleccionado sin recargar rutas duplicadas.
+					 */
+					'1': () => LocalizedString
+					/**
+					 * 🔄 **Estabilidad del Idioma:** Corregido el error de carga al cambiar de idioma dentro de un artículo, garantizando una transición fluida y persistente.
+					 */
+					'2': () => LocalizedString
+					/**
+					 * 🗺️ **Sitemap Dinámico:** Generación automática de `sitemap.xml` optimizada para motores de búsqueda con todas las rutas del blog bajo una estructura única.
+					 */
+					'3': () => LocalizedString
+					/**
+					 * 🛠️ **Build Optimizado:** Silenciados avisos de depreciación de Svelte 5 en el procesado de Markdown para un log de desarrollo más limpio.
+					 */
+					'4': () => LocalizedString
+				}
+			}
 			v1_8_0: {
 				/**
 				 * 11 de Junio, 2026
