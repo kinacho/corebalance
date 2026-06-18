@@ -8,6 +8,7 @@
 
   const t = $derived(lang === 'en' ? {
     badge: 'Interactive Tool',
+    breadcrumb: { home: 'Home', blog: 'Blog', tool: 'TER Calculator' },
     title: 'Total Expense Ratio Calculator',
     subtitle: 'Calculate the real cost of your portfolio (weighted average TER) and project the thousands of euros you\'ll save by avoiding actively managed funds.',
     panelTitle: '1. Your Funds / ETFs',
@@ -34,6 +35,7 @@
     fundPlaceholder: 'e.g. Vanguard MSCI World'
   } : {
     badge: 'Herramienta Interactiva',
+    breadcrumb: { home: 'Inicio', blog: 'Blog', tool: 'Calculadora TER' },
     title: 'Calculadora de TER total',
     subtitle: 'Calcula el coste real de tu cartera (TER medio ponderado) y proyecta los miles de euros que ahorrarás al evitar fondos gestionados activos.',
     panelTitle: '1. Tus Fondos / ETFs',
@@ -136,6 +138,15 @@
     <title>Calculadora de TER de Cartera Indexada | CoreBalance</title>
     <meta name="description" content="Calcula gratis el TER total ponderado (coste real) de tu cartera de fondos indexados o ETFs y simula tu ahorro en comisiones a largo plazo." />
   {/if}
+  {@html `<script type="application/ld+json">${JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": t.breadcrumb.home, "item": "https://corebalance.app" },
+      { "@type": "ListItem", "position": 2, "name": t.breadcrumb.blog, "item": "https://corebalance.app/blog" },
+      { "@type": "ListItem", "position": 3, "name": t.breadcrumb.tool, "item": "https://corebalance.app/herramientas/calculadora-ter" }
+    ]
+  })}<\/script>`}
 </svelte:head>
 
 <div class="ter-page">
@@ -144,6 +155,13 @@
   <LandingNavBar onStart={() => goto('/')} />
 
   <main class="ter-container">
+    <nav class="breadcrumb" aria-label="breadcrumb">
+      <a href="/">🏠 {t.breadcrumb.home}</a>
+      <span class="breadcrumb-sep">›</span>
+      <a href="/blog">{t.breadcrumb.blog}</a>
+      <span class="breadcrumb-sep">›</span>
+      <span aria-current="page">{t.breadcrumb.tool}</span>
+    </nav>
     <header class="ter-header">
       <span class="category-badge">{t.badge}</span>
       <h1 class="gradient-text">{t.title}</h1>
@@ -539,4 +557,22 @@
 
   .btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(59, 130, 246, 0.35); }
   .btn-primary:active { transform: scale(0.98); }
+
+  /* Breadcrumb */
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .breadcrumb a {
+    color: rgba(255, 255, 255, 0.55);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .breadcrumb a:hover { color: rgba(255, 255, 255, 0.9); }
+  .breadcrumb-sep { color: rgba(255, 255, 255, 0.25); }
+  .breadcrumb span[aria-current="page"] { color: rgba(255, 255, 255, 0.85); font-weight: 500; }
 </style>

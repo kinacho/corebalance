@@ -561,7 +561,7 @@ const es = {
     chart_performance_pct: 'Rendimiento (%)',
     legal_disclaimer: '<strong>Aviso Legal:</strong> CoreBalance es una herramienta puramente informativa y educativa. No constituye asesoramiento financiero, de inversión ni fiscal. Los datos mostrados pueden sufrir retrasos o ser inexactos. El desarrollador no se hace responsable de posibles pérdidas financieras derivadas del uso de esta aplicación. Invierte siempre bajo tu propia responsabilidad.',
     footer_tagline: 'Tu centro de mandos para una gestión de activos inteligente y equilibrada.',
-    changelog_trigger: 'v1.8.1 🚀',
+    changelog_trigger: 'v1.9.0 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Hecho con ❤️ para la comunidad inversora',
     reclassify_stocks: 'Acciones Individuales',
@@ -724,6 +724,16 @@ const es = {
     close_aria: 'Cerrar modal',
     btn_understand: 'Entendido',
     releases: {
+      v1_9_0: {
+        date: '18 de Junio, 2026',
+        badge: 'SEO Técnico y Blog Completo',
+        changes: [
+          '✍️ **Paridad Blog ES/EN Completa:** Traducidos los 5 artículos que faltaban para lograr cobertura total de 19/19 posts en ambos idiomas (rebalanceo sin impuestos, traspasos fiscales, IWDA vs VWCE, MyInvestor y DEGIRO).',
+          '🗺️ **Sitemap con Hreflang:** Sitemap refactorizado con etiquetas `hreflang` ES/EN/x-default por par de posts, `lastmod` real usando la fecha de actualización de cada artículo y `changefreq` corregidos (monthly para posts, weekly para listados).',
+          '🔍 **Breadcrumb en Herramientas:** Navegación de migas (Inicio › Blog › Herramienta) con schema JSON-LD `BreadcrumbList` añadida en la Calculadora TER y el Checklist de Rebalanceo para enriquecer los resultados de búsqueda.',
+          '📡 **SEO para IA (llms.txt y robots.txt):** Actualización completa de `llms.txt` con los 24 slugs de blog, herramientas y comparativas, y limpieza de `robots.txt` con referencia cruzada.'
+        ]
+      },
       v1_8_1: {
         date: '16 de Junio, 2026',
         badge: 'Blog y SEO dinámico',

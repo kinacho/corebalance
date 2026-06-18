@@ -2071,7 +2071,7 @@ type RootTranslation = {
 		 */
 		footer_tagline: string
 		/**
-		 * v​1​.​8​.​1​ ​�​�
+		 * v​1​.​9​.​0​ ​�​�
 		 */
 		changelog_trigger: string
 		/**
@@ -2561,6 +2561,34 @@ type RootTranslation = {
 		 */
 		btn_understand: string
 		releases: {
+			v1_9_0: {
+				/**
+				 * 1​8​ ​d​e​ ​J​u​n​i​o​,​ ​2​0​2​6
+				 */
+				date: string
+				/**
+				 * S​E​O​ ​T​é​c​n​i​c​o​ ​y​ ​B​l​o​g​ ​C​o​m​p​l​e​t​o
+				 */
+				badge: string
+				changes: {
+					/**
+					 * ✍​️​ ​*​*​P​a​r​i​d​a​d​ ​B​l​o​g​ ​E​S​/​E​N​ ​C​o​m​p​l​e​t​a​:​*​*​ ​T​r​a​d​u​c​i​d​o​s​ ​l​o​s​ ​5​ ​a​r​t​í​c​u​l​o​s​ ​q​u​e​ ​f​a​l​t​a​b​a​n​ ​p​a​r​a​ ​l​o​g​r​a​r​ ​c​o​b​e​r​t​u​r​a​ ​t​o​t​a​l​ ​d​e​ ​1​9​/​1​9​ ​p​o​s​t​s​ ​e​n​ ​a​m​b​o​s​ ​i​d​i​o​m​a​s​ ​(​r​e​b​a​l​a​n​c​e​o​ ​s​i​n​ ​i​m​p​u​e​s​t​o​s​,​ ​t​r​a​s​p​a​s​o​s​ ​f​i​s​c​a​l​e​s​,​ ​I​W​D​A​ ​v​s​ ​V​W​C​E​,​ ​M​y​I​n​v​e​s​t​o​r​ ​y​ ​D​E​G​I​R​O​)​.
+					 */
+					'0': string
+					/**
+					 * �​�​️​ ​*​*​S​i​t​e​m​a​p​ ​c​o​n​ ​H​r​e​f​l​a​n​g​:​*​*​ ​S​i​t​e​m​a​p​ ​r​e​f​a​c​t​o​r​i​z​a​d​o​ ​c​o​n​ ​e​t​i​q​u​e​t​a​s​ ​`​h​r​e​f​l​a​n​g​`​ ​E​S​/​E​N​/​x​-​d​e​f​a​u​l​t​ ​p​o​r​ ​p​a​r​ ​d​e​ ​p​o​s​t​s​,​ ​`​l​a​s​t​m​o​d​`​ ​r​e​a​l​ ​u​s​a​n​d​o​ ​l​a​ ​f​e​c​h​a​ ​d​e​ ​a​c​t​u​a​l​i​z​a​c​i​ó​n​ ​d​e​ ​c​a​d​a​ ​a​r​t​í​c​u​l​o​ ​y​ ​`​c​h​a​n​g​e​f​r​e​q​`​ ​c​o​r​r​e​g​i​d​o​s​ ​(​m​o​n​t​h​l​y​ ​p​a​r​a​ ​p​o​s​t​s​,​ ​w​e​e​k​l​y​ ​p​a​r​a​ ​l​i​s​t​a​d​o​s​)​.
+					 */
+					'1': string
+					/**
+					 * �​�​ ​*​*​B​r​e​a​d​c​r​u​m​b​ ​e​n​ ​H​e​r​r​a​m​i​e​n​t​a​s​:​*​*​ ​N​a​v​e​g​a​c​i​ó​n​ ​d​e​ ​m​i​g​a​s​ ​(​I​n​i​c​i​o​ ​›​ ​B​l​o​g​ ​›​ ​H​e​r​r​a​m​i​e​n​t​a​)​ ​c​o​n​ ​s​c​h​e​m​a​ ​J​S​O​N​-​L​D​ ​`​B​r​e​a​d​c​r​u​m​b​L​i​s​t​`​ ​a​ñ​a​d​i​d​a​ ​e​n​ ​l​a​ ​C​a​l​c​u​l​a​d​o​r​a​ ​T​E​R​ ​y​ ​e​l​ ​C​h​e​c​k​l​i​s​t​ ​d​e​ ​R​e​b​a​l​a​n​c​e​o​ ​p​a​r​a​ ​e​n​r​i​q​u​e​c​e​r​ ​l​o​s​ ​r​e​s​u​l​t​a​d​o​s​ ​d​e​ ​b​ú​s​q​u​e​d​a​.
+					 */
+					'2': string
+					/**
+					 * �​�​ ​*​*​S​E​O​ ​p​a​r​a​ ​I​A​ ​(​l​l​m​s​.​t​x​t​ ​y​ ​r​o​b​o​t​s​.​t​x​t​)​:​*​*​ ​A​c​t​u​a​l​i​z​a​c​i​ó​n​ ​c​o​m​p​l​e​t​a​ ​d​e​ ​`​l​l​m​s​.​t​x​t​`​ ​c​o​n​ ​l​o​s​ ​2​4​ ​s​l​u​g​s​ ​d​e​ ​b​l​o​g​,​ ​h​e​r​r​a​m​i​e​n​t​a​s​ ​y​ ​c​o​m​p​a​r​a​t​i​v​a​s​,​ ​y​ ​l​i​m​p​i​e​z​a​ ​d​e​ ​`​r​o​b​o​t​s​.​t​x​t​`​ ​c​o​n​ ​r​e​f​e​r​e​n​c​i​a​ ​c​r​u​z​a​d​a​.
+					 */
+					'3': string
+				}
+			}
 			v1_8_1: {
 				/**
 				 * 1​6​ ​d​e​ ​J​u​n​i​o​,​ ​2​0​2​6
@@ -5010,7 +5038,7 @@ export type TranslationFunctions = {
 		 */
 		footer_tagline: () => LocalizedString
 		/**
-		 * v1.8.1 🚀
+		 * v1.9.0 🚀
 		 */
 		changelog_trigger: () => LocalizedString
 		/**
@@ -5492,6 +5520,34 @@ export type TranslationFunctions = {
 		 */
 		btn_understand: () => LocalizedString
 		releases: {
+			v1_9_0: {
+				/**
+				 * 18 de Junio, 2026
+				 */
+				date: () => LocalizedString
+				/**
+				 * SEO Técnico y Blog Completo
+				 */
+				badge: () => LocalizedString
+				changes: {
+					/**
+					 * ✍️ **Paridad Blog ES/EN Completa:** Traducidos los 5 artículos que faltaban para lograr cobertura total de 19/19 posts en ambos idiomas (rebalanceo sin impuestos, traspasos fiscales, IWDA vs VWCE, MyInvestor y DEGIRO).
+					 */
+					'0': () => LocalizedString
+					/**
+					 * 🗺️ **Sitemap con Hreflang:** Sitemap refactorizado con etiquetas `hreflang` ES/EN/x-default por par de posts, `lastmod` real usando la fecha de actualización de cada artículo y `changefreq` corregidos (monthly para posts, weekly para listados).
+					 */
+					'1': () => LocalizedString
+					/**
+					 * 🔍 **Breadcrumb en Herramientas:** Navegación de migas (Inicio › Blog › Herramienta) con schema JSON-LD `BreadcrumbList` añadida en la Calculadora TER y el Checklist de Rebalanceo para enriquecer los resultados de búsqueda.
+					 */
+					'2': () => LocalizedString
+					/**
+					 * 📡 **SEO para IA (llms.txt y robots.txt):** Actualización completa de `llms.txt` con los 24 slugs de blog, herramientas y comparativas, y limpieza de `robots.txt` con referencia cruzada.
+					 */
+					'3': () => LocalizedString
+				}
+			}
 			v1_8_1: {
 				/**
 				 * 16 de Junio, 2026

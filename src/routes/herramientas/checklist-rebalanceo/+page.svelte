@@ -8,6 +8,7 @@
 
   const t = $derived(lang === 'en' ? {
     badge: 'Interactive Resource',
+    breadcrumb: { home: 'Home', blog: 'Blog', tool: 'Rebalancing Checklist' },
     title: 'Is It Time to Rebalance?',
     subtitle: 'Answer these 4 quick questions and get a personalized recommendation on the health of your asset allocation.',
     stepIndicator: (n: number) => `Question ${n} of 4`,
@@ -79,6 +80,7 @@
     }
   } : {
     badge: 'Recurso Interactivo',
+    breadcrumb: { home: 'Inicio', blog: 'Blog', tool: 'Checklist de Rebalanceo' },
     title: '¿Es hora de rebalancear?',
     subtitle: 'Responde a estas 4 preguntas rápidas y obtén una recomendación personalizada sobre la salud de tu asignación de activos.',
     stepIndicator: (n: number) => `Pregunta ${n} de 4`,
@@ -196,6 +198,15 @@
     <title>Checklist: ¿Es hora de rebalancear tu cartera? | CoreBalance</title>
     <meta name="description" content="Descubre si ha llegado el momento de ajustar tus fondos o ETFs con nuestro cuestionario interactivo de rebalanceo de cartera." />
   {/if}
+  {@html `<script type="application/ld+json">${JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": t.breadcrumb.home, "item": "https://corebalance.app" },
+      { "@type": "ListItem", "position": 2, "name": t.breadcrumb.blog, "item": "https://corebalance.app/blog" },
+      { "@type": "ListItem", "position": 3, "name": t.breadcrumb.tool, "item": "https://corebalance.app/herramientas/checklist-rebalanceo" }
+    ]
+  })}<\/script>`}
 </svelte:head>
 
 <div class="checklist-page">
@@ -204,6 +215,13 @@
   <LandingNavBar onStart={() => goto('/')} />
 
   <main class="checklist-container">
+    <nav class="breadcrumb" aria-label="breadcrumb">
+      <a href="/">🏠 {t.breadcrumb.home}</a>
+      <span class="breadcrumb-sep">›</span>
+      <a href="/blog">{t.breadcrumb.blog}</a>
+      <span class="breadcrumb-sep">›</span>
+      <span aria-current="page">{t.breadcrumb.tool}</span>
+    </nav>
     <header class="checklist-header">
       <span class="category-badge">{t.badge}</span>
       <h1 class="gradient-text">{t.title}</h1>
@@ -464,4 +482,22 @@
   }
 
   .btn-secondary:hover { background: rgba(255, 255, 255, 0.1); }
+
+  /* Breadcrumb */
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .breadcrumb a {
+    color: rgba(255, 255, 255, 0.55);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .breadcrumb a:hover { color: rgba(255, 255, 255, 0.9); }
+  .breadcrumb-sep { color: rgba(255, 255, 255, 0.25); }
+  .breadcrumb span[aria-current="page"] { color: rgba(255, 255, 255, 0.85); font-weight: 500; }
 </style>
