@@ -40,7 +40,7 @@
 </script>
 
 {#if !bypassLanding && (!hasLocalHoldings || portfolio.isInitialized)}
-  {#if !portfolio.isInitialized || (!portfolio.user || !portfolio.hasAnyHoldings)}
+  {#if !portfolio.isInitialized || !(portfolio.user || portfolio.hasAnyHoldings || portfolio.isDemo)}
     <LandingPage onStart={handleBypass} />
   {/if}
 {/if}

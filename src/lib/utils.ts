@@ -222,14 +222,28 @@ export function escapeHtml(str: string): string {
 		.replace(/'/g, '&#39;');
 }
 
-/** Comprueba si el usuario tiene activos guardados en el almacenamiento local con participaciones mayores a 0 */
+/** Comprueba si el usuario tiene activos guardados en el almacenamiento local (manuales o por transacciones) */
 export function hasLocalHoldingsData(): boolean {
 	if (typeof localStorage === 'undefined') return false;
 	try {
-		const saved = localStorage.getItem('corebalance_holdings_v2');
-		if (!saved) return false;
-		const parsed = JSON.parse(saved);
-		return Object.values(parsed).some((h: any) => h && h.shares > 0);
+		// 1. Comprobar posiciones manuales o si usa Ledger
+		const savedHoldings = localStorage.getItem('corebalance_holdings_v2');
+		if (savedHoldings) {
+			const parsed = JSON.parse(savedHoldings);
+			const hasManualOrLedger = Object.values(parsed).some(
+				(h: any) => h && (h.shares > 0 || h.useLedger === true)
+			);
+			if (hasManualOrLedger) return true;
+		}
+
+		// 2. Comprobar si hay transacciones guardadas
+		const savedTransactions = localStorage.getItem('corebalance_transactions');
+		if (savedTransactions) {
+			const parsedTx = JSON.parse(savedTransactions);
+			if (Array.isArray(parsedTx) && parsedTx.length > 0) return true;
+		}
+
+		return false;
 	} catch {
 		return false;
 	}
