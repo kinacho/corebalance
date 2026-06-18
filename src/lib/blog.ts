@@ -1,5 +1,49 @@
 import type { ComponentType } from 'svelte';
 
+export interface Tool {
+	slug: string;
+	url: string;
+	icon: string;
+	title: { es: string; en: string };
+	description: { es: string; en: string };
+	badge: { es: string; en: string };
+}
+
+const TOOLS: Tool[] = [
+	{
+		slug: 'calculadora-ter',
+		url: '/herramientas/calculadora-ter',
+		icon: '📊',
+		title: {
+			es: 'Calculadora de TER total',
+			en: 'Total Expense Ratio Calculator'
+		},
+		description: {
+			es: 'Calcula el TER ponderado de tu cartera y proyecta los miles de euros que ahorrarás al evitar fondos activos.',
+			en: 'Calculate your portfolio\'s weighted TER and project the thousands of euros you\'ll save by avoiding active funds.'
+		},
+		badge: { es: 'Herramienta Interactiva', en: 'Interactive Tool' }
+	},
+	{
+		slug: 'checklist-rebalanceo',
+		url: '/herramientas/checklist-rebalanceo',
+		icon: '✅',
+		title: {
+			es: '¿Es hora de rebalancear?',
+			en: 'Is It Time to Rebalance?'
+		},
+		description: {
+			es: 'Responde 4 preguntas rápidas y obtén una recomendación personalizada sobre cuándo y cómo ajustar tu cartera.',
+			en: 'Answer 4 quick questions and get a personalized recommendation on when and how to rebalance your portfolio.'
+		},
+		badge: { es: 'Recurso Interactivo', en: 'Interactive Resource' }
+	}
+];
+
+export function getTools(): Tool[] {
+	return TOOLS;
+}
+
 export interface PostMetadata {
 	title: string;
 	description: string;

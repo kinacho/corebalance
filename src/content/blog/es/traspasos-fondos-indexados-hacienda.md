@@ -8,6 +8,7 @@ tags: [traspasos, fiscalidad, fondos-indexados, hacienda, irpf]
 lang: es
 canonical: "https://corebalance.app/blog/traspasos-fondos-indexados-hacienda"
 ogImage: "/blog/og/traspasos-fondos-indexados-hacienda.jpg"
+slugs: { es: 'traspasos-fondos-indexados-hacienda', en: 'index-fund-transfers-spain-tax-guide' }
 ---
 
 Para un inversor residente en España, el marco fiscal cuenta con una joya de la corona que no tiene equivalente en casi ningún otro país europeo. Hablamos de la **traspasabilidad de los fondos de inversión**.

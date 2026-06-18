@@ -8,6 +8,7 @@ tags: [rebalanceo, myinvestor, fiscalidad, fondos-indexados, traspasos]
 lang: es
 canonical: "https://corebalance.app/blog/rebalanceo-myinvestor-sin-impuestos"
 ogImage: "/blog/og/rebalanceo-myinvestor-sin-impuestos.jpg"
+slugs: { es: 'rebalanceo-myinvestor-sin-impuestos', en: 'myinvestor-rebalancing-tax-free' }
 ---
 
 MyInvestor se ha consolidado como la plataforma preferida por los inversores indexados en España. Su catálogo de fondos indexados de gestoras de prestigio internacional como **Vanguard, iShares o Fidelity**, sumado a la **ausencia de comisiones de custodia**, la convierte en una opción imbatible para aplicar la filosofía *Bogleheads*.

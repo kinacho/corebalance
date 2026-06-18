@@ -1,12 +1,13 @@
 <script lang="ts">
   import LandingNavBar from '$lib/components/landing/LandingNavBar.svelte';
   import LandingFooter from '$lib/components/landing/LandingFooter.svelte';
-  import type { Post } from '$lib/blog';
+  import type { Post, Tool } from '$lib/blog';
   import { goto } from '$app/navigation';
 
-  let { posts = [], lang = 'es' } = $props<{
+  let { posts = [], lang = 'es', tools = [] } = $props<{
     posts: Post[];
     lang: 'es' | 'en';
+    tools: Tool[];
   }>();
 
   // Diccionario simple de traducciones internas
@@ -16,14 +17,20 @@
     readMore: 'Read article',
     noPosts: 'No articles published yet.',
     backToHome: 'Back to home',
-    tagsTitle: 'Topics:'
+    tagsTitle: 'Topics:',
+    toolsSection: 'Interactive Tools',
+    toolsSubtitle: 'Free calculators and resources to help you manage your portfolio.',
+    openTool: 'Open tool →'
   } : {
     title: 'Blog de CoreBalance',
     subtitle: 'Guías, análisis y consejos sobre inversión pasiva, fondos indexados y rebalanceo de carteras.',
     readMore: 'Leer artículo',
     noPosts: 'No hay artículos publicados todavía.',
     backToHome: 'Volver al inicio',
-    tagsTitle: 'Temas:'
+    tagsTitle: 'Temas:',
+    toolsSection: 'Herramientas Interactivas',
+    toolsSubtitle: 'Calculadoras y recursos gratuitos para gestionar tu cartera mejor.',
+    openTool: 'Abrir herramienta →'
   });
 
   function formatPostDate(dateStr: string) {
@@ -36,6 +43,7 @@
   }
 </script>
 
+
 <div class="blog-page">
   <!-- Mesh de fondo animado idéntico al resto de la web -->
   <div class="background-mesh"></div>
@@ -47,6 +55,30 @@
       <h1 class="gradient-text">{t.title}</h1>
       <p class="subtitle">{t.subtitle}</p>
     </header>
+
+    {#if tools.length > 0}
+      <section class="tools-section">
+        <div class="section-label">
+          <span class="section-label-line"></span>
+          <span class="section-label-text">{t.toolsSection}</span>
+          <span class="section-label-line"></span>
+        </div>
+        <p class="tools-subtitle">{t.toolsSubtitle}</p>
+        <div class="tools-grid">
+          {#each tools as tool}
+            <a href={tool.url} class="tool-card">
+              <div class="tool-icon">{tool.icon}</div>
+              <div class="tool-body">
+                <span class="tool-badge">{tool.badge[lang]}</span>
+                <h2 class="tool-title">{tool.title[lang]}</h2>
+                <p class="tool-description">{tool.description[lang]}</p>
+              </div>
+              <span class="tool-cta">{t.openTool}</span>
+            </a>
+          {/each}
+        </div>
+      </section>
+    {/if}
 
     {#if posts.length === 0}
       <div class="no-posts-card">
@@ -95,6 +127,154 @@
 </div>
 
 <style>
+  /* ── Tools Section ────────────────────────────────────── */
+  .tools-section {
+    margin-bottom: 5rem;
+  }
+
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .section-label-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.3), transparent);
+  }
+
+  .section-label-text {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #a78bfa;
+    white-space: nowrap;
+  }
+
+  .tools-subtitle {
+    text-align: center;
+    color: var(--text-muted, rgba(160, 160, 200, 0.6));
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+  }
+
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 1.25rem;
+  }
+
+  @media (max-width: 768px) {
+    .tools-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .tool-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.25rem;
+    padding: 1.5rem;
+    border-radius: 20px;
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(59, 130, 246, 0.03) 100%);
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .tool-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 20px;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.4), rgba(59, 130, 246, 0.2));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .tool-card:hover {
+    border-color: rgba(139, 92, 246, 0.4);
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(59, 130, 246, 0.06) 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(139, 92, 246, 0.12);
+  }
+
+  .tool-card:hover::before {
+    opacity: 1;
+  }
+
+  .tool-icon {
+    font-size: 2rem;
+    line-height: 1;
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(139, 92, 246, 0.1);
+    border-radius: 12px;
+  }
+
+  .tool-body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .tool-badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #a78bfa;
+    background: rgba(139, 92, 246, 0.12);
+    padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
+    margin-bottom: 0.5rem;
+  }
+
+  .tool-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 0.4rem;
+    line-height: 1.3;
+  }
+
+  .tool-description {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .tool-cta {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #a78bfa;
+    white-space: nowrap;
+    align-self: center;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+  }
+
+  .tool-card:hover .tool-cta {
+    transform: translateX(3px);
+  }
+
   .blog-page {
     background: var(--bg-primary, #05050a);
     color: var(--text-primary, #ffffff);

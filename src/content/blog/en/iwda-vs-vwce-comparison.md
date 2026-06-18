@@ -8,6 +8,7 @@ tags: [etfs, ucits, iwda, vwce, comparison]
 lang: en
 canonical: "https://corebalance.app/blog/iwda-vs-vwce-comparison"
 ogImage: "/blog/og/iwda-vs-vwce-comparison.jpg"
+slugs: { es: 'iwda-vs-vwce-comparativa', en: 'iwda-vs-vwce-comparison' }
 ---
 
 When building a long-term, passive global investment portfolio as a European or international investor, you will quickly find yourself choosing between two giants in the UCITS ETF market: **IWDA** and **VWCE**.

@@ -8,6 +8,7 @@ tags: [degiro, etfs, dividendos, fiscalidad, declaracion-renta]
 lang: es
 canonical: "https://corebalance.app/blog/dividendos-etfs-degiro"
 ogImage: "/blog/og/dividendos-etfs-degiro.jpg"
+slugs: { es: 'dividendos-etfs-degiro', en: 'degiro-etf-dividends-guide' }
 ---
 
 Invertir en ETFs de distribución (aquellos que reparten periódicamente sus dividendos en efectivo en tu cuenta del bróker) es una estrategia muy popular para generar flujos de ingresos pasivos. 

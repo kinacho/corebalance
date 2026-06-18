@@ -8,6 +8,7 @@ tags: [rebalanceo, fiscalidad, diferimiento-fiscal, fondos-indexados, impuestos]
 lang: es
 canonical: "https://corebalance.app/blog/rebalancear-sin-pagar-impuestos-espana"
 ogImage: "/blog/og/rebalancear-sin-pagar-impuestos-espana.jpg"
+slugs: { es: 'rebalancear-sin-pagar-impuestos-espana', en: 'rebalancing-without-paying-taxes-spain' }
 ---
 
 El rebalanceo es la única tarea activa que un inversor pasivo debe realizar de forma recurrente. Su objetivo principal es mantener bajo control el riesgo original de la cartera ajustando las desviaciones causadas por los movimientos del mercado.

@@ -4,7 +4,7 @@
 	import type { Asset, Transaction, TransactionType } from '$lib/types';
 	import { formatEUR, formatCurrency, formatDate } from '$lib/utils';
 	import { fade, slide, fly } from 'svelte/transition';
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount, onDestroy, untrack } from 'svelte';
 	import { LL, locale } from '$lib/i18n/i18n-svelte';
 
 	interface Props {
@@ -88,7 +88,10 @@
 		notes: ''
 	});
 
-	// Inicializar valores cuando cambia el activo o se abre el formulario
+	// Inicializar valores cuando cambia el activo o se abre el formulario.
+	// Se usa untrack() para leer defaultPrice/defaultCurrency sin crear dependencia
+	// reactiva en ellos: así el polling de precios (cada 30s) NO re-dispara este
+	// efecto y no borra el historial ni resetea el formulario mientras está abierto.
 	$effect(() => {
 		if (asset.ticker) {
 			editingTxId = null;
@@ -97,8 +100,8 @@
 				type: 'buy',
 				date: Date.now(),
 				shares: 0,
-				price: defaultPrice,
-				currency: defaultCurrency,
+				price: untrack(() => defaultPrice),
+				currency: untrack(() => defaultCurrency),
 				fees: 0,
 				fxRate: 1,
 				notes: ''
@@ -108,8 +111,8 @@
 
 	$effect(() => {
 		if (showAddForm && !editingTxId) {
-			newTx.price = defaultPrice;
-			newTx.currency = defaultCurrency;
+			newTx.price = untrack(() => defaultPrice);
+			newTx.currency = untrack(() => defaultCurrency);
 		}
 	});
 

@@ -1,9 +1,8 @@
+# https://corebalance.app/robots.txt
+
 User-agent: *
-Disallow: /dashboard/
 Disallow: /api/
-Allow: /
-Allow: /privacy
-Allow: /terms
-Allow: /cookies
+Disallow: /dashboard/
 
 Sitemap: https://corebalance.app/sitemap.xml
+LLMs-txt: https://corebalance.app/llms.txt
