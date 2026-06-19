@@ -4,5 +4,34 @@ User-agent: *
 Disallow: /api/
 Disallow: /dashboard/
 
+# Block AI scrapers from crawling general pages
+User-agent: GPTBot
+Disallow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+
+User-agent: ClaudeBot
+Disallow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: PerplexityBot
+Disallow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: cohere-ai
+Disallow: /
+
+User-agent: Omgilibot
+Disallow: /
+
 Sitemap: https://corebalance.app/sitemap.xml
-# LLMs-txt: https://corebalance.app/llms.txt
+LLMs-txt: https://corebalance.app/llms.txt
+LLMs-full-txt: https://corebalance.app/llms-full.txt

@@ -9,6 +9,7 @@
 <svelte:head>
   <title>{$LL.cookies.title()} — CoreBalance</title>
   <meta name="description" content={$LL.cookies.seo_desc()} />
+  <meta name="robots" content="noindex" />
 </svelte:head>
 
 <div class="legal-page">

@@ -2,11 +2,91 @@
   import LandingNavBar from '$lib/components/landing/LandingNavBar.svelte';
   import LandingFooter from '$lib/components/landing/LandingFooter.svelte';
   import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
+
+  let isEs = $derived($page.data.locale === 'es');
+
+  // Metadatos
+  const metaTitle = $derived(isEs 
+    ? 'CoreBalance vs Excel y Google Sheets | Comparativa Completa' 
+    : 'CoreBalance vs Excel & Google Sheets | Complete Comparison'
+  );
+  const metaDesc = $derived(isEs 
+    ? 'Comparativa detallada entre CoreBalance y las hojas de cálculo (Excel, Google Sheets) para el rebalanceo de carteras. Analizamos usabilidad, mantenimiento y privacidad.' 
+    : 'Detailed comparison between CoreBalance and spreadsheets (Excel, Google Sheets) for portfolio rebalancing. We analyze usability, maintenance, and privacy.'
+  );
+
+  // Esquema JSON-LD
+  const schemaData = $derived({
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": isEs ? "Inicio" : "Home",
+            "item": "https://corebalance.app"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Comparativas",
+            "item": "https://corebalance.app/comparativas/corebalance-vs-excel"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "vs Excel",
+            "item": "https://corebalance.app/comparativas/corebalance-vs-excel"
+          }
+        ]
+      },
+      {
+        "@type": "Article",
+        "headline": metaTitle,
+        "description": metaDesc,
+        "image": "https://corebalance.app/og-image.png",
+        "author": {
+          "@type": "Organization",
+          "name": "CoreBalance"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "CoreBalance",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://corebalance.app/logo.png"
+          }
+        },
+        "mainEntityOfPage": "https://corebalance.app/comparativas/corebalance-vs-excel"
+      }
+    ]
+  });
+
+  const schemaString = $derived(JSON.stringify(schemaData));
 </script>
 
 <svelte:head>
-  <title>CoreBalance vs Excel y Google Sheets | Comparativa Completa</title>
-  <meta name="description" content="Comparativa detallada entre CoreBalance y las hojas de cálculo (Excel, Google Sheets) para el rebalanceo de carteras. Analizamos usabilidad, mantenimiento y privacidad." />
+  <title>{metaTitle}</title>
+  <meta name="description" content={metaDesc} />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://corebalance.app/comparativas/corebalance-vs-excel" />
+  <meta property="og:title" content={metaTitle} />
+  <meta property="og:description" content={metaDesc} />
+  <meta property="og:image" content="https://corebalance.app/og-image.png" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="https://corebalance.app/comparativas/corebalance-vs-excel" />
+  <meta name="twitter:title" content={metaTitle} />
+  <meta name="twitter:description" content={metaDesc} />
+  <meta name="twitter:image" content="https://corebalance.app/og-image.png" />
+
+  {@html `<script type="application/ld+json">${schemaString}</script>`}
 </svelte:head>
 
 <div class="compare-page">
@@ -15,11 +95,22 @@
   <LandingNavBar onStart={() => goto('/')} />
 
   <main class="compare-container">
+    <!-- Breadcrumb visual -->
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/">{isEs ? 'Inicio' : 'Home'}</a>
+      <span class="separator">/</span>
+      <span class="current">{isEs ? 'Comparativas' : 'Comparisons'}</span>
+      <span class="separator">/</span>
+      <span class="current">vs Excel & Sheets</span>
+    </nav>
+
     <header class="compare-header">
-      <span class="category-badge">Comparativa de Herramientas</span>
+      <span class="category-badge">{isEs ? 'Comparativa de Herramientas' : 'Tool Comparison'}</span>
       <h1 class="gradient-text">CoreBalance vs <br class="mobile-break">Excel / Google Sheets</h1>
       <p class="subtitle">
-        ¿Prefieres lidiar con fórmulas rotas, APIs inestables y zoom de pantalla en tu móvil o rebalancear tu cartera de fondos en 5 segundos con total privacidad?
+        {isEs 
+          ? '¿Prefieres lidiar con fórmulas rotas, APIs inestables y zoom de pantalla en tu móvil o rebalancear tu cartera de fondos en 5 segundos con total privacidad?' 
+          : 'Do you prefer dealing with broken formulas, unstable APIs, and screen zooming on your mobile, or rebalancing your fund portfolio in 5 seconds with total privacy?'}
       </p>
     </header>
 
@@ -28,16 +119,20 @@
       <div class="intro-grid">
         <div class="intro-card corebalance-intro">
           <h3>CoreBalance</h3>
-          <p class="tagline">La solución dedicada y local-first sin mantenimiento</p>
+          <p class="tagline">{isEs ? 'La solución dedicada y local-first sin mantenimiento' : 'The dedicated, maintenance-free local-first solution'}</p>
           <p class="description">
-            Una calculadora web optimizada que funciona en local. Sin registrarte, introduces tus porcentajes objetivo e importes mensuales y calcula la distribución óptima en segundos. Diseñada especialmente para pantallas móviles y ordenadores.
+            {isEs 
+              ? 'Una calculadora web optimizada que funciona en local. Sin registrarte, introduces tus porcentajes objetivo e importes mensuales y calcula la distribución óptima en segundos. Diseñada especialmente para pantallas móviles y ordenadores.' 
+              : 'An optimized web calculator that works locally. Without registration, enter your target percentages and monthly amounts, and it calculates the optimal distribution in seconds. Specifically designed for mobile screens and desktops.'}
           </p>
         </div>
         <div class="intro-card excel-intro">
           <h3>Excel / Sheets</h3>
-          <p class="tagline">La hoja en blanco clásica y altamente configurable</p>
+          <p class="tagline">{isEs ? 'La hoja en blanco clásica y altamente configurable' : 'The classic, highly configurable blank sheet'}</p>
           <p class="description">
-            Perfecta para quienes aman el control manual total y desean diseñar simulaciones personalizadas a largo plazo. Requiere programar fórmulas, lidiar con errores de cotizaciones en tiempo real y tolerar la fricción en pantallas táctiles.
+            {isEs 
+              ? 'Perfecta para quienes aman el control manual total y desean diseñar simulaciones personalizadas a largo plazo. Requiere programar fórmulas, lidiar con errores de cotizaciones en tiempo real y tolerar la fricción en pantallas táctiles.' 
+              : 'Perfect for those who love total manual control and want to design custom long-term simulations. Requires programming formulas, dealing with real-time quote errors, and tolerating friction on touchscreens.'}
           </p>
         </div>
       </div>
@@ -45,101 +140,152 @@
 
     <!-- Tabla Comparativa -->
     <section class="table-section">
-      <h2>Comparativa de Características</h2>
+      <h2>{isEs ? 'Comparativa de Características' : 'Feature Comparison'}</h2>
       <div class="table-wrapper">
         <table>
           <thead>
             <tr>
-              <th>Característica</th>
+              <th>{isEs ? 'Característica' : 'Feature'}</th>
               <th class="highlight-col">CoreBalance</th>
               <th>Excel / Google Sheets</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td class="feature-title">Tiempo de Configuración</td>
-              <td class="highlight-col">Segundos (sin registrarse)</td>
-              <td>Horas (creando fórmulas y celdas)</td>
+              <td class="feature-title">{isEs ? 'Tiempo de Configuración' : 'Setup Time'}</td>
+              <td class="highlight-col">{isEs ? 'Segundos (sin registrarse)' : 'Seconds (no signup)'}</td>
+              <td>{isEs ? 'Horas (creando fórmulas y celdas)' : 'Hours (creating formulas & cells)'}</td>
             </tr>
             <tr>
-              <td class="feature-title">Mantenimiento de Fórmulas</td>
-              <td class="highlight-col">Nulo (se encarga el sistema)</td>
-              <td>Constante (APIs que fallan, errores de formato)</td>
+              <td class="feature-title">{isEs ? 'Mantenimiento de Fórmulas' : 'Formula Maintenance'}</td>
+              <td class="highlight-col">{isEs ? 'Nulo (se encarga el sistema)' : 'None (handled by system)'}</td>
+              <td>{isEs ? 'Constante (APIs que fallan, errores de formato)' : 'Constant (failing APIs, formatting errors)'}</td>
             </tr>
             <tr>
-              <td class="feature-title">Privacidad en la nube</td>
-              <td class="highlight-col">100% Privado (datos locales encriptados)</td>
-              <td>Media-Baja (datos guardados en servidores de Google/Microsoft)</td>
+              <td class="feature-title">{isEs ? 'Privacidad en la nube' : 'Cloud Privacy'}</td>
+              <td class="highlight-col">{isEs ? '100% Privado (datos locales encriptados)' : '100% Private (encrypted local data)'}</td>
+              <td>{isEs ? 'Media-Baja (datos guardados en servidores de Google/Microsoft)' : 'Medium-Low (stored on Google/Microsoft servers)'}</td>
             </tr>
             <tr>
-              <td class="feature-title">Uso en teléfonos móviles</td>
-              <td class="highlight-col">Perfecto (diseño adaptado nativamente)</td>
-              <td>Poco práctico (fricción al editar celdas pequeñas)</td>
+              <td class="feature-title">{isEs ? 'Uso en teléfonos móviles' : 'Mobile Usability'}</td>
+              <td class="highlight-col">{isEs ? 'Perfecto (diseño adaptado nativamente)' : 'Perfect (natively adapted design)'}</td>
+              <td>{isEs ? 'Poco práctico (fricción al editar celdas pequeñas)' : 'Impractical (friction editing small cells)'}</td>
             </tr>
             <tr>
-              <td class="feature-title">Cálculo de aportaciones</td>
-              <td class="highlight-col">Automático al céntimo</td>
-              <td>Requiere programar fórmulas lógicas complejas</td>
+              <td class="feature-title">{isEs ? 'Cálculo de aportaciones' : 'Contribution Calculation'}</td>
+              <td class="highlight-col">{isEs ? 'Automático al céntimo' : 'Automatic to the cent'}</td>
+              <td>{isEs ? 'Requiere programar fórmulas lógicas complejas' : 'Requires programming complex logic'}</td>
             </tr>
             <tr>
-              <td class="feature-title">Coste</td>
-              <td class="highlight-col">Gratuito y sin publicidad</td>
-              <td>Gratuito (Google) o licencia Office (Excel)</td>
+              <td class="feature-title">{isEs ? 'Coste' : 'Cost'}</td>
+              <td class="highlight-col">{isEs ? 'Gratuito y sin publicidad' : 'Free and ad-free'}</td>
+              <td>{isEs ? 'Gratuito (Google) o licencia Office (Excel)' : 'Free (Google) or Office License (Excel)'}</td>
             </tr>
           </tbody>
         </table>
       </div>
     </section>
 
+    <!-- Caso de estudio real / Real-world case study -->
+    <section class="case-study-section">
+      <h2>{isEs ? 'Caso de Uso Real: El Rebalanceo Mensual' : 'Real-World Case Study: Monthly Rebalancing'}</h2>
+      <p class="section-desc">
+        {isEs
+          ? 'Comparamos la experiencia real de un inversor indexado que aporta 500 € mensuales a su cartera de 4 fondos.'
+          : 'We compare the actual experience of an index investor contributing €500 monthly to a 4-fund portfolio.'}
+      </p>
+      <div class="study-grid">
+        <div class="study-card">
+          <h4>{isEs ? 'Con Hojas de Cálculo (Excel / Sheets)' : 'With Spreadsheets (Excel / Sheets)'}</h4>
+          <ul>
+            <li>{isEs ? 'Abrir archivo e iniciar sesión en Google/Microsoft.' : 'Open file and log into Google/Microsoft.'}</li>
+            <li>{isEs ? 'Esperar a que carguen las cotizaciones (a veces fallan y dan error #N/A).' : 'Wait for quotes to load (sometimes fails with #N/A error).'}</li>
+            <li>{isEs ? 'Revisar manualmente que ninguna celda o fila se haya desconfigurado.' : 'Manually check that no cell or row has lost its format.'}</li>
+            <li>{isEs ? 'Calcular a mano con fórmulas la compra de activos.' : 'Manually calculate asset purchases using formulas.'}</li>
+            <li>{isEs ? 'Tiempo estimado: 10-15 minutos.' : 'Estimated time: 10-15 minutes.'}</li>
+          </ul>
+        </div>
+        <div class="study-card highlight-card">
+          <h4>{isEs ? 'Con CoreBalance' : 'With CoreBalance'}</h4>
+          <ul>
+            <li>{isEs ? 'Abrir la web o app en tu móvil (carga inmediata en 1 segundo).' : 'Open the web or app on your mobile (instant 1-second load).'}</li>
+            <li>{isEs ? 'Los precios se actualizan solos al instante y de forma fiable.' : 'Prices update automatically and reliably.'}</li>
+            <li>{isEs ? 'Introducir el importe del mes (ej: 500 €).' : 'Enter the month\'s amount (e.g., €500).'}</li>
+            <li>{isEs ? 'Ver el cálculo preciso de aportaciones y copiarlo a tu comercializadora.' : 'See the exact contribution calculations and copy them to your broker.'}</li>
+            <li>{isEs ? 'Tiempo estimado: 5 segundos.' : 'Estimated time: 5 seconds.'}</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
     <!-- Detalle de Pros y Contras -->
     <section class="details-section">
-      <h2>Pros y Contras: ¿Cuál te conviene más?</h2>
+      <h2>{isEs ? 'Pros y Contras: ¿Cuál te conviene más?' : 'Pros & Cons: Which suits you best?'}</h2>
       <div class="details-grid">
         <div class="details-card">
-          <h3 class="pros-title">Elige CoreBalance si buscas:</h3>
+          <h3 class="pros-title">{isEs ? 'Elige CoreBalance si buscas:' : 'Choose CoreBalance if you want:'}</h3>
           <ul>
             <li>
               <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
               </svg>
-              <strong>Rapidez y comodidad:</strong> Olvídate de programar o arrastrar celdas. La aplicación calcula todo por ti de forma automática.
+              <span><strong>{isEs ? 'Rapidez y comodidad:' : 'Speed and convenience:'}</strong> {isEs ? 'Olvídate de programar o arrastrar celdas. La aplicación calcula todo por ti de forma automática.' : 'Forget about programming or dragging cells. The app calculates everything for you automatically.'}</span>
             </li>
             <li>
               <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
               </svg>
-              <strong>Seguridad fiscal y operativa:</strong> Evita errores aritméticos humanos que puedan desbalancear tu cartera de forma involuntaria.
+              <span><strong>{isEs ? 'Seguridad fiscal y operativa:' : 'Tax and operational safety:'}</strong> {isEs ? 'Evita errores aritméticos humanos que puedan desbalancear tu cartera de forma involuntaria.' : 'Avoid human arithmetic errors that could unintentionally unbalance your portfolio.'}</span>
             </li>
             <li>
               <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
               </svg>
-              <strong>Sincronización local offline:</strong> Puedes usarla en cualquier sitio sin preocuparte de si tu plantilla sincroniza correctamente en la nube.
+              <span><strong>{isEs ? 'Sincronización local offline:' : 'Local offline sync:'}</strong> {isEs ? 'Puedes usarla en cualquier sitio sin preocuparte de si tu plantilla sincroniza correctamente en la nube.' : 'You can use it anywhere without worrying about whether your template syncs correctly to the cloud.'}</span>
             </li>
           </ul>
         </div>
         <div class="details-card">
-          <h3 class="cons-title">Elige Hojas de Cálculo si buscas:</h3>
+          <h3 class="cons-title">{isEs ? 'Elige Hojas de Cálculo si buscas:' : 'Choose Spreadsheets if you want:'}</h3>
           <ul>
             <li>
               <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
               </svg>
-              <strong>Personalización a medida:</strong> Añadir columnas con ratios personalizados, gráficos de tarta a medida y tablas de amortización.
+              <span><strong>{isEs ? 'Personalización a medida:' : 'Custom personalization:'}</strong> {isEs ? 'Añadir columnas con ratios personalizados, gráficos de tarta a medida y tablas de amortización.' : 'Add columns with custom ratios, tailored pie charts, and amortization tables.'}</span>
             </li>
             <li>
               <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
               </svg>
-              <strong>Simulación histórica compleja:</strong> Proyecciones de interés compuesto a 40 años con variaciones aleatorias (Método de Montecarlo).
+              <span><strong>{isEs ? 'Simulación histórica compleja:' : 'Complex historical simulation:'}</strong> {isEs ? 'Proyecciones de interés compuesto a 40 años con variaciones aleatorias (Método de Montecarlo).' : '40-year compound interest projections with random variations (Monte Carlo method).'}</span>
             </li>
             <li>
               <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
               </svg>
-              <strong>Historial de aportaciones guardado:</strong> Registro histórico de cada aportación mensual detallada en una pestaña separada.
+              <span><strong>{isEs ? 'Historial de aportaciones guardado:' : 'Saved contribution history:'}</strong> {isEs ? 'Registro histórico de cada aportación mensual detallada en una pestaña separada.' : 'Detailed historical record of each monthly contribution in a separate tab.'}</span>
             </li>
           </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sección de Preguntas Frecuentes (FAQ) -->
+    <section class="faq-section">
+      <h2>{isEs ? 'Preguntas Frecuentes' : 'Frequently Asked Questions'}</h2>
+      <div class="faq-grid">
+        <div class="faq-item">
+          <h4>{isEs ? '¿Puedo importar mis datos desde Excel a CoreBalance?' : 'Can I import my data from Excel to CoreBalance?'}</h4>
+          <p>{isEs 
+            ? 'Sí. Puedes guardar tu hoja de cálculo como un archivo CSV e importarlo directamente en la pestaña de Importar de CoreBalance para no tener que meter los activos a mano.' 
+            : 'Yes. You can save your spreadsheet as a CSV file and import it directly into the Import tab in CoreBalance so you do not have to enter assets manually.'}</p>
+        </div>
+        <div class="faq-item">
+          <h4>{isEs ? '¿Es CoreBalance seguro si mis datos se guardan en el navegador?' : 'Is CoreBalance secure if my data is saved in the browser?'}</h4>
+          <p>{isEs 
+            ? 'Totalmente. Al usar IndexedDB en local, tus datos financieros no se envían a ningún servidor de terceros, garantizando una privacidad que Google Sheets o Microsoft Excel 365 en la nube no pueden asegurar por completo.' 
+            : 'Absolutely. By using IndexedDB locally, your financial data is not sent to any third-party servers, guaranteeing privacy that Google Sheets or Microsoft Excel 365 in the cloud cannot fully assure.'}</p>
         </div>
       </div>
     </section>
@@ -147,9 +293,11 @@
     <!-- Conclusión y CTA -->
     <section class="conclusion-cta">
       <div class="cta-inner">
-        <h2>Simplifica tu rebalanceo mensual hoy mismo</h2>
-        <p>Prueba la calculadora de CoreBalance de forma 100% gratuita y privada. Tus datos financieros nunca saldrán de tu dispositivo.</p>
-        <button class="btn-primary" onclick={() => goto('/')}>Probar CoreBalance Gratis</button>
+        <h2>{isEs ? 'Simplifica tu rebalanceo mensual hoy mismo' : 'Simplify your monthly rebalancing today'}</h2>
+        <p>{isEs 
+          ? 'Prueba la calculadora de CoreBalance de forma 100% gratuita y privada. Tus datos financieros nunca saldrán de tu dispositivo.' 
+          : 'Try the CoreBalance calculator 100% free and privately. Your financial data will never leave your device.'}</p>
+        <button class="btn-primary" onclick={() => goto('/')}>{isEs ? 'Probar CoreBalance Gratis' : 'Try CoreBalance Free'}</button>
       </div>
     </section>
   </main>
@@ -170,6 +318,34 @@
     max-width: 1000px;
     margin: 0 auto;
     padding: 140px 1.5rem 80px;
+  }
+
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: rgba(160, 160, 200, 0.6);
+    margin-bottom: 2rem;
+    justify-content: center;
+  }
+
+  .breadcrumb a {
+    color: var(--accent-blue, #3b82f6);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .breadcrumb a:hover {
+    text-decoration: underline;
+  }
+
+  .breadcrumb .separator {
+    color: rgba(160, 160, 200, 0.4);
+  }
+
+  .breadcrumb .current {
+    color: rgba(255, 255, 255, 0.8);
   }
 
   .compare-header {
@@ -325,6 +501,80 @@
     color: rgba(255, 255, 255, 0.9);
   }
 
+  /* Caso de estudio */
+  .case-study-section {
+    margin-bottom: 5rem;
+  }
+
+  .case-study-section h2 {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    text-align: center;
+  }
+
+  .section-desc {
+    color: var(--text-muted, rgba(160, 160, 200, 0.8));
+    text-align: center;
+    margin-bottom: 2.5rem;
+    font-size: 1.1rem;
+  }
+
+  .study-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  @media (max-width: 768px) {
+    .study-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+  }
+
+  .study-card {
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.05));
+    border-radius: 20px;
+    padding: 2rem;
+  }
+
+  .study-card h4 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 1.25rem;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .highlight-card {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.04) 0%, rgba(59, 130, 246, 0.02) 100%);
+    border-color: rgba(16, 185, 129, 0.15);
+  }
+
+  .highlight-card h4 {
+    color: var(--accent-green, #10b981);
+  }
+
+  .study-card ul {
+    list-style: decimal;
+    padding-left: 1.25rem;
+    margin: 0;
+  }
+
+  .study-card li {
+    margin-bottom: 0.85rem;
+    color: rgba(255, 255, 255, 0.75);
+    line-height: 1.5;
+  }
+
+  .study-card li:last-child {
+    margin-bottom: 0;
+    font-weight: 700;
+    color: #fff;
+  }
+
   /* Pros y contras cards */
   .details-section {
     margin-bottom: 5rem;
@@ -395,6 +645,45 @@
     flex-shrink: 0;
     margin-top: 2px;
     color: var(--accent-blue, #3b82f6);
+  }
+
+  /* FAQ section */
+  .faq-section {
+    margin-bottom: 5rem;
+  }
+
+  .faq-section h2 {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 2.5rem;
+    text-align: center;
+  }
+
+  .faq-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+  }
+
+  @media (max-width: 768px) {
+    .faq-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+  }
+
+  .faq-item h4 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    color: #fff;
+  }
+
+  .faq-item p {
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.6;
+    margin: 0;
   }
 
   /* CTA final */
