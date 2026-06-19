@@ -58,6 +58,14 @@
   <meta property="og:title" content={$LL.seo.og_title()} />
   <meta property="og:description" content={$LL.seo.og_description()} />
   <meta property="og:image" content="https://corebalance.app/og-image-landing.png" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://corebalance.app" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={$LL.seo.og_title()} />
+  <meta name="twitter:description" content={$LL.seo.og_description()} />
+  <meta name="twitter:image" content="https://corebalance.app/og-image-landing.png" />
 
   {@html `<script type="application/ld+json">${schemaString}</script>`}
   </svelte:head>

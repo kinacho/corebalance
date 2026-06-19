@@ -21,6 +21,7 @@
 <svelte:head>
   <title>{$LL.privacy.title()} — CoreBalance</title>
   <meta name="description" content={$LL.privacy.seo_desc()} />
+  <meta name="robots" content="noindex" />
 </svelte:head>
 
 <div class="legal-page">

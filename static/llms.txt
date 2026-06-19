@@ -4,6 +4,7 @@
 
 - **URL:** [corebalance.app](https://corebalance.app)
 - **Sitemap:** [Sitemap](https://corebalance.app/sitemap.xml)
+- **Full Context:** [llms-full.txt](https://corebalance.app/llms-full.txt)
 - **License:** Open source (GitHub)
 - **Price:** Free
 - **Languages:** Bilingual — Spanish (ES) and English (EN)

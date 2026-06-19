@@ -1,7 +1,9 @@
 <script lang="ts">
   import { portfolio } from '$lib/stores/portfolio.svelte';
   import { ui } from '$lib/stores/ui.svelte';
-  import { LL } from '$lib/i18n/i18n-svelte';
+  import { LL, locale } from '$lib/i18n/i18n-svelte';
+
+  let isEs = $derived($locale === 'es');
 </script>
 
 <footer class="landing-footer">
@@ -32,6 +34,24 @@
               {$LL.nav.changelog()}
             </button>
           </li>
+        </ul>
+      </div>
+
+      <div class="links-col">
+        <h3>{isEs ? 'Recursos' : 'Resources'}</h3>
+        <ul>
+          <li><a href="/blog">{$LL.nav.blog()}</a></li>
+          <li><a href="/herramientas/calculadora-ter">{isEs ? 'Calculadora TER' : 'TER Calculator'}</a></li>
+          <li><a href="/herramientas/checklist-rebalanceo">{isEs ? 'Checklist Rebalanceo' : 'Rebalancing Checklist'}</a></li>
+        </ul>
+      </div>
+
+      <div class="links-col">
+        <h3>{isEs ? 'Comparativas' : 'Comparisons'}</h3>
+        <ul>
+          <li><a href="/comparativas/corebalance-vs-excel">vs Excel / Sheets</a></li>
+          <li><a href="/comparativas/corebalance-vs-indexa-capital">vs Indexa Capital</a></li>
+          <li><a href="/comparativas/corebalance-vs-portfolio-performance">vs Portfolio Performance</a></li>
         </ul>
       </div>
 
