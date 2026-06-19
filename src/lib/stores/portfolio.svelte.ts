@@ -332,6 +332,11 @@ export class PortfolioStore {
 	private authUnsubscribe: (() => void) | undefined;
 	private isFetching = false;
 
+	// --- Cola de guardado en nube (evita race conditions) ---
+	private _cloudSavePending = false;
+	private _cloudSaveInProgress = false;
+	private _cloudSaveDebounceTimer: ReturnType<typeof setTimeout> | undefined;
+
 	private initPolling() {
 		if (typeof window === 'undefined') return;
 		
@@ -367,12 +372,42 @@ export class PortfolioStore {
 
 	private cleanupPolling() {
 		if (this.pollingTimeoutId) clearTimeout(this.pollingTimeoutId);
+		if (this._cloudSaveDebounceTimer) clearTimeout(this._cloudSaveDebounceTimer);
 		if (this.visibilityHandler) document.removeEventListener('visibilitychange', this.visibilityHandler);
 		if (this.authUnsubscribe) this.authUnsubscribe();
 	}
 
-	private async saveToCloud() {
+	/**
+	 * Encola un guardado en la nube con debounce de 300ms.
+	 * Garantiza que si se llaman múltiples guardados rápidamente (ej: añadir
+	 * varias transacciones seguidas), solo se ejecuta UNO al final con el
+	 * estado más reciente, evitando race conditions en Firestore.
+	 */
+	private scheduleCloudSave() {
 		if (!this.user) return;
+		this._cloudSavePending = true;
+		if (this._cloudSaveDebounceTimer) clearTimeout(this._cloudSaveDebounceTimer);
+		this._cloudSaveDebounceTimer = setTimeout(() => {
+			this._flushCloudSave();
+		}, 300);
+	}
+
+	private async _flushCloudSave(force = false) {
+		if (!this.user) return;
+		// Sin force, solo ejecutar si hay un guardado pendiente
+		if (!force && !this._cloudSavePending) return;
+		// Si ya hay una escritura en curso, reprogramamos para después
+		if (this._cloudSaveInProgress) {
+			if (!force) {
+				if (this._cloudSaveDebounceTimer) clearTimeout(this._cloudSaveDebounceTimer);
+				this._cloudSaveDebounceTimer = setTimeout(() => {
+					this._flushCloudSave();
+				}, 500);
+			}
+			return;
+		}
+		this._cloudSavePending = false;
+		this._cloudSaveInProgress = true;
 		try {
 			const dataToSave = {
 				holdings: $state.snapshot(this.holdings),
@@ -384,11 +419,30 @@ export class PortfolioStore {
 				updatedAt: new Date().toISOString()
 			};
 			await storageProvider.saveUserData(this.user.uid, dataToSave);
-			if (storageProvider.saveTransactions) await storageProvider.saveTransactions(this.user.uid, $state.snapshot(this.transactions));
+			if (storageProvider.saveTransactions) {
+				await storageProvider.saveTransactions(this.user.uid, $state.snapshot(this.transactions));
+			}
+			// Si mientras guardábamos entró otro cambio, lo enviamos ahora
+			if (this._cloudSavePending) {
+				this._cloudSavePending = false;
+				await this._flushCloudSave();
+			}
 		} catch (e) {
 			console.error('Storage save error:', e);
 			ui.addToast(get(LL).toasts.save_error(), 'error');
+			// Reintentar si había un guardado pendiente
+			if (this._cloudSavePending) {
+				if (this._cloudSaveDebounceTimer) clearTimeout(this._cloudSaveDebounceTimer);
+				this._cloudSaveDebounceTimer = setTimeout(() => this._flushCloudSave(), 3000);
+			}
+		} finally {
+			this._cloudSaveInProgress = false;
 		}
+	}
+
+	/** @deprecated Usar scheduleCloudSave() internamente. Mantenido para compatibilidad. */
+	private saveToCloud() {
+		this.scheduleCloudSave();
 	}
 
 	private async loadFromCloud() {
@@ -401,18 +455,60 @@ export class PortfolioStore {
 				storageProvider.loadHistory ? storageProvider.loadHistory(this.user.uid) : Promise.resolve([])
 			]);
 
+			let shouldLoadFromCloud = true;
+
 			if (userData) {
-				this.holdings = this.sanitizeHoldings(userData.holdings || {});
-				this.contribution = userData.contribution || 0;
-				this.isPrivate = userData.isPrivate ?? this.isPrivate;
-				if (userData.coreAssets && Array.isArray(userData.coreAssets)) this.coreAssets = userData.coreAssets;
-				if (userData.satelliteAssets && Array.isArray(userData.satelliteAssets)) this.satelliteAssets = userData.satelliteAssets;
-				if (userData.stockAssets && Array.isArray(userData.stockAssets)) this.stockAssets = userData.stockAssets;
+				// Comparar timestamps: si el localStorage tiene datos MÁS RECIENTES
+				// que Firestore (ej: guardado pendiente que no llegó a completarse),
+				// subimos los datos locales en lugar de sobreescribirlos.
+				const localTimestamp = localStorage.getItem('corebalance_updatedAt');
+				const cloudTimestamp = userData.updatedAt;
+				const localIsNewer = localTimestamp && cloudTimestamp
+					? new Date(localTimestamp) > new Date(cloudTimestamp)
+					: false;
+
+				if (localIsNewer) {
+					// Los datos locales son más recientes: subimos a la nube
+					console.log('[Portfolio] localStorage más reciente que Firestore. Subiendo datos locales...');
+					await this._flushCloudSave(true);
+					shouldLoadFromCloud = false;
+				} else {
+					// Los datos de la nube son más recientes: los cargamos
+					this.holdings = this.sanitizeHoldings(userData.holdings || {});
+					this.contribution = userData.contribution || 0;
+					this.isPrivate = userData.isPrivate ?? this.isPrivate;
+					if (userData.coreAssets && Array.isArray(userData.coreAssets)) this.coreAssets = userData.coreAssets;
+					if (userData.satelliteAssets && Array.isArray(userData.satelliteAssets)) this.satelliteAssets = userData.satelliteAssets;
+					if (userData.stockAssets && Array.isArray(userData.stockAssets)) this.stockAssets = userData.stockAssets;
+
+					// Sincronizar localStorage con los datos cargados de la nube
+					this.syncLocalStorage();
+				}
 			} else if (Object.keys(this.holdings).length > 0 || this.coreAssets.length > 0 || this.satelliteAssets.length > 0 || this.stockAssets.length > 0) {
-				await this.saveToCloud();
+				// No hay datos en la nube pero sí locales: subimos los locales
+				await this._flushCloudSave(true);
+				shouldLoadFromCloud = false;
 			}
 
-			if (transactions) this.transactions = transactions;
+			if (shouldLoadFromCloud) {
+				// Cargar transacciones: usar las de la nube si hay más que las locales,
+				// o las locales si son más recientes.
+				const localTxJson = localStorage.getItem('corebalance_transactions');
+				const localTxCount = localTxJson ? (JSON.parse(localTxJson) as unknown[]).length : 0;
+				if (transactions && transactions.length >= localTxCount) {
+					this.transactions = transactions;
+					// Sincronizar localStorage con las transacciones de la nube
+					try { localStorage.setItem('corebalance_transactions', JSON.stringify(transactions)); } catch (_) {}
+				} else if (transactions && transactions.length > 0 && localTxCount === 0) {
+					this.transactions = transactions;
+				}
+				// Si localTxCount > transactions.length, mantenemos las locales (ya cargadas en loadFromStorage)
+				// y las subimos a la nube para sincronizar
+				if (this.user && localTxCount > (transactions?.length ?? 0)) {
+					console.log('[Portfolio] Más transacciones en local que en nube. Sincronizando...');
+					this.scheduleCloudSave();
+				}
+			}
 			
 			// Si no venía historia en el primer bloque paralelo o está vacía, intentamos cargar/migrar
 			if (history && history.length > 0) {
@@ -474,8 +570,8 @@ export class PortfolioStore {
 		}
 	}
 
-	private saveToStorage() {
-		if (this.isDemo) return;
+	/** Sincroniza el localStorage con el estado actual en memoria. */
+	private syncLocalStorage() {
 		if (typeof localStorage === 'undefined') return;
 		try {
 			localStorage.setItem(STORAGE_KEY_HOLDINGS, JSON.stringify(this.holdings));
@@ -488,8 +584,17 @@ export class PortfolioStore {
 			}));
 			localStorage.setItem('corebalance_transactions', JSON.stringify(this.transactions));
 			localStorage.setItem(STORAGE_KEY_PRICES, JSON.stringify(this.prices));
-		} catch (e) { console.warn('Storage save failed:', e); }
-		this.saveToCloud();
+		} catch (e) { console.warn('LocalStorage sync failed:', e); }
+	}
+
+	private saveToStorage() {
+		if (this.isDemo) return;
+		if (typeof localStorage === 'undefined') return;
+		// Guardar timestamp para comparar con la nube al recargar
+		const now = new Date().toISOString();
+		try { localStorage.setItem('corebalance_updatedAt', now); } catch (_) {}
+		this.syncLocalStorage();
+		this.scheduleCloudSave();
 	}
 
 	private sanitizeHoldings(holdings: HoldingsMap): HoldingsMap {
@@ -563,6 +668,7 @@ export class PortfolioStore {
 				localStorage.removeItem(STORAGE_KEY_CONTRIBUTION);
 				localStorage.removeItem(STORAGE_KEY_PRICES);
 				localStorage.removeItem('corebalance_transactions');
+				localStorage.removeItem('corebalance_updatedAt');
 			}
 			if (typeof sessionStorage !== 'undefined') {
 				sessionStorage.removeItem('bypassLanding');
