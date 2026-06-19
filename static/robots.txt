@@ -33,5 +33,3 @@ User-agent: Omgilibot
 Disallow: /
 
 Sitemap: https://corebalance.app/sitemap.xml
-LLMs-txt: https://corebalance.app/llms.txt
-LLMs-full-txt: https://corebalance.app/llms-full.txt
