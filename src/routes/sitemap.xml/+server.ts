@@ -17,9 +17,6 @@ export const GET: RequestHandler = async () => {
     { url: 'comparativas/corebalance-vs-portfolio-performance', priority: '0.7', changefreq: 'monthly', lastmod: buildDate },
     { url: 'comparativas/corebalance-vs-excel',            priority: '0.7', changefreq: 'monthly', lastmod: buildDate },
     { url: 'comparativas/corebalance-vs-indexa-capital',   priority: '0.7', changefreq: 'monthly', lastmod: buildDate },
-    { url: 'privacy',    priority: '0.3', changefreq: 'monthly', lastmod: buildDate },
-    { url: 'terms',      priority: '0.3', changefreq: 'monthly', lastmod: buildDate },
-    { url: 'cookies',    priority: '0.3', changefreq: 'monthly', lastmod: buildDate },
   ];
 
   // ── Blog posts con hreflang ────────────────────────────────────────────────
