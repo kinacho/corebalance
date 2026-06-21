@@ -1,22 +1,24 @@
 # https://corebalance.app/robots.txt
-# Reference for LLM/AI crawlers (standard comment format to prevent Google Search Console errors)
 # llms-txt: https://corebalance.app/llms.txt
 
-# Global rules for search engine crawlers (Google, Bing, Yahoo, etc.)
+# 1. Regla global y buscadores de IA en tiempo real (mismo acceso público)
 User-agent: *
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: Claude-Web
+User-agent: PerplexityBot
 Disallow: /api/
 Disallow: /dashboard/
 
-# AI bots allowed ONLY to crawl the LLM context files
+# 2. Bots de entrenamiento (solo llms.txt)
 User-agent: GPTBot
 User-agent: ClaudeBot
-User-agent: Claude-Web
-User-agent: PerplexityBot
+User-agent: anthropic-ai
 Disallow: /
 Allow: /llms.txt
 Allow: /llms-full.txt
 
-# Block all crawling for general/aggregator training AI bots
+# 3. Scrapers hostiles / entrenamiento puro — bloqueo total
 User-agent: CCBot
 User-agent: Google-Extended
 User-agent: Applebot-Extended
@@ -25,8 +27,10 @@ User-agent: cohere-ai
 User-agent: Bytespider
 User-agent: Omgilibot
 User-agent: Diffbot
+User-agent: ImagesiftBot
+User-agent: DataForSeoBot
 Disallow: /
 
-# Sitemap path
+# Sitemap
 Sitemap: https://corebalance.app/sitemap.xml
 
