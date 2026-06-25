@@ -840,4 +840,16 @@
 			color: rgba(160, 160, 200, 0.6);
 		}
 	}
+
+	/* Mobile adaptations under 380px */
+	@media (max-width: 380px) {
+		.sync-btn {
+			display: none;
+		}
+		
+		.action-btn {
+			width: 38px;
+			height: 38px;
+		}
+	}
 </style>

@@ -19,6 +19,9 @@
 	let canvas: HTMLCanvasElement;
 	let chart: Chart<'doughnut'> | null = null;
 
+	const prefersReducedMotion = typeof window !== 'undefined' 
+		&& window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 	function createChartConfig(chartData: ChartData) {
 		return {
 			type: 'doughnut' as const,
@@ -67,7 +70,7 @@
 						}
 					}
 				},
-				animation: {
+				animation: prefersReducedMotion ? false : {
 					animateRotate: true,
 					duration: 1200,
 					easing: 'easeOutQuart' as const

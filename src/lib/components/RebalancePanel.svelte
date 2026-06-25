@@ -607,4 +607,15 @@
 		background: rgba(255, 255, 255, 0.4);
 		border-radius: 1px;
 	}
+
+	/* Comparison row adaptable en pantallas estrechas */
+	@media (max-width: 420px) {
+		.comparison-row {
+			grid-template-columns: 100px 1fr 40px;
+		}
+
+		.comparison-name {
+			font-size: 0.62rem;
+		}
+	}
 </style>

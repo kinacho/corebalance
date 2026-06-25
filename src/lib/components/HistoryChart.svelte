@@ -1,6 +1,19 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import Chart from 'chart.js/auto';
+	import {
+		Chart,
+		LineController,
+		LineElement,
+		PointElement,
+		LinearScale,
+		CategoryScale,
+		Filler,
+		Tooltip,
+		Legend
+	} from 'chart.js';
+
+	Chart.register(LineController, LineElement, PointElement, LinearScale, CategoryScale, Filler, Tooltip, Legend);
+
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { formatEUR } from '$lib/utils';
 	import { LL, locale } from '$lib/i18n/i18n-svelte';
@@ -9,6 +22,9 @@
 	let chart: Chart;
 	let currentRange = $state(30);
 	let viewMode = $state<'value' | 'percent'>('value');
+
+	const prefersReducedMotion = typeof window !== 'undefined' 
+		&& window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 	const ranges = [
 		{ label: '7D', days: 7 },
@@ -221,7 +237,7 @@
 						}
 					}
 				},
-				animation: {
+				animation: prefersReducedMotion ? false : {
 					// Efecto de dibujo a mano alzada (progresivo)
 					x: {
 						type: 'number',
@@ -516,6 +532,11 @@
 		.controls-group {
 			width: 100%;
 			justify-content: space-between;
+		}
+
+		.canvas-wrapper {
+			min-height: 220px;
+			height: 220px;
 		}
 	}
 </style>

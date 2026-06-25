@@ -211,4 +211,29 @@
 		overflow: hidden;
 		height: 100vh;
 	}
+
+	/* Tabular nums para cifras financieras */
+	.privacy-blur,
+	.metric-value,
+	.summary-value,
+	.alloc-value,
+	.total-value,
+	.asset-value,
+	.btc-value,
+	.weight-sum,
+	.daily-value,
+	.daily-percent,
+	.legend-value {
+		font-variant-numeric: tabular-nums;
+	}
+
+	/* Touch targets mínimos de 44px en móviles */
+	@media (max-width: 768px) {
+		button:not(.action-btn), 
+		[role="button"]:not(.action-btn),
+		select {
+			min-height: 44px;
+			min-width: 44px;
+		}
+	}
 }
