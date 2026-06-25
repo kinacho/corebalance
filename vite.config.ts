@@ -27,11 +27,12 @@ export default defineConfig({
 				],
 				globIgnores: ['server/**'],
 				modifyURLPrefix: { 'client/': '/' },
-				navigateFallback: null
+				navigateFallback: '/offline.html',
+				navigateFallbackDenylist: [/^\/api\//]
 			},
 			includeAssets: ['favicon.png', 'logo.webp', 'pwa-192x192.png', 'pwa-512x512.png'],
 			manifest: {
-				name: 'CoreBalance — Portfolio Dashboard',
+				name: 'CoreBalance - Rebalanceo',
 				short_name: 'CoreBalance',
 				description: 'Dashboard de inversión personalizable con rebalanceo automático',
 				id: '/',
@@ -51,13 +52,14 @@ export default defineConfig({
 					{
 						src: 'pwa-512x512.png',
 						sizes: '512x512',
-						type: 'image/png'
+						type: 'image/png',
+						purpose: 'any'
 					},
 					{
 						src: 'pwa-512x512.png',
 						sizes: '512x512',
 						type: 'image/png',
-						purpose: 'any maskable'
+						purpose: 'maskable'
 					}
 				]
 			}

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0a0a16" />
+    <title>Sin conexión — CoreBalance</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            background: #05050a;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .glow {
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(at 20% 20%, rgba(59, 130, 246, 0.12) 0, transparent 50%),
+                radial-gradient(at 80% 80%, rgba(16, 185, 129, 0.08) 0, transparent 50%);
+            pointer-events: none;
+        }
+
+        .card {
+            position: relative;
+            z-index: 1;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 24px;
+            padding: 3rem 2.5rem;
+            max-width: 420px;
+            width: 100%;
+        }
+
+        .icon-wrap {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 1.75rem;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-wrap svg {
+            width: 36px;
+            height: 36px;
+            color: #60a5fa;
+            stroke: currentColor;
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, #fff 60%, rgba(255,255,255,0.5));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        p {
+            color: rgba(255, 255, 255, 0.45);
+            font-size: 0.95rem;
+            line-height: 1.65;
+            margin-bottom: 2rem;
+        }
+
+        button {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: #fff;
+            border: none;
+            padding: 0.85rem 2.25rem;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            box-shadow: 0 4px 24px rgba(59, 130, 246, 0.3);
+            letter-spacing: 0.01em;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(59, 130, 246, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .logo {
+            display: block;
+            width: 32px;
+            height: 32px;
+            margin: 2rem auto 0;
+            opacity: 0.25;
+        }
+    </style>
+</head>
+<body>
+    <div class="glow"></div>
+
+    <div class="card">
+        <div class="icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 1l22 22"/>
+                <path d="M16.72 11.06A10.94 10.94 0 0119 12.55"/>
+                <path d="M5 12.55a10.94 10.94 0 015.17-2.39"/>
+                <path d="M10.71 5.05A16 16 0 0122.56 9"/>
+                <path d="M1.42 9a15.91 15.91 0 014.7-2.88"/>
+                <path d="M8.53 16.11a6 6 0 016.95 0"/>
+                <path d="M12 20h.01"/>
+            </svg>
+        </div>
+
+        <h1>Sin conexión</h1>
+        <p>
+            No hay conexión a Internet.<br />
+            Comprueba tu red y vuelve a intentarlo.
+        </p>
+
+        <button onclick="window.location.reload()">
+            Reintentar
+        </button>
+    </div>
+
+    <img src="/logo.webp" alt="CoreBalance" class="logo" />
+</body>
+</html>
