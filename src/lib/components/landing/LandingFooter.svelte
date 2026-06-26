@@ -11,10 +11,7 @@
     <div class="footer-grid">
       <div class="brand-col">
         <div class="logo-group">
-          <picture>
-            <source srcset="/logo.webp" type="image/webp" />
-            <img src="/logo.png" alt="CoreBalance" class="logo" width="28" height="28" loading="lazy" />
-          </picture>
+          <img src="/logo.png" alt="CoreBalance" class="logo" width="28" height="28" loading="lazy" />
           <span class="brand-name">CoreBalance</span>
         </div>
         <p>{$LL.footer.tagline()}</p>

@@ -29,10 +29,7 @@
 <nav class="navbar" class:scrolled={isScrolled}>
   <div class="nav-container">
     <button class="nav-brand" onclick={() => goto('/')} aria-label="Volver a inicio">
-      <picture>
-        <source srcset="/logo.webp" type="image/webp" />
-        <img src="/logo.png" alt="CoreBalance" class="logo" width="32" height="32" fetchpriority="high" loading="eager" />
-      </picture>
+      <img src="/logo.png" alt="CoreBalance" class="logo" width="32" height="32" fetchpriority="high" loading="eager" />
       <span class="brand-name">CoreBalance</span>
     </button>
 

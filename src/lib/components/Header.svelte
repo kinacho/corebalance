@@ -118,10 +118,7 @@
 		}}
 		aria-label="Ir a inicio"
 	>
-		<picture>
-			<source srcset="/logo.webp" type="image/webp" />
-			<img src="/logo.png" alt="CoreBalance Logo" class="logo-img" width="32" height="32" fetchpriority="high" loading="eager" />
-		</picture>
+		<img src="/logo.png" alt="CoreBalance Logo" class="logo-img" width="32" height="32" fetchpriority="high" loading="eager" />
 		<div class="logo-group">
 			<h1 class="logo-title">CoreBalance</h1>
 			<p class="logo-subtitle">{portfolio.targetLabel}</p>
