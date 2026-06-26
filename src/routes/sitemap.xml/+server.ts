@@ -92,12 +92,18 @@ export const GET: RequestHandler = async () => {
     return lines.join('\n');
   }
 
-  const staticXml = staticPages.map(p => `  <url>
-    <loc>${BASE}/${p.url}</loc>
+  const staticXml = staticPages.map(p => {
+    const locUrl = p.url ? `${BASE}/${p.url}` : `${BASE}/`;
+    return `  <url>
+    <loc>${locUrl}</loc>
     <lastmod>${p.lastmod}</lastmod>
     <changefreq>${p.changefreq}</changefreq>
     <priority>${p.priority}</priority>
-  </url>`).join('\n');
+    <xhtml:link rel="alternate" hreflang="es" href="${locUrl}"/>
+    <xhtml:link rel="alternate" hreflang="en" href="${locUrl}"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="${locUrl}"/>
+  </url>`;
+  }).join('\n');
 
   const blogXml = allBlogEntries.map(entry => {
     const hl = hreflang(entry.altEs, entry.altEn);

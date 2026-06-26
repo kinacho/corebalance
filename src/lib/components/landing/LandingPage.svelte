@@ -43,6 +43,12 @@
         "sameAs": [
           "https://github.com/kino166/rebalanceador"
         ]
+      },
+      {
+        "@type": "WebSite",
+        "name": "CoreBalance",
+        "url": "https://corebalance.app",
+        "description": $LL.seo.description()
       }
     ]
   });
@@ -54,10 +60,17 @@
   <title>{$LL.seo.title()}</title>
   <meta name="description" content={$LL.seo.description()} />
 
+  <!-- Hreflang: ES/EN/x-default (ambos apuntan a / porque el contenido cambia por locale) -->
+  <link rel="alternate" hreflang="es" href="https://corebalance.app/" />
+  <link rel="alternate" hreflang="en" href="https://corebalance.app/" />
+  <link rel="alternate" hreflang="x-default" href="https://corebalance.app/" />
+
   <!-- Open Graph -->
   <meta property="og:title" content={$LL.seo.og_title()} />
   <meta property="og:description" content={$LL.seo.og_description()} />
   <meta property="og:image" content="https://corebalance.app/og-image-landing.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://corebalance.app" />
 

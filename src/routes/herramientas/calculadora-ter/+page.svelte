@@ -138,6 +138,27 @@
     <title>Calculadora de TER de Cartera Indexada | CoreBalance</title>
     <meta name="description" content="Calcula gratis el TER total ponderado (coste real) de tu cartera de fondos indexados o ETFs y simula tu ahorro en comisiones a largo plazo." />
   {/if}
+
+  <!-- Hreflang: ES/EN/x-default (ambos apuntan al mismo path ya que cambia según locale) -->
+  <link rel="alternate" hreflang="es" href="https://corebalance.app/herramientas/calculadora-ter" />
+  <link rel="alternate" hreflang="en" href="https://corebalance.app/herramientas/calculadora-ter" />
+  <link rel="alternate" hreflang="x-default" href="https://corebalance.app/herramientas/calculadora-ter" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content={lang === 'es' ? 'Calculadora de TER de Cartera Indexada | CoreBalance' : 'Portfolio TER Calculator | CoreBalance'} />
+  <meta property="og:description" content={lang === 'es' ? 'Calcula gratis el TER total ponderado (coste real) de tu cartera de fondos indexados o ETFs y simula tu ahorro en comisiones a largo plazo.' : 'Free tool to calculate the total weighted TER (real cost) of your index fund or ETF portfolio and simulate your long-term fee savings.'} />
+  <meta property="og:image" content="https://corebalance.app/og-image-ter.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://corebalance.app/herramientas/calculadora-ter" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={lang === 'es' ? 'Calculadora de TER de Cartera Indexada | CoreBalance' : 'Portfolio TER Calculator | CoreBalance'} />
+  <meta name="twitter:description" content={lang === 'es' ? 'Calcula gratis el TER total ponderado (coste real) de tu cartera de fondos indexados o ETFs y simula tu ahorro en comisiones a largo plazo.' : 'Free tool to calculate the total weighted TER (real cost) of your index fund or ETF portfolio and simulate your long-term fee savings.'} />
+  <meta name="twitter:image" content="https://corebalance.app/og-image-ter.png" />
+
   {@html `<script type="application/ld+json">${JSON.stringify({
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",

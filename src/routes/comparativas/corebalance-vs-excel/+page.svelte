@@ -72,6 +72,11 @@
   <title>{metaTitle}</title>
   <meta name="description" content={metaDesc} />
 
+  <!-- Hreflang: ES/EN/x-default (ambos apuntan al mismo path ya que cambia según locale) -->
+  <link rel="alternate" hreflang="es" href="https://corebalance.app/comparativas/corebalance-vs-excel" />
+  <link rel="alternate" hreflang="en" href="https://corebalance.app/comparativas/corebalance-vs-excel" />
+  <link rel="alternate" hreflang="x-default" href="https://corebalance.app/comparativas/corebalance-vs-excel" />
+
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="article" />
   <meta property="og:url" content="https://corebalance.app/comparativas/corebalance-vs-excel" />

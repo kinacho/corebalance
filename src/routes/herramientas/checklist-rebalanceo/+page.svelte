@@ -198,6 +198,27 @@
     <title>Checklist: ¿Es hora de rebalancear tu cartera? | CoreBalance</title>
     <meta name="description" content="Descubre si ha llegado el momento de ajustar tus fondos o ETFs con nuestro cuestionario interactivo de rebalanceo de cartera." />
   {/if}
+
+  <!-- Hreflang: ES/EN/x-default (ambos apuntan al mismo path ya que cambia según locale) -->
+  <link rel="alternate" hreflang="es" href="https://corebalance.app/herramientas/checklist-rebalanceo" />
+  <link rel="alternate" hreflang="en" href="https://corebalance.app/herramientas/checklist-rebalanceo" />
+  <link rel="alternate" hreflang="x-default" href="https://corebalance.app/herramientas/checklist-rebalanceo" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content={lang === 'es' ? 'Checklist: ¿Es hora de rebalancear tu cartera? | CoreBalance' : 'Is It Time to Rebalance Your Portfolio? | CoreBalance'} />
+  <meta property="og:description" content={lang === 'es' ? 'Descubre si ha llegado el momento de ajustar tus fondos o ETFs con nuestro cuestionario interactivo de rebalanceo de cartera.' : 'Discover if it\'s time to adjust your funds or ETFs with our interactive portfolio rebalancing quiz.'} />
+  <meta property="og:image" content="https://corebalance.app/og-image-checklist.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://corebalance.app/herramientas/checklist-rebalanceo" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={lang === 'es' ? 'Checklist: ¿Es hora de rebalancear tu cartera? | CoreBalance' : 'Is It Time to Rebalance Your Portfolio? | CoreBalance'} />
+  <meta name="twitter:description" content={lang === 'es' ? 'Descubre si ha llegado el momento de ajustar tus fondos o ETFs con nuestro cuestionario interactivo de rebalanceo de cartera.' : 'Discover if it\'s time to adjust your funds or ETFs with our interactive portfolio rebalancing quiz.'} />
+  <meta name="twitter:image" content="https://corebalance.app/og-image-checklist.png" />
+
   {@html `<script type="application/ld+json">${JSON.stringify({
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",

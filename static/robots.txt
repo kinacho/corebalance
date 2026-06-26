@@ -16,6 +16,7 @@ User-agent: ClaudeBot
 User-agent: anthropic-ai
 Disallow: /
 Allow: /llms.txt
+Allow: /llms-es.txt
 Allow: /llms-full.txt
 
 # 3. Scrapers hostiles / entrenamiento puro — bloqueo total

@@ -224,6 +224,7 @@
 
 
 <svelte:head>
+  <meta name="robots" content="noindex, nofollow" />
   <title>CoreBalance — Dashboard de Inversión y Rebalanceo de ETFs</title>
   <meta
     name="description"

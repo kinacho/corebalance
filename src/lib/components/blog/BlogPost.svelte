@@ -67,15 +67,29 @@
   <title>{post.title} | CoreBalance</title>
   <meta name="description" content={post.description} />
   
-  <!-- Open Graph -->
-  <meta property="og:title" content={post.title} />
-  <meta property="og:description" content={post.description} />
-  <meta property="og:image" content={post.ogImage} />
-  <meta property="og:type" content="article" />
-  <meta property="og:url" content={post.canonical} />
-  
-  <!-- Canonical -->
-  <link rel="canonical" href={post.canonical} />
+  	<!-- Canonical + Hreflang (ES/EN/x-default) -->
+	{#if post.slugs?.es && post.slugs?.en}
+		<link rel="alternate" hreflang="es" href="https://corebalance.app/blog/{post.slugs.es}" />
+		<link rel="alternate" hreflang="en" href="https://corebalance.app/blog/{post.slugs.en}" />
+		<link rel="alternate" hreflang="x-default" href="https://corebalance.app/blog/{post.slugs.es}" />
+	{:else}
+		<link rel="alternate" hreflang={post.lang} href="https://corebalance.app/blog/{post.slug}" />
+	{/if}
+
+	<!-- Open Graph -->
+	<meta property="og:title" content={post.title} />
+	<meta property="og:description" content={post.description} />
+	<meta property="og:image" content={post.ogImage.startsWith('http') ? post.ogImage : `https://corebalance.app${post.ogImage}`} />
+	<meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
+	<meta property="og:type" content="article" />
+	<meta property="og:url" content={post.canonical} />
+
+	<!-- Twitter Card -->
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:title" content={post.title} />
+	<meta name="twitter:description" content={post.description} />
+	<meta name="twitter:image" content={post.ogImage.startsWith('http') ? post.ogImage : `https://corebalance.app${post.ogImage}`} />
 
   <!-- Schema.org JSON-LD -->
   {@html `<script type="application/ld+json">${jsonLdString}</script>`}

@@ -30,6 +30,7 @@
 	});
 
 	let canonicalUrl = $derived(`https://corebalance.app${$page.url.pathname}`);
+	let ogLocale = $derived($page.data.locale === 'en' ? 'en_US' : 'es_ES');
 
 	// Determinar de manera síncrona si hay datos locales o flag de bypass para evitar flashes en la redirección.
 	const hasLocalHoldings = browser ? hasLocalHoldingsData() : false;
@@ -71,8 +72,9 @@
 
 <svelte:head>
 	<link rel="canonical" href={canonicalUrl} />
-	<link rel="alternate" hreflang="es" href="https://corebalance.app" />
-	<link rel="alternate" hreflang="x-default" href="https://corebalance.app" />
+	<!-- og:site_name y og:locale globales para todas las páginas -->
+	<meta property="og:site_name" content="CoreBalance" />
+	<meta property="og:locale" content={ogLocale} />
 </svelte:head>
 
 <div 
