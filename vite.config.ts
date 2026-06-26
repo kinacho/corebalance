@@ -32,7 +32,7 @@ export default defineConfig({
 			},
 			includeAssets: ['favicon.png', 'logo.webp', 'pwa-192x192.png', 'pwa-512x512.png'],
 			manifest: {
-				name: 'CoreBalance - Rebalanceo',
+				name: 'CoreBalance — Finanzas e Inversión',
 				short_name: 'CoreBalance',
 				description: 'Dashboard de inversión personalizable con rebalanceo automático',
 				id: '/',
