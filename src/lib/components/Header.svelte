@@ -118,7 +118,7 @@
 		}}
 		aria-label="Ir a inicio"
 	>
-		<img src="/logo.png" alt="CoreBalance Logo" class="logo-img" width="32" height="32" fetchpriority="high" loading="eager" />
+		<img src="/logo.png?v=2" alt="CoreBalance Logo" class="logo-img" width="48" height="48" fetchpriority="high" loading="eager" />
 		<div class="logo-group">
 			<h1 class="logo-title">CoreBalance</h1>
 			<p class="logo-subtitle">{portfolio.targetLabel}</p>
@@ -445,9 +445,16 @@
 	}
 
 	.logo-img {
-		width: 32px;
-		height: 32px;
+		width: 36px;
+		height: 36px;
 		flex-shrink: 0;
+	}
+
+	@media (min-width: 768px) {
+		.logo-img {
+			width: 48px;
+			height: 48px;
+		}
 	}
 
 	.logo-title {

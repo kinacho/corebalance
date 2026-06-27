@@ -45,7 +45,7 @@
 		<div class="splash-content">
 			<div class="logo-container">
 				<div class="logo-glow"></div>
-				<img src="/logo.png" alt="CoreBalance Logo" class="logo-img" width="80" height="80" fetchpriority="high" loading="eager" />
+				<img src="/logo.png?v=2" alt="CoreBalance Logo" class="logo-img" width="80" height="80" fetchpriority="high" loading="eager" />
 			</div>
 			
 			<div class="text-container">

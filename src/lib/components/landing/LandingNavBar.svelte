@@ -29,7 +29,7 @@
 <nav class="navbar" class:scrolled={isScrolled}>
   <div class="nav-container">
     <button class="nav-brand" onclick={() => goto('/')} aria-label="Volver a inicio">
-      <img src="/logo.png" alt="CoreBalance" class="logo" width="32" height="32" fetchpriority="high" loading="eager" />
+      <img src="/logo.png?v=2" alt="CoreBalance" class="logo" width="48" height="48" fetchpriority="high" loading="eager" />
       <span class="brand-name">CoreBalance</span>
     </button>
 
@@ -160,8 +160,15 @@
   }
 
   .logo {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
+  }
+
+  @media (min-width: 768px) {
+    .logo {
+      width: 48px;
+      height: 48px;
+    }
   }
 
   .brand-name {

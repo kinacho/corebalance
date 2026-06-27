@@ -11,7 +11,7 @@
     <div class="footer-grid">
       <div class="brand-col">
         <div class="logo-group">
-          <img src="/logo.png" alt="CoreBalance" class="logo" width="28" height="28" loading="lazy" />
+          <img src="/logo.png?v=2" alt="CoreBalance" class="logo" width="36" height="36" loading="lazy" />
           <span class="brand-name">CoreBalance</span>
         </div>
         <p>{$LL.footer.tagline()}</p>
@@ -128,8 +128,15 @@
   }
 
   .logo {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
+  }
+
+  @media (min-width: 768px) {
+    .logo {
+      width: 36px;
+      height: 36px;
+    }
   }
 
   .brand-name {

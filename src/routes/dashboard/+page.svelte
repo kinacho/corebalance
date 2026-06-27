@@ -408,7 +408,7 @@
         <div class="footer-main">
           <div class="footer-brand">
             <div class="footer-logo-group">
-              <img src="/logo.png" alt="CoreBalance" class="footer-logo" width="28" height="28" loading="lazy" />
+              <img src="/logo.png?v=2" alt="CoreBalance" class="footer-logo" width="36" height="36" loading="lazy" />
               <span class="footer-title">CoreBalance</span>
             </div>
             <p class="footer-tagline">{$LL.db.footer_tagline()}</p>
@@ -762,9 +762,16 @@
   }
 
   .footer-logo {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
     filter: grayscale(0.5) opacity(0.8);
+  }
+
+  @media (min-width: 768px) {
+    .footer-logo {
+      width: 36px;
+      height: 36px;
+    }
   }
 
   .footer-title {
