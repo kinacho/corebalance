@@ -157,20 +157,6 @@
 			</button>
 
 			<button
-				class="action-btn sync-btn"
-				onclick={() => showSyncModal = true}
-				title={$LL.header.sync_devices()}
-				aria-label={$LL.header.sync_devices()}
-			>
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-					<rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-					<path d="M8 21h8"></path>
-					<path d="M12 17v4"></path>
-					<rect x="16" y="13" width="6" height="8" rx="1"></rect>
-				</svg>
-			</button>
-
-			<button
 				class="action-btn"
 				onclick={onTogglePrivacy}
 				title={isPrivate ? $LL.header.show_values() : $LL.header.hide_values()}
@@ -299,6 +285,21 @@
 									<option value="en">🇬🇧 EN</option>
 								</select>
 							</div>
+
+							<div class="dropdown-divider"></div>
+							<button 
+								class="dropdown-item" 
+								role="menuitem"
+								onclick={() => { showSyncModal = true; showUserMenu = false; }}
+							>
+								<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+									<rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+									<path d="M8 21h8"></path>
+									<path d="M12 17v4"></path>
+									<rect x="16" y="13" width="6" height="8" rx="1"></rect>
+								</svg>
+								{$LL.header.sync_devices()}
+							</button>
 
 							<div class="dropdown-divider"></div>
 							<button 
@@ -542,18 +543,6 @@
 	.action-btn:disabled {
 		opacity: 0.4;
 		cursor: not-allowed;
-	}
-
-	.sync-btn {
-		color: #3b82f6;
-		background: rgba(59, 130, 246, 0.1);
-		border-color: rgba(59, 130, 246, 0.2);
-	}
-
-	.sync-btn:hover {
-		background: rgba(59, 130, 246, 0.2);
-		color: #60a5fa;
-		border-color: rgba(59, 130, 246, 0.4);
 	}
 
 	.action-btn svg {
@@ -847,10 +836,6 @@
 
 	/* Mobile adaptations under 380px */
 	@media (max-width: 380px) {
-		.sync-btn {
-			display: none;
-		}
-		
 		.action-btn {
 			width: 38px;
 			height: 38px;
