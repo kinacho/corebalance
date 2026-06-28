@@ -3,7 +3,7 @@
     "relation": ["delegate_permission/common.handle_all_urls"],
     "target": {
       "namespace": "android_app",
-      "package_name": "app.corebalance.twa",
+      "package_name": "app.corebalance",
       "sha256_cert_fingerprints": [
         "80:BB:3D:B6:A3:9F:68:B6:00:ED:24:CC:7C:AC:DC:89:23:4A:CD:EA:07:E4:A8:60:BC:6E:D7:C1:3C:CA:10:90"
       ]
