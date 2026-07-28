@@ -1,6 +1,7 @@
 import type { Locales } from './i18n-types';
 import {
 	BILINGUAL_ROUTES as ROUTES,
+	NOINDEX_ROUTES as NOINDEX,
 	DEFAULT_LOCALE as DEFAULT,
 	PREFIXED_LOCALES as PREFIXED
 } from './bilingual-routes.js';
@@ -15,6 +16,14 @@ export const PREFIXED_LOCALES = PREFIXED as Locales[];
 
 /** Rutas públicas con variante por idioma en la URL. Ver `bilingual-routes.js`. */
 export const BILINGUAL_ROUTES: readonly string[] = ROUTES;
+
+/** Rutas bilingües que se declaran `noindex` y por tanto no van al sitemap. */
+export const NOINDEX_ROUTES: readonly string[] = NOINDEX;
+
+/** ¿Esta ruta se declara `noindex`? */
+export function isNoindexRoute(pathname: string): boolean {
+	return NOINDEX_ROUTES.includes(stripLocale(pathname));
+}
 
 const PREFIX_RE = new RegExp(`^/(${PREFIXED_LOCALES.join('|')})(?=/|$)`);
 

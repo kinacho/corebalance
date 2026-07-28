@@ -11,17 +11,39 @@
 	];
 
 	/**
-	 * En las rutas bilingües cada idioma tiene su URL, así que el selector es un
-	 * enlace real: el usuario cambia de URL y Googlebot descubre la variante en
-	 * inglés siguiéndolo. En el resto (dashboard, posts) seguimos cambiando el
-	 * idioma en sitio mediante cookie + store.
+	 * El selector tiene que hacer tres cosas distintas según dónde esté:
+	 *
+	 * 1. **Páginas con gemelo explícito** (los posts del blog): cada idioma es un
+	 *    artículo distinto en su propia URL, así que la ruta la da la propia página
+	 *    en `langAlternates`. Antes aquí sólo se cambiaba el store, y como el post
+	 *    toma su idioma del frontmatter el resultado era que el selector parecía no
+	 *    hacer nada.
+	 * 2. **Rutas bilingües** (landing, /blog, comparativas, herramientas, legales):
+	 *    misma página con prefijo de idioma, se calcula el path.
+	 * 3. **Resto** (dashboard): no hay URL por idioma, se cambia en sitio con
+	 *    cookie + store.
+	 *
+	 * En 1 y 2 es un enlace real, para que el usuario cambie de URL y el crawler
+	 * descubra la variante siguiéndolo.
 	 */
-	const isRouted = $derived(isBilingualRoute($page.url.pathname));
+	const alternates = $derived(
+		($page.data.langAlternates ?? null) as Record<string, string | null> | null
+	);
 	const basePath = $derived(stripLocale($page.url.pathname));
+	const isRouted = $derived(Boolean(alternates) || isBilingualRoute($page.url.pathname));
 
-	// Sólo el pathname: `url.search` y `url.hash` no son accesibles durante el
-	// prerender, y la variante de idioma no depende de ellos.
-	function hrefFor(code: Locales) {
+	/**
+	 * El idioma marcado como activo sale de la página, no del store: en un post el
+	 * idioma correcto es el del artículo, aunque la preferencia guardada sea otra.
+	 */
+	const activeLocale = $derived((($page.data.locale as Locales | undefined) ?? $locale) as Locales);
+
+	function hrefFor(code: Locales): string {
+		if (alternates) {
+			// Si el gemelo no existe, el índice del blog en ese idioma es el destino
+			// menos malo: nunca un enlace roto.
+			return alternates[code] ?? localizePath('/blog', code);
+		}
 		return localizePath(basePath, code);
 	}
 
@@ -31,7 +53,7 @@
 
 	const cls = (code: Locales) =>
 		`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all duration-300 flex items-center gap-1.5 cursor-pointer select-none no-underline ${
-			$locale === code
+			activeLocale === code
 				? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
 				: 'text-slate-400 hover:text-white hover:bg-white/5'
 		}`;
@@ -46,7 +68,7 @@
 				class={cls(code)}
 				href={hrefFor(code)}
 				hreflang={code}
-				aria-current={$locale === code ? 'true' : undefined}
+				aria-current={activeLocale === code ? 'true' : undefined}
 				aria-label={code === 'es' ? 'Ver esta página en español' : 'View this page in English'}
 			>
 				<span class="text-sm leading-none">{flag}</span>

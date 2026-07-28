@@ -3,10 +3,12 @@ import { readdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import {
 	BILINGUAL_ROUTES,
+	NOINDEX_ROUTES,
 	alternates,
 	absoluteUrl,
 	isBilingualRoute,
 	isLocaleCookieRoute,
+	isNoindexRoute,
 	localeFromPath,
 	localeLink,
 	localizePath,
@@ -104,6 +106,28 @@ describe('isLocaleCookieRoute', () => {
 		expect(isLocaleCookieRoute('/api/prices')).toBe(true);
 		expect(isLocaleCookieRoute('/blog')).toBe(false);
 		expect(isLocaleCookieRoute('/en')).toBe(false);
+	});
+});
+
+describe('rutas noindex', () => {
+	it('las legales se reconocen en los dos idiomas', () => {
+		expect(isNoindexRoute('/privacy')).toBe(true);
+		expect(isNoindexRoute('/en/privacy')).toBe(true);
+		expect(isNoindexRoute('/terms')).toBe(true);
+		expect(isNoindexRoute('/cookies')).toBe(true);
+	});
+
+	it('el contenido indexable no es noindex', () => {
+		expect(isNoindexRoute('/')).toBe(false);
+		expect(isNoindexRoute('/blog')).toBe(false);
+		expect(isNoindexRoute('/en/blog')).toBe(false);
+		expect(isNoindexRoute('/autor/kinacho')).toBe(false);
+	});
+
+	it('toda ruta noindex sigue siendo bilingüe (existe en ambos idiomas)', () => {
+		for (const route of NOINDEX_ROUTES) {
+			expect(isBilingualRoute(route), `${route} debería estar en BILINGUAL_ROUTES`).toBe(true);
+		}
 	});
 });
 

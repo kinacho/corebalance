@@ -1,5 +1,5 @@
 import { getPosts } from '$lib/blog';
-import { BILINGUAL_ROUTES, absoluteUrl, localizePath } from '$lib/i18n/routing';
+import { BILINGUAL_ROUTES, absoluteUrl, isNoindexRoute, localizePath } from '$lib/i18n/routing';
 import type { RequestHandler } from './$types';
 
 export const prerender = true;
@@ -41,9 +41,8 @@ const STATIC_PAGES: Record<string, { lastmod: string; priority: string; changefr
 		priority: '0.7',
 		changefreq: 'monthly'
 	},
-	'/privacy': { lastmod: '2026-06-19', priority: '0.3', changefreq: 'yearly' },
-	'/terms': { lastmod: '2026-06-19', priority: '0.3', changefreq: 'yearly' },
-	'/cookies': { lastmod: '2026-06-19', priority: '0.3', changefreq: 'yearly' }
+	// Las legales (/privacy, /terms, /cookies) no están aquí a propósito: llevan
+	// noindex, así que quedan fuera del sitemap. Ver NOINDEX_ROUTES.
 };
 
 /** Rutas cuya frescura sí depende del contenido publicado, no de una fecha fija. */
@@ -96,6 +95,10 @@ export const GET: RequestHandler = async () => {
 	// `hreflang` apuntan a documentos distintos. Antes los tres apuntaban a la
 	// misma URL, que es `hreflang` inválido y Google simplemente lo ignora.
 	for (const route of BILINGUAL_ROUTES) {
+		// Las legales se declaran noindex en su propio <head>: pedir en el sitemap
+		// que se indexen sería contradecirse, y Search Console lo reporta como error.
+		if (isNoindexRoute(route)) continue;
+
 		const esUrl = absoluteUrl(route);
 		const enUrl = absoluteUrl(localizePath(route, 'en'));
 		const alternates = [
