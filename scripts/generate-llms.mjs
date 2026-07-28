@@ -27,6 +27,10 @@ const STATIC_DIR = join(ROOT, 'static');
 
 const SITE = 'https://corebalance.app';
 const TOKEN = '{{SITE_CONTENT}}';
+const DATA_TOKEN = '{{CITABLE_DATA}}';
+
+/** Cifras propias del backtest, la única fuente de datos medidos del sitio. */
+const BACKTEST_PATH = join(ROOT, 'src', 'lib', 'data', 'backtest-8020.json');
 
 /** URL absoluta de una ruta bilingüe. El español vive en la raíz. */
 function url(path, lang) {
@@ -204,10 +208,69 @@ async function build(docLang) {
 	);
 }
 
+/**
+ * Sección de datos medidos para `llms-full.txt`.
+ *
+ * La sección "Citable Facts & Claims" sólo tenía afirmaciones cualitativas sobre
+ * el producto. Un motor generativo cita números con fuente y fecha, así que aquí
+ * se inyecta el único dato propio y comprobable que tiene el sitio, generado desde
+ * el mismo JSON que pinta la tabla del artículo: si se reejecuta el backtest, las
+ * dos cosas se actualizan juntas y no pueden contradecirse.
+ */
+async function citableData() {
+	if (!existsSync(BACKTEST_PATH)) {
+		throw new Error(
+			`Falta ${BACKTEST_PATH}. Ejecuta "npm run backtest" antes de generar los llms.txt.`
+		);
+	}
+
+	const d = JSON.parse(await readFile(BACKTEST_PATH, 'utf8'));
+	const { never, annual } = d.scenarios;
+	const alloc = `${d.targetAllocation.equity}/${d.targetAllocation.bonds}`;
+
+	return [
+		'### Measured data (own research)',
+		'',
+		`CoreBalance publishes its own backtest of a ${alloc} portfolio with and without`,
+		`rebalancing. These are original figures, not taken from a third party, and they can be`,
+		'verified by re-running the published script or by downloading the raw dataset.',
+		'',
+		`- **Period:** ${d.period.from} to ${d.period.to} (${d.period.months} monthly observations).`,
+		`- **Instruments:** ${d.instruments.equity.ticker} (global equities) and ${d.instruments.bonds.ticker} (bonds), monthly adjusted closes.`,
+		`- **Initial capital:** ${d.initialCapital} EUR, single lump sum, no later contributions.`,
+		`- **Never rebalanced:** ${never.finalValue} EUR final value, ${never.cagr}% CAGR, ${never.maxDrawdown}% maximum drawdown, and the equity weight drifted from ${d.targetAllocation.equity}% to **${never.finalEquityWeight}%**.`,
+		`- **Rebalanced yearly:** ${annual.finalValue} EUR final value, ${annual.cagr}% CAGR, ${annual.maxDrawdown}% maximum drawdown, equity weight held at ${annual.finalEquityWeight}%.`,
+		`- **Key finding:** not rebalancing produced ${Math.abs(d.difference.finalValue)} EUR *more* over this period, while ending ${d.difference.equityWeightDrift} percentage points above the intended equity exposure. The conclusion CoreBalance draws is that rebalancing is a risk-control tool, not a return-enhancing one.`,
+		'- **Caveats:** no fees, no taxes and no transaction costs are modelled; the period begins after the 2008 crash, so no severe bear market caught the portfolio at maximum drift.',
+		'',
+		`- **Raw dataset:** [${SITE}/data/backtest-8020.json](${SITE}/data/backtest-8020.json)`,
+		`- **Source:** ${d.source.en}`,
+		`- **Last updated:** ${d.generatedAt}`,
+		'',
+		'---'
+	].join('\n');
+}
+
+async function buildFull() {
+	const templatePath = join(TEMPLATE_DIR, 'llms-full.txt');
+	const outPath = join(STATIC_DIR, 'llms-full.txt');
+
+	const raw = await readFile(templatePath, 'utf8');
+	const template = raw.replace(/^<!--[\s\S]*?-->\s*/, '');
+
+	if (!template.includes(DATA_TOKEN)) {
+		throw new Error(`La plantilla ${templatePath} no contiene ${DATA_TOKEN}`);
+	}
+
+	await writeFile(outPath, template.replace(DATA_TOKEN, await citableData()), 'utf8');
+	console.log(`[llms] ${outPath.replace(ROOT, '.')} — datos medidos inyectados`);
+}
+
 async function main() {
 	await mkdir(STATIC_DIR, { recursive: true });
 	await build('en');
 	await build('es');
+	await buildFull();
 }
 
 main().catch((error) => {

@@ -1,6 +1,9 @@
 {
   "generatedAt": "2026-07-28",
-  "source": "Yahoo Finance (cierres mensuales ajustados, dividendos reinvertidos)",
+  "source": {
+    "es": "Yahoo Finance (cierres mensuales ajustados, dividendos reinvertidos)",
+    "en": "Yahoo Finance (monthly adjusted closes, dividends reinvested)"
+  },
   "instruments": {
     "equity": {
       "ticker": "ACWI",

@@ -1,5 +1,7 @@
 <script lang="ts">
 	import data from '$lib/data/backtest-8020.json';
+	import { SITE_URL } from '$lib/i18n/routing';
+	import { AUTHOR } from '$lib/seo/author';
 
 	/**
 	 * Tabla de datos propios sobre una cartera 80/20 con y sin rebalanceo.
@@ -39,7 +41,8 @@
 					methodTitle: 'Metodología',
 					sourceLabel: 'Fuente',
 					updatedLabel: 'Datos descargados el',
-					reproLabel: 'Reproducible con'
+					reproLabel: 'Reproducible con',
+					datasetLabel: 'Datos en bruto (JSON)'
 				}
 			: {
 					caption: `A ${data.targetAllocation.equity}/${data.targetAllocation.bonds} portfolio with and without rebalancing, ${data.period.from} → ${data.period.to}`,
@@ -60,7 +63,8 @@
 					methodTitle: 'Methodology',
 					sourceLabel: 'Source',
 					updatedLabel: 'Data downloaded on',
-					reproLabel: 'Reproducible with'
+					reproLabel: 'Reproducible with',
+					datasetLabel: 'Raw data (JSON)'
 				}
 	);
 
@@ -78,7 +82,88 @@
 	function pct(value: number) {
 		return `${num(value)}%`;
 	}
+
+	/** URL pública del dataset, para que la cifra se pueda comprobar y citar. */
+	const DATASET_URL = `${SITE_URL}/data/backtest-8020.json`;
+
+	/**
+	 * Schema `Dataset`. Va aquí, junto a los datos, y no en la página: así el
+	 * schema y la tabla salen del mismo JSON y no pueden contradecirse.
+	 *
+	 * Convierte la tabla en un dato declarado y legible por máquina, con periodo,
+	 * metodología, autor y fichero descargable. Es lo que separa "tener una tabla"
+	 * de "ser citable".
+	 */
+	const datasetSchema = $derived({
+		'@context': 'https://schema.org',
+		'@type': 'Dataset',
+		'@id': `${DATASET_URL}#dataset`,
+		name: isEs
+			? `Cartera ${data.targetAllocation.equity}/${data.targetAllocation.bonds} con y sin rebalanceo (${data.period.from} a ${data.period.to})`
+			: `A ${data.targetAllocation.equity}/${data.targetAllocation.bonds} portfolio with and without rebalancing (${data.period.from} to ${data.period.to})`,
+		description: isEs
+			? `Simulación de una cartera ${data.targetAllocation.equity}/${data.targetAllocation.bonds} de ${data.initialCapital} € con rebalanceo anual frente a no rebalancear nunca, sobre series mensuales reales de ${data.instruments.equity.ticker} y ${data.instruments.bonds.ticker}. Mide capital final, rentabilidad anualizada, caída máxima y la deriva del peso en renta variable.`
+			: `Simulation of a ${data.targetAllocation.equity}/${data.targetAllocation.bonds} portfolio of ${data.initialCapital} EUR with annual rebalancing versus never rebalancing, using real monthly series for ${data.instruments.equity.ticker} and ${data.instruments.bonds.ticker}. Measures final value, annualised return, maximum drawdown and equity-weight drift.`,
+		temporalCoverage: `${data.period.from}/${data.period.to}`,
+		dateModified: data.generatedAt,
+		inLanguage: lang,
+		isAccessibleForFree: true,
+		creator: { '@id': `${SITE_URL}${AUTHOR.path}#person` },
+		publisher: { '@id': `${SITE_URL}/#org` },
+		measurementTechnique: data.source[lang],
+		variableMeasured: [
+			{
+				'@type': 'PropertyValue',
+				name: isEs ? 'Capital final sin rebalancear' : 'Final value, never rebalanced',
+				value: never.finalValue,
+				unitText: 'EUR'
+			},
+			{
+				'@type': 'PropertyValue',
+				name: isEs ? 'Capital final con rebalanceo anual' : 'Final value, rebalanced yearly',
+				value: annual.finalValue,
+				unitText: 'EUR'
+			},
+			{
+				'@type': 'PropertyValue',
+				name: isEs ? 'Rentabilidad anualizada sin rebalancear' : 'CAGR, never rebalanced',
+				value: never.cagr,
+				unitText: 'PERCENT'
+			},
+			{
+				'@type': 'PropertyValue',
+				name: isEs ? 'Rentabilidad anualizada con rebalanceo' : 'CAGR, rebalanced yearly',
+				value: annual.cagr,
+				unitText: 'PERCENT'
+			},
+			{
+				'@type': 'PropertyValue',
+				name: isEs
+					? 'Peso final en renta variable sin rebalancear'
+					: 'Final equity weight, never rebalanced',
+				value: never.finalEquityWeight,
+				unitText: 'PERCENT'
+			},
+			{
+				'@type': 'PropertyValue',
+				name: isEs ? 'Caída máxima sin rebalancear' : 'Maximum drawdown, never rebalanced',
+				value: never.maxDrawdown,
+				unitText: 'PERCENT'
+			}
+		],
+		distribution: {
+			'@type': 'DataDownload',
+			encodingFormat: 'application/json',
+			contentUrl: DATASET_URL
+		}
+	});
+
+	const datasetSchemaString = $derived(JSON.stringify(datasetSchema));
 </script>
+
+<svelte:head>
+	{@html `<script type="application/ld+json">${datasetSchemaString}</script>`}
+</svelte:head>
 
 <figure class="backtest">
 	<figcaption>{t.caption}</figcaption>
@@ -113,7 +198,7 @@
 		<summary>{t.methodTitle}</summary>
 		<ul>
 			<li>
-				<strong>{t.sourceLabel}:</strong> {data.source} — {data.instruments.equity.ticker}
+				<strong>{t.sourceLabel}:</strong> {data.source[lang]} — {data.instruments.equity.ticker}
 				({data.instruments.equity.name}) y {data.instruments.bonds.ticker}
 				({data.instruments.bonds.name}).
 			</li>
@@ -121,6 +206,10 @@
 				<li>{assumption}</li>
 			{/each}
 			<li><strong>{t.reproLabel}:</strong> <code>npm run backtest</code></li>
+			<li>
+				<strong>{t.datasetLabel}:</strong>
+				<a href="/data/backtest-8020.json">/data/backtest-8020.json</a>
+			</li>
 			<li><strong>{t.updatedLabel}:</strong> {data.generatedAt}</li>
 		</ul>
 	</details>

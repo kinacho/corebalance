@@ -151,7 +151,12 @@ async function main() {
 	const result = {
 		// Metadatos para que la cifra sea auditable y citable.
 		generatedAt: new Date().toISOString().slice(0, 10),
-		source: 'Yahoo Finance (cierres mensuales ajustados, dividendos reinvertidos)',
+		// Bilingüe: lo consumen la tabla del artículo (en los dos idiomas) y el
+		// llms-full.txt, que está en inglés.
+		source: {
+			es: 'Yahoo Finance (cierres mensuales ajustados, dividendos reinvertidos)',
+			en: 'Yahoo Finance (monthly adjusted closes, dividends reinvested)'
+		},
 		instruments: { equity: EQUITY, bonds: BONDS },
 		period: { from: series[0].month, to: series.at(-1).month, months: series.length },
 		targetAllocation: {
