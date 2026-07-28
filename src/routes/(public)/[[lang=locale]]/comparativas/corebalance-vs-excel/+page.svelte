@@ -1,6 +1,7 @@
 <script lang="ts">
   import LandingNavBar from '$lib/components/landing/LandingNavBar.svelte';
   import LandingFooter from '$lib/components/landing/LandingFooter.svelte';
+  import RelatedReading from '$lib/components/blog/RelatedReading.svelte';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import SeoHead from '$lib/components/seo/SeoHead.svelte';
@@ -8,6 +9,7 @@
   import { link } from '$lib/i18n/link';
   import { alternates, SITE_URL, localizePath, absoluteUrl } from '$lib/i18n/routing';
   import type { Locales } from '$lib/i18n/i18n-types';
+  let { data } = $props<{ data: { relatedReading: import('$lib/seo/related-reading').ReadingItem[] } }>();
 
   const lang = $derived(($page.data.locale ?? 'es') as Locales);
   let isEs = $derived(lang === 'es');
@@ -297,6 +299,8 @@
       </div>
     </section>
   </main>
+
+  <RelatedReading items={data.relatedReading} {lang} />
 
   <LandingFooter />
 </div>

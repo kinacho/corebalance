@@ -14,6 +14,7 @@ import {
 	localizePath,
 	stripLocale
 } from './routing';
+import { RELATED_READING } from '$lib/seo/related-reading';
 
 describe('stripLocale', () => {
 	it('quita el prefijo de idioma', () => {
@@ -187,6 +188,53 @@ describe('enlaces internos del markdown del blog', () => {
 		expect(localeLink('/blog/index-funds-vs-etfs-comparison', 'en')).toBe(
 			'/blog/index-funds-vs-etfs-comparison'
 		);
+	});
+});
+
+describe('lectura relacionada de las comparativas y herramientas', () => {
+	const CONTENT = join(process.cwd(), 'src', 'content', 'blog');
+
+	const esSlugs = new Set(
+		existsSync(join(CONTENT, 'es'))
+			? readdirSync(join(CONTENT, 'es'))
+					.filter((f) => f.endsWith('.md'))
+					.map((f) => f.replace(/\.md$/, ''))
+			: []
+	);
+
+	it('todas las rutas de la lista existen como página bilingüe', () => {
+		for (const route of Object.keys(RELATED_READING)) {
+			expect(isBilingualRoute(route), `${route} no es una ruta bilingüe`).toBe(true);
+		}
+	});
+
+	it('todos los artículos recomendados existen (y se guardan por su slug español)', () => {
+		for (const [route, slugs] of Object.entries(RELATED_READING)) {
+			expect(slugs.length, `${route} no recomienda nada`).toBeGreaterThan(0);
+			for (const slug of slugs) {
+				expect(esSlugs.has(slug), `${route} recomienda "${slug}", que no existe en es/`).toBe(true);
+			}
+		}
+	});
+
+	it('ninguna página se recomienda artículos repetidos', () => {
+		for (const [route, slugs] of Object.entries(RELATED_READING)) {
+			expect(new Set(slugs).size, `${route} tiene recomendaciones duplicadas`).toBe(slugs.length);
+		}
+	});
+
+	it('cada artículo recomendado tiene par en inglés, para que la página /en/ enlace en su idioma', () => {
+		for (const [route, slugs] of Object.entries(RELATED_READING)) {
+			for (const slug of slugs) {
+				const raw = readFileSync(join(CONTENT, 'es', `${slug}.md`), 'utf8');
+				const enSlug = raw.match(/slugs:\s*\{[^}]*en:\s*['"]([^'"]+)['"]/)?.[1];
+				expect(enSlug, `${route} → ${slug} no declara su par en inglés`).toBeDefined();
+				expect(
+					existsSync(join(CONTENT, 'en', `${enSlug}.md`)),
+					`${route} → ${slug} apunta a ${enSlug}, que no existe en en/`
+				).toBe(true);
+			}
+		}
 	});
 });
 
