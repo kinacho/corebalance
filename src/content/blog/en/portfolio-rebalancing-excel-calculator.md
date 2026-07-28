@@ -1,6 +1,10 @@
 ---
 title: "Free Portfolio Rebalancing Excel Calculator: Does It Work?"
 description: "Learn how to build an Excel template to calculate your portfolio rebalance. We analyze common spreadsheet pitfalls and a faster, simpler alternative."
+summary:
+  - "To build a rebalancing calculator in a spreadsheet you need columns for asset, target percentage, unit price, shares and current value, plus the new-contribution formula."
+  - "Templates work well for the first months; maintaining them is the problem: price formulas break, human error creeps in, editing cells on mobile is painful and the data ends up in the cloud."
+  - "For a one-off calculation they are plenty; the real cost shows up in the month-to-month upkeep."
 publishDate: "2026-06-16"
 updatedDate: "2026-06-16"
 author: "kinacho"
@@ -11,9 +15,9 @@ ogImage: "/blog/og/portfolio-rebalancing-excel-calculator.jpg"
 slugs: { es: 'calculadora-rebalanceo-cartera-excel', en: 'portfolio-rebalancing-excel-calculator' }
 ---
 
-When you decide to manage your own portfolio of index funds or ETFs independently (known as DIY or Do-It-Yourself investing), one of your first needs is to find a tool to crunch the numbers.
+When you decide to manage your own portfolio of [index funds](/blog/index-funds-vs-etfs-comparison) or ETFs independently (known as DIY or Do-It-Yourself investing), one of your first needs is to find a tool to crunch the numbers.
 
-The natural instinct of almost any tech-savvy investor is to open a spreadsheet. Searching for a **free portfolio rebalancing Excel calculator** or Google Sheets template seems like the obvious solution: it's customizable, free, and does not require sharing your financial data with any external company.
+The natural instinct of almost any tech-savvy investor is to open a spreadsheet. Searching for a **free portfolio rebalancing [Excel](/comparativas/corebalance-vs-excel) calculator** or Google Sheets template seems like the obvious solution: it's customizable, free, and does not require sharing your financial data with any external company.
 
 In this article, we will analyze how to structure a basic rebalancing spreadsheet, what hidden issues arise in the medium term, and why a modern alternative exists that is just as private but far more convenient.
 
@@ -21,10 +25,10 @@ In this article, we will analyze how to structure a basic rebalancing spreadshee
 
 ## 1. How to Design a Basic Rebalancing Calculator in Excel
 
-If you want to build your own spreadsheet to manage a standard 3-fund index portfolio (for example: 60% MSCI World, 20% Emerging Markets, 20% Global Bonds), you need to set up the following fields in rows and columns:
+If you want to build your own spreadsheet to manage a standard 3-fund index portfolio (for example: 60% MSCI World, 20% [Emerging Markets](/blog/msci-world-emerging-markets-80-20), 20% Global Bonds), you need to set up the following fields in rows and columns:
 
 1. **Asset / Fund:** The name or ticker of each fund.
-2. **Target Weight (%):** The target weight you decided to assign to each asset in your asset allocation. The sum must equal 100%.
+2. **Target Weight (%):** The target weight you decided to assign to each asset in your [asset allocation](/blog/what-is-asset-allocation). The sum must equal 100%.
 3. **Current Unit Price:** The current market price of a share (optional, but necessary if using ETFs).
 4. **Current Shares:** The number of shares you currently own for each fund.
 5. **Current Value ($ / €):** A formula multiplying shares by unit price (or simply manual input of your current balance from your broker).

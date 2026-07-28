@@ -1,6 +1,10 @@
 ---
 title: "Rebalancing on MyInvestor: Complete Tax-Free Guide"
 description: "Learn how to rebalance your index funds on MyInvestor step by step. Leverage the Spanish tax deferral rule to adjust your portfolio without paying capital gains tax."
+summary:
+  - "On MyInvestor you can rebalance without paying tax by using the Spanish fund-to-fund transfer regime."
+  - "You have two routes: transferring between funds when you have no new money, and rebalancing through contributions when you save every month."
+  - "Transfers on MyInvestor carry no fee and you can move money between different managers, for instance from Vanguard to iShares or Fidelity."
 publishDate: "2026-06-16"
 updatedDate: "2026-06-16"
 author: "kinacho"
@@ -11,7 +15,7 @@ ogImage: "/blog/og/rebalanceo-myinvestor-sin-impuestos.jpg"
 slugs: { es: 'rebalanceo-myinvestor-sin-impuestos', en: 'myinvestor-rebalancing-tax-free' }
 ---
 
-MyInvestor has established itself as the platform of choice for index investors in Spain. Its catalogue of index funds from prestigious international fund managers such as **Vanguard, iShares, and Fidelity**, combined with **zero custody fees**, makes it an unbeatable option for applying the *Bogleheads* philosophy.
+MyInvestor has established itself as the platform of choice for index investors in Spain. Its catalogue of [index funds](/blog/index-funds-vs-etfs-comparison) from prestigious international fund managers such as **Vanguard, iShares, and Fidelity**, combined with **zero custody fees**, makes it an unbeatable option for applying the *[Bogleheads](/blog/bogleheads-portfolio-beginners)* philosophy.
 
 However, as markets fluctuate, your portfolio will inevitably drift from your original plan. In this detailed guide, we'll look at how to **rebalance your MyInvestor portfolio in a 100% optimal way** and, most importantly, **take advantage of the Spanish tax benefit to avoid paying a single euro in capital gains tax**.
 
@@ -53,7 +57,7 @@ Calculate the exact amount of your monthly savings to inject into each fund so t
 
 ## 3. Step-by-Step Guide: Calculating the Rebalance with CoreBalance
 
-To avoid complex spreadsheets or mathematical errors, we'll use **CoreBalance**. The process is extremely simple and respects your privacy (no financial data leaves your browser):
+To avoid complex [spreadsheets](/comparativas/corebalance-vs-excel) or mathematical errors, we'll use **CoreBalance**. The process is extremely simple and respects your privacy (no financial data leaves your browser):
 
 1. **Get your balances on MyInvestor:**
    Log into your MyInvestor app and note the current total value in euros of each of your index funds (for example, the Vanguard Global Stock Index and the Vanguard Global Bond Index).

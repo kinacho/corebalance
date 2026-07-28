@@ -1,6 +1,10 @@
 ---
 title: "Fund Transfers in Spain: The Tax Guide for the Index Investor"
 description: "A complete guide to the tax treatment of investment fund transfers in Spain. Learn how to switch funds without paying capital gains tax and optimise your long-term returns."
+summary:
+  - "Article 94 of the Spanish income tax law states that a transfer between investment funds does not count as a capital gain or loss."
+  - "Selling and buying back forces you to pay tax on the gain right then; ordering a transfer defers that payment and keeps the full amount invested."
+  - "The transfer preserves the original acquisition date and cost of the shares, and is requested from the receiving institution."
 publishDate: "2026-06-16"
 updatedDate: "2026-06-16"
 author: "kinacho"
@@ -33,7 +37,7 @@ The rule establishes that when the proceeds from the redemption of units in an i
 
 To understand the power of tax deferral, let's run a simple numerical comparison.
 
-Imagine you hold an index fund tracking the S&P 500 that you bought for **€10,000**, and it is now worth **€20,000** (you have €10,000 in unrealised gains). You decide to change strategy and move all your capital into a global fund such as the MSCI World.
+Imagine you hold an index fund tracking the S&P 500 that you bought for **€10,000**, and it is now worth **€20,000** (you have €10,000 in unrealised gains). You decide to change strategy and move all your capital into a global fund such as the [MSCI World](/blog/msci-world-emerging-markets-80-20).
 
 ### Case A: Sell and Buy Again (Classic Approach)
 1. You sell your units for €20,000.
@@ -67,7 +71,7 @@ When you execute a transfer:
 
 Making a fund transfer is a simple process managed directly from the **destination** platform (where you want to deposit the money).
 
-1. **Access the destination platform** (e.g. MyInvestor, Renta 4, etc.).
+1. **Access the destination platform** (e.g. [MyInvestor](/blog/myinvestor-rebalancing-tax-free), Renta 4, etc.).
 2. Select the **"Fund Transfer"** or **"Bring a fund from another institution"** option.
 3. Enter the **ISIN** and name of the source fund held at another platform, along with the participant account number.
 4. Select your chosen destination fund.
@@ -86,7 +90,7 @@ The tax advantage of fund transfers shines brightest when it comes time to **reb
 If your equity assets have risen sharply and your fixed income has fallen below its target percentage, instead of selling equities and paying tax to Hacienda, you can instruct a **partial transfer** from your equity fund to your bond fund.
 
 **CoreBalance** makes this task as easy as possible:
-1. Analyses the current deviations in your portfolio against your target asset allocation.
+1. Analyses the current deviations in your portfolio against your target [asset allocation](/blog/what-is-asset-allocation).
 2. Shows you the optimal rebalancing alternatives.
-3. Tells you the exact amount in euros to transfer between your index funds to restore the risk structure without triggering any tax event.
+3. Tells you the exact amount in euros to transfer between your [index funds](/blog/index-funds-vs-etfs-comparison) to restore the risk structure without triggering any tax event.
 4. Guarantees full privacy: no registration required and your tax data is never stored in the cloud.

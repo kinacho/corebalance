@@ -31,7 +31,8 @@
     relatedTitle: isEs ? 'Seguir leyendo' : 'Keep reading',
     relatedSubtitle: isEs
         ? 'Artículos relacionados con este tema'
-        : 'Articles related to this topic'
+        : 'Articles related to this topic',
+    summaryTitle: isEs ? 'Resumen rápido' : 'Quick summary'
   });
 
   // Antes estaba cableado a "3 min"; ahora lo calcula en build el plugin remark
@@ -53,6 +54,31 @@
     return new Date(dateStr).toLocaleDateString(isEs ? 'es-ES' : 'en-US', options);
   }
 
+  /**
+   * FAQPage cuando el artículo tiene de verdad una sección de preguntas (dos o
+   * más). Las parejas las extrae en build el plugin remark, así que el schema no
+   * puede desincronizarse del texto visible, que es justo lo que Google penaliza.
+   *
+   * Nota: desde 2023 Google sólo muestra el rich result de FAQ a sitios
+   * gubernamentales y sanitarios, así que esto ya no decora la SERP. Sigue
+   * mereciendo la pena porque Bing lo usa y los buscadores generativos leen las
+   * parejas pregunta/respuesta para citar la respuesta directa.
+   */
+  const faqSchema = $derived(
+    (post.faq?.length ?? 0) >= 2
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          'inLanguage': post.lang,
+          'mainEntity': post.faq!.map((entry) => ({
+            '@type': 'Question',
+            'name': entry.question,
+            'acceptedAnswer': { '@type': 'Answer', 'text': entry.answer }
+          }))
+        }
+      : null
+  );
+
   // Generamos el schema JSON-LD de Article y Breadcrumb
   const jsonLd = $derived([
     {
@@ -60,6 +86,9 @@
       '@type': 'BlogPosting',
       'headline': post.title,
       'description': post.description,
+      // El resumen también en el schema: es la respuesta corta que un motor
+      // generativo puede citar sin tener que resumir el artículo por su cuenta.
+      ...(post.summary?.length ? { 'abstract': post.summary.join(' ') } : {}),
       'image': `${SITE_URL}${ogImage}`,
       'datePublished': post.publishDate,
       'dateModified': post.updatedDate || post.publishDate,
@@ -88,7 +117,8 @@
         { '@type': 'ListItem', 'position': 2, 'name': t.breadcrumbBlog, 'item': absoluteUrl(blogPath) },
         { '@type': 'ListItem', 'position': 3, 'name': post.title, 'item': postUrl }
       ]
-    }
+    },
+    ...(faqSchema ? [faqSchema] : [])
   ]);
 
   const Content = $derived(post.content);
@@ -151,6 +181,20 @@
           {/each}
         </div>
       </header>
+
+      {#if post.summary?.length}
+        <!-- Resumen answer-first: es el primer bloque que responde directo a la
+             pregunta del artículo, que es justo lo que citan los buscadores
+             generativos. -->
+        <aside class="post-summary" aria-labelledby="summary-heading">
+          <h2 id="summary-heading">{t.summaryTitle}</h2>
+          <ul>
+            {#each post.summary as point}
+              <li>{point}</li>
+            {/each}
+          </ul>
+        </aside>
+      {/if}
 
       <!-- Cuerpo del post (Markdown renderizado) -->
       <div class="markdown-body">
@@ -418,6 +462,52 @@
     background: rgba(59, 130, 246, 0.1);
     padding: 0.3rem 0.75rem;
     border-radius: 9999px;
+  }
+
+  /* ── Resumen rápido (TL;DR) ─────────────────────────────── */
+  .post-summary {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.07) 0%, rgba(59, 130, 246, 0.04) 100%);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: 16px;
+    padding: 1.5rem 1.75rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .post-summary h2 {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #34d399;
+    margin: 0 0 1rem;
+  }
+
+  .post-summary ul {
+    margin: 0;
+    padding-left: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .post-summary li {
+    color: rgba(255, 255, 255, 0.88);
+    line-height: 1.65;
+    font-size: 1rem;
+  }
+
+  .post-summary li::marker {
+    color: rgba(52, 211, 153, 0.7);
+  }
+
+  @media (max-width: 768px) {
+    .post-summary {
+      padding: 1.25rem 1.35rem;
+    }
+
+    .post-summary li {
+      font-size: 0.95rem;
+    }
   }
 
   .markdown-body {

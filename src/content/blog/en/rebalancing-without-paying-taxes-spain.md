@@ -1,6 +1,10 @@
 ---
 title: "How to Rebalance Without Paying Taxes: The Spanish Fund Advantage"
 description: "Learn how to rebalance your investment fund portfolio in a tax-optimal way. Maximise tax deferral and avoid unnecessary capital gains tax."
+summary:
+  - "Spanish income tax law grants investment funds a tax-deferral regime: you can move from one fund to another without paying tax on the accumulated gain."
+  - "There are three techniques to rebalance while avoiding the tax toll: regular contributions, internal fund-to-fund transfers, and smart withdrawals in the drawdown phase."
+  - "The article compares two investors with an identical 50,000-euro portfolio and an 80/20 split over 20 years to quantify how much deferral is worth."
 publishDate: "2026-06-16"
 updatedDate: "2026-06-16"
 author: "kinacho"
@@ -25,13 +29,13 @@ In Spain, the IRPF (Personal Income Tax) law grants an exclusive tax deferral re
 
 This means that when you move money from one fund to another via a *traspaso* (fund transfer) instruction, the operation is exempt from taxation. The Spanish Tax Agency (Hacienda) does not consider this a realised capital gain — it simply treats it as a change in the investment vehicle, keeping the original acquisition date and cost basis intact.
 
-This tax exemption does not apply to equities or most ETFs (which trigger a taxable event at the point of sale). For this reason, index funds are the preferred investment vehicle for passive investors looking to optimise their tax costs.
+This tax exemption does not apply to equities or most ETFs (which trigger a taxable event at the point of sale). For this reason, [index funds](/blog/index-funds-vs-etfs-comparison) are the preferred investment vehicle for passive investors looking to optimise their tax costs.
 
 ---
 
 ## 2. Three Techniques to Rebalance Without Paying Tax
 
-There are three main ways to return your portfolio to its original asset allocation while avoiding tax withholdings.
+There are three main ways to return your portfolio to its original [asset allocation](/blog/what-is-asset-allocation) while avoiding tax withholdings.
 
 ### Technique 1: Rebalancing via Periodic Contributions (Cash-Flow Rebalancing)
 This is the ideal technique for investors in the accumulation phase (saving and investing money periodically, for example monthly).
@@ -64,7 +68,7 @@ Every year, Carlos sells the surplus portion of his equity fund to buy bonds. On
 * **Estimated result after 20 years:** Carlos's net cumulative return is dragged down annually by tax withholdings. His final portfolio is approximately **€192,000**.
 
 ### Sofía: Tax-Efficient Rebalancing (via Fund Transfers)
-Every year, Sofía executes fund transfers to rebalance her asset allocation back to 80/20. She pays no tax on rebalancing throughout those 20 years.
+Every year, Sofía executes [fund transfers](/blog/index-fund-transfers-spain-tax-guide) to rebalance her asset allocation back to 80/20. She pays no tax on rebalancing throughout those 20 years.
 * **Estimated result after 20 years:** Because her entire gains remain invested and compounding year after year, Sofía's final portfolio reaches approximately **€214,000**.
 
 > [!TIP]

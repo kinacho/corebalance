@@ -1,6 +1,10 @@
 ---
 title: "Calculadora de rebalanceo de cartera en Excel gratis: ¿funciona?"
 description: "Aprende a crear una plantilla de Excel para calcular el rebalanceo de tu cartera. Analizamos los problemas comunes de las hojas de cálculo y una alternativa más ágil."
+summary:
+  - "Para montar una calculadora de rebalanceo en Excel necesitas columnas de activo, porcentaje objetivo, precio unitario, participaciones y valor actual, más la fórmula de la nueva aportación."
+  - "Las plantillas funcionan bien los primeros meses; el problema es mantenerlas: las fórmulas de precios se rompen, hay riesgo de error humano, editar celdas en el móvil es incómodo y los datos acaban en la nube."
+  - "Para un cálculo puntual sirven de sobra; el coste real aparece en el mantenimiento mes a mes."
 publishDate: "2026-06-16"
 updatedDate: "2026-06-16"
 author: "kinacho"
@@ -11,9 +15,9 @@ ogImage: "/blog/og/calculadora-rebalanceo-cartera-excel.jpg"
 slugs: { es: 'calculadora-rebalanceo-cartera-excel', en: 'portfolio-rebalancing-excel-calculator' }
 ---
 
-Cuando decides gestionar tu propia cartera de fondos indexados o ETFs de forma independiente (lo que se conoce como inversión *DIY* o Do It Yourself), una de las primeras necesidades que te surge es encontrar una herramienta para hacer los números.
+Cuando decides gestionar tu propia cartera de [fondos indexados](/blog/fondos-indexados-vs-etfs-espana) o ETFs de forma independiente (lo que se conoce como inversión *DIY* o Do It Yourself), una de las primeras necesidades que te surge es encontrar una herramienta para hacer los números.
 
-El instinto natural de casi cualquier inversor con conocimientos informáticos básicos es abrir una hoja de cálculo. Buscar una **calculadora de rebalanceo de cartera en Excel gratis** o una plantilla de Google Sheets parece la solución obvia: es personalizable, gratuita y no requiere entregar tus datos financieros a ninguna empresa externa.
+El instinto natural de casi cualquier inversor con conocimientos informáticos básicos es abrir una hoja de cálculo. Buscar una **calculadora de rebalanceo de cartera en [Excel](/comparativas/corebalance-vs-excel) gratis** o una plantilla de Google Sheets parece la solución obvia: es personalizable, gratuita y no requiere entregar tus datos financieros a ninguna empresa externa.
 
 En este artículo analizaremos cómo estructurar una hoja de cálculo básica para rebalancear, qué problemas ocultos presentan a medio plazo y por qué existe una alternativa moderna igual de privada pero mucho más cómoda.
 
@@ -21,10 +25,10 @@ En este artículo analizaremos cómo estructurar una hoja de cálculo básica pa
 
 ## 1. Cómo diseñar una calculadora de rebalanceo básica en Excel
 
-Si deseas construir tu propia hoja de cálculo para gestionar una cartera indexada de 3 fondos (por ejemplo: 60% MSCI World, 20% Emergentes, 20% Bonos Globales), necesitas estructurar los siguientes campos en filas y columnas:
+Si deseas construir tu propia hoja de cálculo para gestionar una cartera indexada de 3 fondos (por ejemplo: 60% [MSCI World](/blog/cartera-msci-world-emerging-markets), 20% Emergentes, 20% Bonos Globales), necesitas estructurar los siguientes campos en filas y columnas:
 
 1. **Activo / Fondo:** El nombre o ticker de cada fondo.
-2. **Porcentaje Objetivo (%):** El peso que decidiste asignar a cada activo en tu asset allocation. La suma total debe ser 100%.
+2. **Porcentaje Objetivo (%):** El peso que decidiste asignar a cada activo en tu [asset allocation](/blog/que-es-asset-allocation). La suma total debe ser 100%.
 3. **Precio Unitario actual:** Cotización actual de la participación (opcional, pero necesario si usas ETFs).
 4. **Participaciones actuales:** La cantidad de participaciones que posees en cada fondo.
 5. **Valor Actual (€):** Una fórmula que multiplica las participaciones por el precio unitario (o simplemente introduces el saldo actual en euros de cada fondo consultado en tu banco).

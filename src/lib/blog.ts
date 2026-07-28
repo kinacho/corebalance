@@ -47,6 +47,12 @@ export function getTools(): Tool[] {
 export interface PostMetadata {
 	title: string;
 	description: string;
+	/**
+	 * Resumen answer-first en 3 viñetas, escrito en el frontmatter del artículo.
+	 * Los motores generativos citan el primer bloque que responde directo a la
+	 * pregunta, así que va antes del cuerpo del post.
+	 */
+	summary?: string[];
 	publishDate: string;
 	updatedDate: string;
 	author: string;
@@ -55,9 +61,11 @@ export interface PostMetadata {
 	canonical: string;
 	ogImage: string;
 	slugs: { es: string; en: string };
-	/** Inyectados en build por el plugin remark de `svelte.config.js`. */
+	/** Inyectados en build por los plugins remark de `svelte.config.js`. */
 	readingMinutes?: number;
 	wordCount?: number;
+	/** Encabezados en forma de pregunta con su respuesta, extraídos del cuerpo. */
+	faq?: { question: string; answer: string }[];
 }
 
 export interface Post extends PostMetadata {

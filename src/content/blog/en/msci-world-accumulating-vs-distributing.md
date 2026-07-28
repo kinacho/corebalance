@@ -1,6 +1,10 @@
 ---
 title: "The Best MSCI World ETF: Accumulating (Acc) vs. Distributing (Dist)"
 description: "Accumulating or distributing? We compare the best MSCI World ETFs and analyze which share class is best for your portfolio's taxes and compounding."
+summary:
+  - "The only difference between Acc and Dist is what the fund does with dividends: accumulating reinvests them inside the fund, distributing pays them out to you."
+  - "While you are still accumulating, the Acc version avoids the tax toll of receiving the dividend and compounds more effectively."
+  - "The Dist version makes sense if what you want is a regular income stream from your portfolio."
 publishDate: "2026-06-16"
 updatedDate: "2026-06-16"
 author: "kinacho"
@@ -11,9 +15,9 @@ ogImage: "/blog/og/msci-world-accumulating-vs-distributing.jpg"
 slugs: { es: 'msci-world-acc-vs-dist', en: 'msci-world-accumulating-vs-distributing' }
 ---
 
-The **MSCI World** index is the cornerstone of millions of passive investment portfolios worldwide. By investing in it, you are buying a slice of over 1,500 of the largest companies across 23 developed markets.
+The **[MSCI World](/blog/msci-world-emerging-markets-80-20)** index is the cornerstone of millions of passive investment portfolios worldwide. By investing in it, you are buying a slice of over 1,500 of the largest companies across 23 developed markets.
 
-However, when searching for an ETF to track this index via your broker (such as DeGiro, Interactive Brokers, or Trade Republic), you will find that most fund managers (like iShares, Vanguard, Amundi) offer two versions or share classes of the same fund: **Accumulating (Acc)** and **Distributing (Dist or Dis)**.
+However, when searching for an ETF to track this index via your broker (such as [DeGiro](/blog/degiro-etf-rebalancing), Interactive Brokers, or Trade Republic), you will find that most fund managers (like iShares, Vanguard, Amundi) offer two versions or share classes of the same fund: **Accumulating (Acc)** and **Distributing (Dist or Dis)**.
 
 In this article, we will analyze the practical differences between these classes, compare the best MSCI World ETFs, and help you choose the right option for your operational and tax needs.
 
@@ -79,4 +83,4 @@ Here is a list of the largest, most liquid, and low-cost global ETFs available t
 
 Whether you choose accumulating ETFs for growth or distributing ETFs for income, **CoreBalance** is the ideal local-first calculator to manage your portfolio.
 
-Define your target asset allocation in seconds. If you use distributing ETFs, you can treat your cash dividends as new contributions. CoreBalance will calculate exactly where to allocate that cash to bring your portfolio back into balance, keeping all your data safe and stored locally in your browser.
+Define your target [asset allocation](/blog/what-is-asset-allocation) in seconds. If you use distributing ETFs, you can treat your cash dividends as new contributions. CoreBalance will calculate exactly where to allocate that cash to bring your portfolio back into balance, keeping all your data safe and stored locally in your browser.

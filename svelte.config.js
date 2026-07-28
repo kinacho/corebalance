@@ -15,6 +15,18 @@ const prerenderEntries = [
 ];
 
 /**
+ * Texto plano de un nodo mdast, sin formato.
+ *
+ * @param {any} node
+ * @returns {string}
+ */
+function nodeText(node) {
+	if (typeof node.value === 'string') return node.value;
+	if (Array.isArray(node.children)) return node.children.map(nodeText).join('');
+	return '';
+}
+
+/**
  * Cuenta las palabras del artículo y deja los minutos de lectura en el
  * frontmatter, para no tener el dato cableado en la plantilla ni cargar el
  * markdown en crudo en el cliente sólo para contarlo.
@@ -44,13 +56,49 @@ function remarkReadingTime() {
 	};
 }
 
+/**
+ * Extrae las parejas pregunta/respuesta del artículo para poder emitir el schema
+ * FAQPage sin duplicar el contenido a mano en el componente.
+ *
+ * Se considera pregunta cualquier encabezado h2/h3 que termine en '?', y como
+ * respuesta el texto que le sigue hasta el siguiente encabezado. Es exactamente
+ * cómo están escritos los artículos, así que no hay que retocar los markdown.
+ *
+ * @returns {(tree: any, file: any) => void}
+ */
+function remarkFaq() {
+	return (tree, file) => {
+		const faq = [];
+		const nodes = tree.children ?? [];
+
+		for (let i = 0; i < nodes.length; i++) {
+			const node = nodes[i];
+			if (node.type !== 'heading' || node.depth < 2 || node.depth > 3) continue;
+
+			const question = nodeText(node).trim();
+			if (!question.endsWith('?')) continue;
+
+			// Todo lo que hay hasta el siguiente encabezado es la respuesta.
+			const answer = [];
+			for (let j = i + 1; j < nodes.length && nodes[j].type !== 'heading'; j++) {
+				const text = nodeText(nodes[j]).trim();
+				if (text) answer.push(text);
+			}
+
+			if (answer.length > 0) faq.push({ question, answer: answer.join(' ') });
+		}
+
+		file.data.fm = { ...file.data.fm, faq };
+	};
+}
+
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
 	extensions: ['.svelte', '.md'],
 	preprocess: [
 		mdsvex({
 			extensions: ['.md'],
-			remarkPlugins: [remarkReadingTime]
+			remarkPlugins: [remarkReadingTime, remarkFaq]
 		})
 	],
 	compilerOptions: {

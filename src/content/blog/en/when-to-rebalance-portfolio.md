@@ -1,6 +1,10 @@
 ---
 title: "When to Rebalance: Calendar-Based vs. Drift-Threshold"
 description: "Discover the best time to rebalance your index portfolio. We compare the calendar-based method against the drift threshold method."
+summary:
+  - "Calendar rebalancing reviews the portfolio on fixed dates. Threshold rebalancing acts only when an asset breaks its tolerance band, usually 5% in absolute terms."
+  - "The calendar gives peace of mind and little management effort but is inefficient in volatile markets; bands react to the actual market at the cost of watching it."
+  - "For a retail investor the most balanced approach is usually the hybrid one: calendar review with a drift trigger."
 publishDate: "2026-06-16"
 updatedDate: "2026-06-16"
 author: "kinacho"
@@ -39,7 +43,7 @@ The most common frequencies are:
 
 This method relies on the percentage drift of your assets relative to your target allocation. You establish a tolerance band and only rebalance when an asset crosses it, regardless of how much time has passed.
 
-There are two main types of tolerance bands:
+There are two main types of [tolerance bands](/herramientas/checklist-rebalanceo):
 
 ### A. Absolute Drift Bands (Recommended)
 You set an absolute percentage (typically **+/- 5%**) relative to the total portfolio size.

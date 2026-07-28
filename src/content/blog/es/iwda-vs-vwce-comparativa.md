@@ -1,6 +1,10 @@
 ---
 title: "IWDA vs VWCE: ¿Cuál ETF UCITS elegir para tu cartera global?"
 description: "Comparativa detallada entre los dos ETFs UCITS globales más populares para inversores europeos: IWDA vs VWCE. Analizamos costes, índices y diversificación."
+summary:
+  - "VWCE replica el FTSE All-World, que incluye desarrollados y emergentes en un solo ETF. IWDA replica el MSCI World, que sólo cubre 23 mercados desarrollados."
+  - "Con IWDA necesitas un segundo ETF de emergentes y rebalancear entre los dos; con VWCE compras un único fondo y te olvidas."
+  - "Elige VWCE si quieres máxima simplicidad, e IWDA más emergentes si quieres controlar tú el peso de los países en desarrollo."
 publishDate: "2026-06-16"
 updatedDate: "2026-06-16"
 author: "kinacho"
@@ -27,7 +31,7 @@ Para entender la diferencia entre los ETFs, debemos fijarnos en los índices que
 
 ### IWDA: iShares Core MSCI World UCITS ETF (Acc)
 * **ISIN:** IE00B4L5Y983 (Ticker: IWDA, EUNL o SWDA según la bolsa).
-* **Índice replicado:** **MSCI World Index**.
+* **Índice replicado:** **[MSCI World](/blog/cartera-msci-world-emerging-markets) Index**.
 * **Cobertura de mercado:** Empresas de mediana y gran capitalización en **23 mercados desarrollados** únicamente.
 * **Número de posiciones:** ~1.500 empresas.
 * **Mercados emergentes:** 0% (no incluye China, India, Taiwán, Brasil, etc.).
@@ -65,7 +69,7 @@ Veamos los costes de cada enfoque:
 * **IWDA + EMIM (2 ETFs):**
   * TER de IWDA: **0,20%**.
   * TER de EMIM: **0,18%**.
-  * TER ponderado para una distribución 88/12: `(0,88 × 0,20%) + (0,12 × 0,18%) = 0,197%`.
+  * [TER](/herramientas/calculadora-ter) ponderado para una distribución 88/12: `(0,88 × 0,20%) + (0,12 × 0,18%) = 0,197%`.
 
 **Veredicto sobre los costes:** La cartera de 2 ETFs es marginalmente más barata en términos de comisiones internas del fondo (0,197% vs. 0,22%). Sin embargo, este pequeño ahorro (alrededor de 2,30 € por cada 10.000 € invertidos al año) puede verse fácilmente anulado si tu bróker cobra por transacción, ya que debes comprar dos ETFs en lugar de uno.
 
@@ -88,12 +92,12 @@ Veamos los costes de cada enfoque:
 ## 5. ¿Cuál deberías elegir?
 
 ### Elige VWCE (Vanguard All-World) si:
-* Quieres la **máxima simplicidad**. No quieres calcular pesos, mantener hojas de cálculo ni pensar en cuánto asignar a cada zona.
+* Quieres la **máxima simplicidad**. No quieres calcular pesos, mantener [hojas de cálculo](/comparativas/corebalance-vs-excel) ni pensar en cuánto asignar a cada zona.
 * Tu bróker cobra comisiones por operación (comprar un solo ETF te ahorra en gastos).
 * Buscas una estrategia de inversión de verdad «compra y olvídate».
 
 ### Elige IWDA (+ Emergentes) si:
-* Quieres **control sobre tu asset allocation**. Quizás prefieres 0% emergentes, o sobreponderarlos al 20% o al 30%.
+* Quieres **control sobre tu [asset allocation](/blog/que-es-asset-allocation)**. Quizás prefieres 0% emergentes, o sobreponderarlos al 20% o al 30%.
 * Tu bróker ofrece planes de ahorro periódicos gratuitos para ETFs de iShares (muchos brókers ofrecen el EUNL sin comisión de compra periódica).
 * Disfrutas del proceso de hacer seguimiento y ajustar tu cartera de forma ocasional.
 

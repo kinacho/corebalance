@@ -1,6 +1,10 @@
 ---
 title: "How to Track and Report ETF Dividends on DEGIRO"
 description: "A complete guide to recording and reporting dividends from your ETFs on DEGIRO. Learn about withholding taxes, double taxation treaties, and how to declare them correctly."
+summary:
+  - "Dividends from foreign ETFs are taxed in Spain within the savings tax base, at rates between 19% and 28%."
+  - "You suffer withholding at source before receiving them, so they must be declared properly to avoid double taxation."
+  - "The Boglehead alternative is accumulating ETFs: they reinvest dividends inside the fund and save you the whole tax procedure."
 publishDate: "2026-06-16"
 updatedDate: "2026-06-16"
 author: "kinacho"
@@ -13,7 +17,7 @@ slugs: { es: 'dividendos-etfs-degiro', en: 'degiro-etf-dividends-guide' }
 
 Investing in distributing ETFs — those that periodically pay out dividends as cash into your brokerage account — is a popular strategy for generating passive income streams.
 
-If you use a low-cost foreign broker like **DEGIRO**, buying these ETFs is extremely affordable and straightforward. However, when it comes to tracking your income and reporting these dividends to the tax authorities in Spain (or your home country), complexity increases considerably.
+If you use a low-cost foreign broker like **[DEGIRO](/blog/degiro-etf-rebalancing)**, buying these ETFs is extremely affordable and straightforward. However, when it comes to tracking your income and reporting these dividends to the tax authorities in Spain (or your home country), complexity increases considerably.
 
 In this guide, we explain step by step **how to track and report your ETF dividends on DEGIRO**, what withholding taxes are, how to avoid double taxation, and how to simplify your financial bookkeeping.
 
@@ -62,7 +66,7 @@ To keep your tax information organised and avoid surprises in April, follow this
 
 If calculating source withholdings, filling in Box 588, and declaring gross dividends sounds like unnecessary hassle, the pure passive investing solution is simple: **invest in Accumulating (Acc) ETFs**.
 
-Accumulating ETFs automatically reinvest all received dividends back into the fund itself.
+[Accumulating ETFs](/blog/msci-world-accumulating-vs-distributing) automatically reinvest all received dividends back into the fund itself.
 * **Operational advantage:** You receive no cash, so there is no taxable event. You don't have to declare anything annually to the tax authorities.
 * **Tax advantage:** 100% of the gross dividend is reinvested in full, accelerating the compound interest effect. You will only pay taxes when you decide to sell your ETF shares, perhaps decades later at retirement.
 
@@ -72,4 +76,4 @@ Accumulating ETFs automatically reinvest all received dividends back into the fu
 
 Whatever your dividend strategy, **CoreBalance** helps you stay in control of your investments in a professional, local-first way.
 
-You can record both your accumulating and distributing ETFs alongside your traditional index funds in the tool. CoreBalance calculates the real weight of your assets in seconds and lets you rebalance your portfolio swiftly by adding the dividends you collect from DEGIRO to your monthly savings plan — all with absolute privacy in your own browser, without your confidential information ending up in the cloud.
+You can record both your accumulating and distributing ETFs alongside your traditional [index funds](/blog/index-funds-vs-etfs-comparison) in the tool. CoreBalance calculates the real weight of your assets in seconds and lets you rebalance your portfolio swiftly by adding the dividends you collect from DEGIRO to your monthly savings plan — all with absolute privacy in your own browser, without your confidential information ending up in the cloud.

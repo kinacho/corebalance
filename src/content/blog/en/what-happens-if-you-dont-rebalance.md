@@ -1,6 +1,10 @@
 ---
 title: "What Happens If You Don't Rebalance Your Index Portfolio?"
 description: "Discover the real consequences of failing to rebalance your portfolio. We analyze how your risk profile shifts with historical examples and simulations."
+summary:
+  - "If you never rebalance, your risk profile drifts out of control: equities grow until they weigh far more than you decided to take on."
+  - "The three consequences are runaway risk, deeper losses in bear markets, and missing the chance to buy what has fallen cheaply."
+  - "You do not need to rebalance every week: doing it too often only adds transaction costs and unnecessary fees."
 publishDate: "2026-06-16"
 updatedDate: "2026-06-16"
 author: "kinacho"
@@ -11,7 +15,7 @@ ogImage: "/blog/og/what-happens-if-you-dont-rebalance.jpg"
 slugs: { es: 'que-pasa-si-no-rebalanceo-cartera', en: 'what-happens-if-you-dont-rebalance' }
 ---
 
-One of the most popular mantras of index and passive investing is the famous phrase: *“Buy and hold.”* Many investors interpret this literally, assuming that once they select their initial index funds or ETFs, their only task for the next 20 years is to deposit money and completely forget about their broker's screen.
+One of the most popular mantras of index and passive investing is the famous phrase: *“Buy and hold.”* Many investors interpret this literally, assuming that once they select their initial [index funds](/blog/index-funds-vs-etfs-comparison) or ETFs, their only task for the next 20 years is to deposit money and completely forget about their broker's screen.
 
 However, there is one crucial exception to this rule of inactivity: **portfolio rebalancing**.
 
@@ -68,7 +72,7 @@ Imagine two investors who started with a balanced 60/40 portfolio in 2003:
 
 You don't need to rebalance your portfolio every week or month; doing so too frequently will only generate unnecessary transaction costs or tax events (depending on your country's regulations).
 
-Most Bogleheads recommend one of two simple approaches:
+Most [Bogleheads](/blog/bogleheads-portfolio-beginners) recommend one of two simple approaches:
 
 1. **Calendar-Based Rebalancing:** Choose one or two dates a year (for example, every January and July) to review your portfolio and make the necessary adjustments.
 2. **Drift-Threshold Rebalancing (The 5% Rule):** Check your portfolio periodically. If any major asset class deviates by more than 5% from its target weight (e.g., a fund that should be 30% shifts to 36%), it's time to rebalance.

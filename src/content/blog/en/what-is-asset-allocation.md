@@ -1,6 +1,10 @@
 ---
 title: "What Is Asset Allocation and How to Choose Yours"
 description: "A detailed guide on asset allocation. Discover what it is, why it determines your returns, and how to choose the ideal mix for your risk profile."
+summary:
+  - "Asset allocation is how you split your capital across asset classes (equities, bonds, cash and real assets) according to your goals and risk tolerance."
+  - "The classic reference on its importance is the 1986 Brinson, Hood and Beebower study, which analysed 91 large pension funds over a decade."
+  - "You choose the split by weighing three personal variables: your time horizon, your financial capacity to take risk and your psychological tolerance."
 publishDate: "2026-06-16"
 updatedDate: "2026-06-16"
 author: "kinacho"
@@ -95,6 +99,6 @@ Over time, stocks will grow or fall at different rates than bonds. Your portfoli
 
 ### Automate Your Calculations with CoreBalance
 
-Doing these calculations and managing percentages in a spreadsheet takes time and effort. **CoreBalance** does this work for you.
+Doing these calculations and managing percentages in a [spreadsheet](/comparativas/corebalance-vs-excel) takes time and effort. **CoreBalance** does this work for you.
 
 Define your target asset allocation once. When you make monthly contributions, CoreBalance will calculate exactly how to distribute your funds to guide your portfolio back to its target weights, maximizing tax efficiency and saving you transaction fees. All of this is free, without accounts, and with complete local privacy in your browser.

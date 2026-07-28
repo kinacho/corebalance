@@ -1,6 +1,10 @@
 ---
 title: "How to Rebalance Your Index Portfolio: A Step-by-Step Guide"
 description: "A practical guide to rebalancing your index fund or ETF portfolio. Learn how to calculate it step-by-step and keep your risk under control."
+summary:
+  - "Your portfolio drifts because each asset class moves at a different pace: an 80/20 stops being an 80/20 without you doing anything."
+  - "There are three ways back to target: new contributions (the most efficient), fund-to-fund transfers (only available to funds in Spain) and selling and buying (the classic, taxable one)."
+  - "With regular contributions you send the new money to the underweighted assets and fix the drift without selling anything."
 publishDate: "2026-06-16"
 updatedDate: "2026-06-16"
 author: "kinacho"
@@ -11,7 +15,7 @@ ogImage: "/blog/og/how-to-rebalance-indexed-portfolio.jpg"
 slugs: { es: 'como-rebalancear-cartera-indexada', en: 'how-to-rebalance-indexed-portfolio' }
 ---
 
-Rebalancing is one of the very few active tasks required in passive or index investing (often referred to as the *Bogleheads* philosophy). Although the main rule of passive investing is to buy, hold, and do nothing (*buy and hold*), the reality is that markets fluctuate. Over time, these fluctuations pull your portfolio away from your target asset allocation and risk level.
+Rebalancing is one of the very few active tasks required in passive or index investing (often referred to as the *Bogleheads* philosophy). Although the main rule of passive investing is to buy, hold, and do nothing (*buy and hold*), the reality is that markets fluctuate. Over time, these fluctuations pull your portfolio away from your target [asset allocation](/blog/what-is-asset-allocation) and risk level.
 
 In this article, we will look at what rebalancing is, why it is essential for your financial health, and how to calculate it step-by-step, whether you are using tax-sheltered accounts or taxable brokerages.
 
@@ -22,7 +26,7 @@ In this article, we will look at what rebalancing is, why it is essential for yo
 When you start investing, the first thing you do is design your **Asset Allocation**. This mix determines the level of volatility you are willing to accept in exchange for a certain expected return.
 
 For example, a typical growth-oriented investor might choose a classic Boglehead portfolio:
-* **80% Equities (Stocks):** Global stock index funds or ETFs (e.g., MSCI World, S&P 500).
+* **80% Equities (Stocks):** Global stock [index funds](/blog/index-funds-vs-etfs-comparison) or ETFs (e.g., [MSCI World](/blog/msci-world-emerging-markets-80-20), S&P 500).
 * **20% Fixed Income (Bonds):** Short- to medium-term government bond index funds.
 
 Suppose you start this portfolio with **$10,000**:
@@ -111,7 +115,7 @@ Therefore, you should allocate the entire $500 contribution to bonds. Your portf
 
 ## Simplify the Process with CoreBalance
 
-As your portfolio grows to include more assets (such as emerging markets, small-caps, or gold), doing these calculations manually or managing a spreadsheet can become tedious.
+As your portfolio grows to include more assets (such as emerging markets, small-caps, or gold), doing these calculations manually or managing a [spreadsheet](/comparativas/corebalance-vs-excel) can become tedious.
 
 **CoreBalance** simplifies this task completely:
 1. Define your target portfolio structure and percentages.

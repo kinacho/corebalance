@@ -1,6 +1,10 @@
 ---
 title: "El mejor ETF MSCI World: Acumulación (Acc) vs Distribución (Dist)"
 description: "¿Acumulación o distribución? Comparamos los mejores ETFs del MSCI World y analizamos cuál te conviene fiscal y operativamente para tu cartera."
+summary:
+  - "La única diferencia entre Acc y Dist es qué hace el fondo con los dividendos: acumulación los reinvierte dentro del fondo, distribución te los ingresa."
+  - "En fase de acumulación la versión Acc evita el peaje fiscal de cobrar el dividendo y aprovecha mejor el interés compuesto."
+  - "La versión Dist tiene sentido si lo que buscas es generar rentas periódicas con tu cartera."
 publishDate: "2026-06-16"
 updatedDate: "2026-06-16"
 author: "kinacho"
@@ -11,9 +15,9 @@ ogImage: "/blog/og/msci-world-acc-vs-dist.jpg"
 slugs: { es: 'msci-world-acc-vs-dist', en: 'msci-world-accumulating-vs-distributing' }
 ---
 
-El índice **MSCI World** es la piedra angular de millones de carteras de inversión pasiva en todo el mundo. Al invertir en él, estás comprando una porción de las más de 1.500 mayores empresas de los 23 países con economías más desarrolladas del planeta.
+El índice **[MSCI World](/blog/cartera-msci-world-emerging-markets)** es la piedra angular de millones de carteras de inversión pasiva en todo el mundo. Al invertir en él, estás comprando una porción de las más de 1.500 mayores empresas de los 23 países con economías más desarrolladas del planeta.
 
-Sin embargo, a la hora de buscar un ETF para replicarlo en tu bróker (como DeGiro, Trade Republic o Interactive Brokers), te encontrarás con que la mayoría de las gestoras (iShares, Vanguard, Amundi, Lyxor) ofrecen dos versiones o "clases de acciones" de un mismo producto: **Acumulación (Acc)** y **Distribución (Dist o Dis)**.
+Sin embargo, a la hora de buscar un ETF para replicarlo en tu bróker (como [DeGiro](/blog/rebalanceo-degiro-etfs), Trade Republic o Interactive Brokers), te encontrarás con que la mayoría de las gestoras (iShares, Vanguard, Amundi, Lyxor) ofrecen dos versiones o "clases de acciones" de un mismo producto: **Acumulación (Acc)** y **Distribución (Dist o Dis)**.
 
 En este artículo analizaremos al detalle las diferencias prácticas entre ambas clases, compararemos los mejores ETFs del MSCI World y te daremos las claves para elegir la opción que más te conviene a nivel operativo y fiscal.
 
@@ -79,4 +83,4 @@ Aquí tienes una tabla con los ETFs más grandes, líquidos y con menores comisi
 
 Independientemente de si tu cartera se compone de ETFs de acumulación para maximizar el crecimiento o de distribución para generar rentas, **CoreBalance** es la calculadora local-first idónea para gestionar tus activos.
 
-Puedes registrar todas tus posiciones y definir tu asset allocation objetivo en segundos. Si utilizas ETFs de distribución, puedes introducir los dividendos que cobres mensualmente directamente como nuevas aportaciones de capital. CoreBalance calculará al céntimo a qué activos destinar ese efectivo para mantener tu cartera perfectamente balanceada, protegiendo tu privacidad ya que ningún dato financiero viaja por la red.
+Puedes registrar todas tus posiciones y definir tu [asset allocation](/blog/que-es-asset-allocation) objetivo en segundos. Si utilizas ETFs de distribución, puedes introducir los dividendos que cobres mensualmente directamente como nuevas aportaciones de capital. CoreBalance calculará al céntimo a qué activos destinar ese efectivo para mantener tu cartera perfectamente balanceada, protegiendo tu privacidad ya que ningún dato financiero viaja por la red.

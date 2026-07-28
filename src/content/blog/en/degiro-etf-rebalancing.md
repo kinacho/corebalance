@@ -1,6 +1,10 @@
 ---
 title: "DeGiro ETF Rebalancing: How to Do It Efficiently"
 description: "A practical guide to rebalancing your ETF portfolio on DeGiro. Learn efficient strategies to minimize transaction fees and avoid tax events."
+summary:
+  - "ETFs do not get the tax-free transfer that index funds enjoy in Spain: selling in order to rebalance realises the gain and triggers tax."
+  - "The efficient strategy is to rebalance exclusively with new contributions, directing every purchase to the most underweighted asset."
+  - "If contributions are not enough: widen your tolerance bands, use the broker commission-free ETF selection, and account for rounding to whole shares."
 publishDate: "2026-06-16"
 updatedDate: "2026-06-16"
 author: "kinacho"
@@ -35,7 +39,7 @@ To avoid triggering unnecessary taxes and brokerage commissions, the smartest st
 Instead of selling your overweight ETFs, you keep them intact and direct your fresh monthly savings to purchase shares of the underweight ETFs that have lagged behind.
 
 ### A Practical Example:
-Suppose you have a target asset allocation of **70% Equities / 30% Bonds** using two ETFs on DeGiro:
+Suppose you have a target [asset allocation](/blog/what-is-asset-allocation) of **70% Equities / 30% Bonds** using two ETFs on DeGiro:
 * **ETF 1 (Vanguard FTSE All-World):** Current value is $7,500 (75% of the portfolio).
 * **ETF 2 (iShares Global Government Bond):** Current value is $2,500 (25% of the portfolio).
 * **Total Portfolio Value:** $10,000 (a 5% drift from target).
@@ -61,7 +65,7 @@ If your portfolio size is large and your monthly contributions are not enough to
 Instead of rebalancing when an asset drifts by a mere 2% or 3%, expand your threshold to a **5% or 10% absolute deviation** (e.g., if a 30% target bond allocation drops below 25% or rises above 35%). Because selling incurs transaction costs and capital gains taxes, tolerating slightly larger drifts is usually more cost-effective than frequent trading.
 
 ### B. Make Use of DeGiro's Core Selection (Core ETFs)
-DeGiro offers a list of **ETFs with reduced transaction fees** (subject to their fair-use policy). If your portfolio consists of ETFs from this core list—such as *Vanguard FTSE All-World* or *iShares Core MSCI World*—you can make regular buy orders without paying commissions. Make sure you read DeGiro's active terms and conditions to verify which tickers qualify.
+DeGiro offers a list of **ETFs with reduced transaction fees** (subject to their fair-use policy). If your portfolio consists of ETFs from this core list—such as *Vanguard FTSE All-World* or *iShares Core [MSCI World](/blog/msci-world-emerging-markets-80-20)*—you can make regular buy orders without paying commissions. Make sure you read DeGiro's active terms and conditions to verify which tickers qualify.
 
 ### C. The Whole-Share Problem (Rounding Residual Cash)
 Unlike mutual funds, which allow fractional investing (where you can invest exactly $123.45 in a fund), **ETFs trade like stocks and can only be bought in whole units**.

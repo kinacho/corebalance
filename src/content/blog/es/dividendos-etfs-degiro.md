@@ -1,6 +1,10 @@
 ---
 title: "Cómo seguir y declarar los dividendos de ETFs en DeGiro"
 description: "Guía completa para registrar y declarar los dividendos de tus ETFs en DeGiro. Aprende sobre retenciones en origen, doble imposición e IRPF en España."
+summary:
+  - "Los dividendos de ETFs extranjeros tributan en España dentro de la base imponible del ahorro, a tipos que oscilan entre el 19% y el 28%."
+  - "Antes de cobrarlos sufres una retención en origen, así que hay que declararlos correctamente para evitar la doble imposición."
+  - "La alternativa Boglehead es usar ETFs de acumulación: reinvierten los dividendos dentro del propio fondo y te ahorran todo el trámite fiscal."
 publishDate: "2026-06-16"
 updatedDate: "2026-06-16"
 author: "kinacho"
@@ -13,7 +17,7 @@ slugs: { es: 'dividendos-etfs-degiro', en: 'degiro-etf-dividends-guide' }
 
 Invertir en ETFs de distribución (aquellos que reparten periódicamente sus dividendos en efectivo en tu cuenta del bróker) es una estrategia muy popular para generar flujos de ingresos pasivos. 
 
-Si utilizas un bróker extranjero de bajo coste como **DeGiro**, comprar estos ETFs es sumamente económico y sencillo. Sin embargo, a la hora de realizar el seguimiento de tus rentas y declarar estos dividendos ante la Agencia Tributaria en España, la complejidad aumenta considerablemente.
+Si utilizas un bróker extranjero de bajo coste como **[DeGiro](/blog/rebalanceo-degiro-etfs)**, comprar estos ETFs es sumamente económico y sencillo. Sin embargo, a la hora de realizar el seguimiento de tus rentas y declarar estos dividendos ante la Agencia Tributaria en España, la complejidad aumenta considerablemente.
 
 En esta guía te explicamos paso a paso **cómo seguir y declarar los dividendos de tus ETFs en DeGiro**, qué son las retenciones en origen, cómo evitar la doble imposición internacional y cómo simplificar tu contabilidad financiera.
 
@@ -60,7 +64,7 @@ Para tener tu información fiscal ordenada y no llevarte sorpresas en el mes de 
 
 ## 4. Alternativa Boglehead: ETFs de Acumulación
 
-Si todo el proceso de calcular retenciones en origen, rellenar la casilla 588 y declarar los dividendos brutos te parece un quebradero de cabeza innecesario, la solución de la inversión pasiva pura es sencilla: **invierte en ETFs de Acumulación (Acc)**.
+Si todo el proceso de calcular retenciones en origen, rellenar la casilla 588 y declarar los dividendos brutos te parece un quebradero de cabeza innecesario, la solución de la inversión pasiva pura es sencilla: **invierte en [ETFs de Acumulación](/blog/msci-world-acc-vs-dist) (Acc)**.
 
 Los ETFs de acumulación reinvierten automáticamente todos los dividendos cobrados dentro del propio fondo. 
 * **Ventaja operativa:** No recibes dinero en efectivo, por lo que no hay hecho imponible. No tienes que declarar nada anualmente ante Hacienda.
@@ -72,4 +76,4 @@ Los ETFs de acumulación reinvierten automáticamente todos los dividendos cobra
 
 Sea cual sea tu estrategia de dividendos, **CoreBalance** te ayuda a mantener el control de tus inversiones de forma profesional y local-first.
 
-Puedes registrar en la herramienta tanto tus ETFs de acumulación como los de distribución junto a tus fondos indexados nacionales. CoreBalance calcula en segundos el peso real de tus activos bajo el capó y te permite rebalancear tu cartera de forma ágil sumando las rentas y dividendos que cobras en DeGiro a tu plan de ahorro mensual. Todo ello con privacidad absoluta en tu propio navegador web, sin que tu información confidencial acabe en la nube.
+Puedes registrar en la herramienta tanto tus ETFs de acumulación como los de distribución junto a tus [fondos indexados](/blog/fondos-indexados-vs-etfs-espana) nacionales. CoreBalance calcula en segundos el peso real de tus activos bajo el capó y te permite rebalancear tu cartera de forma ágil sumando las rentas y dividendos que cobras en DeGiro a tu plan de ahorro mensual. Todo ello con privacidad absoluta en tu propio navegador web, sin que tu información confidencial acabe en la nube.

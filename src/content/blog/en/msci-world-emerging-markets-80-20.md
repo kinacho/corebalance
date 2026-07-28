@@ -1,6 +1,10 @@
 ---
 title: "The MSCI World + Emerging Markets Portfolio: 80/20 Rule Explained"
 description: "Learn how to build your portfolio using MSCI World and Emerging Markets index funds. Discover the advantages of the 80/20 split and how to rebalance it."
+summary:
+  - "MSCI World covers 23 developed countries and MSCI Emerging Markets 24 developing ones. Together they reach almost 99% of the global investable stock market."
+  - "Combining these two funds has become the standard among independent investors thanks to its balance between diversification and simplicity."
+  - "From Spain you can implement it with transferable index funds, better for regular contributions, or with ETFs, better suited to international brokers and larger amounts."
 publishDate: "2026-06-16"
 updatedDate: "2026-06-16"
 author: "kinacho"
@@ -59,7 +63,7 @@ Choosing an allocation of **80% MSCI World and 20% MSCI Emerging Markets** offer
 This two-fund combination has become the gold standard for independent investors for several reasons:
 
 * **Extreme diversification with minimal effort:** With just two financial products, you are simultaneously investing in nearly **3,000 companies** globally. If one company or country experiences a crisis, the impact on your total wealth will be heavily diluted.
-* **Ultra-low costs (TER):** Because these are highly liquid, popular indices, competition among fund providers (Vanguard, iShares, Amundi, DWS) is intense. This results in very low expense ratios (TER), typically ranging from **0.12% to 0.20% annually**.
+* **Ultra-low costs ([TER](/herramientas/calculadora-ter)):** Because these are highly liquid, popular indices, competition among fund providers (Vanguard, iShares, Amundi, DWS) is intense. This results in very low expense ratios (TER), typically ranging from **0.12% to 0.20% annually**.
 * **Zero overlap:** The companies in the MSCI World belong entirely to developed markets, while those in the MSCI EM belong to the emerging block. This guarantees you are not buying the same stock twice under different labels.
 
 ---
@@ -75,7 +79,7 @@ In countries like Spain, index mutual funds offer tax-free transfers (rebalancin
 
 ### Option B: ETFs (Ideal for global brokers like Interactive Brokers, DeGiro, or Trade Republic)
 If you prefer using ETFs, you can purchase shares directly on the stock exchange:
-* **Developed ETF (80%):** *iShares Core MSCI World UCITS ETF (Acc)* (ISIN: IE00B4L5Y983, Ticker: IWDA / EUNL).
+* **Developed ETF (80%):** *iShares Core MSCI World UCITS ETF (Acc)* (ISIN: IE00B4L5Y983, Ticker: [IWDA](/blog/iwda-vs-vwce-comparison) / EUNL).
 * **Emerging ETF (20%):** *iShares Core MSCI EM IMI UCITS ETF (Acc)* (ISIN: IE00BKM4GZ66, Ticker: EMIM / IS3N).
 
 ---
@@ -110,6 +114,6 @@ If you save and invest monthly, you do not need to sell anything. Simply direct 
 
 ## Simplify Your Calculations with CoreBalance
 
-Doing these calculations manually or keeping a spreadsheet up-to-date can be time-consuming. **CoreBalance** is designed specifically to solve this in a clean, private, and automated way.
+Doing these calculations manually or keeping a [spreadsheet](/comparativas/corebalance-vs-excel) up-to-date can be time-consuming. **CoreBalance** is designed specifically to solve this in a clean, private, and automated way.
 
 Simply set your target percentages (80% MSCI World, 20% Emerging Markets) and enter your current balances. When you are ready to make your monthly contribution, enter the amount, and CoreBalance will tell you exactly how much to allocate to each fund to keep your portfolio balanced. All of this is done for free, without accounts, and with complete local privacy.

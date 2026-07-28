@@ -1,6 +1,10 @@
 ---
 title: "Cómo rebalancear tu cartera indexada paso a paso"
 description: "Guía práctica y completa para rebalancear tu cartera de fondos indexados o ETFs. Aprende a calcularlo paso a paso de forma fiscalmente eficiente."
+summary:
+  - "Tu cartera se desvía porque cada clase de activo se mueve a un ritmo distinto: un 80/20 deja de ser un 80/20 sin que hagas nada."
+  - "Hay tres métodos para volver al objetivo: nuevas aportaciones (el más eficiente), traspasos entre fondos (exclusivo de los fondos en España) y vender y comprar (el clásico, el que tributa)."
+  - "Con aportaciones periódicas destinas el dinero nuevo a los activos infraponderados y corriges la desviación sin vender nada."
 publishDate: "2026-06-16"
 updatedDate: "2026-06-16"
 author: "kinacho"
@@ -19,10 +23,10 @@ En este artículo veremos qué es el rebalanceo, por qué es imprescindible para
 
 ## 1. El punto de partida: ¿Por qué se desbalancea tu cartera?
 
-Cuando empiezas a invertir, lo primero que haces es diseñar tu **asignación de activos (Asset Allocation)**. Esta combinación decide el nivel de volatilidad que estás dispuesto a soportar a cambio de cierta rentabilidad esperada.
+Cuando empiezas a invertir, lo primero que haces es diseñar tu **asignación de activos ([Asset Allocation](/blog/que-es-asset-allocation))**. Esta combinación decide el nivel de volatilidad que estás dispuesto a soportar a cambio de cierta rentabilidad esperada.
 
 Por ejemplo, un inversor joven y con alta tolerancia al riesgo podría elegir una cartera clásica de crecimiento:
-* **80% Renta Variable:** Fondos indexados de acciones globales (MSCI World, Emerging Markets, etc.)
+* **80% Renta Variable:** [Fondos indexados](/blog/fondos-indexados-vs-etfs-espana) de acciones globales (MSCI World, [Emerging Markets](/blog/cartera-msci-world-emerging-markets), etc.)
 * **20% Renta Fija:** Fondos indexados de bonos gubernamentales globales a corto/medio plazo.
 
 Supongamos que inicias esta cartera con **10.000 €**:
@@ -57,9 +61,9 @@ Si estás en fase de acumulación (sigues ahorrando mes a mes), este es el mejor
 * **Contras:** Si la cartera es muy grande o la desviación es muy extrema, tus aportaciones mensuales podrían no ser suficientes para compensar el desvío.
 
 ### Método B: Rebalancear mediante traspasos (Exclusivo de fondos en España)
-Si eres residente fiscal en España y utilizas fondos indexados, puedes ordenar un **traspaso**. Consiste en ordenar a tu comercializadora (MyInvestor, Indexa, etc.) que mueva dinero directamente del fondo sobreponderado al infraponderado.
+Si eres residente fiscal en España y utilizas fondos indexados, puedes ordenar un **traspaso**. Consiste en ordenar a tu comercializadora ([MyInvestor](/blog/rebalanceo-myinvestor-sin-impuestos), Indexa, etc.) que mueva dinero directamente del fondo sobreponderado al infraponderado.
 * **Pros:** Gracias a la legislación española, el traspaso de fondos está exento de tributación. No pagas impuestos a Hacienda por las plusvalías generadas.
-* **Contras:** No aplica si inviertes en ETFs (los traspasos de ETFs tributan como venta).
+* **Contras:** No aplica si inviertes en ETFs (los [traspasos](/blog/traspasos-fondos-indexados-hacienda) de ETFs tributan como venta).
 
 ### Método C: Vender y comprar (Rebalanceo clásico)
 Consiste en vender la parte proporcional del fondo que ha subido de más y, con ese dinero en efectivo, comprar el fondo que está por debajo.
