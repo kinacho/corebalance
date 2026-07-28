@@ -1,37 +1,29 @@
 # https://corebalance.app/robots.txt
 # llms-txt: https://corebalance.app/llms.txt
+#
+# CoreBalance es una herramienta gratuita y el contenido del blog es material de
+# difusión: nos interesa que los buscadores clásicos y los generativos lo lean,
+# lo citen y lo recomienden. Por eso el acceso es abierto salvo dos excepciones:
+#   1. Las rutas privadas o sin valor de indexación (/api/, /dashboard/).
+#   2. Los scrapers que revenden datos sin enviar tráfico ni alimentar modelos
+#      que puedan recomendarnos (ver bloque final).
 
-# 1. Regla global y buscadores de IA en tiempo real (mismo acceso público)
+# ── 1. Regla general: buscadores, asistentes y bots de entrenamiento ──────────
+# Incluye Googlebot, Bingbot (base de ChatGPT Search y Copilot), GPTBot,
+# ClaudeBot, OAI-SearchBot, PerplexityBot, Google-Extended (AI Overviews y
+# AI Mode), Applebot-Extended, meta-externalagent, Amazonbot, CCBot, etc.
 User-agent: *
-User-agent: OAI-SearchBot
-User-agent: ChatGPT-User
-User-agent: Claude-Web
-User-agent: PerplexityBot
 Disallow: /api/
 Disallow: /dashboard/
 
-# 2. Bots de entrenamiento (solo llms.txt)
-User-agent: GPTBot
-User-agent: ClaudeBot
-User-agent: anthropic-ai
-Disallow: /
-Allow: /llms.txt
-Allow: /llms-es.txt
-Allow: /llms-full.txt
-
-# 3. Scrapers hostiles / entrenamiento puro — bloqueo total
-User-agent: CCBot
-User-agent: Google-Extended
-User-agent: Applebot-Extended
-User-agent: FacebookBot
-User-agent: cohere-ai
+# ── 2. Scrapers comerciales de reventa de datos ───────────────────────────────
+# No indexan, no citan y no entrenan modelos que nos vayan a recomendar.
 User-agent: Bytespider
-User-agent: Omgilibot
 User-agent: Diffbot
-User-agent: ImagesiftBot
 User-agent: DataForSeoBot
+User-agent: ImagesiftBot
+User-agent: Omgilibot
 Disallow: /
 
-# Sitemap
+# ── Sitemap y feeds ───────────────────────────────────────────────────────────
 Sitemap: https://corebalance.app/sitemap.xml
-

@@ -1,8 +1,12 @@
 ---
 title: "The Bogleheads Portfolio for Beginners: A Practical Guide"
 description: "A complete guide to designing your first Bogleheads index portfolio. Learn which funds or ETFs to choose and how to automate your strategy."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+summary:
+  - "The Boglehead philosophy rests on four pillars: extreme simplicity, global diversification, ultra-low costs and not trying to predict the market."
+  - "In Spain traditional index funds beat ETFs, because fund-to-fund transfers are not taxed when you reshuffle positions."
+  - "The two usual models are the 2-fund and the 3-fund portfolio, the Boglehead standard. The only active upkeep is contributing and rebalancing."
+publishDate: "2026-03-04"
+updatedDate: "2026-03-04"
 author: "kinacho"
 tags: [bogleheads, indexing, index-funds, personal-finance, beginners]
 lang: en
@@ -25,7 +29,7 @@ Investing like a Boglehead is more than just buying index trackers; it is a fina
 
 1. **Extreme Simplicity:** Your portfolio should be easy to understand and maintain. Owning too many funds adds unnecessary complexity and hidden transaction costs.
 2. **Broad Diversification:** You should own a small slice of thousands of companies across different geographies and sectors. If one company or market segment enters a crisis, your global portfolio remains resilient.
-3. **Ultra-Low Costs:** Every dollar or euro you pay in management fees is a dollar or euro that is not compounding. Keeping your total expense ratios (TER) below 0.20% per year is essential.
+3. **Ultra-Low Costs:** Every dollar or euro you pay in management fees is a dollar or euro that is not compounding. Keeping your total expense ratios ([TER](/herramientas/calculadora-ter)) below 0.20% per year is essential.
 4. **Buy and Hold:** Markets fluctuate constantly. A Boglehead investor does not try to predict or time the market; they make regular, automatic contributions and stay the course during market downturns.
 
 ---
@@ -36,7 +40,7 @@ Depending on your geographic location and tax situation, you can implement these
 
 ### A. The 2-Fund Portfolio (Maximum Simplicity)
 An ideal starting model for beginners or those with smaller initial capital:
-* **Asset 1: Global Equities (e.g., 80%).** Tracks a global developed market index like the MSCI World or FTSE Developed World.
+* **Asset 1: Global Equities (e.g., 80%).** Tracks a global developed market index like the [MSCI World](/blog/msci-world-emerging-markets-80-20) or FTSE Developed World.
 * **Asset 2: Global Fixed Income (e.g., 20%).** Provides stability and cushions stock market crashes.
 
 ### B. The 3-Fund Portfolio (The Bogleheads Standard)
@@ -53,7 +57,7 @@ You can purchase these index products through major low-cost brokers (such as Va
 
 * **Developed Markets Equities:**
   * *Vanguard FTSE Developed World* (ISIN: IE00BK5BQV36 / Ticker: VHVE) - TER: 0.12%
-  * *iShares Core MSCI World* (ISIN: IE00B4L5Y983 / Ticker: IWDA) - TER: 0.20%
+  * *iShares Core MSCI World* (ISIN: IE00B4L5Y983 / Ticker: [IWDA](/blog/iwda-vs-vwce-comparison)) - TER: 0.20%
 * **Emerging Markets Equities:**
   * *Vanguard FTSE Emerging Markets* (ISIN: IE00BK5BR733 / Ticker: VFEG) - TER: 0.22%
   * *iShares MSCI EM IM* (ISIN: IE00BKM4GZ66 / Ticker: EIMI) - TER: 0.18%

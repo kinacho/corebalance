@@ -1,8 +1,12 @@
 ---
 title: "La cartera MSCI World + Emerging Markets: El 80/20 explicado"
 description: "Aprende a diseñar tu cartera con fondos indexados al MSCI World y Emerging Markets. Descubre las ventajas del reparto 80/20 y cómo rebalancearlo."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+summary:
+  - "El MSCI World cubre 23 países desarrollados y el MSCI Emerging Markets 24 países en vías de desarrollo. Juntos alcanzan casi el 99% del mercado bursátil invertible global."
+  - "La combinación de estos dos fondos se ha convertido en el estándar entre inversores independientes por su equilibrio entre diversificación y simplicidad."
+  - "Desde España se implementa con fondos indexados traspasables, mejores para aportaciones periódicas, o con ETFs, más adecuados para brókers internacionales y capitales altos."
+publishDate: "2026-03-17"
+updatedDate: "2026-03-17"
 author: "kinacho"
 tags: [cartera, msci-world, emerging-markets, fondos-indexados, asset-allocation]
 lang: es
@@ -59,24 +63,24 @@ Elegir una asignación **80% MSCI World y 20% MSCI Emerging Markets** ofrece var
 Esta combinación de dos fondos se ha convertido en el estándar de oro para los inversores independientes por varias razones de peso:
 
 * **Diversificación extrema con mínimo esfuerzo:** Con solo dos productos financieros, estás invirtiendo de forma simultánea en cerca de **3.000 empresas** de todo el mundo. Si una compañía o un país entero sufre una crisis, el impacto en tu patrimonio global estará muy diversificado.
-* **Costes bajísimos (TER):** Al ser fondos de índices muy líquidos y seguidos, la competencia entre gestoras (Vanguard, iShares, Amundi, DWS) es feroz. Esto se traduce en comisiones de gestión (TER) extraordinariamente bajas, que suelen rondar el **0.12% - 0.20% anual**.
+* **Costes bajísimos ([TER](/herramientas/calculadora-ter)):** Al ser fondos de índices muy líquidos y seguidos, la competencia entre gestoras (Vanguard, iShares, Amundi, DWS) es feroz. Esto se traduce en comisiones de gestión (TER) extraordinariamente bajas, que suelen rondar el **0.12% - 0.20% anual**.
 * **Sin solapamientos:** Las empresas del MSCI World pertenecen en su totalidad a mercados desarrollados, mientras que las del Emerging Markets están en el otro bloque. Esto garantiza que no estás comprando la misma acción dos veces bajo distintas etiquetas.
 
 ---
 
 ## 4. Cómo implementarla desde España
 
-Si resides en España, tienes dos vehículos principales para poner en marcha esta estrategia: **fondos indexados traspasables** o **ETFs**.
+Si resides en España, tienes dos vehículos principales para poner en marcha esta estrategia: **[fondos indexados](/blog/fondos-indexados-vs-etfs-espana) traspasables** o **ETFs**.
 
 ### Opción A: Fondos Indexados (Recomendado para aportaciones periódicas)
-La gran ventaja de los fondos indexados en España es su fiscalidad: puedes mover dinero de un fondo a otro mediante traspasos sin pagar peajes fiscales a Hacienda.
+La gran ventaja de los fondos indexados en España es su fiscalidad: puedes mover dinero de un fondo a otro mediante [traspasos](/blog/traspasos-fondos-indexados-hacienda) sin pagar peajes fiscales a Hacienda.
 
-Puedes configurar esta cartera en entidades como **MyInvestor**, **SelfBank** o mediante gestores automatizados (Robo-advisors) con combinaciones como estas:
+Puedes configurar esta cartera en entidades como **[MyInvestor](/blog/rebalanceo-myinvestor-sin-impuestos)**, **SelfBank** o mediante gestores automatizados (Robo-advisors) con combinaciones como estas:
 * **Fondo Desarrollado (80%):** *Vanguard Global Stock Index Fund* (ISIN: IE00B03HD191) o *Fidelity MSCI World Index Fund* (ISIN: IE00BYX5MX67).
 * **Fondo Emergente (20%):** *Vanguard Emerging Markets Stock Index Fund* (ISIN: IE0031786142) o *iShares Emerging Markets Index Fund* (ISIN: IE00B2QWDY88).
 
 ### Opción B: ETFs (Ideal para brókers internacionales o capitales altos)
-Si prefieres utilizar ETFs en brókers como **DeGiro**, **Interactive Brokers** o **Trade Republic**, puedes comprar participaciones de forma directa:
+Si prefieres utilizar ETFs en brókers como **[DeGiro](/blog/rebalanceo-degiro-etfs)**, **Interactive Brokers** o **Trade Republic**, puedes comprar participaciones de forma directa:
 * **ETF Desarrollado (80%):** *iShares Core MSCI World UCITS ETF (Acc)* (ISIN: IE00B4L5Y983, ticker: EUNL).
 * **ETF Emergente (20%):** *iShares Core MSCI EM IMI UCITS ETF (Acc)* (ISIN: IE00BKM4GZ66, ticker: IS3N).
 

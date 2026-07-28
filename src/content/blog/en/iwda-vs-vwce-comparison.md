@@ -1,6 +1,10 @@
 ---
 title: "IWDA vs VWCE: Which UCITS ETF Should You Choose?"
 description: "A detailed comparison of two of the most popular global UCITS ETFs for European investors: IWDA vs VWCE. Analyze costs, indices, and diversification."
+summary:
+  - "VWCE tracks the FTSE All-World, which includes developed and emerging markets in a single ETF. IWDA tracks the MSCI World, covering only 23 developed markets."
+  - "With IWDA you need a second emerging-markets ETF and have to rebalance between the two; with VWCE you buy one fund and forget about it."
+  - "Pick VWCE for maximum simplicity, or IWDA plus emerging markets if you want to control the developing-country weight yourself."
 publishDate: "2026-06-16"
 updatedDate: "2026-06-16"
 author: "kinacho"
@@ -27,7 +31,7 @@ To understand the difference between the ETFs, we must look at the indices they 
 
 ### IWDA: iShares Core MSCI World UCITS ETF (Acc)
 * **ISIN:** IE00B4L5Y983 (Ticker: IWDA, EUNL, or SWDA depending on the stock exchange).
-* **Index Tracked:** **MSCI World Index**.
+* **Index Tracked:** **[MSCI World](/blog/msci-world-emerging-markets-80-20) Index**.
 * **Market Coverage:** Tracks mid- and large-cap companies across **23 developed markets** only.
 * **Number of Holdings:** ~1,500 companies.
 * **Emerging Markets:** 0% (does not include China, India, Taiwan, Brazil, etc.).
@@ -88,7 +92,7 @@ Let's look at the costs of each approach:
 ## 5. Which One Should You Choose?
 
 ### Choose VWCE (Vanguard All-World) if:
-* You want **maximum simplicity**. You do not want to calculate weights, run spreadsheets, or think about how much to allocate where.
+* You want **maximum simplicity**. You do not want to calculate weights, run [spreadsheets](/comparativas/corebalance-vs-excel), or think about how much to allocate where.
 * Your broker charges transaction fees (buying one ETF saves on commissions).
 * You want a true "set and forget" investment strategy.
 

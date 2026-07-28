@@ -1,8 +1,12 @@
 ---
 title: "Cuándo rebalancear tu cartera: por calendario vs. por desviación"
 description: "Descubre el mejor momento para rebalancear tu cartera indexada. Comparamos el método por calendario frente al de bandas de desviación."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+summary:
+  - "Por calendario revisas la cartera en fechas fijas. Por desviación actúas sólo cuando un activo supera su banda de tolerancia, habitualmente un 5% absoluto."
+  - "El calendario da paz mental y poco esfuerzo de gestión, pero es ineficiente en mercados volátiles; las bandas reaccionan al mercado real a cambio de vigilarlo."
+  - "Para un inversor particular la estrategia más equilibrada suele ser la híbrida: revisión por calendario con gatillo por desviación."
+publishDate: "2026-02-05"
+updatedDate: "2026-02-05"
 author: "kinacho"
 tags: [rebalanceo, asset-allocation, bogleheads, estrategia]
 lang: es
@@ -76,7 +80,7 @@ No hay un método mágico que gane dinero consistentemente sobre el otro. Por ta
 Para un inversor particular, la estrategia más equilibrada suele ser un modelo híbrido conocido como **Revisión por Calendario con Gatillo por Desviación**:
 
 1. **Elige una frecuencia de revisión cómoda:** Por ejemplo, cada **6 meses**.
-2. **Define tus bandas de tolerancia:** Por ejemplo, **5% absoluto** para los activos principales.
+2. **Define tus [bandas de tolerancia](/herramientas/checklist-rebalanceo):** Por ejemplo, **5% absoluto** para los activos principales.
 3. **Al llegar la fecha de revisión, comprueba las desviaciones:**
    * **¿Algún activo se ha desviado más del 5%?** Sí $\rightarrow$ Rebalanceas la cartera completa.
    * **¿Ningún activo supera la desviación del 5%?** No $\rightarrow$ No haces nada. Cierras la pantalla y esperas 6 meses más.
@@ -91,7 +95,7 @@ Para que no tengas que calcular las desviaciones de tus fondos a mano o consulta
 
 1. **Crea tu cartera en CoreBalance** con tus pesos objetivo.
 2. La herramienta te mostrará de forma visual las **desviaciones actuales en tiempo real** de cada fondo respecto a su peso objetivo en tu panel.
-3. Si planeas hacer aportaciones mensuales, puedes introducirlas en la calculadora. CoreBalance priorizará asignar ese nuevo capital a los fondos que más se han desviado del objetivo. Este es el **rebalanceo por cash-flow**, el cual te permite corregir desviaciones de forma continua y sin necesidad de realizar traspasos o ventas.
+3. Si planeas hacer aportaciones mensuales, puedes introducirlas en la calculadora. CoreBalance priorizará asignar ese nuevo capital a los fondos que más se han desviado del objetivo. Este es el **rebalanceo por cash-flow**, el cual te permite corregir desviaciones de forma continua y sin necesidad de realizar [traspasos](/blog/traspasos-fondos-indexados-hacienda) o ventas.
 
 > [!IMPORTANT]
 > Recuerda que el rebalanceo no es un mecanismo para "ganar al mercado", sino el cinturón de seguridad que te protege de asumir un riesgo que no te corresponde. Elige la regla que te resulte más fácil de cumplir a largo plazo y mantén la disciplina.

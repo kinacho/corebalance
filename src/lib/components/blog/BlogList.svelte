@@ -3,6 +3,7 @@
   import LandingFooter from '$lib/components/landing/LandingFooter.svelte';
   import type { Post, Tool } from '$lib/blog';
   import { goto } from '$app/navigation';
+  import { localeLink, localizePath } from '$lib/i18n/routing';
 
   let { posts = [], lang = 'es', tools = [] } = $props<{
     posts: Post[];
@@ -20,7 +21,9 @@
     tagsTitle: 'Topics:',
     toolsSection: 'Interactive Tools',
     toolsSubtitle: 'Free calculators and resources to help you manage your portfolio.',
-    openTool: 'Open tool →'
+    openTool: 'Open tool →',
+    readTime: (min: number) => `${min} min read`,
+    authorPrefix: 'By'
   } : {
     title: 'Blog de CoreBalance',
     subtitle: 'Guías, análisis y consejos sobre inversión pasiva, fondos indexados y rebalanceo de carteras.',
@@ -30,16 +33,16 @@
     tagsTitle: 'Temas:',
     toolsSection: 'Herramientas Interactivas',
     toolsSubtitle: 'Calculadoras y recursos gratuitos para gestionar tu cartera mejor.',
-    openTool: 'Abrir herramienta →'
+    openTool: 'Abrir herramienta →',
+    readTime: (min: number) => `${min} min de lectura`,
+    authorPrefix: 'Por'
   });
+
+  const homePath = $derived(localizePath('/', lang));
 
   function formatPostDate(dateStr: string) {
     const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(dateStr).toLocaleDateString(lang === 'es' ? 'es-ES' : 'en-US', options);
-  }
-
-  function navigateToPost(slug: string) {
-    goto(`/blog/${slug}`);
   }
 </script>
 
@@ -48,7 +51,7 @@
   <!-- Mesh de fondo animado idéntico al resto de la web -->
   <div class="background-mesh"></div>
   
-  <LandingNavBar onStart={() => goto('/')} />
+  <LandingNavBar onStart={() => goto(homePath)} />
 
   <main class="blog-container">
     <header class="blog-header">
@@ -66,7 +69,7 @@
         <p class="tools-subtitle">{t.toolsSubtitle}</p>
         <div class="tools-grid">
           {#each tools as tool}
-            <a href={tool.url} class="tool-card">
+            <a href={localeLink(tool.url, lang)} class="tool-card">
               <div class="tool-icon">{tool.icon}</div>
               <div class="tool-body">
                 <span class="tool-badge">{tool.badge[lang]}</span>
@@ -83,24 +86,25 @@
     {#if posts.length === 0}
       <div class="no-posts-card">
         <p>{t.noPosts}</p>
-        <button class="btn-secondary" onclick={() => goto('/')}>{t.backToHome}</button>
+        <button class="btn-secondary" onclick={() => goto(homePath)}>{t.backToHome}</button>
       </div>
     {:else}
       <div class="posts-grid">
         {#each posts as post}
-          <!-- svelte-ignore a11y_click_events_have_key_events -->
-          <!-- svelte-ignore a11y_no_static_element_interactions -->
-          <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-          <article class="post-card" onclick={() => navigateToPost(post.slug)}>
-            <div class="card-content">
+          <!-- Enlace real, no un onclick: así el crawler sigue el artículo y el
+               teclado puede navegarlo (antes hacía falta silenciar tres reglas
+               de accesibilidad). -->
+          <article class="post-card">
+            <a class="card-content" href={`/blog/${post.slug}`}>
               <div class="post-meta">
                 <time datetime={post.publishDate}>{formatPostDate(post.publishDate)}</time>
-                <span class="author">· Por {post.author}</span>
+                <span class="author">· {t.authorPrefix} {post.author}</span>
+                <span>· {t.readTime(post.readingMinutes ?? 3)}</span>
               </div>
-              
+
               <h2 class="post-title">{post.title}</h2>
               <p class="post-description">{post.description}</p>
-              
+
               <div class="post-tags">
                 {#each post.tags as tag}
                   <span class="tag-badge">#{tag}</span>
@@ -116,7 +120,7 @@
                   </svg>
                 </span>
               </div>
-            </div>
+            </a>
           </article>
         {/each}
       </div>
@@ -394,6 +398,8 @@
     display: flex;
     flex-direction: column;
     height: 100%;
+    text-decoration: none;
+    color: inherit;
   }
 
   .post-meta {
@@ -401,6 +407,7 @@
     color: var(--text-muted, rgba(160, 160, 200, 0.6));
     margin-bottom: 1rem;
     display: flex;
+    flex-wrap: wrap;
     gap: 0.25rem;
   }
 

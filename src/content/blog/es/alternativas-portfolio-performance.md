@@ -1,8 +1,12 @@
 ---
 title: "Las mejores alternativas a Portfolio Performance en español"
 description: "¿Buscas alternativas a Portfolio Performance? Analizamos las mejores herramientas, webs y apps en español para controlar y rebalancear tu cartera."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+summary:
+  - "Portfolio Performance es gratuito y muy completo, pero es una aplicación de escritorio con una curva de aprendizaje empinada y demasiada complejidad si sólo quieres rebalancear."
+  - "Las alternativas se agrupan en tres familias: hojas de cálculo propias, robo-advisors como Indexa Capital o MyInvestor, y calculadoras web centradas en el rebalanceo."
+  - "Si tu estrategia es comprar fondos indexados y rebalancear una o dos veces al año, no necesitas una herramienta de auditoría de carteras."
+publishDate: "2026-07-16"
+updatedDate: "2026-07-16"
 author: "kinacho"
 tags: [herramientas, portfolio-performance, alternativas, rebalanceo, excel]
 lang: es
@@ -11,11 +15,11 @@ ogImage: "/blog/og/alternativas-portfolio-performance.jpg"
 slugs: { es: 'alternativas-portfolio-performance', en: 'portfolio-performance-alternatives' }
 ---
 
-Para los inversores particulares apasionados de las finanzas y el seguimiento al céntimo, **Portfolio Performance** ha sido durante años la herramienta de referencia de código abierto. Es un programa de escritorio robusto, gratuito y extremadamente potente que te permite calcular métricas como el TWR (Time-Weighted Return), el MWR (Money-Weighted Return) y graficar tu patrimonio.
+Para los inversores particulares apasionados de las finanzas y el seguimiento al céntimo, **[Portfolio Performance](/comparativas/corebalance-vs-portfolio-performance)** ha sido durante años la herramienta de referencia de código abierto. Es un programa de escritorio robusto, gratuito y extremadamente potente que te permite calcular métricas como el TWR (Time-Weighted Return), el MWR (Money-Weighted Return) y graficar tu patrimonio.
 
 Sin embargo, a pesar de sus virtudes, Portfolio Performance adolece de un gran problema: **su enorme curva de aprendizaje y su complejidad visual**. 
 
-Para un inversor pasivo o Boglehead cuyo objetivo es simplemente aportar a 2 o 3 fondos indexados al mes y realizar un rebalanceo ocasional, configurar y mantener al día esta herramienta de escritorio resulta matar moscas a cañonazos.
+Para un inversor pasivo o Boglehead cuyo objetivo es simplemente aportar a 2 o 3 [fondos indexados](/blog/fondos-indexados-vs-etfs-espana) al mes y realizar un rebalanceo ocasional, configurar y mantener al día esta herramienta de escritorio resulta matar moscas a cañonazos.
 
 En este artículo analizaremos las mejores **alternativas a Portfolio Performance en español**, comparando sus pros, sus contras y cuál deberías elegir según tus necesidades reales de control financiero.
 
@@ -46,7 +50,7 @@ Si delegas tu cartera a un robo-advisor o utilizas la pantalla de resumen del ba
 * **Contras:** Estás atado a sus condiciones y fondos específicos. Además, los robo-advisors cobran una comisión de gestión adicional (en torno al 0.40% - 0.60% total) que reduce tu rentabilidad final si tu capital es alto. Tampoco te permite unificar activos de diferentes entidades en una sola vista.
 
 ### Alternativa C: Calculadoras web enfocadas en rebalanceo (CoreBalance)
-Aplicaciones web modernas pensadas para inversores Bogleheads independientes que controlan su propia cartera en comercializadoras tradicionales o brókers de bajo coste.
+Aplicaciones web modernas pensadas para inversores [Bogleheads](/blog/cartera-bogle-principiantes-espana) independientes que controlan su propia cartera en comercializadoras tradicionales o brókers de bajo coste.
 
 ---
 
@@ -67,7 +71,7 @@ Aplicaciones web modernas pensadas para inversores Bogleheads independientes que
 
 Si tu estrategia consiste en comprar fondos y rebalancear una o dos veces al año, **CoreBalance** elimina toda la complejidad y la frustración de Portfolio Performance, manteniendo su mayor virtud: la privacidad de tus datos.
 
-* **Foco en lo que importa:** CoreBalance no pretende ser un software contable complejo. Te da exactamente lo que necesitas para ejecutar tu inversión pasiva: calcula el desbalanceo y te dice cómo reajustar tu cartera mediante nuevas aportaciones o traspasos al céntimo.
+* **Foco en lo que importa:** CoreBalance no pretende ser un software contable complejo. Te da exactamente lo que necesitas para ejecutar tu inversión pasiva: calcula el desbalanceo y te dice cómo reajustar tu cartera mediante nuevas aportaciones o [traspasos](/blog/traspasos-fondos-indexados-hacienda) al céntimo.
 * **Sin registros ni cuentas:** No tienes que dar tu correo, vincular tus cuentas bancarias ni subir tus datos financieros personales a la nube. Tus carteras se almacenan localmente de forma encriptada en tu navegador.
 * **Interactiva y rápida:** Entras a la web, introduces tus fondos en segundos y ya tienes los cálculos listos. Sin importar ficheros XML ni configurar cotizaciones complejas.
 

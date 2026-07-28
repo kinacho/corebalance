@@ -1,0 +1,296 @@
+import { describe, it, expect } from 'vitest';
+import { readdirSync, readFileSync, existsSync } from 'node:fs';
+import { join } from 'node:path';
+import {
+	BILINGUAL_ROUTES,
+	NOINDEX_ROUTES,
+	alternates,
+	absoluteUrl,
+	isBilingualRoute,
+	isLocaleCookieRoute,
+	isNoindexRoute,
+	localeFromPath,
+	localeLink,
+	localizePath,
+	stripLocale
+} from './routing';
+import { RELATED_READING } from '$lib/seo/related-reading';
+
+describe('stripLocale', () => {
+	it('quita el prefijo de idioma', () => {
+		expect(stripLocale('/en/blog')).toBe('/blog');
+		expect(stripLocale('/en')).toBe('/');
+	});
+
+	it('deja intactas las rutas sin prefijo', () => {
+		expect(stripLocale('/blog')).toBe('/blog');
+		expect(stripLocale('/')).toBe('/');
+	});
+
+	it('no confunde un segmento que empieza por el prefijo', () => {
+		expect(stripLocale('/entrada')).toBe('/entrada');
+	});
+});
+
+describe('localeFromPath', () => {
+	it('deduce el idioma del prefijo, con el español por defecto', () => {
+		expect(localeFromPath('/en/comparativas/corebalance-vs-excel')).toBe('en');
+		expect(localeFromPath('/comparativas/corebalance-vs-excel')).toBe('es');
+		expect(localeFromPath('/entrada')).toBe('es');
+	});
+});
+
+describe('localizePath', () => {
+	it('el español vive en la raíz y el inglés bajo /en', () => {
+		expect(localizePath('/blog', 'es')).toBe('/blog');
+		expect(localizePath('/blog', 'en')).toBe('/en/blog');
+		expect(localizePath('/', 'en')).toBe('/en');
+	});
+
+	it('es idempotente: traducir una ruta ya traducida no duplica el prefijo', () => {
+		expect(localizePath('/en/blog', 'en')).toBe('/en/blog');
+		expect(localizePath('/en/blog', 'es')).toBe('/blog');
+	});
+});
+
+describe('localeLink', () => {
+	it('traduce las rutas bilingües conservando hash y query', () => {
+		expect(localeLink('/#features', 'en')).toBe('/en#features');
+		expect(localeLink('/blog', 'en')).toBe('/en/blog');
+		expect(localeLink('/privacy?x=1', 'en')).toBe('/en/privacy?x=1');
+	});
+
+	it('no toca lo que no tiene variante de idioma en la URL', () => {
+		// El dashboard no está prefijado: /en/dashboard no existiría.
+		expect(localeLink('/dashboard', 'en')).toBe('/dashboard');
+		// Cada post ya tiene su propio slug traducido.
+		expect(localeLink('/blog/degiro-etf-rebalancing', 'en')).toBe('/blog/degiro-etf-rebalancing');
+	});
+
+	it('ignora los enlaces externos', () => {
+		expect(localeLink('https://github.com/kinacho', 'en')).toBe('https://github.com/kinacho');
+		expect(localeLink('mailto:hola@corebalance.app', 'en')).toBe('mailto:hola@corebalance.app');
+	});
+});
+
+describe('absoluteUrl', () => {
+	it('mantiene la barra sólo en la raíz', () => {
+		expect(absoluteUrl('/')).toBe('https://corebalance.app/');
+		expect(absoluteUrl('/blog')).toBe('https://corebalance.app/blog');
+		expect(absoluteUrl('/blog/')).toBe('https://corebalance.app/blog');
+	});
+});
+
+describe('alternates', () => {
+	it('declara URLs distintas por idioma y x-default al español', () => {
+		const fromEs = alternates('/comparativas/corebalance-vs-excel', 'es');
+		const fromEn = alternates('/en/comparativas/corebalance-vs-excel', 'en');
+
+		expect(fromEs.es).toBe('https://corebalance.app/comparativas/corebalance-vs-excel');
+		expect(fromEs.en).toBe('https://corebalance.app/en/comparativas/corebalance-vs-excel');
+		expect(fromEs.es).not.toBe(fromEs.en);
+		expect(fromEs.xDefault).toBe(fromEs.es);
+
+		// La canónica es siempre la del idioma que se está sirviendo.
+		expect(fromEs.canonical).toBe(fromEs.es);
+		expect(fromEn.canonical).toBe(fromEn.en);
+
+		// Las alternativas no dependen de por qué URL se entre.
+		expect(fromEn.es).toBe(fromEs.es);
+		expect(fromEn.en).toBe(fromEs.en);
+	});
+});
+
+describe('isLocaleCookieRoute', () => {
+	it('sólo el área autenticada y la API dependen de la cookie', () => {
+		expect(isLocaleCookieRoute('/dashboard')).toBe(true);
+		expect(isLocaleCookieRoute('/api/prices')).toBe(true);
+		expect(isLocaleCookieRoute('/blog')).toBe(false);
+		expect(isLocaleCookieRoute('/en')).toBe(false);
+	});
+});
+
+describe('enlaces internos del markdown del blog', () => {
+	const CONTENT = join(process.cwd(), 'src', 'content', 'blog');
+
+	/** slug → idioma, para saber a qué idioma apunta un enlace a un post. */
+	const langBySlug = new Map<string, 'es' | 'en'>();
+	for (const lang of ['es', 'en'] as const) {
+		const dir = join(CONTENT, lang);
+		if (!existsSync(dir)) continue;
+		for (const file of readdirSync(dir).filter((f) => f.endsWith('.md'))) {
+			langBySlug.set(file.replace(/\.md$/, ''), lang);
+		}
+	}
+
+	/** Todos los enlaces internos del markdown, con el idioma del post que los contiene. */
+	function internalLinks() {
+		const links: { lang: 'es' | 'en'; slug: string; href: string }[] = [];
+		for (const lang of ['es', 'en'] as const) {
+			const dir = join(CONTENT, lang);
+			if (!existsSync(dir)) continue;
+			for (const file of readdirSync(dir).filter((f) => f.endsWith('.md'))) {
+				const src = readFileSync(join(dir, file), 'utf8');
+				for (const m of src.matchAll(/\[[^\]]*\]\((\/[^)]*)\)/g)) {
+					links.push({ lang, slug: file.replace(/\.md$/, ''), href: m[1] });
+				}
+			}
+		}
+		return links;
+	}
+
+	it('hay enlaces internos que auditar', () => {
+		expect(internalLinks().length).toBeGreaterThan(50);
+	});
+
+	/**
+	 * Un post nunca debe enlazar a un artículo del otro idioma: eso el plugin de
+	 * build no lo puede arreglar, porque el slug destino es otro contenido.
+	 */
+	it('ningún post enlaza a un artículo del otro idioma', () => {
+		for (const { lang, slug, href } of internalLinks()) {
+			const target = href.split(/[#?]/)[0].match(/^\/blog\/([^/]+)\/?$/)?.[1];
+			if (!target) continue;
+			const targetLang = langBySlug.get(target);
+			expect(targetLang, `${lang}/${slug} enlaza a /blog/${target}, que no existe`).toBeDefined();
+			expect(targetLang, `${lang}/${slug} (${lang}) enlaza a /blog/${target} (${targetLang})`).toBe(
+				lang
+			);
+		}
+	});
+
+	/**
+	 * Las rutas bilingües sí las localiza el plugin en build, así que en el markdown
+	 * deben escribirse sin prefijo. Si alguien pone `/en/...` a mano, el plugin lo
+	 * dejaría igual y el post español acabaría enlazando al inglés.
+	 */
+	it('las rutas bilingües se escriben sin prefijo de idioma', () => {
+		for (const { lang, slug, href } of internalLinks()) {
+			expect(
+				href.startsWith('/en/'),
+				`${lang}/${slug} escribe ${href} con prefijo; debe ir sin él y lo localiza el build`
+			).toBe(false);
+		}
+	});
+
+	it('el build traduce esos enlaces al idioma del post', () => {
+		// Es la transformación que aplica remarkLocalizeLinks en svelte.config.js.
+		expect(localeLink('/comparativas/corebalance-vs-excel', 'en')).toBe(
+			'/en/comparativas/corebalance-vs-excel'
+		);
+		expect(localeLink('/herramientas/calculadora-ter', 'en')).toBe(
+			'/en/herramientas/calculadora-ter'
+		);
+		expect(localeLink('/comparativas/corebalance-vs-excel', 'es')).toBe(
+			'/comparativas/corebalance-vs-excel'
+		);
+		// Y no toca los posts, que tienen slug propio por idioma.
+		expect(localeLink('/blog/index-funds-vs-etfs-comparison', 'en')).toBe(
+			'/blog/index-funds-vs-etfs-comparison'
+		);
+	});
+});
+
+describe('lectura relacionada de las comparativas y herramientas', () => {
+	const CONTENT = join(process.cwd(), 'src', 'content', 'blog');
+
+	const esSlugs = new Set(
+		existsSync(join(CONTENT, 'es'))
+			? readdirSync(join(CONTENT, 'es'))
+					.filter((f) => f.endsWith('.md'))
+					.map((f) => f.replace(/\.md$/, ''))
+			: []
+	);
+
+	it('todas las rutas de la lista existen como página bilingüe', () => {
+		for (const route of Object.keys(RELATED_READING)) {
+			expect(isBilingualRoute(route), `${route} no es una ruta bilingüe`).toBe(true);
+		}
+	});
+
+	it('todos los artículos recomendados existen (y se guardan por su slug español)', () => {
+		for (const [route, slugs] of Object.entries(RELATED_READING)) {
+			expect(slugs.length, `${route} no recomienda nada`).toBeGreaterThan(0);
+			for (const slug of slugs) {
+				expect(esSlugs.has(slug), `${route} recomienda "${slug}", que no existe en es/`).toBe(true);
+			}
+		}
+	});
+
+	it('ninguna página se recomienda artículos repetidos', () => {
+		for (const [route, slugs] of Object.entries(RELATED_READING)) {
+			expect(new Set(slugs).size, `${route} tiene recomendaciones duplicadas`).toBe(slugs.length);
+		}
+	});
+
+	it('cada artículo recomendado tiene par en inglés, para que la página /en/ enlace en su idioma', () => {
+		for (const [route, slugs] of Object.entries(RELATED_READING)) {
+			for (const slug of slugs) {
+				const raw = readFileSync(join(CONTENT, 'es', `${slug}.md`), 'utf8');
+				const enSlug = raw.match(/slugs:\s*\{[^}]*en:\s*['"]([^'"]+)['"]/)?.[1];
+				expect(enSlug, `${route} → ${slug} no declara su par en inglés`).toBeDefined();
+				expect(
+					existsSync(join(CONTENT, 'en', `${enSlug}.md`)),
+					`${route} → ${slug} apunta a ${enSlug}, que no existe en en/`
+				).toBe(true);
+			}
+		}
+	});
+});
+
+describe('rutas noindex', () => {
+	it('las legales se reconocen en los dos idiomas', () => {
+		expect(isNoindexRoute('/privacy')).toBe(true);
+		expect(isNoindexRoute('/en/privacy')).toBe(true);
+		expect(isNoindexRoute('/terms')).toBe(true);
+		expect(isNoindexRoute('/cookies')).toBe(true);
+	});
+
+	it('el contenido indexable no es noindex', () => {
+		expect(isNoindexRoute('/')).toBe(false);
+		expect(isNoindexRoute('/blog')).toBe(false);
+		expect(isNoindexRoute('/en/blog')).toBe(false);
+		expect(isNoindexRoute('/autor/kinacho')).toBe(false);
+	});
+
+	it('toda ruta noindex sigue siendo bilingüe (existe en ambos idiomas)', () => {
+		for (const route of NOINDEX_ROUTES) {
+			expect(isBilingualRoute(route), `${route} debería estar en BILINGUAL_ROUTES`).toBe(true);
+		}
+	});
+});
+
+describe('BILINGUAL_ROUTES', () => {
+	const GROUP_DIR = join(process.cwd(), 'src', 'routes', '(public)', '[[lang=locale]]');
+
+	/** Rutas de página que existen de verdad dentro del grupo con prefijo. */
+	function routesOnDisk(dir: string, prefix = ''): string[] {
+		const found: string[] = [];
+		for (const entry of readdirSync(dir, { withFileTypes: true })) {
+			if (!entry.isDirectory()) continue;
+			const path = `${prefix}/${entry.name}`;
+			const full = join(dir, entry.name);
+			if (existsSync(join(full, '+page.svelte'))) found.push(path);
+			found.push(...routesOnDisk(full, path));
+		}
+		return found;
+	}
+
+	it('todas las rutas declaradas existen en el árbol de rutas', () => {
+		const onDisk = new Set(routesOnDisk(GROUP_DIR));
+		// La landing es el `+page.svelte` de la raíz del grupo.
+		if (existsSync(join(GROUP_DIR, '+page.svelte'))) onDisk.add('/');
+
+		for (const route of BILINGUAL_ROUTES) {
+			expect(onDisk.has(route), `${route} está declarada pero no existe`).toBe(true);
+		}
+	});
+
+	it('toda ruta del grupo está declarada como bilingüe', () => {
+		for (const route of routesOnDisk(GROUP_DIR)) {
+			expect(isBilingualRoute(route), `${route} existe pero no está en BILINGUAL_ROUTES`).toBe(
+				true
+			);
+		}
+	});
+});

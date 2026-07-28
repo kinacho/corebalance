@@ -1,8 +1,12 @@
 ---
 title: "Qué es el asset allocation y cómo elegir el tuyo"
 description: "Guía detallada sobre la asignación de activos (asset allocation). Descubre qué es, por qué determina tu rentabilidad y cómo elegir el ideal según tu perfil de riesgo."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+summary:
+  - "El asset allocation es cómo reparte tu capital entre clases de activos (renta variable, renta fija, efectivo y activos reales) según tus objetivos y tu tolerancia al riesgo."
+  - "La referencia clásica sobre su importancia es el estudio de Brinson, Hood y Beebower de 1986, que analizó 91 grandes fondos de pensiones durante una década."
+  - "El reparto se elige cruzando tres variables personales: tu horizonte temporal, tu capacidad financiera de asumir riesgo y tu tolerancia psicológica."
+publishDate: "2026-01-09"
+updatedDate: "2026-01-09"
 author: "kinacho"
 tags: [asset-allocation, cartera, finanzas-personales, renta-variable, renta-fija]
 lang: es
@@ -95,6 +99,6 @@ Con el paso de los meses, las acciones subirán o caerán con más fuerza que lo
 
 ### Automatiza tus cálculos con CoreBalance
 
-Hacer estos cálculos y ajustar los decimales en una hoja de Excel requiere tiempo y esfuerzo. **CoreBalance** hace este trabajo por ti. 
+Hacer estos cálculos y ajustar los decimales en una hoja de [Excel](/comparativas/corebalance-vs-excel) requiere tiempo y esfuerzo. **CoreBalance** hace este trabajo por ti. 
 
 Define tu asset allocation objetivo una sola vez. Cuando realices aportaciones periódicas, CoreBalance te dirá de forma exacta cómo distribuir tu dinero para guiar tu cartera de vuelta a sus porcentajes ideales, maximizando el diferimiento fiscal y ahorrándote comisiones de venta innecesarias. Todo de forma gratuita y sin compartir tus datos financieros personales en la nube.

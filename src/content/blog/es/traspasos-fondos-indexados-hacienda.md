@@ -1,8 +1,12 @@
 ---
 title: "Traspasos de fondos en España: la guía fiscal del inversor indexado"
 description: "Guía completa sobre la fiscalidad de los traspasos de fondos de inversión en España. Aprende a traspasar sin tributar a Hacienda y optimizar tu rentabilidad."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+summary:
+  - "El Artículo 94 de la Ley del IRPF establece que en un traspaso entre fondos de inversión no se computa ganancia ni pérdida patrimonial."
+  - "Vender y volver a comprar te obliga a tributar por la plusvalía en ese momento; ordenar un traspaso difiere ese pago y deja el dinero completo trabajando."
+  - "El traspaso conserva la antigüedad y el valor de adquisición original de las participaciones, y se ordena desde la entidad de destino."
+publishDate: "2026-04-14"
+updatedDate: "2026-04-14"
 author: "kinacho"
 tags: [traspasos, fiscalidad, fondos-indexados, hacienda, irpf]
 lang: es
@@ -33,7 +37,7 @@ La norma establece que, cuando el importe obtenido por el reembolso de participa
 
 Para entender el poder del diferimiento fiscal, hagamos una comparativa numérica simple.
 
-Imagina que tienes un fondo indexado al S&P 500 que compraste por **10.000 €** y que ahora vale **20.000 €** (tienes 10.000 € de plusvalías latentes). Decides que quieres cambiar de estrategia y mover todo tu capital a un fondo global como el MSCI World.
+Imagina que tienes un fondo indexado al S&P 500 que compraste por **10.000 €** y que ahora vale **20.000 €** (tienes 10.000 € de plusvalías latentes). Decides que quieres cambiar de estrategia y mover todo tu capital a un fondo global como el [MSCI World](/blog/cartera-msci-world-emerging-markets).
 
 ### Caso A: Vender y volver a comprar (Clásico)
 1. Vendes tus participaciones por 20.000 €.
@@ -67,7 +71,7 @@ Si realizas un traspaso:
 
 Hacer un traspaso de fondos es un proceso sencillo que se gestiona directamente desde la entidad de **destino** (donde quieres depositar el dinero).
 
-1. **Accede a la plataforma de destino** (ej. MyInvestor, Renta 4, etc.).
+1. **Accede a la plataforma de destino** (ej. [MyInvestor](/blog/rebalanceo-myinvestor-sin-impuestos), Renta 4, etc.).
 2. Selecciona la opción de **"Traspaso de fondos"** o **"Traer fondo de otra entidad"**.
 3. Indica el **ISIN** y el nombre del fondo de origen que tienes en otra comercializadora, así como el número de cuenta partícipe.
 4. Selecciona el fondo de destino de tu elección.
@@ -86,7 +90,7 @@ La ventaja de los traspasos brilla con luz propia cuando llega el momento de **r
 Si tus activos de renta variable han subido mucho y tu renta fija se ha quedado por debajo de sus porcentajes objetivo, en lugar de vender acciones y pagar impuestos a Hacienda, puedes ordenar un **traspaso parcial** desde tu fondo de acciones al de bonos.
 
 **CoreBalance** te facilita esta tarea al máximo:
-1. Analiza las desviaciones actuales de tu cartera frente a tu asset allocation objetivo.
+1. Analiza las desviaciones actuales de tu cartera frente a tu [asset allocation](/blog/que-es-asset-allocation) objetivo.
 2. Te muestra las alternativas óptimas de rebalanceo.
-3. Te indica el importe exacto en euros que debes traspasar entre tus fondos indexados para restablecer la estructura de riesgo sin activar peajes fiscales.
+3. Te indica el importe exacto en euros que debes traspasar entre tus [fondos indexados](/blog/fondos-indexados-vs-etfs-espana) para restablecer la estructura de riesgo sin activar peajes fiscales.
 4. Te garantiza privacidad total: no requiere registro ni almacena tus datos fiscales en la nube.

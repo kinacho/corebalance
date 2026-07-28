@@ -1,5 +1,12 @@
 <script lang="ts">
   import { LL } from '$lib/i18n/i18n-svelte';
+  import { page } from '$app/stores';
+  import { absoluteUrl } from '$lib/i18n/routing';
+  import type { Locales } from '$lib/i18n/i18n-types';
+
+  const lang = $derived(($page.data.locale ?? 'es') as Locales);
+  /** La guía vive en la landing del idioma correspondiente, no siempre en la raíz. */
+  const sectionUrl = $derived(`${absoluteUrl($page.url.pathname)}#guia-rebalanceo`);
 
   const steps = $derived([
     {
@@ -30,11 +37,13 @@
     "name": $LL.how_to_rebalance.title() + " " + $LL.how_to_rebalance.title_gradient(),
     "description": $LL.how_to_rebalance.subtitle(),
     "totalTime": "PT5M",
-    "step": steps.map((step) => ({
+    "inLanguage": lang,
+    "step": steps.map((step, index) => ({
       "@type": "HowToStep",
+      "position": index + 1,
       "name": step.title,
       "text": step.desc,
-      "url": "https://corebalance.app/#guia-rebalanceo"
+      "url": sectionUrl
     }))
   });
 

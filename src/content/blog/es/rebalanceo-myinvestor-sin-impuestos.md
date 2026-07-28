@@ -1,8 +1,12 @@
 ---
 title: "Rebalanceo en MyInvestor: guía completa sin pagar impuestos"
 description: "Aprende a rebalancear tus fondos indexados en MyInvestor paso a paso. Aprovecha el diferimiento fiscal para ajustar tu cartera sin pagar a Hacienda."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+summary:
+  - "En MyInvestor puedes rebalancear sin pagar impuestos aprovechando el régimen español de traspasos entre fondos de inversión."
+  - "Tienes dos caminos: el traspaso entre fondos cuando no dispones de capital nuevo, y el rebalanceo por aportación cuando aportas ahorro cada mes."
+  - "Los traspasos en MyInvestor no tienen comisión y puedes mover dinero entre gestoras distintas, por ejemplo de Vanguard a iShares o Fidelity."
+publishDate: "2026-05-08"
+updatedDate: "2026-05-08"
 author: "kinacho"
 tags: [rebalanceo, myinvestor, fiscalidad, fondos-indexados, traspasos]
 lang: es
@@ -11,7 +15,7 @@ ogImage: "/blog/og/rebalanceo-myinvestor-sin-impuestos.jpg"
 slugs: { es: 'rebalanceo-myinvestor-sin-impuestos', en: 'myinvestor-rebalancing-tax-free' }
 ---
 
-MyInvestor se ha consolidado como la plataforma preferida por los inversores indexados en España. Su catálogo de fondos indexados de gestoras de prestigio internacional como **Vanguard, iShares o Fidelity**, sumado a la **ausencia de comisiones de custodia**, la convierte en una opción imbatible para aplicar la filosofía *Bogleheads*.
+MyInvestor se ha consolidado como la plataforma preferida por los inversores indexados en España. Su catálogo de [fondos indexados](/blog/fondos-indexados-vs-etfs-espana) de gestoras de prestigio internacional como **Vanguard, iShares o Fidelity**, sumado a la **ausencia de comisiones de custodia**, la convierte en una opción imbatible para aplicar la filosofía *[Bogleheads](/blog/cartera-bogle-principiantes-espana)*.
 
 Sin embargo, a medida que el mercado fluctúa, tu cartera se desviará inevitablemente de tu plan original. En esta guía detallada veremos cómo realizar el **rebalanceo de tu cartera en MyInvestor de forma 100% óptima** y, lo más importante, **aprovechando la ventaja fiscal española para no pagar un solo euro en impuestos**.
 
@@ -21,7 +25,7 @@ Sin embargo, a medida que el mercado fluctúa, tu cartera se desviará inevitabl
 
 En la mayoría de países, rebalancear una cartera de inversión obliga a vender los activos que han subido de más y comprar los que han bajado. Esta venta genera una ganancia patrimonial por la que hay que pagar impuestos inmediatamente.
 
-En España, los inversores particulares disfrutan de una ventaja competitiva excepcional: **el régimen de traspasos de fondos de inversión**.
+En España, los inversores particulares disfrutan de una ventaja competitiva excepcional: **el régimen de [traspasos](/blog/traspasos-fondos-indexados-hacienda) de fondos de inversión**.
 
 De acuerdo con la normativa fiscal española:
 * Puedes trasladar el capital (tanto el principal invertido como las plusvalías acumuladas) de un fondo de inversión a otro **sin tener que tributar por las ganancias**.
@@ -53,7 +57,7 @@ Consiste en calcular qué cantidad exacta de tu ahorro mensual debes inyectar en
 
 ## 3. Guía paso a paso: Cómo calcular el rebalanceo con CoreBalance
 
-Para evitar tener que hacer hojas de cálculo complejas o cometer errores matemáticos, utilizaremos **CoreBalance**. El proceso es extremadamente sencillo y respeta tu privacidad (ningún dato financiero sale de tu navegador):
+Para evitar tener que hacer [hojas de cálculo](/comparativas/corebalance-vs-excel) complejas o cometer errores matemáticos, utilizaremos **CoreBalance**. El proceso es extremadamente sencillo y respeta tu privacidad (ningún dato financiero sale de tu navegador):
 
 1. **Obtén tus saldos en MyInvestor:**
    Entra en tu aplicación de MyInvestor y anota el valor total actual en euros de cada uno de tus fondos indexados (por ejemplo, el fondo Vanguard Global Stock Index y el Vanguard Global Bond Index).

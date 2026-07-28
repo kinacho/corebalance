@@ -1,8 +1,12 @@
 ---
 title: "Rebalanceo en DeGiro con ETFs: cómo hacerlo bien"
 description: "Guía práctica para rebalancear tu cartera de ETFs en DeGiro. Estrategias eficientes para minimizar comisiones y el impacto de los impuestos."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+summary:
+  - "Con ETFs no existe el traspaso libre de impuestos que sí tienen los fondos indexados en España: vender para rebalancear realiza la ganancia y tributa."
+  - "La estrategia eficiente es rebalancear exclusivamente con aportaciones nuevas, dirigiendo cada compra al activo más infraponderado."
+  - "Si las aportaciones no bastan: amplía tus bandas de tolerancia, aprovecha la selección de ETFs sin comisión del bróker y ten en cuenta el redondeo a participaciones enteras."
+publishDate: "2026-05-21"
+updatedDate: "2026-05-21"
 author: "kinacho"
 tags: [rebalanceo, degiro, etfs, comisiones, impuestos]
 lang: es
@@ -11,7 +15,7 @@ ogImage: "/blog/og/rebalanceo-degiro-etfs.jpg"
 slugs: { es: 'rebalanceo-degiro-etfs', en: 'degiro-etf-rebalancing' }
 ---
 
-DeGiro es uno de los brókers online más populares de Europa debido a sus **bajas comisiones** y a su plataforma intuitiva. Muchos inversores particulares eligen DeGiro para construir sus carteras pasivas a largo plazo utilizando **ETFs (fondos cotizados)** en lugar de fondos indexados tradicionales, atraídos por la liquidez inmediata y la oferta de grandes gestoras mundiales.
+DeGiro es uno de los brókers online más populares de Europa debido a sus **bajas comisiones** y a su plataforma intuitiva. Muchos inversores particulares eligen DeGiro para construir sus carteras pasivas a largo plazo utilizando **ETFs (fondos cotizados)** en lugar de [fondos indexados](/blog/fondos-indexados-vs-etfs-espana) tradicionales, atraídos por la liquidez inmediata y la oferta de grandes gestoras mundiales.
 
 Sin embargo, gestionar una cartera de ETFs en España e incurrir en rebalanceos periódicos presenta desafíos muy distintos a los de los fondos indexados. En esta guía exploraremos cómo **rebalancear tu cartera de ETFs en DeGiro de la forma más eficiente**, controlando al máximo las comisiones de compraventa y los impuestos.
 
@@ -20,7 +24,7 @@ Sin embargo, gestionar una cartera de ETFs en España e incurrir en rebalanceos 
 ## 1. El gran desafío de los ETFs en España: La fricción fiscal
 
 Si resides fiscalmente en España, la diferencia más crucial entre un fondo indexado y un ETF es su **tratamiento fiscal al traspasar**:
-* **Fondos indexados:** Permiten realizar traspasos exentos de tributación (puedes mover capital de un fondo a otro sin pagar impuestos por las plusvalías).
+* **Fondos indexados:** Permiten realizar [traspasos](/blog/traspasos-fondos-indexados-hacienda) exentos de tributación (puedes mover capital de un fondo a otro sin pagar impuestos por las plusvalías).
 * **ETFs:** **No disfrutan de esta exención.** Cada vez que quieras mover dinero de un ETF a otro, debes vender el primero (lo cual obliga a declarar las ganancias patrimoniales y pagar a Hacienda entre un 19% y un 28% de impuestos) y comprar el segundo con el saldo restante.
 
 A este peaje fiscal debemos sumarle la **fricción de las comisiones del bróker**: DeGiro cobra una comisión por cada transacción de compra y de venta (salvo en su selección de ETFs seleccionados bajo ciertas condiciones).
@@ -62,7 +66,7 @@ Si tu cartera es muy grande y tus aportaciones mensuales no son suficientes para
 En lugar de rebalancear cuando un activo se desvíe un 5%, amplía el límite al **10% absoluto** para carteras de ETFs. Dado que vender implica pagar impuestos, es preferible tolerar un desvío de riesgo ligeramente mayor antes de asumir el peaje fiscal de una venta forzosa.
 
 ### B. Aprovecha la selección de ETFs de DeGiro (Selección Core)
-DeGiro cuenta con una lista de **ETFs con condiciones de comisión de transacción reducida** (sujeta a política de uso aceptable). Si tu cartera está compuesta por ETFs de esta lista (como el clásico *Vanguard FTSE All-World* o el *iShares Core MSCI World*), realizar compras mensuales para rebalancear no te costará comisiones de corretaje. Asegúrate de leer las condiciones de la promoción de DeGiro para evitar sorpresas.
+DeGiro cuenta con una lista de **ETFs con condiciones de comisión de transacción reducida** (sujeta a política de uso aceptable). Si tu cartera está compuesta por ETFs de esta lista (como el clásico *Vanguard FTSE All-World* o el *iShares Core [MSCI World](/blog/cartera-msci-world-emerging-markets)*), realizar compras mensuales para rebalancear no te costará comisiones de corretaje. Asegúrate de leer las condiciones de la promoción de DeGiro para evitar sorpresas.
 
 ### C. El problema de las participaciones enteras (Redondeo)
 A diferencia de los fondos indexados, que permiten comprar fracciones de participaciones (puedes invertir exactamente 123.45 € en un fondo Vanguard), **los ETFs cotizan como acciones y solo se pueden comprar en unidades enteras**.

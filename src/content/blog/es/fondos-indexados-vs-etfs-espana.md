@@ -1,8 +1,12 @@
 ---
 title: "Fondos indexados vs ETFs: diferencias prácticas para el inversor español"
 description: "Descubre las diferencias clave entre fondos indexados y ETFs. Analizamos la fiscalidad, costes, comisiones y cuál te conviene más para invertir en España."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+summary:
+  - "La diferencia decisiva en España es fiscal: los fondos de inversión se pueden traspasar sin tributar por la ganancia, los ETFs no."
+  - "Los ETFs cotizan en tiempo real y suelen tener un TER algo menor, pero pagas comisiones de compraventa al bróker en cada operación."
+  - "Si haces aportaciones mensuales moderadas, de 100 a 500 euros, los fondos indexados encajan mejor; los ETFs tienen sentido con capitales altos o brókers internacionales."
+publishDate: "2026-03-31"
+updatedDate: "2026-03-31"
 author: "kinacho"
 tags: [fondos-indexados, etfs, fiscalidad, inversion-pasiva, comparativa]
 lang: es
@@ -13,7 +17,7 @@ slugs: { es: 'fondos-indexados-vs-etfs-espana', en: 'index-funds-vs-etfs-compari
 
 A la hora de poner en práctica una estrategia de inversión pasiva global, la primera bifurcación del camino nos obliga a tomar una decisión técnica: **¿Debería utilizar fondos indexados tradicionales o ETFs (Exchange Traded Funds)?**
 
-Ambos instrumentos financieros comparten el mismo objetivo: replicar el comportamiento de un índice de referencia (como el MSCI World, el S&P 500 o el Euro Stoxx 50) cobrando las menores comisiones posibles. Sin embargo, su funcionamiento operativo y, sobre todo, **su tratamiento fiscal en España** son muy diferentes.
+Ambos instrumentos financieros comparten el mismo objetivo: replicar el comportamiento de un índice de referencia (como el [MSCI World](/blog/cartera-msci-world-emerging-markets), el S&P 500 o el Euro Stoxx 50) cobrando las menores comisiones posibles. Sin embargo, su funcionamiento operativo y, sobre todo, **su tratamiento fiscal en España** son muy diferentes.
 
 En este artículo analizaremos al detalle las diferencias prácticas entre fondos indexados y ETFs para que puedas decidir cuál se adapta mejor a tu perfil y cómo rebalancear tu cartera de forma eficiente en cada caso.
 
@@ -78,12 +82,12 @@ Esto supone un peaje fiscal inmediato que merma la capacidad del interés compue
 
 ### Cuándo elegir Fondos Indexados:
 * Si estás en fase de acumulación y realizas **aportaciones mensuales periódicas** de importes moderados (100 € - 500 €).
-* Si quieres olvidarte de los impuestos y rebalancear tu cartera de forma fiscalmente eficiente mediante traspasos.
+* Si quieres olvidarte de los impuestos y rebalancear tu cartera de forma fiscalmente eficiente mediante [traspasos](/blog/traspasos-fondos-indexados-hacienda).
 * Si buscas sencillez operativa y automatización total.
 
 ### Cuándo elegir ETFs:
 * Si tienes un capital inicial elevado y no planeas hacer operaciones constantes (reduciendo el impacto de las comisiones del bróker).
-* Si utilizas un bróker internacional que no ofrece fondos indexados tradicionales (como Interactive Brokers o DeGiro).
+* Si utilizas un bróker internacional que no ofrece fondos indexados tradicionales (como Interactive Brokers o [DeGiro](/blog/rebalanceo-degiro-etfs)).
 * Si deseas tener control absoluto sobre el precio exacto de entrada y salida al mercado en tiempo real.
 * Si buscas replicar índices muy específicos o sectores nicho que no tienen equivalente en formato de fondo tradicional.
 
@@ -95,6 +99,6 @@ Independientemente de si prefieres la optimización fiscal de los fondos indexad
 
 Nuestra calculadora local-first te permite configurar tu cartera mezclando fondos indexados y ETFs. A la hora de rebalancear:
 1. Si usas **fondos indexados**, CoreBalance te ayudará a calcular traspasos o aportaciones óptimas sin gatillar plusvalías fiscales.
-2. Si usas **ETFs**, nuestra herramienta te ayudará a optimizar las compras y ventas necesarias para ajustar tu asset allocation minimizando el número de transacciones necesarias, ahorrándote comisiones operativas en tu bróker.
+2. Si usas **ETFs**, nuestra herramienta te ayudará a optimizar las compras y ventas necesarias para ajustar tu [asset allocation](/blog/que-es-asset-allocation) minimizando el número de transacciones necesarias, ahorrándote comisiones operativas en tu bróker.
 
 Todo ello sin necesidad de subir tus datos financieros a internet, garantizando tu privacidad financiera.

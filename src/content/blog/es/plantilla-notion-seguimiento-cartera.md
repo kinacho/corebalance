@@ -1,8 +1,12 @@
 ---
 title: "Plantilla de Notion y Markdown para seguimiento de cartera gratis"
 description: "Consigue una plantilla gratuita en Notion o Markdown para el seguimiento manual de tus inversiones y fondos indexados de forma privada."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+summary:
+  - "Un registro sano de cartera necesita tres áreas: la asignación de activos objetivo, el inventario actual de fondos y el historial de aportaciones y rebalanceos."
+  - "El artículo incluye una plantilla en Markdown lista para copiar y las propiedades concretas para montar la misma estructura como base de datos en Notion."
+  - "Mantener el registro en Markdown local da privacidad absoluta, a cambio de actualizar los saldos a mano una vez al mes."
+publishDate: "2026-07-24"
+updatedDate: "2026-07-24"
 author: "kinacho"
 tags: [recursos, notion, markdown, plantilla, seguimiento-cartera]
 lang: es
@@ -13,7 +17,7 @@ slugs: { es: 'plantilla-notion-seguimiento-cartera', en: 'notion-portfolio-track
 
 Llevar un diario financiero o un registro estructurado de tus inversiones es uno de los mejores hábitos que puedes adquirir. Te ayuda a mantener los pies en el suelo en momentos de volatilidad del mercado, te recuerda tus objetivos a largo plazo y mantiene organizados tus costes de adquisición.
 
-Aunque las hojas de cálculo como Excel o Google Sheets son muy comunes, muchos inversores prefieren la limpieza visual y el orden de herramientas de notas como **Notion** o archivos de texto plano en **Markdown** (ideales para integrarse con herramientas como Obsidian o Logseq).
+Aunque las hojas de cálculo como [Excel](/comparativas/corebalance-vs-excel) o Google Sheets son muy comunes, muchos inversores prefieren la limpieza visual y el orden de herramientas de notas como **Notion** o archivos de texto plano en **Markdown** (ideales para integrarse con herramientas como Obsidian o Logseq).
 
 En este artículo te ofrecemos una **plantilla gratuita de seguimiento de cartera en Notion y Markdown** lista para copiar y usar, te explicamos cómo estructurarla de forma sencilla y te damos consejos para integrarla en tu rutina mensual.
 
@@ -23,7 +27,7 @@ En este artículo te ofrecemos una **plantilla gratuita de seguimiento de carter
 
 Tanto si usas Notion como si trabajas en Markdown, un registro saludable de tu cartera debe constar de tres áreas principales:
 
-1. **La Asignación Estratégica (Asset Allocation):** Tus porcentajes objetivo (ej. 80% acciones, 20% bonos).
+1. **La Asignación Estratégica ([Asset Allocation](/blog/que-es-asset-allocation)):** Tus porcentajes objetivo (ej. 80% acciones, 20% bonos).
 2. **El Inventario de Activos:** La lista de fondos o ETFs que posees, su ISIN, la comercializadora donde los custodias y su coste medio de adquisición.
 3. **El Historial de Aportaciones / Rebalanceos:** Un registro cronológico de cuánto capital aportas cada mes y en qué fecha realizas ajustes.
 

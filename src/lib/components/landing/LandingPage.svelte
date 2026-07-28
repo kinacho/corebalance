@@ -10,8 +10,17 @@
   import Cta from './Cta.svelte';
   import LandingFooter from './LandingFooter.svelte';
   import { LL } from '$lib/i18n/i18n-svelte';
+  import { page } from '$app/stores';
+  import SeoHead from '$lib/components/seo/SeoHead.svelte';
+  import { AUTHOR, GITHUB_REPO } from '$lib/seo/author';
+  import { pageOgImage } from '$lib/seo/og';
+  import { SITE_URL, alternates } from '$lib/i18n/routing';
+  import type { Locales } from '$lib/i18n/i18n-types';
 
   let { onStart = () => {} } = $props();
+
+  const lang = $derived(($page.data.locale ?? 'es') as Locales);
+  const alts = $derived(alternates($page.url.pathname, lang));
 
   // Schema.org JSON-LD
   const schemaData = $derived({
@@ -19,10 +28,18 @@
     "@graph": [
       {
         "@type": "SoftwareApplication",
+        "@id": `${SITE_URL}/#app`,
         "name": "CoreBalance",
-        "url": "https://corebalance.app",
+        "url": alts.canonical,
         "applicationCategory": "FinanceApplication",
+        "applicationSubCategory": "Portfolio rebalancing calculator",
         "operatingSystem": "Web",
+        "browserRequirements": "Requires JavaScript",
+        "softwareVersion": __APP_VERSION__,
+        "inLanguage": ["es", "en"],
+        "isAccessibleForFree": true,
+        "screenshot": `${SITE_URL}${pageOgImage('landing', lang)}`,
+        "sameAs": [GITHUB_REPO],
         "offers": {
           "@type": "Offer",
           "price": "0",
@@ -34,54 +51,38 @@
           $LL.features.item_projections_title(),
           $LL.features.item_broker_desc(),
           $LL.features.item_privacy_desc()
-        ]
+        ],
+        "author": { "@id": `${SITE_URL}${AUTHOR.path}#person` }
       },
       {
         "@type": "Organization",
+        "@id": `${SITE_URL}/#org`,
         "name": "CoreBalance",
-        "url": "https://corebalance.app",
-        "sameAs": [
-          "https://github.com/kino166/rebalanceador"
-        ]
+        "url": SITE_URL,
+        "logo": `${SITE_URL}/logo.png`,
+        "sameAs": [GITHUB_REPO]
       },
       {
         "@type": "WebSite",
+        "@id": `${SITE_URL}/#website`,
         "name": "CoreBalance",
-        "url": "https://corebalance.app",
+        "url": SITE_URL,
+        "inLanguage": lang,
+        "publisher": { "@id": `${SITE_URL}/#org` },
         "description": $LL.seo.description()
       }
     ]
   });
-
-  const schemaString = $derived(JSON.stringify(schemaData));
   </script>
 
-  <svelte:head>
-  <title>{$LL.seo.title()}</title>
-  <meta name="description" content={$LL.seo.description()} />
-
-  <!-- Hreflang: ES/EN/x-default (ambos apuntan a / porque el contenido cambia por locale) -->
-  <link rel="alternate" hreflang="es" href="https://corebalance.app/" />
-  <link rel="alternate" hreflang="en" href="https://corebalance.app/" />
-  <link rel="alternate" hreflang="x-default" href="https://corebalance.app/" />
-
-  <!-- Open Graph -->
-  <meta property="og:title" content={$LL.seo.og_title()} />
-  <meta property="og:description" content={$LL.seo.og_description()} />
-  <meta property="og:image" content="https://corebalance.app/og-image-landing.png" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://corebalance.app" />
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content={$LL.seo.og_title()} />
-  <meta name="twitter:description" content={$LL.seo.og_description()} />
-  <meta name="twitter:image" content="https://corebalance.app/og-image-landing.png" />
-
-  {@html `<script type="application/ld+json">${schemaString}</script>`}
-  </svelte:head>
+  <SeoHead
+    title={$LL.seo.title()}
+    description={$LL.seo.description()}
+    path={$page.url.pathname}
+    {lang}
+    image={pageOgImage('landing', lang)}
+    jsonLd={schemaData}
+  />
 
 <div class="landing-page">
   <LandingNavBar {onStart} />

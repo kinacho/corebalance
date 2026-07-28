@@ -1,42 +1,42 @@
-import { invalidateAll, invalidate } from '$app/navigation';
 import { setLocale } from './i18n-svelte';
 import { loadLocaleAsync } from './i18n-util.async';
 import type { Locales } from './i18n-types';
 import { browser } from '$app/environment';
 
 /**
- * Cambia el idioma de la aplicación de forma global y persistente.
+ * Cambia el idioma **en sitio**, sin navegar.
+ *
+ * Se usa sólo en el área autenticada (el selector del dashboard), donde no hay
+ * URL por idioma y todo el texto sale de `$LL`: no existe contenido en el otro
+ * idioma con el que quedar descompasado, así que una actualización atómica del
+ * store es correcta y es lo más rápido posible.
+ *
+ * En las páginas públicas **no se usa**: allí cada idioma tiene su URL y el
+ * selector es un enlace con `data-sveltekit-reload`, que carga el documento ya
+ * renderizado en el idioma correcto.
+ *
+ * Lo que se ha quitado y por qué:
+ *
+ * - `invalidate()` + `invalidateAll()`: forzaban re-ejecutar todos los `load`,
+ *   incluido el `+layout.server.ts`, o sea un viaje al servidor para un cambio
+ *   que es puramente de cliente. Era el motivo de la lentitud, y además volvía a
+ *   ejecutar loads que fijan el locale, que podían pisar el idioma recién elegido.
+ * - `POST /api/lang`: redundante, la cookie ya se escribe aquí mismo.
+ * - `localStorage`: era una cuarta fuente de verdad capaz de contradecir a la
+ *   URL. La cookie basta, y es la única que el servidor puede leer.
  */
 export async function switchLocale(newLocale: Locales) {
-	// Cargar las traducciones del nuevo idioma
 	await loadLocaleAsync(newLocale);
-	// Actualizar el store de i18n
 	setLocale(newLocale);
 
-	if (browser) {
-		// 1. Guardar en localStorage (persistencia fuerte en el cliente)
-		localStorage.setItem('lang', newLocale);
-		
-		// 2. Actualizar la cookie inmediatamente para que las peticiones de SvelteKit la lleven
-		document.cookie = `lang=${newLocale}; path=/; max-age=31536000; SameSite=Lax`;
+	if (!browser) return;
 
-		try {
-			// 3. Guardar preferencia en el servidor vía API (opcional pero recomendado)
-			fetch('/api/lang', {
-				method: 'POST',
-				body: JSON.stringify({ locale: newLocale }),
-				headers: { 'Content-Type': 'application/json' }
-			}).catch(e => console.error('Error saving locale via API:', e));
-		} catch (e) {
-			// Ignorar errores del fetch ya que la cookie ya está puesta
-		}
+	// La cookie es la preferencia persistente: la lee `hooks.server.ts` para
+	// resolver el idioma del área autenticada en la siguiente petición.
+	document.cookie = `lang=${newLocale}; path=/; max-age=31536000; SameSite=Lax`;
 
-		// Actualizar el atributo lang del HTML
-		document.documentElement.lang = newLocale;
-		
-        // Notificar a SvelteKit que el locale ha cambiado para re-ejecutar loads dependientes
-		await invalidate('app:locale');
-        // Por seguridad invalidamos todo lo demás
-        await invalidateAll();
-	}
+	// El `lang` del <html> lo escribe el servidor al renderizar; al cambiar en
+	// sitio hay que actualizarlo a mano o los lectores de pantalla se quedan con
+	// el idioma anterior.
+	document.documentElement.lang = newLocale;
 }

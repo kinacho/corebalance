@@ -1,8 +1,12 @@
 ---
 title: "La cartera Bogleheads para principiantes en España: Guía práctica"
 description: "Guía completa para diseñar tu primera cartera Bogleheads en España. Aprende qué fondos indexados elegir y cómo automatizar tu estrategia de inversión."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+summary:
+  - "La filosofía Boglehead se apoya en cuatro pilares: simplicidad extrema, diversificación global, costes ultrabajos y no intentar predecir el mercado."
+  - "En España conviene usar fondos indexados tradicionales en lugar de ETFs, porque los traspasos entre fondos no tributan al reordenar posiciones."
+  - "Los dos modelos habituales son la cartera de 2 fondos y la de 3 fondos, el estándar Boglehead. El único mantenimiento activo es aportar y rebalancear."
+publishDate: "2026-03-04"
+updatedDate: "2026-03-04"
 author: "kinacho"
 tags: [bogleheads, indexacion, fondos-indexados, finanzas-personales, principiantes]
 lang: es
@@ -15,7 +19,7 @@ La filosofía *Bogleheads* debe su nombre a **John C. Bogle**, fundador de la ge
 
 Su propuesta fue tan radical como sencilla: en lugar de buscar la aguja en el pajar, **compra el pajar entero**.
 
-Hoy en día, miles de inversores hispanohablantes se agrupan en torno a esta filosofía. Si quieres empezar a invertir y construir tu primera **cartera Bogleheads para principiantes desde España**, esta guía te dará las bases conceptuales y los fondos indexados exactos para ponerla en marcha hoy mismo de forma óptima.
+Hoy en día, miles de inversores hispanohablantes se agrupan en torno a esta filosofía. Si quieres empezar a invertir y construir tu primera **cartera Bogleheads para principiantes desde España**, esta guía te dará las bases conceptuales y los [fondos indexados](/blog/fondos-indexados-vs-etfs-espana) exactos para ponerla en marcha hoy mismo de forma óptima.
 
 ---
 
@@ -25,20 +29,20 @@ Invertir al estilo Boglehead no consiste únicamente en comprar fondos indexados
 
 1. **Simplicidad extrema:** Tu cartera debe ser fácil de entender y de mantener. Un exceso de fondos solo añade comisiones y complejidad.
 2. **Diversificación global:** Debes poseer una pequeña porción de miles de empresas y de diferentes geografías. Si una empresa, sector o país entra en crisis, tu patrimonio global apenas lo notará.
-3. **Costes ultrabajos:** Cada euro que pagas en comisiones de gestión es un euro menos que se acumula en tu cartera. Mantener las comisiones internas (TER) por debajo del 0.25% anual es innegociable.
+3. **Costes ultrabajos:** Cada euro que pagas en comisiones de gestión es un euro menos que se acumula en tu cartera. Mantener las comisiones internas ([TER](/herramientas/calculadora-ter)) por debajo del 0.25% anual es innegociable.
 4. **Comprar y mantener (*Buy & Hold*):** La bolsa fluctúa constantemente. El inversor Boglehead no intenta predecir el futuro; compra de forma periódica y no vende ante los pánicos temporales del mercado.
 
 ---
 
 ## 2. Modelos de Cartera Bogleheads en España
 
-En España, gracias a la fiscalidad especial de traspasos, es idóneo utilizar **fondos indexados tradicionales** en lugar de ETFs para evitar pagar peajes fiscales al reordenar posiciones.
+En España, gracias a la fiscalidad especial de [traspasos](/blog/traspasos-fondos-indexados-hacienda), es idóneo utilizar **fondos indexados tradicionales** en lugar de ETFs para evitar pagar peajes fiscales al reordenar posiciones.
 
 Existen dos fórmulas clásicas para construir tu cartera boglehead:
 
 ### A. La Cartera de 2 Fondos (Simplicidad Absoluta)
 Es el modelo de partida idóneo si estás empezando con poco capital:
-* **Fondo 1: Renta Variable Global (ej. 80%).** Replica un índice mundial de países desarrollados como el MSCI World.
+* **Fondo 1: Renta Variable Global (ej. 80%).** Replica un índice mundial de países desarrollados como el [MSCI World](/blog/cartera-msci-world-emerging-markets).
 * **Fondo 2: Renta Fija Global (ej. 20%).** Aporta estabilidad y amortigua las caídas de la bolsa.
 
 ### B. La Cartera de 3 Fondos (El Estándar Boglehead)
@@ -51,7 +55,7 @@ Es la combinación óptima para inversores que buscan una diversificación geogr
 
 ## 3. Fondos indexados recomendados (con ISIN) para el inversor español
 
-Puedes comprar estos fondos desde comercializadoras tradicionales o bancos que no cobran custodias para indexados (como **MyInvestor** o **SelfBank**):
+Puedes comprar estos fondos desde comercializadoras tradicionales o bancos que no cobran custodias para indexados (como **[MyInvestor](/blog/rebalanceo-myinvestor-sin-impuestos)** o **SelfBank**):
 
 * **Renta Variable Desarrollada (MSCI World):**
   * *Vanguard Global Stock Index Fund* (ISIN: IE00B03HD191) - TER: 0.18%

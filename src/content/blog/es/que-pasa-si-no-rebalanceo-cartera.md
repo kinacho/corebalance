@@ -1,8 +1,12 @@
 ---
 title: "¿Qué pasa si no rebalanceo mi cartera indexada?"
 description: "Descubre las consecuencias reales de no rebalancear tu cartera. Analizamos cómo cambia tu perfil de riesgo con ejemplos históricos y simulaciones."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+summary:
+  - "Si no rebalanceas, tu perfil de riesgo se descontrola: la renta variable crece hasta pesar mucho más de lo que habías decidido asumir."
+  - "Las tres consecuencias son riesgo fuera de control, pérdidas más severas en los mercados bajistas y perder la oportunidad de comprar barato lo que ha caído."
+  - "No hace falta rebalancear cada semana: hacerlo demasiado a menudo sólo añade costes de transacción y comisiones innecesarias."
+publishDate: "2026-02-19"
+updatedDate: "2026-02-19"
 author: "kinacho"
 tags: [rebalanceo, gestion-riesgo, volatilidad, inversion-pasiva, bogleheads]
 lang: es
@@ -11,7 +15,11 @@ ogImage: "/blog/og/que-pasa-si-no-rebalanceo-cartera.jpg"
 slugs: { es: 'que-pasa-si-no-rebalanceo-cartera', en: 'what-happens-if-you-dont-rebalance' }
 ---
 
-Uno de los mantras más populares de la inversión indexada o pasiva es la famosa frase: *“Comprar y no tocar nada”* (o en inglés, *buy and hold*). Muchos inversores interpretan esto al pie de la letra, asumiendo que tras elegir sus fondos indexados o ETFs iniciales, su única tarea durante los siguientes 20 años es aportar dinero y desentenderse por completo de la pantalla del bróker.
+<script>
+  import BacktestTable from '$lib/components/blog/BacktestTable.svelte';
+</script>
+
+Uno de los mantras más populares de la inversión indexada o pasiva es la famosa frase: *“Comprar y no tocar nada”* (o en inglés, *buy and hold*). Muchos inversores interpretan esto al pie de la letra, asumiendo que tras elegir sus [fondos indexados](/blog/fondos-indexados-vs-etfs-espana) o ETFs iniciales, su única tarea durante los siguientes 20 años es aportar dinero y desentenderse por completo de la pantalla del bróker.
 
 Sin embargo, hay una excepción crucial a esta regla de inactividad: el **rebalanceo de cartera**.
 
@@ -62,13 +70,25 @@ Imagina un inversor que en el año 2003 tenía una cartera equilibrada 60/40.
 * **El inversor A rebalanceó anualmente:** En 2008, tras el estallido de la crisis de las hipotecas subprime, su cartera sufrió pérdidas, pero el rebalanceo sistemático le obligó a vender bonos (que estaban caros) para comprar acciones (que estaban en mínimos). Cuando el mercado se recuperó con fuerza a partir de 2009, su cartera rebotó con una velocidad espectacular.
 * **El inversor B nunca rebalanceó:** En 2008 llegó con una cartera que se había desvíado de forma natural hasta un 80/20 por las subidas de los años anteriores. La caída que sufrió fue dramática. No tenía bonos suficientes para vender y aprovechar las gangas en renta variable, por lo que su recuperación tardó años más en completarse.
 
+### Qué dicen los datos reales de 2010 a 2026
+
+El relato anterior es ilustrativo. Estos números no: son el resultado de simular una cartera 80/20 con series reales de mercado desde enero de 2010, con y sin rebalanceo anual.
+
+<BacktestTable lang="es" />
+
+El dato incómodo es que **no rebalancear salió más rentable** en este periodo concreto, y preferimos decirlo que esconderlo: son más de dieciséis años especialmente buenos para la bolsa, y dejar correr la parte de acciones paga cuando las acciones apenas dejan de subir.
+
+Lo que revela la tabla es el problema de fondo. La cartera que nunca se rebalanceó terminó con casi el **94% en renta variable**. Quien la diseñó eligió un 80/20 porque ese era el riesgo que podía soportar, y acabó con una cartera que ya no era la suya, sin haber tomado ninguna decisión. La caída máxima de los dos escenarios apenas se diferencia, pero por un motivo que conviene entender: el periodo arranca *después* del desplome de 2008, y ninguna de las correcciones posteriores pilló a la cartera en su punto de máxima desviación. La próxima puede.
+
+Dicho de otra forma: **rebalancear no es una estrategia para ganar más, es el precio de seguir invirtiendo con el riesgo que elegiste.** Si esperabas que la tabla dijera lo contrario, ese es exactamente el malentendido que merece la pena deshacer.
+
 ---
 
 ## 4. ¿Cómo evitar el desvío sin obsesionarse?
 
 No es necesario que rebalancees tu cartera cada semana ni cada mes; de hecho, hacerlo demasiado a menudo solo te generará costes de transacción o comisiones innecesarias.
 
-La mayoría de los expertos Bogleheads recomiendan seguir una de estas dos estrategias:
+La mayoría de los expertos [Bogleheads](/blog/cartera-bogle-principiantes-espana) recomiendan seguir una de estas dos estrategias:
 
 1. **Rebalanceo por calendario:** Establece una o dos fechas al año (por ejemplo, cada mes de enero y julio) para revisar el estado de tu cartera y realizar los ajustes necesarios.
 2. **Rebalanceo por bandas de desviación (Regla del 5%):** Revisa tu cartera de forma visual. Si alguno de tus activos principales se desvía más de un 5% de su peso objetivo (por ejemplo, si un fondo que debería pesar un 30% pasa a pesar un 36%), es hora de rebalancear.

@@ -1,5 +1,9 @@
 <script lang="ts">
   import { LL } from '$lib/i18n/i18n-svelte';
+  import { page } from '$app/stores';
+  import type { Locales } from '$lib/i18n/i18n-types';
+
+  const lang = $derived(($page.data.locale ?? 'es') as Locales);
 
   const faqs = $derived([
     {
@@ -30,6 +34,7 @@
   const faqSchema = $derived({
     "@context": "https://schema.org",
     "@type": "FAQPage",
+    "inLanguage": lang,
     "mainEntity": faqs.map(faq => ({
       "@type": "Question",
       "name": faq.question,

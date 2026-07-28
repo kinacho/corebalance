@@ -1,8 +1,12 @@
 ---
 title: "Index Funds vs. ETFs: Which Should You Choose?"
 description: "Discover the key differences between index mutual funds and ETFs. We analyze cost structure, trading, fractional shares, and tax efficiency."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+summary:
+  - "The decisive difference in Spain is tax: investment funds can be transferred without paying tax on the gain, ETFs cannot."
+  - "ETFs trade in real time and usually carry a slightly lower TER, but you pay the broker a commission on every trade."
+  - "If you make moderate monthly contributions, roughly 100 to 500 euros, index funds fit better; ETFs make sense with larger amounts or international brokers."
+publishDate: "2026-03-31"
+updatedDate: "2026-03-31"
 author: "kinacho"
 tags: [index-funds, etfs, taxation, passive-investing, comparison]
 lang: en
@@ -13,7 +17,7 @@ slugs: { es: 'fondos-indexados-vs-etfs-espana', en: 'index-funds-vs-etfs-compari
 
 When putting a global passive investment strategy into practice, the first fork in the road forces us to make a technical decision: **Should I use traditional index mutual funds or Exchange-Traded Funds (ETFs)?**
 
-Both financial instruments share the exact same goal: to replicate the performance of a benchmark index (like the MSCI World, S&P 500, or FTSE All-World) while charging the lowest possible fees. However, their day-to-day operations, fee structures, and tax treatments can vary significantly depending on your jurisdiction.
+Both financial instruments share the exact same goal: to replicate the performance of a benchmark index (like the [MSCI World](/blog/msci-world-emerging-markets-80-20), S&P 500, or FTSE All-World) while charging the lowest possible fees. However, their day-to-day operations, fee structures, and tax treatments can vary significantly depending on your jurisdiction.
 
 In this article, we will analyze the practical differences between index funds and ETFs so you can decide which one fits your profile best.
 
@@ -77,7 +81,7 @@ Tax efficiency is highly dependent on where you live:
 * You prefer a simple "set-and-forget" setup without seeing intraday market price fluctuations.
 
 ### Choose ETFs if:
-* Your broker does not offer traditional index mutual funds (common with low-cost international brokers like Interactive Brokers or DeGiro).
+* Your broker does not offer traditional index mutual funds (common with low-cost international brokers like Interactive Brokers or [DeGiro](/blog/degiro-etf-rebalancing)).
 * You want to target very specific niche indexes, sectors, or factor strategies that are unavailable in mutual fund formats.
 * You want to utilize advanced order types (like limit orders) and execute trades instantly during market hours.
 
@@ -87,8 +91,8 @@ Tax efficiency is highly dependent on where you live:
 
 Whether you prefer the tax-optimization of mutual funds or the liquidity of ETFs, **CoreBalance is fully compatible with both**.
 
-Our local-first calculator allows you to configure your target asset allocation using both funds and ETFs. When it is time to rebalance:
-1. If you use **mutual funds**, CoreBalance helps you calculate optimal contributions or fund transfers to keep your portfolio aligned.
+Our local-first calculator allows you to configure your target [asset allocation](/blog/what-is-asset-allocation) using both funds and ETFs. When it is time to rebalance:
+1. If you use **mutual funds**, CoreBalance helps you calculate optimal contributions or [fund transfers](/blog/index-fund-transfers-spain-tax-guide) to keep your portfolio aligned.
 2. If you use **ETFs**, CoreBalance calculates the optimal purchase of whole shares to balance your portfolio while minimizing uninvested cash and transaction commissions.
 
 All of this happens locally inside your browser, ensuring absolute privacy for your financial data.

@@ -1,8 +1,12 @@
 ---
 title: "Free Notion and Markdown Portfolio Tracker Template"
 description: "Get a free, custom Notion or Markdown template to manually track your index funds, ETFs, and asset allocation with absolute privacy."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+summary:
+  - "A healthy portfolio log needs three areas: the target asset allocation, the current fund inventory, and the history of contributions and rebalances."
+  - "The article includes a copy-pasteable Markdown template and the exact properties to build the same structure as a Notion database."
+  - "Keeping the log in local Markdown gives absolute privacy, at the cost of updating balances by hand once a month."
+publishDate: "2026-07-24"
+updatedDate: "2026-07-24"
 author: "kinacho"
 tags: [resources, notion, markdown, templates, portfolio-tracker]
 lang: en
@@ -13,7 +17,7 @@ slugs: { es: 'plantilla-notion-seguimiento-cartera', en: 'notion-portfolio-track
 
 Keeping a financial journal or a structured log of your investments is one of the best habits you can build. It keeps you grounded during times of market volatility, reminds you of your long-term goals, and keeps your cost basis organized.
 
-While spreadsheets like Excel or Google Sheets are common, many investors prefer the visual cleanliness and focus of notes tools like **Notion** or plain-text files written in **Markdown** (which integrate beautifully with tools like Obsidian, Logseq, or Joplin).
+While spreadsheets like [Excel](/comparativas/corebalance-vs-excel) or Google Sheets are common, many investors prefer the visual cleanliness and focus of notes tools like **Notion** or plain-text files written in **Markdown** (which integrate beautifully with tools like Obsidian, Logseq, or Joplin).
 
 In this article, we provide a **free, copy-pasteable portfolio tracking template in Notion and Markdown**, explain how to structure it, and share tips for integrating it into your monthly routine.
 
@@ -23,7 +27,7 @@ In this article, we provide a **free, copy-pasteable portfolio tracking template
 
 Whether you use Notion or plain Markdown, a healthy investment log should cover three primary areas:
 
-1. **Strategic Asset Allocation:** Your target weights (e.g., 80% equities, 20% bonds).
+1. **Strategic [Asset Allocation](/blog/what-is-asset-allocation):** Your target weights (e.g., 80% equities, 20% bonds).
 2. **Asset Inventory:** The list of funds or ETFs you own, their ISIN/ticker, the custodian platform, and your average cost basis.
 3. **Transaction / Rebalancing Log:** A chronological record of how much money you contribute each month and the adjustments you make.
 

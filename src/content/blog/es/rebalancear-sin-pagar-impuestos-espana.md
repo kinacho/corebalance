@@ -1,8 +1,12 @@
 ---
 title: "Cómo rebalancear sin pagar impuestos: la ventaja de los fondos en España"
 description: "Aprende a rebalancear tu cartera de fondos de inversión de forma fiscalmente óptima. Maximiza el diferimiento fiscal y evita el peaje de Hacienda."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+summary:
+  - "En España la ley del IRPF concede a los fondos de inversión un régimen de diferimiento fiscal: puedes traspasar de un fondo a otro sin tributar por la ganancia acumulada."
+  - "Hay tres técnicas para rebalancear esquivando el peaje fiscal: aportaciones periódicas, traspasos internos entre fondos y desinversiones inteligentes en la fase de retiro."
+  - "El artículo compara dos inversores con una cartera idéntica de 50.000 euros y un 80/20 a 20 años para cuantificar cuánto pesa el diferimiento."
+publishDate: "2026-04-27"
+updatedDate: "2026-04-27"
 author: "kinacho"
 tags: [rebalanceo, fiscalidad, diferimiento-fiscal, fondos-indexados, impuestos]
 lang: es
@@ -25,18 +29,18 @@ En España, la legislación del IRPF otorga un régimen de diferimiento fiscal e
 
 Esto significa que cuando mueves dinero de un fondo a otro mediante la orden de un "traspaso", la operación está exenta de tributación. Hacienda no considera que hayas tenido una plusvalía realizada; simplemente considera que has cambiado el vehículo de tu inversión, manteniendo la antigüedad y el coste de adquisición original.
 
-Esta exención fiscal no se aplica a las acciones ni a la mayoría de los ETFs (que tributan en el momento de la venta). Por ello, los fondos indexados son el vehículo de inversión preferido para los inversores pasivos que buscan optimizar sus costes impositivos.
+Esta exención fiscal no se aplica a las acciones ni a la mayoría de los ETFs (que tributan en el momento de la venta). Por ello, los [fondos indexados](/blog/fondos-indexados-vs-etfs-espana) son el vehículo de inversión preferido para los inversores pasivos que buscan optimizar sus costes impositivos.
 
 ---
 
 ## 2. Tres técnicas para rebalancear sin pagar impuestos
 
-Existen tres formas principales de devolver tu cartera a su asignación original de activos (asset allocation) esquivando las retenciones fiscales de Hacienda.
+Existen tres formas principales de devolver tu cartera a su asignación original de activos ([asset allocation](/blog/que-es-asset-allocation)) esquivando las retenciones fiscales de Hacienda.
 
 ### Técnica 1: Rebalancear mediante aportaciones periódicas (Cash-Flow Rebalancing)
 Esta es la técnica ideal para inversores que están en la fase de acumulación (ahorrando e invirtiendo dinero de forma periódica, por ejemplo, mensualmente).
 * **Cómo funciona:** En lugar de vender tus activos sobreponderados, utilizas tu nuevo capital de ahorro mensual para comprar exclusivamente aquellos fondos que se han quedado por debajo de su porcentaje objetivo.
-* **Ventaja:** Cero comisiones operativas y cero impacto fiscal, ya que solo realizas compras de fondos, no ventas ni traspasos.
+* **Ventaja:** Cero comisiones operativas y cero impacto fiscal, ya que solo realizas compras de fondos, no ventas ni [traspasos](/blog/traspasos-fondos-indexados-hacienda).
 
 ### Técnica 2: Rebalancear mediante traspasos internos entre fondos
 Si el desvío de tu cartera es muy grande o tu capital acumulado es elevado, puede que tu ahorro mensual no sea suficiente para devolver la cartera a su equilibrio original.

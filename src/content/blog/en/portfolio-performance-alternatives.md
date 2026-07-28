@@ -1,8 +1,12 @@
 ---
 title: "The Best Alternatives to Portfolio Performance"
 description: "Looking for alternatives to Portfolio Performance? We review the best tools, websites, and apps to track and rebalance your investment portfolio."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+summary:
+  - "Portfolio Performance is free and very complete, but it is a desktop app with a steep learning curve and far more complexity than rebalancing needs."
+  - "The alternatives fall into three families: your own spreadsheets, robo-advisors such as Indexa Capital or MyInvestor, and web calculators focused on rebalancing."
+  - "If your strategy is buying index funds and rebalancing once or twice a year, you do not need a portfolio-auditing tool."
+publishDate: "2026-07-16"
+updatedDate: "2026-07-16"
 author: "kinacho"
 tags: [tools, portfolio-performance, alternatives, rebalancing, spreadsheets]
 lang: en
@@ -11,11 +15,11 @@ ogImage: "/blog/og/portfolio-performance-alternatives.jpg"
 slugs: { es: 'alternativas-portfolio-performance', en: 'portfolio-performance-alternatives' }
 ---
 
-For DIY investors who are passionate about personal finance and tracking every penny, **Portfolio Performance** has been the go-to open-source tool for years. It is a robust, free, and extremely powerful desktop application that allows you to calculate metrics like TWR (Time-Weighted Return), MWR (Money-Weighted Return), and graph your net worth.
+For DIY investors who are passionate about personal finance and tracking every penny, **[Portfolio Performance](/comparativas/corebalance-vs-portfolio-performance)** has been the go-to open-source tool for years. It is a robust, free, and extremely powerful desktop application that allows you to calculate metrics like TWR (Time-Weighted Return), MWR (Money-Weighted Return), and graph your net worth.
 
 However, despite its strengths, Portfolio Performance suffers from a major issue: **its steep learning curve and visual complexity**.
 
-For passive or Boglehead investors whose main goal is to contribute to 2 or 3 index funds or ETFs monthly and perform an occasional rebalancing, setting up and maintaining this desktop tool is like cracking a nut with a sledgehammer.
+For passive or Boglehead investors whose main goal is to contribute to 2 or 3 [index funds](/blog/index-funds-vs-etfs-comparison) or ETFs monthly and perform an occasional rebalancing, setting up and maintaining this desktop tool is like cracking a nut with a sledgehammer.
 
 In this article, we will analyze the best **alternatives to Portfolio Performance**, comparing their pros, cons, and which one you should choose based on your actual financial tracking needs.
 
@@ -46,7 +50,7 @@ If you delegate your portfolio to a robo-advisor or use the summary screen of th
 * **Cons:** You are tied to their specific funds and terms. In addition, robo-advisors charge an extra management fee (usually around 0.15% to 0.50% annually), which reduces your long-term returns. They also do not allow you to unify assets from different platforms into a single view.
 
 ### Alternative C: Web Calculators Focused on Rebalancing (CoreBalance)
-Modern web applications designed for independent Boglehead investors who manage their own portfolios across traditional brokers or low-cost platforms (like Interactive Brokers, DeGiro, or Vanguard).
+Modern web applications designed for independent Boglehead investors who manage their own portfolios across traditional brokers or low-cost platforms (like Interactive Brokers, [DeGiro](/blog/degiro-etf-rebalancing), or Vanguard).
 
 ---
 
@@ -67,7 +71,7 @@ Modern web applications designed for independent Boglehead investors who manage 
 
 If your strategy is to buy funds and rebalance once or twice a year, **CoreBalance** removes all the complexity and frustration of Portfolio Performance while preserving its greatest virtue: data privacy.
 
-* **Focused on What Matters:** CoreBalance does not try to be a complex accounting package. It gives you exactly what you need to execute your passive strategy: it calculates your drifts and tells you precisely how to adjust your portfolio using new contributions or fund transfers.
+* **Focused on What Matters:** CoreBalance does not try to be a complex accounting package. It gives you exactly what you need to execute your passive strategy: it calculates your drifts and tells you precisely how to adjust your portfolio using new contributions or [fund transfers](/blog/index-fund-transfers-spain-tax-guide).
 * **No Accounts or Sign-ups:** You don't need to enter your email, link bank accounts, or upload your sensitive financial details to the cloud. Your portfolios are encrypted and stored locally in your web browser's storage (`localStorage`).
 * **Fast and Interactive:** Go to the web page, add your assets in seconds, and see your calculations immediately. No XML files to import or complex feeds to configure.
 
