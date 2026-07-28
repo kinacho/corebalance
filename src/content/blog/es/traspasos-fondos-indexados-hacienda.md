@@ -5,8 +5,8 @@ summary:
   - "El Artículo 94 de la Ley del IRPF establece que en un traspaso entre fondos de inversión no se computa ganancia ni pérdida patrimonial."
   - "Vender y volver a comprar te obliga a tributar por la plusvalía en ese momento; ordenar un traspaso difiere ese pago y deja el dinero completo trabajando."
   - "El traspaso conserva la antigüedad y el valor de adquisición original de las participaciones, y se ordena desde la entidad de destino."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+publishDate: "2026-04-14"
+updatedDate: "2026-04-14"
 author: "kinacho"
 tags: [traspasos, fiscalidad, fondos-indexados, hacienda, irpf]
 lang: es

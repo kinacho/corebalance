@@ -5,8 +5,8 @@ summary:
   - "Por calendario revisas la cartera en fechas fijas. Por desviación actúas sólo cuando un activo supera su banda de tolerancia, habitualmente un 5% absoluto."
   - "El calendario da paz mental y poco esfuerzo de gestión, pero es ineficiente en mercados volátiles; las bandas reaccionan al mercado real a cambio de vigilarlo."
   - "Para un inversor particular la estrategia más equilibrada suele ser la híbrida: revisión por calendario con gatillo por desviación."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+publishDate: "2026-02-05"
+updatedDate: "2026-02-05"
 author: "kinacho"
 tags: [rebalanceo, asset-allocation, bogleheads, estrategia]
 lang: es

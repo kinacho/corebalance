@@ -5,8 +5,8 @@ summary:
   - "On MyInvestor you can rebalance without paying tax by using the Spanish fund-to-fund transfer regime."
   - "You have two routes: transferring between funds when you have no new money, and rebalancing through contributions when you save every month."
   - "Transfers on MyInvestor carry no fee and you can move money between different managers, for instance from Vanguard to iShares or Fidelity."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+publishDate: "2026-05-08"
+updatedDate: "2026-05-08"
 author: "kinacho"
 tags: [rebalancing, myinvestor, taxes, index-funds, fund-transfers]
 lang: en

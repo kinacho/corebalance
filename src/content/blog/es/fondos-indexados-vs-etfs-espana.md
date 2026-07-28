@@ -5,8 +5,8 @@ summary:
   - "La diferencia decisiva en España es fiscal: los fondos de inversión se pueden traspasar sin tributar por la ganancia, los ETFs no."
   - "Los ETFs cotizan en tiempo real y suelen tener un TER algo menor, pero pagas comisiones de compraventa al bróker en cada operación."
   - "Si haces aportaciones mensuales moderadas, de 100 a 500 euros, los fondos indexados encajan mejor; los ETFs tienen sentido con capitales altos o brókers internacionales."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+publishDate: "2026-03-31"
+updatedDate: "2026-03-31"
 author: "kinacho"
 tags: [fondos-indexados, etfs, fiscalidad, inversion-pasiva, comparativa]
 lang: es

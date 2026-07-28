@@ -5,8 +5,8 @@ summary:
   - "Portfolio Performance is free and very complete, but it is a desktop app with a steep learning curve and far more complexity than rebalancing needs."
   - "The alternatives fall into three families: your own spreadsheets, robo-advisors such as Indexa Capital or MyInvestor, and web calculators focused on rebalancing."
   - "If your strategy is buying index funds and rebalancing once or twice a year, you do not need a portfolio-auditing tool."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+publishDate: "2026-07-16"
+updatedDate: "2026-07-16"
 author: "kinacho"
 tags: [tools, portfolio-performance, alternatives, rebalancing, spreadsheets]
 lang: en

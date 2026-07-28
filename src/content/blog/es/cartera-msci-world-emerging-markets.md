@@ -5,8 +5,8 @@ summary:
   - "El MSCI World cubre 23 países desarrollados y el MSCI Emerging Markets 24 países en vías de desarrollo. Juntos alcanzan casi el 99% del mercado bursátil invertible global."
   - "La combinación de estos dos fondos se ha convertido en el estándar entre inversores independientes por su equilibrio entre diversificación y simplicidad."
   - "Desde España se implementa con fondos indexados traspasables, mejores para aportaciones periódicas, o con ETFs, más adecuados para brókers internacionales y capitales altos."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+publishDate: "2026-03-17"
+updatedDate: "2026-03-17"
 author: "kinacho"
 tags: [cartera, msci-world, emerging-markets, fondos-indexados, asset-allocation]
 lang: es

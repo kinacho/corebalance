@@ -5,8 +5,8 @@ summary:
   - "The only difference between Acc and Dist is what the fund does with dividends: accumulating reinvests them inside the fund, distributing pays them out to you."
   - "While you are still accumulating, the Acc version avoids the tax toll of receiving the dividend and compounds more effectively."
   - "The Dist version makes sense if what you want is a regular income stream from your portfolio."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+publishDate: "2026-06-03"
+updatedDate: "2026-06-03"
 author: "kinacho"
 tags: [etfs, msci-world, accumulating, distributing, taxes]
 lang: en

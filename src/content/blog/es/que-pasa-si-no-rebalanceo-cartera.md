@@ -5,8 +5,8 @@ summary:
   - "Si no rebalanceas, tu perfil de riesgo se descontrola: la renta variable crece hasta pesar mucho más de lo que habías decidido asumir."
   - "Las tres consecuencias son riesgo fuera de control, pérdidas más severas en los mercados bajistas y perder la oportunidad de comprar barato lo que ha caído."
   - "No hace falta rebalancear cada semana: hacerlo demasiado a menudo sólo añade costes de transacción y comisiones innecesarias."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+publishDate: "2026-02-19"
+updatedDate: "2026-02-19"
 author: "kinacho"
 tags: [rebalanceo, gestion-riesgo, volatilidad, inversion-pasiva, bogleheads]
 lang: es

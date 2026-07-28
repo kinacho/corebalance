@@ -5,8 +5,8 @@ summary:
   - "ETFs do not get the tax-free transfer that index funds enjoy in Spain: selling in order to rebalance realises the gain and triggers tax."
   - "The efficient strategy is to rebalance exclusively with new contributions, directing every purchase to the most underweighted asset."
   - "If contributions are not enough: widen your tolerance bands, use the broker commission-free ETF selection, and account for rounding to whole shares."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+publishDate: "2026-05-21"
+updatedDate: "2026-05-21"
 author: "kinacho"
 tags: [rebalancing, degiro, etfs, transaction-fees, taxes]
 lang: en

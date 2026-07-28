@@ -5,8 +5,8 @@ summary:
   - "Calendar rebalancing reviews the portfolio on fixed dates. Threshold rebalancing acts only when an asset breaks its tolerance band, usually 5% in absolute terms."
   - "The calendar gives peace of mind and little management effort but is inefficient in volatile markets; bands react to the actual market at the cost of watching it."
   - "For a retail investor the most balanced approach is usually the hybrid one: calendar review with a drift trigger."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+publishDate: "2026-02-05"
+updatedDate: "2026-02-05"
 author: "kinacho"
 tags: [rebalancing, asset-allocation, bogleheads, strategy]
 lang: en

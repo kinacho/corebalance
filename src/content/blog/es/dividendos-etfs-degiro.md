@@ -5,8 +5,8 @@ summary:
   - "Los dividendos de ETFs extranjeros tributan en España dentro de la base imponible del ahorro, a tipos que oscilan entre el 19% y el 28%."
   - "Antes de cobrarlos sufres una retención en origen, así que hay que declararlos correctamente para evitar la doble imposición."
   - "La alternativa Boglehead es usar ETFs de acumulación: reinvierten los dividendos dentro del propio fondo y te ahorran todo el trámite fiscal."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+publishDate: "2026-06-25"
+updatedDate: "2026-06-25"
 author: "kinacho"
 tags: [degiro, etfs, dividendos, fiscalidad, declaracion-renta]
 lang: es

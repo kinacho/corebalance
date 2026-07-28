@@ -5,8 +5,8 @@ summary:
   - "La filosofía Boglehead se apoya en cuatro pilares: simplicidad extrema, diversificación global, costes ultrabajos y no intentar predecir el mercado."
   - "En España conviene usar fondos indexados tradicionales en lugar de ETFs, porque los traspasos entre fondos no tributan al reordenar posiciones."
   - "Los dos modelos habituales son la cartera de 2 fondos y la de 3 fondos, el estándar Boglehead. El único mantenimiento activo es aportar y rebalancear."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+publishDate: "2026-03-04"
+updatedDate: "2026-03-04"
 author: "kinacho"
 tags: [bogleheads, indexacion, fondos-indexados, finanzas-personales, principiantes]
 lang: es

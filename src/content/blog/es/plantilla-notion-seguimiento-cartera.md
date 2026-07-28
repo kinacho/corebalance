@@ -5,8 +5,8 @@ summary:
   - "Un registro sano de cartera necesita tres áreas: la asignación de activos objetivo, el inventario actual de fondos y el historial de aportaciones y rebalanceos."
   - "El artículo incluye una plantilla en Markdown lista para copiar y las propiedades concretas para montar la misma estructura como base de datos en Notion."
   - "Mantener el registro en Markdown local da privacidad absoluta, a cambio de actualizar los saldos a mano una vez al mes."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+publishDate: "2026-07-24"
+updatedDate: "2026-07-24"
 author: "kinacho"
 tags: [recursos, notion, markdown, plantilla, seguimiento-cartera]
 lang: es

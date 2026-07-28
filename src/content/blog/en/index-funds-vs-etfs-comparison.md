@@ -5,8 +5,8 @@ summary:
   - "The decisive difference in Spain is tax: investment funds can be transferred without paying tax on the gain, ETFs cannot."
   - "ETFs trade in real time and usually carry a slightly lower TER, but you pay the broker a commission on every trade."
   - "If you make moderate monthly contributions, roughly 100 to 500 euros, index funds fit better; ETFs make sense with larger amounts or international brokers."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+publishDate: "2026-03-31"
+updatedDate: "2026-03-31"
 author: "kinacho"
 tags: [index-funds, etfs, taxation, passive-investing, comparison]
 lang: en

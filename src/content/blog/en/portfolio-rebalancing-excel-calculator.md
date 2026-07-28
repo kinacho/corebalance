@@ -5,8 +5,8 @@ summary:
   - "To build a rebalancing calculator in a spreadsheet you need columns for asset, target percentage, unit price, shares and current value, plus the new-contribution formula."
   - "Templates work well for the first months; maintaining them is the problem: price formulas break, human error creeps in, editing cells on mobile is painful and the data ends up in the cloud."
   - "For a one-off calculation they are plenty; the real cost shows up in the month-to-month upkeep."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+publishDate: "2026-07-07"
+updatedDate: "2026-07-07"
 author: "kinacho"
 tags: [tools, excel, google-sheets, rebalancing, templates]
 lang: en

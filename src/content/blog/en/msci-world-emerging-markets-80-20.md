@@ -5,8 +5,8 @@ summary:
   - "MSCI World covers 23 developed countries and MSCI Emerging Markets 24 developing ones. Together they reach almost 99% of the global investable stock market."
   - "Combining these two funds has become the standard among independent investors thanks to its balance between diversification and simplicity."
   - "From Spain you can implement it with transferable index funds, better for regular contributions, or with ETFs, better suited to international brokers and larger amounts."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+publishDate: "2026-03-17"
+updatedDate: "2026-03-17"
 author: "kinacho"
 tags: [portfolio, msci-world, emerging-markets, index-funds, asset-allocation]
 lang: en

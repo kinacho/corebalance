@@ -5,8 +5,8 @@ summary:
   - "Article 94 of the Spanish income tax law states that a transfer between investment funds does not count as a capital gain or loss."
   - "Selling and buying back forces you to pay tax on the gain right then; ordering a transfer defers that payment and keeps the full amount invested."
   - "The transfer preserves the original acquisition date and cost of the shares, and is requested from the receiving institution."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+publishDate: "2026-04-14"
+updatedDate: "2026-04-14"
 author: "kinacho"
 tags: [fund-transfers, taxes, index-funds, hacienda, income-tax]
 lang: en

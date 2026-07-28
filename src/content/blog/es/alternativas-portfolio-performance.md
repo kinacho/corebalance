@@ -5,8 +5,8 @@ summary:
   - "Portfolio Performance es gratuito y muy completo, pero es una aplicación de escritorio con una curva de aprendizaje empinada y demasiada complejidad si sólo quieres rebalancear."
   - "Las alternativas se agrupan en tres familias: hojas de cálculo propias, robo-advisors como Indexa Capital o MyInvestor, y calculadoras web centradas en el rebalanceo."
   - "Si tu estrategia es comprar fondos indexados y rebalancear una o dos veces al año, no necesitas una herramienta de auditoría de carteras."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+publishDate: "2026-07-16"
+updatedDate: "2026-07-16"
 author: "kinacho"
 tags: [herramientas, portfolio-performance, alternativas, rebalanceo, excel]
 lang: es

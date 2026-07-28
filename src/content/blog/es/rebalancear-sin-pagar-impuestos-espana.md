@@ -5,8 +5,8 @@ summary:
   - "En España la ley del IRPF concede a los fondos de inversión un régimen de diferimiento fiscal: puedes traspasar de un fondo a otro sin tributar por la ganancia acumulada."
   - "Hay tres técnicas para rebalancear esquivando el peaje fiscal: aportaciones periódicas, traspasos internos entre fondos y desinversiones inteligentes en la fase de retiro."
   - "El artículo compara dos inversores con una cartera idéntica de 50.000 euros y un 80/20 a 20 años para cuantificar cuánto pesa el diferimiento."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+publishDate: "2026-04-27"
+updatedDate: "2026-04-27"
 author: "kinacho"
 tags: [rebalanceo, fiscalidad, diferimiento-fiscal, fondos-indexados, impuestos]
 lang: es

@@ -5,8 +5,8 @@ summary:
   - "Spanish income tax law grants investment funds a tax-deferral regime: you can move from one fund to another without paying tax on the accumulated gain."
   - "There are three techniques to rebalance while avoiding the tax toll: regular contributions, internal fund-to-fund transfers, and smart withdrawals in the drawdown phase."
   - "The article compares two investors with an identical 50,000-euro portfolio and an 80/20 split over 20 years to quantify how much deferral is worth."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+publishDate: "2026-04-27"
+updatedDate: "2026-04-27"
 author: "kinacho"
 tags: [rebalancing, taxes, tax-deferral, index-funds, capital-gains]
 lang: en

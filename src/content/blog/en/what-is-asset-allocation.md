@@ -5,8 +5,8 @@ summary:
   - "Asset allocation is how you split your capital across asset classes (equities, bonds, cash and real assets) according to your goals and risk tolerance."
   - "The classic reference on its importance is the 1986 Brinson, Hood and Beebower study, which analysed 91 large pension funds over a decade."
   - "You choose the split by weighing three personal variables: your time horizon, your financial capacity to take risk and your psychological tolerance."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+publishDate: "2026-01-09"
+updatedDate: "2026-01-09"
 author: "kinacho"
 tags: [asset-allocation, portfolio, personal-finance, equities, fixed-income]
 lang: en

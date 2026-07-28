@@ -5,8 +5,8 @@ summary:
   - "A healthy portfolio log needs three areas: the target asset allocation, the current fund inventory, and the history of contributions and rebalances."
   - "The article includes a copy-pasteable Markdown template and the exact properties to build the same structure as a Notion database."
   - "Keeping the log in local Markdown gives absolute privacy, at the cost of updating balances by hand once a month."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+publishDate: "2026-07-24"
+updatedDate: "2026-07-24"
 author: "kinacho"
 tags: [resources, notion, markdown, templates, portfolio-tracker]
 lang: en

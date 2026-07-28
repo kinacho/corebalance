@@ -5,8 +5,8 @@ summary:
   - "The Boglehead philosophy rests on four pillars: extreme simplicity, global diversification, ultra-low costs and not trying to predict the market."
   - "In Spain traditional index funds beat ETFs, because fund-to-fund transfers are not taxed when you reshuffle positions."
   - "The two usual models are the 2-fund and the 3-fund portfolio, the Boglehead standard. The only active upkeep is contributing and rebalancing."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+publishDate: "2026-03-04"
+updatedDate: "2026-03-04"
 author: "kinacho"
 tags: [bogleheads, indexing, index-funds, personal-finance, beginners]
 lang: en

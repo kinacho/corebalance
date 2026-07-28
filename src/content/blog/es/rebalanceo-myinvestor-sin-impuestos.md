@@ -5,8 +5,8 @@ summary:
   - "En MyInvestor puedes rebalancear sin pagar impuestos aprovechando el régimen español de traspasos entre fondos de inversión."
   - "Tienes dos caminos: el traspaso entre fondos cuando no dispones de capital nuevo, y el rebalanceo por aportación cuando aportas ahorro cada mes."
   - "Los traspasos en MyInvestor no tienen comisión y puedes mover dinero entre gestoras distintas, por ejemplo de Vanguard a iShares o Fidelity."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+publishDate: "2026-05-08"
+updatedDate: "2026-05-08"
 author: "kinacho"
 tags: [rebalanceo, myinvestor, fiscalidad, fondos-indexados, traspasos]
 lang: es

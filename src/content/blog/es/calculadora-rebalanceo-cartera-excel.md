@@ -5,8 +5,8 @@ summary:
   - "Para montar una calculadora de rebalanceo en Excel necesitas columnas de activo, porcentaje objetivo, precio unitario, participaciones y valor actual, más la fórmula de la nueva aportación."
   - "Las plantillas funcionan bien los primeros meses; el problema es mantenerlas: las fórmulas de precios se rompen, hay riesgo de error humano, editar celdas en el móvil es incómodo y los datos acaban en la nube."
   - "Para un cálculo puntual sirven de sobra; el coste real aparece en el mantenimiento mes a mes."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+publishDate: "2026-07-07"
+updatedDate: "2026-07-07"
 author: "kinacho"
 tags: [herramientas, excel, google-sheets, rebalanceo, plantilla]
 lang: es

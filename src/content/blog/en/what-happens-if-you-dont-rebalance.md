@@ -5,8 +5,8 @@ summary:
   - "If you never rebalance, your risk profile drifts out of control: equities grow until they weigh far more than you decided to take on."
   - "The three consequences are runaway risk, deeper losses in bear markets, and missing the chance to buy what has fallen cheaply."
   - "You do not need to rebalance every week: doing it too often only adds transaction costs and unnecessary fees."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+publishDate: "2026-02-19"
+updatedDate: "2026-02-19"
 author: "kinacho"
 tags: [rebalancing, risk-management, volatility, passive-investing, bogleheads]
 lang: en

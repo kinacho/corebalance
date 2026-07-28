@@ -5,8 +5,8 @@ summary:
   - "El asset allocation es cómo reparte tu capital entre clases de activos (renta variable, renta fija, efectivo y activos reales) según tus objetivos y tu tolerancia al riesgo."
   - "La referencia clásica sobre su importancia es el estudio de Brinson, Hood y Beebower de 1986, que analizó 91 grandes fondos de pensiones durante una década."
   - "El reparto se elige cruzando tres variables personales: tu horizonte temporal, tu capacidad financiera de asumir riesgo y tu tolerancia psicológica."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+publishDate: "2026-01-09"
+updatedDate: "2026-01-09"
 author: "kinacho"
 tags: [asset-allocation, cartera, finanzas-personales, renta-variable, renta-fija]
 lang: es

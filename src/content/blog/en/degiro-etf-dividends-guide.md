@@ -5,8 +5,8 @@ summary:
   - "Dividends from foreign ETFs are taxed in Spain within the savings tax base, at rates between 19% and 28%."
   - "You suffer withholding at source before receiving them, so they must be declared properly to avoid double taxation."
   - "The Boglehead alternative is accumulating ETFs: they reinvest dividends inside the fund and save you the whole tax procedure."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+publishDate: "2026-06-25"
+updatedDate: "2026-06-25"
 author: "kinacho"
 tags: [degiro, etfs, dividends, taxes, income-tax]
 lang: en

@@ -5,8 +5,8 @@ summary:
   - "Your portfolio drifts because each asset class moves at a different pace: an 80/20 stops being an 80/20 without you doing anything."
   - "There are three ways back to target: new contributions (the most efficient), fund-to-fund transfers (only available to funds in Spain) and selling and buying (the classic, taxable one)."
   - "With regular contributions you send the new money to the underweighted assets and fix the drift without selling anything."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+publishDate: "2026-01-22"
+updatedDate: "2026-01-22"
 author: "kinacho"
 tags: [rebalancing, portfolio, etfs, index-funds, bogleheads]
 lang: en

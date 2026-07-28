@@ -5,8 +5,8 @@ summary:
   - "Con ETFs no existe el traspaso libre de impuestos que sí tienen los fondos indexados en España: vender para rebalancear realiza la ganancia y tributa."
   - "La estrategia eficiente es rebalancear exclusivamente con aportaciones nuevas, dirigiendo cada compra al activo más infraponderado."
   - "Si las aportaciones no bastan: amplía tus bandas de tolerancia, aprovecha la selección de ETFs sin comisión del bróker y ten en cuenta el redondeo a participaciones enteras."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+publishDate: "2026-05-21"
+updatedDate: "2026-05-21"
 author: "kinacho"
 tags: [rebalanceo, degiro, etfs, comisiones, impuestos]
 lang: es

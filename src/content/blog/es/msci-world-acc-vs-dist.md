@@ -5,8 +5,8 @@ summary:
   - "La única diferencia entre Acc y Dist es qué hace el fondo con los dividendos: acumulación los reinvierte dentro del fondo, distribución te los ingresa."
   - "En fase de acumulación la versión Acc evita el peaje fiscal de cobrar el dividendo y aprovecha mejor el interés compuesto."
   - "La versión Dist tiene sentido si lo que buscas es generar rentas periódicas con tu cartera."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+publishDate: "2026-06-03"
+updatedDate: "2026-06-03"
 author: "kinacho"
 tags: [etfs, msci-world, acumulacion, distribucion, fiscalidad]
 lang: es

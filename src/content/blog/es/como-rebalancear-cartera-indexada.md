@@ -5,8 +5,8 @@ summary:
   - "Tu cartera se desvía porque cada clase de activo se mueve a un ritmo distinto: un 80/20 deja de ser un 80/20 sin que hagas nada."
   - "Hay tres métodos para volver al objetivo: nuevas aportaciones (el más eficiente), traspasos entre fondos (exclusivo de los fondos en España) y vender y comprar (el clásico, el que tributa)."
   - "Con aportaciones periódicas destinas el dinero nuevo a los activos infraponderados y corriges la desviación sin vender nada."
-publishDate: "2026-06-16"
-updatedDate: "2026-06-16"
+publishDate: "2026-01-22"
+updatedDate: "2026-01-22"
 author: "kinacho"
 tags: [rebalanceo, cartera, etfs, fondos-indexados, bogleheads]
 lang: es
