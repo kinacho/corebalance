@@ -25,6 +25,13 @@
 	 *
 	 * En 1 y 2 es un enlace real, para que el usuario cambie de URL y el crawler
 	 * descubra la variante siguiéndolo.
+	 *
+	 * Y lleva `data-sveltekit-reload` a propósito: cambiar de idioma reemplaza el
+	 * 100% del texto de la página, así que la navegación SPA no aporta nada y sí
+	 * abre la ventana en la que media interfaz está traducida y la otra mitad no.
+	 * Con una carga de documento completa el HTML destino llega ya prerenderizado
+	 * en su idioma desde la CDN: es más rápido que la ruta SPA (sin chunk de
+	 * diccionario, sin loads, sin re-render) y quedarse a medias es imposible.
 	 */
 	const alternates = $derived(
 		($page.data.langAlternates ?? null) as Record<string, string | null> | null
@@ -68,6 +75,7 @@
 				class={cls(code)}
 				href={hrefFor(code)}
 				hreflang={code}
+				data-sveltekit-reload
 				aria-current={activeLocale === code ? 'true' : undefined}
 				aria-label={code === 'es' ? 'Ver esta página en español' : 'View this page in English'}
 			>

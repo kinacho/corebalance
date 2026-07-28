@@ -1,8 +1,5 @@
 import { getPosts, getRelatedPosts } from '$lib/blog';
 import { error } from '@sveltejs/kit';
-import { browser } from '$app/environment';
-import { loadLocaleAsync } from '$lib/i18n/i18n-util.async';
-import { setLocale } from '$lib/i18n/i18n-svelte';
 import type { PageLoad, EntryGenerator } from './$types';
 
 export const prerender = true;
@@ -29,19 +26,6 @@ export const load: PageLoad = async ({ params }) => {
 		error(404, 'Post not found');
 	}
 
-	// El idioma de un post lo manda el propio artículo, no la cookie ni la
-	// preferencia guardada: un post en español es un post en español. Fijando el
-	// locale aquí, la navbar, el footer y el resto de la interfaz salen en el
-	// idioma del texto que se está leyendo, en vez de quedar a medias.
-	await loadLocaleAsync(post.lang);
-	setLocale(post.lang);
-
-	// El `lang` del <html> lo pone el hook al servir la página, pero en una
-	// navegación de cliente entre un post y su gemelo no se vuelve a renderizar
-	// app.html. Sin esto, un lector de pantalla leería el artículo en inglés con
-	// voz española.
-	if (browser) document.documentElement.lang = post.lang;
-
 	// Sólo los campos que pinta la tarjeta: el componente compilado del post
 	// relacionado no hace falta aquí.
 	const related = getRelatedPosts(post).map((p) => ({
@@ -62,5 +46,8 @@ export const load: PageLoad = async ({ params }) => {
 		en: post.slugs?.en ? `/blog/${post.slugs.en}` : null
 	};
 
+	// `locale` se expone para que el selector marque el idioma correcto y los
+	// componentes puedan leerlo de `$page.data`. Quien lo *aplica* al store es el
+	// layout raíz, con el valor que ya resolvió el hook a partir del slug.
 	return { post, related, locale: post.lang, langAlternates };
 };

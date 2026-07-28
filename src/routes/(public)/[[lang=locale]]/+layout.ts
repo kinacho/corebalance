@@ -1,7 +1,4 @@
 import type { LayoutLoad } from './$types';
-import { browser } from '$app/environment';
-import { loadLocaleAsync } from '$lib/i18n/i18n-util.async';
-import { setLocale } from '$lib/i18n/i18n-svelte';
 import type { Locales } from '$lib/i18n/i18n-types';
 import { DEFAULT_LOCALE } from '$lib/i18n/routing';
 
@@ -13,25 +10,16 @@ import { DEFAULT_LOCALE } from '$lib/i18n/routing';
 export const prerender = true;
 
 /**
- * Aquí el idioma lo manda la URL, no la cookie. Es la diferencia clave con el
- * área autenticada: dos URLs distintas e indexables en lugar de una que cambia
- * de contenido según quién la pida.
+ * El idioma sale del prefijo de la URL, pero **no se aplica aquí**: quien lo
+ * aplica es el layout raíz, a partir de lo que ya resolvió `hooks.server.ts`
+ * (que para estas rutas usa exactamente el mismo criterio: la URL).
+ *
+ * Este load sólo lo expone en `data` para que los componentes puedan leer
+ * `$page.data.locale` sin depender del store global. Tener un único escritor es
+ * lo que evita que la página quede a medio traducir.
  */
 export const load: LayoutLoad = async ({ params }) => {
 	const locale = ((params as { lang?: string }).lang as Locales | undefined) ?? DEFAULT_LOCALE;
-
-	await loadLocaleAsync(locale);
-	setLocale(locale);
-
-	// El idioma de la URL pasa a ser la preferencia del usuario, para que el
-	// área autenticada (que sí va por cookie) no le cambie el idioma después.
-	if (browser) {
-		localStorage.setItem('lang', locale);
-		document.documentElement.lang = locale;
-		if (!document.cookie.includes(`lang=${locale}`)) {
-			document.cookie = `lang=${locale}; path=/; max-age=31536000; SameSite=Lax`;
-		}
-	}
 
 	return { locale };
 };

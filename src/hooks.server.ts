@@ -48,6 +48,21 @@ export const handle: Handle = async ({ event, resolve }) => {
 	const dependsOnCookie = isLocaleCookieRoute(event.url.pathname);
 
 	await loadLocaleAsync(locale);
+
+	/**
+	 * ⚠️ `setLocale` escribe un store global de módulo, compartido por todas las
+	 * peticiones del proceso. Es necesario para que `$LL` funcione al renderizar
+	 * en servidor, pero significa que dos peticiones concurrentes en idiomas
+	 * distintos pueden entrelazarse en un `await` y una renderizar con el
+	 * diccionario de la otra.
+	 *
+	 * Hoy el alcance es pequeño: todo lo público está prerenderizado, así que la
+	 * única ruta que se renderiza en servidor es `/dashboard`, y allí el peor caso
+	 * es un parpadeo hasta que hidrata. El arreglo definitivo es no usar el store
+	 * global en SSR: pasar el objeto de traducciones por `data` con
+	 * `i18nObject(locale)`, que es por petición. Toca todos los usos de `$LL`, así
+	 * que se deja anotado en vez de hacerlo a medias.
+	 */
 	setLocale(locale);
 	event.locals.locale = locale;
 
