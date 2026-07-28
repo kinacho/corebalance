@@ -4,6 +4,7 @@
 	import { page } from '$app/stores';
 	import { absoluteUrl, localizePath, SITE_URL } from '$lib/i18n/routing';
 	import { AUTHOR } from '$lib/seo/author';
+	import { pageOgImage } from '$lib/seo/og';
 	import type { Post, Tool } from '$lib/blog';
 	import type { Locales } from '$lib/i18n/i18n-types';
 
@@ -56,7 +57,7 @@
 	description={metaDesc}
 	path={$page.url.pathname}
 	lang={data.lang}
-	image="/og-image-blog.png"
+	image={pageOgImage('blog', data.lang)}
 	jsonLd={schema}
 />
 

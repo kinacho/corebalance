@@ -1,12 +1,22 @@
 /**
- * Genera las imágenes Open Graph de los posts del blog en tiempo de build.
+ * Genera todas las imágenes Open Graph del sitio en tiempo de build.
  *
- * Antes los 34 posts declaraban `ogImage: /blog/og/<slug>.jpg` y ese directorio
- * no existía: og:image y twitter:image daban 404 (cards sin imagen al compartir)
- * y el campo `image` del schema BlogPosting era inválido.
+ * Había tres problemas distintos:
  *
- * La imagen se genera a partir del slug real de cada post, así que los 6 posts
- * en inglés que reutilizaban el fichero del slug español quedan corregidos solos.
+ * 1. Los 34 posts declaraban `ogImage: /blog/og/<slug>.jpg` y ese directorio no
+ *    existía: og:image y twitter:image daban 404 (cards sin imagen al compartir)
+ *    y el campo `image` del schema BlogPosting era inválido. La imagen se genera
+ *    ahora desde el slug real, así que los 6 posts en inglés que reutilizaban el
+ *    fichero del slug español quedan corregidos solos.
+ * 2. `og-image.png` y `og-image-landing.png` **eran JPEG con extensión .png** y
+ *    además cuadrados (1024×1024), mientras el HTML declaraba 1200×630. El
+ *    desajuste de formato y de proporción hace que algunas redes rechacen o
+ *    recorten mal la card.
+ * 3. `og-image-blog.png`, `og-image-ter.png` y `og-image-checklist.png` se
+ *    referenciaban pero no existían.
+ *
+ * Todo sale del mismo lenguaje visual y en las dos variantes de idioma, para que
+ * al compartir una página en inglés la card no salga en español.
  *
  * Se ejecuta desde el script `prebuild`, antes de que Vite lea `static/`.
  */
@@ -19,7 +29,9 @@ import { Resvg } from '@resvg/resvg-js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const CONTENT_DIR = join(ROOT, 'src', 'content', 'blog');
-const OUT_DIR = join(ROOT, 'static', 'blog', 'og');
+const STATIC_DIR = join(ROOT, 'static');
+const OUT_DIR = join(STATIC_DIR, 'blog', 'og');
+const PAGE_OUT_DIR = join(STATIC_DIR, 'og');
 const FONT_DIR = join(ROOT, 'node_modules', '@fontsource', 'plus-jakarta-sans', 'files');
 
 const WIDTH = 1200;
@@ -31,6 +43,79 @@ const LABEL = {
 	es: 'Rebalanceo de carteras · corebalance.app',
 	en: 'Portfolio rebalancing · corebalance.app'
 };
+
+/**
+ * Páginas fijas. Los títulos son los mismos que sirve cada página; se repiten
+ * aquí porque este script corre en Node, fuera de la app, y no puede leer
+ * typesafe-i18n. Si cambias el H1 de una página, cambia también el texto de aquí.
+ */
+const PAGES = [
+	{
+		key: 'landing',
+		kicker: { es: 'Calculadora gratuita', en: 'Free calculator' },
+		title: {
+			es: 'Rebalancea tu cartera de ETFs y fondos indexados',
+			en: 'Rebalance your portfolio of ETFs and index funds'
+		}
+	},
+	{
+		key: 'blog',
+		kicker: { es: 'Blog', en: 'Blog' },
+		title: {
+			es: 'Inversión indexada y rebalanceo de carteras',
+			en: 'Index investing and portfolio rebalancing'
+		}
+	},
+	{
+		key: 'ter',
+		kicker: { es: 'Herramienta interactiva', en: 'Interactive tool' },
+		title: {
+			es: 'Calculadora de TER total de tu cartera',
+			en: 'Total expense ratio calculator'
+		}
+	},
+	{
+		key: 'checklist',
+		kicker: { es: 'Recurso interactivo', en: 'Interactive resource' },
+		title: { es: '¿Es hora de rebalancear?', en: 'Is it time to rebalance?' }
+	},
+	{
+		key: 'autor',
+		kicker: { es: 'Autor', en: 'Author' },
+		title: { es: 'Quién escribe en CoreBalance', en: 'Who writes on CoreBalance' }
+	},
+	{
+		key: 'vs-excel',
+		kicker: { es: 'Comparativa', en: 'Comparison' },
+		title: { es: 'CoreBalance vs Excel y Google Sheets', en: 'CoreBalance vs Excel & Google Sheets' }
+	},
+	{
+		key: 'vs-indexa-capital',
+		kicker: { es: 'Comparativa', en: 'Comparison' },
+		title: { es: 'CoreBalance vs Indexa Capital', en: 'CoreBalance vs Indexa Capital' }
+	},
+	{
+		key: 'vs-portfolio-performance',
+		kicker: { es: 'Comparativa', en: 'Comparison' },
+		title: {
+			es: 'CoreBalance vs Portfolio Performance',
+			en: 'CoreBalance vs Portfolio Performance'
+		}
+	}
+];
+
+/**
+ * Imágenes en la raíz de `static/` que ya estaban referenciadas (y posiblemente
+ * compartidas por ahí fuera): se regeneran en su sitio para no romper enlaces
+ * antiguos, ahora sí como PNG de 1200×630 de verdad.
+ */
+const LEGACY_IMAGES = [
+	{ out: 'og-image.png', page: 'landing', lang: 'es' },
+	{ out: 'og-image-landing.png', page: 'landing', lang: 'es' },
+	{ out: 'og-image-blog.png', page: 'blog', lang: 'es' },
+	{ out: 'og-image-ter.png', page: 'ter', lang: 'es' },
+	{ out: 'og-image-checklist.png', page: 'checklist', lang: 'es' }
+];
 
 /** Extrae el frontmatter mínimo que necesitamos sin añadir un parser de YAML. */
 function readFrontmatter(raw) {
@@ -61,7 +146,7 @@ function titleFontSize(title) {
 	return 44;
 }
 
-function template({ title, label }) {
+function template({ title, label, kicker }) {
 	return {
 		type: 'div',
 		props: {
@@ -110,20 +195,46 @@ function template({ title, label }) {
 						]
 					}
 				},
-				// Título del post
+				// Antetítulo (sólo en las páginas fijas) + título
 				{
 					type: 'div',
 					props: {
-						style: {
-							display: 'flex',
-							fontSize: `${titleFontSize(title)}px`,
-							fontWeight: 800,
-							lineHeight: 1.18,
-							color: '#ffffff',
-							letterSpacing: '-0.03em',
-							maxWidth: '1000px'
-						},
-						children: title
+						style: { display: 'flex', flexDirection: 'column', gap: '20px' },
+						children: [
+							...(kicker
+								? [
+										{
+											type: 'div',
+											props: {
+												style: {
+													display: 'flex',
+													fontSize: '24px',
+													fontWeight: 700,
+													color: '#60a5fa',
+													textTransform: 'uppercase',
+													letterSpacing: '0.12em'
+												},
+												children: kicker
+											}
+										}
+									]
+								: []),
+							{
+								type: 'div',
+								props: {
+									style: {
+										display: 'flex',
+										fontSize: `${titleFontSize(title)}px`,
+										fontWeight: 800,
+										lineHeight: 1.18,
+										color: '#ffffff',
+										letterSpacing: '-0.03em',
+										maxWidth: '1000px'
+									},
+									children: title
+								}
+							}
+						]
 					}
 				},
 				// Pie
@@ -218,19 +329,24 @@ async function needsRebuild(outPath, sourcePath) {
 	return source.mtimeMs > out.mtimeMs;
 }
 
+/** Rasteriza una card y la escribe en disco. */
+async function render(outPath, content, fonts) {
+	const svg = await satori(template(content), { width: WIDTH, height: HEIGHT, fonts });
+	const png = new Resvg(svg, { fitTo: { mode: 'width', value: WIDTH } }).render().asPng();
+	await writeFile(outPath, png);
+}
+
 async function main() {
 	const posts = await collectPosts();
-	if (posts.length === 0) {
-		console.log('[og] No se encontraron posts, nada que generar.');
-		return;
-	}
+	const fonts = await loadFonts();
 
 	await mkdir(OUT_DIR, { recursive: true });
-	const fonts = await loadFonts();
+	await mkdir(PAGE_OUT_DIR, { recursive: true });
 
 	let generated = 0;
 	let skipped = 0;
 
+	// ── Posts del blog ────────────────────────────────────────────────────────
 	for (const post of posts) {
 		const outPath = join(OUT_DIR, `${post.slug}.png`);
 
@@ -239,21 +355,53 @@ async function main() {
 			continue;
 		}
 
-		const svg = await satori(template({ title: post.title, label: LABEL[post.lang] }), {
-			width: WIDTH,
-			height: HEIGHT,
-			fonts
-		});
-
-		const png = new Resvg(svg, { fitTo: { mode: 'width', value: WIDTH } })
-			.render()
-			.asPng();
-
-		await writeFile(outPath, png);
+		await render(outPath, { title: post.title, label: LABEL[post.lang] }, fonts);
 		generated++;
 	}
 
-	console.log(`[og] ${generated} imágenes generadas, ${skipped} al día (${posts.length} posts).`);
+	// ── Páginas fijas, una por idioma ─────────────────────────────────────────
+	// Estas dependen del propio script, no de un markdown, así que se regeneran
+	// cuando el script cambia.
+	for (const page of PAGES) {
+		for (const lang of LOCALES) {
+			const outPath = join(PAGE_OUT_DIR, `${page.key}-${lang}.png`);
+
+			if (!(await needsRebuild(outPath, fileURLToPath(import.meta.url)))) {
+				skipped++;
+				continue;
+			}
+
+			await render(
+				outPath,
+				{ title: page.title[lang], kicker: page.kicker[lang], label: LABEL[lang] },
+				fonts
+			);
+			generated++;
+		}
+	}
+
+	// ── Nombres antiguos en la raíz de static/ ────────────────────────────────
+	for (const legacy of LEGACY_IMAGES) {
+		const outPath = join(STATIC_DIR, legacy.out);
+		const page = PAGES.find((candidate) => candidate.key === legacy.page);
+
+		if (!(await needsRebuild(outPath, fileURLToPath(import.meta.url)))) {
+			skipped++;
+			continue;
+		}
+
+		await render(
+			outPath,
+			{ title: page.title[legacy.lang], kicker: page.kicker[legacy.lang], label: LABEL[legacy.lang] },
+			fonts
+		);
+		generated++;
+	}
+
+	console.log(
+		`[og] ${generated} imágenes generadas, ${skipped} al día ` +
+			`(${posts.length} posts + ${PAGES.length * LOCALES.length} páginas + ${LEGACY_IMAGES.length} nombres antiguos).`
+	);
 }
 
 main().catch((error) => {

@@ -7,6 +7,7 @@
 	import { link } from '$lib/i18n/link';
 	import { absoluteUrl, localizePath, SITE_URL } from '$lib/i18n/routing';
 	import { AUTHOR, GITHUB_REPO } from '$lib/seo/author';
+	import { pageOgImage } from '$lib/seo/og';
 	import type { Locales } from '$lib/i18n/i18n-types';
 	import type { RelatedPost } from '$lib/blog';
 
@@ -98,6 +99,7 @@
 	description={metaDesc}
 	path={$page.url.pathname}
 	{lang}
+	image={pageOgImage('autor', lang)}
 	jsonLd={schema}
 />
 

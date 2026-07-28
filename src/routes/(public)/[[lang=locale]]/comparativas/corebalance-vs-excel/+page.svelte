@@ -4,6 +4,7 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import SeoHead from '$lib/components/seo/SeoHead.svelte';
+  import { pageOgImage } from '$lib/seo/og';
   import { link } from '$lib/i18n/link';
   import { alternates, SITE_URL, localizePath, absoluteUrl } from '$lib/i18n/routing';
   import type { Locales } from '$lib/i18n/i18n-types';
@@ -54,7 +55,7 @@
         "@type": "Article",
         "headline": metaTitle,
         "description": metaDesc,
-        "image": `${SITE_URL}/og-image.png`,
+        "image": `${SITE_URL}${pageOgImage('vs-excel', lang)}`,
         "inLanguage": lang,
         "author": {
           "@type": "Organization",
@@ -79,6 +80,7 @@
   description={metaDesc}
   path={$page.url.pathname}
   {lang}
+  image={pageOgImage('vs-excel', lang)}
   ogType="article"
   jsonLd={schemaData}
 />

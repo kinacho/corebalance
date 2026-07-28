@@ -4,6 +4,7 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import SeoHead from '$lib/components/seo/SeoHead.svelte';
+  import { pageOgImage } from '$lib/seo/og';
   import { link } from '$lib/i18n/link';
   import { absoluteUrl, localizePath } from '$lib/i18n/routing';
   import type { Locales } from '$lib/i18n/i18n-types';
@@ -220,7 +221,7 @@
   description={metaDesc}
   path={$page.url.pathname}
   {lang}
-  image="/og-image-checklist.png"
+  image={pageOgImage('checklist', lang)}
   jsonLd={breadcrumbSchema}
 />
 

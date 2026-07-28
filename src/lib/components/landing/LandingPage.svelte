@@ -13,6 +13,7 @@
   import { page } from '$app/stores';
   import SeoHead from '$lib/components/seo/SeoHead.svelte';
   import { AUTHOR, GITHUB_REPO } from '$lib/seo/author';
+  import { pageOgImage } from '$lib/seo/og';
   import { SITE_URL, alternates } from '$lib/i18n/routing';
   import type { Locales } from '$lib/i18n/i18n-types';
 
@@ -37,7 +38,7 @@
         "softwareVersion": __APP_VERSION__,
         "inLanguage": ["es", "en"],
         "isAccessibleForFree": true,
-        "screenshot": `${SITE_URL}/og-image-landing.png`,
+        "screenshot": `${SITE_URL}${pageOgImage('landing', lang)}`,
         "sameAs": [GITHUB_REPO],
         "offers": {
           "@type": "Offer",
@@ -79,7 +80,7 @@
     description={$LL.seo.description()}
     path={$page.url.pathname}
     {lang}
-    image="/og-image-landing.png"
+    image={pageOgImage('landing', lang)}
     jsonLd={schemaData}
   />
 
