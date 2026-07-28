@@ -43,3 +43,64 @@ export const DEFAULT_LOCALE = 'es';
 
 /** Idiomas que sí llevan prefijo en la URL. */
 export const PREFIXED_LOCALES = ['en'];
+
+const PREFIX_RE = new RegExp(`^/(${PREFIXED_LOCALES.join('|')})(?=/|$)`);
+
+/**
+ * Implementación única de la localización de rutas. Vive aquí, en JS plano, para
+ * que la compartan los tres consumidores sin duplicar la regla:
+ *
+ * - `routing.ts` → enlaces de los componentes (`$link`) y hreflang.
+ * - `svelte.config.js` → el plugin remark que localiza los enlaces del markdown.
+ * - la config de prerender → las entradas `/en/...`.
+ *
+ * @param {string} pathname
+ * @returns {string}
+ */
+export function stripLocalePrefix(pathname) {
+	const stripped = pathname.replace(PREFIX_RE, '');
+	return stripped === '' ? '/' : stripped;
+}
+
+/**
+ * @param {string} pathname
+ * @param {string} lang
+ * @returns {string}
+ */
+export function localizeRoute(pathname, lang) {
+	const base = stripLocalePrefix(pathname);
+	if (lang === DEFAULT_LOCALE) return base;
+	return base === '/' ? `/${lang}` : `/${lang}${base}`;
+}
+
+/**
+ * @param {string} pathname
+ * @returns {boolean}
+ */
+export function isBilingualRoute(pathname) {
+	return BILINGUAL_ROUTES.includes(stripLocalePrefix(pathname));
+}
+
+/**
+ * Traduce un enlace interno al idioma indicado, conservando hash y query.
+ *
+ * Deja intacto lo que no tiene variante de idioma en la URL:
+ * - `/blog/<slug>`, porque cada post ya tiene su propio slug traducido;
+ * - `/dashboard` y `/api/...`, que no existen bajo `/en/`;
+ * - cualquier destino externo o ancla.
+ *
+ * @param {string} href
+ * @param {string} lang
+ * @returns {string}
+ */
+export function localizeInternalLink(href, lang) {
+	if (typeof href !== 'string' || !href.startsWith('/')) return href;
+
+	const cut = href.search(/[#?]/);
+	const pathname = cut === -1 ? href : href.slice(0, cut);
+	const suffix = cut === -1 ? '' : href.slice(cut);
+
+	if (!isBilingualRoute(pathname)) return href;
+
+	return localizeRoute(pathname, lang) + suffix;
+}

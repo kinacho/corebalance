@@ -1,6 +1,6 @@
 import adapter from '@sveltejs/adapter-auto';
 import { mdsvex } from 'mdsvex';
-import { BILINGUAL_ROUTES } from './src/lib/i18n/bilingual-routes.js';
+import { BILINGUAL_ROUTES, localizeInternalLink } from './src/lib/i18n/bilingual-routes.js';
 
 /**
  * `'*'` cubre las rutas sin parámetros obligatorios, lo que incluye la variante
@@ -57,6 +57,46 @@ function remarkReadingTime() {
 }
 
 /**
+ * Localiza los enlaces internos del artículo según el idioma del propio post.
+ *
+ * El problema que resuelve: en un post en inglés, un enlace a
+ * `/comparativas/corebalance-vs-excel` llevaba a la comparativa **en español**.
+ * Había 11 enlaces así, y el fallo se repetiría cada vez que alguien escribiera un
+ * enlace nuevo, porque hay que acordarse del prefijo `/en/` a mano.
+ *
+ * Con esto el markdown se escribe siempre con la ruta canónica en español y el
+ * build la traduce al idioma del post. Sólo afecta a las rutas que existen en dos
+ * idiomas: `/blog/<slug>` no se toca (cada post ya tiene su slug traducido) ni
+ * `/dashboard`, ni los enlaces externos.
+ *
+ * @returns {(tree: any, file: any) => void}
+ */
+function remarkLocalizeLinks() {
+	return (tree, file) => {
+		// El idioma sale del frontmatter y, si faltara, de la carpeta del fichero.
+		const lang =
+			file.data?.fm?.lang ??
+			(/[/\\](en|es)[/\\][^/\\]+\.md$/.exec(file.filename ?? file.path ?? '')?.[1] ?? 'es');
+
+		/** @param {any} node */
+		const walk = (node) => {
+			if (node.type === 'link' || node.type === 'definition') {
+				node.url = localizeInternalLink(node.url, lang);
+			}
+			// Enlaces escritos como HTML crudo dentro del markdown.
+			if ((node.type === 'html' || node.type === 'jsx') && typeof node.value === 'string') {
+				node.value = node.value.replace(
+					/href="(\/[^"]*)"/g,
+					(_, href) => `href="${localizeInternalLink(href, lang)}"`
+				);
+			}
+			if (Array.isArray(node.children)) node.children.forEach(walk);
+		};
+		walk(tree);
+	};
+}
+
+/**
  * Extrae las parejas pregunta/respuesta del artículo para poder emitir el schema
  * FAQPage sin duplicar el contenido a mano en el componente.
  *
@@ -98,7 +138,7 @@ const config = {
 	preprocess: [
 		mdsvex({
 			extensions: ['.md'],
-			remarkPlugins: [remarkReadingTime, remarkFaq]
+			remarkPlugins: [remarkReadingTime, remarkFaq, remarkLocalizeLinks]
 		})
 	],
 	compilerOptions: {

@@ -3,7 +3,10 @@ import {
 	BILINGUAL_ROUTES as ROUTES,
 	NOINDEX_ROUTES as NOINDEX,
 	DEFAULT_LOCALE as DEFAULT,
-	PREFIXED_LOCALES as PREFIXED
+	PREFIXED_LOCALES as PREFIXED,
+	stripLocalePrefix,
+	localizeRoute,
+	localizeInternalLink
 } from './bilingual-routes.js';
 
 export const SITE_URL = 'https://corebalance.app';
@@ -27,10 +30,13 @@ export function isNoindexRoute(pathname: string): boolean {
 
 const PREFIX_RE = new RegExp(`^/(${PREFIXED_LOCALES.join('|')})(?=/|$)`);
 
+// La lógica pura vive en `bilingual-routes.js` para que la compartan los
+// componentes, el plugin remark del markdown y la config de prerender. Aquí sólo
+// se le pone tipo.
+
 /** Quita el prefijo de idioma de un pathname: `/en/blog` → `/blog`. */
 export function stripLocale(pathname: string): string {
-	const stripped = pathname.replace(PREFIX_RE, '');
-	return stripped === '' ? '/' : stripped;
+	return stripLocalePrefix(pathname);
 }
 
 /** Deduce el idioma a partir del pathname. */
@@ -41,9 +47,7 @@ export function localeFromPath(pathname: string): Locales {
 
 /** Traduce un pathname al idioma indicado: (`/blog`, 'en') → `/en/blog`. */
 export function localizePath(pathname: string, lang: Locales): string {
-	const base = stripLocale(pathname);
-	if (lang === DEFAULT_LOCALE) return base;
-	return base === '/' ? `/${lang}` : `/${lang}${base}`;
+	return localizeRoute(pathname, lang);
 }
 
 /** Convierte un pathname en URL absoluta, sin barra final salvo en la raíz. */
@@ -88,15 +92,7 @@ export function isBilingualRoute(pathname: string): boolean {
  * Conserva hash y query: (`/#features`, 'en') → `/en#features`.
  */
 export function localeLink(href: string, lang: Locales): string {
-	if (!href.startsWith('/')) return href;
-
-	const cut = href.search(/[#?]/);
-	const pathname = cut === -1 ? href : href.slice(0, cut);
-	const suffix = cut === -1 ? '' : href.slice(cut);
-
-	if (!isBilingualRoute(pathname)) return href;
-
-	return localizePath(pathname, lang) + suffix;
+	return localizeInternalLink(href, lang);
 }
 
 /** Rutas que sirven contenido según cookie y por tanto no se pueden cachear en CDN. */

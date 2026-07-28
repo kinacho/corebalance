@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { readdirSync, existsSync } from 'node:fs';
+import { readdirSync, readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import {
 	BILINGUAL_ROUTES,
@@ -106,6 +106,87 @@ describe('isLocaleCookieRoute', () => {
 		expect(isLocaleCookieRoute('/api/prices')).toBe(true);
 		expect(isLocaleCookieRoute('/blog')).toBe(false);
 		expect(isLocaleCookieRoute('/en')).toBe(false);
+	});
+});
+
+describe('enlaces internos del markdown del blog', () => {
+	const CONTENT = join(process.cwd(), 'src', 'content', 'blog');
+
+	/** slug → idioma, para saber a qué idioma apunta un enlace a un post. */
+	const langBySlug = new Map<string, 'es' | 'en'>();
+	for (const lang of ['es', 'en'] as const) {
+		const dir = join(CONTENT, lang);
+		if (!existsSync(dir)) continue;
+		for (const file of readdirSync(dir).filter((f) => f.endsWith('.md'))) {
+			langBySlug.set(file.replace(/\.md$/, ''), lang);
+		}
+	}
+
+	/** Todos los enlaces internos del markdown, con el idioma del post que los contiene. */
+	function internalLinks() {
+		const links: { lang: 'es' | 'en'; slug: string; href: string }[] = [];
+		for (const lang of ['es', 'en'] as const) {
+			const dir = join(CONTENT, lang);
+			if (!existsSync(dir)) continue;
+			for (const file of readdirSync(dir).filter((f) => f.endsWith('.md'))) {
+				const src = readFileSync(join(dir, file), 'utf8');
+				for (const m of src.matchAll(/\[[^\]]*\]\((\/[^)]*)\)/g)) {
+					links.push({ lang, slug: file.replace(/\.md$/, ''), href: m[1] });
+				}
+			}
+		}
+		return links;
+	}
+
+	it('hay enlaces internos que auditar', () => {
+		expect(internalLinks().length).toBeGreaterThan(50);
+	});
+
+	/**
+	 * Un post nunca debe enlazar a un artículo del otro idioma: eso el plugin de
+	 * build no lo puede arreglar, porque el slug destino es otro contenido.
+	 */
+	it('ningún post enlaza a un artículo del otro idioma', () => {
+		for (const { lang, slug, href } of internalLinks()) {
+			const target = href.split(/[#?]/)[0].match(/^\/blog\/([^/]+)\/?$/)?.[1];
+			if (!target) continue;
+			const targetLang = langBySlug.get(target);
+			expect(targetLang, `${lang}/${slug} enlaza a /blog/${target}, que no existe`).toBeDefined();
+			expect(targetLang, `${lang}/${slug} (${lang}) enlaza a /blog/${target} (${targetLang})`).toBe(
+				lang
+			);
+		}
+	});
+
+	/**
+	 * Las rutas bilingües sí las localiza el plugin en build, así que en el markdown
+	 * deben escribirse sin prefijo. Si alguien pone `/en/...` a mano, el plugin lo
+	 * dejaría igual y el post español acabaría enlazando al inglés.
+	 */
+	it('las rutas bilingües se escriben sin prefijo de idioma', () => {
+		for (const { lang, slug, href } of internalLinks()) {
+			expect(
+				href.startsWith('/en/'),
+				`${lang}/${slug} escribe ${href} con prefijo; debe ir sin él y lo localiza el build`
+			).toBe(false);
+		}
+	});
+
+	it('el build traduce esos enlaces al idioma del post', () => {
+		// Es la transformación que aplica remarkLocalizeLinks en svelte.config.js.
+		expect(localeLink('/comparativas/corebalance-vs-excel', 'en')).toBe(
+			'/en/comparativas/corebalance-vs-excel'
+		);
+		expect(localeLink('/herramientas/calculadora-ter', 'en')).toBe(
+			'/en/herramientas/calculadora-ter'
+		);
+		expect(localeLink('/comparativas/corebalance-vs-excel', 'es')).toBe(
+			'/comparativas/corebalance-vs-excel'
+		);
+		// Y no toca los posts, que tienen slug propio por idioma.
+		expect(localeLink('/blog/index-funds-vs-etfs-comparison', 'en')).toBe(
+			'/blog/index-funds-vs-etfs-comparison'
+		);
 	});
 });
 
