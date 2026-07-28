@@ -1,4 +1,5 @@
-export const GITHUB_REPO = 'https://github.com/kino166/rebalanceador';
+/** Debe coincidir con el remote real: un `sameAs` a un repo inexistente es una señal de entidad rota. */
+export const GITHUB_REPO = 'https://github.com/kinacho/Rebalanceador-90-5-5';
 
 /**
  * Datos del autor del blog, en un solo sitio porque los consumen la página de
@@ -17,7 +18,7 @@ export const AUTHOR = {
 	name: 'kinacho',
 	displayName: 'Kinacho',
 	path: '/autor/kinacho',
-	github: 'https://github.com/kino166',
+	github: 'https://github.com/kinacho',
 	jobTitle: {
 		es: 'Desarrollador e inversor indexado',
 		en: 'Developer and index investor'

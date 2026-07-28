@@ -65,7 +65,7 @@ describe('localeLink', () => {
 	});
 
 	it('ignora los enlaces externos', () => {
-		expect(localeLink('https://github.com/kino166', 'en')).toBe('https://github.com/kino166');
+		expect(localeLink('https://github.com/kinacho', 'en')).toBe('https://github.com/kinacho');
 		expect(localeLink('mailto:hola@corebalance.app', 'en')).toBe('mailto:hola@corebalance.app');
 	});
 });
