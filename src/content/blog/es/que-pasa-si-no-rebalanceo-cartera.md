@@ -15,6 +15,10 @@ ogImage: "/blog/og/que-pasa-si-no-rebalanceo-cartera.jpg"
 slugs: { es: 'que-pasa-si-no-rebalanceo-cartera', en: 'what-happens-if-you-dont-rebalance' }
 ---
 
+<script>
+  import BacktestTable from '$lib/components/blog/BacktestTable.svelte';
+</script>
+
 Uno de los mantras más populares de la inversión indexada o pasiva es la famosa frase: *“Comprar y no tocar nada”* (o en inglés, *buy and hold*). Muchos inversores interpretan esto al pie de la letra, asumiendo que tras elegir sus [fondos indexados](/blog/fondos-indexados-vs-etfs-espana) o ETFs iniciales, su única tarea durante los siguientes 20 años es aportar dinero y desentenderse por completo de la pantalla del bróker.
 
 Sin embargo, hay una excepción crucial a esta regla de inactividad: el **rebalanceo de cartera**.
@@ -65,6 +69,18 @@ Analicemos qué ocurrió en un escenario real: el mercado bajista de la crisis f
 Imagina un inversor que en el año 2003 tenía una cartera equilibrada 60/40.
 * **El inversor A rebalanceó anualmente:** En 2008, tras el estallido de la crisis de las hipotecas subprime, su cartera sufrió pérdidas, pero el rebalanceo sistemático le obligó a vender bonos (que estaban caros) para comprar acciones (que estaban en mínimos). Cuando el mercado se recuperó con fuerza a partir de 2009, su cartera rebotó con una velocidad espectacular.
 * **El inversor B nunca rebalanceó:** En 2008 llegó con una cartera que se había desvíado de forma natural hasta un 80/20 por las subidas de los años anteriores. La caída que sufrió fue dramática. No tenía bonos suficientes para vender y aprovechar las gangas en renta variable, por lo que su recuperación tardó años más en completarse.
+
+### Qué dicen los datos reales de 2010 a 2026
+
+El relato anterior es ilustrativo. Estos números no: son el resultado de simular una cartera 80/20 con series reales de mercado desde enero de 2010, con y sin rebalanceo anual.
+
+<BacktestTable lang="es" />
+
+El dato incómodo es que **no rebalancear salió más rentable** en este periodo concreto, y preferimos decirlo que esconderlo: son más de dieciséis años especialmente buenos para la bolsa, y dejar correr la parte de acciones paga cuando las acciones apenas dejan de subir.
+
+Lo que revela la tabla es el problema de fondo. La cartera que nunca se rebalanceó terminó con casi el **94% en renta variable**. Quien la diseñó eligió un 80/20 porque ese era el riesgo que podía soportar, y acabó con una cartera que ya no era la suya, sin haber tomado ninguna decisión. La caída máxima de los dos escenarios apenas se diferencia, pero por un motivo que conviene entender: el periodo arranca *después* del desplome de 2008, y ninguna de las correcciones posteriores pilló a la cartera en su punto de máxima desviación. La próxima puede.
+
+Dicho de otra forma: **rebalancear no es una estrategia para ganar más, es el precio de seguir invirtiendo con el riesgo que elegiste.** Si esperabas que la tabla dijera lo contrario, ese es exactamente el malentendido que merece la pena deshacer.
 
 ---
 

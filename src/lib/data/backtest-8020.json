@@ -1,0 +1,56 @@
+{
+  "generatedAt": "2026-07-28",
+  "source": "Yahoo Finance (cierres mensuales ajustados, dividendos reinvertidos)",
+  "instruments": {
+    "equity": {
+      "ticker": "ACWI",
+      "name": "iShares MSCI ACWI ETF (renta variable global)"
+    },
+    "bonds": {
+      "ticker": "BND",
+      "name": "Vanguard Total Bond Market ETF (renta fija)"
+    }
+  },
+  "period": {
+    "from": "2010-01",
+    "to": "2026-07",
+    "months": 199
+  },
+  "targetAllocation": {
+    "equity": 80,
+    "bonds": 20
+  },
+  "initialCapital": 10000,
+  "assumptions": [
+    "Aportación única inicial, sin aportaciones periódicas posteriores.",
+    "Rebalanceo anual al cierre de diciembre en el escenario rebalanceado.",
+    "Sin comisiones de compraventa, custodia ni impacto fiscal.",
+    "Cierres mensuales ajustados: los dividendos se consideran reinvertidos."
+  ],
+  "scenarios": {
+    "never": {
+      "initial": 10000,
+      "finalValue": 45991,
+      "cagr": 9.64,
+      "maxDrawdown": 24.63,
+      "finalEquityWeight": 93.6,
+      "maxEquityWeight": 93.6,
+      "minEquityWeight": 78.3,
+      "rebalances": 0
+    },
+    "annual": {
+      "initial": 10000,
+      "finalValue": 42517,
+      "cagr": 9.12,
+      "maxDrawdown": 23.49,
+      "finalEquityWeight": 81.5,
+      "maxEquityWeight": 83.3,
+      "minEquityWeight": 75.6,
+      "rebalances": 16
+    }
+  },
+  "difference": {
+    "finalValue": -3474,
+    "equityWeightDrift": 12.1
+  }
+}

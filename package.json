@@ -11,6 +11,7 @@
 		"og": "node scripts/generate-og.mjs --force",
 		"icons": "node scripts/generate-icons.mjs",
 		"llms": "node scripts/generate-llms.mjs",
+		"backtest": "node scripts/backtest-8020.mjs",
 		"indexnow": "node scripts/indexnow.mjs",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
