@@ -55,11 +55,23 @@ export interface PostMetadata {
 	canonical: string;
 	ogImage: string;
 	slugs: { es: string; en: string };
+	/** Inyectados en build por el plugin remark de `svelte.config.js`. */
+	readingMinutes?: number;
+	wordCount?: number;
 }
 
 export interface Post extends PostMetadata {
 	slug: string;
 	content: ComponentType;
+}
+
+/** Versión ligera de un post para las tarjetas de "relacionados". */
+export interface RelatedPost {
+	slug: string;
+	title: string;
+	description: string;
+	publishDate: string;
+	readingMinutes?: number;
 }
 
 // Carga estática de todos los archivos markdown en tiempo de compilación
@@ -81,6 +93,57 @@ const postsList: Post[] = Object.entries(modules).map(([path, module]) => {
 		content: module.default
 	};
 });
+
+/** Imagen social por defecto, usada cuando un post no tiene la suya generada. */
+export const DEFAULT_OG_IMAGE = '/og-image-blog.png';
+
+/**
+ * OG images generadas en build por `scripts/generate-og.mjs`.
+ *
+ * Se resuelven por slug y no por el campo `ogImage` del frontmatter a propósito:
+ * ese campo apuntaba a `/blog/og/<slug>.jpg` sobre un directorio que no existía
+ * (404 en og:image y schema inválido) y en 6 posts en inglés apuntaba además al
+ * fichero del slug español. Mirando el slug real, ambos problemas desaparecen.
+ */
+const ogFiles = import.meta.glob('/static/blog/og/*.{png,jpg,jpeg}', { query: '?url' });
+
+const ogImageBySlug = new Map<string, string>(
+	Object.keys(ogFiles).map((path) => {
+		const file = path.split('/').pop() as string;
+		const slug = file.replace(/\.(png|jpe?g)$/, '');
+		return [slug, `/blog/og/${file}`];
+	})
+);
+
+/** Ruta de la imagen social de un post, con fallback a la genérica de marca. */
+export function postOgImage(post: Pick<Post, 'slug'>): string {
+	return ogImageBySlug.get(post.slug) ?? DEFAULT_OG_IMAGE;
+}
+
+/**
+ * Posts del mismo idioma que comparten etiquetas, de mayor a menor solape.
+ * El enlazado interno entre artículos es de lo que más mueve posiciones en un
+ * blog de nicho, y los `tags` ya venían en el frontmatter sin usarse para esto.
+ */
+export function getRelatedPosts(post: Post, limit = 3): Post[] {
+	const tags = new Set(post.tags ?? []);
+	if (tags.size === 0) return [];
+
+	return postsList
+		.filter((candidate) => candidate.lang === post.lang && candidate.slug !== post.slug)
+		.map((candidate) => ({
+			post: candidate,
+			shared: (candidate.tags ?? []).filter((tag) => tags.has(tag)).length
+		}))
+		.filter((entry) => entry.shared > 0)
+		.sort(
+			(a, b) =>
+				b.shared - a.shared ||
+				new Date(b.post.publishDate).getTime() - new Date(a.post.publishDate).getTime()
+		)
+		.slice(0, limit)
+		.map((entry) => entry.post);
+}
 
 /**
  * Obtiene todos los posts ordenados por fecha de publicación (más recientes primero)

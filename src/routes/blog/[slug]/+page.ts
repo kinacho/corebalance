@@ -1,4 +1,4 @@
-import { getPosts } from '$lib/blog';
+import { getPosts, getRelatedPosts } from '$lib/blog';
 import { error } from '@sveltejs/kit';
 import type { PageLoad, EntryGenerator } from './$types';
 
@@ -26,5 +26,15 @@ export const load: PageLoad = async ({ params }) => {
 		error(404, 'Post not found');
 	}
 
-	return { post };
+	// Sólo los campos que pinta la tarjeta: el componente compilado del post
+	// relacionado no hace falta aquí.
+	const related = getRelatedPosts(post).map((p) => ({
+		slug: p.slug,
+		title: p.title,
+		description: p.description,
+		publishDate: p.publishDate,
+		readingMinutes: p.readingMinutes
+	}));
+
+	return { post, related };
 };

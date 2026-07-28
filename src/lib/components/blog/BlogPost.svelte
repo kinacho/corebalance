@@ -1,32 +1,56 @@
 <script lang="ts">
-  import { locale, LL } from '$lib/i18n/i18n-svelte';
-  import type { Post } from '$lib/blog';
+  import type { Post, RelatedPost } from '$lib/blog';
+  import { postOgImage } from '$lib/blog';
   import { goto } from '$app/navigation';
   import LandingNavBar from '$lib/components/landing/LandingNavBar.svelte';
   import LandingFooter from '$lib/components/landing/LandingFooter.svelte';
+  import SeoHead from '$lib/components/seo/SeoHead.svelte';
+  import { AUTHOR } from '$lib/seo/author';
+  import { SITE_URL, absoluteUrl, localizePath } from '$lib/i18n/routing';
 
-  let { post }: { post: Post } = $props();
+  let { post, related = [] }: { post: Post; related?: RelatedPost[] } = $props();
 
-  // Reaccionar al cambio global de idioma
-  const currentLang = $derived($locale);
+  // El idioma lo manda el propio post, no el store global: un post en inglés se
+  // prerenderiza en build (sin cookie → locale 'es') y antes eso hacía que el
+  // HTML servido a Googlebot llevara la interfaz en español sobre texto inglés.
+  const currentLang = $derived(post.lang);
+  const isEs = $derived(currentLang === 'es');
 
-  // Usar $LL para las traducciones fijas que no están en el post
   const t = $derived({
-    back: currentLang === 'es' ? 'Volver al blog' : 'Back to blog',
-    breadcrumbHome: currentLang === 'es' ? 'Inicio' : 'Home',
+    back: isEs ? 'Volver al blog' : 'Back to blog',
+    breadcrumbHome: isEs ? 'Inicio' : 'Home',
     breadcrumbBlog: 'Blog',
-    ctaTitle: currentLang === 'es' ? '¿Listo para rebalancear tu cartera?' : 'Ready to rebalance your portfolio?',
-    ctaDesc: currentLang === 'es' 
-        ? 'Introduce tus fondos o ETFs, define tus porcentajes objetivo y obtén los cálculos exactos al instante. Gratis, sin registro y 100% privado en tu navegador.' 
+    ctaTitle: isEs ? '¿Listo para rebalancear tu cartera?' : 'Ready to rebalance your portfolio?',
+    ctaDesc: isEs
+        ? 'Introduce tus fondos o ETFs, define tus porcentajes objetivo y obtén los cálculos exactos al instante. Gratis, sin registro y 100% privado en tu navegador.'
         : 'Enter your funds or ETFs, set your target percentages, and get the exact calculation instantly. Free, no signup required, and 100% private in your browser.',
-    ctaBtn: currentLang === 'es' ? 'Probar calculadora gratis' : 'Try free calculator',
-    readTime: currentLang === 'es' ? '3 min de lectura' : '3 min read',
-    authorPrefix: currentLang === 'es' ? 'Por' : 'By'
+    ctaBtn: isEs ? 'Probar calculadora gratis' : 'Try free calculator',
+    readTime: (min: number) => (isEs ? `${min} min de lectura` : `${min} min read`),
+    authorPrefix: isEs ? 'Por' : 'By',
+    updatedOn: isEs ? 'Actualizado el' : 'Updated on',
+    relatedTitle: isEs ? 'Seguir leyendo' : 'Keep reading',
+    relatedSubtitle: isEs
+        ? 'Artículos relacionados con este tema'
+        : 'Articles related to this topic'
   });
+
+  // Antes estaba cableado a "3 min"; ahora lo calcula en build el plugin remark
+  // de svelte.config.js a partir del texto real del artículo.
+  const readingMinutes = $derived(post.readingMinutes ?? 3);
+
+  /** Sólo mostramos "actualizado" si de verdad es posterior a la publicación. */
+  const wasUpdated = $derived(
+    Boolean(post.updatedDate) && post.updatedDate !== post.publishDate
+  );
+
+  const homePath = $derived(localizePath('/', currentLang));
+  const blogPath = $derived(localizePath('/blog', currentLang));
+  const postUrl = $derived(absoluteUrl(`/blog/${post.slug}`));
+  const ogImage = $derived(postOgImage(post));
 
   function formatPostDate(dateStr: string) {
     const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateStr).toLocaleDateString(currentLang === 'es' ? 'es-ES' : 'en-US', options);
+    return new Date(dateStr).toLocaleDateString(isEs ? 'es-ES' : 'en-US', options);
   }
 
   // Generamos el schema JSON-LD de Article y Breadcrumb
@@ -36,76 +60,64 @@
       '@type': 'BlogPosting',
       'headline': post.title,
       'description': post.description,
-      'image': post.ogImage.startsWith('http') ? post.ogImage : `https://corebalance.app${post.ogImage}`,
+      'image': `${SITE_URL}${ogImage}`,
       'datePublished': post.publishDate,
-      'dateModified': post.updatedDate,
-      'author': { '@type': 'Person', 'name': post.author },
+      'dateModified': post.updatedDate || post.publishDate,
+      'inLanguage': post.lang,
+      'wordCount': post.wordCount,
+      'timeRequired': `PT${readingMinutes}M`,
+      'author': {
+        '@type': 'Person',
+        '@id': `${SITE_URL}${AUTHOR.path}#person`,
+        'name': post.author,
+        'url': absoluteUrl(localizePath(AUTHOR.path, currentLang))
+      },
       'publisher': {
         '@type': 'Organization',
+        '@id': `${SITE_URL}/#org`,
         'name': 'CoreBalance',
-        'logo': { '@type': 'ImageObject', 'url': 'https://corebalance.app/logo.png' }
+        'logo': { '@type': 'ImageObject', 'url': `${SITE_URL}/logo.png` }
       },
-      'mainEntityOfPage': { '@type': 'WebPage', '@id': post.canonical }
+      'mainEntityOfPage': { '@type': 'WebPage', '@id': postUrl }
     },
     {
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
       'itemListElement': [
-        { '@type': 'ListItem', 'position': 1, 'name': t.breadcrumbHome, 'item': 'https://corebalance.app/' },
-        { '@type': 'ListItem', 'position': 2, 'name': t.breadcrumbBlog, 'item': 'https://corebalance.app/blog' },
-        { '@type': 'ListItem', 'position': 3, 'name': post.title, 'item': post.canonical }
+        { '@type': 'ListItem', 'position': 1, 'name': t.breadcrumbHome, 'item': absoluteUrl(homePath) },
+        { '@type': 'ListItem', 'position': 2, 'name': t.breadcrumbBlog, 'item': absoluteUrl(blogPath) },
+        { '@type': 'ListItem', 'position': 3, 'name': post.title, 'item': postUrl }
       ]
     }
   ]);
 
-  const jsonLdString = $derived(JSON.stringify(jsonLd));
-
   const Content = $derived(post.content);
 </script>
 
-<svelte:head>
-  <title>{post.title} | CoreBalance</title>
-  <meta name="description" content={post.description} />
-  
-  	<!-- Canonical + Hreflang (ES/EN/x-default) -->
-	{#if post.slugs?.es && post.slugs?.en}
-		<link rel="alternate" hreflang="es" href="https://corebalance.app/blog/{post.slugs.es}" />
-		<link rel="alternate" hreflang="en" href="https://corebalance.app/blog/{post.slugs.en}" />
-		<link rel="alternate" hreflang="x-default" href="https://corebalance.app/blog/{post.slugs.es}" />
-	{:else}
-		<link rel="alternate" hreflang={post.lang} href="https://corebalance.app/blog/{post.slug}" />
-	{/if}
-
-	<!-- Open Graph -->
-	<meta property="og:title" content={post.title} />
-	<meta property="og:description" content={post.description} />
-	<meta property="og:image" content={post.ogImage.startsWith('http') ? post.ogImage : `https://corebalance.app${post.ogImage}`} />
-	<meta property="og:image:width" content="1200" />
-	<meta property="og:image:height" content="630" />
-	<meta property="og:type" content="article" />
-	<meta property="og:url" content={post.canonical} />
-
-	<!-- Twitter Card -->
-	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:title" content={post.title} />
-	<meta name="twitter:description" content={post.description} />
-	<meta name="twitter:image" content={post.ogImage.startsWith('http') ? post.ogImage : `https://corebalance.app${post.ogImage}`} />
-
-  <!-- Schema.org JSON-LD -->
-  {@html `<script type="application/ld+json">${jsonLdString}</script>`}
-</svelte:head>
+<SeoHead
+  title={`${post.title} | CoreBalance`}
+  description={post.description}
+  path={`/blog/${post.slug}`}
+  lang={currentLang}
+  image={ogImage}
+  ogType="article"
+  bilingual={false}
+  altEs={post.slugs?.es ? absoluteUrl(`/blog/${post.slugs.es}`) : null}
+  altEn={post.slugs?.en ? absoluteUrl(`/blog/${post.slugs.en}`) : null}
+  jsonLd={jsonLd}
+/>
 
 <div class="blog-post-page">
   <div class="background-mesh"></div>
 
-  <LandingNavBar onStart={() => goto('/')} />
+  <LandingNavBar onStart={() => goto(homePath)} />
 
   <main class="post-container">
     <!-- Breadcrumb de navegación -->
     <nav class="breadcrumb" aria-label="Breadcrumb">
-      <a href="/">{t.breadcrumbHome}</a>
+      <a href={homePath}>{t.breadcrumbHome}</a>
       <span class="separator">/</span>
-      <a href="/blog">{t.breadcrumbBlog}</a>
+      <a href={blogPath}>{t.breadcrumbBlog}</a>
       <span class="separator">/</span>
       <span class="current" aria-current="page">{post.title}</span>
     </nav>
@@ -115,13 +127,24 @@
         <div class="post-meta">
           <time datetime={post.publishDate}>{formatPostDate(post.publishDate)}</time>
           <span class="separator-dot">·</span>
-          <span>{t.readTime}</span>
+          <span>{t.readTime(readingMinutes)}</span>
           <span class="separator-dot">·</span>
-          <span class="author">{t.authorPrefix} {post.author}</span>
+          <span class="author">
+            {t.authorPrefix}
+            <a href={localizePath(AUTHOR.path, currentLang)} rel="author">{post.author}</a>
+          </span>
         </div>
 
         <h1 class="post-title">{post.title}</h1>
-        
+
+        {#if wasUpdated}
+          <!-- Visible, no sólo en el schema: la frescura que se ve es la que
+               premian tanto Google como los buscadores generativos. -->
+          <p class="post-updated">
+            {t.updatedOn} <time datetime={post.updatedDate}>{formatPostDate(post.updatedDate)}</time>
+          </p>
+        {/if}
+
         <div class="post-tags">
           {#each post.tags as tag}
             <span class="tag-badge">#{tag}</span>
@@ -140,7 +163,7 @@
         <div class="cta-content">
           <h3>{t.ctaTitle}</h3>
           <p>{t.ctaDesc}</p>
-          <button class="btn-cta" onclick={() => goto('/')}>
+          <button class="btn-cta" onclick={() => goto(homePath)}>
             {t.ctaBtn}
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="cta-arrow">
               <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -151,8 +174,26 @@
       </section>
     </article>
 
+    {#if related.length > 0}
+      <section class="related" aria-labelledby="related-heading">
+        <h2 id="related-heading">{t.relatedTitle}</h2>
+        <p class="related-subtitle">{t.relatedSubtitle}</p>
+        <ul class="related-grid">
+          {#each related as item}
+            <li>
+              <a class="related-card" href={`/blog/${item.slug}`}>
+                <h3>{item.title}</h3>
+                <p>{item.description}</p>
+                <span class="related-meta">{t.readTime(item.readingMinutes ?? 3)}</span>
+              </a>
+            </li>
+          {/each}
+        </ul>
+      </section>
+    {/if}
+
     <div class="post-back-nav">
-      <a href="/blog" class="btn-back">
+      <a href={blogPath} class="btn-back">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="back-arrow">
           <line x1="19" y1="12" x2="5" y2="12"></line>
           <polyline points="12 19 5 12 12 5"></polyline>
@@ -276,10 +317,98 @@
     }
   }
 
+  .post-meta .author a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: rgba(255, 255, 255, 0.2);
+    text-underline-offset: 3px;
+  }
+
+  .post-meta .author a:hover {
+    color: #fff;
+    text-decoration-color: #3b82f6;
+  }
+
+  .post-updated {
+    font-size: 0.85rem;
+    color: rgba(16, 185, 129, 0.85);
+    margin: -0.75rem 0 1.5rem;
+    font-weight: 600;
+  }
+
   .post-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
+  }
+
+  /* ── Posts relacionados ─────────────────────────────────── */
+  .related {
+    margin-bottom: 3rem;
+  }
+
+  .related h2 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #fff;
+    margin: 0 0 0.35rem;
+    letter-spacing: -0.02em;
+  }
+
+  .related-subtitle {
+    color: var(--text-muted, rgba(160, 160, 200, 0.6));
+    font-size: 0.9rem;
+    margin: 0 0 1.5rem;
+  }
+
+  .related-grid {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+  }
+
+  .related-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 0.5rem;
+    padding: 1.25rem;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.02);
+    text-decoration: none;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .related-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(139, 92, 246, 0.25);
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .related-card h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  .related-card p {
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0;
+    flex-grow: 1;
+  }
+
+  .related-meta {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #a78bfa;
   }
 
   .tag-badge {
