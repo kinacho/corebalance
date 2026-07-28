@@ -2,9 +2,25 @@
   import LandingNavBar from '$lib/components/landing/LandingNavBar.svelte';
   import LandingFooter from '$lib/components/landing/LandingFooter.svelte';
   import { goto } from '$app/navigation';
-  import { locale } from '$lib/i18n/i18n-svelte';
+  import { page } from '$app/stores';
+  import SeoHead from '$lib/components/seo/SeoHead.svelte';
+  import { link } from '$lib/i18n/link';
+  import { absoluteUrl, localizePath } from '$lib/i18n/routing';
+  import type { Locales } from '$lib/i18n/i18n-types';
 
-  const lang = $derived($locale);
+  // El idioma sale de la URL (lo resuelve el layout del grupo), no del store
+  // global: así el HTML prerenderizado de /en/... sale de verdad en inglés.
+  const lang = $derived(($page.data.locale ?? 'es') as Locales);
+
+  const metaTitle = $derived(lang === 'en'
+    ? 'Portfolio TER Calculator | CoreBalance'
+    : 'Calculadora de TER de Cartera Indexada | CoreBalance'
+  );
+  const metaDesc = $derived(lang === 'en'
+    ? 'Free tool to calculate the total weighted TER (real cost) of your index fund or ETF portfolio and simulate your long-term fee savings.'
+    : 'Calcula gratis el TER total ponderado (coste real) de tu cartera de fondos indexados o ETFs y simula tu ahorro en comisiones a largo plazo.'
+  );
+
 
   const t = $derived(lang === 'en' ? {
     badge: 'Interactive Tool',
@@ -60,6 +76,16 @@
     ctaBtn: 'Ir a la calculadora',
     deleteLabel: 'Eliminar fondo',
     fundPlaceholder: 'Ej. Vanguard MSCI World'
+  });
+
+  const breadcrumbSchema = $derived({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": t.breadcrumb.home, "item": absoluteUrl(localizePath('/', lang)) },
+      { "@type": "ListItem", "position": 2, "name": t.breadcrumb.blog, "item": absoluteUrl(localizePath('/blog', lang)) },
+      { "@type": "ListItem", "position": 3, "name": t.breadcrumb.tool, "item": absoluteUrl($page.url.pathname) }
+    ]
   });
 
   // Lista de fondos iniciales por defecto
@@ -130,56 +156,25 @@
   const numLocale = $derived(lang === 'es' ? 'es-ES' : 'en-US');
 </script>
 
-<svelte:head>
-  {#if lang === 'en'}
-    <title>Portfolio TER Calculator | CoreBalance</title>
-    <meta name="description" content="Free tool to calculate the total weighted TER (real cost) of your index fund or ETF portfolio and simulate your long-term fee savings." />
-  {:else}
-    <title>Calculadora de TER de Cartera Indexada | CoreBalance</title>
-    <meta name="description" content="Calcula gratis el TER total ponderado (coste real) de tu cartera de fondos indexados o ETFs y simula tu ahorro en comisiones a largo plazo." />
-  {/if}
-
-  <!-- Hreflang: ES/EN/x-default (ambos apuntan al mismo path ya que cambia según locale) -->
-  <link rel="alternate" hreflang="es" href="https://corebalance.app/herramientas/calculadora-ter" />
-  <link rel="alternate" hreflang="en" href="https://corebalance.app/herramientas/calculadora-ter" />
-  <link rel="alternate" hreflang="x-default" href="https://corebalance.app/herramientas/calculadora-ter" />
-
-  <!-- Open Graph -->
-  <meta property="og:title" content={lang === 'es' ? 'Calculadora de TER de Cartera Indexada | CoreBalance' : 'Portfolio TER Calculator | CoreBalance'} />
-  <meta property="og:description" content={lang === 'es' ? 'Calcula gratis el TER total ponderado (coste real) de tu cartera de fondos indexados o ETFs y simula tu ahorro en comisiones a largo plazo.' : 'Free tool to calculate the total weighted TER (real cost) of your index fund or ETF portfolio and simulate your long-term fee savings.'} />
-  <meta property="og:image" content="https://corebalance.app/og-image-ter.png" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://corebalance.app/herramientas/calculadora-ter" />
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content={lang === 'es' ? 'Calculadora de TER de Cartera Indexada | CoreBalance' : 'Portfolio TER Calculator | CoreBalance'} />
-  <meta name="twitter:description" content={lang === 'es' ? 'Calcula gratis el TER total ponderado (coste real) de tu cartera de fondos indexados o ETFs y simula tu ahorro en comisiones a largo plazo.' : 'Free tool to calculate the total weighted TER (real cost) of your index fund or ETF portfolio and simulate your long-term fee savings.'} />
-  <meta name="twitter:image" content="https://corebalance.app/og-image-ter.png" />
-
-  {@html `<script type="application/ld+json">${JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": t.breadcrumb.home, "item": "https://corebalance.app" },
-      { "@type": "ListItem", "position": 2, "name": t.breadcrumb.blog, "item": "https://corebalance.app/blog" },
-      { "@type": "ListItem", "position": 3, "name": t.breadcrumb.tool, "item": "https://corebalance.app/herramientas/calculadora-ter" }
-    ]
-  })}<\/script>`}
-</svelte:head>
+<SeoHead
+  title={metaTitle}
+  description={metaDesc}
+  path={$page.url.pathname}
+  {lang}
+  image="/og-image-ter.png"
+  jsonLd={breadcrumbSchema}
+/>
 
 <div class="ter-page">
   <div class="background-mesh"></div>
 
-  <LandingNavBar onStart={() => goto('/')} />
+  <LandingNavBar onStart={() => goto($link('/'))} />
 
   <main class="ter-container">
     <nav class="breadcrumb" aria-label="breadcrumb">
-      <a href="/">🏠 {t.breadcrumb.home}</a>
+      <a href={$link('/')}>🏠 {t.breadcrumb.home}</a>
       <span class="breadcrumb-sep">›</span>
-      <a href="/blog">{t.breadcrumb.blog}</a>
+      <a href={$link('/blog')}>{t.breadcrumb.blog}</a>
       <span class="breadcrumb-sep">›</span>
       <span aria-current="page">{t.breadcrumb.tool}</span>
     </nav>
@@ -299,7 +294,7 @@
       <div class="cta-inner">
         <h2>{t.ctaTitle}</h2>
         <p>{t.ctaDesc}</p>
-        <button class="btn-primary" onclick={() => goto('/')}>{t.ctaBtn}</button>
+        <button class="btn-primary" onclick={() => goto($link('/'))}>{t.ctaBtn}</button>
       </div>
     </section>
   </main>

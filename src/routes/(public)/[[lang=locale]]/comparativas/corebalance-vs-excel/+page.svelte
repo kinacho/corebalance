@@ -3,17 +3,24 @@
   import LandingFooter from '$lib/components/landing/LandingFooter.svelte';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
+  import SeoHead from '$lib/components/seo/SeoHead.svelte';
+  import { link } from '$lib/i18n/link';
+  import { alternates, SITE_URL, localizePath, absoluteUrl } from '$lib/i18n/routing';
+  import type { Locales } from '$lib/i18n/i18n-types';
 
-  let isEs = $derived($page.data.locale === 'es');
+  const lang = $derived(($page.data.locale ?? 'es') as Locales);
+  let isEs = $derived(lang === 'es');
+  const canonical = $derived(alternates($page.url.pathname, lang).canonical);
+  const homeUrl = $derived(absoluteUrl(localizePath('/', lang)));
 
   // Metadatos
   const metaTitle = $derived(isEs 
-    ? 'CoreBalance vs Portfolio Performance | Comparativa Completa' 
-    : 'CoreBalance vs Portfolio Performance | Complete Comparison'
+    ? 'CoreBalance vs Excel y Google Sheets | Comparativa Completa' 
+    : 'CoreBalance vs Excel & Google Sheets | Complete Comparison'
   );
   const metaDesc = $derived(isEs 
-    ? 'Comparativa detallada de CoreBalance frente a Portfolio Performance. Analizamos usabilidad, privacidad, curva de aprendizaje y rebalanceo de carteras.' 
-    : 'Detailed comparison between CoreBalance and Portfolio Performance. We analyze usability, privacy, learning curve, and portfolio rebalancing.'
+    ? 'Comparativa detallada entre CoreBalance y las hojas de cálculo (Excel, Google Sheets) para el rebalanceo de carteras. Analizamos usabilidad, mantenimiento y privacidad.' 
+    : 'Detailed comparison between CoreBalance and spreadsheets (Excel, Google Sheets) for portfolio rebalancing. We analyze usability, maintenance, and privacy.'
   );
 
   // Esquema JSON-LD
@@ -27,19 +34,19 @@
             "@type": "ListItem",
             "position": 1,
             "name": isEs ? "Inicio" : "Home",
-            "item": "https://corebalance.app"
+            "item": homeUrl
           },
           {
             "@type": "ListItem",
             "position": 2,
-            "name": "Comparativas",
-            "item": "https://corebalance.app/comparativas/corebalance-vs-portfolio-performance"
+            "name": isEs ? "Comparativas" : "Comparisons",
+            "item": canonical
           },
           {
             "@type": "ListItem",
             "position": 3,
-            "name": "vs Portfolio Performance",
-            "item": "https://corebalance.app/comparativas/corebalance-vs-portfolio-performance"
+            "name": "vs Excel",
+            "item": canonical
           }
         ]
       },
@@ -47,7 +54,8 @@
         "@type": "Article",
         "headline": metaTitle,
         "description": metaDesc,
-        "image": "https://corebalance.app/og-image.png",
+        "image": `${SITE_URL}/og-image.png`,
+        "inLanguage": lang,
         "author": {
           "@type": "Organization",
           "name": "CoreBalance"
@@ -57,65 +65,46 @@
           "name": "CoreBalance",
           "logo": {
             "@type": "ImageObject",
-            "url": "https://corebalance.app/logo.png"
+            "url": `${SITE_URL}/logo.png`
           }
         },
-        "mainEntityOfPage": "https://corebalance.app/comparativas/corebalance-vs-portfolio-performance"
+        "mainEntityOfPage": canonical
       }
     ]
   });
-
-  const schemaString = $derived(JSON.stringify(schemaData));
 </script>
 
-<svelte:head>
-  <title>{metaTitle}</title>
-  <meta name="description" content={metaDesc} />
-
-  <!-- Hreflang: ES/EN/x-default (ambos apuntan al mismo path ya que cambia según locale) -->
-  <link rel="alternate" hreflang="es" href="https://corebalance.app/comparativas/corebalance-vs-portfolio-performance" />
-  <link rel="alternate" hreflang="en" href="https://corebalance.app/comparativas/corebalance-vs-portfolio-performance" />
-  <link rel="alternate" hreflang="x-default" href="https://corebalance.app/comparativas/corebalance-vs-portfolio-performance" />
-
-  <!-- Open Graph / Facebook -->
-  <meta property="og:type" content="article" />
-  <meta property="og:url" content="https://corebalance.app/comparativas/corebalance-vs-portfolio-performance" />
-  <meta property="og:title" content={metaTitle} />
-  <meta property="og:description" content={metaDesc} />
-  <meta property="og:image" content="https://corebalance.app/og-image.png" />
-
-  <!-- Twitter -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:url" content="https://corebalance.app/comparativas/corebalance-vs-portfolio-performance" />
-  <meta name="twitter:title" content={metaTitle} />
-  <meta name="twitter:description" content={metaDesc} />
-  <meta name="twitter:image" content="https://corebalance.app/og-image.png" />
-
-  {@html `<script type="application/ld+json">${schemaString}</script>`}
-</svelte:head>
+<SeoHead
+  title={metaTitle}
+  description={metaDesc}
+  path={$page.url.pathname}
+  {lang}
+  ogType="article"
+  jsonLd={schemaData}
+/>
 
 <div class="compare-page">
   <div class="background-mesh"></div>
 
-  <LandingNavBar onStart={() => goto('/')} />
+  <LandingNavBar onStart={() => goto($link('/'))} />
 
   <main class="compare-container">
     <!-- Breadcrumb visual -->
     <nav class="breadcrumb" aria-label="Breadcrumb">
-      <a href="/">{isEs ? 'Inicio' : 'Home'}</a>
+      <a href={$link('/')}>{isEs ? 'Inicio' : 'Home'}</a>
       <span class="separator">/</span>
       <span class="current">{isEs ? 'Comparativas' : 'Comparisons'}</span>
       <span class="separator">/</span>
-      <span class="current">vs Portfolio Performance</span>
+      <span class="current">vs Excel & Sheets</span>
     </nav>
 
     <header class="compare-header">
       <span class="category-badge">{isEs ? 'Comparativa de Herramientas' : 'Tool Comparison'}</span>
-      <h1 class="gradient-text">CoreBalance vs <br class="mobile-break">Portfolio Performance</h1>
+      <h1 class="gradient-text">CoreBalance vs <br class="mobile-break">Excel / Google Sheets</h1>
       <p class="subtitle">
         {isEs 
-          ? '¿Buscas un análisis exhaustivo e histórico de tu cartera o necesitas un método ágil y privado para rebalancear tus fondos indexados cada mes?' 
-          : 'Are you looking for an exhaustive and historical analysis of your portfolio or do you need an agile and private method to rebalance your index funds every month?'}
+          ? '¿Prefieres lidiar con fórmulas rotas, APIs inestables y zoom de pantalla en tu móvil o rebalancear tu cartera de fondos en 5 segundos con total privacidad?' 
+          : 'Do you prefer dealing with broken formulas, unstable APIs, and screen zooming on your mobile, or rebalancing your fund portfolio in 5 seconds with total privacy?'}
       </p>
     </header>
 
@@ -124,20 +113,20 @@
       <div class="intro-grid">
         <div class="intro-card corebalance-intro">
           <h3>CoreBalance</h3>
-          <p class="tagline">{isEs ? 'La alternativa moderna, local-first y enfocada en el rebalanceo' : 'The modern, local-first alternative focused on rebalancing'}</p>
+          <p class="tagline">{isEs ? 'La solución dedicada y local-first sin mantenimiento' : 'The dedicated, maintenance-free local-first solution'}</p>
           <p class="description">
             {isEs 
-              ? 'Una herramienta web ultrarrápida diseñada exclusivamente para inversores pasivos. Calcula tus aportaciones y traspasos al céntimo en segundos, manteniendo tus datos 100% privados en tu propio navegador.' 
-              : 'An ultra-fast web tool designed exclusively for passive investors. It calculates your contributions and transfers to the cent in seconds, keeping your data 100% private in your own browser.'}
+              ? 'Una calculadora web optimizada que funciona en local. Sin registrarte, introduces tus porcentajes objetivo e importes mensuales y calcula la distribución óptima en segundos. Diseñada especialmente para pantallas móviles y ordenadores.' 
+              : 'An optimized web calculator that works locally. Without registration, enter your target percentages and monthly amounts, and it calculates the optimal distribution in seconds. Specifically designed for mobile screens and desktops.'}
           </p>
         </div>
-        <div class="intro-card pp-intro">
-          <h3>Portfolio Performance</h3>
-          <p class="tagline">{isEs ? 'El gigante clásico de escritorio para analistas detallistas' : 'The classic desktop giant for detailed analysts'}</p>
+        <div class="intro-card excel-intro">
+          <h3>Excel / Sheets</h3>
+          <p class="tagline">{isEs ? 'La hoja en blanco clásica y altamente configurable' : 'The classic, highly configurable blank sheet'}</p>
           <p class="description">
             {isEs 
-              ? 'Un software de escritorio de código abierto sumamente potente. Ideal para registrar transacciones históricas al céntimo, calcular retornos ponderados (TWR) y analizar dividendos, a cambio de una alta complejidad.' 
-              : 'An extremely powerful open-source desktop software. Ideal for recording historical transactions to the cent, calculating time-weighted returns (TWR), and analyzing dividends, at the expense of high complexity.'}
+              ? 'Perfecta para quienes aman el control manual total y desean diseñar simulaciones personalizadas a largo plazo. Requiere programar fórmulas, lidiar con errores de cotizaciones en tiempo real y tolerar la fricción en pantallas táctiles.' 
+              : 'Perfect for those who love total manual control and want to design custom long-term simulations. Requires programming formulas, dealing with real-time quote errors, and tolerating friction on touchscreens.'}
           </p>
         </div>
       </div>
@@ -145,78 +134,78 @@
 
     <!-- Tabla Comparativa -->
     <section class="table-section">
-      <h2>{isEs ? 'Tabla Comparativa Directa' : 'Direct Comparison Table'}</h2>
+      <h2>{isEs ? 'Comparativa de Características' : 'Feature Comparison'}</h2>
       <div class="table-wrapper">
         <table>
           <thead>
             <tr>
               <th>{isEs ? 'Característica' : 'Feature'}</th>
               <th class="highlight-col">CoreBalance</th>
-              <th>Portfolio Performance</th>
+              <th>Excel / Google Sheets</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td class="feature-title">{isEs ? 'Plataforma' : 'Platform'}</td>
-              <td class="highlight-col">{isEs ? 'Web y Móvil (Responsive)' : 'Web & Mobile (Responsive)'}</td>
-              <td>{isEs ? 'Escritorio (Windows, Mac, Linux)' : 'Desktop (Windows, Mac, Linux)'}</td>
+              <td class="feature-title">{isEs ? 'Tiempo de Configuración' : 'Setup Time'}</td>
+              <td class="highlight-col">{isEs ? 'Segundos (sin registrarse)' : 'Seconds (no signup)'}</td>
+              <td>{isEs ? 'Horas (creando fórmulas y celdas)' : 'Hours (creating formulas & cells)'}</td>
             </tr>
             <tr>
-              <td class="feature-title">{isEs ? 'Curva de Aprendizaje' : 'Learning Curve'}</td>
-              <td class="highlight-col">{isEs ? 'Nula (Segundos)' : 'None (Seconds)'}</td>
-              <td>{isEs ? 'Muy alta (Horas de tutoriales)' : 'Very High (Hours of tutorials)'}</td>
+              <td class="feature-title">{isEs ? 'Mantenimiento de Fórmulas' : 'Formula Maintenance'}</td>
+              <td class="highlight-col">{isEs ? 'Nulo (se encarga el sistema)' : 'None (handled by system)'}</td>
+              <td>{isEs ? 'Constante (APIs que fallan, errores de formato)' : 'Constant (failing APIs, formatting errors)'}</td>
             </tr>
             <tr>
-              <td class="feature-title">{isEs ? 'Privacidad de datos' : 'Data Privacy'}</td>
-              <td class="highlight-col">{isEs ? 'Excelente (Local-first en tu navegador)' : 'Excellent (Local-first in your browser)'}</td>
-              <td>{isEs ? 'Excelente (Archivo local en tu disco duro)' : 'Excellent (Local file on your hard drive)'}</td>
+              <td class="feature-title">{isEs ? 'Privacidad en la nube' : 'Cloud Privacy'}</td>
+              <td class="highlight-col">{isEs ? '100% Privado (datos locales encriptados)' : '100% Private (encrypted local data)'}</td>
+              <td>{isEs ? 'Media-Baja (datos guardados en servidores de Google/Microsoft)' : 'Medium-Low (stored on Google/Microsoft servers)'}</td>
             </tr>
             <tr>
-              <td class="feature-title">{isEs ? 'Cálculo de Rebalanceo' : 'Rebalancing Calculation'}</td>
-              <td class="highlight-col">{isEs ? 'Automático y optimizado para aportaciones' : 'Automatic and optimized for contributions'}</td>
-              <td>{isEs ? 'Manual mediante reglas de desvío complejas' : 'Manual via complex deviation rules'}</td>
+              <td class="feature-title">{isEs ? 'Uso en teléfonos móviles' : 'Mobile Usability'}</td>
+              <td class="highlight-col">{isEs ? 'Perfecto (diseño adaptado nativamente)' : 'Perfect (natively adapted design)'}</td>
+              <td>{isEs ? 'Poco práctico (fricción al editar celdas pequeñas)' : 'Impractical (friction editing small cells)'}</td>
             </tr>
             <tr>
-              <td class="feature-title">{isEs ? 'Importación de Transacciones' : 'Transaction Importing'}</td>
-              <td class="highlight-col">{isEs ? 'No requerida (solo introduces saldos o CSV opcional)' : 'Optional (just enter balances or optional CSV)'}</td>
-              <td>{isEs ? 'Requerida (mediante PDFs bancarios o CSV)' : 'Required (via bank PDFs or CSV)'}</td>
+              <td class="feature-title">{isEs ? 'Cálculo de aportaciones' : 'Contribution Calculation'}</td>
+              <td class="highlight-col">{isEs ? 'Automático al céntimo' : 'Automatic to the cent'}</td>
+              <td>{isEs ? 'Requiere programar fórmulas lógicas complejas' : 'Requires programming complex logic'}</td>
             </tr>
             <tr>
-              <td class="feature-title">{isEs ? 'Precio' : 'Price'}</td>
-              <td class="highlight-col">{isEs ? 'Gratuito y sin anuncios' : 'Free and ad-free'}</td>
-              <td>{isEs ? 'Gratuito (Código Abierto)' : 'Free (Open Source)'}</td>
+              <td class="feature-title">{isEs ? 'Coste' : 'Cost'}</td>
+              <td class="highlight-col">{isEs ? 'Gratuito y sin publicidad' : 'Free and ad-free'}</td>
+              <td>{isEs ? 'Gratuito (Google) o licencia Office (Excel)' : 'Free (Google) or Office License (Excel)'}</td>
             </tr>
           </tbody>
         </table>
       </div>
     </section>
 
-    <!-- Caso de estudio / Rebalancing process comparison -->
+    <!-- Caso de estudio real / Real-world case study -->
     <section class="case-study-section">
-      <h2>{isEs ? 'Diferencia en el Flujo de Trabajo' : 'Difference in the Workflow'}</h2>
+      <h2>{isEs ? 'Caso de Uso Real: El Rebalanceo Mensual' : 'Real-World Case Study: Monthly Rebalancing'}</h2>
       <p class="section-desc">
-        {isEs 
-          ? 'Comparamos la experiencia del rebalanceo mensual de aportaciones.'
-          : 'We compare the monthly rebalancing contribution experience.'}
+        {isEs
+          ? 'Comparamos la experiencia real de un inversor indexado que aporta 500 € mensuales a su cartera de 4 fondos.'
+          : 'We compare the actual experience of an index investor contributing €500 monthly to a 4-fund portfolio.'}
       </p>
       <div class="study-grid">
         <div class="study-card">
-          <h4>Portfolio Performance</h4>
+          <h4>{isEs ? 'Con Hojas de Cálculo (Excel / Sheets)' : 'With Spreadsheets (Excel / Sheets)'}</h4>
           <ul>
-            <li>{isEs ? 'Descargar los PDFs de las operaciones del mes de tu banco comercializador.' : 'Download this month\'s transaction PDFs from your retail bank.'}</li>
-            <li>{isEs ? 'Importar los PDFs al programa y depurar fallos en la detección de nombres/ISIN.' : 'Import the PDFs into the software and debug name/ISIN detection failures.'}</li>
-            <li>{isEs ? 'Crear taxonomías y reglas de rebalanceo manuales.' : 'Create taxonomies and manual rebalancing rules.'}</li>
-            <li>{isEs ? 'Calcular a mano cuánto comprar para cuadrar los desvíos.' : 'Manually calculate how much to buy to correct deviations.'}</li>
-            <li>{isEs ? 'Tiempo estimado: 15-20 minutos.' : 'Estimated time: 15-20 minutes.'}</li>
+            <li>{isEs ? 'Abrir archivo e iniciar sesión en Google/Microsoft.' : 'Open file and log into Google/Microsoft.'}</li>
+            <li>{isEs ? 'Esperar a que carguen las cotizaciones (a veces fallan y dan error #N/A).' : 'Wait for quotes to load (sometimes fails with #N/A error).'}</li>
+            <li>{isEs ? 'Revisar manualmente que ninguna celda o fila se haya desconfigurado.' : 'Manually check that no cell or row has lost its format.'}</li>
+            <li>{isEs ? 'Calcular a mano con fórmulas la compra de activos.' : 'Manually calculate asset purchases using formulas.'}</li>
+            <li>{isEs ? 'Tiempo estimado: 10-15 minutos.' : 'Estimated time: 10-15 minutes.'}</li>
           </ul>
         </div>
         <div class="study-card highlight-card">
-          <h4>CoreBalance</h4>
+          <h4>{isEs ? 'Con CoreBalance' : 'With CoreBalance'}</h4>
           <ul>
-            <li>{isEs ? 'Abrir CoreBalance en el navegador (móvil o PC).' : 'Open CoreBalance in your browser (mobile or PC).'}</li>
-            <li>{isEs ? 'Saldos actualizados al instante en local.' : 'Balances instantly updated locally.'}</li>
-            <li>{isEs ? 'Escribir la aportación del mes y obtener las compras idóneas.' : 'Type this month\'s contribution and get the ideal purchases.'}</li>
-            <li>{isEs ? 'Copiar las operaciones y realizarlas en tu banco.' : 'Copy the operations and perform them in your bank.'}</li>
+            <li>{isEs ? 'Abrir la web o app en tu móvil (carga inmediata en 1 segundo).' : 'Open the web or app on your mobile (instant 1-second load).'}</li>
+            <li>{isEs ? 'Los precios se actualizan solos al instante y de forma fiable.' : 'Prices update automatically and reliably.'}</li>
+            <li>{isEs ? 'Introducir el importe del mes (ej: 500 €).' : 'Enter the month\'s amount (e.g., €500).'}</li>
+            <li>{isEs ? 'Ver el cálculo preciso de aportaciones y copiarlo a tu comercializadora.' : 'See the exact contribution calculations and copy them to your broker.'}</li>
             <li>{isEs ? 'Tiempo estimado: 5 segundos.' : 'Estimated time: 5 seconds.'}</li>
           </ul>
         </div>
@@ -234,42 +223,42 @@
               <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
               </svg>
-              <span><strong>{isEs ? 'Simplicidad operativa:' : 'Operational simplicity:'}</strong> {isEs ? 'Configuras tus fondos y actualizas tus saldos en menos de un minuto al mes.' : 'Set up your funds and update your balances in less than a minute per month.'}</span>
+              <span><strong>{isEs ? 'Rapidez y comodidad:' : 'Speed and convenience:'}</strong> {isEs ? 'Olvídate de programar o arrastrar celdas. La aplicación calcula todo por ti de forma automática.' : 'Forget about programming or dragging cells. The app calculates everything for you automatically.'}</span>
             </li>
             <li>
               <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
               </svg>
-              <span><strong>{isEs ? 'Optimización del ahorro:' : 'Savings optimization:'}</strong> {isEs ? 'Introduce lo que vas a ahorrar este mes y la herramienta calcula de forma exacta cuánto destinar a cada fondo.' : 'Enter what you are going to save this month and the tool calculates exactly how much to allocate to each fund.'}</span>
+              <span><strong>{isEs ? 'Seguridad fiscal y operativa:' : 'Tax and operational safety:'}</strong> {isEs ? 'Evita errores aritméticos humanos que puedan desbalancear tu cartera de forma involuntaria.' : 'Avoid human arithmetic errors that could unintentionally unbalance your portfolio.'}</span>
             </li>
             <li>
               <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
               </svg>
-              <span><strong>{isEs ? 'Acceso rápido multidispositivo:' : 'Fast multi-device access:'}</strong> {isEs ? 'Consúltalo y actualízalo desde el teléfono móvil cómodamente sin instalar software de PC.' : 'Check and update it from your mobile phone comfortably without installing PC software.'}</span>
+              <span><strong>{isEs ? 'Sincronización local offline:' : 'Local offline sync:'}</strong> {isEs ? 'Puedes usarla en cualquier sitio sin preocuparte de si tu plantilla sincroniza correctamente en la nube.' : 'You can use it anywhere without worrying about whether your template syncs correctly to the cloud.'}</span>
             </li>
           </ul>
         </div>
         <div class="details-card">
-          <h3 class="cons-title">{isEs ? 'Elige Portfolio Performance si buscas:' : 'Choose Portfolio Performance if you want:'}</h3>
+          <h3 class="cons-title">{isEs ? 'Elige Hojas de Cálculo si buscas:' : 'Choose Spreadsheets if you want:'}</h3>
           <ul>
             <li>
               <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
               </svg>
-              <span><strong>{isEs ? 'Análisis histórico profundo:' : 'Deep historical analysis:'}</strong> {isEs ? 'Gráficas de rentabilidad ponderada en el tiempo (TWR) y comparativas contra benchmarks.' : 'Time-weighted return (TWR) charts and comparative benchmarking.'}</span>
+              <span><strong>{isEs ? 'Personalización a medida:' : 'Custom personalization:'}</strong> {isEs ? 'Añadir columnas con ratios personalizados, gráficos de tarta a medida y tablas de amortización.' : 'Add columns with custom ratios, tailored pie charts, and amortization tables.'}</span>
             </li>
             <li>
               <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
               </svg>
-              <span><strong>{isEs ? 'Control exhaustivo de transacciones:' : 'Exhaustive transaction control:'}</strong> {isEs ? 'Registro detallado de cada comisión bancaria, dividendo cobrado y retención fiscal.' : 'Detailed record of every bank fee, dividend collected, and tax withholding.'}</span>
+              <span><strong>{isEs ? 'Simulación histórica compleja:' : 'Complex historical simulation:'}</strong> {isEs ? 'Proyecciones de interés compuesto a 40 años con variaciones aleatorias (Método de Montecarlo).' : '40-year compound interest projections with random variations (Monte Carlo method).'}</span>
             </li>
             <li>
               <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
               </svg>
-              <span><strong>{isEs ? 'Inversión activa o trading:' : 'Active investing or trading:'}</strong> {isEs ? 'Soporte avanzado para opciones, futuros y acciones individuales con múltiples operaciones diarias.' : 'Advanced support for options, futures, and individual stocks with multiple daily operations.'}</span>
+              <span><strong>{isEs ? 'Historial de aportaciones guardado:' : 'Saved contribution history:'}</strong> {isEs ? 'Registro histórico de cada aportación mensual detallada en una pestaña separada.' : 'Detailed historical record of each monthly contribution in a separate tab.'}</span>
             </li>
           </ul>
         </div>
@@ -281,16 +270,16 @@
       <h2>{isEs ? 'Preguntas Frecuentes' : 'Frequently Asked Questions'}</h2>
       <div class="faq-grid">
         <div class="faq-item">
-          <h4>{isEs ? '¿Puedo usar ambas aplicaciones a la vez?' : 'Can I use both apps at the same time?'}</h4>
+          <h4>{isEs ? '¿Puedo importar mis datos desde Excel a CoreBalance?' : 'Can I import my data from Excel to CoreBalance?'}</h4>
           <p>{isEs 
-            ? 'Sí. Muchos inversores usan Portfolio Performance en el PC para analizar el rendimiento anual y CoreBalance en el móvil o navegador para calcular el rebalanceo mensual rápido de forma muy ágil.' 
-            : 'Yes. Many investors use Portfolio Performance on PC to analyze annual performance and CoreBalance on mobile or browser to calculate the quick monthly rebalancing very efficiently.'}</p>
+            ? 'Sí. Puedes guardar tu hoja de cálculo como un archivo CSV e importarlo directamente en la pestaña de Importar de CoreBalance para no tener que meter los activos a mano.' 
+            : 'Yes. You can save your spreadsheet as a CSV file and import it directly into the Import tab in CoreBalance so you do not have to enter assets manually.'}</p>
         </div>
         <div class="faq-item">
-          <h4>{isEs ? '¿Por qué elegir CoreBalance si Portfolio Performance tiene más métricas?' : 'Why choose CoreBalance if Portfolio Performance has more metrics?'}</h4>
+          <h4>{isEs ? '¿Es CoreBalance seguro si mis datos se guardan en el navegador?' : 'Is CoreBalance secure if my data is saved in the browser?'}</h4>
           <p>{isEs 
-            ? 'Por simplicidad y usabilidad móvil. Portfolio Performance requiere configurar cotizaciones externas complejas de Yahoo Finance o AlphaVantage que fallan recurrentemente. CoreBalance ofrece una interfaz limpia donde todo funciona a la primera.' 
-            : 'For simplicity and mobile usability. Portfolio Performance requires configuring complex external quotes from Yahoo Finance or AlphaVantage that recurrently fail. CoreBalance offers a clean interface where everything works out-of-the-box.'}</p>
+            ? 'Totalmente. Al usar IndexedDB en local, tus datos financieros no se envían a ningún servidor de terceros, garantizando una privacidad que Google Sheets o Microsoft Excel 365 en la nube no pueden asegurar por completo.' 
+            : 'Absolutely. By using IndexedDB locally, your financial data is not sent to any third-party servers, guaranteeing privacy that Google Sheets or Microsoft Excel 365 in the cloud cannot fully assure.'}</p>
         </div>
       </div>
     </section>
@@ -298,11 +287,11 @@
     <!-- Conclusión y CTA -->
     <section class="conclusion-cta">
       <div class="cta-inner">
-        <h2>{isEs ? '¿Listo para rebalancear tu cartera de forma sencilla?' : 'Ready to rebalance your portfolio easily?'}</h2>
+        <h2>{isEs ? 'Simplifica tu rebalanceo mensual hoy mismo' : 'Simplify your monthly rebalancing today'}</h2>
         <p>{isEs 
-          ? 'Prueba CoreBalance de forma totalmente gratuita. Sin cuentas, sin registros, y 100% privado en tu navegador.' 
-          : 'Try CoreBalance 100% free. No accounts, no signups, and 100% private in your browser.'}</p>
-        <button class="btn-primary" onclick={() => goto('/')}>{isEs ? 'Probar Calculadora Gratis' : 'Try Calculator Free'}</button>
+          ? 'Prueba la calculadora de CoreBalance de forma 100% gratuita y privada. Tus datos financieros nunca saldrán de tu dispositivo.' 
+          : 'Try the CoreBalance calculator 100% free and privately. Your financial data will never leave your device.'}</p>
+        <button class="btn-primary" onclick={() => goto($link('/'))}>{isEs ? 'Probar CoreBalance Gratis' : 'Try CoreBalance Free'}</button>
       </div>
     </section>
   </main>

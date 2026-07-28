@@ -5,6 +5,7 @@
   import { goto } from '$app/navigation';
   import LanguageSwitcher from '$lib/components/LanguageSwitcher.svelte';
   import { LL } from '$lib/i18n/i18n-svelte';
+  import { link } from '$lib/i18n/link';
 
   let { onStart = () => {} } = $props();
   let isScrolled = $state(false);
@@ -28,18 +29,18 @@
 
 <nav class="navbar" class:scrolled={isScrolled}>
   <div class="nav-container">
-    <button class="nav-brand" onclick={() => goto('/')} aria-label="Volver a inicio">
+    <a class="nav-brand" href={$link('/')} aria-label="CoreBalance">
       <img src="/logo.png?v=2" alt="CoreBalance" class="logo" width="48" height="48" fetchpriority="high" loading="eager" />
       <span class="brand-name">CoreBalance</span>
-    </button>
+    </a>
 
     <!-- Menú Desktop Links -->
     <div class="nav-links">
-      <a href="/#features" aria-label={$LL.nav.aria_features()}>{$LL.nav.features()}</a>
-      <a href="/#how-it-works" aria-label={$LL.nav.aria_how_it_works()}>{$LL.nav.how_it_works()}</a>
-      <a href="/#why-us" aria-label={$LL.nav.aria_why_us()}>{$LL.nav.why_us()}</a>
-      <a href="/#educational" aria-label={$LL.nav.aria_faq()}>{$LL.nav.faq()}</a>
-      <a href="/blog" aria-label={$LL.nav.aria_blog()}>{$LL.nav.blog()}</a>
+      <a href={$link('/#features')} aria-label={$LL.nav.aria_features()}>{$LL.nav.features()}</a>
+      <a href={$link('/#how-it-works')} aria-label={$LL.nav.aria_how_it_works()}>{$LL.nav.how_it_works()}</a>
+      <a href={$link('/#why-us')} aria-label={$LL.nav.aria_why_us()}>{$LL.nav.why_us()}</a>
+      <a href={$link('/#educational')} aria-label={$LL.nav.aria_faq()}>{$LL.nav.faq()}</a>
+      <a href={$link('/blog')} aria-label={$LL.nav.aria_blog()}>{$LL.nav.blog()}</a>
     </div>
 
     <!-- Menú Desktop Acciones -->
@@ -77,11 +78,11 @@
 {#if isMobileMenuOpen}
   <div class="mobile-menu" transition:fade={{ duration: 150 }}>
     <div class="mobile-menu-links">
-      <a href="/#features" onclick={() => isMobileMenuOpen = false} aria-label={$LL.nav.aria_features()}>{$LL.nav.features()}</a>
-      <a href="/#how-it-works" onclick={() => isMobileMenuOpen = false} aria-label={$LL.nav.aria_how_it_works()}>{$LL.nav.how_it_works()}</a>
-      <a href="/#why-us" onclick={() => isMobileMenuOpen = false} aria-label={$LL.nav.aria_why_us()}>{$LL.nav.why_us()}</a>
-      <a href="/#educational" onclick={() => isMobileMenuOpen = false} aria-label={$LL.nav.aria_faq()}>{$LL.nav.faq()}</a>
-      <a href="/blog" onclick={() => isMobileMenuOpen = false} aria-label={$LL.nav.aria_blog()}>{$LL.nav.blog()}</a>
+      <a href={$link('/#features')} onclick={() => isMobileMenuOpen = false} aria-label={$LL.nav.aria_features()}>{$LL.nav.features()}</a>
+      <a href={$link('/#how-it-works')} onclick={() => isMobileMenuOpen = false} aria-label={$LL.nav.aria_how_it_works()}>{$LL.nav.how_it_works()}</a>
+      <a href={$link('/#why-us')} onclick={() => isMobileMenuOpen = false} aria-label={$LL.nav.aria_why_us()}>{$LL.nav.why_us()}</a>
+      <a href={$link('/#educational')} onclick={() => isMobileMenuOpen = false} aria-label={$LL.nav.aria_faq()}>{$LL.nav.faq()}</a>
+      <a href={$link('/blog')} onclick={() => isMobileMenuOpen = false} aria-label={$LL.nav.aria_blog()}>{$LL.nav.blog()}</a>
     </div>
     <div class="mobile-menu-actions">
       <div class="mobile-lang">
@@ -156,6 +157,7 @@
     text-align: left;
     font: inherit;
     color: inherit;
+    text-decoration: none; /* Es un <a> real para que el crawler siga el enlace al home del idioma */
     flex-shrink: 0; /* Evita que el logo se deforme o se achique */
   }
 

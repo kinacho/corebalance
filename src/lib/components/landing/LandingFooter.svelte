@@ -2,6 +2,7 @@
   import { portfolio } from '$lib/stores/portfolio.svelte';
   import { ui } from '$lib/stores/ui.svelte';
   import { LL, locale } from '$lib/i18n/i18n-svelte';
+  import { link } from '$lib/i18n/link';
 
   let isEs = $derived($locale === 'es');
 </script>
@@ -20,9 +21,9 @@
       <div class="links-col">
         <h3>{$LL.nav.product()}</h3>
         <ul>
-          <li><a href="/#features">{$LL.nav.features()}</a></li>
-          <li><a href="/#how-it-works">{$LL.nav.how_it_works()}</a></li>
-          <li><a href="/#why-us">{$LL.nav.why_us()}</a></li>
+          <li><a href={$link('/#features')}>{$LL.nav.features()}</a></li>
+          <li><a href={$link('/#how-it-works')}>{$LL.nav.how_it_works()}</a></li>
+          <li><a href={$link('/#why-us')}>{$LL.nav.why_us()}</a></li>
           <li>
             <button 
               class="footer-btn" 
@@ -37,27 +38,29 @@
       <div class="links-col">
         <h3>{isEs ? 'Recursos' : 'Resources'}</h3>
         <ul>
-          <li><a href="/blog">{$LL.nav.blog()}</a></li>
-          <li><a href="/herramientas/calculadora-ter">{isEs ? 'Calculadora TER' : 'TER Calculator'}</a></li>
-          <li><a href="/herramientas/checklist-rebalanceo">{isEs ? 'Checklist Rebalanceo' : 'Rebalancing Checklist'}</a></li>
+          <li><a href={$link('/blog')}>{$LL.nav.blog()}</a></li>
+          <li><a href={$link('/herramientas/calculadora-ter')}>{isEs ? 'Calculadora TER' : 'TER Calculator'}</a></li>
+          <li><a href={$link('/herramientas/checklist-rebalanceo')}>{isEs ? 'Checklist Rebalanceo' : 'Rebalancing Checklist'}</a></li>
+          <li><a href={$link('/autor/kinacho')}>{isEs ? 'Sobre el autor' : 'About the author'}</a></li>
+          <li><a href={isEs ? '/rss.xml' : '/en/rss.xml'}>RSS</a></li>
         </ul>
       </div>
 
       <div class="links-col">
         <h3>{isEs ? 'Comparativas' : 'Comparisons'}</h3>
         <ul>
-          <li><a href="/comparativas/corebalance-vs-excel">vs Excel / Sheets</a></li>
-          <li><a href="/comparativas/corebalance-vs-indexa-capital">vs Indexa Capital</a></li>
-          <li><a href="/comparativas/corebalance-vs-portfolio-performance">vs Portfolio Performance</a></li>
+          <li><a href={$link('/comparativas/corebalance-vs-excel')}>vs Excel / Sheets</a></li>
+          <li><a href={$link('/comparativas/corebalance-vs-indexa-capital')}>vs Indexa Capital</a></li>
+          <li><a href={$link('/comparativas/corebalance-vs-portfolio-performance')}>vs Portfolio Performance</a></li>
         </ul>
       </div>
 
       <div class="links-col">
         <h3>{$LL.nav.legal()}</h3>
         <ul>
-          <li><a href="/privacy">{$LL.footer.privacy()}</a></li>
-          <li><a href="/terms">{$LL.footer.terms()}</a></li>
-          <li><a href="/cookies">{$LL.footer.cookies()}</a></li>
+          <li><a href={$link('/privacy')}>{$LL.footer.privacy()}</a></li>
+          <li><a href={$link('/terms')}>{$LL.footer.terms()}</a></li>
+          <li><a href={$link('/cookies')}>{$LL.footer.cookies()}</a></li>
         </ul>
       </div>
 

@@ -3,8 +3,15 @@
   import LandingFooter from '$lib/components/landing/LandingFooter.svelte';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
+  import SeoHead from '$lib/components/seo/SeoHead.svelte';
+  import { link } from '$lib/i18n/link';
+  import { alternates, SITE_URL, localizePath, absoluteUrl } from '$lib/i18n/routing';
+  import type { Locales } from '$lib/i18n/i18n-types';
 
-  let isEs = $derived($page.data.locale === 'es');
+  const lang = $derived(($page.data.locale ?? 'es') as Locales);
+  let isEs = $derived(lang === 'es');
+  const canonical = $derived(alternates($page.url.pathname, lang).canonical);
+  const homeUrl = $derived(absoluteUrl(localizePath('/', lang)));
 
   // Metadatos
   const metaTitle = $derived(isEs 
@@ -27,19 +34,19 @@
             "@type": "ListItem",
             "position": 1,
             "name": isEs ? "Inicio" : "Home",
-            "item": "https://corebalance.app"
+            "item": homeUrl
           },
           {
             "@type": "ListItem",
             "position": 2,
-            "name": "Comparativas",
-            "item": "https://corebalance.app/comparativas/corebalance-vs-indexa-capital"
+            "name": isEs ? "Comparativas" : "Comparisons",
+            "item": canonical
           },
           {
             "@type": "ListItem",
             "position": 3,
             "name": "vs Indexa Capital",
-            "item": "https://corebalance.app/comparativas/corebalance-vs-indexa-capital"
+            "item": canonical
           }
         ]
       },
@@ -47,7 +54,8 @@
         "@type": "Article",
         "headline": metaTitle,
         "description": metaDesc,
-        "image": "https://corebalance.app/og-image.png",
+        "image": `${SITE_URL}/og-image.png`,
+        "inLanguage": lang,
         "author": {
           "@type": "Organization",
           "name": "CoreBalance"
@@ -57,52 +65,33 @@
           "name": "CoreBalance",
           "logo": {
             "@type": "ImageObject",
-            "url": "https://corebalance.app/logo.png"
+            "url": `${SITE_URL}/logo.png`
           }
         },
-        "mainEntityOfPage": "https://corebalance.app/comparativas/corebalance-vs-indexa-capital"
+        "mainEntityOfPage": canonical
       }
     ]
   });
-
-  const schemaString = $derived(JSON.stringify(schemaData));
 </script>
 
-<svelte:head>
-  <title>{metaTitle}</title>
-  <meta name="description" content={metaDesc} />
-
-  <!-- Hreflang: ES/EN/x-default (ambos apuntan al mismo path ya que cambia según locale) -->
-  <link rel="alternate" hreflang="es" href="https://corebalance.app/comparativas/corebalance-vs-indexa-capital" />
-  <link rel="alternate" hreflang="en" href="https://corebalance.app/comparativas/corebalance-vs-indexa-capital" />
-  <link rel="alternate" hreflang="x-default" href="https://corebalance.app/comparativas/corebalance-vs-indexa-capital" />
-
-  <!-- Open Graph / Facebook -->
-  <meta property="og:type" content="article" />
-  <meta property="og:url" content="https://corebalance.app/comparativas/corebalance-vs-indexa-capital" />
-  <meta property="og:title" content={metaTitle} />
-  <meta property="og:description" content={metaDesc} />
-  <meta property="og:image" content="https://corebalance.app/og-image.png" />
-
-  <!-- Twitter -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:url" content="https://corebalance.app/comparativas/corebalance-vs-indexa-capital" />
-  <meta name="twitter:title" content={metaTitle} />
-  <meta name="twitter:description" content={metaDesc} />
-  <meta name="twitter:image" content="https://corebalance.app/og-image.png" />
-
-  {@html `<script type="application/ld+json">${schemaString}</script>`}
-</svelte:head>
+<SeoHead
+  title={metaTitle}
+  description={metaDesc}
+  path={$page.url.pathname}
+  {lang}
+  ogType="article"
+  jsonLd={schemaData}
+/>
 
 <div class="compare-page">
   <div class="background-mesh"></div>
 
-  <LandingNavBar onStart={() => goto('/')} />
+  <LandingNavBar onStart={() => goto($link('/'))} />
 
   <main class="compare-container">
     <!-- Breadcrumb visual -->
     <nav class="breadcrumb" aria-label="Breadcrumb">
-      <a href="/">{isEs ? 'Inicio' : 'Home'}</a>
+      <a href={$link('/')}>{isEs ? 'Inicio' : 'Home'}</a>
       <span class="separator">/</span>
       <span class="current">{isEs ? 'Comparativas' : 'Comparisons'}</span>
       <span class="separator">/</span>
@@ -315,7 +304,7 @@
         <p>{isEs 
           ? 'Utiliza CoreBalance gratis para calcular tus rebalanceos y mantén todo tu capital invertido sin pagar comisiones de gestión.' 
           : 'Use CoreBalance for free to calculate your rebalancing and keep all your capital invested without paying management fees.'}</p>
-        <button class="btn-primary" onclick={() => goto('/')}>{isEs ? 'Probar CoreBalance Gratis' : 'Try CoreBalance Free'}</button>
+        <button class="btn-primary" onclick={() => goto($link('/'))}>{isEs ? 'Probar CoreBalance Gratis' : 'Try CoreBalance Free'}</button>
       </div>
     </section>
   </main>

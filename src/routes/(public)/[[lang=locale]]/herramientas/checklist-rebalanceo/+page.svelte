@@ -2,9 +2,24 @@
   import LandingNavBar from '$lib/components/landing/LandingNavBar.svelte';
   import LandingFooter from '$lib/components/landing/LandingFooter.svelte';
   import { goto } from '$app/navigation';
-  import { locale } from '$lib/i18n/i18n-svelte';
+  import { page } from '$app/stores';
+  import SeoHead from '$lib/components/seo/SeoHead.svelte';
+  import { link } from '$lib/i18n/link';
+  import { absoluteUrl, localizePath } from '$lib/i18n/routing';
+  import type { Locales } from '$lib/i18n/i18n-types';
 
-  const lang = $derived($locale);
+  // El idioma sale de la URL (lo resuelve el layout del grupo), no del store
+  // global: así el HTML prerenderizado de /en/... sale de verdad en inglés.
+  const lang = $derived(($page.data.locale ?? 'es') as Locales);
+
+  const metaTitle = $derived(lang === 'en'
+    ? 'Is It Time to Rebalance Your Portfolio? | CoreBalance'
+    : 'Checklist: ¿Es hora de rebalancear tu cartera? | CoreBalance'
+  );
+  const metaDesc = $derived(lang === 'en'
+    ? "Discover if it's time to adjust your funds or ETFs with our interactive portfolio rebalancing quiz."
+    : 'Descubre si ha llegado el momento de ajustar tus fondos o ETFs con nuestro cuestionario interactivo de rebalanceo de cartera.'
+  );
 
   const t = $derived(lang === 'en' ? {
     badge: 'Interactive Resource',
@@ -152,6 +167,16 @@
     }
   });
 
+  const breadcrumbSchema = $derived({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": t.breadcrumb.home, "item": absoluteUrl(localizePath('/', lang)) },
+      { "@type": "ListItem", "position": 2, "name": t.breadcrumb.blog, "item": absoluteUrl(localizePath('/blog', lang)) },
+      { "@type": "ListItem", "position": 3, "name": t.breadcrumb.tool, "item": absoluteUrl($page.url.pathname) }
+    ]
+  });
+
   // Estado del cuestionario
   let currentStep = $state(0);
   let timeAnswer = $state<string | null>(null);
@@ -190,56 +215,25 @@
   }
 </script>
 
-<svelte:head>
-  {#if lang === 'en'}
-    <title>Is It Time to Rebalance Your Portfolio? | CoreBalance</title>
-    <meta name="description" content="Discover if it's time to adjust your funds or ETFs with our interactive portfolio rebalancing quiz." />
-  {:else}
-    <title>Checklist: ¿Es hora de rebalancear tu cartera? | CoreBalance</title>
-    <meta name="description" content="Descubre si ha llegado el momento de ajustar tus fondos o ETFs con nuestro cuestionario interactivo de rebalanceo de cartera." />
-  {/if}
-
-  <!-- Hreflang: ES/EN/x-default (ambos apuntan al mismo path ya que cambia según locale) -->
-  <link rel="alternate" hreflang="es" href="https://corebalance.app/herramientas/checklist-rebalanceo" />
-  <link rel="alternate" hreflang="en" href="https://corebalance.app/herramientas/checklist-rebalanceo" />
-  <link rel="alternate" hreflang="x-default" href="https://corebalance.app/herramientas/checklist-rebalanceo" />
-
-  <!-- Open Graph -->
-  <meta property="og:title" content={lang === 'es' ? 'Checklist: ¿Es hora de rebalancear tu cartera? | CoreBalance' : 'Is It Time to Rebalance Your Portfolio? | CoreBalance'} />
-  <meta property="og:description" content={lang === 'es' ? 'Descubre si ha llegado el momento de ajustar tus fondos o ETFs con nuestro cuestionario interactivo de rebalanceo de cartera.' : 'Discover if it\'s time to adjust your funds or ETFs with our interactive portfolio rebalancing quiz.'} />
-  <meta property="og:image" content="https://corebalance.app/og-image-checklist.png" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://corebalance.app/herramientas/checklist-rebalanceo" />
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content={lang === 'es' ? 'Checklist: ¿Es hora de rebalancear tu cartera? | CoreBalance' : 'Is It Time to Rebalance Your Portfolio? | CoreBalance'} />
-  <meta name="twitter:description" content={lang === 'es' ? 'Descubre si ha llegado el momento de ajustar tus fondos o ETFs con nuestro cuestionario interactivo de rebalanceo de cartera.' : 'Discover if it\'s time to adjust your funds or ETFs with our interactive portfolio rebalancing quiz.'} />
-  <meta name="twitter:image" content="https://corebalance.app/og-image-checklist.png" />
-
-  {@html `<script type="application/ld+json">${JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": t.breadcrumb.home, "item": "https://corebalance.app" },
-      { "@type": "ListItem", "position": 2, "name": t.breadcrumb.blog, "item": "https://corebalance.app/blog" },
-      { "@type": "ListItem", "position": 3, "name": t.breadcrumb.tool, "item": "https://corebalance.app/herramientas/checklist-rebalanceo" }
-    ]
-  })}<\/script>`}
-</svelte:head>
+<SeoHead
+  title={metaTitle}
+  description={metaDesc}
+  path={$page.url.pathname}
+  {lang}
+  image="/og-image-checklist.png"
+  jsonLd={breadcrumbSchema}
+/>
 
 <div class="checklist-page">
   <div class="background-mesh"></div>
 
-  <LandingNavBar onStart={() => goto('/')} />
+  <LandingNavBar onStart={() => goto($link('/'))} />
 
   <main class="checklist-container">
     <nav class="breadcrumb" aria-label="breadcrumb">
-      <a href="/">🏠 {t.breadcrumb.home}</a>
+      <a href={$link('/')}>🏠 {t.breadcrumb.home}</a>
       <span class="breadcrumb-sep">›</span>
-      <a href="/blog">{t.breadcrumb.blog}</a>
+      <a href={$link('/blog')}>{t.breadcrumb.blog}</a>
       <span class="breadcrumb-sep">›</span>
       <span aria-current="page">{t.breadcrumb.tool}</span>
     </nav>
@@ -302,7 +296,7 @@
           </div>
 
           <div class="action-buttons">
-            <button class="btn-primary" onclick={() => goto('/')}>{t.goToCalc}</button>
+            <button class="btn-primary" onclick={() => goto($link('/'))}>{t.goToCalc}</button>
             <button class="btn-secondary" onclick={restart}>{t.restart}</button>
           </div>
         </div>
