@@ -38,7 +38,15 @@ export default defineConfig({
 				navigateFallback: '/offline.html',
 				navigateFallbackDenylist: [/^\/api\//]
 			},
-			includeAssets: ['favicon.png', 'logo.webp', 'pwa-192x192.png', 'pwa-512x512.png'],
+			includeAssets: [
+				'favicon.png',
+				'favicon.ico',
+				'apple-touch-icon.png',
+				'logo.png',
+				'logo.webp',
+				'pwa-192x192.png',
+				'pwa-512x512.png'
+			],
 			manifest: {
 				name: 'CoreBalance — Finanzas e Inversión',
 				short_name: 'CoreBalance',
