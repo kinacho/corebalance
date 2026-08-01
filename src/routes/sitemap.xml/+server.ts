@@ -17,27 +17,27 @@ export const prerender = true;
 const STATIC_PAGES: Record<string, { lastmod: string; priority: string; changefreq: string }> = {
 	'/': { lastmod: '2026-08-01', priority: '1.0', changefreq: 'weekly' },
 	'/comparativas/corebalance-vs-portfolio-performance': {
-		lastmod: '2026-06-26',
+		lastmod: '2026-08-01',
 		priority: '0.7',
 		changefreq: 'monthly'
 	},
 	'/comparativas/corebalance-vs-excel': {
-		lastmod: '2026-06-26',
+		lastmod: '2026-08-01',
 		priority: '0.7',
 		changefreq: 'monthly'
 	},
 	'/comparativas/corebalance-vs-indexa-capital': {
-		lastmod: '2026-06-26',
+		lastmod: '2026-08-01',
 		priority: '0.7',
 		changefreq: 'monthly'
 	},
 	'/herramientas/calculadora-ter': {
-		lastmod: '2026-06-26',
+		lastmod: '2026-08-01',
 		priority: '0.7',
 		changefreq: 'monthly'
 	},
 	'/herramientas/checklist-rebalanceo': {
-		lastmod: '2026-06-26',
+		lastmod: '2026-08-01',
 		priority: '0.7',
 		changefreq: 'monthly'
 	},
