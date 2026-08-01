@@ -63,11 +63,14 @@ Guías destacadas del blog: [cómo rebalancear una cartera indexada](https://cor
 ```bash
 git clone https://github.com/kinacho/Rebalanceador-90-5-5.git
 cd Rebalanceador-90-5-5
+cp .env.example .env    # necesario: ver abajo
 npm install
 npm run dev
 ```
 
-Variables de entorno opcionales (sólo para el backend de precios): copia `.env.example` a `.env` y rellena `KV_REST_API_URL` y `KV_REST_API_TOKEN`.
+**Copia `.env.example` a `.env` aunque no vayas a rellenarlo.** SvelteKit genera los tipos de `$env/static/public` a partir de las variables que existen, así que sin ese fichero `npm run check` falla con `Module '"$env/static/public"' has no exported member 'PUBLIC_USE_FIREBASE'`. Con el ejemplo vacío basta para que compile.
+
+Los valores sólo hacen falta para funcionalidades concretas: `KV_REST_API_URL` y `KV_REST_API_TOKEN` para la caché de precios en Redis (sin ellos degrada a memoria por proceso), `VITE_FIREBASE_*` para la sincronización opcional en la nube, y `RESEND_API_KEY` para el formulario de soporte. La calculadora funciona sin ninguno.
 
 ### Scripts útiles
 
