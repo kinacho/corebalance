@@ -13,6 +13,7 @@
 		"llms": "node scripts/generate-llms.mjs",
 		"backtest": "node scripts/backtest-8020.mjs",
 		"indexnow": "node scripts/indexnow.mjs",
+		"seo:audit": "node scripts/seo-audit.mjs",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",

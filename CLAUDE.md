@@ -24,10 +24,13 @@ The repo is really two apps:
 | `npm run backtest` | Regenerates `src/lib/data/backtest-8020.json` from real Yahoo data (citable dataset). |
 | `npm run og` / `icons` / `llms` | Regenerate OG cards / icons / llms.txt manually. |
 | `npm run indexnow` | Ping IndexNow with recently-modified sitemap URLs. Deliberately **not** hooked to the build. |
+| `npm run seo:audit` | Audits the **built** HTML (`.svelte-kit/output`): duplicate/missing title-description-canonical, `hreflang` reciprocity, JSON-LD validity and required fields, OG images that 404, broken internal links, sitemap↔build consistency. Needs `npm run build` first. Exits non-zero on errors (warnings don't fail). Flags: `--verbose`, `--warnings`, `--dir <path>`. |
 
 **Git policy** (`.ai/rules/global-rules.md`): never perform git operations without explicit user authorization. Commit style: Conventional Commits **in Spanish** (`feat(seo):`, `fix(i18n):`, `content(blog):`).
 
-⚠️ `.gitignore` excludes `*.test.ts`, `*.spec.ts`, `vitest.config.ts` and `src/setupTest.ts`. Several test files are tracked only because they were added before that rule; others are **not in git at all**. New test files must be added with `git add -f` (or fix the `.gitignore`).
+**Test files are versioned normally** — just `git add` them. The `.gitignore` used to exclude `*.test.ts`, `*.spec.ts`, `vitest.config.ts` and `setupTest.ts`, which left four suites (the CSV importers and the ledger's average-cost accounting) living only on the author's machine; that rule is gone and the suites are in git. Don't reintroduce it.
+
+⚠️ **`/training/` is ignored wholesale** because it holds real broker exports with personal data (ISINs, balances, order numbers). It used to be a file-by-file list, and that gap let four real CSVs get committed. Suites that read those fixtures `skip` when the directory is absent, so a clean clone still passes.
 
 ## Architecture
 
@@ -89,7 +92,7 @@ Does four things: locale resolution, `lang` cookie policy (`Vary: Cookie` only o
 
 ## Testing
 
-Vitest + jsdom, `*.test.ts` **colocated next to the source file**. Setup in `src/setupTest.ts` (jest-dom, `matchMedia`/`scrollTo` polyfills). The SvelteKit plugin is loaded, so `$lib`/`$app` aliases work in tests. Component tests use `@testing-library/svelte`. Key suites: `rebalance.test.ts` (core math), `importers/parsers.test.ts` (all broker detectors), `importers/training_csv.test.ts` (real CSVs), `i18n/routing.test.ts`.
+Vitest + jsdom, `*.test.ts` **colocated next to the source file**. Setup in `src/setupTest.ts` (jest-dom, `matchMedia`/`scrollTo` polyfills). The SvelteKit plugin is loaded, so `$lib`/`$app` aliases work in tests. Component tests use `@testing-library/svelte`. Key suites: `rebalance.test.ts` (core math), `importers/parsers.test.ts` (all broker detectors), `importers/training_csv.test.ts` (real CSVs, skipped when `/training_csv/` is absent), `i18n/routing.test.ts`, and `scripts/seo-audit.test.ts` (runs the SEO linter against a deliberately broken mini-build in `scripts/__fixtures__/seo-audit/` — a linter that stops detecting looks exactly like a clean site, so it needs its own fixture). `vitest.config.ts` therefore includes both `src/**` and `scripts/**`.
 
 ## Gotchas
 

@@ -22,27 +22,34 @@ Thumbs.db
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
-# Tests
+# Informes y artefactos de test.
+#
+# ⚠️ Los ficheros de test SÍ se versionan. Antes había aquí `*.test.ts`,
+# `*.spec.ts`, `src/setupTest.ts`, `vitest.config.ts` y `playwright.config.ts`,
+# y la consecuencia fue que cuatro suites —las de los importadores de CSV y la
+# del coste medio del ledger, es decir, la lógica financiera— existían sólo en
+# la máquina del autor y desaparecían en un clone limpio. No volver a añadirlas.
 /test-results
 /playwright-report
 /blob-report
 /playwright/.cache
 /coverage
-*.test.ts
-*.spec.ts
-src/setupTest.ts
-vitest.config.ts
-playwright.config.ts
 
-training/trading212_transactions.csv
-training/README.md
-training/myinvestor_movimientos.csv
-training/interactive_brokers_activity.csv
-training/degiro_transactions.csv
-training/degiro_account_statement.csv
+# Exports reales de bróker usados como fixtures: contienen datos personales
+# (ISIN, saldos, números de orden, movimientos de cuenta).
+#
+# ⚠️ Se ignora el directorio ENTERO a propósito. Antes se listaban los ficheros
+# uno a uno y eso dejó fuera cualquier CSV nuevo: así acabaron trackeados
+# `Account.csv`, `Transactions.csv`, `Portfolio (1).csv` y `Órdenes ….csv`.
+# Las suites que los consumen hacen `skip` cuando el directorio no existe, así
+# que la batería pasa igual en un clone limpio.
+/training/
+/training_csv/
 
-# Test inputs and scratch directories
-training_csv/
-scratch/
-training/*.png
+# Directorios de trabajo temporales
+/scratch/
 
+# Ajustes locales de Claude Code (por máquina). `.rtk/` sí se versiona: es
+# configuración compartida del equipo.
+.claude/settings.local.json
+.claude/*.tmp.*
