@@ -43,7 +43,11 @@ vite.config.ts.timestamp-*
 # `Account.csv`, `Transactions.csv`, `Portfolio (1).csv` y `Órdenes ….csv`.
 # Las suites que los consumen hacen `skip` cuando el directorio no existe, así
 # que la batería pasa igual en un clone limpio.
-/training/
+# Se ignora el CONTENIDO (`/training/*`) y no el directorio (`/training/`): si se
+# excluye el directorio, git no desciende en él y la excepción del README no
+# llegaría a evaluarse nunca.
+/training/*
+!/training/README.md
 /training_csv/
 
 # Directorios de trabajo temporales

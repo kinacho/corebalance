@@ -77,7 +77,7 @@ Variables de entorno opcionales (sólo para el backend de precios): copia `.env.
 | `npm run build` | Build de producción (lanza antes `prebuild`: iconos, OG images y `llms.txt`) |
 | `npm run check` | `svelte-check` sobre todo el proyecto |
 | `npm test` | Tests unitarios (Vitest) |
-| `npm run test:e2e` | Tests end-to-end (Playwright) |
+| `npm run seo:audit` | Audita el HTML construido: metadatos duplicados, `hreflang`, JSON-LD, imágenes OG y enlaces rotos (requiere `npm run build` antes) |
 | `npm run icons` | Regenera los iconos de `static/` desde los masters de `assets/` |
 | `npm run og` | Regenera todas las imágenes Open Graph |
 | `npm run llms` | Regenera `llms.txt` y `llms-es.txt` desde las plantillas |
@@ -85,7 +85,26 @@ Variables de entorno opcionales (sólo para el backend de precios): copia `.env.
 
 ## Contribuir
 
-Los *issues* y *pull requests* son bienvenidos. Si encuentras un error de cálculo, incluye los pesos objetivo y los importes con los que lo reproduces.
+Los *issues* son bienvenidos y son la mejor forma de aportar: fallos, cálculos que no cuadran, CSV de un bróker que no se detecta bien. Si encuentras un error de cálculo, incluye los pesos objetivo y los importes con los que lo reproduces.
+
+Los *pull requests* también, con dos peticiones para que no acabemos perdiendo el tiempo ninguno de los dos:
+
+- **Para una funcionalidad nueva, abre antes una issue** y hablamos del enfoque. Un PR grande sin acuerdo previo es difícil de aceptar.
+- Correcciones de fallos, documentación y traducciones: adelante directamente.
+
+CoreBalance lo mantiene **una sola persona en su tiempo libre**. Leo todo, pero no hay compromiso de plazo de respuesta ni garantía de que una propuesta acabe integrándose.
+
+### Datos de prueba
+
+`training/` está ignorado por completo porque contiene exports reales de bróker con datos personales. Las suites que dependen de esos ficheros hacen `skip` cuando no están, así que un clon limpio pasa la batería entera. Si quieres ejecutarlas, mira `training/README.md`.
+
+## Seguridad
+
+Si encuentras una vulnerabilidad, no abras una issue pública: escribe a `kino166@gmail.com`. Ver [SECURITY.md](SECURITY.md).
+
+## Licencia
+
+[MIT](LICENSE). Puedes usar, modificar y distribuir el código, incluso comercialmente, conservando el aviso de copyright.
 
 ---
 
