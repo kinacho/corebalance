@@ -42,12 +42,6 @@
           {
             "@type": "ListItem",
             "position": 2,
-            "name": isEs ? "Comparativas" : "Comparisons",
-            "item": canonical
-          },
-          {
-            "@type": "ListItem",
-            "position": 3,
             "name": "vs Portfolio Performance",
             "item": canonical
           }
@@ -171,8 +165,13 @@
             </tr>
             <tr>
               <td class="feature-title">{isEs ? 'Importación de Transacciones' : 'Transaction Importing'}</td>
-              <td class="highlight-col">{isEs ? 'No requerida (solo introduces saldos o CSV opcional)' : 'Optional (just enter balances or optional CSV)'}</td>
+              <td class="highlight-col">{isEs ? 'Libro de transacciones propio (compras/ventas/dividendos) + importación CSV multi-broker con precio medio automático' : 'Built-in transaction ledger (buys/sells/dividends) + multi-broker CSV importing with automatic average cost'}</td>
               <td>{isEs ? 'Requerida (mediante PDFs bancarios o CSV)' : 'Required (via bank PDFs or CSV)'}</td>
+            </tr>
+            <tr>
+              <td class="feature-title">{isEs ? 'Multi-divisa' : 'Multi-currency'}</td>
+              <td class="highlight-col">{isEs ? 'EUR / USD / GBP con conversión automática' : 'EUR / USD / GBP with automatic conversion'}</td>
+              <td>{isEs ? 'Sí, muy completa' : 'Yes, very complete'}</td>
             </tr>
             <tr>
               <td class="feature-title">{isEs ? 'Precio' : 'Price'}</td>
@@ -256,7 +255,7 @@
               <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
               </svg>
-              <span><strong>{isEs ? 'Control exhaustivo de transacciones:' : 'Exhaustive transaction control:'}</strong> {isEs ? 'Registro detallado de cada comisión bancaria, dividendo cobrado y retención fiscal.' : 'Detailed record of every bank fee, dividend collected, and tax withholding.'}</span>
+              <span><strong>{isEs ? 'Fiscalidad avanzada y benchmarks:' : 'Advanced tax handling and benchmarks:'}</strong> {isEs ? 'Retenciones por país, TWR/MWR y comparación contra índices.' : 'Per-country withholding taxes, TWR/MWR, and benchmarking against indices.'}</span>
             </li>
             <li>
               <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -297,6 +296,17 @@
           : 'Try CoreBalance 100% free. No accounts, no signups, and 100% private in your browser.'}</p>
         <button class="btn-primary" onclick={() => goto($link('/'))}>{isEs ? 'Probar Calculadora Gratis' : 'Try Calculator Free'}</button>
       </div>
+    </section>
+
+    <!-- Otras comparativas -->
+    <section class="other-comparisons" aria-labelledby="other-comparisons-title">
+      <h2 id="other-comparisons-title">{isEs ? 'Otras comparativas' : 'Other comparisons'}</h2>
+      <ul>
+        <li><a href={$link('/comparativas/corebalance-vs-excel')}>{isEs ? 'CoreBalance vs Excel y Google Sheets' : 'CoreBalance vs Excel & Google Sheets'}</a></li>
+        <li><a href={$link('/comparativas/corebalance-vs-indexa-capital')}>CoreBalance vs Indexa Capital</a></li>
+        <li><a href={$link('/comparativas/corebalance-vs-justetf')}>CoreBalance vs JustETF</a></li>
+        <li><a href={$link('/comparativas/corebalance-vs-ghostfolio')}>CoreBalance vs Ghostfolio</a></li>
+      </ul>
     </section>
   </main>
 
@@ -740,5 +750,44 @@
 
   .btn-primary:active {
     transform: scale(0.98);
+  }
+  /* Otras comparativas */
+  .other-comparisons {
+    margin-top: 3rem;
+  }
+
+  .other-comparisons h2 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0 0 1.25rem;
+  }
+
+  .other-comparisons ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+
+  .other-comparisons a {
+    display: block;
+    padding: 1rem 1.25rem;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.02);
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .other-comparisons a:hover {
+    transform: translateY(-3px);
+    border-color: rgba(59, 130, 246, 0.28);
+    background: rgba(255, 255, 255, 0.04);
   }
 </style>

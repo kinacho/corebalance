@@ -9,10 +9,14 @@ export type OgPageKey =
 	| 'blog'
 	| 'ter'
 	| 'checklist'
+	| 'crisis'
+	| 'precio-medio'
 	| 'autor'
 	| 'vs-excel'
 	| 'vs-indexa-capital'
-	| 'vs-portfolio-performance';
+	| 'vs-portfolio-performance'
+	| 'vs-justetf'
+	| 'vs-ghostfolio';
 
 /**
  * Imagen Open Graph de una página fija, en el idioma que se está sirviendo.

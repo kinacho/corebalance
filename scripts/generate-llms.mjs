@@ -53,12 +53,16 @@ const COPY = {
 		],
 		toolLines: (l) => [
 			`- [Calculadora de TER](${url('/herramientas/calculadora-ter', l)}) — TER medio ponderado de la cartera y simulación de comisiones a largo plazo`,
-			`- [Checklist de rebalanceo](${url('/herramientas/checklist-rebalanceo', l)}) — Cuestionario interactivo: ¿toca rebalancear ahora?`
+			`- [Checklist de rebalanceo](${url('/herramientas/checklist-rebalanceo', l)}) — Cuestionario interactivo: ¿toca rebalancear ahora?`,
+			`- [Simulador de crisis](${url('/herramientas/simulador-crisis', l)}) — ¿Qué pasaría con tu cartera si el mercado cae? Escenarios históricos (2000, 2008, 2020) y tiempo de recuperación`,
+			`- [Calculadora de precio medio](${url('/herramientas/calculadora-precio-medio', l)}) — Precio medio ponderado de compra con ventas, dividendos y comisiones`
 		],
 		comparisonLines: (l) => [
 			`- [CoreBalance vs Portfolio Performance](${url('/comparativas/corebalance-vs-portfolio-performance', l)})`,
 			`- [CoreBalance vs Excel y Google Sheets](${url('/comparativas/corebalance-vs-excel', l)})`,
-			`- [CoreBalance vs Indexa Capital](${url('/comparativas/corebalance-vs-indexa-capital', l)})`
+			`- [CoreBalance vs Indexa Capital](${url('/comparativas/corebalance-vs-indexa-capital', l)})`,
+			`- [CoreBalance vs JustETF](${url('/comparativas/corebalance-vs-justetf', l)})`,
+			`- [CoreBalance vs Ghostfolio](${url('/comparativas/corebalance-vs-ghostfolio', l)})`
 		],
 		authorLines: (l) => [
 			`- [Sobre el autor](${url('/autor/kinacho', l)}) — Quién escribe los artículos, experiencia y aviso de que no es asesoramiento financiero`
@@ -83,12 +87,16 @@ const COPY = {
 		],
 		toolLines: (l) => [
 			`- [TER Calculator](${url('/herramientas/calculadora-ter', l)}) — Weighted portfolio TER and long-term fee simulation`,
-			`- [Rebalancing Checklist](${url('/herramientas/checklist-rebalanceo', l)}) — Interactive quiz: should I rebalance now?`
+			`- [Rebalancing Checklist](${url('/herramientas/checklist-rebalanceo', l)}) — Interactive quiz: should I rebalance now?`,
+			`- [Crisis Simulator](${url('/herramientas/simulador-crisis', l)}) — What would a market crash do to your portfolio? Historical scenarios (2000, 2008, 2020) and recovery time`,
+			`- [Average Cost Calculator](${url('/herramientas/calculadora-precio-medio', l)}) — Weighted average purchase price with sells, dividends and fees`
 		],
 		comparisonLines: (l) => [
 			`- [CoreBalance vs Portfolio Performance](${url('/comparativas/corebalance-vs-portfolio-performance', l)})`,
 			`- [CoreBalance vs Excel & Google Sheets](${url('/comparativas/corebalance-vs-excel', l)})`,
-			`- [CoreBalance vs Indexa Capital](${url('/comparativas/corebalance-vs-indexa-capital', l)})`
+			`- [CoreBalance vs Indexa Capital](${url('/comparativas/corebalance-vs-indexa-capital', l)})`,
+			`- [CoreBalance vs JustETF](${url('/comparativas/corebalance-vs-justetf', l)})`,
+			`- [CoreBalance vs Ghostfolio](${url('/comparativas/corebalance-vs-ghostfolio', l)})`
 		],
 		authorLines: (l) => [
 			`- [About the author](${url('/autor/kinacho', l)}) — Who writes the articles, background, and the note that none of it is financial advice`

@@ -13,6 +13,7 @@
   import { page } from '$app/stores';
   import SeoHead from '$lib/components/seo/SeoHead.svelte';
   import { AUTHOR, GITHUB_REPO } from '$lib/seo/author';
+  import { FEATURE_LIST } from '$lib/seo/features';
   import { pageOgImage } from '$lib/seo/og';
   import { SITE_URL, alternates } from '$lib/i18n/routing';
   import type { Locales } from '$lib/i18n/i18n-types';
@@ -32,7 +33,7 @@
         "name": "CoreBalance",
         "url": alts.canonical,
         "applicationCategory": "FinanceApplication",
-        "applicationSubCategory": "Portfolio rebalancing calculator",
+        "applicationSubCategory": "Index portfolio tracker and rebalancing calculator",
         "operatingSystem": "Web",
         "browserRequirements": "Requires JavaScript",
         "softwareVersion": __APP_VERSION__,
@@ -46,12 +47,7 @@
           "priceCurrency": "EUR"
         },
         "description": $LL.seo.description(),
-        "featureList": [
-          $LL.features.item_rebalance_title(),
-          $LL.features.item_projections_title(),
-          $LL.features.item_broker_desc(),
-          $LL.features.item_privacy_desc()
-        ],
+        "featureList": FEATURE_LIST[lang],
         "author": { "@id": `${SITE_URL}${AUTHOR.path}#person` }
       },
       {

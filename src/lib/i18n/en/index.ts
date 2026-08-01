@@ -3,9 +3,9 @@ import type { Translation } from '../i18n-types';
 const en: Translation = {
   landing: {
     badge: 'Available for Web, iOS & Android',
-    hero_title_1: 'Rebalance your portfolio of',
+    hero_title_1: 'Track and rebalance your portfolio of',
     hero_title_gradient: 'ETFs and Index Funds',
-    hero_subtitle: 'The ultimate calculator for index investors. Calculate your rebalance in seconds, optimize contributions, and keep your strategy under control locally and privately.',
+    hero_subtitle: 'The free, private tool for index investors. Calculate your rebalance in seconds, track your contributions and dividends, and keep your strategy under control without your data ever leaving your browser.',
     cta_primary: 'Get started free',
     cta_demo: 'Try Interactive Demo',
     cta_how: 'See how it works →',
@@ -37,6 +37,8 @@ const en: Translation = {
     aria_why_us: 'Learn about the story and why to use CoreBalance',
     aria_faq: 'See frequently asked questions about passive investing and rebalancing',
     aria_blog: 'Go to the CoreBalance investment blog',
+    tools: 'Tools',
+    aria_tools: 'See the free CoreBalance tools',
     aria_dashboard: 'Go to your investment dashboard',
     aria_demo: 'Try interactive portfolio rebalancing demo',
     aria_start_free: 'Start rebalancing your portfolio for free',
@@ -63,13 +65,19 @@ const en: Translation = {
     item_projections_desc: 'Visualize how your wealth will grow based on your contributions and expected returns.',
     item_broker_title: 'Multi-Broker',
     item_broker_desc: 'Import your transactions from MyInvestor, DeGiro, Interactive Brokers, and more.',
+    item_ledger_title: 'Transaction Ledger',
+    item_ledger_desc: 'Record buys, sells, dividends and transfers. Your average purchase price always up to date, no spreadsheets.',
+    item_cash_title: 'Interest-Bearing Accounts',
+    item_cash_desc: 'Add your deposits and savings accounts with their interest rate: it accrues daily and counts toward your allocation.',
+    item_currency_title: 'Multi-Currency',
+    item_currency_desc: 'Your portfolio in euros, dollars or pounds, with automatic exchange rate conversion.',
   },
   // Comparison
   comparison: {
     title: 'The alternative to',
     title_gradient: 'Portfolio Performance',
     title_and: 'and Excel',
-    subtitle: 'CoreBalance is the free, fast, and private tool that does the dirty work for you, so you can focus on what matters: your financial freedom.',
+    subtitle: 'CoreBalance is the free, private portfolio manager that does the dirty work for you, so you can focus on what matters: your financial freedom.',
     col_feature: 'Feature',
     col_excel: 'Excel / Google Sheets',
     col_others: 'Other Apps',
@@ -83,12 +91,21 @@ const en: Translation = {
     item_calc_core: 'Optimized',
     item_privacy_title: 'Privacy',
     item_privacy_excel: 'Local, but exposed',
-    item_privacy_others: 'They sell your data',
+    item_privacy_others: 'Your data on their servers',
     item_privacy_core: 'Your data is yours',
     item_ease_title: 'Ease of use',
     item_ease_excel: 'Only for experts',
     item_ease_others: 'Complex',
     item_ease_core: 'Intuitive',
+    item_ledger_title: 'History & average cost',
+    item_ledger_excel: 'Fragile manual formulas',
+    item_ledger_others: 'Paid plans only',
+    item_ledger_core: 'Automatic & free',
+    item_currency_title: 'Multi-currency',
+    item_currency_excel: 'Manual conversion',
+    item_currency_others: 'Limited',
+    item_currency_core: 'Automatic EUR / USD / GBP',
+    see_full: 'See the full comparison:',
   },
   // Why Us
   why_us: {
@@ -160,6 +177,14 @@ const en: Translation = {
     q3_a: "Unlike other apps, CoreBalance is 'Local-First'. Your financial data is stored exclusively in your browser (IndexedDB). There are no servers that store your portfolio, nor do you need to link your bank accounts.",
     q4_q: 'Is it compatible with MyInvestor or Indexa Capital?',
     q4_a: 'Yes, it is the perfect complement. You can import your portfolio via CSV or enter your positions manually to calculate the exact rebalance you need to execute at your broker.',
+    q5_q: 'Is it free? Do I need to sign up?',
+    q5_a: 'Yes, it is free and open source, and no sign-up is required: your data lives in your browser. Creating an account is optional and only used to sync across devices.',
+    q6_q: 'Can I track my buys, sells and dividends?',
+    q6_a: 'Yes. With Ledger mode you record every buy, sell, dividend or transfer, and CoreBalance automatically calculates your weighted average purchase price and your current holdings.',
+    q7_q: 'Can I include savings accounts or deposits?',
+    q7_a: 'Yes. You can add interest-bearing accounts and deposits with their interest rate: interest accrues daily and is included in your portfolio value and allocation.',
+    q8_q: 'Does it work if my funds trade in dollars or pounds?',
+    q8_a: 'Yes. CoreBalance is multi-currency (EUR, USD and GBP): it automatically converts prices using up-to-date exchange rates so you see your whole portfolio in your base currency.',
   },
   // CTA
   cta: {
@@ -182,10 +207,10 @@ const en: Translation = {
   },
   // SEO
   seo: {
-    title: 'CoreBalance — Rebalance your portfolio of ETFs and Index Funds',
-    description: 'The ultimate tool for the index investor. Calculate your rebalance in seconds, optimize your portfolio and keep your strategy under control.',
-    og_title: 'CoreBalance — Rebalance your portfolio of ETFs',
-    og_description: 'Manage your portfolio of index funds and ETFs with smart rebalancing and real-time tracking.',
+    title: 'CoreBalance — Track and Rebalance Your Index Fund & ETF Portfolio',
+    description: 'Free, private, no sign-up. Calculate your rebalance in seconds, track your transactions, dividends and TER, and keep your strategy under control without your data ever leaving the browser.',
+    og_title: 'CoreBalance — Track and rebalance your index portfolio',
+    og_description: 'Manage your index fund & ETF portfolio: smart rebalancing, transaction ledger and real-time tracking. Free, no sign-up.',
   },
   // Dashboard
   dashboard: {
@@ -269,7 +294,7 @@ const en: Translation = {
   terms: {
     title: 'Terms and Conditions of Use',
     updated: 'Last updated: {date|shortDate}',
-    seo_desc: 'Read our terms and conditions of use. Learn about the conditions under which you can use the CoreBalance rebalancing tool.',
+    seo_desc: 'Read our terms and conditions of use. Learn about the conditions under which you can use the CoreBalance index portfolio manager.',
     sections: {
       s1_title: '1. Description of Service',
       s1_content: 'CoreBalance is a web tool designed to help individual investors manage, analyze, and rebalance their portfolios of index funds, ETFs, and other financial assets. The service allows for the registration of positions, calculation of contributions needed to maintain a specific strategy, and visualization of performance metrics.',
@@ -722,6 +747,17 @@ const en: Translation = {
     close_aria: 'Close modal',
     btn_understand: 'Got it',
     releases: {
+      v1_10_0: {
+        date: 'August 1, 2026',
+        badge: 'New tools, comparisons & guides',
+        changes: [
+          '🧰 **Two new public tools:** the Crash Simulator (what would a crash like 2000, 2008 or 2020 do to your portfolio, and how long to recover?) and the Average Purchase Price Calculator with sells, dividends and fees.',
+          '⚖️ **Two new comparisons:** CoreBalance vs JustETF and CoreBalance vs Ghostfolio, with honest dimension-by-dimension tables.',
+          '📥 **Four CSV import guides:** step-by-step for DEGIRO, MyInvestor, Trading 212 and Interactive Brokers, verified against the app\'s actual importer.',
+          '🧭 **New "Track and rebalance" positioning:** the landing now tells everything the app does — transaction ledger with average cost, interest-bearing accounts with daily accrual and multi-currency — with new feature cards, comparison rows and FAQs.',
+          '🛠️ **Improvements to existing tools:** the Checklist\'s time question now counts toward the verdict (annual calendar rule) and the TER Calculator lets you edit the active fund TER and adds FAQs.'
+        ]
+      },
       v1_9_0: {
         date: 'June 18, 2026',
         badge: 'Technical SEO & Complete Blog',

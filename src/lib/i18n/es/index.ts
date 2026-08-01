@@ -4,9 +4,9 @@ const es = {
   // Landing
   landing: {
     badge: 'Disponible para Web, iOS y Android',
-    hero_title_1: 'Rebalancea tu cartera de',
+    hero_title_1: 'Gestiona y rebalancea tu cartera de',
     hero_title_gradient: 'ETFs y Fondos Indexados',
-    hero_subtitle: 'La calculadora definitiva para el inversor indexado. Calcula tu rebalanceo en segundos, optimiza tus aportaciones y mantén tu estrategia bajo control de forma local y privada.',
+    hero_subtitle: 'La herramienta gratuita y privada del inversor indexado. Calcula tu rebalanceo en segundos, sigue tus aportaciones y dividendos, y mantén tu estrategia bajo control sin que tus datos salgan de tu navegador.',
     cta_primary: 'Empezar gratis',
     cta_demo: 'Probar Demo Interactiva',
     cta_how: 'Ver cómo funciona →',
@@ -39,6 +39,8 @@ const es = {
     aria_why_us: 'Conocer la historia y por qué usar CoreBalance',
     aria_faq: 'Ver preguntas frecuentes sobre inversión pasiva y rebalanceo',
     aria_blog: 'Ir al blog de inversión de CoreBalance',
+    tools: 'Herramientas',
+    aria_tools: 'Ver las herramientas gratuitas de CoreBalance',
     aria_dashboard: 'Ir a tu panel de control de inversiones',
     aria_demo: 'Probar demostración interactiva de rebalanceo de cartera',
     aria_start_free: 'Empezar a rebalancear tu cartera gratis',
@@ -65,13 +67,19 @@ const es = {
     item_projections_desc: 'Visualiza cómo crecerá tu patrimonio basándote en tus aportaciones y rentabilidad esperada.',
     item_broker_title: 'Multi-Broker',
     item_broker_desc: 'Importa tus operaciones desde MyInvestor, DeGiro, Interactive Brokers y más.',
+    item_ledger_title: 'Libro de Transacciones',
+    item_ledger_desc: 'Registra compras, ventas, dividendos y traspasos. Tu precio medio de compra siempre al día, sin hojas de cálculo.',
+    item_cash_title: 'Cuentas Remuneradas',
+    item_cash_desc: 'Añade tus depósitos y cuentas remuneradas con su interés: se devengan a diario y cuentan en tu asignación.',
+    item_currency_title: 'Multi-divisa',
+    item_currency_desc: 'Cartera en euros, dólares o libras, con conversión automática del tipo de cambio.',
   },
   // Comparison
   comparison: {
     title: 'La alternativa a',
     title_gradient: 'Portfolio Performance',
     title_and: 'y Excel',
-    subtitle: 'CoreBalance es la herramienta gratuita, rápida y privada que hace el trabajo sucio por ti, para que te centres en lo que importa: tu libertad financiera.',
+    subtitle: 'CoreBalance es el gestor de cartera gratuito y privado que hace el trabajo sucio por ti, para que te centres en lo que importa: tu libertad financiera.',
     col_feature: 'Funcionalidad',
     col_excel: 'Excel / Google Sheets',
     col_others: 'Otras Apps',
@@ -85,12 +93,21 @@ const es = {
     item_calc_core: 'Optimizado',
     item_privacy_title: 'Privacidad',
     item_privacy_excel: 'Local, pero expuesta',
-    item_privacy_others: 'Venden tus datos',
+    item_privacy_others: 'Tus datos en sus servidores',
     item_privacy_core: 'Tus datos son tuyos',
     item_ease_title: 'Facilidad de uso',
     item_ease_excel: 'Sólo para expertos',
     item_ease_others: 'Compleja',
     item_ease_core: 'Intuitiva',
+    item_ledger_title: 'Historial y precio medio',
+    item_ledger_excel: 'Fórmulas manuales frágiles',
+    item_ledger_others: 'Solo en planes de pago',
+    item_ledger_core: 'Automático y gratis',
+    item_currency_title: 'Multi-divisa',
+    item_currency_excel: 'Conversión manual',
+    item_currency_others: 'Limitada',
+    item_currency_core: 'EUR / USD / GBP automático',
+    see_full: 'Ver comparativa completa:',
   },
   // Why Us
   why_us: {
@@ -162,6 +179,14 @@ const es = {
     q3_a: "A diferencia de otras apps, CoreBalance es 'Local-First'. Tus datos financieros se guardan exclusivamente en tu navegador (IndexedDB). No hay servidores que guarden tu cartera, ni necesitas vincular tus cuentas bancarias.",
     q4_q: '¿Es compatible con MyInvestor o Indexa Capital?',
     q4_a: 'Sí, es el complemento perfecto. Puedes importar tu cartera mediante CSV o introducir tus posiciones manualmente para calcular el rebalanceo exacto que necesitas ejecutar en tu comercializadora.',
+    q5_q: '¿Es gratis? ¿Necesito registrarme?',
+    q5_a: 'Sí, es gratis y de código abierto, y no requiere registro: los datos viven en tu navegador. Crear cuenta es opcional y solo sirve para sincronizar entre dispositivos.',
+    q6_q: '¿Puedo llevar el historial de compras, ventas y dividendos?',
+    q6_a: 'Sí. Con el modo Ledger registras cada compra, venta, dividendo o traspaso, y CoreBalance calcula automáticamente tu precio medio de compra ponderado y tus participaciones actuales.',
+    q7_q: '¿Puedo incluir cuentas remuneradas o depósitos?',
+    q7_a: 'Sí. Puedes añadir cuentas remuneradas y depósitos indicando su tipo de interés: los intereses se devengan a diario y se integran en el valor y la asignación de tu cartera.',
+    q8_q: '¿Funciona si mis fondos cotizan en dólares o libras?',
+    q8_a: 'Sí. CoreBalance es multi-divisa (EUR, USD y GBP): convierte automáticamente los precios con el tipo de cambio actualizado para que veas toda tu cartera en tu moneda base.',
   },
   // CTA
   cta: {
@@ -184,10 +209,10 @@ const es = {
   },
   // SEO
   seo: {
-    title: 'CoreBalance — Rebalancea tu cartera de ETFs y Fondos Indexados',
-    description: 'La herramienta definitiva para el inversor indexado. Calcula tu rebalanceo en segundos, optimiza tu cartera y mantén tu estrategia bajo control.',
-    og_title: 'CoreBalance — Rebalancea tu cartera de ETFs',
-    og_description: 'Gestiona tu cartera de fondos indexados y ETFs con rebalanceo inteligente y seguimiento en tiempo real.',
+    title: 'CoreBalance — Gestiona y rebalancea tu cartera de fondos indexados y ETFs',
+    description: 'Gratis, privada y sin registro. Calcula tu rebalanceo en segundos, sigue tus transacciones, dividendos y TER, y mantén tu estrategia bajo control sin que tus datos salgan del navegador.',
+    og_title: 'CoreBalance — Gestiona y rebalancea tu cartera indexada',
+    og_description: 'Gestiona tu cartera de fondos indexados y ETFs: rebalanceo inteligente, libro de transacciones y seguimiento en tiempo real. Gratis y sin registro.',
   },
   // Dashboard
   dashboard: {
@@ -271,7 +296,7 @@ const es = {
   terms: {
     title: 'Términos y Condiciones de Uso',
     updated: 'Última actualización: {date|shortDate}',
-    seo_desc: 'Lee nuestros términos y condiciones de uso. Conoce las condiciones bajo las cuales puedes usar la herramienta de rebalanceo CoreBalance.',
+    seo_desc: 'Lee nuestros términos y condiciones de uso. Conoce las condiciones bajo las cuales puedes usar el gestor de carteras indexadas CoreBalance.',
     sections: {
       s1_title: '1. Descripción del Servicio',
       s1_content: 'CoreBalance es una herramienta web diseñada para ayudar a inversores particulares a gestionar, analizar y rebalancear sus carteras de fondos indexados, ETFs y otros activos financieros. El servicio permite el registro de posiciones, el cálculo de aportaciones necesarias para mantener una estrategia determinada y la visualización de métricas de rendimiento.',
@@ -724,6 +749,17 @@ const es = {
     close_aria: 'Cerrar modal',
     btn_understand: 'Entendido',
     releases: {
+      v1_10_0: {
+        date: '1 de Agosto, 2026',
+        badge: 'Nuevas herramientas, comparativas y guías',
+        changes: [
+          '🧰 **Dos herramientas públicas nuevas:** el Simulador de Crisis (¿qué pasaría con tu cartera en un crash como 2000, 2008 o 2020 y cuánto tardarías en recuperarte?) y la Calculadora de Precio Medio de compra con ventas, dividendos y comisiones.',
+          '⚖️ **Dos comparativas nuevas:** CoreBalance vs JustETF y CoreBalance vs Ghostfolio, con tablas honestas por dimensiones.',
+          '📥 **Cuatro guías de importación CSV:** paso a paso para DEGIRO, MyInvestor, Trading 212 e Interactive Brokers, verificadas contra el importador real de la app.',
+          '🧭 **Nuevo posicionamiento "Gestiona y rebalancea":** la landing ahora cuenta todo lo que hace la app — libro de transacciones con precio medio, cuentas remuneradas con interés diario y multi-divisa — con nuevas tarjetas, filas comparativas y preguntas frecuentes.',
+          '🛠️ **Mejoras en las herramientas existentes:** la pregunta de tiempo del Checklist ahora cuenta en el veredicto (regla de calendario anual) y la Calculadora TER permite editar el TER del fondo activo y añade preguntas frecuentes.'
+        ]
+      },
       v1_9_0: {
         date: '18 de Junio, 2026',
         badge: 'SEO Técnico y Blog Completo',

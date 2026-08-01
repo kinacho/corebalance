@@ -42,12 +42,6 @@
           {
             "@type": "ListItem",
             "position": 2,
-            "name": isEs ? "Comparativas" : "Comparisons",
-            "item": canonical
-          },
-          {
-            "@type": "ListItem",
-            "position": 3,
             "name": "vs Excel",
             "item": canonical
           }
@@ -161,7 +155,7 @@
             </tr>
             <tr>
               <td class="feature-title">{isEs ? 'Privacidad en la nube' : 'Cloud Privacy'}</td>
-              <td class="highlight-col">{isEs ? '100% Privado (datos locales encriptados)' : '100% Private (encrypted local data)'}</td>
+              <td class="highlight-col">{isEs ? '100% privado (datos locales en tu navegador, sin servidor)' : '100% private (local data in your browser, no server)'}</td>
               <td>{isEs ? 'Media-Baja (datos guardados en servidores de Google/Microsoft)' : 'Medium-Low (stored on Google/Microsoft servers)'}</td>
             </tr>
             <tr>
@@ -241,6 +235,12 @@
               </svg>
               <span><strong>{isEs ? 'Sincronización local offline:' : 'Local offline sync:'}</strong> {isEs ? 'Puedes usarla en cualquier sitio sin preocuparte de si tu plantilla sincroniza correctamente en la nube.' : 'You can use it anywhere without worrying about whether your template syncs correctly to the cloud.'}</span>
             </li>
+            <li>
+              <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+              </svg>
+              <span><strong>{isEs ? 'Libro de transacciones con precio medio automático:' : 'Transaction ledger with automatic average cost:'}</strong> {isEs ? 'Registra compras, ventas, dividendos y traspasos, y calcula el precio medio de cada activo sin fórmulas.' : 'Records buys, sells, dividends, and transfers, and calculates each asset\'s average cost with no formulas.'}</span>
+            </li>
           </ul>
         </div>
         <div class="details-card">
@@ -257,12 +257,6 @@
                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
               </svg>
               <span><strong>{isEs ? 'Simulación histórica compleja:' : 'Complex historical simulation:'}</strong> {isEs ? 'Proyecciones de interés compuesto a 40 años con variaciones aleatorias (Método de Montecarlo).' : '40-year compound interest projections with random variations (Monte Carlo method).'}</span>
-            </li>
-            <li>
-              <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-              </svg>
-              <span><strong>{isEs ? 'Historial de aportaciones guardado:' : 'Saved contribution history:'}</strong> {isEs ? 'Registro histórico de cada aportación mensual detallada en una pestaña separada.' : 'Detailed historical record of each monthly contribution in a separate tab.'}</span>
             </li>
           </ul>
         </div>
@@ -297,6 +291,17 @@
           : 'Try the CoreBalance calculator 100% free and privately. Your financial data will never leave your device.'}</p>
         <button class="btn-primary" onclick={() => goto($link('/'))}>{isEs ? 'Probar CoreBalance Gratis' : 'Try CoreBalance Free'}</button>
       </div>
+    </section>
+
+    <!-- Otras comparativas -->
+    <section class="other-comparisons" aria-labelledby="other-comparisons-title">
+      <h2 id="other-comparisons-title">{isEs ? 'Otras comparativas' : 'Other comparisons'}</h2>
+      <ul>
+        <li><a href={$link('/comparativas/corebalance-vs-portfolio-performance')}>CoreBalance vs Portfolio Performance</a></li>
+        <li><a href={$link('/comparativas/corebalance-vs-indexa-capital')}>CoreBalance vs Indexa Capital</a></li>
+        <li><a href={$link('/comparativas/corebalance-vs-justetf')}>CoreBalance vs JustETF</a></li>
+        <li><a href={$link('/comparativas/corebalance-vs-ghostfolio')}>CoreBalance vs Ghostfolio</a></li>
+      </ul>
     </section>
   </main>
 
@@ -740,5 +745,44 @@
 
   .btn-primary:active {
     transform: scale(0.98);
+  }
+  /* Otras comparativas */
+  .other-comparisons {
+    margin-top: 3rem;
+  }
+
+  .other-comparisons h2 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0 0 1.25rem;
+  }
+
+  .other-comparisons ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+
+  .other-comparisons a {
+    display: block;
+    padding: 1rem 1.25rem;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.02);
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .other-comparisons a:hover {
+    transform: translateY(-3px);
+    border-color: rgba(59, 130, 246, 0.28);
+    background: rgba(255, 255, 255, 0.04);
   }
 </style>

@@ -42,12 +42,6 @@
           {
             "@type": "ListItem",
             "position": 2,
-            "name": isEs ? "Comparativas" : "Comparisons",
-            "item": canonical
-          },
-          {
-            "@type": "ListItem",
-            "position": 3,
             "name": "vs Indexa Capital",
             "item": canonical
           }
@@ -156,7 +150,7 @@
             </tr>
             <tr>
               <td class="feature-title">{isEs ? 'Comisión de Gestión Adicional' : 'Additional Management Fee'}</td>
-              <td class="highlight-col"><strong>{isEs ? '0% (Completamente gratuito)' : '0% (Completamente free)'}</strong></td>
+              <td class="highlight-col"><strong>{isEs ? '0% (Completamente gratuito)' : '0% (Completely free)'}</strong></td>
               <td>{isEs ? '0.43% - 0.60% anual de media (según capital)' : '0.43% - 0.60% annually on average (by capital)'}</td>
             </tr>
             <tr>
@@ -178,6 +172,11 @@
               <td class="feature-title">{isEs ? 'Capital Mínimo' : 'Minimum Capital'}</td>
               <td class="highlight-col">{isEs ? 'Desde 0 €' : 'From 0 €'}</td>
               <td>{isEs ? 'Desde 3.000 € (para carteras diversificadas)' : 'From 3,000 € (for diversified portfolios)'}</td>
+            </tr>
+            <tr>
+              <td class="feature-title">{isEs ? 'Visión completa de tu patrimonio' : 'Complete view of your wealth'}</td>
+              <td class="highlight-col">{isEs ? 'Fondos + acciones + cuentas remuneradas y depósitos, aunque estén en varios brokers y divisas' : 'Funds + stocks + interest-bearing accounts and deposits, even across several brokers and currencies'}</td>
+              <td>{isEs ? 'Solo la cartera que custodia' : 'Only the portfolio it custodies'}</td>
             </tr>
           </tbody>
         </table>
@@ -226,6 +225,7 @@
       </div>
       <p class="note" style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-muted, rgba(160, 160, 200, 0.8)); text-align: center;">
         * {isEs ? 'Nota: La simulación no incluye el coste de los fondos subyacentes (TER), que ronda el 0.15% en ambos modelos. Solo se compara el coste por el servicio de gestión y rebalanceo.' : 'Note: This simulation does not include the underlying fund cost (TER) of approx. 0.15% which applies to both. It only compares the management fee charge.'}
+        {isEs ? 'Puedes estimar cuánto te cuesta el TER de tus fondos con nuestra ' : 'You can estimate what your funds\' TER costs you with our '}<a href={$link('/herramientas/calculadora-ter')}>{isEs ? 'calculadora de TER' : 'TER calculator'}</a>.
       </p>
     </section>
 
@@ -310,6 +310,17 @@
           : 'Use CoreBalance for free to calculate your rebalancing and keep all your capital invested without paying management fees.'}</p>
         <button class="btn-primary" onclick={() => goto($link('/'))}>{isEs ? 'Probar CoreBalance Gratis' : 'Try CoreBalance Free'}</button>
       </div>
+    </section>
+
+    <!-- Otras comparativas -->
+    <section class="other-comparisons" aria-labelledby="other-comparisons-title">
+      <h2 id="other-comparisons-title">{isEs ? 'Otras comparativas' : 'Other comparisons'}</h2>
+      <ul>
+        <li><a href={$link('/comparativas/corebalance-vs-portfolio-performance')}>CoreBalance vs Portfolio Performance</a></li>
+        <li><a href={$link('/comparativas/corebalance-vs-excel')}>{isEs ? 'CoreBalance vs Excel y Google Sheets' : 'CoreBalance vs Excel & Google Sheets'}</a></li>
+        <li><a href={$link('/comparativas/corebalance-vs-justetf')}>CoreBalance vs JustETF</a></li>
+        <li><a href={$link('/comparativas/corebalance-vs-ghostfolio')}>CoreBalance vs Ghostfolio</a></li>
+      </ul>
     </section>
   </main>
 
@@ -698,5 +709,55 @@
 
   .btn-primary:active {
     transform: scale(0.98);
+  }
+  /* Enlace contextual de la nota de costes */
+  .note a {
+    color: var(--accent-blue, #3b82f6);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .note a:hover {
+    text-decoration: underline;
+  }
+
+  /* Otras comparativas */
+  .other-comparisons {
+    margin-top: 3rem;
+  }
+
+  .other-comparisons h2 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0 0 1.25rem;
+  }
+
+  .other-comparisons ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+
+  .other-comparisons a {
+    display: block;
+    padding: 1rem 1.25rem;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.02);
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .other-comparisons a:hover {
+    transform: translateY(-3px);
+    border-color: rgba(59, 130, 246, 0.28);
+    background: rgba(255, 255, 255, 0.04);
   }
 </style>

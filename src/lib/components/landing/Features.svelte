@@ -31,11 +31,26 @@
       title: $LL.features.item_broker_title(),
       description: $LL.features.item_broker_desc(),
       icon: "💼"
+    },
+    {
+      title: $LL.features.item_ledger_title(),
+      description: $LL.features.item_ledger_desc(),
+      icon: "📒"
+    },
+    {
+      title: $LL.features.item_cash_title(),
+      description: $LL.features.item_cash_desc(),
+      icon: "🏦"
+    },
+    {
+      title: $LL.features.item_currency_title(),
+      description: $LL.features.item_currency_desc(),
+      icon: "🌍"
     }
   ]);
 </script>
 
-<section id="features" class="features" style="min-height: 800px;">
+<section id="features" class="features">
   <div class="container">
     <div class="section-header">
       <span class="eyebrow">{$LL.features.eyebrow()}</span>

@@ -1,6 +1,6 @@
-# CoreBalance — Rebalanceo de carteras de fondos indexados y ETFs
+# CoreBalance — Gestión y rebalanceo de carteras de fondos indexados y ETFs
 
-**Calculadora gratuita de rebalanceo de cartera para inversores indexados.** Define tu *asset allocation* objetivo, introduce tus fondos o ETFs y CoreBalance calcula exactamente cuánto comprar de cada activo — priorizando las nuevas aportaciones para que no tengas que vender ni tributar. Sin registro, sin cuentas bancarias enlazadas y con los datos guardados sólo en tu navegador.
+**Gestiona y rebalancea tu cartera indexada, gratis y sin registro.** Define tu *asset allocation* objetivo, importa tus operaciones (MyInvestor, DEGIRO, Trading 212, Interactive Brokers o cualquier CSV), sigue tu coste medio, dividendos, intereses de cuentas remuneradas y TER, y CoreBalance calcula exactamente cuánto comprar de cada activo — priorizando las nuevas aportaciones para que no tengas que vender ni tributar. Sin cuentas bancarias enlazadas y con los datos guardados sólo en tu navegador.
 
 🔗 **[corebalance.app](https://corebalance.app)** · 🇬🇧 **[English version](https://corebalance.app/en)** · 📖 **[Blog](https://corebalance.app/blog)**
 

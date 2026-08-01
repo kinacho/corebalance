@@ -20,10 +20,20 @@ export const RELATED_READING: Record<string, readonly string[]> = {
 		'plantilla-notion-seguimiento-cartera',
 		'como-rebalancear-cartera-indexada'
 	],
+	'/comparativas/corebalance-vs-ghostfolio': [
+		'alternativas-portfolio-performance',
+		'como-rebalancear-cartera-indexada',
+		'que-es-asset-allocation'
+	],
 	'/comparativas/corebalance-vs-indexa-capital': [
 		'que-es-asset-allocation',
 		'cartera-bogle-principiantes-espana',
 		'cuando-rebalancear-cartera'
+	],
+	'/comparativas/corebalance-vs-justetf': [
+		'iwda-vs-vwce-comparativa',
+		'fondos-indexados-vs-etfs-espana',
+		'como-rebalancear-cartera-indexada'
 	],
 	'/comparativas/corebalance-vs-portfolio-performance': [
 		'alternativas-portfolio-performance',
@@ -39,6 +49,16 @@ export const RELATED_READING: Record<string, readonly string[]> = {
 		'cuando-rebalancear-cartera',
 		'que-pasa-si-no-rebalanceo-cartera',
 		'rebalancear-sin-pagar-impuestos-espana'
+	],
+	'/herramientas/calculadora-precio-medio': [
+		'dividendos-etfs-degiro',
+		'como-rebalancear-cartera-indexada',
+		'rebalancear-sin-pagar-impuestos-espana'
+	],
+	'/herramientas/simulador-crisis': [
+		'que-pasa-si-no-rebalanceo-cartera',
+		'cuando-rebalancear-cartera',
+		'como-rebalancear-cartera-indexada'
 	]
 };
 

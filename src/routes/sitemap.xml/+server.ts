@@ -15,7 +15,7 @@ export const prerender = true;
  * aquí. Cambiar sólo metadatos o estilos no cuenta como modificación.
  */
 const STATIC_PAGES: Record<string, { lastmod: string; priority: string; changefreq: string }> = {
-	'/': { lastmod: '2026-06-26', priority: '1.0', changefreq: 'weekly' },
+	'/': { lastmod: '2026-08-01', priority: '1.0', changefreq: 'weekly' },
 	'/comparativas/corebalance-vs-portfolio-performance': {
 		lastmod: '2026-06-26',
 		priority: '0.7',
@@ -38,6 +38,26 @@ const STATIC_PAGES: Record<string, { lastmod: string; priority: string; changefr
 	},
 	'/herramientas/checklist-rebalanceo': {
 		lastmod: '2026-06-26',
+		priority: '0.7',
+		changefreq: 'monthly'
+	},
+	'/comparativas/corebalance-vs-justetf': {
+		lastmod: '2026-08-01',
+		priority: '0.7',
+		changefreq: 'monthly'
+	},
+	'/comparativas/corebalance-vs-ghostfolio': {
+		lastmod: '2026-08-01',
+		priority: '0.7',
+		changefreq: 'monthly'
+	},
+	'/herramientas/simulador-crisis': {
+		lastmod: '2026-08-01',
+		priority: '0.7',
+		changefreq: 'monthly'
+	},
+	'/herramientas/calculadora-precio-medio': {
+		lastmod: '2026-08-01',
 		priority: '0.7',
 		changefreq: 'monthly'
 	},

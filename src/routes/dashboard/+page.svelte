@@ -225,11 +225,8 @@
 
 <svelte:head>
   <meta name="robots" content="noindex, nofollow" />
-  <title>CoreBalance — Dashboard de Inversión y Rebalanceo de ETFs</title>
-  <meta
-    name="description"
-    content="Gestiona tu cartera de fondos indexados y ETFs. Rebalanceo inteligente, seguimiento de patrimonio y herramientas para el inversor pasivo."
-  />
+  <title>{$LL.seo.title()}</title>
+  <meta name="description" content={$LL.seo.description()} />
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1, viewport-fit=cover"
@@ -238,15 +235,15 @@
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://corebalance.app/" />
-  <meta property="og:title" content="CoreBalance — Rebalancea tu cartera de ETFs y Fondos Indexados" />
-  <meta property="og:description" content="La herramienta definitiva para el inversor indexado. Calcula tu rebalanceo en segundos y optimiza tu cartera." />
+  <meta property="og:title" content={$LL.seo.og_title()} />
+  <meta property="og:description" content={$LL.seo.og_description()} />
   <meta property="og:image" content="https://corebalance.app/og-image.png" />
 
   <!-- Twitter -->
   <meta property="twitter:card" content="summary_large_image" />
   <meta property="twitter:url" content="https://corebalance.app/" />
-  <meta property="twitter:title" content="CoreBalance — Rebalancea tu cartera de ETFs" />
-  <meta property="twitter:description" content="Gestiona tu cartera de fondos indexados y ETFs con rebalanceo inteligente." />
+  <meta property="twitter:title" content={$LL.seo.og_title()} />
+  <meta property="twitter:description" content={$LL.seo.og_description()} />
   <meta property="twitter:image" content="https://corebalance.app/og-image.png" />
 
   {@html `<script type="application/ld+json">${dashboardSchemaString}</script>`}

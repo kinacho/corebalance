@@ -32,8 +32,14 @@
     stepIndicator: (n: number) => `Question ${n} of 4`,
     back: 'Back',
     tipLabel: '💡 Key tip:',
-    goToCalc: 'Go to calculator',
+    goToCalc: 'Open the portfolio manager',
     restart: 'Restart Quiz',
+    otherToolsTitle: 'Other tools',
+    otherTools: [
+      { path: '/herramientas/calculadora-ter', label: 'TER Calculator' },
+      { path: '/herramientas/simulador-crisis', label: 'Crash Simulator' },
+      { path: '/herramientas/calculadora-precio-medio', label: 'Average Price Calculator' }
+    ],
     steps: [
       {
         title: '1. How long has it been since your last rebalance?',
@@ -71,6 +77,12 @@
       }
     ],
     verdicts: {
+      by_time: {
+        title: 'Rebalancing recommended: over a year without reviewing',
+        color: '#3b82f6',
+        desc: 'Your drift is small, but more than 12 months have passed since your last rebalance (or you have never done one). The calendar rule for passive investors is to review your allocation at least once a year: check your real weights and steer your next contributions towards whatever has fallen behind, without selling anything.',
+        tip: 'Set a fixed annual date (e.g. every January) and let CoreBalance calculate the exact contribution that brings you back to your target allocation.'
+      },
       no_rebalance: {
         title: 'Rebalancing is not necessary',
         color: '#10b981',
@@ -104,8 +116,14 @@
     stepIndicator: (n: number) => `Pregunta ${n} de 4`,
     back: 'Atrás',
     tipLabel: '💡 Consejo clave:',
-    goToCalc: 'Ir a la calculadora',
+    goToCalc: 'Abrir la calculadora de cartera',
     restart: 'Reiniciar Cuestionario',
+    otherToolsTitle: 'Otras herramientas',
+    otherTools: [
+      { path: '/herramientas/calculadora-ter', label: 'Calculadora de TER' },
+      { path: '/herramientas/simulador-crisis', label: 'Simulador de crisis' },
+      { path: '/herramientas/calculadora-precio-medio', label: 'Calculadora de precio medio' }
+    ],
     steps: [
       {
         title: '1. ¿Cuánto tiempo ha pasado desde tu último rebalanceo?',
@@ -143,6 +161,12 @@
       }
     ],
     verdicts: {
+      by_time: {
+        title: 'Rebalanceo recomendado: más de un año sin revisar',
+        color: '#3b82f6',
+        desc: 'Tu desviación es pequeña, pero han pasado más de 12 meses desde tu último rebalanceo (o nunca lo has hecho). La regla de calendario del inversor pasivo es revisar la asignación al menos una vez al año: comprueba tus pesos reales y dirige tus próximas aportaciones hacia lo que se haya quedado rezagado, sin vender nada.',
+        tip: 'Fija una fecha anual (por ejemplo cada enero) y deja que CoreBalance calcule la aportación exacta que te devuelve a tu asignación objetivo.'
+      },
       no_rebalance: {
         title: 'No es necesario rebalancear',
         color: '#10b981',
@@ -191,7 +215,11 @@
   let verdict = $derived.by(() => {
     if (currentStep < 4) return null;
 
-    if (driftAnswer === 'drift_low') return t.verdicts.no_rebalance;
+    if (driftAnswer === 'drift_low') {
+      // Regla de calendario: aunque la deriva sea baja, más de 12 meses sin
+      // revisar merece al menos un rebalanceo por aportación.
+      return timeAnswer === 'more_12' ? t.verdicts.by_time : t.verdicts.no_rebalance;
+    }
     if (driftAnswer === 'drift_medium' && aportationAnswer === 'aport_yes') return t.verdicts.by_contribution;
     if (assetTypeAnswer === 'type_funds') return t.verdicts.by_transfer;
     return t.verdicts.by_sell_buy;
@@ -299,12 +327,22 @@
           </div>
 
           <div class="action-buttons">
-            <button class="btn-primary" onclick={() => goto($link('/'))}>{t.goToCalc}</button>
+            <button class="btn-primary" onclick={() => goto($link('/dashboard'))}>{t.goToCalc}</button>
             <button class="btn-secondary" onclick={restart}>{t.restart}</button>
           </div>
         </div>
       {/if}
     </div>
+
+    <!-- Enlaces cruzados a las demás herramientas -->
+    <aside class="other-tools">
+      <h2>{t.otherToolsTitle}</h2>
+      <ul>
+        {#each t.otherTools as tool}
+          <li><a href={$link(tool.path)}>{tool.label}</a></li>
+        {/each}
+      </ul>
+    </aside>
   </main>
 
   <RelatedReading items={data.relatedReading} {lang} />
@@ -502,6 +540,36 @@
   }
 
   .btn-secondary:hover { background: rgba(255, 255, 255, 0.1); }
+
+  /* Otras herramientas */
+  .other-tools {
+    background: var(--bg-card, rgba(255, 255, 255, 0.03));
+    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+    border-radius: 16px;
+    padding: 1.5rem 2rem;
+    margin-top: 3rem;
+  }
+  .other-tools h2 {
+    font-size: 1.05rem;
+    font-weight: 800;
+    margin: 0 0 1rem;
+  }
+  .other-tools ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.75rem;
+  }
+  .other-tools a {
+    color: #60a5fa;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: color 0.2s ease;
+  }
+  .other-tools a:hover { color: #93c5fd; text-decoration: underline; }
 
   /* Breadcrumb */
   .breadcrumb {

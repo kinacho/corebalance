@@ -21,6 +21,22 @@
     {
       question: $LL.faq.q4_q(),
       answer: $LL.faq.q4_a()
+    },
+    {
+      question: $LL.faq.q5_q(),
+      answer: $LL.faq.q5_a()
+    },
+    {
+      question: $LL.faq.q6_q(),
+      answer: $LL.faq.q6_a()
+    },
+    {
+      question: $LL.faq.q7_q(),
+      answer: $LL.faq.q7_a()
+    },
+    {
+      question: $LL.faq.q8_q(),
+      answer: $LL.faq.q8_a()
     }
   ]);
 

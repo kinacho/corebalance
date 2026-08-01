@@ -20,7 +20,7 @@ type RootTranslation = {
 		 */
 		badge: string
 		/**
-		 * R​e​b​a​l​a​n​c​e​a​ ​t​u​ ​c​a​r​t​e​r​a​ ​d​e
+		 * G​e​s​t​i​o​n​a​ ​y​ ​r​e​b​a​l​a​n​c​e​a​ ​t​u​ ​c​a​r​t​e​r​a​ ​d​e
 		 */
 		hero_title_1: string
 		/**
@@ -28,7 +28,7 @@ type RootTranslation = {
 		 */
 		hero_title_gradient: string
 		/**
-		 * L​a​ ​c​a​l​c​u​l​a​d​o​r​a​ ​d​e​f​i​n​i​t​i​v​a​ ​p​a​r​a​ ​e​l​ ​i​n​v​e​r​s​o​r​ ​i​n​d​e​x​a​d​o​.​ ​C​a​l​c​u​l​a​ ​t​u​ ​r​e​b​a​l​a​n​c​e​o​ ​e​n​ ​s​e​g​u​n​d​o​s​,​ ​o​p​t​i​m​i​z​a​ ​t​u​s​ ​a​p​o​r​t​a​c​i​o​n​e​s​ ​y​ ​m​a​n​t​é​n​ ​t​u​ ​e​s​t​r​a​t​e​g​i​a​ ​b​a​j​o​ ​c​o​n​t​r​o​l​ ​d​e​ ​f​o​r​m​a​ ​l​o​c​a​l​ ​y​ ​p​r​i​v​a​d​a​.
+		 * L​a​ ​h​e​r​r​a​m​i​e​n​t​a​ ​g​r​a​t​u​i​t​a​ ​y​ ​p​r​i​v​a​d​a​ ​d​e​l​ ​i​n​v​e​r​s​o​r​ ​i​n​d​e​x​a​d​o​.​ ​C​a​l​c​u​l​a​ ​t​u​ ​r​e​b​a​l​a​n​c​e​o​ ​e​n​ ​s​e​g​u​n​d​o​s​,​ ​s​i​g​u​e​ ​t​u​s​ ​a​p​o​r​t​a​c​i​o​n​e​s​ ​y​ ​d​i​v​i​d​e​n​d​o​s​,​ ​y​ ​m​a​n​t​é​n​ ​t​u​ ​e​s​t​r​a​t​e​g​i​a​ ​b​a​j​o​ ​c​o​n​t​r​o​l​ ​s​i​n​ ​q​u​e​ ​t​u​s​ ​d​a​t​o​s​ ​s​a​l​g​a​n​ ​d​e​ ​t​u​ ​n​a​v​e​g​a​d​o​r​.
 		 */
 		hero_subtitle: string
 		/**
@@ -150,6 +150,14 @@ type RootTranslation = {
 		 */
 		aria_blog: string
 		/**
+		 * H​e​r​r​a​m​i​e​n​t​a​s
+		 */
+		tools: string
+		/**
+		 * V​e​r​ ​l​a​s​ ​h​e​r​r​a​m​i​e​n​t​a​s​ ​g​r​a​t​u​i​t​a​s​ ​d​e​ ​C​o​r​e​B​a​l​a​n​c​e
+		 */
+		aria_tools: string
+		/**
 		 * I​r​ ​a​ ​t​u​ ​p​a​n​e​l​ ​d​e​ ​c​o​n​t​r​o​l​ ​d​e​ ​i​n​v​e​r​s​i​o​n​e​s
 		 */
 		aria_dashboard: string
@@ -243,6 +251,30 @@ type RootTranslation = {
 		 * I​m​p​o​r​t​a​ ​t​u​s​ ​o​p​e​r​a​c​i​o​n​e​s​ ​d​e​s​d​e​ ​M​y​I​n​v​e​s​t​o​r​,​ ​D​e​G​i​r​o​,​ ​I​n​t​e​r​a​c​t​i​v​e​ ​B​r​o​k​e​r​s​ ​y​ ​m​á​s​.
 		 */
 		item_broker_desc: string
+		/**
+		 * L​i​b​r​o​ ​d​e​ ​T​r​a​n​s​a​c​c​i​o​n​e​s
+		 */
+		item_ledger_title: string
+		/**
+		 * R​e​g​i​s​t​r​a​ ​c​o​m​p​r​a​s​,​ ​v​e​n​t​a​s​,​ ​d​i​v​i​d​e​n​d​o​s​ ​y​ ​t​r​a​s​p​a​s​o​s​.​ ​T​u​ ​p​r​e​c​i​o​ ​m​e​d​i​o​ ​d​e​ ​c​o​m​p​r​a​ ​s​i​e​m​p​r​e​ ​a​l​ ​d​í​a​,​ ​s​i​n​ ​h​o​j​a​s​ ​d​e​ ​c​á​l​c​u​l​o​.
+		 */
+		item_ledger_desc: string
+		/**
+		 * C​u​e​n​t​a​s​ ​R​e​m​u​n​e​r​a​d​a​s
+		 */
+		item_cash_title: string
+		/**
+		 * A​ñ​a​d​e​ ​t​u​s​ ​d​e​p​ó​s​i​t​o​s​ ​y​ ​c​u​e​n​t​a​s​ ​r​e​m​u​n​e​r​a​d​a​s​ ​c​o​n​ ​s​u​ ​i​n​t​e​r​é​s​:​ ​s​e​ ​d​e​v​e​n​g​a​n​ ​a​ ​d​i​a​r​i​o​ ​y​ ​c​u​e​n​t​a​n​ ​e​n​ ​t​u​ ​a​s​i​g​n​a​c​i​ó​n​.
+		 */
+		item_cash_desc: string
+		/**
+		 * M​u​l​t​i​-​d​i​v​i​s​a
+		 */
+		item_currency_title: string
+		/**
+		 * C​a​r​t​e​r​a​ ​e​n​ ​e​u​r​o​s​,​ ​d​ó​l​a​r​e​s​ ​o​ ​l​i​b​r​a​s​,​ ​c​o​n​ ​c​o​n​v​e​r​s​i​ó​n​ ​a​u​t​o​m​á​t​i​c​a​ ​d​e​l​ ​t​i​p​o​ ​d​e​ ​c​a​m​b​i​o​.
+		 */
+		item_currency_desc: string
 	}
 	comparison: {
 		/**
@@ -258,7 +290,7 @@ type RootTranslation = {
 		 */
 		title_and: string
 		/**
-		 * C​o​r​e​B​a​l​a​n​c​e​ ​e​s​ ​l​a​ ​h​e​r​r​a​m​i​e​n​t​a​ ​g​r​a​t​u​i​t​a​,​ ​r​á​p​i​d​a​ ​y​ ​p​r​i​v​a​d​a​ ​q​u​e​ ​h​a​c​e​ ​e​l​ ​t​r​a​b​a​j​o​ ​s​u​c​i​o​ ​p​o​r​ ​t​i​,​ ​p​a​r​a​ ​q​u​e​ ​t​e​ ​c​e​n​t​r​e​s​ ​e​n​ ​l​o​ ​q​u​e​ ​i​m​p​o​r​t​a​:​ ​t​u​ ​l​i​b​e​r​t​a​d​ ​f​i​n​a​n​c​i​e​r​a​.
+		 * C​o​r​e​B​a​l​a​n​c​e​ ​e​s​ ​e​l​ ​g​e​s​t​o​r​ ​d​e​ ​c​a​r​t​e​r​a​ ​g​r​a​t​u​i​t​o​ ​y​ ​p​r​i​v​a​d​o​ ​q​u​e​ ​h​a​c​e​ ​e​l​ ​t​r​a​b​a​j​o​ ​s​u​c​i​o​ ​p​o​r​ ​t​i​,​ ​p​a​r​a​ ​q​u​e​ ​t​e​ ​c​e​n​t​r​e​s​ ​e​n​ ​l​o​ ​q​u​e​ ​i​m​p​o​r​t​a​:​ ​t​u​ ​l​i​b​e​r​t​a​d​ ​f​i​n​a​n​c​i​e​r​a​.
 		 */
 		subtitle: string
 		/**
@@ -314,7 +346,7 @@ type RootTranslation = {
 		 */
 		item_privacy_excel: string
 		/**
-		 * V​e​n​d​e​n​ ​t​u​s​ ​d​a​t​o​s
+		 * T​u​s​ ​d​a​t​o​s​ ​e​n​ ​s​u​s​ ​s​e​r​v​i​d​o​r​e​s
 		 */
 		item_privacy_others: string
 		/**
@@ -337,6 +369,42 @@ type RootTranslation = {
 		 * I​n​t​u​i​t​i​v​a
 		 */
 		item_ease_core: string
+		/**
+		 * H​i​s​t​o​r​i​a​l​ ​y​ ​p​r​e​c​i​o​ ​m​e​d​i​o
+		 */
+		item_ledger_title: string
+		/**
+		 * F​ó​r​m​u​l​a​s​ ​m​a​n​u​a​l​e​s​ ​f​r​á​g​i​l​e​s
+		 */
+		item_ledger_excel: string
+		/**
+		 * S​o​l​o​ ​e​n​ ​p​l​a​n​e​s​ ​d​e​ ​p​a​g​o
+		 */
+		item_ledger_others: string
+		/**
+		 * A​u​t​o​m​á​t​i​c​o​ ​y​ ​g​r​a​t​i​s
+		 */
+		item_ledger_core: string
+		/**
+		 * M​u​l​t​i​-​d​i​v​i​s​a
+		 */
+		item_currency_title: string
+		/**
+		 * C​o​n​v​e​r​s​i​ó​n​ ​m​a​n​u​a​l
+		 */
+		item_currency_excel: string
+		/**
+		 * L​i​m​i​t​a​d​a
+		 */
+		item_currency_others: string
+		/**
+		 * E​U​R​ ​/​ ​U​S​D​ ​/​ ​G​B​P​ ​a​u​t​o​m​á​t​i​c​o
+		 */
+		item_currency_core: string
+		/**
+		 * V​e​r​ ​c​o​m​p​a​r​a​t​i​v​a​ ​c​o​m​p​l​e​t​a​:
+		 */
+		see_full: string
 	}
 	why_us: {
 		/**
@@ -586,6 +654,38 @@ type RootTranslation = {
 		 * S​í​,​ ​e​s​ ​e​l​ ​c​o​m​p​l​e​m​e​n​t​o​ ​p​e​r​f​e​c​t​o​.​ ​P​u​e​d​e​s​ ​i​m​p​o​r​t​a​r​ ​t​u​ ​c​a​r​t​e​r​a​ ​m​e​d​i​a​n​t​e​ ​C​S​V​ ​o​ ​i​n​t​r​o​d​u​c​i​r​ ​t​u​s​ ​p​o​s​i​c​i​o​n​e​s​ ​m​a​n​u​a​l​m​e​n​t​e​ ​p​a​r​a​ ​c​a​l​c​u​l​a​r​ ​e​l​ ​r​e​b​a​l​a​n​c​e​o​ ​e​x​a​c​t​o​ ​q​u​e​ ​n​e​c​e​s​i​t​a​s​ ​e​j​e​c​u​t​a​r​ ​e​n​ ​t​u​ ​c​o​m​e​r​c​i​a​l​i​z​a​d​o​r​a​.
 		 */
 		q4_a: string
+		/**
+		 * ¿​E​s​ ​g​r​a​t​i​s​?​ ​¿​N​e​c​e​s​i​t​o​ ​r​e​g​i​s​t​r​a​r​m​e​?
+		 */
+		q5_q: string
+		/**
+		 * S​í​,​ ​e​s​ ​g​r​a​t​i​s​ ​y​ ​d​e​ ​c​ó​d​i​g​o​ ​a​b​i​e​r​t​o​,​ ​y​ ​n​o​ ​r​e​q​u​i​e​r​e​ ​r​e​g​i​s​t​r​o​:​ ​l​o​s​ ​d​a​t​o​s​ ​v​i​v​e​n​ ​e​n​ ​t​u​ ​n​a​v​e​g​a​d​o​r​.​ ​C​r​e​a​r​ ​c​u​e​n​t​a​ ​e​s​ ​o​p​c​i​o​n​a​l​ ​y​ ​s​o​l​o​ ​s​i​r​v​e​ ​p​a​r​a​ ​s​i​n​c​r​o​n​i​z​a​r​ ​e​n​t​r​e​ ​d​i​s​p​o​s​i​t​i​v​o​s​.
+		 */
+		q5_a: string
+		/**
+		 * ¿​P​u​e​d​o​ ​l​l​e​v​a​r​ ​e​l​ ​h​i​s​t​o​r​i​a​l​ ​d​e​ ​c​o​m​p​r​a​s​,​ ​v​e​n​t​a​s​ ​y​ ​d​i​v​i​d​e​n​d​o​s​?
+		 */
+		q6_q: string
+		/**
+		 * S​í​.​ ​C​o​n​ ​e​l​ ​m​o​d​o​ ​L​e​d​g​e​r​ ​r​e​g​i​s​t​r​a​s​ ​c​a​d​a​ ​c​o​m​p​r​a​,​ ​v​e​n​t​a​,​ ​d​i​v​i​d​e​n​d​o​ ​o​ ​t​r​a​s​p​a​s​o​,​ ​y​ ​C​o​r​e​B​a​l​a​n​c​e​ ​c​a​l​c​u​l​a​ ​a​u​t​o​m​á​t​i​c​a​m​e​n​t​e​ ​t​u​ ​p​r​e​c​i​o​ ​m​e​d​i​o​ ​d​e​ ​c​o​m​p​r​a​ ​p​o​n​d​e​r​a​d​o​ ​y​ ​t​u​s​ ​p​a​r​t​i​c​i​p​a​c​i​o​n​e​s​ ​a​c​t​u​a​l​e​s​.
+		 */
+		q6_a: string
+		/**
+		 * ¿​P​u​e​d​o​ ​i​n​c​l​u​i​r​ ​c​u​e​n​t​a​s​ ​r​e​m​u​n​e​r​a​d​a​s​ ​o​ ​d​e​p​ó​s​i​t​o​s​?
+		 */
+		q7_q: string
+		/**
+		 * S​í​.​ ​P​u​e​d​e​s​ ​a​ñ​a​d​i​r​ ​c​u​e​n​t​a​s​ ​r​e​m​u​n​e​r​a​d​a​s​ ​y​ ​d​e​p​ó​s​i​t​o​s​ ​i​n​d​i​c​a​n​d​o​ ​s​u​ ​t​i​p​o​ ​d​e​ ​i​n​t​e​r​é​s​:​ ​l​o​s​ ​i​n​t​e​r​e​s​e​s​ ​s​e​ ​d​e​v​e​n​g​a​n​ ​a​ ​d​i​a​r​i​o​ ​y​ ​s​e​ ​i​n​t​e​g​r​a​n​ ​e​n​ ​e​l​ ​v​a​l​o​r​ ​y​ ​l​a​ ​a​s​i​g​n​a​c​i​ó​n​ ​d​e​ ​t​u​ ​c​a​r​t​e​r​a​.
+		 */
+		q7_a: string
+		/**
+		 * ¿​F​u​n​c​i​o​n​a​ ​s​i​ ​m​i​s​ ​f​o​n​d​o​s​ ​c​o​t​i​z​a​n​ ​e​n​ ​d​ó​l​a​r​e​s​ ​o​ ​l​i​b​r​a​s​?
+		 */
+		q8_q: string
+		/**
+		 * S​í​.​ ​C​o​r​e​B​a​l​a​n​c​e​ ​e​s​ ​m​u​l​t​i​-​d​i​v​i​s​a​ ​(​E​U​R​,​ ​U​S​D​ ​y​ ​G​B​P​)​:​ ​c​o​n​v​i​e​r​t​e​ ​a​u​t​o​m​á​t​i​c​a​m​e​n​t​e​ ​l​o​s​ ​p​r​e​c​i​o​s​ ​c​o​n​ ​e​l​ ​t​i​p​o​ ​d​e​ ​c​a​m​b​i​o​ ​a​c​t​u​a​l​i​z​a​d​o​ ​p​a​r​a​ ​q​u​e​ ​v​e​a​s​ ​t​o​d​a​ ​t​u​ ​c​a​r​t​e​r​a​ ​e​n​ ​t​u​ ​m​o​n​e​d​a​ ​b​a​s​e​.
+		 */
+		q8_a: string
 	}
 	cta: {
 		/**
@@ -645,19 +745,19 @@ type RootTranslation = {
 	}
 	seo: {
 		/**
-		 * C​o​r​e​B​a​l​a​n​c​e​ ​—​ ​R​e​b​a​l​a​n​c​e​a​ ​t​u​ ​c​a​r​t​e​r​a​ ​d​e​ ​E​T​F​s​ ​y​ ​F​o​n​d​o​s​ ​I​n​d​e​x​a​d​o​s
+		 * C​o​r​e​B​a​l​a​n​c​e​ ​—​ ​G​e​s​t​i​o​n​a​ ​y​ ​r​e​b​a​l​a​n​c​e​a​ ​t​u​ ​c​a​r​t​e​r​a​ ​d​e​ ​f​o​n​d​o​s​ ​i​n​d​e​x​a​d​o​s​ ​y​ ​E​T​F​s
 		 */
 		title: string
 		/**
-		 * L​a​ ​h​e​r​r​a​m​i​e​n​t​a​ ​d​e​f​i​n​i​t​i​v​a​ ​p​a​r​a​ ​e​l​ ​i​n​v​e​r​s​o​r​ ​i​n​d​e​x​a​d​o​.​ ​C​a​l​c​u​l​a​ ​t​u​ ​r​e​b​a​l​a​n​c​e​o​ ​e​n​ ​s​e​g​u​n​d​o​s​,​ ​o​p​t​i​m​i​z​a​ ​t​u​ ​c​a​r​t​e​r​a​ ​y​ ​m​a​n​t​é​n​ ​t​u​ ​e​s​t​r​a​t​e​g​i​a​ ​b​a​j​o​ ​c​o​n​t​r​o​l​.
+		 * G​r​a​t​i​s​,​ ​p​r​i​v​a​d​a​ ​y​ ​s​i​n​ ​r​e​g​i​s​t​r​o​.​ ​C​a​l​c​u​l​a​ ​t​u​ ​r​e​b​a​l​a​n​c​e​o​ ​e​n​ ​s​e​g​u​n​d​o​s​,​ ​s​i​g​u​e​ ​t​u​s​ ​t​r​a​n​s​a​c​c​i​o​n​e​s​,​ ​d​i​v​i​d​e​n​d​o​s​ ​y​ ​T​E​R​,​ ​y​ ​m​a​n​t​é​n​ ​t​u​ ​e​s​t​r​a​t​e​g​i​a​ ​b​a​j​o​ ​c​o​n​t​r​o​l​ ​s​i​n​ ​q​u​e​ ​t​u​s​ ​d​a​t​o​s​ ​s​a​l​g​a​n​ ​d​e​l​ ​n​a​v​e​g​a​d​o​r​.
 		 */
 		description: string
 		/**
-		 * C​o​r​e​B​a​l​a​n​c​e​ ​—​ ​R​e​b​a​l​a​n​c​e​a​ ​t​u​ ​c​a​r​t​e​r​a​ ​d​e​ ​E​T​F​s
+		 * C​o​r​e​B​a​l​a​n​c​e​ ​—​ ​G​e​s​t​i​o​n​a​ ​y​ ​r​e​b​a​l​a​n​c​e​a​ ​t​u​ ​c​a​r​t​e​r​a​ ​i​n​d​e​x​a​d​a
 		 */
 		og_title: string
 		/**
-		 * G​e​s​t​i​o​n​a​ ​t​u​ ​c​a​r​t​e​r​a​ ​d​e​ ​f​o​n​d​o​s​ ​i​n​d​e​x​a​d​o​s​ ​y​ ​E​T​F​s​ ​c​o​n​ ​r​e​b​a​l​a​n​c​e​o​ ​i​n​t​e​l​i​g​e​n​t​e​ ​y​ ​s​e​g​u​i​m​i​e​n​t​o​ ​e​n​ ​t​i​e​m​p​o​ ​r​e​a​l​.
+		 * G​e​s​t​i​o​n​a​ ​t​u​ ​c​a​r​t​e​r​a​ ​d​e​ ​f​o​n​d​o​s​ ​i​n​d​e​x​a​d​o​s​ ​y​ ​E​T​F​s​:​ ​r​e​b​a​l​a​n​c​e​o​ ​i​n​t​e​l​i​g​e​n​t​e​,​ ​l​i​b​r​o​ ​d​e​ ​t​r​a​n​s​a​c​c​i​o​n​e​s​ ​y​ ​s​e​g​u​i​m​i​e​n​t​o​ ​e​n​ ​t​i​e​m​p​o​ ​r​e​a​l​.​ ​G​r​a​t​i​s​ ​y​ ​s​i​n​ ​r​e​g​i​s​t​r​o​.
 		 */
 		og_description: string
 	}
@@ -949,7 +1049,7 @@ type RootTranslation = {
 		 */
 		updated: RequiredParams<'date|shortDate'>
 		/**
-		 * L​e​e​ ​n​u​e​s​t​r​o​s​ ​t​é​r​m​i​n​o​s​ ​y​ ​c​o​n​d​i​c​i​o​n​e​s​ ​d​e​ ​u​s​o​.​ ​C​o​n​o​c​e​ ​l​a​s​ ​c​o​n​d​i​c​i​o​n​e​s​ ​b​a​j​o​ ​l​a​s​ ​c​u​a​l​e​s​ ​p​u​e​d​e​s​ ​u​s​a​r​ ​l​a​ ​h​e​r​r​a​m​i​e​n​t​a​ ​d​e​ ​r​e​b​a​l​a​n​c​e​o​ ​C​o​r​e​B​a​l​a​n​c​e​.
+		 * L​e​e​ ​n​u​e​s​t​r​o​s​ ​t​é​r​m​i​n​o​s​ ​y​ ​c​o​n​d​i​c​i​o​n​e​s​ ​d​e​ ​u​s​o​.​ ​C​o​n​o​c​e​ ​l​a​s​ ​c​o​n​d​i​c​i​o​n​e​s​ ​b​a​j​o​ ​l​a​s​ ​c​u​a​l​e​s​ ​p​u​e​d​e​s​ ​u​s​a​r​ ​e​l​ ​g​e​s​t​o​r​ ​d​e​ ​c​a​r​t​e​r​a​s​ ​i​n​d​e​x​a​d​a​s​ ​C​o​r​e​B​a​l​a​n​c​e​.
 		 */
 		seo_desc: string
 		sections: {
@@ -2561,6 +2661,38 @@ type RootTranslation = {
 		 */
 		btn_understand: string
 		releases: {
+			v1_10_0: {
+				/**
+				 * 1​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
+				 */
+				date: string
+				/**
+				 * N​u​e​v​a​s​ ​h​e​r​r​a​m​i​e​n​t​a​s​,​ ​c​o​m​p​a​r​a​t​i​v​a​s​ ​y​ ​g​u​í​a​s
+				 */
+				badge: string
+				changes: {
+					/**
+					 * �​�​ ​*​*​D​o​s​ ​h​e​r​r​a​m​i​e​n​t​a​s​ ​p​ú​b​l​i​c​a​s​ ​n​u​e​v​a​s​:​*​*​ ​e​l​ ​S​i​m​u​l​a​d​o​r​ ​d​e​ ​C​r​i​s​i​s​ ​(​¿​q​u​é​ ​p​a​s​a​r​í​a​ ​c​o​n​ ​t​u​ ​c​a​r​t​e​r​a​ ​e​n​ ​u​n​ ​c​r​a​s​h​ ​c​o​m​o​ ​2​0​0​0​,​ ​2​0​0​8​ ​o​ ​2​0​2​0​ ​y​ ​c​u​á​n​t​o​ ​t​a​r​d​a​r​í​a​s​ ​e​n​ ​r​e​c​u​p​e​r​a​r​t​e​?​)​ ​y​ ​l​a​ ​C​a​l​c​u​l​a​d​o​r​a​ ​d​e​ ​P​r​e​c​i​o​ ​M​e​d​i​o​ ​d​e​ ​c​o​m​p​r​a​ ​c​o​n​ ​v​e​n​t​a​s​,​ ​d​i​v​i​d​e​n​d​o​s​ ​y​ ​c​o​m​i​s​i​o​n​e​s​.
+					 */
+					'0': string
+					/**
+					 * ⚖​️​ ​*​*​D​o​s​ ​c​o​m​p​a​r​a​t​i​v​a​s​ ​n​u​e​v​a​s​:​*​*​ ​C​o​r​e​B​a​l​a​n​c​e​ ​v​s​ ​J​u​s​t​E​T​F​ ​y​ ​C​o​r​e​B​a​l​a​n​c​e​ ​v​s​ ​G​h​o​s​t​f​o​l​i​o​,​ ​c​o​n​ ​t​a​b​l​a​s​ ​h​o​n​e​s​t​a​s​ ​p​o​r​ ​d​i​m​e​n​s​i​o​n​e​s​.
+					 */
+					'1': string
+					/**
+					 * �​�​ ​*​*​C​u​a​t​r​o​ ​g​u​í​a​s​ ​d​e​ ​i​m​p​o​r​t​a​c​i​ó​n​ ​C​S​V​:​*​*​ ​p​a​s​o​ ​a​ ​p​a​s​o​ ​p​a​r​a​ ​D​E​G​I​R​O​,​ ​M​y​I​n​v​e​s​t​o​r​,​ ​T​r​a​d​i​n​g​ ​2​1​2​ ​e​ ​I​n​t​e​r​a​c​t​i​v​e​ ​B​r​o​k​e​r​s​,​ ​v​e​r​i​f​i​c​a​d​a​s​ ​c​o​n​t​r​a​ ​e​l​ ​i​m​p​o​r​t​a​d​o​r​ ​r​e​a​l​ ​d​e​ ​l​a​ ​a​p​p​.
+					 */
+					'2': string
+					/**
+					 * �​�​ ​*​*​N​u​e​v​o​ ​p​o​s​i​c​i​o​n​a​m​i​e​n​t​o​ ​"​G​e​s​t​i​o​n​a​ ​y​ ​r​e​b​a​l​a​n​c​e​a​"​:​*​*​ ​l​a​ ​l​a​n​d​i​n​g​ ​a​h​o​r​a​ ​c​u​e​n​t​a​ ​t​o​d​o​ ​l​o​ ​q​u​e​ ​h​a​c​e​ ​l​a​ ​a​p​p​ ​—​ ​l​i​b​r​o​ ​d​e​ ​t​r​a​n​s​a​c​c​i​o​n​e​s​ ​c​o​n​ ​p​r​e​c​i​o​ ​m​e​d​i​o​,​ ​c​u​e​n​t​a​s​ ​r​e​m​u​n​e​r​a​d​a​s​ ​c​o​n​ ​i​n​t​e​r​é​s​ ​d​i​a​r​i​o​ ​y​ ​m​u​l​t​i​-​d​i​v​i​s​a​ ​—​ ​c​o​n​ ​n​u​e​v​a​s​ ​t​a​r​j​e​t​a​s​,​ ​f​i​l​a​s​ ​c​o​m​p​a​r​a​t​i​v​a​s​ ​y​ ​p​r​e​g​u​n​t​a​s​ ​f​r​e​c​u​e​n​t​e​s​.
+					 */
+					'3': string
+					/**
+					 * �​�​️​ ​*​*​M​e​j​o​r​a​s​ ​e​n​ ​l​a​s​ ​h​e​r​r​a​m​i​e​n​t​a​s​ ​e​x​i​s​t​e​n​t​e​s​:​*​*​ ​l​a​ ​p​r​e​g​u​n​t​a​ ​d​e​ ​t​i​e​m​p​o​ ​d​e​l​ ​C​h​e​c​k​l​i​s​t​ ​a​h​o​r​a​ ​c​u​e​n​t​a​ ​e​n​ ​e​l​ ​v​e​r​e​d​i​c​t​o​ ​(​r​e​g​l​a​ ​d​e​ ​c​a​l​e​n​d​a​r​i​o​ ​a​n​u​a​l​)​ ​y​ ​l​a​ ​C​a​l​c​u​l​a​d​o​r​a​ ​T​E​R​ ​p​e​r​m​i​t​e​ ​e​d​i​t​a​r​ ​e​l​ ​T​E​R​ ​d​e​l​ ​f​o​n​d​o​ ​a​c​t​i​v​o​ ​y​ ​a​ñ​a​d​e​ ​p​r​e​g​u​n​t​a​s​ ​f​r​e​c​u​e​n​t​e​s​.
+					 */
+					'4': string
+				}
+			}
 			v1_9_0: {
 				/**
 				 * 1​8​ ​d​e​ ​J​u​n​i​o​,​ ​2​0​2​6
@@ -3034,7 +3166,7 @@ export type TranslationFunctions = {
 		 */
 		badge: () => LocalizedString
 		/**
-		 * Rebalancea tu cartera de
+		 * Gestiona y rebalancea tu cartera de
 		 */
 		hero_title_1: () => LocalizedString
 		/**
@@ -3042,7 +3174,7 @@ export type TranslationFunctions = {
 		 */
 		hero_title_gradient: () => LocalizedString
 		/**
-		 * La calculadora definitiva para el inversor indexado. Calcula tu rebalanceo en segundos, optimiza tus aportaciones y mantén tu estrategia bajo control de forma local y privada.
+		 * La herramienta gratuita y privada del inversor indexado. Calcula tu rebalanceo en segundos, sigue tus aportaciones y dividendos, y mantén tu estrategia bajo control sin que tus datos salgan de tu navegador.
 		 */
 		hero_subtitle: () => LocalizedString
 		/**
@@ -3164,6 +3296,14 @@ export type TranslationFunctions = {
 		 */
 		aria_blog: () => LocalizedString
 		/**
+		 * Herramientas
+		 */
+		tools: () => LocalizedString
+		/**
+		 * Ver las herramientas gratuitas de CoreBalance
+		 */
+		aria_tools: () => LocalizedString
+		/**
 		 * Ir a tu panel de control de inversiones
 		 */
 		aria_dashboard: () => LocalizedString
@@ -3257,6 +3397,30 @@ export type TranslationFunctions = {
 		 * Importa tus operaciones desde MyInvestor, DeGiro, Interactive Brokers y más.
 		 */
 		item_broker_desc: () => LocalizedString
+		/**
+		 * Libro de Transacciones
+		 */
+		item_ledger_title: () => LocalizedString
+		/**
+		 * Registra compras, ventas, dividendos y traspasos. Tu precio medio de compra siempre al día, sin hojas de cálculo.
+		 */
+		item_ledger_desc: () => LocalizedString
+		/**
+		 * Cuentas Remuneradas
+		 */
+		item_cash_title: () => LocalizedString
+		/**
+		 * Añade tus depósitos y cuentas remuneradas con su interés: se devengan a diario y cuentan en tu asignación.
+		 */
+		item_cash_desc: () => LocalizedString
+		/**
+		 * Multi-divisa
+		 */
+		item_currency_title: () => LocalizedString
+		/**
+		 * Cartera en euros, dólares o libras, con conversión automática del tipo de cambio.
+		 */
+		item_currency_desc: () => LocalizedString
 	}
 	comparison: {
 		/**
@@ -3272,7 +3436,7 @@ export type TranslationFunctions = {
 		 */
 		title_and: () => LocalizedString
 		/**
-		 * CoreBalance es la herramienta gratuita, rápida y privada que hace el trabajo sucio por ti, para que te centres en lo que importa: tu libertad financiera.
+		 * CoreBalance es el gestor de cartera gratuito y privado que hace el trabajo sucio por ti, para que te centres en lo que importa: tu libertad financiera.
 		 */
 		subtitle: () => LocalizedString
 		/**
@@ -3328,7 +3492,7 @@ export type TranslationFunctions = {
 		 */
 		item_privacy_excel: () => LocalizedString
 		/**
-		 * Venden tus datos
+		 * Tus datos en sus servidores
 		 */
 		item_privacy_others: () => LocalizedString
 		/**
@@ -3351,6 +3515,42 @@ export type TranslationFunctions = {
 		 * Intuitiva
 		 */
 		item_ease_core: () => LocalizedString
+		/**
+		 * Historial y precio medio
+		 */
+		item_ledger_title: () => LocalizedString
+		/**
+		 * Fórmulas manuales frágiles
+		 */
+		item_ledger_excel: () => LocalizedString
+		/**
+		 * Solo en planes de pago
+		 */
+		item_ledger_others: () => LocalizedString
+		/**
+		 * Automático y gratis
+		 */
+		item_ledger_core: () => LocalizedString
+		/**
+		 * Multi-divisa
+		 */
+		item_currency_title: () => LocalizedString
+		/**
+		 * Conversión manual
+		 */
+		item_currency_excel: () => LocalizedString
+		/**
+		 * Limitada
+		 */
+		item_currency_others: () => LocalizedString
+		/**
+		 * EUR / USD / GBP automático
+		 */
+		item_currency_core: () => LocalizedString
+		/**
+		 * Ver comparativa completa:
+		 */
+		see_full: () => LocalizedString
 	}
 	why_us: {
 		/**
@@ -3595,6 +3795,38 @@ export type TranslationFunctions = {
 		 * Sí, es el complemento perfecto. Puedes importar tu cartera mediante CSV o introducir tus posiciones manualmente para calcular el rebalanceo exacto que necesitas ejecutar en tu comercializadora.
 		 */
 		q4_a: () => LocalizedString
+		/**
+		 * ¿Es gratis? ¿Necesito registrarme?
+		 */
+		q5_q: () => LocalizedString
+		/**
+		 * Sí, es gratis y de código abierto, y no requiere registro: los datos viven en tu navegador. Crear cuenta es opcional y solo sirve para sincronizar entre dispositivos.
+		 */
+		q5_a: () => LocalizedString
+		/**
+		 * ¿Puedo llevar el historial de compras, ventas y dividendos?
+		 */
+		q6_q: () => LocalizedString
+		/**
+		 * Sí. Con el modo Ledger registras cada compra, venta, dividendo o traspaso, y CoreBalance calcula automáticamente tu precio medio de compra ponderado y tus participaciones actuales.
+		 */
+		q6_a: () => LocalizedString
+		/**
+		 * ¿Puedo incluir cuentas remuneradas o depósitos?
+		 */
+		q7_q: () => LocalizedString
+		/**
+		 * Sí. Puedes añadir cuentas remuneradas y depósitos indicando su tipo de interés: los intereses se devengan a diario y se integran en el valor y la asignación de tu cartera.
+		 */
+		q7_a: () => LocalizedString
+		/**
+		 * ¿Funciona si mis fondos cotizan en dólares o libras?
+		 */
+		q8_q: () => LocalizedString
+		/**
+		 * Sí. CoreBalance es multi-divisa (EUR, USD y GBP): convierte automáticamente los precios con el tipo de cambio actualizado para que veas toda tu cartera en tu moneda base.
+		 */
+		q8_a: () => LocalizedString
 	}
 	cta: {
 		/**
@@ -3654,19 +3886,19 @@ export type TranslationFunctions = {
 	}
 	seo: {
 		/**
-		 * CoreBalance — Rebalancea tu cartera de ETFs y Fondos Indexados
+		 * CoreBalance — Gestiona y rebalancea tu cartera de fondos indexados y ETFs
 		 */
 		title: () => LocalizedString
 		/**
-		 * La herramienta definitiva para el inversor indexado. Calcula tu rebalanceo en segundos, optimiza tu cartera y mantén tu estrategia bajo control.
+		 * Gratis, privada y sin registro. Calcula tu rebalanceo en segundos, sigue tus transacciones, dividendos y TER, y mantén tu estrategia bajo control sin que tus datos salgan del navegador.
 		 */
 		description: () => LocalizedString
 		/**
-		 * CoreBalance — Rebalancea tu cartera de ETFs
+		 * CoreBalance — Gestiona y rebalancea tu cartera indexada
 		 */
 		og_title: () => LocalizedString
 		/**
-		 * Gestiona tu cartera de fondos indexados y ETFs con rebalanceo inteligente y seguimiento en tiempo real.
+		 * Gestiona tu cartera de fondos indexados y ETFs: rebalanceo inteligente, libro de transacciones y seguimiento en tiempo real. Gratis y sin registro.
 		 */
 		og_description: () => LocalizedString
 	}
@@ -3946,7 +4178,7 @@ export type TranslationFunctions = {
 		 */
 		updated: (arg: { date: unknown }) => LocalizedString
 		/**
-		 * Lee nuestros términos y condiciones de uso. Conoce las condiciones bajo las cuales puedes usar la herramienta de rebalanceo CoreBalance.
+		 * Lee nuestros términos y condiciones de uso. Conoce las condiciones bajo las cuales puedes usar el gestor de carteras indexadas CoreBalance.
 		 */
 		seo_desc: () => LocalizedString
 		sections: {
@@ -5520,6 +5752,38 @@ export type TranslationFunctions = {
 		 */
 		btn_understand: () => LocalizedString
 		releases: {
+			v1_10_0: {
+				/**
+				 * 1 de Agosto, 2026
+				 */
+				date: () => LocalizedString
+				/**
+				 * Nuevas herramientas, comparativas y guías
+				 */
+				badge: () => LocalizedString
+				changes: {
+					/**
+					 * 🧰 **Dos herramientas públicas nuevas:** el Simulador de Crisis (¿qué pasaría con tu cartera en un crash como 2000, 2008 o 2020 y cuánto tardarías en recuperarte?) y la Calculadora de Precio Medio de compra con ventas, dividendos y comisiones.
+					 */
+					'0': () => LocalizedString
+					/**
+					 * ⚖️ **Dos comparativas nuevas:** CoreBalance vs JustETF y CoreBalance vs Ghostfolio, con tablas honestas por dimensiones.
+					 */
+					'1': () => LocalizedString
+					/**
+					 * 📥 **Cuatro guías de importación CSV:** paso a paso para DEGIRO, MyInvestor, Trading 212 e Interactive Brokers, verificadas contra el importador real de la app.
+					 */
+					'2': () => LocalizedString
+					/**
+					 * 🧭 **Nuevo posicionamiento "Gestiona y rebalancea":** la landing ahora cuenta todo lo que hace la app — libro de transacciones con precio medio, cuentas remuneradas con interés diario y multi-divisa — con nuevas tarjetas, filas comparativas y preguntas frecuentes.
+					 */
+					'3': () => LocalizedString
+					/**
+					 * 🛠️ **Mejoras en las herramientas existentes:** la pregunta de tiempo del Checklist ahora cuenta en el veredicto (regla de calendario anual) y la Calculadora TER permite editar el TER del fondo activo y añade preguntas frecuentes.
+					 */
+					'4': () => LocalizedString
+				}
+			}
 			v1_9_0: {
 				/**
 				 * 18 de Junio, 2026

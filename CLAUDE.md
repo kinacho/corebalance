@@ -1,3 +1,109 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project overview
+
+**CoreBalance** ([corebalance.app](https://corebalance.app)) — free, local-first portfolio rebalancing calculator for passive index investors (Spanish market focus, bilingual ES/EN). Svelte 5 (runes) + SvelteKit on Vercel. User data lives in the browser (IndexedDB via Dexie); cloud sync via Firebase is optional and only for logged-in users. Market prices come from a hybrid Yahoo Finance + Financial Times backend cached in Upstash Redis.
+
+The repo is really two apps:
+
+- **Prerendered marketing site** — landing, blog, comparativas, herramientas, autor — under `src/routes/(public)/[[lang=locale]]/`. Spanish at `/`, English at `/en/...`.
+- **The calculator** at `/dashboard` — SPA-only (`ssr = false` in its `+layout.ts`), all data client-side. Dashboard code may touch `window`/`localStorage` freely, but nothing dashboard-related may be imported into a public route.
+
+## Commands
+
+| Command | Notes |
+|---|---|
+| `npm run dev` | Runs `vite dev` **and** the typesafe-i18n watcher in parallel. Editing `src/lib/i18n/es/index.ts` only regenerates types while this watcher runs. |
+| `npm run build` | `prebuild` first regenerates icons, OG images and `llms*.txt` (`scripts/*.mjs`). |
+| `npm run check` | `svelte-kit sync && svelte-check` (strict TS, `checkJs` too). |
+| `npm test` | Vitest unit tests. |
+| `npm test -- src/lib/rebalance.test.ts` | Run a single test file. |
+| `npm run test:e2e` | ⚠️ Declared, but **no `playwright.config.ts` or spec files exist** — E2E is not actually set up (`.ai/rules/testing-rules.md` claiming otherwise is stale). |
+| `npm run backtest` | Regenerates `src/lib/data/backtest-8020.json` from real Yahoo data (citable dataset). |
+| `npm run og` / `icons` / `llms` | Regenerate OG cards / icons / llms.txt manually. |
+| `npm run indexnow` | Ping IndexNow with recently-modified sitemap URLs. Deliberately **not** hooked to the build. |
+
+**Git policy** (`.ai/rules/global-rules.md`): never perform git operations without explicit user authorization. Commit style: Conventional Commits **in Spanish** (`feat(seo):`, `fix(i18n):`, `content(blog):`).
+
+⚠️ `.gitignore` excludes `*.test.ts`, `*.spec.ts`, `vitest.config.ts` and `src/setupTest.ts`. Several test files are tracked only because they were added before that rule; others are **not in git at all**. New test files must be added with `git add -f` (or fix the `.gitignore`).
+
+## Architecture
+
+### Rebalancing engine (the core math)
+
+- `src/lib/rebalance.ts` — pure functions, no I/O: `calculatePortfolioState()` (per-position value/deviation/target, aggregates, sparkline) and `calculateRebalance()` (**cash-flow rebalancing**: buy-only, distributes a contribution pro-rata to each asset's deficit vs target; never sells, to avoid realizing capital gains). Supports `manualInterestRate` assets (cash/deposits with accrued interest).
+- `src/lib/stores/portfolio.svelte.ts` — `PortfolioStore`, the app's brain (singleton `portfolio`). Holds holdings/transactions/prices/assets in `$state`, derives `ledgerHoldings` (weighted-average cost from the transaction ledger), calls `calculatePortfolioState` separately for the three buckets (`core` / `satellite` / `stocks`), handles price polling (30 s, exponential backoff, paused on hidden tab), auth, and cloud sync.
+- **Non-obvious ledger accounting** (in `ledgerHoldings`): `dividend` transactions *reduce the cost basis* (they lower the average cost, they are not counted as profit); `sell` reduces total cost proportionally without changing the average cost; assets with `manualInterestRate` accrue interest per period between transactions (`rate/365 × days`). `effectiveHoldings` merges manual holdings with ledger-derived ones only for tickers with `useLedger: true`.
+- Domain types in `src/lib/types.ts`; shared constants (localStorage keys, colors, tabs) in `src/lib/constants.ts`.
+
+### Storage
+
+`src/lib/db/index.ts` exports the `storageProvider` singleton (`LazyStorageProvider`) which picks its backend at first use from `PUBLIC_USE_FIREBASE === 'true'` (build-time env):
+
+- `LocalDBStorage.ts` — Dexie DB `CoreBalanceDB` (tables `userData`, `history`, `transactions`; schema versions live here). **`localDB` is `null` during SSR — always guard.**
+- `FirebaseStorage.ts` — Firestore `user_data/{uid}`, `user_history/{uid}`, `user_transactions/{uid}/items/*`. Sync is **last-write-wins** on `updatedAt` (and transaction conflicts are resolved by **item count** — whichever side has more wins — a fragile heuristic to keep in mind when touching sync), writes debounced 300 ms via `scheduleCloudSave()`. Firebase is code-split into its own chunk (`manualChunks` in `vite.config.ts`). Missing `VITE_FIREBASE_API_KEY` → sync silently disabled.
+- `firestore.rules` (repo root) must be deployed manually; no Firebase CLI config in the repo.
+
+### Price layer (server)
+
+Endpoints in `src/routes/api/` — `prices`, `search`, `resolve` (ISIN→ticker), `support` (Resend email). All rate-limited via `src/lib/server/rateLimit.ts` (Redis INCR/EXPIRE, permissive in-memory fallback).
+
+- `api/prices/priceHelpers.ts` — Yahoo bulk quotes, plus **Financial Times HTML scraping** for funds Yahoo prices badly (`RELIABLE_FT_MAPPINGS`) or lacks entirely (`src/lib/ft-assets.ts`, which documents the "how to add a fund" recipe). The FT scraper regexes HTML and silently falls back to Yahoo when FT changes markup. Subunit currencies (GBp etc.) are normalized by `correctSubunitCurrencies()`.
+- Redis (`src/lib/server/redis.ts`, Upstash): only the **history/sparkline** is cached (`price_history:<ticker>`, TTL 4 h); live quotes always hit Yahoo. Without `KV_REST_API_URL/TOKEN` both cache and rate limiter degrade to per-process memory — effectively no caching/limiting on Vercel serverless.
+- Currency pairs (`EURUSD=X`, …) are auto-appended to every price request; `CASH-*` tickers are synthetic (1.0 EUR).
+
+### CSV broker importers
+
+`src/lib/importers/` — `BrokerDetector` pattern: each broker exposes `{ detect(headers) → confidence, parse(rows) }`; order in `ALL_DETECTORS` matters (DEGIRO account-statement before DEGIRO transactions, generic last). Entry points `importFromCSV()` / `importWithMapping()`; import from the `$lib/importers` barrel. `csv-utils.ts` has the delimiter/header/ISIN heuristics and auto column-mapping. Real broker CSV fixtures live in `training/` (gitignored) and are exercised by `training_csv.test.ts`.
+
+### i18n & routing (most convention-heavy area — read before touching)
+
+- **typesafe-i18n**, base locale `es`. Hand-edit only `src/lib/i18n/es/index.ts` and `en/index.ts`; `i18n-types.ts`, `i18n-util*.ts`, `i18n-svelte.ts` are **generated**.
+- **Single source of truth for bilingual routes:** `src/lib/i18n/bilingual-routes.js` (plain JS so `svelte.config.js` can import it). `BILINGUAL_ROUTES` feeds the prerender entries, the sitemap, hreflang alternates and the `$link()` store. `src/lib/i18n/routing.ts` is the typed wrapper (`alternates()`, `absoluteUrl`, `isLocaleCookieRoute`).
+- **Blog posts are NOT bilingual routes.** Each post has its own translated slug at `/blog/<slug>` (no `/en/` prefix); the twin is resolved via frontmatter `slugs`. `src/lib/blog-locales.ts` maps slug→language with a deliberately **lazy** glob.
+- **Locale resolution** (`src/hooks.server.ts`): URL prefix → post slug → `lang` cookie (only on `/dashboard` and `/api`) → `Accept-Language`. The only client-side locale writer is the root `src/routes/+layout.ts`. Language switching on public routes is a real `<a>` navigation with full document load — do not reintroduce store-based switching there. Known documented hazard: `setLocale` in the server hook writes a module-global shared across concurrent requests; tolerable only because public routes are prerendered.
+- **Checklist for adding a bilingual page:** add to `BILINGUAL_ROUTES` → add `lastmod` entry to `STATIC_PAGES` in `src/routes/sitemap.xml/+server.ts` → add a `PAGES` entry in `scripts/generate-og.mjs` and `OgPageKey` in `src/lib/seo/og.ts` if it needs an OG card. A test in `src/lib/i18n/routing.test.ts` fails if `BILINGUAL_ROUTES` desyncs from the route tree.
+- **In blog markdown, always write internal links with the canonical Spanish path** — the `remarkLocalizeLinks` plugin rewrites them per post language at build time.
+
+### Content / blog
+
+Markdown in `src/content/blog/{es,en}/*.md`, compiled by mdsvex. Three custom remark plugins defined inline in `svelte.config.js` inject `readingMinutes`, `faq` (h2/h3 ending in `?` → FAQPage JSON-LD) and localized links into frontmatter. SEO head for all public pages goes through `src/lib/components/seo/SeoHead.svelte`. `src/lib/blog.ts` uses an **eager** `import.meta.glob` — never import it from a universal load, only from server loads (see `related-reading.server.ts` for the pattern).
+
+### State management
+
+Runes mode is **forced** for all non-`node_modules` code (`compilerOptions.runes` in `svelte.config.js`) — no Svelte 4 stores in app code (the typesafe-i18n `LL`/`locale` readables are the exception). Pattern: classes with `$state`/`$derived` exported as module singletons (`portfolio`, `ui`).
+
+### Styling & UI conventions
+
+- `src/routes/layout.css` is the **only** CSS entry point (Tailwind v4 via `@import 'tailwindcss'`; there is no `tailwind.config.js`). Design tokens are CSS variables in `:root` (`--bg-primary`, `--bg-card`, `--text-primary`, `--text-muted`, `--accent-blue/green/orange`, …).
+- Reuse the existing convention classes instead of reinventing them: `.privacy-mode`/`.privacy-blur` (blurs figures in privacy mode), `.shimmer` (skeletons), `.asset-card`, `.background-mesh`, `.noise-overlay` (uses the `#noiseFilter` SVG declared in `app.html`), `body.modal-open` (scroll lock).
+- `font-variant-numeric: tabular-nums` is applied to a **closed list of classes** (`.metric-value`, `.summary-value`, `.asset-value`, `.total-value`, …) — a new class that displays figures must be added to that list or the digits jitter.
+- Font: Plus Jakarta Sans, **self-hosted** in `static/fonts/` with woff2 400/700 preloads (`.ai/rules/frontend-rules.md` saying Inter/Roboto is wrong).
+- Dashboard tabs (`src/routes/dashboard/+page.svelte`): all tabs render **always** and are hidden with `class:tab-hidden` — deliberately no `{#if}` per tab, so Chart.js canvases don't remount and lose state. Don't "optimize" this into conditionals.
+
+### hooks.server.ts
+
+Does four things: locale resolution, `lang` cookie policy (`Vary: Cookie` only on `/dashboard`/`/api` so public pages stay CDN-cacheable), security headers, and a hand-built CSP. **Any new third-party script/domain must be added to `cspDirectives` there.**
+
+## Testing
+
+Vitest + jsdom, `*.test.ts` **colocated next to the source file**. Setup in `src/setupTest.ts` (jest-dom, `matchMedia`/`scrollTo` polyfills). The SvelteKit plugin is loaded, so `$lib`/`$app` aliases work in tests. Component tests use `@testing-library/svelte`. Key suites: `rebalance.test.ts` (core math), `importers/parsers.test.ts` (all broker detectors), `importers/training_csv.test.ts` (real CSVs), `i18n/routing.test.ts`.
+
+## Gotchas
+
+- `static/sw.js` is a **self-unregistering stub** to kill stale dev service workers; the real production SW is generated by vite-pwa. The SW is active in `vite dev` (`devOptions.enabled: true`) — hard-reload/unregister when dev looks stale.
+- Workbox deliberately does **not** precache prerendered HTML (the CDN serves it); offline navigation falls back to `/offline.html`. Known pending bug: the file is precached as `offline` (no extension) so the offline fallback doesn't actually resolve — fixing it requires `navigateFallbackAllowlist` care (see `propuestas_mejora_corebalance.md`, task 21).
+- `STATIC_PAGES` in the sitemap has hand-maintained `lastmod` dates — bump the date when a page's *visible content* changes (deliberately not `new Date()`).
+- `vercel.json` only sets headers for `/.well-known/assetlinks.json` (Android TWA link verification — see `play-store-assets/` and `pasos_restantes_deploy.md`) and the web manifest.
+- Env vars: `PUBLIC_USE_FIREBASE` (build-time, selects storage backend), `VITE_FIREBASE_*`, `KV_REST_API_URL/TOKEN` (Upstash), `RESEND_API_KEY`. See `.env.example`.
+- `src/app.html` contains an inline splash/gatekeeper script that **hardcodes the localStorage key `corebalance_holdings_v2`**, duplicating `STORAGE_KEY_HOLDINGS` from `src/lib/constants.ts` — renaming the key requires touching both places. It also captures `window.__deferredPrompt` (PWA install) and substitutes `%lang%` via the server hook.
+- `project.inlang/` is a leftover from a different i18n tool — **not in use** (typesafe-i18n is).
+- Extended machine-readable docs live in `.ai/context/` and `.ai/rules/` — but treat them as **unverified**: `.ai/summaries/current-state.md` states an old version and claims E2E tests exist (they don't), `known-issues.md` claims the app is "100% dynamic SSR" (it's the inverse — public routes are prerendered, `/dashboard` is client-only), and `frontend-rules.md` names the wrong fonts. Verify against the code before relying on `.ai/` claims. Root planning docs: `propuestas_mejora_corebalance.md` (SEO/GEO plan, Parte A implemented), `propuestas_mejora_tecnica_funcional.md` (technical/functional improvement plan) and `pasos_restantes_deploy.md` (Play Store TWA steps).
+
+---
+
 <!-- rtk-instructions v2 -->
 # RTK (Rust Token Killer) - Token-Optimized Commands
 

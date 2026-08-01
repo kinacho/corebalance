@@ -41,6 +41,8 @@
           <li><a href={$link('/blog')}>{$LL.nav.blog()}</a></li>
           <li><a href={$link('/herramientas/calculadora-ter')}>{isEs ? 'Calculadora TER' : 'TER Calculator'}</a></li>
           <li><a href={$link('/herramientas/checklist-rebalanceo')}>{isEs ? 'Checklist Rebalanceo' : 'Rebalancing Checklist'}</a></li>
+          <li><a href={$link('/herramientas/simulador-crisis')}>{isEs ? 'Simulador de crisis' : 'Crash simulator'}</a></li>
+          <li><a href={$link('/herramientas/calculadora-precio-medio')}>{isEs ? 'Calculadora de precio medio' : 'Average cost calculator'}</a></li>
           <li><a href={$link('/autor/kinacho')}>{isEs ? 'Sobre el autor' : 'About the author'}</a></li>
           <li><a href={isEs ? '/rss.xml' : '/en/rss.xml'}>RSS</a></li>
         </ul>
@@ -52,6 +54,8 @@
           <li><a href={$link('/comparativas/corebalance-vs-excel')}>vs Excel / Sheets</a></li>
           <li><a href={$link('/comparativas/corebalance-vs-indexa-capital')}>vs Indexa Capital</a></li>
           <li><a href={$link('/comparativas/corebalance-vs-portfolio-performance')}>vs Portfolio Performance</a></li>
+          <li><a href={$link('/comparativas/corebalance-vs-justetf')}>vs JustETF</a></li>
+          <li><a href={$link('/comparativas/corebalance-vs-ghostfolio')}>vs Ghostfolio</a></li>
         </ul>
       </div>
 

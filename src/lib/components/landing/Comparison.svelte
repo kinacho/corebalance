@@ -1,5 +1,6 @@
 <script lang="ts">
   import { LL } from '$lib/i18n/i18n-svelte';
+  import { link } from '$lib/i18n/link';
 
   const comparison = $derived([
     {
@@ -29,8 +30,30 @@
       others: $LL.comparison.item_ease_others(),
       corebalance: $LL.comparison.item_ease_core(),
       highlight: true
+    },
+    {
+      feature: $LL.comparison.item_ledger_title(),
+      excel: $LL.comparison.item_ledger_excel(),
+      others: $LL.comparison.item_ledger_others(),
+      corebalance: $LL.comparison.item_ledger_core(),
+      highlight: true
+    },
+    {
+      feature: $LL.comparison.item_currency_title(),
+      excel: $LL.comparison.item_currency_excel(),
+      others: $LL.comparison.item_currency_others(),
+      corebalance: $LL.comparison.item_currency_core(),
+      highlight: true
     }
   ]);
+
+  const comparisonLinks = [
+    { href: '/comparativas/corebalance-vs-portfolio-performance', label: 'vs Portfolio Performance' },
+    { href: '/comparativas/corebalance-vs-excel', label: 'vs Excel / Sheets' },
+    { href: '/comparativas/corebalance-vs-indexa-capital', label: 'vs Indexa Capital' },
+    { href: '/comparativas/corebalance-vs-justetf', label: 'vs JustETF' },
+    { href: '/comparativas/corebalance-vs-ghostfolio', label: 'vs Ghostfolio' }
+  ];
 </script>
 
 <section class="comparison">
@@ -62,6 +85,13 @@
         </tbody>
       </table>
     </div>
+
+    <p class="comparison-links">
+      <span class="links-label">{$LL.comparison.see_full()}</span>
+      {#each comparisonLinks as cl, i}
+        <a href={$link(cl.href)}>{cl.label}</a>{#if i < comparisonLinks.length - 1}<span class="links-sep" aria-hidden="true"> · </span>{/if}
+      {/each}
+    </p>
   </div>
 </section>
 
@@ -191,6 +221,34 @@
 
   th.active-col {
     color: #3b82f6;
+  }
+
+  .comparison-links {
+    margin-top: 2rem;
+    text-align: center;
+    color: rgba(160, 160, 200, 0.6);
+    font-size: 0.9rem;
+    line-height: 1.8;
+  }
+
+  .links-label {
+    margin-right: 0.5rem;
+  }
+
+  .comparison-links a {
+    color: #60a5fa;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color 0.2s ease;
+  }
+
+  .comparison-links a:hover {
+    color: #93c5fd;
+    text-decoration: underline;
+  }
+
+  .links-sep {
+    margin: 0 0.35rem;
   }
 </style>
 

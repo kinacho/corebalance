@@ -52,10 +52,10 @@ const LABEL = {
 const PAGES = [
 	{
 		key: 'landing',
-		kicker: { es: 'Calculadora gratuita', en: 'Free calculator' },
+		kicker: { es: 'Gratis, privada y sin registro', en: 'Free, private, no sign-up' },
 		title: {
-			es: 'Rebalancea tu cartera de ETFs y fondos indexados',
-			en: 'Rebalance your portfolio of ETFs and index funds'
+			es: 'Gestiona y rebalancea tu cartera de ETFs y fondos indexados',
+			en: 'Track and rebalance your index fund & ETF portfolio'
 		}
 	},
 	{
@@ -80,6 +80,22 @@ const PAGES = [
 		title: { es: '¿Es hora de rebalancear?', en: 'Is it time to rebalance?' }
 	},
 	{
+		key: 'crisis',
+		kicker: { es: 'Herramienta interactiva', en: 'Interactive tool' },
+		title: {
+			es: '¿Qué pasaría con tu cartera si la bolsa cae?',
+			en: 'What would a market crash do to your portfolio?'
+		}
+	},
+	{
+		key: 'precio-medio',
+		kicker: { es: 'Herramienta interactiva', en: 'Interactive tool' },
+		title: {
+			es: 'Calculadora de precio medio de compra',
+			en: 'Average purchase cost calculator'
+		}
+	},
+	{
 		key: 'autor',
 		kicker: { es: 'Autor', en: 'Author' },
 		title: { es: 'Quién escribe en CoreBalance', en: 'Who writes on CoreBalance' }
@@ -101,6 +117,16 @@ const PAGES = [
 			es: 'CoreBalance vs Portfolio Performance',
 			en: 'CoreBalance vs Portfolio Performance'
 		}
+	},
+	{
+		key: 'vs-justetf',
+		kicker: { es: 'Comparativa', en: 'Comparison' },
+		title: { es: 'CoreBalance vs JustETF', en: 'CoreBalance vs JustETF' }
+	},
+	{
+		key: 'vs-ghostfolio',
+		kicker: { es: 'Comparativa', en: 'Comparison' },
+		title: { es: 'CoreBalance vs Ghostfolio', en: 'CoreBalance vs Ghostfolio' }
 	}
 ];
 
