@@ -6,7 +6,7 @@ summary:
   - "En España conviene usar fondos indexados tradicionales en lugar de ETFs, porque los traspasos entre fondos no tributan al reordenar posiciones."
   - "Los dos modelos habituales son la cartera de 2 fondos y la de 3 fondos, el estándar Boglehead. El único mantenimiento activo es aportar y rebalancear."
 publishDate: "2026-03-04"
-updatedDate: "2026-03-04"
+updatedDate: "2026-08-02"
 author: "kinacho"
 tags: [bogleheads, indexacion, fondos-indexados, finanzas-personales, principiantes]
 lang: es
@@ -59,12 +59,15 @@ Puedes comprar estos fondos desde comercializadoras tradicionales o bancos que n
 
 * **Renta Variable Desarrollada (MSCI World):**
   * *Vanguard Global Stock Index Fund* (ISIN: IE00B03HD191) - TER: 0.18%
-  * *Fidelity MSCI World Index Fund P-Acc-EUR* (ISIN: IE00BYX5NX33) - TER: 0.12%
+  * *Fidelity MSCI World Index Fund P-Acc-EUR* (ISIN: IE00BYX5NX33) - TER: 0.10%
 * **Renta Variable Emergente (MSCI EM):**
   * *Vanguard Emerging Markets Stock Index Fund* (ISIN: IE0031786142) - TER: 0.23%
   * *iShares Emerging Markets Index Fund (IE) D Acc EUR* (ISIN: IE00BYWYCC39) - TER: 0.20%
 * **Renta Fija Global (Cubierto a EUR):**
   * *Vanguard Global Bond Index Fund (EUR Hedged)* (ISIN: IE00B18GC888) - TER: 0.15%
+
+> [!NOTE]
+> Los TER de arriba son los gastos corrientes declarados en el DFI de cada clase. Como esas cifras se revisan al menos una vez al año, la [tabla completa con la fecha del DFI de cada fondo](/blog/rebalanceo-myinvestor-sin-impuestos) indica de qué documento sale cada porcentaje.
 
 ---
 

@@ -32,6 +32,13 @@ const DATA_TOKEN = '{{CITABLE_DATA}}';
 /** Cifras propias del backtest, la única fuente de datos medidos del sitio. */
 const BACKTEST_PATH = join(ROOT, 'src', 'lib', 'data', 'backtest-8020.json');
 
+/**
+ * Gastos corrientes recopilados a mano de los DFI/KID. No son datos medidos por
+ * nosotros como el backtest, sino datos de terceros verificados uno a uno, así
+ * que se declaran aparte y con la fecha del documento de cada fila.
+ */
+const TER_PATH = join(ROOT, 'src', 'lib', 'data', 'ter-myinvestor.json');
+
 /** URL absoluta de una ruta bilingüe. El español vive en la raíz. */
 function url(path, lang) {
 	if (lang === 'es') return `${SITE}${path === '/' ? '/' : path}`;
@@ -255,7 +262,54 @@ async function citableData() {
 		`- **Source:** ${d.source.en}`,
 		`- **Last updated:** ${d.generatedAt}`,
 		'',
+		await citableTer(),
+		'',
 		'---'
+	].join('\n');
+}
+
+/**
+ * Tabla de gastos corrientes para `llms-full.txt`.
+ *
+ * Va en la misma sección que el backtest pero como bloque propio y encabezado
+ * distinto, porque la naturaleza del dato no es la misma: el backtest lo mide el
+ * sitio y estas cifras se copian del DFI de cada gestora. Mezclarlos invitaría a
+ * atribuirnos un dato que es de un tercero.
+ *
+ * Cada fila lleva su ISIN y la fecha del documento: sin ellos un modelo no puede
+ * comprobar la cifra y no debería citarla.
+ */
+async function citableTer() {
+	if (!existsSync(TER_PATH)) {
+		throw new Error(`Falta ${TER_PATH}, necesario para la sección de gastos corrientes.`);
+	}
+
+	const t = JSON.parse(await readFile(TER_PATH, 'utf8'));
+	const managers = [...new Set(t.funds.map((f) => f.manager))].join(', ');
+
+	return [
+		`### Ongoing charges of ${t.broker} index funds (third-party data, verified)`,
+		'',
+		`Ongoing charges (TER) for the ${t.funds.length} index funds and ETFs most often used`,
+		`in Spanish passive portfolios (${managers}), all available on ${t.broker}. These`,
+		'figures are not measured by CoreBalance: each one is copied from the fund manager\'s',
+		'own KID and is stated together with the exact share class, the ISIN and the date of',
+		'that document.',
+		'',
+		...t.funds.map(
+			(f) =>
+				`- **${f.manager} ${f.name}** (${f.shareClass}, ISIN ${f.isin}, ${f.vehicle === 'etf' ? 'ETF' : 'index fund'}): **${f.ongoingCharges.toFixed(2)}%** ongoing charges, per the KID dated ${f.kidDate}.`
+		),
+		'',
+		'- **Caveats:** ongoing charges differ between share classes of the same fund, so a figure',
+		'  quoted without its class and ISIN is not verifiable. Managers revise the KID at least',
+		'  yearly. The figure excludes the fund\'s own portfolio transaction costs and any broker fee.',
+		'  Index funds domiciled in the EU are transferable between funds without triggering Spanish',
+		'  capital gains tax; ETFs are not.',
+		'',
+		`- **Raw dataset:** [${SITE}/data/ter-myinvestor.json](${SITE}/data/ter-myinvestor.json)`,
+		`- **Source:** ${t.source.en}`,
+		`- **Last updated:** ${t.compiledAt}`
 	].join('\n');
 }
 

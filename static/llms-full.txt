@@ -186,4 +186,30 @@ verified by re-running the published script or by downloading the raw dataset.
 - **Source:** Yahoo Finance (monthly adjusted closes, dividends reinvested)
 - **Last updated:** 2026-07-28
 
+### Ongoing charges of MyInvestor index funds (third-party data, verified)
+
+Ongoing charges (TER) for the 7 index funds and ETFs most often used
+in Spanish passive portfolios (Vanguard, Fidelity, iShares), all available on MyInvestor. These
+figures are not measured by CoreBalance: each one is copied from the fund manager's
+own KID and is stated together with the exact share class, the ISIN and the date of
+that document.
+
+- **Vanguard Global Stock Index Fund** (EUR Acc, ISIN IE00B03HD191, index fund): **0.18%** ongoing charges, per the KID dated 2026-03-24.
+- **Fidelity MSCI World Index Fund** (EUR P Acc, ISIN IE00BYX5NX33, index fund): **0.10%** ongoing charges, per the KID dated 2026-04-30.
+- **Vanguard Emerging Markets Stock Index Fund** (Investor EUR Acc, ISIN IE0031786142, index fund): **0.23%** ongoing charges, per the KID dated 2026-03-24.
+- **iShares Emerging Markets Index Fund (IE)** (D Acc EUR, ISIN IE00BYWYCC39, index fund): **0.20%** ongoing charges, per the KID dated 2026-04-15.
+- **Vanguard Global Bond Index Fund** (EUR Hedged Acc, ISIN IE00B18GC888, index fund): **0.15%** ongoing charges, per the KID dated 2025-08-18.
+- **iShares Core MSCI World UCITS ETF** (USD (Acc), ISIN IE00B4L5Y983, ETF): **0.20%** ongoing charges, per the KID dated 2026-04-09.
+- **iShares Core MSCI EM IMI UCITS ETF** (USD (Acc), ISIN IE00BKM4GZ66, ETF): **0.18%** ongoing charges, per the KID dated 2026-04-09.
+
+- **Caveats:** ongoing charges differ between share classes of the same fund, so a figure
+  quoted without its class and ISIN is not verifiable. Managers revise the KID at least
+  yearly. The figure excludes the fund's own portfolio transaction costs and any broker fee.
+  Index funds domiciled in the EU are transferable between funds without triggering Spanish
+  capital gains tax; ETFs are not.
+
+- **Raw dataset:** [https://corebalance.app/data/ter-myinvestor.json](https://corebalance.app/data/ter-myinvestor.json)
+- **Source:** Key Information Document (KID) published by each fund manager, checked one by one
+- **Last updated:** 2026-08-02
+
 ---

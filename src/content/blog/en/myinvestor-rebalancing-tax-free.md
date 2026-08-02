@@ -6,7 +6,7 @@ summary:
   - "You have two routes: transferring between funds when you have no new money, and rebalancing through contributions when you save every month."
   - "Transfers on MyInvestor carry no fee and you can move money between different managers, for instance from Vanguard to iShares or Fidelity."
 publishDate: "2026-05-08"
-updatedDate: "2026-05-08"
+updatedDate: "2026-08-02"
 author: "kinacho"
 tags: [rebalancing, myinvestor, taxes, index-funds, fund-transfers]
 lang: en
@@ -14,6 +14,10 @@ canonical: "https://corebalance.app/blog/myinvestor-rebalancing-tax-free"
 ogImage: "/blog/og/rebalanceo-myinvestor-sin-impuestos.jpg"
 slugs: { es: 'rebalanceo-myinvestor-sin-impuestos', en: 'myinvestor-rebalancing-tax-free' }
 ---
+
+<script>
+  import TerTable from '$lib/components/blog/TerTable.svelte';
+</script>
 
 MyInvestor has established itself as the platform of choice for index investors in Spain. Its catalogue of [index funds](/blog/index-funds-vs-etfs-comparison) from prestigious international fund managers such as **Vanguard, iShares, and Fidelity**, combined with **zero custody fees**, makes it an unbeatable option for applying the *[Bogleheads](/blog/bogleheads-portfolio-beginners)* philosophy.
 
@@ -82,6 +86,18 @@ Once CoreBalance has given you the exact transfer figures, execute it in MyInves
 5. Select the **Destination Fund** (the underweighted fund you want to inject the money into).
 6. Enter the amount to transfer. You can select a **partial transfer** and enter the exact amount calculated by CoreBalance.
 7. Confirm the transaction with your security code.
+
+---
+
+## 5. What MyInvestor's Index Funds Cost You Every Year
+
+The transfer is free, but the fund is not. What you actually pay, every year and regardless of how the market does, is the **ongoing charge**: the management fee plus the fund's operating costs, already deducted from the net asset value before you ever see your return.
+
+Below are the figures for the products that show up most often in Spanish index portfolios, taken from each manager's **KID**, with the exact share class and ISIN. Two warnings before you read it: ongoing charges **differ between share classes of the same fund**, which is why the figure is worthless without the class and the ISIN; and managers review the document at least once a year, so the date on each row matters as much as the percentage.
+
+<TerTable lang="en" />
+
+Note how the table is split, because it is the thread running through this whole guide: the **funds** at the top are transferable and let you rebalance without going through the tax office; the **ETFs** at the bottom are not. An ETF can be slightly cheaper to hold and still cost you more the moment you rebalance by selling, because there the capital gain is taxed.
 
 ---
 

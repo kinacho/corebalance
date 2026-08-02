@@ -6,7 +6,7 @@ summary:
   - "Tienes dos caminos: el traspaso entre fondos cuando no dispones de capital nuevo, y el rebalanceo por aportación cuando aportas ahorro cada mes."
   - "Los traspasos en MyInvestor no tienen comisión y puedes mover dinero entre gestoras distintas, por ejemplo de Vanguard a iShares o Fidelity."
 publishDate: "2026-05-08"
-updatedDate: "2026-05-08"
+updatedDate: "2026-08-02"
 author: "kinacho"
 tags: [rebalanceo, myinvestor, fiscalidad, fondos-indexados, traspasos]
 lang: es
@@ -14,6 +14,10 @@ canonical: "https://corebalance.app/blog/rebalanceo-myinvestor-sin-impuestos"
 ogImage: "/blog/og/rebalanceo-myinvestor-sin-impuestos.jpg"
 slugs: { es: 'rebalanceo-myinvestor-sin-impuestos', en: 'myinvestor-rebalancing-tax-free' }
 ---
+
+<script>
+  import TerTable from '$lib/components/blog/TerTable.svelte';
+</script>
 
 MyInvestor se ha consolidado como la plataforma preferida por los inversores indexados en España. Su catálogo de [fondos indexados](/blog/fondos-indexados-vs-etfs-espana) de gestoras de prestigio internacional como **Vanguard, iShares o Fidelity**, sumado a la **ausencia de comisiones de custodia**, la convierte en una opción imbatible para aplicar la filosofía *[Bogleheads](/blog/cartera-bogle-principiantes-espana)*.
 
@@ -82,6 +86,18 @@ Una vez que CoreBalance te ha dado las cifras exactas del traspaso, debes ejecut
 5. Selecciona el **Fondo de destino** (el fondo infraponderado al que quieres inyectar el dinero).
 6. Indica la cantidad a traspasar. Puedes seleccionar realizar un **traspaso parcial** e introducir el importe exacto calculado por CoreBalance.
 7. Firma la operación con tu código de seguridad.
+
+---
+
+## 5. Qué te cuestan al año los indexados de MyInvestor
+
+El traspaso es gratis, pero el fondo no. Lo que pagas de verdad, todos los años y lo haga bien o mal el mercado, es el **gasto corriente**: la comisión de gestión más los gastos operativos, ya descontados del valor liquidativo antes de que veas tu rentabilidad.
+
+Esta es la cifra de los productos que más aparecen en las carteras indexadas españolas, sacada del **DFI (KID) de cada gestora**, con la clase exacta y el ISIN de cada uno. Dos advertencias antes de mirarla: el gasto corriente **cambia de una clase a otra del mismo fondo**, y por eso sin la clase y el ISIN el dato no vale nada; y las gestoras revisan el documento al menos una vez al año, así que la fecha de cada fila importa tanto como el porcentaje.
+
+<TerTable lang="es" />
+
+Fíjate en la separación de la tabla, porque es el mismo hilo de toda esta guía: los **fondos** de arriba son traspasables y te dejan rebalancear sin pasar por Hacienda; los **ETFs** de abajo, no. Un ETF puede ser algo más barato de mantener y aun así salirte más caro en cuanto rebalancees vendiendo, porque ahí sí tributas la plusvalía.
 
 ---
 

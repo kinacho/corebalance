@@ -1,0 +1,93 @@
+{
+	"broker": "MyInvestor",
+	"compiledAt": "2026-08-02",
+	"currency": "EUR",
+	"source": {
+		"es": "Documento de datos fundamentales (DFI/KID) de cada gestora, consultado ficha a ficha",
+		"en": "Key Information Document (KID) published by each fund manager, checked one by one"
+	},
+	"caveats": {
+		"es": [
+			"La cifra es el gasto corriente declarado en el DFI/KID, que incluye la comisión de gestión y los gastos operativos del fondo. No incluye los costes de transacción de la cartera del fondo ni las comisiones del bróker.",
+			"El gasto corriente cambia de una clase a otra del mismo fondo. Por eso cada fila indica la clase exacta y su ISIN: sin ellos el dato no es comprobable.",
+			"Cada fila lleva la fecha del DFI del que salió. Las gestoras lo revisan al menos una vez al año, así que conviene contrastar contra la ficha vigente antes de tomar una decisión."
+		],
+		"en": [
+			"The figure is the ongoing charge declared in the KID, which covers the management fee and the fund's operating costs. It excludes the fund's own portfolio transaction costs and any broker fees.",
+			"Ongoing charges differ between share classes of the same fund. That is why every row states the exact class and its ISIN: without them the figure cannot be verified.",
+			"Every row carries the date of the KID it was taken from. Managers review it at least once a year, so check it against the current factsheet before acting on it."
+		]
+	},
+	"funds": [
+		{
+			"manager": "Vanguard",
+			"name": "Global Stock Index Fund",
+			"shareClass": "EUR Acc",
+			"isin": "IE00B03HD191",
+			"vehicle": "fund",
+			"assetClass": "developed",
+			"ongoingCharges": 0.18,
+			"kidDate": "2026-03-24"
+		},
+		{
+			"manager": "Fidelity",
+			"name": "MSCI World Index Fund",
+			"shareClass": "EUR P Acc",
+			"isin": "IE00BYX5NX33",
+			"vehicle": "fund",
+			"assetClass": "developed",
+			"ongoingCharges": 0.1,
+			"kidDate": "2026-04-30"
+		},
+		{
+			"manager": "Vanguard",
+			"name": "Emerging Markets Stock Index Fund",
+			"shareClass": "Investor EUR Acc",
+			"isin": "IE0031786142",
+			"vehicle": "fund",
+			"assetClass": "emerging",
+			"ongoingCharges": 0.23,
+			"kidDate": "2026-03-24"
+		},
+		{
+			"manager": "iShares",
+			"name": "Emerging Markets Index Fund (IE)",
+			"shareClass": "D Acc EUR",
+			"isin": "IE00BYWYCC39",
+			"vehicle": "fund",
+			"assetClass": "emerging",
+			"ongoingCharges": 0.2,
+			"kidDate": "2026-04-15"
+		},
+		{
+			"manager": "Vanguard",
+			"name": "Global Bond Index Fund",
+			"shareClass": "EUR Hedged Acc",
+			"isin": "IE00B18GC888",
+			"vehicle": "fund",
+			"assetClass": "bonds",
+			"ongoingCharges": 0.15,
+			"kidDate": "2025-08-18"
+		},
+		{
+			"manager": "iShares",
+			"name": "Core MSCI World UCITS ETF",
+			"shareClass": "USD (Acc)",
+			"isin": "IE00B4L5Y983",
+			"vehicle": "etf",
+			"assetClass": "developed",
+			"ongoingCharges": 0.2,
+			"kidDate": "2026-04-09"
+		},
+		{
+			"manager": "iShares",
+			"name": "Core MSCI EM IMI UCITS ETF",
+			"shareClass": "USD (Acc)",
+			"isin": "IE00BKM4GZ66",
+			"vehicle": "etf",
+			"assetClass": "emerging",
+			"ongoingCharges": 0.18,
+			"kidDate": "2026-04-09"
+		}
+	]
+}
