@@ -67,7 +67,7 @@ You set a percentage proportional to the asset's own target weight (typically **
 
 ## Historical Performance Comparison
 
-Numerous academic studies, including analyses by the index fund giant *Vanguard*, have compared both methods using historical data over the last 80 years. The conclusions are surprising:
+Vanguard has compared both methods several times, most recently in [*Rational rebalancing: an analytical approach to multiasset portfolio rebalancing*](https://corporate.vanguard.com/content/dam/corp/research/pdf/rational_rebalancing_analytical_approach_to_multiasset_portfolio_rebalancing.pdf) (2022), simulating return distributions and transaction costs. The conclusion keeps coming back the same:
 
 > **The final net performance and risk reduction obtained with both methods are nearly identical.**
 

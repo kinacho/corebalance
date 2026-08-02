@@ -25,7 +25,7 @@ In this guide we'll break down exactly how the tax regime for fund transfers wor
 
 ## 1. What Does the Law Say About Fund Transfers?
 
-The tax treatment of fund transfers is regulated by **Article 94 of the Spanish IRPF Law**.
+The tax treatment of fund transfers is regulated by **[Article 94 of Spanish Law 35/2006 on personal income tax](https://www.boe.es/buscar/act.php?id=BOE-A-2006-20764#a94)** (consolidated text at the BOE, the official state gazette). The CNMV, Spain's securities regulator, explains how the order works on its page about [subscriptions, redemptions and transfers](https://www.cnmv.es/portal/inversor/fondos-como-invertir) and in its guide [*Los fondos de inversión y la inversión colectiva*](https://www.cnmv.es/DocPortal/Publicaciones/Guias/guia_FI.pdf).
 
 The rule establishes that when the proceeds from the redemption of units in an investment fund are used to acquire units in another investment fund, **no capital gain or loss shall be recognised**, and the newly acquired units shall retain the acquisition value and date of the original units.
 

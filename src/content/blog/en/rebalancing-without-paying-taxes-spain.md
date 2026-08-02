@@ -25,7 +25,7 @@ Fortunately for Spanish tax residents, there are powerful and entirely legal str
 
 ## 1. The Spanish Tax Advantage for Investment Funds
 
-In Spain, the IRPF (Personal Income Tax) law grants an exclusive tax deferral regime to investment funds, known as **traspasabilidad** (fund transferability).
+In Spain, the IRPF (Personal Income Tax) law grants an exclusive tax deferral regime to investment funds, known as **traspasabilidad** (fund transferability), set out in [Article 94 of Law 35/2006](https://www.boe.es/buscar/act.php?id=BOE-A-2006-20764#a94).
 
 This means that when you move money from one fund to another via a *traspaso* (fund transfer) instruction, the operation is exempt from taxation. The Spanish Tax Agency (Hacienda) does not consider this a realised capital gain — it simply treats it as a change in the investment vehicle, keeping the original acquisition date and cost basis intact.
 

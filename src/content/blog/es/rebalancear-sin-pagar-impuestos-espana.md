@@ -25,7 +25,7 @@ Por suerte para los residentes fiscales en España, existen estrategias legales 
 
 ## 1. La ventaja fiscal española para fondos de inversión
 
-En España, la legislación del IRPF otorga un régimen de diferimiento fiscal exclusivo a los fondos de inversión (conocido como **traspasabilidad**). 
+En España, la legislación del IRPF otorga un régimen de diferimiento fiscal exclusivo a los fondos de inversión (conocido como **traspasabilidad**), recogido en el [artículo 94 de la Ley 35/2006](https://www.boe.es/buscar/act.php?id=BOE-A-2006-20764#a94). 
 
 Esto significa que cuando mueves dinero de un fondo a otro mediante la orden de un "traspaso", la operación está exenta de tributación. Hacienda no considera que hayas tenido una plusvalía realizada; simplemente considera que has cambiado el vehículo de tu inversión, manteniendo la antigüedad y el coste de adquisición original.
 

@@ -67,7 +67,7 @@ Consiste en fijar un porcentaje proporcional al peso del propio activo (típicam
 
 ## Comparativa de Rendimiento Histórico
 
-Numerosos estudios académicos, incluyendo análisis de la gestora *Vanguard*, han comparado ambos métodos utilizando datos históricos de los últimos 80 años. Las conclusiones son sorprendentes:
+Vanguard ha comparado ambos métodos en varias ocasiones, la más reciente en [*Rational rebalancing: an analytical approach to multiasset portfolio rebalancing*](https://corporate.vanguard.com/content/dam/corp/research/pdf/rational_rebalancing_analytical_approach_to_multiasset_portfolio_rebalancing.pdf) (2022), simulando distribuciones de rentabilidad y costes de transacción. La conclusión se repite:
 
 > **El rendimiento neto final y la reducción de volatilidad que se obtienen con ambos métodos son casi idénticos.**
 

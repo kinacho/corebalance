@@ -25,7 +25,7 @@ En esta guía desgranaremos cómo funciona exactamente el régimen fiscal de los
 
 ## 1. ¿Qué dice la ley sobre los traspasos?
 
-El tratamiento fiscal de los traspasos está regulado en el **Artículo 94 de la Ley del IRPF** en España. 
+El tratamiento fiscal de los traspasos está regulado en el **[artículo 94 de la Ley 35/2006 del IRPF](https://www.boe.es/buscar/act.php?id=BOE-A-2006-20764#a94)** (texto consolidado en el BOE). La CNMV explica la mecánica de la orden en su página sobre [suscripciones, reembolsos y traspasos](https://www.cnmv.es/portal/inversor/fondos-como-invertir) y en su guía [*Los fondos de inversión y la inversión colectiva*](https://www.cnmv.es/DocPortal/Publicaciones/Guias/guia_FI.pdf). 
 
 La norma establece que, cuando el importe obtenido por el reembolso de participaciones de un fondo de inversión se destine a la adquisición de participaciones en otro fondo de inversión, **no se computará ganancia o pérdida patrimonial**, y las nuevas participaciones adquiridas conservarán el valor y la fecha de adquisición de las acciones transmitidas.
 
