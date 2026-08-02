@@ -42,6 +42,12 @@
           {
             "@type": "ListItem",
             "position": 2,
+            "name": isEs ? "Comparativas" : "Comparisons",
+            "item": absoluteUrl(localizePath('/comparativas', lang))
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
             "name": "vs Portfolio Performance",
             "item": canonical
           }
@@ -91,7 +97,7 @@
     <nav class="breadcrumb" aria-label="Breadcrumb">
       <a href={$link('/')}>{isEs ? 'Inicio' : 'Home'}</a>
       <span class="separator">/</span>
-      <span class="current">{isEs ? 'Comparativas' : 'Comparisons'}</span>
+      <a href={$link('/comparativas')}>{isEs ? 'Comparativas' : 'Comparisons'}</a>
       <span class="separator">/</span>
       <span class="current">vs Portfolio Performance</span>
     </nav>

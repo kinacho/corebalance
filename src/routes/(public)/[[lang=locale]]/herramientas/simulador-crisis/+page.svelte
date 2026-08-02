@@ -26,7 +26,7 @@
 
   const t = $derived(lang === 'en' ? {
     badge: 'Interactive Tool',
-    breadcrumb: { home: 'Home', blog: 'Blog', tool: 'Crash Simulator' },
+    breadcrumb: { home: 'Home', tools: 'Tools', tool: 'Crash Simulator' },
     title: 'Stock Market Crash Simulator',
     subtitle: 'See what a historic crash would do to your portfolio today — and how long recovery would take if you keep contributing versus doing nothing.',
     panelTitle: '1. Your Scenario',
@@ -79,7 +79,7 @@
     ctaBtn: 'Go to calculator'
   } : {
     badge: 'Herramienta Interactiva',
-    breadcrumb: { home: 'Inicio', blog: 'Blog', tool: 'Simulador de Crisis' },
+    breadcrumb: { home: 'Inicio', tools: 'Herramientas', tool: 'Simulador de Crisis' },
     title: 'Simulador de crisis bursátil',
     subtitle: 'Comprueba qué le haría a tu cartera un crash histórico hoy — y cuánto tardarías en recuperarte si sigues aportando frente a no hacer nada.',
     panelTitle: '1. Tu Escenario',
@@ -137,7 +137,7 @@
     "@type": "BreadcrumbList",
     "itemListElement": [
       { "@type": "ListItem", "position": 1, "name": t.breadcrumb.home, "item": absoluteUrl(localizePath('/', lang)) },
-      { "@type": "ListItem", "position": 2, "name": t.breadcrumb.blog, "item": absoluteUrl(localizePath('/blog', lang)) },
+      { "@type": "ListItem", "position": 2, "name": t.breadcrumb.tools, "item": absoluteUrl(localizePath('/herramientas', lang)) },
       { "@type": "ListItem", "position": 3, "name": t.breadcrumb.tool, "item": absoluteUrl($page.url.pathname) }
     ]
   });
@@ -207,7 +207,7 @@
     <nav class="breadcrumb" aria-label="breadcrumb">
       <a href={$link('/')}>🏠 {t.breadcrumb.home}</a>
       <span class="breadcrumb-sep">›</span>
-      <a href={$link('/blog')}>{t.breadcrumb.blog}</a>
+      <a href={$link('/herramientas')}>{t.breadcrumb.tools}</a>
       <span class="breadcrumb-sep">›</span>
       <span aria-current="page">{t.breadcrumb.tool}</span>
     </nav>

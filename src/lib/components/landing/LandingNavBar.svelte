@@ -40,7 +40,7 @@
       <a href={$link('/#how-it-works')} aria-label={$LL.nav.aria_how_it_works()}>{$LL.nav.how_it_works()}</a>
       <a href={$link('/#why-us')} aria-label={$LL.nav.aria_why_us()}>{$LL.nav.why_us()}</a>
       <a href={$link('/#educational')} aria-label={$LL.nav.aria_faq()}>{$LL.nav.faq()}</a>
-      <a href={$link('/herramientas/calculadora-ter')} aria-label={$LL.nav.aria_tools()}>{$LL.nav.tools()}</a>
+      <a href={$link('/herramientas')} aria-label={$LL.nav.aria_tools()}>{$LL.nav.tools()}</a>
       <a href={$link('/blog')} aria-label={$LL.nav.aria_blog()}>{$LL.nav.blog()}</a>
     </div>
 
@@ -83,7 +83,7 @@
       <a href={$link('/#how-it-works')} onclick={() => isMobileMenuOpen = false} aria-label={$LL.nav.aria_how_it_works()}>{$LL.nav.how_it_works()}</a>
       <a href={$link('/#why-us')} onclick={() => isMobileMenuOpen = false} aria-label={$LL.nav.aria_why_us()}>{$LL.nav.why_us()}</a>
       <a href={$link('/#educational')} onclick={() => isMobileMenuOpen = false} aria-label={$LL.nav.aria_faq()}>{$LL.nav.faq()}</a>
-      <a href={$link('/herramientas/calculadora-ter')} onclick={() => isMobileMenuOpen = false} aria-label={$LL.nav.aria_tools()}>{$LL.nav.tools()}</a>
+      <a href={$link('/herramientas')} onclick={() => isMobileMenuOpen = false} aria-label={$LL.nav.aria_tools()}>{$LL.nav.tools()}</a>
       <a href={$link('/blog')} onclick={() => isMobileMenuOpen = false} aria-label={$LL.nav.aria_blog()}>{$LL.nav.blog()}</a>
     </div>
     <div class="mobile-menu-actions">

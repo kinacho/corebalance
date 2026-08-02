@@ -14,6 +14,8 @@
 export const BILINGUAL_ROUTES = [
 	'/',
 	'/blog',
+	'/herramientas',
+	'/comparativas',
 	'/comparativas/corebalance-vs-portfolio-performance',
 	'/comparativas/corebalance-vs-excel',
 	'/comparativas/corebalance-vs-indexa-capital',

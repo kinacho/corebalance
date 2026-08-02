@@ -67,6 +67,22 @@ const PAGES = [
 		}
 	},
 	{
+		key: 'herramientas',
+		kicker: { es: 'Herramientas interactivas', en: 'Interactive tools' },
+		title: {
+			es: 'Herramientas gratis para el inversor indexado',
+			en: 'Free tools for index investors'
+		}
+	},
+	{
+		key: 'comparativas',
+		kicker: { es: 'Comparativas', en: 'Comparisons' },
+		title: {
+			es: 'CoreBalance frente a las alternativas',
+			en: 'CoreBalance versus the alternatives'
+		}
+	},
+	{
 		key: 'ter',
 		kicker: { es: 'Herramienta interactiva', en: 'Interactive tool' },
 		title: {

@@ -7,6 +7,8 @@ import type { Locales } from '$lib/i18n/i18n-types';
 export type OgPageKey =
 	| 'landing'
 	| 'blog'
+	| 'herramientas'
+	| 'comparativas'
 	| 'ter'
 	| 'checklist'
 	| 'crisis'

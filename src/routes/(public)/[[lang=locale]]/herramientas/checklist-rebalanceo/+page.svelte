@@ -26,7 +26,7 @@
 
   const t = $derived(lang === 'en' ? {
     badge: 'Interactive Resource',
-    breadcrumb: { home: 'Home', blog: 'Blog', tool: 'Rebalancing Checklist' },
+    breadcrumb: { home: 'Home', tools: 'Tools', tool: 'Rebalancing Checklist' },
     title: 'Is It Time to Rebalance?',
     subtitle: 'Answer these 4 quick questions and get a personalized recommendation on the health of your asset allocation.',
     stepIndicator: (n: number) => `Question ${n} of 4`,
@@ -110,7 +110,7 @@
     }
   } : {
     badge: 'Recurso Interactivo',
-    breadcrumb: { home: 'Inicio', blog: 'Blog', tool: 'Checklist de Rebalanceo' },
+    breadcrumb: { home: 'Inicio', tools: 'Herramientas', tool: 'Checklist de Rebalanceo' },
     title: '¿Es hora de rebalancear?',
     subtitle: 'Responde a estas 4 preguntas rápidas y obtén una recomendación personalizada sobre la salud de tu asignación de activos.',
     stepIndicator: (n: number) => `Pregunta ${n} de 4`,
@@ -199,7 +199,7 @@
     "@type": "BreadcrumbList",
     "itemListElement": [
       { "@type": "ListItem", "position": 1, "name": t.breadcrumb.home, "item": absoluteUrl(localizePath('/', lang)) },
-      { "@type": "ListItem", "position": 2, "name": t.breadcrumb.blog, "item": absoluteUrl(localizePath('/blog', lang)) },
+      { "@type": "ListItem", "position": 2, "name": t.breadcrumb.tools, "item": absoluteUrl(localizePath('/herramientas', lang)) },
       { "@type": "ListItem", "position": 3, "name": t.breadcrumb.tool, "item": absoluteUrl($page.url.pathname) }
     ]
   });
@@ -264,7 +264,7 @@
     <nav class="breadcrumb" aria-label="breadcrumb">
       <a href={$link('/')}>🏠 {t.breadcrumb.home}</a>
       <span class="breadcrumb-sep">›</span>
-      <a href={$link('/blog')}>{t.breadcrumb.blog}</a>
+      <a href={$link('/herramientas')}>{t.breadcrumb.tools}</a>
       <span class="breadcrumb-sep">›</span>
       <span aria-current="page">{t.breadcrumb.tool}</span>
     </nav>

@@ -26,7 +26,7 @@
 
   const t = $derived(lang === 'en' ? {
     badge: 'Interactive Tool',
-    breadcrumb: { home: 'Home', blog: 'Blog', tool: 'Average Price Calculator' },
+    breadcrumb: { home: 'Home', tools: 'Tools', tool: 'Average Price Calculator' },
     title: 'Average Purchase Price Calculator',
     subtitle: 'Add your buys, sells and dividends and see live your weighted average cost, total cost basis and unrealized P&L — the same ledger accounting CoreBalance uses.',
     panelTitle: '1. Your Transactions',
@@ -94,7 +94,7 @@
     ctaBtn: 'Open the dashboard'
   } : {
     badge: 'Herramienta Interactiva',
-    breadcrumb: { home: 'Inicio', blog: 'Blog', tool: 'Calculadora Precio Medio' },
+    breadcrumb: { home: 'Inicio', tools: 'Herramientas', tool: 'Calculadora Precio Medio' },
     title: 'Calculadora de precio medio de compra',
     subtitle: 'Añade tus compras, ventas y dividendos y ve en vivo tu precio medio ponderado, tu coste total y tu P&L latente — con la misma contabilidad de libro que usa CoreBalance.',
     panelTitle: '1. Tus Transacciones',
@@ -167,7 +167,7 @@
     "@type": "BreadcrumbList",
     "itemListElement": [
       { "@type": "ListItem", "position": 1, "name": t.breadcrumb.home, "item": absoluteUrl(localizePath('/', lang)) },
-      { "@type": "ListItem", "position": 2, "name": t.breadcrumb.blog, "item": absoluteUrl(localizePath('/blog', lang)) },
+      { "@type": "ListItem", "position": 2, "name": t.breadcrumb.tools, "item": absoluteUrl(localizePath('/herramientas', lang)) },
       { "@type": "ListItem", "position": 3, "name": t.breadcrumb.tool, "item": absoluteUrl($page.url.pathname) }
     ]
   });
@@ -279,7 +279,7 @@
     <nav class="breadcrumb" aria-label="breadcrumb">
       <a href={$link('/')}>🏠 {t.breadcrumb.home}</a>
       <span class="breadcrumb-sep">›</span>
-      <a href={$link('/blog')}>{t.breadcrumb.blog}</a>
+      <a href={$link('/herramientas')}>{t.breadcrumb.tools}</a>
       <span class="breadcrumb-sep">›</span>
       <span aria-current="page">{t.breadcrumb.tool}</span>
     </nav>

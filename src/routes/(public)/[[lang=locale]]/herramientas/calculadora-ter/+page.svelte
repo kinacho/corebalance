@@ -27,7 +27,7 @@
 
   const t = $derived(lang === 'en' ? {
     badge: 'Interactive Tool',
-    breadcrumb: { home: 'Home', blog: 'Blog', tool: 'TER Calculator' },
+    breadcrumb: { home: 'Home', tools: 'Tools', tool: 'TER Calculator' },
     title: 'Total Expense Ratio Calculator',
     subtitle: 'Calculate the real cost of your portfolio (weighted average TER) and project the thousands of euros you\'ll save by avoiding actively managed funds.',
     panelTitle: '1. Your Funds / ETFs',
@@ -81,7 +81,7 @@
     fundPlaceholder: 'e.g. Vanguard MSCI World'
   } : {
     badge: 'Herramienta Interactiva',
-    breadcrumb: { home: 'Inicio', blog: 'Blog', tool: 'Calculadora TER' },
+    breadcrumb: { home: 'Inicio', tools: 'Herramientas', tool: 'Calculadora TER' },
     title: 'Calculadora de TER total',
     subtitle: 'Calcula el coste real de tu cartera (TER medio ponderado) y proyecta los miles de euros que ahorrarás al evitar fondos gestionados activos.',
     panelTitle: '1. Tus Fondos / ETFs',
@@ -140,7 +140,7 @@
     "@type": "BreadcrumbList",
     "itemListElement": [
       { "@type": "ListItem", "position": 1, "name": t.breadcrumb.home, "item": absoluteUrl(localizePath('/', lang)) },
-      { "@type": "ListItem", "position": 2, "name": t.breadcrumb.blog, "item": absoluteUrl(localizePath('/blog', lang)) },
+      { "@type": "ListItem", "position": 2, "name": t.breadcrumb.tools, "item": absoluteUrl(localizePath('/herramientas', lang)) },
       { "@type": "ListItem", "position": 3, "name": t.breadcrumb.tool, "item": absoluteUrl($page.url.pathname) }
     ]
   });
@@ -244,7 +244,7 @@
     <nav class="breadcrumb" aria-label="breadcrumb">
       <a href={$link('/')}>🏠 {t.breadcrumb.home}</a>
       <span class="breadcrumb-sep">›</span>
-      <a href={$link('/blog')}>{t.breadcrumb.blog}</a>
+      <a href={$link('/herramientas')}>{t.breadcrumb.tools}</a>
       <span class="breadcrumb-sep">›</span>
       <span aria-current="page">{t.breadcrumb.tool}</span>
     </nav>

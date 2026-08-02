@@ -16,6 +16,10 @@ export const prerender = true;
  */
 const STATIC_PAGES: Record<string, { lastmod: string; priority: string; changefreq: string }> = {
 	'/': { lastmod: '2026-08-01', priority: '1.0', changefreq: 'weekly' },
+	// Los dos hubs van a 0.8, por encima de sus hijas (0.7): son el destino del
+	// enlace de la navbar, que se repite en todas las páginas del sitio.
+	'/herramientas': { lastmod: '2026-08-02', priority: '0.8', changefreq: 'monthly' },
+	'/comparativas': { lastmod: '2026-08-02', priority: '0.8', changefreq: 'monthly' },
 	'/comparativas/corebalance-vs-portfolio-performance': {
 		lastmod: '2026-08-01',
 		priority: '0.7',
