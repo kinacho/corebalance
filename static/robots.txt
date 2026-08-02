@@ -12,9 +12,13 @@
 # Incluye Googlebot, Bingbot (base de ChatGPT Search y Copilot), GPTBot,
 # ClaudeBot, OAI-SearchBot, PerplexityBot, Google-Extended (AI Overviews y
 # AI Mode), Applebot-Extended, meta-externalagent, Amazonbot, CCBot, etc.
+# Sin barra final a propósito: `Disallow: /dashboard/` NO cubre `/dashboard`, que es
+# la URL real. Bingbot la rastreó por esa rendija y la marcó como página sin meta
+# description — y lo está, porque el dashboard va con `ssr = false` y lo único que
+# recibe un rastreador es el esqueleto de `app.html`.
 User-agent: *
-Disallow: /api/
-Disallow: /dashboard/
+Disallow: /api
+Disallow: /dashboard
 
 # ── 2. Scrapers comerciales de reventa de datos ───────────────────────────────
 # No indexan, no citan y no entrenan modelos que nos vayan a recomendar.
