@@ -74,8 +74,8 @@ Depending on where you live and your broker, you can implement this strategy usi
 
 ### Option A: Index Mutual Funds (Popular in certain European countries)
 In countries like Spain, index mutual funds offer tax-free transfers (rebalancing without triggering capital gains).
-* **Developed Fund (80%):** *Vanguard Global Stock Index Fund* (ISIN: IE00B03HD191) or *Fidelity MSCI World Index Fund* (ISIN: IE00BYX5MX67).
-* **Emerging Fund (20%):** *Vanguard Emerging Markets Stock Index Fund* (ISIN: IE0031786142) or *iShares Emerging Markets Index Fund* (ISIN: IE00B2QWDY88).
+* **Developed Fund (80%):** *Vanguard Global Stock Index Fund* (ISIN: IE00B03HD191) or *Fidelity MSCI World Index Fund P-Acc-EUR* (ISIN: IE00BYX5NX33).
+* **Emerging Fund (20%):** *Vanguard Emerging Markets Stock Index Fund* (ISIN: IE0031786142) or *iShares Emerging Markets Index Fund (IE) D Acc EUR* (ISIN: IE00BYWYCC39).
 
 ### Option B: ETFs (Ideal for global brokers like Interactive Brokers, DeGiro, or Trade Republic)
 If you prefer using ETFs, you can purchase shares directly on the stock exchange:

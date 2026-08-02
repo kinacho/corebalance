@@ -76,8 +76,8 @@ Si resides en España, tienes dos vehículos principales para poner en marcha es
 La gran ventaja de los fondos indexados en España es su fiscalidad: puedes mover dinero de un fondo a otro mediante [traspasos](/blog/traspasos-fondos-indexados-hacienda) sin pagar peajes fiscales a Hacienda.
 
 Puedes configurar esta cartera en entidades como **[MyInvestor](/blog/rebalanceo-myinvestor-sin-impuestos)**, **SelfBank** o mediante gestores automatizados (Robo-advisors) con combinaciones como estas:
-* **Fondo Desarrollado (80%):** *Vanguard Global Stock Index Fund* (ISIN: IE00B03HD191) o *Fidelity MSCI World Index Fund* (ISIN: IE00BYX5MX67).
-* **Fondo Emergente (20%):** *Vanguard Emerging Markets Stock Index Fund* (ISIN: IE0031786142) o *iShares Emerging Markets Index Fund* (ISIN: IE00B2QWDY88).
+* **Fondo Desarrollado (80%):** *Vanguard Global Stock Index Fund* (ISIN: IE00B03HD191) o *Fidelity MSCI World Index Fund P-Acc-EUR* (ISIN: IE00BYX5NX33).
+* **Fondo Emergente (20%):** *Vanguard Emerging Markets Stock Index Fund* (ISIN: IE0031786142) o *iShares Emerging Markets Index Fund (IE) D Acc EUR* (ISIN: IE00BYWYCC39).
 
 ### Opción B: ETFs (Ideal para brókers internacionales o capitales altos)
 Si prefieres utilizar ETFs en brókers como **[DeGiro](/blog/rebalanceo-degiro-etfs)**, **Interactive Brokers** o **Trade Republic**, puedes comprar participaciones de forma directa:

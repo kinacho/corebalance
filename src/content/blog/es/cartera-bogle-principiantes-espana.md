@@ -59,10 +59,10 @@ Puedes comprar estos fondos desde comercializadoras tradicionales o bancos que n
 
 * **Renta Variable Desarrollada (MSCI World):**
   * *Vanguard Global Stock Index Fund* (ISIN: IE00B03HD191) - TER: 0.18%
-  * *Fidelity MSCI World Index Fund* (ISIN: IE00BYX5MX67) - TER: 0.12%
+  * *Fidelity MSCI World Index Fund P-Acc-EUR* (ISIN: IE00BYX5NX33) - TER: 0.12%
 * **Renta Variable Emergente (MSCI EM):**
   * *Vanguard Emerging Markets Stock Index Fund* (ISIN: IE0031786142) - TER: 0.23%
-  * *iShares Emerging Markets Index Fund* (ISIN: IE00B2QWDY88) - TER: 0.20%
+  * *iShares Emerging Markets Index Fund (IE) D Acc EUR* (ISIN: IE00BYWYCC39) - TER: 0.20%
 * **Renta Fija Global (Cubierto a EUR):**
   * *Vanguard Global Bond Index Fund (EUR Hedged)* (ISIN: IE00B18GC888) - TER: 0.15%
 
