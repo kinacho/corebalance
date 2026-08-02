@@ -56,7 +56,7 @@
 				.map((key) => (changesObj as any)[key]());
 
 			return {
-				version: v.replace('_', '.'),
+				version: v.replace(/_/g, '.'),
 				date: releaseData.date(),
 				badge: releaseData.badge(),
 				badgeColor: badgeColors[v],
@@ -79,9 +79,9 @@
 		<header class="changelog-header">
 			<div class="title-group">
 				<span class="changelog-icon">🚀</span>
-				<h2 id="changelog-title" class="changelog-title">Historial de Cambios</h2>
+				<h2 id="changelog-title" class="changelog-title">{$LL.changelog_modal.title()}</h2>
 			</div>
-			<button class="close-btn" onclick={onClose} aria-label="Cerrar modal">✕</button>
+			<button class="close-btn" onclick={onClose} aria-label={$LL.changelog_modal.close_aria()}>✕</button>
 		</header>
 
 		<div class="changelog-body">
@@ -113,7 +113,7 @@
 		</div>
 
 		<footer class="changelog-footer">
-			<button class="btn-primary" onclick={onClose}>Entendido</button>
+			<button class="btn-primary" onclick={onClose}>{$LL.changelog_modal.btn_understand()}</button>
 		</footer>
 	</div>
 </div>
