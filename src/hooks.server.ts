@@ -43,46 +43,80 @@ const getLocale = (event: RequestEvent): Locales => {
 	return detectLocale(headerDetector);
 };
 
+/**
+ * Cola de un solo carril para todo lo que renderiza Svelte en servidor.
+ *
+ * `setLocale` escribe un store global de módulo, compartido por todas las
+ * peticiones del proceso. Es lo que hace funcionar `$LL` al renderizar en
+ * servidor, y también lo que permitía que dos peticiones en idiomas distintos se
+ * entrelazasen en cualquier `await` entre el `setLocale` y el render, dejando a
+ * una renderizando con el diccionario de la otra.
+ *
+ * Aquí se cierra por el lado del calendario en vez de por el del store: entre
+ * fijar el idioma y devolver la respuesta no corre ninguna otra petición que
+ * pueda tocarlo. Se eligió esto frente a pasar `i18nObject(locale)` por `data`
+ * porque arregla la clase de fallo y no un caso: hoy el único árbol que se
+ * renderiza en tiempo de petición es el de error, pero el día que una ruta deje
+ * de estar prerenderizada el arreglo sigue en pie sin tocar ningún `$LL`.
+ *
+ * El coste de serializar es asumible **porque el conjunto es diminuto**: las 76
+ * páginas públicas son ficheros estáticos que ni pasan por aquí, y `/dashboard`
+ * es `ssr = false`, o sea una cáscara sin componentes. En la práctica la cola
+ * sólo ve páginas de error. `/api/*` queda fuera a propósito: es la superficie
+ * con tráfico real (el sondeo de precios cada 30 s) y no renderiza nada.
+ */
+let renderQueue: Promise<unknown> = Promise.resolve();
+
+function inRenderQueue<T>(run: () => Promise<T>): Promise<T> {
+	const result = renderQueue.then(run, run);
+	// La cola nunca debe quedarse rota: si un render revienta, el siguiente entra
+	// igual. De ahí que se encadene una promesa ya neutralizada y no `result`.
+	renderQueue = result.then(
+		() => undefined,
+		() => undefined
+	);
+	return result;
+}
+
 export const handle: Handle = async ({ event, resolve }) => {
 	const locale = getLocale(event);
 	const dependsOnCookie = isLocaleCookieRoute(event.url.pathname);
 
-	await loadLocaleAsync(locale);
-
 	/**
-	 * ⚠️ `setLocale` escribe un store global de módulo, compartido por todas las
-	 * peticiones del proceso. Es necesario para que `$LL` funcione al renderizar
-	 * en servidor, pero significa que dos peticiones concurrentes en idiomas
-	 * distintos pueden entrelazarse en un `await` y una renderizar con el
-	 * diccionario de la otra.
-	 *
-	 * Hoy el alcance es pequeño: todo lo público está prerenderizado, así que la
-	 * única ruta que se renderiza en servidor es `/dashboard`, y allí el peor caso
-	 * es un parpadeo hasta que hidrata. El arreglo definitivo es no usar el store
-	 * global en SSR: pasar el objeto de traducciones por `data` con
-	 * `i18nObject(locale)`, que es por petición. Toca todos los usos de `$LL`, así
-	 * que se deja anotado en vez de hacerlo a medias.
+	 * `/api/*` no renderiza componentes, así que ni necesita el store ni debe
+	 * escribirlo: si lo hiciera, una petición de precios podría cambiarle el
+	 * idioma a una página que está a mitad de render, y la cola no la protegería
+	 * porque los endpoints no pasan por ella.
 	 */
-	setLocale(locale);
-	event.locals.locale = locale;
+	const rendersComponents = !event.url.pathname.startsWith('/api');
 
-	// La cookie de idioma se fija sólo donde de verdad decide el contenido: el
-	// área autenticada. Fijarla en las páginas públicas obligaba a mandar
-	// `Vary: Cookie` + `Set-Cookie` en la primera visita y anulaba la caché de
-	// la CDN, penalizando el TTFB de usuarios y crawlers.
-	if (!building && dependsOnCookie && !event.cookies.get('lang')) {
-		event.cookies.set('lang', locale, {
-			path: '/',
-			maxAge: 60 * 60 * 24 * 365,
-			sameSite: 'lax',
-			httpOnly: false,
-			secure: true
+	const respond = async () => {
+		if (rendersComponents) {
+			await loadLocaleAsync(locale);
+			setLocale(locale);
+		}
+		event.locals.locale = locale;
+
+		// La cookie de idioma se fija sólo donde de verdad decide el contenido: el
+		// área autenticada. Fijarla en las páginas públicas obligaba a mandar
+		// `Vary: Cookie` + `Set-Cookie` en la primera visita y anulaba la caché de
+		// la CDN, penalizando el TTFB de usuarios y crawlers.
+		if (!building && dependsOnCookie && !event.cookies.get('lang')) {
+			event.cookies.set('lang', locale, {
+				path: '/',
+				maxAge: 60 * 60 * 24 * 365,
+				sameSite: 'lax',
+				httpOnly: false,
+				secure: true
+			});
+		}
+
+		return resolve(event, {
+			transformPageChunk: ({ html }) => html.replace('%lang%', locale)
 		});
-	}
+	};
 
-	const response = await resolve(event, {
-		transformPageChunk: ({ html }) => html.replace('%lang%', locale)
-	});
+	const response = rendersComponents ? await inRenderQueue(respond) : await respond();
 
 	if (dependsOnCookie) {
 		response.headers.set('Vary', 'Cookie');
