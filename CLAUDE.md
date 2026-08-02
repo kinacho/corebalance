@@ -24,6 +24,7 @@ The repo is really two apps:
 | `npm run backtest` | Regenerates `src/lib/data/backtest-8020.json` from real Yahoo data (citable dataset). |
 | `npm run og` / `icons` / `llms` | Regenerate OG cards / icons / llms.txt manually. |
 | `npm run indexnow` | Ping IndexNow with recently-modified sitemap URLs. Deliberately **not** hooked to the build. |
+| `npm run measure:filters` | Measures what the mesh gradient, the `feTurbulence` overlay and the card `backdrop-filter`s actually cost, on throttled mobile (Playwright + CDP). Needs `npm run build` first. Prints its own noise floor — read that before believing any delta. Flags: `--runs <n>`, `--path <url>`. |
 | `npm run seo:audit` | Audits the **built** HTML (`.svelte-kit/output`): duplicate/missing title-description-canonical, `hreflang` reciprocity, JSON-LD validity and required fields, OG images that 404, broken internal links, sitemap↔build consistency. Needs `npm run build` first. Exits non-zero on errors (warnings don't fail). Flags: `--verbose`, `--warnings`, `--dir <path>`. |
 
 **Git policy**: never perform git operations without explicit user authorization. Commit style: Conventional Commits **in Spanish** (`feat(seo):`, `fix(i18n):`, `content(blog):`).
@@ -84,6 +85,7 @@ Runes mode is **forced** for all non-`node_modules` code (`compilerOptions.runes
 - Reuse the existing convention classes instead of reinventing them: `.privacy-mode`/`.privacy-blur` (blurs figures in privacy mode), `.shimmer` (skeletons), `.asset-card`, `.background-mesh`, `.noise-overlay` (uses the `#noiseFilter` SVG declared in `app.html`), `body.modal-open` (scroll lock).
 - `font-variant-numeric: tabular-nums` is applied to a **closed list of classes** (`.metric-value`, `.summary-value`, `.asset-value`, `.total-value`, …) — a new class that displays figures must be added to that list or the digits jitter.
 - Font: Plus Jakarta Sans, **self-hosted** in `static/fonts/` with woff2 400/700 preloads.
+- **The heavy visual effects were measured and are not a performance problem — don't "optimize" them away.** `.background-mesh` (`filter: blur(80px)`, 40px on mobile, plus a 25 s infinite `transform` animation), the full-viewport `.noise-overlay` (`feTurbulence`) and the card `backdrop-filter: blur()` were all suspected of hurting LCP and INP. `npm run measure:filters` on throttled mobile says otherwise: LCP sits around 600–700 ms — roughly a third of the 2.5 s "good" threshold — and **every** difference between having the effects and removing them came out smaller than the run-to-run noise floor, sometimes with the wrong sign. The animation costs nothing sustained either: median frame 16.7 ms and **zero** frames over 32 ms in every variant, because a `transform` animation on a filtered layer is composited. These are lab numbers; the deciding data would be real Speed Insights field metrics, which need the Vercel account.
 - Dashboard tabs (`src/routes/dashboard/+page.svelte`): all tabs render **always** and are hidden with `class:tab-hidden` — deliberately no `{#if}` per tab, so Chart.js canvases don't remount and lose state. Don't "optimize" this into conditionals.
 
 ### hooks.server.ts
