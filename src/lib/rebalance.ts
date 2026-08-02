@@ -92,7 +92,11 @@ export function calculatePortfolioState(
 		const currentWeight = totalCapital > 0 ? pos.totalValue / totalCapital : 0;
 		const deviation = currentWeight - pos.asset.targetWeight;
 		const targetValue = totalCapital * pos.asset.targetWeight;
-		const targetHoldings = pos.unitPrice > 0 ? targetValue / pos.unitPrice : 0;
+		// `targetValue` está en divisa base y `unitPrice` en la del activo, así que
+		// el tipo de cambio tiene que entrar aquí para que salgan participaciones.
+		const posFxRate = prices[pos.asset.ticker]?.fxRate ?? 1;
+		const priceInBase = pos.unitPrice * posFxRate;
+		const targetHoldings = priceInBase > 0 ? targetValue / priceInBase : 0;
 		
 		return {
 			...pos,
@@ -120,8 +124,10 @@ export function calculatePortfolioState(
 			const sp = prices[pos.asset.ticker]?.sparkline;
 			if (sp && sp.length > 0) {
 				const index = sp.length - MAX_DAYS + i;
-				const price = index >= 0 ? sp[index] : sp[0]; 
-				dayValue += pos.holdings * price;
+				const price = index >= 0 ? sp[index] : sp[0];
+				// El sparkline viene en la divisa del activo: sin el cambio, una
+				// sección con activos en varias divisas sumaría peras con manzanas.
+				dayValue += pos.holdings * price * (prices[pos.asset.ticker]?.fxRate ?? 1);
 				hasData = true;
 			}
 		});

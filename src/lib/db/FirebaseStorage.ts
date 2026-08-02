@@ -1,5 +1,7 @@
 import type { StorageProvider, UserData, HistoryPoint } from './types';
 import type { Transaction } from '$lib/types';
+import type { HoldingEdit } from '$lib/history/types';
+import { mergeHoldingEdits } from '$lib/history/merge';
 import { auth, db, googleProvider } from '$lib/firebase';
 import { onAuthStateChanged, signInWithPopup, signOut, type User } from 'firebase/auth';
 import { doc, getDoc, setDoc, collection, getDocs, writeBatch, query, orderBy, deleteDoc, updateDoc, deleteField } from 'firebase/firestore';
@@ -133,6 +135,36 @@ export class FirebaseStorage implements StorageProvider {
 		}
 	}
 
+	/**
+	 * Guarda el log de ediciones uniéndolo con lo que haya en la nube.
+	 *
+	 * A diferencia del resto de la sincronización, aquí no vale last-write-wins:
+	 * perder la edición de otro dispositivo (o quedarse con una versión sin
+	 * clasificar) se traduce directamente en un escalón falso en el gráfico.
+	 */
+	async saveHoldingEdits(userId: string, items: HoldingEdit[]): Promise<void> {
+		if (!db) return;
+		try {
+			const remote = await this.loadHoldingEdits(userId);
+			const merged = mergeHoldingEdits(items, remote);
+			await setDoc(doc(db, 'user_holding_edits', userId), { items: merged }, { merge: true });
+		} catch (e) {
+			console.error('Firestore holding edits save error:', e);
+		}
+	}
+
+	async loadHoldingEdits(userId: string): Promise<HoldingEdit[]> {
+		if (!db) return [];
+		try {
+			const snap = await getDoc(doc(db, 'user_holding_edits', userId));
+			if (snap.exists()) return snap.data().items || [];
+			return [];
+		} catch (e) {
+			console.error('Firestore holding edits load error:', e);
+			return [];
+		}
+	}
+
 	async login(): Promise<void> {
 		if (!auth || !googleProvider) return;
 		try {
@@ -175,10 +207,12 @@ export class FirebaseStorage implements StorageProvider {
 		const userData = await this.loadUserData(userId);
 		const history = await this.loadHistory(userId);
 		const transactions = await this.loadTransactions(userId);
-		return { 
-			userData: userData ? [{ ...userData, id: userId }] : [], 
+		const holdingEdits = await this.loadHoldingEdits(userId);
+		return {
+			userData: userData ? [{ ...userData, id: userId }] : [],
 			history: history.length ? [{ id: userId, points: history }] : [],
-			transactions: transactions.length ? [{ userId, items: transactions }] : []
+			transactions: transactions.length ? [{ userId, items: transactions }] : [],
+			holdingEdits: holdingEdits.length ? [{ userId, items: holdingEdits }] : []
 		};
 	}
 
@@ -197,6 +231,9 @@ export class FirebaseStorage implements StorageProvider {
 		if (data.transactions?.[0]?.items) {
 			await this.saveTransactions(userId, data.transactions[0].items);
 		}
+		if (data.holdingEdits?.[0]?.items) {
+			await this.saveHoldingEdits(userId, data.holdingEdits[0].items);
+		}
 	}
 
 	async deleteAccount(): Promise<void> {
@@ -208,7 +245,8 @@ export class FirebaseStorage implements StorageProvider {
 			// 1. Borrar datos de Firestore
 			await deleteDoc(doc(db, 'user_data', userId));
 			await deleteDoc(doc(db, 'user_history', userId));
-			
+			await deleteDoc(doc(db, 'user_holding_edits', userId));
+
 			// Borrar todos los documentos de la subcolección de transacciones
 			const subcollRef = collection(db, 'user_transactions', userId, 'items');
 			const subcollSnap = await getDocs(subcollRef);

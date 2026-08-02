@@ -162,13 +162,82 @@ describe('rebalance.ts', () => {
 			const usdAsset: Asset[] = [{ ticker: 'USD', name: 'USD Asset', isin: '', targetWeight: 1, ter: 0, color: '', icon: '', category: 'core' }];
 			const usdHoldings: HoldingsMap = { 'USD': { shares: 10, avgCost: 100 } };
 			const usdPrices: Record<string, PriceData> = { 'USD': { price: 150, change: 0, currency: 'USD', name: 'USD', fxRate: 1.10 } };
-			
+
 			const state = calculatePortfolioState(usdAsset, usdHoldings, usdPrices);
 			// Total capital in base currency: 10 * 150 * 1.10 = 1650
 			expect(state.totalCapital).toBeCloseTo(1650, 2);
 			// Total invested in base currency: 10 * 100 * 1.10 = 1100
 			expect(state.totalInvested).toBeCloseTo(1100, 2);
 			expect(state.totalProfit).toBeCloseTo(550, 2);
+		});
+
+		/**
+		 * El contrato es «precio en divisa del activo × fxRate». Estos casos fijan
+		 * las dos direcciones del cambio porque el error de aplicarlo dos veces
+		 * tiene signo distinto según el tipo: infravalora cuando el tipo es mayor
+		 * que 1 (USD) y sobrevalora cuando es menor que 1 (GBP), así que un solo
+		 * caso podía parecer correcto por casualidad.
+		 */
+		it('aplica el tipo de cambio una sola vez con tipo mayor que 1', () => {
+			const asset: Asset[] = [{ ticker: 'MSFT', name: 'Microsoft', isin: '', targetWeight: 1, ter: 0, color: '', icon: '', category: 'stocks' }];
+			const h: HoldingsMap = { 'MSFT': { shares: 15, avgCost: 320.5 } };
+			// EURUSD 1,08 → un dólar son 1/1,08 euros.
+			const p: Record<string, PriceData> = {
+				'MSFT': { price: 415.2, change: 0, currency: 'USD', name: 'Microsoft', fxRate: 1 / 1.08 }
+			};
+
+			const state = calculatePortfolioState(asset, h, p);
+
+			expect(state.totalCapital).toBeCloseTo((15 * 415.2) / 1.08, 2); // 5766,67 €
+			expect(state.totalInvested).toBeCloseTo((15 * 320.5) / 1.08, 2); // 4451,39 €
+			expect(state.totalProfit).toBeCloseTo(1315.28, 2);
+			// El precio unitario se queda en divisa del activo, sin tocar.
+			expect(state.positions[0].unitPrice).toBe(415.2);
+		});
+
+		it('aplica el tipo de cambio una sola vez con tipo menor que 1', () => {
+			const asset: Asset[] = [{ ticker: 'ULVR.L', name: 'Unilever', isin: '', targetWeight: 1, ter: 0, color: '', icon: '', category: 'stocks' }];
+			const h: HoldingsMap = { 'ULVR.L': { shares: 100, avgCost: 40 } };
+			// EURGBP 0,85 → una libra son 1/0,85 euros, más de un euro.
+			const p: Record<string, PriceData> = {
+				'ULVR.L': { price: 45, change: 0, currency: 'GBP', name: 'Unilever', fxRate: 1 / 0.85 }
+			};
+
+			const state = calculatePortfolioState(asset, h, p);
+
+			expect(state.totalCapital).toBeCloseTo((100 * 45) / 0.85, 2); // 5294,12 €
+			expect(state.totalInvested).toBeCloseTo((100 * 40) / 0.85, 2); // 4705,88 €
+		});
+
+		it('devuelve targetHoldings en participaciones, no en divisa base', () => {
+			const asset: Asset[] = [{ ticker: 'MSFT', name: 'Microsoft', isin: '', targetWeight: 1, ter: 0, color: '', icon: '', category: 'stocks' }];
+			const h: HoldingsMap = { 'MSFT': { shares: 15, avgCost: 320.5 } };
+			const p: Record<string, PriceData> = {
+				'MSFT': { price: 415.2, change: 0, currency: 'USD', name: 'Microsoft', fxRate: 1 / 1.08 }
+			};
+
+			const state = calculatePortfolioState(asset, h, p);
+
+			// Con peso objetivo 100 %, el objetivo son las participaciones que ya hay.
+			expect(state.positions[0].targetHoldings).toBeCloseTo(15, 6);
+		});
+
+		it('suma el sparkline de sección en divisa base', () => {
+			const mixed: Asset[] = [
+				{ ticker: 'EUR.AS', name: 'Euro fund', isin: '', targetWeight: 0.5, ter: 0, color: '', icon: '', category: 'core' },
+				{ ticker: 'USD.US', name: 'Dollar fund', isin: '', targetWeight: 0.5, ter: 0, color: '', icon: '', category: 'core' }
+			];
+			const h: HoldingsMap = { 'EUR.AS': { shares: 10, avgCost: 1 }, 'USD.US': { shares: 10, avgCost: 1 } };
+			const p: Record<string, PriceData> = {
+				'EUR.AS': { price: 100, change: 0, currency: 'EUR', name: 'Euro fund', sparkline: new Array(7).fill(100), fxRate: 1 },
+				'USD.US': { price: 100, change: 0, currency: 'USD', name: 'Dollar fund', sparkline: new Array(7).fill(100), fxRate: 0.5 }
+			};
+
+			const state = calculatePortfolioState(mixed, h, p);
+
+			// 10×100×1 + 10×100×0,5 = 1500, no 2000.
+			expect(state.sparkline?.[0]).toBeCloseTo(1500, 6);
+			expect(state.sparkline?.[0]).toBeCloseTo(state.totalCapital, 6);
 		});
 
 		it('uses manualInterestRate instead of daily change if present', () => {

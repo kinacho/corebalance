@@ -35,6 +35,7 @@ export const STORAGE_KEY_HOLDINGS = 'corebalance_holdings_v2';
 export const STORAGE_KEY_CONTRIBUTION = 'corebalance_contribution';
 export const STORAGE_KEY_ASSETS = 'corebalance_user_assets';
 export const STORAGE_KEY_PRICES = 'corebalance_prices_cache';
+export const STORAGE_KEY_EDITS = 'corebalance_holding_edits';
 
 
 

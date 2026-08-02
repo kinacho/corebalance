@@ -1,4 +1,5 @@
 import type { Asset, HoldingsMap, Transaction } from '$lib/types';
+import type { HoldingEdit } from '$lib/history/types';
 
 export interface UserData {
 	holdings: HoldingsMap;
@@ -13,7 +14,20 @@ export interface UserData {
 
 export interface HistoryPoint {
 	date: string;
+	/**
+	 * Patrimonio total del día. Conserva el nombre `value` por compatibilidad con
+	 * los puntos que ya están guardados.
+	 */
 	value: number;
+	/**
+	 * Desglose por categoría y flujo neto del día. Ausentes en los puntos que
+	 * guardaron versiones anteriores: sin ellos el gráfico corta las líneas por
+	 * categoría en vez de inventárselas.
+	 */
+	core?: number;
+	satellite?: number;
+	stocks?: number;
+	netFlow?: number;
 }
 
 export interface StorageProvider {
@@ -30,6 +44,10 @@ export interface StorageProvider {
 	// History
 	saveHistory(userId: string, points: HistoryPoint[]): Promise<void>;
 	loadHistory(userId: string): Promise<HistoryPoint[]>;
+
+	// Log de ediciones manuales de participaciones
+	saveHoldingEdits?(userId: string, edits: HoldingEdit[]): Promise<void>;
+	loadHoldingEdits?(userId: string): Promise<HoldingEdit[]>;
 	
 	// Auth (optional for Local)
 	login?(): Promise<any>;

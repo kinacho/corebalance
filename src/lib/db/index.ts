@@ -1,6 +1,7 @@
 import { PUBLIC_USE_FIREBASE } from '$env/static/public';
 import type { StorageProvider, UserData, HistoryPoint } from './types';
 import type { Transaction } from '$lib/types';
+import type { HoldingEdit } from '$lib/history/types';
 
 class LazyStorageProvider implements StorageProvider {
 	private providerPromise: Promise<StorageProvider> | null = null;
@@ -60,6 +61,17 @@ class LazyStorageProvider implements StorageProvider {
 	async loadHistory(userId: string): Promise<HistoryPoint[]> {
 		const p = await this.getProvider();
 		return p.loadHistory(userId);
+	}
+
+	async saveHoldingEdits(userId: string, edits: HoldingEdit[]): Promise<void> {
+		const p = await this.getProvider();
+		if (p.saveHoldingEdits) return p.saveHoldingEdits(userId, edits);
+	}
+
+	async loadHoldingEdits(userId: string): Promise<HoldingEdit[]> {
+		const p = await this.getProvider();
+		if (p.loadHoldingEdits) return p.loadHoldingEdits(userId);
+		return [];
 	}
 
 	async login(): Promise<any> {

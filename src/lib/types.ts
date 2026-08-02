@@ -42,14 +42,14 @@ export interface PricesResponse {
 export interface PortfolioPosition {
 	asset: Asset;
 	holdings: number;       // Participaciones poseídas
-	avgCost: number;        // Precio medio de compra
-	totalCost: number;      // holdings * avgCost
-	unitPrice: number;      // Precio unitario actual
-	totalValue: number;     // holdings * unitPrice
+	avgCost: number;        // Precio medio de compra, en la divisa del activo
+	totalCost: number;      // holdings * avgCost * fxRate, en divisa base
+	unitPrice: number;      // Precio unitario actual, en la divisa del activo
+	totalValue: number;     // holdings * unitPrice * fxRate, en divisa base
 	currentWeight: number;  // totalValue / capitalTotal
 	deviation: number;      // currentWeight - targetWeight
-	targetValue: number;    // capitalTotal * targetWeight
-	targetHoldings: number; // targetValue / unitPrice
+	targetValue: number;    // capitalTotal * targetWeight, en divisa base
+	targetHoldings: number; // targetValue / (unitPrice * fxRate)
 	profit: number;         // totalValue - totalCost
 	profitPercent: number;  // profit / totalCost
 	dailyChangeValue: number; // Cambio diario en valor absoluto

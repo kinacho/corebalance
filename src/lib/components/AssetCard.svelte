@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import type { PortfolioPosition, HoldingData } from '$lib/types';
-	import { isMarketOpen } from '$lib/utils';
+	import { formatCurrency, isMarketOpen } from '$lib/utils';
 	import LedgerModal from './LedgerModal.svelte';
+	import EditReasonPrompt from './EditReasonPrompt.svelte';
 	import { LL } from '$lib/i18n/i18n-svelte';
 
 	interface Props {
@@ -21,6 +22,10 @@
 	let showLedger = $state(false);
 
 	const useLedger = $derived(portfolio.holdings[position.asset.ticker]?.useLedger ?? false);
+
+	/** Participaciones al entrar en el campo, para calcular el delta al salir. */
+	let sharesAtFocus: number | null = null;
+	const pendingEdit = $derived(portfolio.pendingEditByTicker[position.asset.ticker]);
 
 	// Filtro de rendimiento seleccionado
 	let perfFilter = $state<'YTD' | 'MTD' | '1M'>('YTD');
@@ -89,6 +94,19 @@
 		const target = e.target as HTMLInputElement;
 		editHoldingsValue = target.value;
 		isEditingHoldings = true;
+		sharesAtFocus = position.holdings;
+	}
+
+	/**
+	 * El cambio se registra al salir del campo, nunca en cada tecla: teclear "200"
+	 * sobre "500" pasa por los estados 2 y 20, y anotarlos generaría ventas que
+	 * nunca ocurrieron.
+	 */
+	function handleHoldingsBlur() {
+		isEditingHoldings = false;
+		if (useLedger || sharesAtFocus === null) return;
+		portfolio.commitHoldingEdit(position.asset.ticker, sharesAtFocus, position.holdings);
+		sharesAtFocus = null;
 	}
 
 	function handleAvgCostFocus(e: Event) {
@@ -173,7 +191,7 @@
 						class="modern-input"
 						value={isEditingHoldings ? editHoldingsValue : displayHoldings}
 						oninput={handleHoldingsInput}
-						onblur={() => (isEditingHoldings = false)}
+						onblur={handleHoldingsBlur}
 						onfocus={handleHoldingsFocus}
 						onwheel={(e) => e.preventDefault()}
 						min="0"
@@ -211,6 +229,10 @@
 			{/if}
 		</div>
 
+		{#if pendingEdit}
+			<EditReasonPrompt edit={pendingEdit} />
+		{/if}
+
 		<!-- Compact stats -->
 		<div class="metrics-row" style={isCash ? 'grid-template-columns: repeat(3, 1fr);' : ''}>
 			{#if !isCash}
@@ -218,7 +240,9 @@
 					<span class="metric-label">{$LL.dashboard.price()}</span>
 					<div class="metric-content">
 						{#if position.unitPrice > 0}
-							<span class="metric-value">{$LL.dashboard.currency(portfolio.prices[position.asset.ticker]?.price || 0)}</span>
+							<!-- El precio está en la divisa del activo, así que se etiqueta con
+							     la suya y no con la base, igual que hace CompactAssetRow. -->
+							<span class="metric-value">{formatCurrency(portfolio.prices[position.asset.ticker]?.price || 0, assetCurrency, 2)}</span>
 						{:else}
 							<input 
 								type="number" 

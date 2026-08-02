@@ -13,8 +13,24 @@
 		document.body.classList.remove('modal-open');
 	});
 
+	/**
+	 * Las entradas del changelog están escritas en markdown ligero (`**negrita**`
+	 * y `código`) pero se pintan con `{@html}`, así que hasta ahora los asteriscos
+	 * y las comillas invertidas salían literales en las catorce versiones. Esto los
+	 * convierte a etiquetas.
+	 *
+	 * El texto viene de los diccionarios de traducción de la app, nunca de entrada
+	 * del usuario, y ya pasaba por `{@html}` tal cual: esto no añade superficie.
+	 */
+	function renderInlineMarkdown(text: string): string {
+		return text
+			.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+			.replace(/`([^`]+)`/g, '<code>$1</code>');
+	}
+
 	// Mapeo dinámico desde el diccionario de traducciones
 	const releaseVersions = [
+		'v1_11_0',
 		'v1_10_0',
 		'v1_9_0',
 		'v1_8_1',
@@ -31,6 +47,7 @@
 	] as const;
 
 	const badgeColors: Record<string, string> = {
+		v1_11_0: '#10b981',
 		v1_10_0: '#f59e0b',
 		v1_9_0: '#a855f7',
 		v1_8_1: '#10b981',
@@ -102,7 +119,7 @@
 							<ul class="changes-list">
 								{#each release.changes as change}
 									<li>
-										{@html change}
+										{@html renderInlineMarkdown(change)}
 									</li>
 								{/each}
 							</ul>
@@ -307,6 +324,20 @@
 		font-size: 0.8rem;
 		color: rgba(255, 255, 255, 0.7);
 		line-height: 1.4;
+	}
+
+	.changes-list li :global(strong) {
+		font-weight: 700;
+		color: rgba(255, 255, 255, 0.95);
+	}
+
+	.changes-list li :global(code) {
+		font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+		font-size: 0.92em;
+		padding: 0.05rem 0.3rem;
+		border-radius: 5px;
+		background: rgba(255, 255, 255, 0.08);
+		color: rgba(255, 255, 255, 0.9);
 	}
 
 	.changelog-footer {

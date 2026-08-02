@@ -5,6 +5,8 @@
   import HeroSummary from "$lib/components/HeroSummary.svelte";
   import DonutChart from "$lib/components/DonutChart.svelte";
   import HistoryChart from "$lib/components/HistoryChart.svelte";
+  import PendingEditsPanel from "$lib/components/PendingEditsPanel.svelte";
+  import TimingCost from "$lib/components/TimingCost.svelte";
   import RebalancePanel from "$lib/components/RebalancePanel.svelte";
   import Projections from "$lib/components/Projections.svelte";
   import CrisisSimulator from "$lib/components/CrisisSimulator.svelte";
@@ -321,7 +323,9 @@
         <div class="section-header">
           <h3 class="section-title">{$LL.db.chart_historic_title()}</h3>
         </div>
+        <PendingEditsPanel />
         <HistoryChart />
+        <TimingCost />
       </section>
 
       <!-- Charts Row (Desktop: Horizontal, Mobile: Swipe Carousel) -->

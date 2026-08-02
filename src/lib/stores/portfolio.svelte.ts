@@ -1,9 +1,22 @@
 import { get } from 'svelte/store';
 import { LL } from '$lib/i18n/i18n-svelte';
-import { DEFAULT_CORE_ASSETS, DEFAULT_SATELLITE_ASSETS, DEFAULT_STOCK_ASSETS, STORAGE_KEY_HOLDINGS, STORAGE_KEY_CONTRIBUTION, STORAGE_KEY_ASSETS, STORAGE_KEY_PRICES } from '$lib/constants';
+import { DEFAULT_CORE_ASSETS, DEFAULT_SATELLITE_ASSETS, DEFAULT_STOCK_ASSETS, STORAGE_KEY_HOLDINGS, STORAGE_KEY_CONTRIBUTION, STORAGE_KEY_ASSETS, STORAGE_KEY_PRICES, STORAGE_KEY_EDITS } from '$lib/constants';
 import type { Asset, AssetCategory, HoldingData, HoldingsMap, PortfolioPosition, PortfolioState, PriceData, RebalanceResult, Transaction } from '$lib/types';
 import { calculatePortfolioState, calculateRebalance } from '$lib/rebalance';
+import type { EditReason, HoldingEdit, PerformanceSeries, PositionTimeline } from '$lib/history/types';
+import {
+	alignPriceSeries,
+	buildPerformanceSeries,
+	buildTimelineFromEdits,
+	buildTimelineFromLedger,
+	DAY_MS,
+	mergeHoldingEdits,
+	overlaySnapshots,
+	reconstructDailySeries,
+	startOfUTCDay
+} from '$lib/history';
 import { storageProvider } from '$lib/db';
+import type { HistoryPoint } from '$lib/db/types';
 import { formatDate, resolveAssetIcon } from '$lib/utils';
 import { ui } from '$lib/stores/ui.svelte';
 import { goto } from '$app/navigation';
@@ -18,6 +31,7 @@ interface PortfolioBackup {
 	stockAssets: Asset[];
 	contribution: number;
 	transactions: Transaction[];
+	holdingEdits: HoldingEdit[];
 }
 
 export class PortfolioStore {
@@ -32,7 +46,13 @@ export class PortfolioStore {
 	user = $state<User | null>(null);
 	isPrivate = $state(false);
 	isInitialized = $state(false);
-	history = $state<{ date: string; value: number }[]>([]);
+	history = $state<HistoryPoint[]>([]);
+	/**
+	 * Log de cambios manuales en las participaciones. Es el libro mayor implícito
+	 * del modo manual: sin él, editar 500 a 200 no se distingue de una venta y el
+	 * gráfico de rentabilidad se inventa un desplome.
+	 */
+	holdingEdits = $state<HoldingEdit[]>([]);
 	authLoading = $state(false);
 	authReady = $state(false);
 	isDemo = $state(false);
@@ -163,33 +183,41 @@ export class PortfolioStore {
 		return 1;
 	}
 
-	convertedPrices: Record<string, PriceData> = $derived.by(() => {
+	/**
+	 * Precios **en la divisa del activo** más el multiplicador a divisa base.
+	 *
+	 * Deliberadamente no convierte `price`. El contrato de `calculatePortfolioState`
+	 * es «precio crudo × fxRate», el mismo que usa para el coste
+	 * (`avgCost × fxRate`, y `avgCost` está guardado en divisa del activo). Cuando
+	 * esto devolvía el precio ya convertido *y además* el multiplicador, la función
+	 * aplicaba el cambio dos veces: una posición en dólares aparecía un 7,4 % por
+	 * debajo de su valor y una en libras un 17,6 % por encima. El coste salía bien,
+	 * así que el error se concentraba entero en el beneficio (−32,5 % en el caso de
+	 * MSFT de la demo).
+	 *
+	 * Si alguna vez hace falta el precio ya convertido, multiplícalo por `fxRate`
+	 * en el punto de uso; no lo conviertas aquí.
+	 */
+	pricesWithFx: Record<string, PriceData> = $derived.by(() => {
 		const res: Record<string, PriceData> = {};
 		const base = ui.baseCurrency;
 		for (const [ticker, data] of Object.entries(this.prices)) {
-			let price = data.price;
 			const fromCurrency = data.currency || 'EUR';
 			let fxRate = 1;
 			if (fromCurrency !== base) {
 				const fromRateToEur = this.getExchangeRateToEur(fromCurrency);
-				const priceInEur = price / fromRateToEur;
-				if (base === 'EUR') {
-					price = priceInEur;
-					fxRate = 1 / fromRateToEur;
-				} else {
-					const baseRateToEur = this.getExchangeRateToEur(base);
-					price = priceInEur * baseRateToEur;
-					fxRate = baseRateToEur / fromRateToEur;
-				}
+				fxRate = base === 'EUR'
+					? 1 / fromRateToEur
+					: this.getExchangeRateToEur(base) / fromRateToEur;
 			}
-			res[ticker] = { ...data, price, fxRate };
+			res[ticker] = { ...data, fxRate };
 		}
 		return res;
 	});
 
-	portfolioState: PortfolioState = $derived(calculatePortfolioState(this.coreAssets, this.effectiveHoldings, this.convertedPrices));
-	satelliteState: PortfolioState = $derived(calculatePortfolioState(this.satelliteAssets, this.effectiveHoldings, this.convertedPrices));
-	stockState: PortfolioState = $derived(calculatePortfolioState(this.stockAssets, this.effectiveHoldings, this.convertedPrices));
+	portfolioState: PortfolioState = $derived(calculatePortfolioState(this.coreAssets, this.effectiveHoldings, this.pricesWithFx));
+	satelliteState: PortfolioState = $derived(calculatePortfolioState(this.satelliteAssets, this.effectiveHoldings, this.pricesWithFx));
+	stockState: PortfolioState = $derived(calculatePortfolioState(this.stockAssets, this.effectiveHoldings, this.pricesWithFx));
 	globalCapital = $derived(this.portfolioState.totalCapital + this.satelliteState.totalCapital + this.stockState.totalCapital);
 	globalProfit = $derived(this.portfolioState.totalProfit + this.satelliteState.totalProfit + this.stockState.totalProfit);
 	globalInvested = $derived(this.portfolioState.totalInvested + this.satelliteState.totalInvested + this.stockState.totalInvested);
@@ -201,53 +229,117 @@ export class PortfolioStore {
 
 	sparklineVersion = $state(0); // Incrementa solo cuando cambian los sparklines de la API
 
-	reconstructedHistory = $derived.by(() => {
-		// Dependencia explícita para forzar recalculo solo cuando cambian los sparklines
-		this.sparklineVersion; 
-		
-		const days = 30;
-		const historyPoints: { date: string; total: number; core: number; stocks: number; satellite: number; }[] = [];
-		for (let i = 0; i < days; i++) {
-			const d = new Date();
-			d.setDate(d.getDate() - (days - 1 - i));
-			historyPoints.push({ date: formatDate(d), total: 0, core: 0, stocks: 0, satellite: 0 });
+	/** Días que cubre la reconstrucción, limitado por lo que da el sparkline de Yahoo. */
+	static readonly HISTORY_DAYS = 30;
+
+	/** A qué categoría pertenece cada ticker, sin depender de `asset.category`. */
+	private categoryByTicker = $derived.by(() => {
+		const map: Record<string, AssetCategory> = {};
+		for (const a of this.coreAssets) map[a.ticker] = 'core';
+		for (const a of this.satelliteAssets) map[a.ticker] = 'satellite';
+		for (const a of this.stockAssets) map[a.ticker] = 'stocks';
+		return map;
+	});
+
+	private allPositions: PortfolioPosition[] = $derived([
+		...this.portfolioState.positions,
+		...this.satelliteState.positions,
+		...this.stockState.positions
+	]);
+
+	/**
+	 * Valor actual en divisa base de una participación de cada activo.
+	 *
+	 * Se deriva del valor que la app ya muestra (`totalValue / holdings`) en lugar
+	 * de recalcular la conversión de divisa. Así el último punto del gráfico
+	 * coincide por construcción con el patrimonio de cabecera y las dos cifras no
+	 * pueden contradecirse.
+	 */
+	perShareBase: Record<string, number> = $derived.by(() => {
+		const map: Record<string, number> = {};
+		for (const pos of this.allPositions) {
+			map[pos.asset.ticker] =
+				pos.holdings > 0
+					? pos.totalValue / pos.holdings
+					: pos.unitPrice * (this.pricesWithFx[pos.asset.ticker]?.fxRate ?? 1);
+		}
+		return map;
+	});
+
+	/**
+	 * Una línea temporal por activo, con los tramos en los que las participaciones
+	 * fueron constantes.
+	 *
+	 * El ledger y el log de ediciones producen la misma estructura: el resto del
+	 * cálculo no distingue de dónde vino, así que el modo manual y el modo ledger
+	 * comparten exactamente el mismo camino de código.
+	 */
+	positionTimelines: PositionTimeline[] = $derived.by(() => {
+		return this.allUserTickers.map((ticker) =>
+			this.holdings[ticker]?.useLedger
+				? buildTimelineFromLedger(ticker, this.transactions)
+				: buildTimelineFromEdits(ticker, this.effectiveHoldings[ticker]?.shares ?? 0, this.holdingEdits)
+		);
+	});
+
+	/**
+	 * Las tres series del gráfico más las dos rentabilidades.
+	 *
+	 * Reconstruye tramo a tramo en lugar de multiplicar las participaciones de hoy
+	 * por los precios del pasado: eso último reescribía los 30 días cada vez que
+	 * se editaba una posición.
+	 */
+	performanceSeries: PerformanceSeries = $derived.by(() => {
+		// Dependencia explícita para recalcular solo cuando cambian los sparklines
+		// y no en cada tick de precio.
+		this.sparklineVersion;
+
+		const days = PortfolioStore.HISTORY_DAYS;
+		const priceSeries: Record<string, number[]> = {};
+		const paddedBefore: Record<string, number> = {};
+
+		for (const pos of this.allPositions) {
+			const aligned = alignPriceSeries(this.prices[pos.asset.ticker]?.sparkline, days);
+			priceSeries[pos.asset.ticker] = aligned.series;
+			paddedBefore[pos.asset.ticker] = aligned.paddedBefore;
 		}
 
-		const processPositions = (positions: PortfolioPosition[], key: 'core' | 'stocks' | 'satellite') => {
-			positions.forEach(pos => {
-				if (pos.holdings <= 0 || pos.unitPrice <= 0) return;
-				const spark = pos.sparkline || [];
-				for (let i = 0; i < days; i++) {
-					const sparkIndex = spark.length - days + i;
-					const priceAtDay = (sparkIndex >= 0 && sparkIndex < spark.length) ? spark[sparkIndex] : pos.unitPrice;
-					const val = pos.holdings * priceAtDay;
-					historyPoints[i][key] += val;
-					historyPoints[i].total += val;
-				}
-			});
-		};
+		const reconstructed = reconstructDailySeries({
+			timelines: this.positionTimelines,
+			priceSeries,
+			perShareBase: this.perShareBase,
+			paddedBefore,
+			categoryOf: this.categoryByTicker,
+			days
+		});
 
-		processPositions(this.portfolioState.positions, 'core');
-		processPositions(this.stockState.positions, 'stocks');
-		processPositions(this.satelliteState.positions, 'satellite');
+		const points = overlaySnapshots(
+			reconstructed,
+			this.history.map((h) => ({
+				date: h.date,
+				total: h.value,
+				core: h.core,
+				satellite: h.satellite,
+				stocks: h.stocks
+			}))
+		);
 
-		// Si tenemos historia real que cubra más tiempo, la usamos
-		if (this.history.length >= days) {
-			return this.history.map(h => ({ date: h.date, total: h.value, core: h.value, stocks: 0, satellite: 0 }));
+		return buildPerformanceSeries(points, this.globalInvested);
+	});
+
+	/** Cambios registrados que el usuario todavía no ha clasificado. */
+	unclassifiedEdits: HoldingEdit[] = $derived(
+		this.holdingEdits.filter((e) => e.reason === 'unclassified')
+	);
+
+	/** El cambio pendiente más reciente de cada activo, para el aviso de la tarjeta. */
+	pendingEditByTicker: Record<string, HoldingEdit> = $derived.by(() => {
+		const map: Record<string, HoldingEdit> = {};
+		for (const edit of this.unclassifiedEdits) {
+			const current = map[edit.ticker];
+			if (!current || edit.createdAt > current.createdAt) map[edit.ticker] = edit;
 		}
-
-		// Si tenemos historia real corta, sobreescribimos los puntos correspondientes para mayor precisión
-		if (this.history.length > 0) {
-			this.history.forEach(h => {
-				const idx = historyPoints.findIndex(p => p.date === h.date);
-				if (idx >= 0) {
-					historyPoints[idx].total = h.value;
-					historyPoints[idx].core = h.value;
-				}
-			});
-		}
-
-		return historyPoints;
+		return map;
 	});
 
 
@@ -259,7 +351,7 @@ export class PortfolioStore {
 		return '#6366f1';
 	});
 
-	rebalanceResult: RebalanceResult | null = $derived(this.contribution > 0 && Object.keys(this.prices).length > 0 ? calculateRebalance(this.coreAssets, this.effectiveHoldings, this.convertedPrices, this.contribution) : null);
+	rebalanceResult: RebalanceResult | null = $derived(this.contribution > 0 && Object.keys(this.prices).length > 0 ? calculateRebalance(this.coreAssets, this.effectiveHoldings, this.pricesWithFx, this.contribution) : null);
 	hasAnyHoldings = $derived(Object.values(this.effectiveHoldings).some((h) => h.shares > 0));
 
 	get btcPrice() { return this.prices['BTC-EUR']?.price || 0; }
@@ -449,11 +541,23 @@ export class PortfolioStore {
 		if (!this.user) return;
 		try {
 			// Paralelizamos la carga de todos los datos del usuario
-			const [userData, transactions, history] = await Promise.all([
+			const [userData, transactions, history, remoteEdits] = await Promise.all([
 				storageProvider.loadUserData(this.user.uid),
 				storageProvider.loadTransactions ? storageProvider.loadTransactions(this.user.uid) : Promise.resolve([]),
-				storageProvider.loadHistory ? storageProvider.loadHistory(this.user.uid) : Promise.resolve([])
+				storageProvider.loadHistory ? storageProvider.loadHistory(this.user.uid) : Promise.resolve([]),
+				storageProvider.loadHoldingEdits ? storageProvider.loadHoldingEdits(this.user.uid) : Promise.resolve([])
 			]);
+
+			// El log de ediciones se une por id en lugar de resolverse por
+			// last-write-wins: quedarse con la versión perdedora convertiría el
+			// cambio de otro dispositivo en un escalón falso del gráfico.
+			if (remoteEdits.length > 0 || this.holdingEdits.length > 0) {
+				this.holdingEdits = mergeHoldingEdits(
+					$state.snapshot(this.holdingEdits) as HoldingEdit[],
+					remoteEdits
+				);
+				this.persistHoldingEdits();
+			}
 
 			let shouldLoadFromCloud = true;
 
@@ -552,11 +656,30 @@ export class PortfolioStore {
 		if (!this.user || this.globalCapital === 0) return;
 		if (this.history.length === 0) await this.loadHistory();
 		const today = formatDate();
-		const currentPoint = { date: today, value: this.globalCapital };
+
+		// El snapshot guarda el desglose por categoría y el flujo del día, no solo
+		// el total: sin el flujo no hay forma de calcular la rentabilidad a
+		// posteriori, y sin el desglose las líneas por categoría de días antiguos
+		// tendrían que inventarse.
+		const latest = this.performanceSeries.points[this.performanceSeries.points.length - 1];
+		const currentPoint: HistoryPoint = {
+			date: today,
+			value: this.globalCapital,
+			core: this.portfolioState.totalCapital,
+			satellite: this.satelliteState.totalCapital,
+			stocks: this.stockState.totalCapital,
+			netFlow: latest?.date === today ? latest.netFlow : 0
+		};
+
 		let newHistory = [...$state.snapshot(this.history)];
 		const index = newHistory.findIndex(p => p.date === today);
 		if (index >= 0) {
-			if (Math.abs(newHistory[index].value - currentPoint.value) < 0.01) return;
+			const existing = newHistory[index];
+			const sameValue = Math.abs(existing.value - currentPoint.value) < 0.01;
+			// Los puntos que guardaron versiones anteriores no traen desglose: aunque
+			// el total no haya cambiado, hay que reescribirlos para completarlos.
+			const alreadyDetailed = existing.core !== undefined && existing.netFlow !== undefined;
+			if (sameValue && alreadyDetailed) return;
 			newHistory[index] = currentPoint;
 		} else newHistory.push(currentPoint);
 		newHistory.sort((a, b) => a.date.localeCompare(b.date));
@@ -583,6 +706,7 @@ export class PortfolioStore {
 				stockAssets: this.stockAssets
 			}));
 			localStorage.setItem('corebalance_transactions', JSON.stringify(this.transactions));
+			localStorage.setItem(STORAGE_KEY_EDITS, JSON.stringify(this.holdingEdits));
 			localStorage.setItem(STORAGE_KEY_PRICES, JSON.stringify(this.prices));
 		} catch (e) { console.warn('LocalStorage sync failed:', e); }
 	}
@@ -634,6 +758,8 @@ export class PortfolioStore {
 			} else this.holdings = {};
 			const savedTransactions = localStorage.getItem('corebalance_transactions');
 			if (savedTransactions) this.transactions = JSON.parse(savedTransactions) || [];
+			const savedEdits = localStorage.getItem(STORAGE_KEY_EDITS);
+			if (savedEdits) this.holdingEdits = JSON.parse(savedEdits) || [];
 			const savedContribution = localStorage.getItem(STORAGE_KEY_CONTRIBUTION);
 			if (savedContribution) this.contribution = parseFloat(savedContribution) || 0;
 			this.isPrivate = localStorage.getItem('corebalance_privacy') === 'true';
@@ -730,6 +856,101 @@ export class PortfolioStore {
 	removeTransaction(id: string) { this.transactions = this.transactions.filter(t => t.id !== id); this.saveToStorage(); }
 	updateTransaction(id: string, updates: Partial<Transaction>) { this.transactions = this.transactions.map(t => t.id === id ? { ...t, ...updates } : t); this.saveToStorage(); }
 	toggleLedger(ticker: string, enabled: boolean) { this.updateHolding(ticker, { useLedger: enabled }); }
+
+	/**
+	 * Valor base de una participación en una fecha pasada, vía el ratio del
+	 * sparkline. Permite valorar correctamente un flujo que el usuario retrofecha
+	 * en lugar de aplicarle el precio de hoy.
+	 */
+	private priceBaseAt(ticker: string, date: number): number {
+		const base = this.perShareBase[ticker] ?? 0;
+		if (!(base > 0)) return 0;
+
+		const days = PortfolioStore.HISTORY_DAYS;
+		const { series } = alignPriceSeries(this.prices[ticker]?.sparkline, days);
+		const todayPrice = series[days - 1];
+		const offset = Math.round((startOfUTCDay(new Date()) - startOfUTCDay(new Date(date))) / DAY_MS);
+		const index = days - 1 - offset;
+		const dayPrice = index >= 0 && index < days ? series[index] : 0;
+
+		if (!(todayPrice > 0) || !(dayPrice > 0)) return base;
+		return base * (dayPrice / todayPrice);
+	}
+
+	/**
+	 * Registra un cambio de participaciones para que el gráfico pueda explicarlo.
+	 *
+	 * Debe llamarse al salir del campo, nunca en cada tecla: teclear "200" sobre
+	 * "500" pasa por los estados 2 y 20, y anotarlos generaría flujos que no
+	 * existieron.
+	 *
+	 * El cambio nace `unclassified`, que la reconstrucción trata como corrección.
+	 * Es un sesgo deliberado: reescribir el pasado en silencio molesta menos que
+	 * inventar una pérdida, y el usuario puede clasificarlo después.
+	 */
+	commitHoldingEdit(ticker: string, sharesBefore: number, sharesAfter: number, date?: number): HoldingEdit | null {
+		if (this.isDemo) return null;
+		// En modo ledger el cambio ya queda registrado como transacción.
+		if (this.holdings[ticker]?.useLedger) return null;
+
+		const before = Math.round(sharesBefore * 1000) / 1000;
+		const after = Math.round(sharesAfter * 1000) / 1000;
+		if (Math.abs(after - before) < 0.0001) return null;
+
+		// Durante el alta inicial no hay pasado que explicar, así que no se pregunta.
+		if (before === 0 && this.history.length === 0 && this.holdingEdits.length === 0) return null;
+
+		const when = date ?? startOfUTCDay(new Date());
+		const edit: HoldingEdit = {
+			id: `${ticker}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+			ticker,
+			date: when,
+			sharesBefore: before,
+			sharesAfter: after,
+			reason: 'unclassified',
+			priceBase: this.priceBaseAt(ticker, when),
+			origin: 'manual',
+			createdAt: Date.now()
+		};
+
+		this.holdingEdits = [...this.holdingEdits, edit];
+		this.persistHoldingEdits();
+		return edit;
+	}
+
+	/** Clasifica un cambio pendiente, revalorando el flujo si cambia la fecha. */
+	classifyEdit(id: string, reason: EditReason, options?: { date?: number }) {
+		this.holdingEdits = this.holdingEdits.map((edit) => {
+			if (edit.id !== id) return edit;
+			const date = options?.date ?? edit.date;
+			return { ...edit, reason, date, priceBase: this.priceBaseAt(edit.ticker, date) };
+		});
+		this.persistHoldingEdits();
+	}
+
+	/** Clasifica de golpe todos los cambios pendientes de un activo, o de todos. */
+	classifyAllPending(reason: EditReason, ticker?: string) {
+		this.holdingEdits = this.holdingEdits.map((edit) =>
+			edit.reason === 'unclassified' && (!ticker || edit.ticker === ticker)
+				? { ...edit, reason }
+				: edit
+		);
+		this.persistHoldingEdits();
+	}
+
+	private persistHoldingEdits() {
+		if (this.isDemo) return;
+		const snapshot = $state.snapshot(this.holdingEdits) as HoldingEdit[];
+
+		if (typeof localStorage !== 'undefined') {
+			try { localStorage.setItem(STORAGE_KEY_EDITS, JSON.stringify(snapshot)); } catch (_) {}
+		}
+		if (this.user && storageProvider.saveHoldingEdits) {
+			storageProvider
+				.saveHoldingEdits(this.user.uid, snapshot)
+				.catch((e) => console.error('Holding edits save error:', e));
+		}
+	}
 	updateContribution(value: number) { this.contribution = value; this.saveToStorage(); }
 	togglePrivacy() { this.isPrivate = !this.isPrivate; this.saveToStorage(); }
 
@@ -833,7 +1054,8 @@ export class PortfolioStore {
 			satelliteAssets: $state.snapshot(this.satelliteAssets),
 			stockAssets: $state.snapshot(this.stockAssets),
 			contribution: this.contribution,
-			transactions: $state.snapshot(this.transactions)
+			transactions: $state.snapshot(this.transactions),
+			holdingEdits: $state.snapshot(this.holdingEdits) as HoldingEdit[]
 		};
 
 		this.isDemo = true;
@@ -872,6 +1094,7 @@ export class PortfolioStore {
 
 		this.contribution = 1500;
 		this.history = [];
+		this.holdingEdits = [];
 		this.prices = {
 			'IWDA.AS': { name: 'iShares Core MSCI World', price: 88.45, currency: 'EUR', change: 0.85 },
 			'ZPRV.DE': { name: 'SPDR MSCI USA Small Cap Value', price: 54.12, currency: 'EUR', change: -0.42 },
@@ -897,6 +1120,7 @@ export class PortfolioStore {
 			this.stockAssets = this._backup.stockAssets;
 			this.contribution = this._backup.contribution;
 			this.transactions = this._backup.transactions;
+			this.holdingEdits = this._backup.holdingEdits;
 		}
 		this.isDemo = false;
 		this.loadFromStorage();

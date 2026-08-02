@@ -3,6 +3,7 @@
 	import type { PortfolioPosition, HoldingData } from '$lib/types';
 	import { formatCurrency, formatPrice, formatPercent, isMarketOpen } from '$lib/utils';
 	import LedgerModal from './LedgerModal.svelte';
+	import EditReasonPrompt from './EditReasonPrompt.svelte';
 
 	interface Props {
 		position: PortfolioPosition;
@@ -19,6 +20,10 @@
 	let showLedger = $state(false);
 
 	const useLedger = $derived(portfolio.holdings[position.asset.ticker]?.useLedger ?? false);
+
+	/** Participaciones al entrar en el campo, para calcular el delta al salir. */
+	let sharesAtFocus: number | null = null;
+	const pendingEdit = $derived(portfolio.pendingEditByTicker[position.asset.ticker]);
 
 	// Filtro de rendimiento seleccionado
 	let perfFilter = $state<'YTD' | 'MTD' | '1M'>('YTD');
@@ -60,6 +65,19 @@
 		const target = e.target as HTMLInputElement;
 		editHoldingsValue = target.value;
 		isEditingHoldings = true;
+		sharesAtFocus = position.holdings;
+	}
+
+	/**
+	 * El cambio se registra al salir del campo, nunca en cada tecla: teclear "200"
+	 * sobre "500" pasa por los estados 2 y 20, y anotarlos generaría ventas que
+	 * nunca ocurrieron.
+	 */
+	function handleHoldingsBlur() {
+		isEditingHoldings = false;
+		if (useLedger || sharesAtFocus === null) return;
+		portfolio.commitHoldingEdit(position.asset.ticker, sharesAtFocus, position.holdings);
+		sharesAtFocus = null;
 	}
 
 	function handleAvgCostFocus(e: Event) {
@@ -100,7 +118,7 @@
 				type="number"
 				value={isEditingHoldings ? editHoldingsValue : displayHoldings}
 				oninput={handleHoldingsInput}
-				onblur={() => (isEditingHoldings = false)}
+				onblur={handleHoldingsBlur}
 				onfocus={handleHoldingsFocus}
 				onwheel={(e) => e.preventDefault()}
 				min="0" step="0.001" placeholder="0" inputmode="decimal"
@@ -191,9 +209,19 @@
 			<span class="w-target">/ {position.asset.targetWeight * 100 % 1 === 0 ? formatPercent(position.asset.targetWeight, 0) : formatPercent(position.asset.targetWeight, 1)}</span>
 		{/if}
 	</div>
+
+	{#if pendingEdit}
+		<div class="cell-prompt">
+			<EditReasonPrompt edit={pendingEdit} compact />
+		</div>
+	{/if}
 </div>
 
 <style>
+	.cell-prompt {
+		grid-column: 1 / -1;
+	}
+
 	.compact-row {
 		display: grid;
 		grid-template-columns: 2fr 1.8fr 1.2fr 1.8fr 1fr;

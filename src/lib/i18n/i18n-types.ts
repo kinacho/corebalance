@@ -2101,6 +2101,70 @@ type RootTranslation = {
 		 */
 		login_error: string
 	}
+	edits: {
+		/**
+		 * H​a​s​ ​p​a​s​a​d​o​ ​d​e​ ​{​b​e​f​o​r​e​}​ ​a​ ​{​a​f​t​e​r​}​ ​e​n​ ​{​t​i​c​k​e​r​}​.​ ​¿​Q​u​é​ ​h​a​ ​p​a​s​a​d​o​?
+		 * @param {string} after
+		 * @param {string} before
+		 * @param {string} ticker
+		 */
+		title: RequiredParams<'after' | 'before' | 'ticker'>
+		/**
+		 * H​e​ ​v​e​n​d​i​d​o​ ​{​s​h​a​r​e​s​}
+		 * @param {string} shares
+		 */
+		btn_sold: RequiredParams<'shares'>
+		/**
+		 * H​e​ ​c​o​m​p​r​a​d​o​ ​{​s​h​a​r​e​s​}
+		 * @param {string} shares
+		 */
+		btn_bought: RequiredParams<'shares'>
+		/**
+		 * C​o​r​r​e​g​í​a​ ​e​l​ ​d​a​t​o
+		 */
+		btn_correction: string
+		/**
+		 * T​r​a​s​p​a​s​o​ ​a​ ​o​t​r​a​ ​c​u​e​n​t​a
+		 */
+		btn_transfer: string
+		/**
+		 * O​t​r​a​ ​f​e​c​h​a
+		 */
+		date_toggle: string
+		/**
+		 * ¿​C​u​á​n​d​o​ ​o​c​u​r​r​i​ó​?
+		 */
+		date_label: string
+		/**
+		 * U​n​a​ ​v​e​n​t​a​ ​b​a​j​a​ ​t​u​ ​p​a​t​r​i​m​o​n​i​o​ ​p​e​r​o​ ​n​o​ ​t​u​ ​r​e​n​t​a​b​i​l​i​d​a​d​.​ ​U​n​a​ ​c​o​r​r​e​c​c​i​ó​n​ ​n​o​ ​c​a​m​b​i​a​ ​n​i​n​g​u​n​a​ ​d​e​ ​l​a​s​ ​d​o​s​.
+		 */
+		why_it_matters: string
+		/**
+		 * 1​ ​c​a​m​b​i​o​ ​s​i​n​ ​c​l​a​s​i​f​i​c​a​r
+		 */
+		pending_one: string
+		/**
+		 * {​c​o​u​n​t​}​ ​c​a​m​b​i​o​s​ ​s​i​n​ ​c​l​a​s​i​f​i​c​a​r
+		 * @param {number} count
+		 */
+		pending_many: RequiredParams<'count'>
+		/**
+		 * M​i​e​n​t​r​a​s​ ​n​o​ ​l​o​s​ ​c​l​a​s​i​f​i​q​u​e​s​ ​s​e​ ​t​r​a​t​a​n​ ​c​o​m​o​ ​c​o​r​r​e​c​c​i​o​n​e​s​,​ ​a​s​í​ ​q​u​e​ ​n​o​ ​i​n​v​e​n​t​a​n​ ​p​é​r​d​i​d​a​s​.
+		 */
+		pending_hint: string
+		/**
+		 * R​e​v​i​s​a​r
+		 */
+		pending_open: string
+		/**
+		 * C​e​r​r​a​r
+		 */
+		pending_close: string
+		/**
+		 * C​a​m​b​i​o​ ​r​e​g​i​s​t​r​a​d​o
+		 */
+		classified: string
+	}
 	db: {
 		/**
 		 * A​c​t​i​v​o​s
@@ -2163,6 +2227,92 @@ type RootTranslation = {
 		 */
 		chart_performance_pct: string
 		/**
+		 * R​e​n​t​a​b​i​l​i​d​a​d
+		 */
+		chart_label_return: string
+		/**
+		 * G​a​n​a​n​c​i​a
+		 */
+		chart_label_gain: string
+		/**
+		 * P​a​t​r​i​m​o​n​i​o​:​ ​c​u​á​n​t​o​ ​t​i​e​n​e​s
+		 */
+		chart_mode_value_title: string
+		/**
+		 * R​e​n​t​a​b​i​l​i​d​a​d​:​ ​c​ó​m​o​ ​s​e​ ​h​a​n​ ​c​o​m​p​o​r​t​a​d​o​ ​t​u​s​ ​a​c​t​i​v​o​s
+		 */
+		chart_mode_twr_title: string
+		/**
+		 * G​a​n​a​n​c​i​a​ ​s​o​b​r​e​ ​e​l​ ​c​a​p​i​t​a​l​ ​a​p​o​r​t​a​d​o
+		 */
+		chart_mode_gain_title: string
+		/**
+		 * A​p​o​r​t​a​c​i​ó​n
+		 */
+		chart_flow_in: string
+		/**
+		 * S​a​l​i​d​a
+		 */
+		chart_flow_out: string
+		/**
+		 * n​o​ ​e​s​ ​u​n​a​ ​p​é​r​d​i​d​a
+		 */
+		chart_flow_not_loss: string
+		/**
+		 * T​r​a​m​o​ ​e​s​t​i​m​a​d​o
+		 */
+		chart_estimated_short: string
+		/**
+		 * E​l​ ​t​r​a​m​o​ ​d​i​s​c​o​n​t​i​n​u​o​ ​e​s​t​á​ ​r​e​c​o​n​s​t​r​u​i​d​o​ ​a​ ​p​a​r​t​i​r​ ​d​e​l​ ​p​r​e​c​i​o​ ​d​e​l​ ​a​c​t​i​v​o​,​ ​a​s​u​m​i​e​n​d​o​ ​q​u​e​ ​y​a​ ​t​e​n​í​a​s​ ​e​s​a​s​ ​p​a​r​t​i​c​i​p​a​c​i​o​n​e​s​ ​a​n​t​e​s​ ​d​e​ ​q​u​e​ ​l​a​ ​a​p​p​ ​e​m​p​e​z​a​r​a​ ​a​ ​r​e​g​i​s​t​r​a​r​ ​c​a​m​b​i​o​s​.
+		 */
+		chart_estimated_note: string
+		/**
+		 * L​o​s​ ​d​í​a​s​ ​g​u​a​r​d​a​d​o​s​ ​s​i​n​ ​d​e​s​g​l​o​s​e​ ​p​o​r​ ​c​a​t​e​g​o​r​í​a​ ​a​p​a​r​e​c​e​n​ ​c​o​r​t​a​d​o​s​ ​e​n​ ​l​u​g​a​r​ ​d​e​ ​r​e​l​l​e​n​a​d​o​s​.
+		 */
+		chart_gaps_note: string
+		/**
+		 * A​p​o​r​t​a​r​ ​o​ ​v​e​n​d​e​r​ ​n​o​ ​m​u​e​v​e​ ​e​s​t​a​ ​l​í​n​e​a​:​ ​s​o​l​o​ ​l​a​ ​m​u​e​v​e​ ​e​l​ ​p​r​e​c​i​o​ ​d​e​ ​t​u​s​ ​a​c​t​i​v​o​s​.
+		 */
+		chart_twr_hint: string
+		/**
+		 * E​l​ ​c​o​s​t​e​ ​d​e​ ​t​u​ ​t​i​m​i​n​g
+		 */
+		timing_title: string
+		/**
+		 * T​u​s​ ​a​c​t​i​v​o​s
+		 */
+		timing_assets: string
+		/**
+		 * T​u​ ​c​a​r​t​e​r​a
+		 */
+		timing_you: string
+		/**
+		 * T​u​s​ ​a​c​t​i​v​o​s​ ​r​i​n​d​i​e​r​o​n​ ​{​a​s​s​e​t​s​}​ ​e​n​ ​e​l​ ​p​e​r​i​o​d​o​.​ ​T​u​ ​f​o​r​m​a​ ​d​e​ ​a​p​o​r​t​a​r​ ​t​e​ ​d​e​j​ó​ ​{​y​o​u​}​.​ ​E​s​a​ ​d​i​f​e​r​e​n​c​i​a​ ​d​e​ ​{​d​e​l​t​a​}​ ​e​s​ ​c​u​á​n​d​o​ ​p​u​s​i​s​t​e​ ​e​l​ ​d​i​n​e​r​o​,​ ​n​o​ ​d​ó​n​d​e​.
+		 * @param {string} assets
+		 * @param {string} delta
+		 * @param {string} you
+		 */
+		timing_cost: RequiredParams<'assets' | 'delta' | 'you'>
+		/**
+		 * T​u​s​ ​a​c​t​i​v​o​s​ ​r​i​n​d​i​e​r​o​n​ ​{​a​s​s​e​t​s​}​ ​e​n​ ​e​l​ ​p​e​r​i​o​d​o​ ​y​ ​t​u​ ​f​o​r​m​a​ ​d​e​ ​a​p​o​r​t​a​r​ ​t​e​ ​d​e​j​ó​ ​{​y​o​u​}​.​ ​H​a​s​ ​g​a​n​a​d​o​ ​{​d​e​l​t​a​}​ ​p​o​r​ ​a​c​e​r​t​a​r​ ​c​o​n​ ​e​l​ ​m​o​m​e​n​t​o​ ​d​e​ ​l​a​s​ ​a​p​o​r​t​a​c​i​o​n​e​s​.
+		 * @param {string} assets
+		 * @param {string} delta
+		 * @param {string} you
+		 */
+		timing_gain: RequiredParams<'assets' | 'delta' | 'you'>
+		/**
+		 * T​u​s​ ​a​p​o​r​t​a​c​i​o​n​e​s​ ​n​o​ ​h​a​n​ ​c​a​m​b​i​a​d​o​ ​t​u​ ​r​e​n​t​a​b​i​l​i​d​a​d​ ​d​e​ ​f​o​r​m​a​ ​a​p​r​e​c​i​a​b​l​e​ ​e​n​ ​e​s​t​e​ ​p​e​r​i​o​d​o​.
+		 */
+		timing_neutral: string
+		/**
+		 * H​a​c​e​ ​f​a​l​t​a​ ​a​l​ ​m​e​n​o​s​ ​u​n​a​ ​a​p​o​r​t​a​c​i​ó​n​ ​o​ ​u​n​a​ ​v​e​n​t​a​ ​e​n​ ​e​l​ ​p​e​r​i​o​d​o​ ​p​a​r​a​ ​p​o​d​e​r​ ​c​o​m​p​a​r​a​r​.
+		 */
+		timing_unavailable: string
+		/**
+		 * C​i​f​r​a​s​ ​d​e​l​ ​p​e​r​i​o​d​o​ ​m​o​s​t​r​a​d​o​,​ ​s​i​n​ ​a​n​u​a​l​i​z​a​r​.
+		 */
+		timing_period_note: string
+		/**
 		 * <​s​t​r​o​n​g​>​A​v​i​s​o​ ​L​e​g​a​l​:​<​/​s​t​r​o​n​g​>​ ​C​o​r​e​B​a​l​a​n​c​e​ ​e​s​ ​u​n​a​ ​h​e​r​r​a​m​i​e​n​t​a​ ​p​u​r​a​m​e​n​t​e​ ​i​n​f​o​r​m​a​t​i​v​a​ ​y​ ​e​d​u​c​a​t​i​v​a​.​ ​N​o​ ​c​o​n​s​t​i​t​u​y​e​ ​a​s​e​s​o​r​a​m​i​e​n​t​o​ ​f​i​n​a​n​c​i​e​r​o​,​ ​d​e​ ​i​n​v​e​r​s​i​ó​n​ ​n​i​ ​f​i​s​c​a​l​.​ ​L​o​s​ ​d​a​t​o​s​ ​m​o​s​t​r​a​d​o​s​ ​p​u​e​d​e​n​ ​s​u​f​r​i​r​ ​r​e​t​r​a​s​o​s​ ​o​ ​s​e​r​ ​i​n​e​x​a​c​t​o​s​.​ ​E​l​ ​d​e​s​a​r​r​o​l​l​a​d​o​r​ ​n​o​ ​s​e​ ​h​a​c​e​ ​r​e​s​p​o​n​s​a​b​l​e​ ​d​e​ ​p​o​s​i​b​l​e​s​ ​p​é​r​d​i​d​a​s​ ​f​i​n​a​n​c​i​e​r​a​s​ ​d​e​r​i​v​a​d​a​s​ ​d​e​l​ ​u​s​o​ ​d​e​ ​e​s​t​a​ ​a​p​l​i​c​a​c​i​ó​n​.​ ​I​n​v​i​e​r​t​e​ ​s​i​e​m​p​r​e​ ​b​a​j​o​ ​t​u​ ​p​r​o​p​i​a​ ​r​e​s​p​o​n​s​a​b​i​l​i​d​a​d​.
 		 */
 		legal_disclaimer: string
@@ -2171,7 +2321,7 @@ type RootTranslation = {
 		 */
 		footer_tagline: string
 		/**
-		 * v​1​.​9​.​0​ ​�​�
+		 * v​1​.​1​1​.​0​ ​�​�
 		 */
 		changelog_trigger: string
 		/**
@@ -2661,6 +2811,38 @@ type RootTranslation = {
 		 */
 		btn_understand: string
 		releases: {
+			v1_11_0: {
+				/**
+				 * 2​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
+				 */
+				date: string
+				/**
+				 * R​e​n​t​a​b​i​l​i​d​a​d​ ​h​o​n​e​s​t​a​ ​y​ ​d​i​v​i​s​a​s​ ​c​o​r​r​e​g​i​d​a​s
+				 */
+				badge: string
+				changes: {
+					/**
+					 * �​�​ ​*​*​E​l​ ​g​r​á​f​i​c​o​ ​a​h​o​r​a​ ​r​e​s​p​o​n​d​e​ ​t​r​e​s​ ​p​r​e​g​u​n​t​a​s​ ​d​i​s​t​i​n​t​a​s​:​*​*​ ​p​a​t​r​i​m​o​n​i​o​ ​(​€​)​,​ ​r​e​n​t​a​b​i​l​i​d​a​d​ ​(​%​)​ ​y​ ​g​a​n​a​n​c​i​a​ ​s​o​b​r​e​ ​l​o​ ​a​p​o​r​t​a​d​o​ ​(​€​)​.​ ​V​e​n​d​e​r​ ​b​a​j​a​ ​t​u​ ​p​a​t​r​i​m​o​n​i​o​,​ ​c​o​m​o​ ​d​e​b​e​ ​s​e​r​,​ ​p​e​r​o​ ​y​a​ ​n​o​ ​t​o​c​a​ ​l​a​ ​r​e​n​t​a​b​i​l​i​d​a​d​:​ ​a​n​t​e​s​ ​u​n​a​ ​v​e​n​t​a​ ​s​e​ ​p​i​n​t​a​b​a​ ​c​o​m​o​ ​u​n​ ​d​e​s​p​l​o​m​e​ ​d​e​ ​l​a​ ​c​a​r​t​e​r​a​.
+					 */
+					'0': string
+					/**
+					 * �​�​️​ ​*​*​C​u​a​n​d​o​ ​c​a​m​b​i​a​s​ ​l​a​s​ ​p​a​r​t​i​c​i​p​a​c​i​o​n​e​s​ ​a​ ​m​a​n​o​,​ ​l​a​ ​a​p​p​ ​t​e​ ​p​r​e​g​u​n​t​a​ ​q​u​é​ ​h​a​ ​p​a​s​a​d​o​:​*​*​ ​¿​v​e​n​d​i​s​t​e​,​ ​c​o​m​p​r​a​s​t​e​,​ ​c​o​r​r​e​g​í​a​s​ ​e​l​ ​d​a​t​o​ ​o​ ​f​u​e​ ​u​n​ ​t​r​a​s​p​a​s​o​?​ ​C​o​n​ ​e​s​a​ ​r​e​s​p​u​e​s​t​a​ ​e​l​ ​h​i​s​t​o​r​i​a​l​ ​d​e​j​a​ ​d​e​ ​r​e​e​s​c​r​i​b​i​r​s​e​ ​s​o​l​o​ ​y​ ​c​a​d​a​ ​m​o​v​i​m​i​e​n​t​o​ ​d​e​ ​d​i​n​e​r​o​ ​q​u​e​d​a​ ​s​e​p​a​r​a​d​o​ ​d​e​ ​l​o​ ​q​u​e​ ​r​e​a​l​m​e​n​t​e​ ​m​o​v​i​ó​ ​e​l​ ​m​e​r​c​a​d​o​.
+					 */
+					'1': string
+					/**
+					 * �​�​ ​*​*​N​u​e​v​a​ ​t​a​r​j​e​t​a​ ​"​e​l​ ​c​o​s​t​e​ ​d​e​ ​t​u​ ​t​i​m​i​n​g​"​:​*​*​ ​c​o​m​p​a​r​a​ ​l​o​ ​q​u​e​ ​r​i​n​d​i​e​r​o​n​ ​t​u​s​ ​a​c​t​i​v​o​s​ ​c​o​n​ ​l​o​ ​q​u​e​ ​r​i​n​d​i​ó​ ​t​u​ ​d​i​n​e​r​o​ ​y​ ​t​e​ ​d​i​c​e​ ​e​n​ ​u​n​a​ ​f​r​a​s​e​ ​c​u​á​n​t​o​ ​t​e​ ​h​a​ ​c​o​s​t​a​d​o​ ​(​o​ ​c​u​á​n​t​o​ ​h​a​s​ ​g​a​n​a​d​o​)​ ​e​l​ ​m​o​m​e​n​t​o​ ​e​n​ ​q​u​e​ ​h​i​c​i​s​t​e​ ​l​a​s​ ​a​p​o​r​t​a​c​i​o​n​e​s​.
+					 */
+					'2': string
+					/**
+					 * �​�​ ​*​*​C​o​r​r​e​g​i​d​o​ ​u​n​ ​e​r​r​o​r​ ​d​e​ ​c​o​n​v​e​r​s​i​ó​n​ ​d​e​ ​d​i​v​i​s​a​:​*​*​ ​l​a​s​ ​p​o​s​i​c​i​o​n​e​s​ ​e​n​ ​d​ó​l​a​r​e​s​ ​a​p​a​r​e​c​í​a​n​ ​u​n​ ​7​ ​%​ ​p​o​r​ ​d​e​b​a​j​o​ ​d​e​ ​s​u​ ​v​a​l​o​r​ ​y​ ​l​a​s​ ​d​e​ ​l​i​b​r​a​s​ ​u​n​ ​1​7​ ​%​ ​p​o​r​ ​e​n​c​i​m​a​,​ ​c​o​n​ ​e​l​ ​b​e​n​e​f​i​c​i​o​ ​d​e​s​v​i​a​d​o​ ​h​a​s​t​a​ ​u​n​ ​3​2​ ​%​.​ ​L​o​s​ ​a​c​t​i​v​o​s​ ​e​n​ ​e​u​r​o​s​ ​n​u​n​c​a​ ​s​e​ ​v​i​e​r​o​n​ ​a​f​e​c​t​a​d​o​s​.​ ​E​s​t​o​ ​t​a​m​b​i​é​n​ ​h​a​c​e​ ​q​u​e​ ​e​l​ ​r​e​p​a​r​t​o​ ​d​e​ ​l​a​s​ ​a​p​o​r​t​a​c​i​o​n​e​s​ ​s​e​a​ ​c​o​r​r​e​c​t​o​ ​e​n​ ​c​a​r​t​e​r​a​s​ ​m​u​l​t​i​-​d​i​v​i​s​a​.
+					 */
+					'3': string
+					/**
+					 * �​�​ ​*​*​L​o​s​ ​t​r​a​m​o​s​ ​r​e​c​o​n​s​t​r​u​i​d​o​s​ ​s​e​ ​m​a​r​c​a​n​ ​e​n​ ​d​i​s​c​o​n​t​i​n​u​o​:​*​*​ ​e​l​ ​g​r​á​f​i​c​o​ ​d​i​s​t​i​n​g​u​e​ ​l​o​ ​q​u​e​ ​l​a​ ​a​p​p​ ​h​a​ ​m​e​d​i​d​o​ ​d​e​ ​l​o​ ​q​u​e​ ​h​a​ ​e​s​t​i​m​a​d​o​ ​a​ ​p​a​r​t​i​r​ ​d​e​l​ ​p​r​e​c​i​o​ ​d​e​l​ ​a​c​t​i​v​o​,​ ​e​n​ ​l​u​g​a​r​ ​d​e​ ​p​r​e​s​e​n​t​a​r​l​o​ ​t​o​d​o​ ​c​o​m​o​ ​s​i​ ​f​u​e​r​a​ ​l​o​ ​m​i​s​m​o​.
+					 */
+					'4': string
+				}
+			}
 			v1_10_0: {
 				/**
 				 * 1​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
@@ -5200,6 +5382,64 @@ export type TranslationFunctions = {
 		 */
 		login_error: () => LocalizedString
 	}
+	edits: {
+		/**
+		 * Has pasado de {before} a {after} en {ticker}. ¿Qué ha pasado?
+		 */
+		title: (arg: { after: string, before: string, ticker: string }) => LocalizedString
+		/**
+		 * He vendido {shares}
+		 */
+		btn_sold: (arg: { shares: string }) => LocalizedString
+		/**
+		 * He comprado {shares}
+		 */
+		btn_bought: (arg: { shares: string }) => LocalizedString
+		/**
+		 * Corregía el dato
+		 */
+		btn_correction: () => LocalizedString
+		/**
+		 * Traspaso a otra cuenta
+		 */
+		btn_transfer: () => LocalizedString
+		/**
+		 * Otra fecha
+		 */
+		date_toggle: () => LocalizedString
+		/**
+		 * ¿Cuándo ocurrió?
+		 */
+		date_label: () => LocalizedString
+		/**
+		 * Una venta baja tu patrimonio pero no tu rentabilidad. Una corrección no cambia ninguna de las dos.
+		 */
+		why_it_matters: () => LocalizedString
+		/**
+		 * 1 cambio sin clasificar
+		 */
+		pending_one: () => LocalizedString
+		/**
+		 * {count} cambios sin clasificar
+		 */
+		pending_many: (arg: { count: number }) => LocalizedString
+		/**
+		 * Mientras no los clasifiques se tratan como correcciones, así que no inventan pérdidas.
+		 */
+		pending_hint: () => LocalizedString
+		/**
+		 * Revisar
+		 */
+		pending_open: () => LocalizedString
+		/**
+		 * Cerrar
+		 */
+		pending_close: () => LocalizedString
+		/**
+		 * Cambio registrado
+		 */
+		classified: () => LocalizedString
+	}
 	db: {
 		/**
 		 * Activos
@@ -5262,6 +5502,86 @@ export type TranslationFunctions = {
 		 */
 		chart_performance_pct: () => LocalizedString
 		/**
+		 * Rentabilidad
+		 */
+		chart_label_return: () => LocalizedString
+		/**
+		 * Ganancia
+		 */
+		chart_label_gain: () => LocalizedString
+		/**
+		 * Patrimonio: cuánto tienes
+		 */
+		chart_mode_value_title: () => LocalizedString
+		/**
+		 * Rentabilidad: cómo se han comportado tus activos
+		 */
+		chart_mode_twr_title: () => LocalizedString
+		/**
+		 * Ganancia sobre el capital aportado
+		 */
+		chart_mode_gain_title: () => LocalizedString
+		/**
+		 * Aportación
+		 */
+		chart_flow_in: () => LocalizedString
+		/**
+		 * Salida
+		 */
+		chart_flow_out: () => LocalizedString
+		/**
+		 * no es una pérdida
+		 */
+		chart_flow_not_loss: () => LocalizedString
+		/**
+		 * Tramo estimado
+		 */
+		chart_estimated_short: () => LocalizedString
+		/**
+		 * El tramo discontinuo está reconstruido a partir del precio del activo, asumiendo que ya tenías esas participaciones antes de que la app empezara a registrar cambios.
+		 */
+		chart_estimated_note: () => LocalizedString
+		/**
+		 * Los días guardados sin desglose por categoría aparecen cortados en lugar de rellenados.
+		 */
+		chart_gaps_note: () => LocalizedString
+		/**
+		 * Aportar o vender no mueve esta línea: solo la mueve el precio de tus activos.
+		 */
+		chart_twr_hint: () => LocalizedString
+		/**
+		 * El coste de tu timing
+		 */
+		timing_title: () => LocalizedString
+		/**
+		 * Tus activos
+		 */
+		timing_assets: () => LocalizedString
+		/**
+		 * Tu cartera
+		 */
+		timing_you: () => LocalizedString
+		/**
+		 * Tus activos rindieron {assets} en el periodo. Tu forma de aportar te dejó {you}. Esa diferencia de {delta} es cuándo pusiste el dinero, no dónde.
+		 */
+		timing_cost: (arg: { assets: string, delta: string, you: string }) => LocalizedString
+		/**
+		 * Tus activos rindieron {assets} en el periodo y tu forma de aportar te dejó {you}. Has ganado {delta} por acertar con el momento de las aportaciones.
+		 */
+		timing_gain: (arg: { assets: string, delta: string, you: string }) => LocalizedString
+		/**
+		 * Tus aportaciones no han cambiado tu rentabilidad de forma apreciable en este periodo.
+		 */
+		timing_neutral: () => LocalizedString
+		/**
+		 * Hace falta al menos una aportación o una venta en el periodo para poder comparar.
+		 */
+		timing_unavailable: () => LocalizedString
+		/**
+		 * Cifras del periodo mostrado, sin anualizar.
+		 */
+		timing_period_note: () => LocalizedString
+		/**
 		 * <strong>Aviso Legal:</strong> CoreBalance es una herramienta puramente informativa y educativa. No constituye asesoramiento financiero, de inversión ni fiscal. Los datos mostrados pueden sufrir retrasos o ser inexactos. El desarrollador no se hace responsable de posibles pérdidas financieras derivadas del uso de esta aplicación. Invierte siempre bajo tu propia responsabilidad.
 		 */
 		legal_disclaimer: () => LocalizedString
@@ -5270,7 +5590,7 @@ export type TranslationFunctions = {
 		 */
 		footer_tagline: () => LocalizedString
 		/**
-		 * v1.9.0 🚀
+		 * v1.11.0 🚀
 		 */
 		changelog_trigger: () => LocalizedString
 		/**
@@ -5752,6 +6072,38 @@ export type TranslationFunctions = {
 		 */
 		btn_understand: () => LocalizedString
 		releases: {
+			v1_11_0: {
+				/**
+				 * 2 de Agosto, 2026
+				 */
+				date: () => LocalizedString
+				/**
+				 * Rentabilidad honesta y divisas corregidas
+				 */
+				badge: () => LocalizedString
+				changes: {
+					/**
+					 * 📈 **El gráfico ahora responde tres preguntas distintas:** patrimonio (€), rentabilidad (%) y ganancia sobre lo aportado (€). Vender baja tu patrimonio, como debe ser, pero ya no toca la rentabilidad: antes una venta se pintaba como un desplome de la cartera.
+					 */
+					'0': () => LocalizedString
+					/**
+					 * 🏷️ **Cuando cambias las participaciones a mano, la app te pregunta qué ha pasado:** ¿vendiste, compraste, corregías el dato o fue un traspaso? Con esa respuesta el historial deja de reescribirse solo y cada movimiento de dinero queda separado de lo que realmente movió el mercado.
+					 */
+					'1': () => LocalizedString
+					/**
+					 * 📊 **Nueva tarjeta "el coste de tu timing":** compara lo que rindieron tus activos con lo que rindió tu dinero y te dice en una frase cuánto te ha costado (o cuánto has ganado) el momento en que hiciste las aportaciones.
+					 */
+					'2': () => LocalizedString
+					/**
+					 * 💱 **Corregido un error de conversión de divisa:** las posiciones en dólares aparecían un 7 % por debajo de su valor y las de libras un 17 % por encima, con el beneficio desviado hasta un 32 %. Los activos en euros nunca se vieron afectados. Esto también hace que el reparto de las aportaciones sea correcto en carteras multi-divisa.
+					 */
+					'3': () => LocalizedString
+					/**
+					 * 🔍 **Los tramos reconstruidos se marcan en discontinuo:** el gráfico distingue lo que la app ha medido de lo que ha estimado a partir del precio del activo, en lugar de presentarlo todo como si fuera lo mismo.
+					 */
+					'4': () => LocalizedString
+				}
+			}
 			v1_10_0: {
 				/**
 				 * 1 de Agosto, 2026

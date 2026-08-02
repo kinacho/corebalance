@@ -1,12 +1,14 @@
 import Dexie, { type Table } from 'dexie';
 import type { StorageProvider, UserData, HistoryPoint } from './types';
 import type { Transaction } from '$lib/types';
+import type { HoldingEdit } from '$lib/history/types';
 import { browser } from '$app/environment';
 
 export class CoreBalanceDB extends Dexie {
 	userData!: Table<UserData & { id: string }>;
 	history!: Table<{ id: string; points: HistoryPoint[] }>;
 	transactions!: Table<{ userId: string; items: Transaction[] }>;
+	holdingEdits!: Table<{ userId: string; items: HoldingEdit[] }>;
 
 	constructor() {
 		super('CoreBalanceDB');
@@ -16,6 +18,12 @@ export class CoreBalanceDB extends Dexie {
 		});
 		this.version(2).stores({
 			transactions: 'userId'
+		});
+		// El log de ediciones sigue el mismo patrón que `transactions`: un
+		// documento por usuario con el array completo. Es append-only y se mezcla
+		// por id en código, no por número de elementos.
+		this.version(3).stores({
+			holdingEdits: 'userId'
 		});
 	}
 }
@@ -62,6 +70,17 @@ export class LocalDBStorage implements StorageProvider {
 		return data?.items || [];
 	}
 
+	async saveHoldingEdits(userId: string, items: HoldingEdit[]): Promise<void> {
+		if (!localDB) return;
+		await localDB.holdingEdits.put({ userId, items });
+	}
+
+	async loadHoldingEdits(userId: string): Promise<HoldingEdit[]> {
+		if (!localDB) return [];
+		const data = await localDB.holdingEdits.get(userId);
+		return data?.items || [];
+	}
+
 	async saveHistory(userId: string, points: HistoryPoint[]): Promise<void> {
 		if (!localDB) return;
 		await localDB.history.put({ id: userId, points });
@@ -96,26 +115,30 @@ export class LocalDBStorage implements StorageProvider {
 		const userData = await localDB.userData.toArray();
 		const history = await localDB.history.toArray();
 		const transactions = await localDB.transactions.toArray();
-		return { userData, history, transactions };
+		const holdingEdits = await localDB.holdingEdits.toArray();
+		return { userData, history, transactions, holdingEdits };
 	}
 	async importAllData(data: any): Promise<void> {
 		if (!localDB || !data) return;
-		await localDB.transaction('rw', localDB.userData, localDB.history, localDB.transactions, async () => {
+		await localDB.transaction('rw', localDB.userData, localDB.history, localDB.transactions, localDB.holdingEdits, async () => {
 			await localDB.userData.clear();
 			await localDB.history.clear();
 			await localDB.transactions.clear();
+			await localDB.holdingEdits.clear();
 			if (data.userData?.length) await localDB.userData.bulkPut(data.userData);
 			if (data.history?.length) await localDB.history.bulkPut(data.history);
 			if (data.transactions?.length) await localDB.transactions.bulkPut(data.transactions);
+			if (data.holdingEdits?.length) await localDB.holdingEdits.bulkPut(data.holdingEdits);
 		});
 	}
 
 	async deleteAccount(): Promise<void> {
 		if (!localDB) return;
-		await localDB.transaction('rw', localDB.userData, localDB.history, localDB.transactions, async () => {
+		await localDB.transaction('rw', localDB.userData, localDB.history, localDB.transactions, localDB.holdingEdits, async () => {
 			await localDB.userData.clear();
 			await localDB.history.clear();
 			await localDB.transactions.clear();
+			await localDB.holdingEdits.clear();
 		});
 		localStorage.clear();
 	}

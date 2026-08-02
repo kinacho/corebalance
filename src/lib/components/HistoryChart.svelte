@@ -18,12 +18,24 @@
 	import { formatEUR } from '$lib/utils';
 	import { LL, locale } from '$lib/i18n/i18n-svelte';
 
+	/**
+	 * Tres modos, tres preguntas distintas, nunca en el mismo eje:
+	 *
+	 * - `value`  — ¿cuánto tengo? Vender **debe** hacerla bajar.
+	 * - `twr`    — ¿cómo se han comportado mis activos? Ni vender ni aportar la mueven.
+	 * - `gain`   — ¿cuánto he ganado sobre lo aportado?
+	 *
+	 * Mezclar la primera con la segunda es lo que convertía una venta en una
+	 * pérdida aparente del 40 %.
+	 */
+	type ViewMode = 'value' | 'twr' | 'gain';
+
 	let canvas: HTMLCanvasElement;
 	let chart: Chart;
 	let currentRange = $state(30);
-	let viewMode = $state<'value' | 'percent'>('value');
+	let viewMode = $state<ViewMode>('value');
 
-	const prefersReducedMotion = typeof window !== 'undefined' 
+	const prefersReducedMotion = typeof window !== 'undefined'
 		&& window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 	const ranges = [
@@ -32,11 +44,9 @@
 		{ label: '30D', days: 30 }
 	];
 
-	// Estado para la visibilidad de los datasets
-	// Por defecto ocultamos todo excepto 'Total'
+	// Por defecto solo la línea principal; las categorías se activan a mano.
 	let hiddenDatasets = $state<string[]>(['Principal', 'Acciones', 'Conservadora', 'Invertido']);
 
-	// Cargar preferencias guardadas
 	onMount(() => {
 		const saved = localStorage.getItem('corebalance_hidden_history_lines');
 		if (saved) {
@@ -48,7 +58,6 @@
 		}
 	});
 
-	// Guardar preferencias cuando cambian
 	$effect(() => {
 		localStorage.setItem('corebalance_hidden_history_lines', JSON.stringify(hiddenDatasets));
 	});
@@ -61,72 +70,105 @@
 		}
 	}
 
-	// Sincronizar el gráfico con los datos de la historia
-	$effect(() => {
-		const fullHistory = portfolio.reconstructedHistory;
-		const history = fullHistory.slice(-currentRange);
-		
-		if (chart && history.length > 0) {
-			const first = history[0];
-			
-			chart.data.labels = history.map((p: any, i: number) => {
-				const date = new Date(p.date);
-				const loc = $locale === 'es' ? 'es-ES' : 'en-US';
-				return date.toLocaleDateString(loc, { day: '2-digit', month: 'short' }).replace('.', '');
-			});
+	const series = $derived(portfolio.performanceSeries);
 
-			const transform = (val: number, firstVal: number) => {
-				if (viewMode === 'percent') {
-					return firstVal > 0 ? ((val - firstVal) / firstVal) * 100 : 0;
-				}
-				return val;
-			};
+	/** La ventana visible, con el índice TWR rebasado a su primer día. */
+	const view = $derived.by(() => {
+		const all = series.points;
+		const start = Math.max(0, all.length - currentRange);
+		const points = all.slice(start);
+		const rawTwr = series.twr.slice(start);
+		const twrBase = rawTwr[0] > 0 ? rawTwr[0] : 100;
 
-			// Actualizar etiquetas según idioma
-			chart.data.datasets[0].label = $LL.db.chart_label_total();
-			chart.data.datasets[1].label = $LL.db.chart_label_core();
-			chart.data.datasets[2].label = $LL.db.chart_label_stocks();
-			chart.data.datasets[3].label = $LL.db.chart_label_satellite();
-			chart.data.datasets[4].label = $LL.db.chart_label_invested();
+		return {
+			points,
+			twrPct: rawTwr.map((v) => (v / twrBase - 1) * 100),
+			invested: series.invested.slice(start),
+			gain: series.gain.slice(start),
+			estimated: points.map((p) => p.estimated),
+			hasEstimated: points.some((p) => p.estimated),
+			hasGaps: points.some((p) => !p.hasBreakdown),
+			flows: points.map((p) => p.netFlow)
+		};
+	});
 
-			// Dataset 0: Total
-			chart.data.datasets[0].data = history.map((p: any) => transform(p.total, first.total));
-			chart.data.datasets[0].hidden = hiddenDatasets.includes('Total');
+	const isPercentMode = $derived(viewMode === 'twr');
 
-			// Dataset 1: Principal
-			chart.data.datasets[1].data = history.map((p: any) => transform(p.core, first.core));
-			chart.data.datasets[1].hidden = hiddenDatasets.includes('Principal');
+	/**
+	 * En los días sin desglose por categoría se devuelve `null` para que el
+	 * gráfico deje un hueco. Los snapshots de versiones anteriores solo guardaban
+	 * el total, y dibujar una categoría inventada sería peor que no dibujarla.
+	 */
+	function categorySeries(key: 'core' | 'stocks' | 'satellite'): (number | null)[] {
+		return view.points.map((p) => (p.hasBreakdown ? p[key] : null));
+	}
 
-			// Dataset 2: Acciones
-			chart.data.datasets[2].data = history.map((p: any) => transform(p.stocks, first.stocks));
-			chart.data.datasets[2].hidden = hiddenDatasets.includes('Acciones');
+	function flowLabel(amount: number): string {
+		return amount > 0 ? $LL.db.chart_flow_in() : $LL.db.chart_flow_out();
+	}
 
-			// Dataset 3: Conservadora
-			chart.data.datasets[3].data = history.map((p: any) => transform(p.satellite, first.satellite));
-			chart.data.datasets[3].hidden = hiddenDatasets.includes('Conservadora');
+	/** Volcado de la serie al gráfico. */
+	function syncChart() {
+		if (!chart) return;
 
-			// Dataset 4: Invertido
-			if (viewMode === 'value') {
-				chart.data.datasets[4].data = history.map(() => portfolio.globalInvested);
-				chart.data.datasets[4].hidden = hiddenDatasets.includes('Invertido');
+		const loc = $locale === 'es' ? 'es-ES' : 'en-US';
+		chart.data.labels = view.points.map((p) =>
+			new Date(p.date).toLocaleDateString(loc, { day: '2-digit', month: 'short' }).replace('.', '')
+		);
+
+		chart.data.datasets[0].label =
+			viewMode === 'twr' ? $LL.db.chart_label_return()
+			: viewMode === 'gain' ? $LL.db.chart_label_gain()
+			: $LL.db.chart_label_total();
+		chart.data.datasets[1].label = $LL.db.chart_label_core();
+		chart.data.datasets[2].label = $LL.db.chart_label_stocks();
+		chart.data.datasets[3].label = $LL.db.chart_label_satellite();
+		chart.data.datasets[4].label = $LL.db.chart_label_invested();
+
+		chart.data.datasets[0].data =
+			viewMode === 'twr' ? view.twrPct : viewMode === 'gain' ? view.gain : view.points.map((p) => p.total);
+		chart.data.datasets[0].hidden = hiddenDatasets.includes('Total');
+
+		// Las categorías solo tienen sentido en euros: el desglose por categoría de
+		// la rentabilidad exigiría repartir los flujos por categoría, que es
+		// precisión que ahora mismo no se tiene.
+		const showCategories = viewMode === 'value';
+		chart.data.datasets[1].data = categorySeries('core');
+		chart.data.datasets[1].hidden = !showCategories || hiddenDatasets.includes('Principal');
+		chart.data.datasets[2].data = categorySeries('stocks');
+		chart.data.datasets[2].hidden = !showCategories || hiddenDatasets.includes('Acciones');
+		chart.data.datasets[3].data = categorySeries('satellite');
+		chart.data.datasets[3].hidden = !showCategories || hiddenDatasets.includes('Conservadora');
+
+		// El capital aportado es una escalera real, no el invertido de hoy repetido
+		// hacia atrás como si nunca hubieras aportado nada.
+		chart.data.datasets[4].data = view.invested;
+		chart.data.datasets[4].hidden = !showCategories || hiddenDatasets.includes('Invertido');
+
+		if (chart.options.scales?.y) {
+			const yAxis = chart.options.scales.y as any;
+			if (isPercentMode) {
+				yAxis.ticks.callback = (value: number) => portfolio.isPrivate ? '****' : value.toFixed(1) + '%';
+				yAxis.title = { display: true, text: $LL.db.chart_performance_pct(), color: 'rgba(255,255,255,0.3)', font: { size: 10 } };
 			} else {
-				chart.data.datasets[4].hidden = true;
+				yAxis.ticks.callback = (value: number) => portfolio.isPrivate ? '****' : formatEUR(value);
+				yAxis.title = { display: false };
 			}
-
-			// Ajustar escalas según el modo
-			if (chart.options.scales?.y) {
-				const yAxis = chart.options.scales.y as any;
-				if (viewMode === 'percent') {
-					yAxis.ticks.callback = (value: number) => portfolio.isPrivate ? '****' : value.toFixed(1) + '%';
-					yAxis.title = { display: true, text: $LL.db.chart_performance_pct(), color: 'rgba(255,255,255,0.3)', font: { size: 10 } };
-				} else {
-					yAxis.ticks.callback = (value: number) => portfolio.isPrivate ? '****' : formatEUR(value);
-					yAxis.title = { display: false };
-				}
-			}
-
-			chart.update();
 		}
+
+		chart.update();
+	}
+
+	$effect(() => {
+		// `view` se lee antes de cualquier guarda para que el efecto quede suscrito
+		// a ella aunque el gráfico todavía no exista. Comprobar `chart` primero
+		// cortocircuitaba la lectura, el efecto no registraba la dependencia y el
+		// lienzo se quedaba en blanco hasta el siguiente tick de precios.
+		const hasData = view.points.length > 0;
+		// Modo y visibilidad también son dependencias del volcado.
+		void viewMode;
+		void hiddenDatasets;
+		if (hasData) syncChart();
 	});
 
 	onMount(() => {
@@ -139,6 +181,10 @@
 			gradient.addColorStop(1, color.replace('1)', '0)'));
 			return gradient;
 		};
+
+		/** Discontinuo en los tramos que la app no observó, solo reconstruyó. */
+		const dashEstimated = (ctx: any) =>
+			view.estimated[ctx.p1DataIndex] ? [4, 4] : undefined;
 
 		// @ts-ignore - Chart.js types are too strict for this configuration
 		chart = new Chart(ctx, {
@@ -153,10 +199,17 @@
 						backgroundColor: createGradient('rgba(255, 255, 255, 1)', 0.1),
 						fill: true,
 						tension: 0.45,
-						pointRadius: 0,
 						borderWidth: 3,
 						borderCapStyle: 'round',
 						borderJoinStyle: 'round',
+						segment: { borderDash: dashEstimated },
+						// Un punto visible solo donde hubo movimiento de dinero.
+						pointRadius: (ctx: any) => (view.flows[ctx.dataIndex] ? 5 : 0),
+						pointHoverRadius: (ctx: any) => (view.flows[ctx.dataIndex] ? 7 : 4),
+						pointBackgroundColor: (ctx: any) =>
+							view.flows[ctx.dataIndex] > 0 ? '#10b981' : '#f59e0b',
+						pointBorderColor: '#05050a',
+						pointBorderWidth: 2
 					},
 					{
 						label: 'Principal',
@@ -168,6 +221,8 @@
 						borderWidth: 2,
 						borderCapStyle: 'round',
 						borderJoinStyle: 'round',
+						segment: { borderDash: dashEstimated },
+						spanGaps: false
 					},
 					{
 						label: 'Acciones',
@@ -179,6 +234,8 @@
 						borderWidth: 2,
 						borderCapStyle: 'round',
 						borderJoinStyle: 'round',
+						segment: { borderDash: dashEstimated },
+						spanGaps: false
 					},
 					{
 						label: 'Conservadora',
@@ -190,6 +247,8 @@
 						borderWidth: 2,
 						borderCapStyle: 'round',
 						borderJoinStyle: 'round',
+						segment: { borderDash: dashEstimated },
+						spanGaps: false
 					},
 					{
 						label: 'Invertido',
@@ -199,9 +258,9 @@
 						borderWidth: 1.5,
 						pointRadius: 0,
 						fill: false,
-						tension: 0,
+						stepped: true,
 						borderCapStyle: 'round',
-						borderJoinStyle: 'round',
+						borderJoinStyle: 'round'
 					}
 				]
 			},
@@ -218,6 +277,7 @@
 						backgroundColor: 'rgba(15, 15, 30, 0.95)',
 						titleFont: { size: 13, weight: 800 },
 						bodyFont: { size: 12, weight: 600 },
+						footerFont: { size: 11, weight: 600 },
 						padding: 14,
 						cornerRadius: 16,
 						borderColor: 'rgba(255, 255, 255, 0.1)',
@@ -229,10 +289,27 @@
 								const label = context.dataset.label || '';
 								if (portfolio.isPrivate) return ` ${label}: ****`;
 								const yValue = context.parsed.y ?? 0;
-								const value = viewMode === 'percent' 
-									? yValue.toFixed(2) + '%' 
+								const value = isPercentMode
+									? yValue.toFixed(2) + '%'
 									: formatEUR(yValue);
 								return ` ${label}: ${value}`;
+							},
+							/**
+							 * La pieza que evita el susto: cuando el patrimonio baja por
+							 * una venta, el tooltip lo dice con palabras en lugar de
+							 * dejar que el usuario lo lea como una pérdida.
+							 */
+							footer: (items: any[]) => {
+								const index = items[0]?.dataIndex ?? -1;
+								const flow = view.flows[index] ?? 0;
+								const lines: string[] = [];
+								if (flow && !portfolio.isPrivate) {
+									lines.push(
+										`${flowLabel(flow)}: ${formatEUR(flow)} — ${$LL.db.chart_flow_not_loss()}`
+									);
+								}
+								if (view.estimated[index]) lines.push($LL.db.chart_estimated_short());
+								return lines;
 							}
 						}
 					}
@@ -243,7 +320,7 @@
 						type: 'number',
 						easing: 'easeInOutQuart',
 						duration: 20, // Duración por punto
-						from: NaN, 
+						from: NaN,
 						delay(ctx: any) {
 							if (ctx.type !== 'data' || ctx.xStarted) return 0;
 							ctx.xStarted = true;
@@ -265,7 +342,7 @@
 				scales: {
 					x: {
 						grid: { display: false },
-						ticks: { 
+						ticks: {
 							color: 'rgba(255, 255, 255, 0.5)',
 							font: { size: 11, weight: 600 },
 							maxRotation: 0,
@@ -276,7 +353,7 @@
 					y: {
 						beginAtZero: false,
 						position: 'right',
-						grid: { 
+						grid: {
 							color: 'rgba(255, 255, 255, 0.05)',
 						},
 						border: { display: false },
@@ -289,6 +366,9 @@
 				}
 			} as any
 		});
+
+		// Primer pintado sin esperar al siguiente tick de precios.
+		syncChart();
 	});
 
 	onDestroy(() => {
@@ -299,41 +379,45 @@
 <div class="chart-container">
 	<div class="chart-header">
 		<div class="legend">
-			<button 
-				class="legend-item" 
+			<button
+				class="legend-item"
 				class:is-hidden={hiddenDatasets.includes('Total')}
 				onclick={() => toggleDataset('Total')}
 			>
 				<span class="dot total"></span>
-				<span class="label">{$LL.db.chart_label_total()}</span>
-			</button>
-			<button 
-				class="legend-item" 
-				class:is-hidden={hiddenDatasets.includes('Principal')}
-				onclick={() => toggleDataset('Principal')}
-			>
-				<span class="dot core"></span>
-				<span class="label">{$LL.db.chart_label_core()}</span>
-			</button>
-			<button 
-				class="legend-item" 
-				class:is-hidden={hiddenDatasets.includes('Acciones')}
-				onclick={() => toggleDataset('Acciones')}
-			>
-				<span class="dot stocks"></span>
-				<span class="label">{$LL.db.chart_label_stocks()}</span>
-			</button>
-			<button 
-				class="legend-item" 
-				class:is-hidden={hiddenDatasets.includes('Conservadora')}
-				onclick={() => toggleDataset('Conservadora')}
-			>
-				<span class="dot satellite"></span>
-				<span class="label">{$LL.db.chart_label_satellite()}</span>
+				<span class="label">
+					{viewMode === 'twr' ? $LL.db.chart_label_return()
+						: viewMode === 'gain' ? $LL.db.chart_label_gain()
+						: $LL.db.chart_label_total()}
+				</span>
 			</button>
 			{#if viewMode === 'value'}
-				<button 
-					class="legend-item" 
+				<button
+					class="legend-item"
+					class:is-hidden={hiddenDatasets.includes('Principal')}
+					onclick={() => toggleDataset('Principal')}
+				>
+					<span class="dot core"></span>
+					<span class="label">{$LL.db.chart_label_core()}</span>
+				</button>
+				<button
+					class="legend-item"
+					class:is-hidden={hiddenDatasets.includes('Acciones')}
+					onclick={() => toggleDataset('Acciones')}
+				>
+					<span class="dot stocks"></span>
+					<span class="label">{$LL.db.chart_label_stocks()}</span>
+				</button>
+				<button
+					class="legend-item"
+					class:is-hidden={hiddenDatasets.includes('Conservadora')}
+					onclick={() => toggleDataset('Conservadora')}
+				>
+					<span class="dot satellite"></span>
+					<span class="label">{$LL.db.chart_label_satellite()}</span>
+				</button>
+				<button
+					class="legend-item"
 					class:is-hidden={hiddenDatasets.includes('Invertido')}
 					onclick={() => toggleDataset('Invertido')}
 				>
@@ -345,26 +429,36 @@
 
 		<div class="controls-group">
 			<div class="view-toggle">
-				<button 
-					class="toggle-btn" 
+				<button
+					class="toggle-btn"
 					class:active={viewMode === 'value'}
 					onclick={() => viewMode = 'value'}
+					title={$LL.db.chart_mode_value_title()}
 				>
 					€
 				</button>
-				<button 
-					class="toggle-btn" 
-					class:active={viewMode === 'percent'}
-					onclick={() => viewMode = 'percent'}
+				<button
+					class="toggle-btn"
+					class:active={viewMode === 'twr'}
+					onclick={() => viewMode = 'twr'}
+					title={$LL.db.chart_mode_twr_title()}
 				>
 					%
+				</button>
+				<button
+					class="toggle-btn"
+					class:active={viewMode === 'gain'}
+					onclick={() => viewMode = 'gain'}
+					title={$LL.db.chart_mode_gain_title()}
+				>
+					±
 				</button>
 			</div>
 
 			<div class="range-selector">
 				{#each ranges as range}
-					<button 
-						class="range-btn" 
+					<button
+						class="range-btn"
 						class:active={currentRange === range.days}
 						onclick={() => currentRange = range.days}
 					>
@@ -377,6 +471,18 @@
 
 	<div class="canvas-wrapper">
 		<canvas bind:this={canvas}></canvas>
+	</div>
+
+	<div class="chart-notes">
+		{#if viewMode === 'twr'}
+			<p class="note accent">{$LL.db.chart_twr_hint()}</p>
+		{/if}
+		{#if view.hasEstimated}
+			<p class="note">{$LL.db.chart_estimated_note()}</p>
+		{/if}
+		{#if view.hasGaps && viewMode === 'value'}
+			<p class="note">{$LL.db.chart_gaps_note()}</p>
+		{/if}
 	</div>
 </div>
 
@@ -470,7 +576,7 @@
 	.dot.core { background: #3b82f6; box-shadow: 0 0 8px rgba(59, 130, 246, 0.5); }
 	.dot.stocks { background: #10b981; box-shadow: 0 0 8px rgba(16, 185, 129, 0.5); }
 	.dot.satellite { background: #f59e0b; box-shadow: 0 0 8px rgba(245, 158, 11, 0.5); }
-	
+
 	.line.invested {
 		width: 12px;
 		height: 2px;
@@ -523,12 +629,30 @@
 		position: relative;
 	}
 
+	.chart-notes {
+		display: flex;
+		flex-direction: column;
+		gap: 0.35rem;
+		margin-top: -0.75rem;
+	}
+
+	.note {
+		font-size: 0.7rem;
+		line-height: 1.4;
+		color: var(--text-muted);
+		margin: 0;
+	}
+
+	.note.accent {
+		color: rgba(255, 255, 255, 0.65);
+	}
+
 	@media (max-width: 640px) {
 		.chart-header {
 			flex-direction: column;
 			align-items: flex-start;
 		}
-		
+
 		.controls-group {
 			width: 100%;
 			justify-content: space-between;
