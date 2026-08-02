@@ -166,13 +166,20 @@
 
   onMount(() => {
     // Solo iniciar automáticamente la primera vez
-    const hasSeenTour = localStorage.getItem('corebalance_tour_seen');
-    if (!hasSeenTour) {
-      setTimeout(() => {
-        startTour();
-        localStorage.setItem('corebalance_tour_seen', 'true');
-      }, 1000); // Pequeño retraso para que la app cargue
-    }
+    if (localStorage.getItem('corebalance_tour_seen')) return;
+
+    // El retraso deja que la app acabe de cargar, pero abre una ventana peligrosa: un
+    // visitante que entra directo a /dashboard sin cartera es devuelto a la landing en
+    // ese intervalo, y driver.js monta su overlay en `document.body`, fuera del árbol
+    // de Svelte. Sin las dos guardas de abajo el tutorial se abría sobre la landing y
+    // además quemaba el flag, así que ya no volvía a salir en el dashboard de verdad.
+    const timer = setTimeout(() => {
+      if (!window.location.pathname.startsWith('/dashboard')) return;
+      startTour();
+      localStorage.setItem('corebalance_tour_seen', 'true');
+    }, 1000);
+
+    return () => clearTimeout(timer);
   });
 </script>
 
