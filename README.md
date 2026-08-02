@@ -8,6 +8,7 @@
 [![PWA](https://img.shields.io/badge/PWA-Ready-00a8cc?logo=pwa)](https://vite-pwa-org.netlify.app/)
 [![Redis](https://img.shields.io/badge/Cache-Upstash_Redis-ED1C24?logo=redis)](https://upstash.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Apoya el proyecto](https://img.shields.io/badge/Apoya_el_proyecto-PayPal-0070ba?logo=paypal&logoColor=white)](#apoya-el-proyecto)
 
 ![CoreBalance](https://github.com/kinacho/Rebalanceador-90-5-5/raw/main/static/og/landing-es.png)
 
@@ -57,6 +58,23 @@ Guías destacadas del blog: [cómo rebalancear una cartera indexada](https://cor
 - **Local-first**: el cálculo y el almacenamiento ocurren en el cliente.
 - **Sin registro**: no hace falta cuenta para usar la calculadora. La sincronización en la nube es opcional y sólo para quien inicia sesión.
 - **Sin enlazar cuentas bancarias**: los datos entran a mano o por CSV.
+
+## Apoya el proyecto
+
+Esa página de privacidad tan corta tiene una consecuencia: **no hay anuncios, ni analítica que te siga, ni plan de pago detrás de un botón, ni datos que vender** — difícilmente, cuando no se recoge ninguno. Lo que sí hay son costes que no desaparecen: el dominio, la caché de precios en Upstash, el despliegue y las horas de una sola persona en su tiempo libre.
+
+<div align="center">
+
+[![Donar 5 €](https://img.shields.io/badge/Donar-5%E2%82%AC-10b981?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/kinacho/5EUR)
+[![Donar 10 €](https://img.shields.io/badge/Donar-10%E2%82%AC-10b981?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/kinacho/10EUR)
+[![Donar 20 €](https://img.shields.io/badge/Donar-20%E2%82%AC-10b981?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/kinacho/20EUR)
+[![Otro importe](https://img.shields.io/badge/Otro_importe-0070ba?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/kinacho)
+
+</div>
+
+Son los mismos importes que aparecen dentro de la app, y van al mismo sitio: [paypal.me/kinacho](https://paypal.me/kinacho).
+
+Conviene decir la otra mitad: **esto no desbloquea nada**. No hay versión pro, no hay funciones reservadas, no hay recordatorios y la calculadora seguirá siendo gratuita y sin registro con donaciones y sin ellas. Si CoreBalance te ha ahorrado una tarde de hoja de cálculo, cinco euros lo dicen mejor que una estrella; y si no, úsala igual — para eso está.
 
 ## Desarrollo
 

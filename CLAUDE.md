@@ -20,13 +20,13 @@ The repo is really two apps:
 | `npm run check` | `svelte-kit sync && svelte-check` (strict TS, `checkJs` too). |
 | `npm test` | Vitest unit tests. |
 | `npm test -- src/lib/rebalance.test.ts` | Run a single test file. |
-| `npm run test:e2e` | ⚠️ Declared, but **no `playwright.config.ts` or spec files exist** — E2E is not actually set up (`.ai/rules/testing-rules.md` claiming otherwise is stale). |
+| `npm run test:e2e` | ⚠️ Declared, but **no `playwright.config.ts` or spec files exist** — E2E is not actually set up. |
 | `npm run backtest` | Regenerates `src/lib/data/backtest-8020.json` from real Yahoo data (citable dataset). |
 | `npm run og` / `icons` / `llms` | Regenerate OG cards / icons / llms.txt manually. |
 | `npm run indexnow` | Ping IndexNow with recently-modified sitemap URLs. Deliberately **not** hooked to the build. |
 | `npm run seo:audit` | Audits the **built** HTML (`.svelte-kit/output`): duplicate/missing title-description-canonical, `hreflang` reciprocity, JSON-LD validity and required fields, OG images that 404, broken internal links, sitemap↔build consistency. Needs `npm run build` first. Exits non-zero on errors (warnings don't fail). Flags: `--verbose`, `--warnings`, `--dir <path>`. |
 
-**Git policy** (`.ai/rules/global-rules.md`): never perform git operations without explicit user authorization. Commit style: Conventional Commits **in Spanish** (`feat(seo):`, `fix(i18n):`, `content(blog):`).
+**Git policy**: never perform git operations without explicit user authorization. Commit style: Conventional Commits **in Spanish** (`feat(seo):`, `fix(i18n):`, `content(blog):`).
 
 **Test files are versioned normally** — just `git add` them. The `.gitignore` used to exclude `*.test.ts`, `*.spec.ts`, `vitest.config.ts` and `setupTest.ts`, which left four suites (the CSV importers and the ledger's average-cost accounting) living only on the author's machine; that rule is gone and the suites are in git. Don't reintroduce it.
 
@@ -83,7 +83,7 @@ Runes mode is **forced** for all non-`node_modules` code (`compilerOptions.runes
 - `src/routes/layout.css` is the **only** CSS entry point (Tailwind v4 via `@import 'tailwindcss'`; there is no `tailwind.config.js`). Design tokens are CSS variables in `:root` (`--bg-primary`, `--bg-card`, `--text-primary`, `--text-muted`, `--accent-blue/green/orange`, …).
 - Reuse the existing convention classes instead of reinventing them: `.privacy-mode`/`.privacy-blur` (blurs figures in privacy mode), `.shimmer` (skeletons), `.asset-card`, `.background-mesh`, `.noise-overlay` (uses the `#noiseFilter` SVG declared in `app.html`), `body.modal-open` (scroll lock).
 - `font-variant-numeric: tabular-nums` is applied to a **closed list of classes** (`.metric-value`, `.summary-value`, `.asset-value`, `.total-value`, …) — a new class that displays figures must be added to that list or the digits jitter.
-- Font: Plus Jakarta Sans, **self-hosted** in `static/fonts/` with woff2 400/700 preloads (`.ai/rules/frontend-rules.md` saying Inter/Roboto is wrong).
+- Font: Plus Jakarta Sans, **self-hosted** in `static/fonts/` with woff2 400/700 preloads.
 - Dashboard tabs (`src/routes/dashboard/+page.svelte`): all tabs render **always** and are hidden with `class:tab-hidden` — deliberately no `{#if}` per tab, so Chart.js canvases don't remount and lose state. Don't "optimize" this into conditionals.
 
 ### hooks.server.ts
@@ -92,18 +92,18 @@ Does four things: locale resolution, `lang` cookie policy (`Vary: Cookie` only o
 
 ## Testing
 
-Vitest + jsdom, `*.test.ts` **colocated next to the source file**. Setup in `src/setupTest.ts` (jest-dom, `matchMedia`/`scrollTo` polyfills). The SvelteKit plugin is loaded, so `$lib`/`$app` aliases work in tests. Component tests use `@testing-library/svelte`. Key suites: `rebalance.test.ts` (core math), `importers/parsers.test.ts` (all broker detectors), `importers/training_csv.test.ts` (real CSVs, skipped when `/training_csv/` is absent), `i18n/routing.test.ts`, and `scripts/seo-audit.test.ts` (runs the SEO linter against a deliberately broken mini-build in `scripts/__fixtures__/seo-audit/` — a linter that stops detecting looks exactly like a clean site, so it needs its own fixture). `vitest.config.ts` therefore includes both `src/**` and `scripts/**`.
+Vitest + jsdom, `*.test.ts` **colocated next to the source file**. Setup in `src/setupTest.ts` (jest-dom, `matchMedia`/`scrollTo` polyfills). The SvelteKit plugin is loaded, so `$lib`/`$app` aliases work in tests. Component tests use `@testing-library/svelte`. Key suites: `rebalance.test.ts` (core math), `importers/parsers.test.ts` (all broker detectors), `importers/training_csv.test.ts` (real CSVs from `training/`, skipped when that directory is absent), `i18n/routing.test.ts`, `i18n/version.test.ts` (guards the four copies of the version number), and `scripts/seo-audit.test.ts` (runs the SEO linter against a deliberately broken mini-build in `scripts/__fixtures__/seo-audit/` — a linter that stops detecting looks exactly like a clean site, so it needs its own fixture). `vitest.config.ts` therefore includes both `src/**` and `scripts/**`.
 
 ## Gotchas
 
 - `static/sw.js` is a **self-unregistering stub** to kill stale dev service workers; the real production SW is generated by vite-pwa. The SW is active in `vite dev` (`devOptions.enabled: true`) — hard-reload/unregister when dev looks stale.
-- Workbox deliberately does **not** precache prerendered HTML (the CDN serves it); offline navigation falls back to `/offline.html`. Known pending bug: the file is precached as `offline` (no extension) so the offline fallback doesn't actually resolve — fixing it requires `navigateFallbackAllowlist` care (see `propuestas_mejora_corebalance.md`, task 21).
+- Workbox deliberately does **not** precache prerendered HTML (the CDN serves it); offline navigation falls back to `/offline.html`. Known pending bug: the file is precached as `offline` (no extension) so the offline fallback doesn't actually resolve — fixing it requires `navigateFallbackAllowlist` care.
 - `STATIC_PAGES` in the sitemap has hand-maintained `lastmod` dates — bump the date when a page's *visible content* changes (deliberately not `new Date()`).
-- `vercel.json` only sets headers for `/.well-known/assetlinks.json` (Android TWA link verification — see `play-store-assets/` and `pasos_restantes_deploy.md`) and the web manifest.
+- `vercel.json` only sets headers for `/.well-known/assetlinks.json` (Android TWA link verification, left over from a Play Store deploy that is parked) and the web manifest.
 - Env vars: `PUBLIC_USE_FIREBASE` (build-time, selects storage backend), `VITE_FIREBASE_*`, `KV_REST_API_URL/TOKEN` (Upstash), `RESEND_API_KEY`. See `.env.example`.
 - `src/app.html` contains an inline splash/gatekeeper script that **hardcodes the localStorage key `corebalance_holdings_v2`**, duplicating `STORAGE_KEY_HOLDINGS` from `src/lib/constants.ts` — renaming the key requires touching both places. It also captures `window.__deferredPrompt` (PWA install) and substitutes `%lang%` via the server hook.
-- `project.inlang/` is a leftover from a different i18n tool — **not in use** (typesafe-i18n is).
-- Extended machine-readable docs live in `.ai/context/` and `.ai/rules/` — but treat them as **unverified**: `.ai/summaries/current-state.md` states an old version and claims E2E tests exist (they don't), `known-issues.md` claims the app is "100% dynamic SSR" (it's the inverse — public routes are prerendered, `/dashboard` is client-only), and `frontend-rules.md` names the wrong fonts. Verify against the code before relying on `.ai/` claims. Root planning docs: `propuestas_mejora_corebalance.md` (SEO/GEO plan, Parte A implemented), `propuestas_mejora_tecnica_funcional.md` (technical/functional improvement plan) and `pasos_restantes_deploy.md` (Play Store TWA steps).
+- **This file is the only prose source of truth about the repo.** There used to be a parallel `.ai/` tree (61 files of rules, context and summaries) plus four root planning documents; every one of them had drifted from the code — wrong fonts, a claim that E2E tests existed, a claim that the app was "100% dynamic SSR" when it is the inverse. They were deleted rather than fixed. If you find a claim about this project in a file other than `CLAUDE.md`, `README.md` or `SECURITY.md`, distrust it and check the code.
+- **The version number lives in four places at once** — `package.json`, `changelog_trigger` in both i18n files, the `changelog_modal.releases` keys and the `releaseVersions` list in `ChangelogModal.svelte`. They desynced once (footer stuck at v1.9.0 with the app on 1.10.0). `src/lib/i18n/version.test.ts` now fails when they drift; bump all four together.
 
 ---
 
