@@ -35,8 +35,34 @@ export default defineConfig({
 				],
 				globIgnores: ['server/**'],
 				modifyURLPrefix: { 'client/': '/' },
-				navigateFallback: '/offline.html',
-				navigateFallbackDenylist: [/^\/api\//]
+				// Fallback offline. Aquí había `navigateFallback: '/offline.html'` y no
+				// funcionaba por dos razones independientes:
+				//
+				//   1. El plugin reescribe las entradas .html del manifest a rutas limpias,
+				//      así que la página aparece como `offline` —sin barra ni extensión— y
+				//      `createHandlerBoundToURL('/offline.html')` no encontraba nada.
+				//   2. `navigateFallback` registra una NavigationRoute que atiende TODAS las
+				//      navegaciones. Como el HTML prerenderizado no se precachea a propósito,
+				//      llegó a servir la página offline estando online.
+				//
+				// El patrón correcto para "solo cuando falla la red" es NetworkOnly con
+				// `precacheFallback`: la red manda siempre y la página offline solo entra
+				// cuando la petición falla.
+				//
+				// `navigateFallback: null` es imprescindible: si se omite la clave,
+				// @vite-pwa/sveltekit inyecta su propia `NavigationRoute` apuntando a `/`, y
+				// como Workbox resuelve por orden de registro esa ruta gana y sirve el
+				// esqueleto precacheado en TODAS las navegaciones, también online.
+				navigateFallback: null,
+				runtimeCaching: [
+					{
+						urlPattern: ({ request }) => request.mode === 'navigate',
+						handler: 'NetworkOnly',
+						options: {
+							precacheFallback: { fallbackURL: '/offline' }
+						}
+					}
+				]
 			},
 			includeAssets: [
 				'favicon.png',
