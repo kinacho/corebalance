@@ -10,7 +10,7 @@
 
 - **Primary URL:** [corebalance.app](https://corebalance.app)
 - **Primary Index:** [llms.txt](https://corebalance.app/llms.txt)
-- **Source Code:** [GitHub Repository](https://github.com/kinacho/Rebalanceador-90-5-5)
+- **Source Code:** [GitHub Repository](https://github.com/kinacho/corebalance)
 
 ---
 

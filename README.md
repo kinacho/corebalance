@@ -10,7 +10,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Apoya el proyecto](https://img.shields.io/badge/Apoya_el_proyecto-PayPal-0070ba?logo=paypal&logoColor=white)](#apoya-el-proyecto)
 
-![CoreBalance](https://github.com/kinacho/Rebalanceador-90-5-5/raw/main/static/og/landing-es.png)
+![CoreBalance](https://corebalance.app/og/landing-es.png)
 
 ---
 
@@ -79,8 +79,8 @@ Conviene decir la otra mitad: **esto no desbloquea nada**. No hay versión pro, 
 ## Desarrollo
 
 ```bash
-git clone https://github.com/kinacho/Rebalanceador-90-5-5.git
-cd Rebalanceador-90-5-5
+git clone https://github.com/kinacho/corebalance.git
+cd corebalance
 cp .env.example .env    # necesario: ver abajo
 npm install
 npm run dev
