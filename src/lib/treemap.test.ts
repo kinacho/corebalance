@@ -1,5 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { squarify, type TreemapItem, type TreemapRect } from './treemap';
+import {
+	squarify,
+	labelFits,
+	truncateToWidth,
+	approximateTextWidth,
+	type TreemapItem,
+	type TreemapRect
+} from './treemap';
 
 const W = 100;
 const H = 60;
@@ -126,5 +133,64 @@ describe('squarify', () => {
 	it('un solo elemento ocupa todo el lienzo', () => {
 		const rects = squarify([{ key: 'solo', value: 42 }], W, H);
 		expect(rects).toEqual([{ key: 'solo', x: 0, y: 0, w: W, h: H }]);
+	});
+});
+
+describe('rótulos que no se pisan', () => {
+	it('el ancho estimado crece con el texto y con el cuerpo de letra', () => {
+		expect(approximateTextWidth('abc', 2)).toBeLessThan(approximateTextWidth('abcdef', 2));
+		expect(approximateTextWidth('abc', 2)).toBeLessThan(approximateTextWidth('abc', 4));
+	});
+
+	it('las mayúsculas cuentan más que las minúsculas', () => {
+		// Un solo ancho medio daba `CASH-DEP` un 15 % más estrecho de lo que mide y
+		// el rótulo se salía de la celda. Los tickers son todo mayúsculas.
+		expect(approximateTextWidth('MMMM', 3)).toBeGreaterThan(approximateTextWidth('mmmm', 3));
+		expect(approximateTextWidth('IIII', 3)).toBeGreaterThan(approximateTextWidth('llll', 3));
+	});
+
+	it('un ticker en mayúsculas no se declara más estrecho de lo que es', () => {
+		// El caso concreto que desbordaba en móvil: celda de 22,8 de ancho con 4,4
+		// de cuerpo y 4,4 de margen total.
+		expect(labelFits('CASH-DEP', 4.4, 22.8, 4.4)).toBe(false);
+	});
+
+	it('un nombre largo no cabe en una celda estrecha', () => {
+		// El caso real: «Consumo discrecional» en una celda de 12 unidades. Antes
+		// se dibujaba igual y se pintaba encima de la celda vecina.
+		expect(labelFits('Consumo discrecional', 2.5, 12)).toBe(false);
+		expect(labelFits('EEUU', 2.5, 12)).toBe(true);
+	});
+
+	it('recorta con puntos suspensivos cuando hay sitio para media palabra', () => {
+		const cut = truncateToWidth('Consumo discrecional', 2.5, 18);
+		expect(cut.endsWith('…')).toBe(true);
+		expect(cut.length).toBeLessThan('Consumo discrecional'.length);
+		// Y lo recortado sí cabe, que es el objetivo de todo esto.
+		expect(labelFits(cut, 2.5, 18)).toBe(true);
+	});
+
+	it('no recorta lo que ya cabe, aunque sea largo', () => {
+		// Con 30 unidades de ancho «Consumo discrecional» entra entero: recortarlo
+		// sería perder información sin motivo.
+		expect(truncateToWidth('Consumo discrecional', 2.5, 30)).toBe('Consumo discrecional');
+	});
+
+	it('devuelve vacío en vez de un muñón ilegible', () => {
+		// Con sitio para dos caracteres, «Co…» no informa de nada: mejor dejar la
+		// celda con solo su cifra.
+		expect(truncateToWidth('Consumo discrecional', 3, 6)).toBe('');
+	});
+
+	it('no toca el texto que ya cabe', () => {
+		expect(truncateToWidth('Japón', 2.5, 60)).toBe('Japón');
+	});
+
+	it('el margen se descuenta del ancho disponible', () => {
+		// Un texto que cabría justo al milímetro no cabe con margen, porque
+		// pegado al borde de la celda se lee mal y parece desbordado.
+		const width = approximateTextWidth('Japón', 2.5) + 1;
+		expect(labelFits('Japón', 2.5, width, 0)).toBe(true);
+		expect(labelFits('Japón', 2.5, width, 4)).toBe(false);
 	});
 });

@@ -26,6 +26,80 @@ export interface TreemapRect {
 	h: number;
 }
 
+/**
+ * Anchos por carácter, en múltiplos del cuerpo de letra.
+ *
+ * Un único ancho medio no sirve: los tickers son todo mayúsculas y los nombres
+ * de sector casi todo minúsculas, así que una media los trata mal a los dos. Con
+ * un solo factor de 0,55 em, `CASH-DEP` se estimaba un 15 % más estrecho de lo
+ * que mide y se salía de su celda.
+ */
+const WIDE_CHARS = 0.63; // mayúsculas, dígitos, y las anchas de siempre
+const NARROW_CHARS = 0.31; // i, l, j, t, f, puntuación y espacio
+const DEFAULT_CHAR = 0.53; // minúsculas
+
+/**
+ * Ancho aproximado de un texto en unidades del viewBox.
+ *
+ * `<text>` en SVG no se ajusta ni se recorta solo: un rótulo largo en una celda
+ * estrecha se sale y se pinta encima de la vecina. Medirlo de verdad exigiría
+ * tocar el DOM, así que se estima. La estimación decide **si merece la pena
+ * dibujar**; el `clipPath` por celda de los componentes es la garantía dura de
+ * que nada se salga aunque la estimación falle.
+ */
+export function approximateTextWidth(text: string, fontSize: number): number {
+	let units = 0;
+	for (const char of text) {
+		if (/[A-ZÁÉÍÓÚÑÜ0-9@%&WMÆ]/.test(char)) units += WIDE_CHARS;
+		else if (/[iljtfr.,;:'’!|¡  ]/.test(char)) units += NARROW_CHARS;
+		else units += DEFAULT_CHAR;
+	}
+	return units * fontSize;
+}
+
+/** Si un rótulo cabe en un ancho dado, con un margen a cada lado. */
+export function labelFits(
+	text: string,
+	fontSize: number,
+	availableWidth: number,
+	padding = 2.8
+): boolean {
+	return approximateTextWidth(text, fontSize) <= availableWidth - padding;
+}
+
+/**
+ * Recorta un rótulo al ancho disponible añadiendo puntos suspensivos.
+ *
+ * Crece carácter a carácter en lugar de dividir por un ancho medio, porque con
+ * anchos por carácter la división ya no vale: «WWWW» y «llll» ocupan el doble el
+ * uno que el otro con el mismo número de letras.
+ *
+ * Devuelve cadena vacía si no caben al menos cuatro caracteres útiles: media
+ * palabra seguida de puntos es ruido, y la celda se lee mejor solo con su cifra.
+ */
+export function truncateToWidth(
+	text: string,
+	fontSize: number,
+	availableWidth: number,
+	padding = 2.8
+): string {
+	if (labelFits(text, fontSize, availableWidth, padding)) return text;
+
+	const usable = availableWidth - padding;
+	const ellipsis = approximateTextWidth('…', fontSize);
+
+	let kept = '';
+	for (const char of text) {
+		const candidate = kept + char;
+		if (approximateTextWidth(candidate, fontSize) + ellipsis > usable) break;
+		kept = candidate;
+	}
+
+	kept = kept.trimEnd();
+	if (kept.length < 4) return '';
+	return kept + '…';
+}
+
 export function squarify(items: TreemapItem[], width: number, height: number): TreemapRect[] {
 	const usable = items.filter((item) => item.value > 0).sort((a, b) => b.value - a.value);
 	const out: TreemapRect[] = [];

@@ -4,165 +4,161 @@
   import "driver.js/dist/driver.css";
   import { get } from 'svelte/store';
   import { LL } from '$lib/i18n/i18n-svelte';
-  
+  import type { TranslationFunctions } from '$lib/i18n/i18n-types';
+  import { portfolio } from '$lib/stores/portfolio.svelte';
+
+  /**
+   * El tutorial son **dos recorridos distintos**, y cuál se lanza lo decide si
+   * hay cartera o no.
+   *
+   * Antes había uno solo, de once pasos, y se lanzaba igual en los dos casos. El
+   * problema es que el camino del usuario nuevo de verdad —«Empezar gratis» en
+   * la landing— entra al dashboard **vacío**, así que el tutorial le explicaba
+   * «monitoriza tu patrimonio con datos en tiempo real» sobre ceros, la
+   * calculadora de aportación sobre un panel en blanco y el simulador de crisis
+   * sobre nada. Encima dejaba «importar CSV» —lo único que necesita— en el paso
+   * 11 de 11, cuando ya no queda atención.
+   *
+   * Ahora:
+   *  - **cartera vacía** → tres pasos cuyo único objetivo es meter los datos;
+   *  - **demo o con posiciones** → seis pasos por lo que de verdad hay que saber,
+   *    incluido el panel fiscal, que es lo que nadie espera que exista.
+   *
+   * De rebote, relanzar el tutorial desde el pie de página después de añadir
+   * activos da el recorrido completo, que es justo lo que uno querría.
+   */
+  function emitTourStep(target: string) {
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('tour-step', { detail: { target } }));
+    }
+  }
+
+  /** Pasos para una cartera vacía: el trabajo es tener datos dentro. */
+  function startupSteps(t: TranslationFunctions) {
+    return [
+      {
+        // Sin `element` a propósito: driver.js lo muestra centrado como modal.
+        // Antes esto apuntaba a `#tour-welcome`, un id que no existe en el
+        // proyecto, así que acababa centrado igual pero por accidente.
+        popover: {
+          title: t.tour.steps.start_welcome.title(),
+          description: t.tour.steps.start_welcome.description()
+        }
+      },
+      {
+        element: '#tour-manage-btn',
+        popover: {
+          title: t.tour.steps.start_manage.title(),
+          description: t.tour.steps.start_manage.description(),
+          side: "bottom" as const,
+          align: 'end' as const
+        }
+      },
+      {
+        element: '#tour-import-csv',
+        popover: {
+          title: t.tour.steps.start_import.title(),
+          description: t.tour.steps.start_import.description(),
+          side: "top" as const,
+          align: 'center' as const
+        },
+        onHighlightStarted: () => emitTourStep('manage')
+      }
+    ];
+  }
+
+  /** Recorrido completo: solo tiene sentido cuando los paneles tienen cifras. */
+  function fullSteps(t: TranslationFunctions) {
+    return [
+      {
+        element: '#tour-global-summary',
+        popover: {
+          title: t.tour.steps.summary.title(),
+          description: t.tour.steps.summary.description(),
+          side: "bottom" as const,
+          align: 'center' as const
+        },
+        onHighlightStarted: () => emitTourStep('assets')
+      },
+      {
+        element: '#tour-portfolio-categories',
+        popover: {
+          title: t.tour.steps.categories.title(),
+          description: t.tour.steps.categories.description(),
+          side: "top" as const,
+          align: 'center' as const
+        },
+        onHighlightStarted: () => emitTourStep('assets')
+      },
+      {
+        element: '#tour-rebalance',
+        popover: {
+          title: t.tour.steps.rebalance.title(),
+          description: t.tour.steps.rebalance.description(),
+          side: "top" as const,
+          align: 'center' as const
+        },
+        onHighlightStarted: () => emitTourStep('rebalance')
+      },
+      {
+        element: '#tour-tax',
+        popover: {
+          title: t.tour.steps.tax.title(),
+          description: t.tour.steps.tax.description(),
+          side: "top" as const,
+          align: 'center' as const
+        },
+        onHighlightStarted: () => emitTourStep('rebalance')
+      },
+      {
+        element: '#tour-maps',
+        popover: {
+          title: t.tour.steps.maps.title(),
+          description: t.tour.steps.maps.description(),
+          side: "top" as const,
+          align: 'center' as const
+        },
+        onHighlightStarted: () => emitTourStep('charts')
+      },
+      {
+        element: '#tour-manage-btn',
+        popover: {
+          title: t.tour.steps.manage.title(),
+          description: t.tour.steps.manage.description(),
+          side: "bottom" as const,
+          align: 'end' as const
+        }
+      }
+    ];
+  }
+
   export function startTour() {
     const t = get(LL);
+    const hasPortfolio = portfolio.hasAnyHoldings;
+
     const driverObj = driver({
       showProgress: true,
       nextBtnText: t.tour.btn_next(),
       prevBtnText: t.tour.btn_prev(),
-      doneBtnText: t.tour.btn_done(),
+      doneBtnText: hasPortfolio ? t.tour.btn_done() : t.tour.btn_done_startup(),
       popoverClass: 'corebalance-tour-theme',
       onDestroyed: () => {
-        if (typeof window !== 'undefined') {
-          window.dispatchEvent(new CustomEvent('tour-step', { detail: { target: 'close-all' } }));
+        emitTourStep('close-all');
+        // El flag se quema **al cerrar**, no al abrir. Antes se escribía justo
+        // después de `drive()`, así que una recarga a mitad de recorrido —o un
+        // cierre accidental en el primer paso— lo dejaba visto para siempre.
+        try {
+          localStorage.setItem('corebalance_tour_seen', 'true');
+        } catch {
+          // Modo privado del navegador; no vale la pena romper por esto.
         }
       },
-      steps: [
-        {
-          element: '#tour-welcome',
-          popover: {
-            title: t.tour.steps.welcome.title(),
-            description: t.tour.steps.welcome.description(),
-            side: "bottom",
-            align: 'start'
-          }
-        },
-        {
-          element: '#tour-sync-auth',
-          popover: {
-            title: t.tour.steps.sync.title(),
-            description: t.tour.steps.sync.description(),
-            side: "bottom",
-            align: 'end'
-          }
-        },
-        {
-          element: '#tour-global-summary',
-          popover: {
-            title: t.tour.steps.summary.title(),
-            description: t.tour.steps.summary.description(),
-            side: "bottom",
-            align: 'center'
-          },
-          onHighlightStarted: () => {
-            if (typeof window !== 'undefined') {
-              window.dispatchEvent(new CustomEvent('tour-step', { detail: { target: 'assets' } }));
-            }
-          }
-        },
-        {
-          element: '#tour-portfolio-categories',
-          popover: {
-            title: t.tour.steps.categories.title(),
-            description: t.tour.steps.categories.description(),
-            side: "top",
-            align: 'center'
-          },
-          onHighlightStarted: () => {
-            if (typeof window !== 'undefined') {
-              window.dispatchEvent(new CustomEvent('tour-step', { detail: { target: 'assets' } }));
-            }
-          }
-        },
-        {
-          element: '#tour-rebalance',
-          popover: {
-            title: t.tour.steps.rebalance.title(),
-            description: t.tour.steps.rebalance.description(),
-            side: "top",
-            align: 'center'
-          },
-          onHighlightStarted: () => {
-            if (typeof window !== 'undefined') {
-              window.dispatchEvent(new CustomEvent('tour-step', { detail: { target: 'rebalance' } }));
-            }
-          }
-        },
-        {
-          element: '#tour-projections',
-          popover: {
-            title: t.tour.steps.projections.title(),
-            description: t.tour.steps.projections.description(),
-            side: "top",
-            align: 'center'
-          },
-          onHighlightStarted: () => {
-            if (typeof window !== 'undefined') {
-              window.dispatchEvent(new CustomEvent('tour-step', { detail: { target: 'rebalance' } }));
-            }
-          }
-        },
-        {
-          element: '#tour-crisis',
-          popover: {
-            title: t.tour.steps.crisis.title(),
-            description: t.tour.steps.crisis.description(),
-            side: "top",
-            align: 'center'
-          },
-          onHighlightStarted: () => {
-            if (typeof window !== 'undefined') {
-              window.dispatchEvent(new CustomEvent('tour-step', { detail: { target: 'rebalance' } }));
-            }
-          }
-        },
-        {
-          element: '#tour-manage-btn',
-          popover: {
-            title: t.tour.steps.manage_btn.title(),
-            description: t.tour.steps.manage_btn.description(),
-            side: "bottom",
-            align: 'end'
-          }
-        },
-        {
-          element: '#tour-add-asset',
-          popover: {
-            title: t.tour.steps.add_asset.title(),
-            description: t.tour.steps.add_asset.description(),
-            side: "top",
-            align: 'center'
-          },
-          onHighlightStarted: () => {
-            if (typeof window !== 'undefined') {
-              window.dispatchEvent(new CustomEvent('tour-step', { detail: { target: 'manage' } }));
-            }
-          }
-        },
-        {
-          element: '#tour-ledger',
-          popover: {
-            title: t.tour.steps.ledger.title(),
-            description: t.tour.steps.ledger.description(),
-            side: "bottom",
-            align: 'center'
-          },
-          onHighlightStarted: () => {
-            if (typeof window !== 'undefined') {
-              window.dispatchEvent(new CustomEvent('tour-step', { detail: { target: 'manage' } }));
-            }
-          }
-        },
-        {
-          element: '#tour-import-csv',
-          popover: {
-            title: t.tour.steps.import_csv.title(),
-            description: t.tour.steps.import_csv.description(),
-            side: "top",
-            align: 'center'
-          },
-          onHighlightStarted: () => {
-            if (typeof window !== 'undefined') {
-              window.dispatchEvent(new CustomEvent('tour-step', { detail: { target: 'manage' } }));
-            }
-          }
-        }
-      ]
+      steps: hasPortfolio ? fullSteps(t) : startupSteps(t)
     });
-    
+
     driverObj.drive();
   }
+
 
   onMount(() => {
     // Solo iniciar automáticamente la primera vez
@@ -171,12 +167,12 @@
     // El retraso deja que la app acabe de cargar, pero abre una ventana peligrosa: un
     // visitante que entra directo a /dashboard sin cartera es devuelto a la landing en
     // ese intervalo, y driver.js monta su overlay en `document.body`, fuera del árbol
-    // de Svelte. Sin las dos guardas de abajo el tutorial se abría sobre la landing y
-    // además quemaba el flag, así que ya no volvía a salir en el dashboard de verdad.
+    // de Svelte. Sin la guarda de abajo el tutorial se abría sobre la landing.
     const timer = setTimeout(() => {
       if (!window.location.pathname.startsWith('/dashboard')) return;
+      // El flag lo escribe `onDestroyed`, no esta línea: así una recarga a mitad
+      // de recorrido no cuenta como visto.
       startTour();
-      localStorage.setItem('corebalance_tour_seen', 'true');
     }, 1000);
 
     return () => clearTimeout(timer);

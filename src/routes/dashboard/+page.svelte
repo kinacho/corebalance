@@ -362,7 +362,7 @@
            treemap es SVG y no tiene estado que perder, pero el selector
            región/sector del mapa del subyacente sí, y con un {#if} se
            reiniciaría cada vez que el usuario cambia de pestaña. -->
-      <section class="maps-section" class:tab-hidden={activeTab !== "charts"}>
+      <section id="tour-maps" class="maps-section" class:tab-hidden={activeTab !== "charts"}>
         <div class="map-card card">
           <DeviationTreemap />
         </div>
@@ -675,8 +675,16 @@
   .maps-section {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 1.5rem;
+    gap: 1rem;
     margin-bottom: 1.5rem;
+  }
+
+  @media (max-width: 640px) {
+    .map-card {
+      /* Menos margen lateral para que el mapa gane ancho, que es lo escaso. */
+      padding: 1rem 0.85rem;
+      border-radius: 22px;
+    }
   }
 
   .map-card {

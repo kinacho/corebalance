@@ -814,51 +814,46 @@ const es = {
   tour: {
     btn_next: 'Siguiente ➔',
     btn_prev: '⬅ Anterior',
-    btn_done: '¡Empezar!',
+    btn_done: 'Listo',
+    btn_done_startup: 'Vamos allá',
     steps: {
-      welcome: {
-        title: '¡Bienvenido a CoreBalance! 🚀',
-        description: 'Tu centro de mando para una inversión inteligente. Vamos a mostrarte cómo optimizar tu cartera en menos de 1 minuto.',
+      // Recorrido de arranque: cartera vacía, el único objetivo es meter datos.
+      start_welcome: {
+        title: 'Tu cartera está vacía',
+        description: 'Nada de lo que ves tiene datos todavía. Te enseño el camino corto para meterla: son dos pasos.',
       },
-      sync: {
-        title: 'Sincronización Total',
-        description: 'Mantén tus datos seguros y sincronizados entre dispositivos mediante Google Auth o exportación local cifrada.',
+      start_manage: {
+        title: 'Todo empieza aquí',
+        description: 'Este botón abre la gestión de tu cartera: añadir activos, fijar cuánto quieres que pese cada uno e importar desde tu bróker.',
       },
+      start_import: {
+        title: 'Lo más rápido: tu extracto del bróker',
+        description: 'Sube el CSV de MyInvestor, DEGIRO, Trading 212 o Interactive Brokers y se rellena solo, con el precio medio ya calculado. Si prefieres ir a mano, «Buscar activo» está justo encima.',
+      },
+      // Recorrido completo: solo cuando los paneles tienen cifras que mirar.
       summary: {
-        title: 'Visión de Alto Nivel',
-        description: 'Monitoriza tu Patrimonio Neto, Capital Invertido y Rentabilidad Total de un vistazo con datos actualizados en tiempo real.',
+        title: 'Tu patrimonio, de un vistazo',
+        description: 'Lo que tienes, lo que has aportado y la diferencia entre las dos cosas. Los precios se actualizan solos cada 30 segundos.',
       },
       categories: {
-        title: 'Estrategia Multicartera 🏦',
-        description: 'Gestiona tu estrategia Core (90%), Satélite (5%) y Efectivo (5%) de forma independiente pero integrada.',
+        title: 'Tres carteras, una estrategia',
+        description: 'Principal, conservadora y acciones individuales. Cada una lleva sus propios pesos objetivo y su desviación, y el rebalanceo se calcula dentro de cada una por separado.',
       },
       rebalance: {
-        title: 'Inyección Óptima de Capital ✨',
-        description: 'Nuestra calculadora matemática te indica exactamente qué activos comprar para restaurar tus pesos ideales, minimizando las desviaciones.',
+        title: 'Cuánto comprar este mes',
+        description: 'Escribe tu aportación y te dice cuánto va a cada activo para acercarte al objetivo sin vender nada.',
       },
-      projections: {
-        title: 'Proyecciones de Interés Compuesto',
-        description: 'Simula el crecimiento de tu riqueza a largo plazo. Ahora puedes elegir entre usar tu capital real o uno personalizado para ver diferentes escenarios.',
+      tax: {
+        title: 'Y si no quieres esperar meses',
+        description: 'Entre fondos de inversión, mover dinero no tributa en España. Este panel calcula el movimiento exacto hasta tu objetivo y lo que costaría en impuestos: muchas veces, cero. Despliégalo para ver el plan.',
       },
-      crisis: {
-        title: 'Simulador de Crisis Históricas 📉',
-        description: 'Pon a prueba tu temple financiero. Analiza cómo se comportaría tu cartera en crisis reales como el 2008 o el COVID-19 y el impacto del DCA.',
+      maps: {
+        title: 'Qué tienes de verdad',
+        description: 'El primer mapa colorea cada activo según lo lejos que está de su objetivo. El segundo abre tus fondos por dentro y te dice en qué regiones y sectores estás en realidad, y si dos de ellos apuntan a las mismas empresas.',
       },
-      manage_btn: {
-        title: 'Configuración de Cartera',
-        description: 'Ajusta tus objetivos con precisión decimal. Usa los candados para fijar activos y deja que el algoritmo autocompense el resto automáticamente.',
-      },
-      add_asset: {
-        title: 'Personaliza tus Activos',
-        description: 'Añade fondos, ETFs o acciones. Puedes arrastrarlos para moverlos entre categorías (Core, Satélite o Acciones).',
-      },
-      ledger: {
-        title: 'Libro de Transacciones (Ledger)',
-        description: 'Activa el modo Ledger para llevar un registro real de tus compras y ventas. Calcularemos tu coste medio y plusvalías automáticamente.',
-      },
-      import_csv: {
-        title: 'Importación Inteligente 📥',
-        description: 'No metas los datos a mano. Sube tus extractos de DEGIRO, MyInvestor o Trading 212 y nosotros haremos el trabajo sucio.',
+      manage: {
+        title: 'Cuando quieras cambiar algo',
+        description: 'Desde aquí ajustas los pesos objetivo, añades activos, activas el libro de transacciones o importas de tu bróker. Este tutorial puedes relanzarlo cuando quieras desde el pie de página.',
       },
     },
   },

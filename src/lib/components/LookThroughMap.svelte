@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { portfolio } from '$lib/stores/portfolio.svelte';
-	import { squarify } from '$lib/treemap';
+	import { squarify, labelFits, truncateToWidth } from '$lib/treemap';
 	import { formatEUR, formatPercent } from '$lib/utils';
 	import { LL } from '$lib/i18n/i18n-svelte';
 	import { INDICES } from '$lib/lookthrough';
+	import { isNarrowViewport } from '$lib/viewport.svelte';
 
 	/**
 	 * Lo que hay dentro de los fondos: exposición real por región y por sector, y
@@ -15,8 +16,22 @@
 	 * patrimonio total, y lo que se queda fuera se dice en voz alta.
 	 */
 
+	const narrow = isNarrowViewport();
+
+	/**
+	 * Igual que el treemap de desviación: en móvil el lienzo se acerca al cuadrado
+	 * y las letras crecen, porque un rótulo de 8 px no lo lee nadie.
+	 *
+	 * Aquí además los nombres son largos de verdad («Consumo discrecional»,
+	 * «Asia emergente»), así que en pantalla estrecha las celdas muestran **solo
+	 * el porcentaje** y los nombres se leen en el ranking de debajo, que ya los
+	 * lista completos. Es preferible a un mapa lleno de «Consu…».
+	 */
 	const VIEW_W = 100;
-	const VIEW_H = 55;
+	const viewH = $derived(narrow.matches ? 100 : 55);
+	const fontLabel = $derived(narrow.matches ? 3.6 : 2.5);
+	const fontPct = $derived(narrow.matches ? 4.6 : 2.8);
+	const pad = $derived(narrow.matches ? 2.2 : 1.5);
 
 	let mode = $state<'regions' | 'sectors'>('regions');
 
@@ -45,20 +60,39 @@
 		const rects = squarify(
 			slices.map((slice) => ({ key: slice.key, value: slice.value })),
 			VIEW_W,
-			VIEW_H
+			viewH
 		);
 		return rects.map((rect) => {
 			const index = slices.findIndex((slice) => slice.key === rect.key);
 			const slice = slices[index];
+			const full = labelFor(slice.key);
+
+			// El porcentaje manda: es lo que se lee de un vistazo y siempre es corto.
+			const pctText = formatPercent(slice.weight, 0);
+			const showPct = labelFits(pctText, fontPct, rect.w, pad * 2) && rect.h >= fontPct * 1.5;
+
+			// El nombre solo en pantalla ancha, y solo si cabe entero o recortado
+			// con sentido. En móvil se deja al ranking de abajo.
+			const label = narrow.matches ? '' : truncateToWidth(full, fontLabel, rect.w, pad * 2);
+			const showLabel = label !== '' && rect.h >= fontPct * 1.4 + fontLabel * 1.5;
+
 			return {
 				rect,
 				slice,
-				label: labelFor(slice.key),
-				fill: PALETTE[index % PALETTE.length],
-				area: rect.w * rect.h
+				full,
+				label,
+				showLabel,
+				pctText,
+				showPct,
+				fill: PALETTE[index % PALETTE.length]
 			};
 		});
 	});
+
+	/** Un id de clipPath válido: las claves son seguras, pero por si cambian. */
+	function clipId(key: string): string {
+		return `lt-clip-${key.replace(/[^a-zA-Z0-9]/g, '_')}`;
+	}
 
 	function labelFor(key: string): string {
 		const table = mode === 'regions' ? regionLabels : sectorLabels;
@@ -135,16 +169,32 @@
 		{#if cells.length > 0}
 			<svg
 				class="map"
-				viewBox="0 0 {VIEW_W} {VIEW_H}"
+				viewBox="0 0 {VIEW_W} {viewH}"
+				style="aspect-ratio: {VIEW_W} / {viewH}"
 				preserveAspectRatio="none"
 				role="img"
 				aria-label={mode === 'regions'
 					? $LL.lookthrough.tab_regions()
 					: $LL.lookthrough.tab_sectors()}
 			>
+				<defs>
+					<!-- Recorte por celda: la garantía dura de que ningún rótulo se
+					     pinte encima de la celda vecina. -->
+					{#each cells as cell (cell.slice.key)}
+						<clipPath id={clipId(cell.slice.key)}>
+							<rect
+								x={cell.rect.x}
+								y={cell.rect.y}
+								width={cell.rect.w}
+								height={cell.rect.h}
+							/>
+						</clipPath>
+					{/each}
+				</defs>
+
 				{#each cells as cell (cell.slice.key)}
 					<g>
-						<title>{cell.label}: {formatPercent(cell.slice.weight, 1)}</title>
+						<title>{cell.full}: {formatPercent(cell.slice.weight, 1)}</title>
 						<rect
 							x={cell.rect.x}
 							y={cell.rect.y}
@@ -155,24 +205,39 @@
 							stroke-width="0.4"
 							rx="0.8"
 						/>
-						{#if cell.area >= 70}
-							<text class="cell-label" x={cell.rect.x + 1.4} y={cell.rect.y + 4} font-size="2.4">
-								{cell.label}
-							</text>
-						{/if}
-						{#if cell.area >= 150}
-							<text class="cell-pct" x={cell.rect.x + 1.4} y={cell.rect.y + 7.4} font-size="2.6">
-								{formatPercent(cell.slice.weight, 0)}
-							</text>
-						{/if}
+						<g clip-path="url(#{clipId(cell.slice.key)})">
+							{#if cell.showPct}
+								<text
+									class="cell-pct"
+									x={cell.rect.x + pad}
+									y={cell.rect.y + pad + fontPct * 0.85}
+									font-size={fontPct}
+								>
+									{cell.pctText}
+								</text>
+							{/if}
+							{#if cell.showLabel}
+								<text
+									class="cell-label"
+									x={cell.rect.x + pad}
+									y={cell.rect.y + pad + fontPct * 0.85 + fontLabel * 1.3}
+									font-size={fontLabel}
+								>
+									{cell.label}
+								</text>
+							{/if}
+						</g>
 					</g>
 				{/each}
 			</svg>
 		{/if}
 
+		<!-- En móvil el mapa no lleva nombres, así que el ranking se alarga: es
+		     donde el usuario lee de qué es cada rectángulo. -->
 		<ol class="ranking">
-			{#each slices.slice(0, 5) as slice (slice.key)}
+			{#each slices.slice(0, narrow.matches ? 7 : 5) as slice (slice.key)}
 				<li class="rank-row">
+					<span class="rank-swatch" aria-hidden="true" style="background: {cells.find((c) => c.slice.key === slice.key)?.fill ?? 'transparent'}"></span>
 					<span class="rank-label">{labelFor(slice.key)}</span>
 					<span class="rank-bar" aria-hidden="true">
 						<i style="width: {(slice.weight * 100).toFixed(1)}%"></i>
@@ -291,9 +356,10 @@
 	.map {
 		width: 100%;
 		height: auto;
-		aspect-ratio: 100 / 55;
 		border-radius: 12px;
 		display: block;
+		/* La proporción la fija el atributo `style` en línea, porque cambia con el
+		   ancho de pantalla y el viewBox no se puede tocar desde una media query. */
 	}
 
 	.map :global(text) {
@@ -302,14 +368,14 @@
 		font-variant-numeric: tabular-nums;
 	}
 
-	.cell-label {
-		fill: rgba(255, 255, 255, 0.95);
+	.cell-pct {
+		fill: rgba(255, 255, 255, 0.97);
 		font-weight: 700;
 	}
 
-	.cell-pct {
+	.cell-label {
 		fill: rgba(255, 255, 255, 0.8);
-		font-weight: 700;
+		font-weight: 600;
 	}
 
 	.ranking {
@@ -323,10 +389,20 @@
 
 	.rank-row {
 		display: grid;
-		grid-template-columns: minmax(90px, 1fr) 2fr auto;
+		grid-template-columns: 9px minmax(80px, 1fr) 2fr auto;
 		align-items: center;
-		gap: 0.6rem;
-		font-size: 0.7rem;
+		gap: 0.5rem;
+		font-size: 0.72rem;
+	}
+
+	/* La muestra de color es lo que ata cada fila a su rectángulo del mapa. Sin
+	   ella, en móvil (donde el mapa no lleva nombres) las dos cosas no se
+	   relacionan entre sí. */
+	.rank-swatch {
+		width: 9px;
+		height: 9px;
+		border-radius: 3px;
+		display: inline-block;
 	}
 
 	.rank-label {
@@ -419,5 +495,45 @@
 		padding: 1rem;
 		background: rgba(0, 0, 0, 0.2);
 		border-radius: 12px;
+	}
+
+	@media (max-width: 640px) {
+		/* El selector región/sector pasa a ocupar todo el ancho: dos objetivos
+		   grandes se aciertan con el pulgar, dos pastillas de 70 px no. */
+		.head {
+			flex-direction: column;
+			align-items: stretch;
+			gap: 0.6rem;
+		}
+
+		.mode-switch {
+			width: 100%;
+		}
+
+		.mode-btn {
+			flex: 1;
+			padding: 0.55rem 0.5rem;
+			font-size: 0.72rem;
+		}
+
+		.rank-row {
+			/* Sin la barra: en 340 px de ancho robaba sitio al nombre, que es lo
+			   que hay que poder leer. */
+			grid-template-columns: 9px 1fr auto;
+			font-size: 0.78rem;
+			gap: 0.55rem;
+		}
+
+		.rank-bar {
+			display: none;
+		}
+
+		.overlap-row {
+			font-size: 0.75rem;
+		}
+
+		.note {
+			font-size: 0.68rem;
+		}
 	}
 </style>

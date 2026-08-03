@@ -812,51 +812,46 @@ const en: Translation = {
   tour: {
     btn_next: 'Next ➔',
     btn_prev: '⬅ Prev',
-    btn_done: 'Start!',
+    btn_done: 'Done',
+    btn_done_startup: 'Let\'s go',
     steps: {
-      welcome: {
-        title: 'Welcome to CoreBalance! 🚀',
-        description: 'Your control center for smart investing. Let us show you how to optimize your portfolio in less than 1 minute.',
+      // Startup run: empty portfolio, the only goal is getting data in.
+      start_welcome: {
+        title: 'Your portfolio is empty',
+        description: 'Nothing you see has any data yet. Here is the short way to get it in: two steps.',
       },
-      sync: {
-        title: 'Total Sync',
-        description: 'Keep your data safe and synced between devices via Google Auth or encrypted local export.',
+      start_manage: {
+        title: 'It all starts here',
+        description: 'This button opens your portfolio settings: add assets, set how much each one should weigh, and import from your broker.',
       },
+      start_import: {
+        title: 'Fastest route: your broker statement',
+        description: 'Upload the CSV from MyInvestor, DEGIRO, Trading 212 or Interactive Brokers and it fills itself in, average cost included. If you would rather do it by hand, "Search asset" is just above.',
+      },
+      // Full run: only when the panels have figures worth looking at.
       summary: {
-        title: 'High Level Overview',
-        description: 'Monitor your Net Worth, Invested Capital, and Total Performance at a glance with real-time updated data.',
+        title: 'Your wealth, at a glance',
+        description: 'What you hold, what you have put in, and the difference between the two. Prices refresh on their own every 30 seconds.',
       },
       categories: {
-        title: 'Multi-Portfolio Strategy 🏦',
-        description: 'Manage your Core (90%), Satellite (5%), and Cash (5%) strategies independently but in an integrated way.',
+        title: 'Three portfolios, one strategy',
+        description: 'Core, conservative and individual shares. Each one carries its own target weights and its own drift, and rebalancing is worked out inside each one separately.',
       },
       rebalance: {
-        title: 'Optimal Capital Injection ✨',
-        description: 'Our mathematical calculator tells you exactly which assets to buy to restore your ideal weights, minimizing deviations.',
+        title: 'How much to buy this month',
+        description: 'Type in your contribution and it tells you how much goes to each asset to move closer to target without selling anything.',
       },
-      projections: {
-        title: 'Compound Interest Projections',
-        description: 'Simulate long-term wealth growth. You can now choose between using your real capital or a custom one to see different scenarios.',
+      tax: {
+        title: 'And if you would rather not wait months',
+        description: 'In Spain, moving money between investment funds is not taxed. This panel works out the exact move to your target and what it would cost in tax: often nothing. Open it to see the plan.',
       },
-      crisis: {
-        title: 'Historical Crisis Simulator 📉',
-        description: 'Test your financial grit. Analyze how your portfolio would behave in real crises like 2008 or COVID-19 and the impact of DCA.',
+      maps: {
+        title: 'What you actually own',
+        description: 'The first map colours each asset by how far it sits from its target. The second one opens your funds up and tells you which regions and sectors you are really in, and whether two of them point at the same companies.',
       },
-      manage_btn: {
-        title: 'Portfolio Settings',
-        description: 'Adjust your targets with decimal precision. Use the locks to fix assets and let the algorithm auto-compensate the rest.',
-      },
-      add_asset: {
-        title: 'Customize Your Assets',
-        description: 'Add funds, ETFs, or stocks. You can drag them to move them between categories (Core, Satellite, or Stocks).',
-      },
-      ledger: {
-        title: 'Transaction Log (Ledger)',
-        description: 'Activate Ledger mode to keep a real record of your buys and sells. We will calculate your average cost and gains automatically.',
-      },
-      import_csv: {
-        title: 'Smart Import 📥',
-        description: 'Don\'t input data manually. Upload your statements from DEGIRO, MyInvestor, or Trading 212 and we will do the dirty work.',
+      manage: {
+        title: 'When you want to change something',
+        description: 'From here you adjust target weights, add assets, switch on the transaction ledger or import from your broker. You can relaunch this tutorial any time from the footer.',
       },
     },
   },

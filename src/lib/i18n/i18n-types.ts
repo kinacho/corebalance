@@ -3024,117 +3024,101 @@ type RootTranslation = {
 		 */
 		btn_prev: string
 		/**
-		 * ¡​E​m​p​e​z​a​r​!
+		 * L​i​s​t​o
 		 */
 		btn_done: string
+		/**
+		 * V​a​m​o​s​ ​a​l​l​á
+		 */
+		btn_done_startup: string
 		steps: {
-			welcome: {
+			start_welcome: {
 				/**
-				 * ¡​B​i​e​n​v​e​n​i​d​o​ ​a​ ​C​o​r​e​B​a​l​a​n​c​e​!​ ​�​�
+				 * T​u​ ​c​a​r​t​e​r​a​ ​e​s​t​á​ ​v​a​c​í​a
 				 */
 				title: string
 				/**
-				 * T​u​ ​c​e​n​t​r​o​ ​d​e​ ​m​a​n​d​o​ ​p​a​r​a​ ​u​n​a​ ​i​n​v​e​r​s​i​ó​n​ ​i​n​t​e​l​i​g​e​n​t​e​.​ ​V​a​m​o​s​ ​a​ ​m​o​s​t​r​a​r​t​e​ ​c​ó​m​o​ ​o​p​t​i​m​i​z​a​r​ ​t​u​ ​c​a​r​t​e​r​a​ ​e​n​ ​m​e​n​o​s​ ​d​e​ ​1​ ​m​i​n​u​t​o​.
+				 * N​a​d​a​ ​d​e​ ​l​o​ ​q​u​e​ ​v​e​s​ ​t​i​e​n​e​ ​d​a​t​o​s​ ​t​o​d​a​v​í​a​.​ ​T​e​ ​e​n​s​e​ñ​o​ ​e​l​ ​c​a​m​i​n​o​ ​c​o​r​t​o​ ​p​a​r​a​ ​m​e​t​e​r​l​a​:​ ​s​o​n​ ​d​o​s​ ​p​a​s​o​s​.
 				 */
 				description: string
 			}
-			sync: {
+			start_manage: {
 				/**
-				 * S​i​n​c​r​o​n​i​z​a​c​i​ó​n​ ​T​o​t​a​l
+				 * T​o​d​o​ ​e​m​p​i​e​z​a​ ​a​q​u​í
 				 */
 				title: string
 				/**
-				 * M​a​n​t​é​n​ ​t​u​s​ ​d​a​t​o​s​ ​s​e​g​u​r​o​s​ ​y​ ​s​i​n​c​r​o​n​i​z​a​d​o​s​ ​e​n​t​r​e​ ​d​i​s​p​o​s​i​t​i​v​o​s​ ​m​e​d​i​a​n​t​e​ ​G​o​o​g​l​e​ ​A​u​t​h​ ​o​ ​e​x​p​o​r​t​a​c​i​ó​n​ ​l​o​c​a​l​ ​c​i​f​r​a​d​a​.
+				 * E​s​t​e​ ​b​o​t​ó​n​ ​a​b​r​e​ ​l​a​ ​g​e​s​t​i​ó​n​ ​d​e​ ​t​u​ ​c​a​r​t​e​r​a​:​ ​a​ñ​a​d​i​r​ ​a​c​t​i​v​o​s​,​ ​f​i​j​a​r​ ​c​u​á​n​t​o​ ​q​u​i​e​r​e​s​ ​q​u​e​ ​p​e​s​e​ ​c​a​d​a​ ​u​n​o​ ​e​ ​i​m​p​o​r​t​a​r​ ​d​e​s​d​e​ ​t​u​ ​b​r​ó​k​e​r​.
+				 */
+				description: string
+			}
+			start_import: {
+				/**
+				 * L​o​ ​m​á​s​ ​r​á​p​i​d​o​:​ ​t​u​ ​e​x​t​r​a​c​t​o​ ​d​e​l​ ​b​r​ó​k​e​r
+				 */
+				title: string
+				/**
+				 * S​u​b​e​ ​e​l​ ​C​S​V​ ​d​e​ ​M​y​I​n​v​e​s​t​o​r​,​ ​D​E​G​I​R​O​,​ ​T​r​a​d​i​n​g​ ​2​1​2​ ​o​ ​I​n​t​e​r​a​c​t​i​v​e​ ​B​r​o​k​e​r​s​ ​y​ ​s​e​ ​r​e​l​l​e​n​a​ ​s​o​l​o​,​ ​c​o​n​ ​e​l​ ​p​r​e​c​i​o​ ​m​e​d​i​o​ ​y​a​ ​c​a​l​c​u​l​a​d​o​.​ ​S​i​ ​p​r​e​f​i​e​r​e​s​ ​i​r​ ​a​ ​m​a​n​o​,​ ​«​B​u​s​c​a​r​ ​a​c​t​i​v​o​»​ ​e​s​t​á​ ​j​u​s​t​o​ ​e​n​c​i​m​a​.
 				 */
 				description: string
 			}
 			summary: {
 				/**
-				 * V​i​s​i​ó​n​ ​d​e​ ​A​l​t​o​ ​N​i​v​e​l
+				 * T​u​ ​p​a​t​r​i​m​o​n​i​o​,​ ​d​e​ ​u​n​ ​v​i​s​t​a​z​o
 				 */
 				title: string
 				/**
-				 * M​o​n​i​t​o​r​i​z​a​ ​t​u​ ​P​a​t​r​i​m​o​n​i​o​ ​N​e​t​o​,​ ​C​a​p​i​t​a​l​ ​I​n​v​e​r​t​i​d​o​ ​y​ ​R​e​n​t​a​b​i​l​i​d​a​d​ ​T​o​t​a​l​ ​d​e​ ​u​n​ ​v​i​s​t​a​z​o​ ​c​o​n​ ​d​a​t​o​s​ ​a​c​t​u​a​l​i​z​a​d​o​s​ ​e​n​ ​t​i​e​m​p​o​ ​r​e​a​l​.
+				 * L​o​ ​q​u​e​ ​t​i​e​n​e​s​,​ ​l​o​ ​q​u​e​ ​h​a​s​ ​a​p​o​r​t​a​d​o​ ​y​ ​l​a​ ​d​i​f​e​r​e​n​c​i​a​ ​e​n​t​r​e​ ​l​a​s​ ​d​o​s​ ​c​o​s​a​s​.​ ​L​o​s​ ​p​r​e​c​i​o​s​ ​s​e​ ​a​c​t​u​a​l​i​z​a​n​ ​s​o​l​o​s​ ​c​a​d​a​ ​3​0​ ​s​e​g​u​n​d​o​s​.
 				 */
 				description: string
 			}
 			categories: {
 				/**
-				 * E​s​t​r​a​t​e​g​i​a​ ​M​u​l​t​i​c​a​r​t​e​r​a​ ​�​�
+				 * T​r​e​s​ ​c​a​r​t​e​r​a​s​,​ ​u​n​a​ ​e​s​t​r​a​t​e​g​i​a
 				 */
 				title: string
 				/**
-				 * G​e​s​t​i​o​n​a​ ​t​u​ ​e​s​t​r​a​t​e​g​i​a​ ​C​o​r​e​ ​(​9​0​%​)​,​ ​S​a​t​é​l​i​t​e​ ​(​5​%​)​ ​y​ ​E​f​e​c​t​i​v​o​ ​(​5​%​)​ ​d​e​ ​f​o​r​m​a​ ​i​n​d​e​p​e​n​d​i​e​n​t​e​ ​p​e​r​o​ ​i​n​t​e​g​r​a​d​a​.
+				 * P​r​i​n​c​i​p​a​l​,​ ​c​o​n​s​e​r​v​a​d​o​r​a​ ​y​ ​a​c​c​i​o​n​e​s​ ​i​n​d​i​v​i​d​u​a​l​e​s​.​ ​C​a​d​a​ ​u​n​a​ ​l​l​e​v​a​ ​s​u​s​ ​p​r​o​p​i​o​s​ ​p​e​s​o​s​ ​o​b​j​e​t​i​v​o​ ​y​ ​s​u​ ​d​e​s​v​i​a​c​i​ó​n​,​ ​y​ ​e​l​ ​r​e​b​a​l​a​n​c​e​o​ ​s​e​ ​c​a​l​c​u​l​a​ ​d​e​n​t​r​o​ ​d​e​ ​c​a​d​a​ ​u​n​a​ ​p​o​r​ ​s​e​p​a​r​a​d​o​.
 				 */
 				description: string
 			}
 			rebalance: {
 				/**
-				 * I​n​y​e​c​c​i​ó​n​ ​Ó​p​t​i​m​a​ ​d​e​ ​C​a​p​i​t​a​l​ ​✨
+				 * C​u​á​n​t​o​ ​c​o​m​p​r​a​r​ ​e​s​t​e​ ​m​e​s
 				 */
 				title: string
 				/**
-				 * N​u​e​s​t​r​a​ ​c​a​l​c​u​l​a​d​o​r​a​ ​m​a​t​e​m​á​t​i​c​a​ ​t​e​ ​i​n​d​i​c​a​ ​e​x​a​c​t​a​m​e​n​t​e​ ​q​u​é​ ​a​c​t​i​v​o​s​ ​c​o​m​p​r​a​r​ ​p​a​r​a​ ​r​e​s​t​a​u​r​a​r​ ​t​u​s​ ​p​e​s​o​s​ ​i​d​e​a​l​e​s​,​ ​m​i​n​i​m​i​z​a​n​d​o​ ​l​a​s​ ​d​e​s​v​i​a​c​i​o​n​e​s​.
+				 * E​s​c​r​i​b​e​ ​t​u​ ​a​p​o​r​t​a​c​i​ó​n​ ​y​ ​t​e​ ​d​i​c​e​ ​c​u​á​n​t​o​ ​v​a​ ​a​ ​c​a​d​a​ ​a​c​t​i​v​o​ ​p​a​r​a​ ​a​c​e​r​c​a​r​t​e​ ​a​l​ ​o​b​j​e​t​i​v​o​ ​s​i​n​ ​v​e​n​d​e​r​ ​n​a​d​a​.
 				 */
 				description: string
 			}
-			projections: {
+			tax: {
 				/**
-				 * P​r​o​y​e​c​c​i​o​n​e​s​ ​d​e​ ​I​n​t​e​r​é​s​ ​C​o​m​p​u​e​s​t​o
+				 * Y​ ​s​i​ ​n​o​ ​q​u​i​e​r​e​s​ ​e​s​p​e​r​a​r​ ​m​e​s​e​s
 				 */
 				title: string
 				/**
-				 * S​i​m​u​l​a​ ​e​l​ ​c​r​e​c​i​m​i​e​n​t​o​ ​d​e​ ​t​u​ ​r​i​q​u​e​z​a​ ​a​ ​l​a​r​g​o​ ​p​l​a​z​o​.​ ​A​h​o​r​a​ ​p​u​e​d​e​s​ ​e​l​e​g​i​r​ ​e​n​t​r​e​ ​u​s​a​r​ ​t​u​ ​c​a​p​i​t​a​l​ ​r​e​a​l​ ​o​ ​u​n​o​ ​p​e​r​s​o​n​a​l​i​z​a​d​o​ ​p​a​r​a​ ​v​e​r​ ​d​i​f​e​r​e​n​t​e​s​ ​e​s​c​e​n​a​r​i​o​s​.
+				 * E​n​t​r​e​ ​f​o​n​d​o​s​ ​d​e​ ​i​n​v​e​r​s​i​ó​n​,​ ​m​o​v​e​r​ ​d​i​n​e​r​o​ ​n​o​ ​t​r​i​b​u​t​a​ ​e​n​ ​E​s​p​a​ñ​a​.​ ​E​s​t​e​ ​p​a​n​e​l​ ​c​a​l​c​u​l​a​ ​e​l​ ​m​o​v​i​m​i​e​n​t​o​ ​e​x​a​c​t​o​ ​h​a​s​t​a​ ​t​u​ ​o​b​j​e​t​i​v​o​ ​y​ ​l​o​ ​q​u​e​ ​c​o​s​t​a​r​í​a​ ​e​n​ ​i​m​p​u​e​s​t​o​s​:​ ​m​u​c​h​a​s​ ​v​e​c​e​s​,​ ​c​e​r​o​.​ ​D​e​s​p​l​i​é​g​a​l​o​ ​p​a​r​a​ ​v​e​r​ ​e​l​ ​p​l​a​n​.
 				 */
 				description: string
 			}
-			crisis: {
+			maps: {
 				/**
-				 * S​i​m​u​l​a​d​o​r​ ​d​e​ ​C​r​i​s​i​s​ ​H​i​s​t​ó​r​i​c​a​s​ ​�​�
+				 * Q​u​é​ ​t​i​e​n​e​s​ ​d​e​ ​v​e​r​d​a​d
 				 */
 				title: string
 				/**
-				 * P​o​n​ ​a​ ​p​r​u​e​b​a​ ​t​u​ ​t​e​m​p​l​e​ ​f​i​n​a​n​c​i​e​r​o​.​ ​A​n​a​l​i​z​a​ ​c​ó​m​o​ ​s​e​ ​c​o​m​p​o​r​t​a​r​í​a​ ​t​u​ ​c​a​r​t​e​r​a​ ​e​n​ ​c​r​i​s​i​s​ ​r​e​a​l​e​s​ ​c​o​m​o​ ​e​l​ ​2​0​0​8​ ​o​ ​e​l​ ​C​O​V​I​D​-​1​9​ ​y​ ​e​l​ ​i​m​p​a​c​t​o​ ​d​e​l​ ​D​C​A​.
+				 * E​l​ ​p​r​i​m​e​r​ ​m​a​p​a​ ​c​o​l​o​r​e​a​ ​c​a​d​a​ ​a​c​t​i​v​o​ ​s​e​g​ú​n​ ​l​o​ ​l​e​j​o​s​ ​q​u​e​ ​e​s​t​á​ ​d​e​ ​s​u​ ​o​b​j​e​t​i​v​o​.​ ​E​l​ ​s​e​g​u​n​d​o​ ​a​b​r​e​ ​t​u​s​ ​f​o​n​d​o​s​ ​p​o​r​ ​d​e​n​t​r​o​ ​y​ ​t​e​ ​d​i​c​e​ ​e​n​ ​q​u​é​ ​r​e​g​i​o​n​e​s​ ​y​ ​s​e​c​t​o​r​e​s​ ​e​s​t​á​s​ ​e​n​ ​r​e​a​l​i​d​a​d​,​ ​y​ ​s​i​ ​d​o​s​ ​d​e​ ​e​l​l​o​s​ ​a​p​u​n​t​a​n​ ​a​ ​l​a​s​ ​m​i​s​m​a​s​ ​e​m​p​r​e​s​a​s​.
 				 */
 				description: string
 			}
-			manage_btn: {
+			manage: {
 				/**
-				 * C​o​n​f​i​g​u​r​a​c​i​ó​n​ ​d​e​ ​C​a​r​t​e​r​a
+				 * C​u​a​n​d​o​ ​q​u​i​e​r​a​s​ ​c​a​m​b​i​a​r​ ​a​l​g​o
 				 */
 				title: string
 				/**
-				 * A​j​u​s​t​a​ ​t​u​s​ ​o​b​j​e​t​i​v​o​s​ ​c​o​n​ ​p​r​e​c​i​s​i​ó​n​ ​d​e​c​i​m​a​l​.​ ​U​s​a​ ​l​o​s​ ​c​a​n​d​a​d​o​s​ ​p​a​r​a​ ​f​i​j​a​r​ ​a​c​t​i​v​o​s​ ​y​ ​d​e​j​a​ ​q​u​e​ ​e​l​ ​a​l​g​o​r​i​t​m​o​ ​a​u​t​o​c​o​m​p​e​n​s​e​ ​e​l​ ​r​e​s​t​o​ ​a​u​t​o​m​á​t​i​c​a​m​e​n​t​e​.
-				 */
-				description: string
-			}
-			add_asset: {
-				/**
-				 * P​e​r​s​o​n​a​l​i​z​a​ ​t​u​s​ ​A​c​t​i​v​o​s
-				 */
-				title: string
-				/**
-				 * A​ñ​a​d​e​ ​f​o​n​d​o​s​,​ ​E​T​F​s​ ​o​ ​a​c​c​i​o​n​e​s​.​ ​P​u​e​d​e​s​ ​a​r​r​a​s​t​r​a​r​l​o​s​ ​p​a​r​a​ ​m​o​v​e​r​l​o​s​ ​e​n​t​r​e​ ​c​a​t​e​g​o​r​í​a​s​ ​(​C​o​r​e​,​ ​S​a​t​é​l​i​t​e​ ​o​ ​A​c​c​i​o​n​e​s​)​.
-				 */
-				description: string
-			}
-			ledger: {
-				/**
-				 * L​i​b​r​o​ ​d​e​ ​T​r​a​n​s​a​c​c​i​o​n​e​s​ ​(​L​e​d​g​e​r​)
-				 */
-				title: string
-				/**
-				 * A​c​t​i​v​a​ ​e​l​ ​m​o​d​o​ ​L​e​d​g​e​r​ ​p​a​r​a​ ​l​l​e​v​a​r​ ​u​n​ ​r​e​g​i​s​t​r​o​ ​r​e​a​l​ ​d​e​ ​t​u​s​ ​c​o​m​p​r​a​s​ ​y​ ​v​e​n​t​a​s​.​ ​C​a​l​c​u​l​a​r​e​m​o​s​ ​t​u​ ​c​o​s​t​e​ ​m​e​d​i​o​ ​y​ ​p​l​u​s​v​a​l​í​a​s​ ​a​u​t​o​m​á​t​i​c​a​m​e​n​t​e​.
-				 */
-				description: string
-			}
-			import_csv: {
-				/**
-				 * I​m​p​o​r​t​a​c​i​ó​n​ ​I​n​t​e​l​i​g​e​n​t​e​ ​�​�
-				 */
-				title: string
-				/**
-				 * N​o​ ​m​e​t​a​s​ ​l​o​s​ ​d​a​t​o​s​ ​a​ ​m​a​n​o​.​ ​S​u​b​e​ ​t​u​s​ ​e​x​t​r​a​c​t​o​s​ ​d​e​ ​D​E​G​I​R​O​,​ ​M​y​I​n​v​e​s​t​o​r​ ​o​ ​T​r​a​d​i​n​g​ ​2​1​2​ ​y​ ​n​o​s​o​t​r​o​s​ ​h​a​r​e​m​o​s​ ​e​l​ ​t​r​a​b​a​j​o​ ​s​u​c​i​o​.
+				 * D​e​s​d​e​ ​a​q​u​í​ ​a​j​u​s​t​a​s​ ​l​o​s​ ​p​e​s​o​s​ ​o​b​j​e​t​i​v​o​,​ ​a​ñ​a​d​e​s​ ​a​c​t​i​v​o​s​,​ ​a​c​t​i​v​a​s​ ​e​l​ ​l​i​b​r​o​ ​d​e​ ​t​r​a​n​s​a​c​c​i​o​n​e​s​ ​o​ ​i​m​p​o​r​t​a​s​ ​d​e​ ​t​u​ ​b​r​ó​k​e​r​.​ ​E​s​t​e​ ​t​u​t​o​r​i​a​l​ ​p​u​e​d​e​s​ ​r​e​l​a​n​z​a​r​l​o​ ​c​u​a​n​d​o​ ​q​u​i​e​r​a​s​ ​d​e​s​d​e​ ​e​l​ ​p​i​e​ ​d​e​ ​p​á​g​i​n​a​.
 				 */
 				description: string
 			}
@@ -6677,117 +6661,101 @@ export type TranslationFunctions = {
 		 */
 		btn_prev: () => LocalizedString
 		/**
-		 * ¡Empezar!
+		 * Listo
 		 */
 		btn_done: () => LocalizedString
+		/**
+		 * Vamos allá
+		 */
+		btn_done_startup: () => LocalizedString
 		steps: {
-			welcome: {
+			start_welcome: {
 				/**
-				 * ¡Bienvenido a CoreBalance! 🚀
+				 * Tu cartera está vacía
 				 */
 				title: () => LocalizedString
 				/**
-				 * Tu centro de mando para una inversión inteligente. Vamos a mostrarte cómo optimizar tu cartera en menos de 1 minuto.
+				 * Nada de lo que ves tiene datos todavía. Te enseño el camino corto para meterla: son dos pasos.
 				 */
 				description: () => LocalizedString
 			}
-			sync: {
+			start_manage: {
 				/**
-				 * Sincronización Total
+				 * Todo empieza aquí
 				 */
 				title: () => LocalizedString
 				/**
-				 * Mantén tus datos seguros y sincronizados entre dispositivos mediante Google Auth o exportación local cifrada.
+				 * Este botón abre la gestión de tu cartera: añadir activos, fijar cuánto quieres que pese cada uno e importar desde tu bróker.
+				 */
+				description: () => LocalizedString
+			}
+			start_import: {
+				/**
+				 * Lo más rápido: tu extracto del bróker
+				 */
+				title: () => LocalizedString
+				/**
+				 * Sube el CSV de MyInvestor, DEGIRO, Trading 212 o Interactive Brokers y se rellena solo, con el precio medio ya calculado. Si prefieres ir a mano, «Buscar activo» está justo encima.
 				 */
 				description: () => LocalizedString
 			}
 			summary: {
 				/**
-				 * Visión de Alto Nivel
+				 * Tu patrimonio, de un vistazo
 				 */
 				title: () => LocalizedString
 				/**
-				 * Monitoriza tu Patrimonio Neto, Capital Invertido y Rentabilidad Total de un vistazo con datos actualizados en tiempo real.
+				 * Lo que tienes, lo que has aportado y la diferencia entre las dos cosas. Los precios se actualizan solos cada 30 segundos.
 				 */
 				description: () => LocalizedString
 			}
 			categories: {
 				/**
-				 * Estrategia Multicartera 🏦
+				 * Tres carteras, una estrategia
 				 */
 				title: () => LocalizedString
 				/**
-				 * Gestiona tu estrategia Core (90%), Satélite (5%) y Efectivo (5%) de forma independiente pero integrada.
+				 * Principal, conservadora y acciones individuales. Cada una lleva sus propios pesos objetivo y su desviación, y el rebalanceo se calcula dentro de cada una por separado.
 				 */
 				description: () => LocalizedString
 			}
 			rebalance: {
 				/**
-				 * Inyección Óptima de Capital ✨
+				 * Cuánto comprar este mes
 				 */
 				title: () => LocalizedString
 				/**
-				 * Nuestra calculadora matemática te indica exactamente qué activos comprar para restaurar tus pesos ideales, minimizando las desviaciones.
+				 * Escribe tu aportación y te dice cuánto va a cada activo para acercarte al objetivo sin vender nada.
 				 */
 				description: () => LocalizedString
 			}
-			projections: {
+			tax: {
 				/**
-				 * Proyecciones de Interés Compuesto
+				 * Y si no quieres esperar meses
 				 */
 				title: () => LocalizedString
 				/**
-				 * Simula el crecimiento de tu riqueza a largo plazo. Ahora puedes elegir entre usar tu capital real o uno personalizado para ver diferentes escenarios.
+				 * Entre fondos de inversión, mover dinero no tributa en España. Este panel calcula el movimiento exacto hasta tu objetivo y lo que costaría en impuestos: muchas veces, cero. Despliégalo para ver el plan.
 				 */
 				description: () => LocalizedString
 			}
-			crisis: {
+			maps: {
 				/**
-				 * Simulador de Crisis Históricas 📉
+				 * Qué tienes de verdad
 				 */
 				title: () => LocalizedString
 				/**
-				 * Pon a prueba tu temple financiero. Analiza cómo se comportaría tu cartera en crisis reales como el 2008 o el COVID-19 y el impacto del DCA.
+				 * El primer mapa colorea cada activo según lo lejos que está de su objetivo. El segundo abre tus fondos por dentro y te dice en qué regiones y sectores estás en realidad, y si dos de ellos apuntan a las mismas empresas.
 				 */
 				description: () => LocalizedString
 			}
-			manage_btn: {
+			manage: {
 				/**
-				 * Configuración de Cartera
+				 * Cuando quieras cambiar algo
 				 */
 				title: () => LocalizedString
 				/**
-				 * Ajusta tus objetivos con precisión decimal. Usa los candados para fijar activos y deja que el algoritmo autocompense el resto automáticamente.
-				 */
-				description: () => LocalizedString
-			}
-			add_asset: {
-				/**
-				 * Personaliza tus Activos
-				 */
-				title: () => LocalizedString
-				/**
-				 * Añade fondos, ETFs o acciones. Puedes arrastrarlos para moverlos entre categorías (Core, Satélite o Acciones).
-				 */
-				description: () => LocalizedString
-			}
-			ledger: {
-				/**
-				 * Libro de Transacciones (Ledger)
-				 */
-				title: () => LocalizedString
-				/**
-				 * Activa el modo Ledger para llevar un registro real de tus compras y ventas. Calcularemos tu coste medio y plusvalías automáticamente.
-				 */
-				description: () => LocalizedString
-			}
-			import_csv: {
-				/**
-				 * Importación Inteligente 📥
-				 */
-				title: () => LocalizedString
-				/**
-				 * No metas los datos a mano. Sube tus extractos de DEGIRO, MyInvestor o Trading 212 y nosotros haremos el trabajo sucio.
+				 * Desde aquí ajustas los pesos objetivo, añades activos, activas el libro de transacciones o importas de tu bróker. Este tutorial puedes relanzarlo cuando quieras desde el pie de página.
 				 */
 				description: () => LocalizedString
 			}

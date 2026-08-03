@@ -1,0 +1,246 @@
+import { describe, it, expect, vi } from 'vitest';
+import { render } from '@testing-library/svelte';
+import { loadLocale } from '$lib/i18n/i18n-util.sync';
+import { setLocale } from '$lib/i18n/i18n-svelte';
+import { approximateTextWidth } from '$lib/treemap';
+import type { PortfolioPosition } from '$lib/types';
+
+loadLocale('es');
+setLocale('es');
+
+/**
+ * Guardia contra el defecto que motivó todo esto: los rótulos del mapa se
+ * pisaban entre celdas.
+ *
+ * `<text>` en SVG no se recorta solo, así que un nombre largo en una celda
+ * estrecha se pintaba encima de la vecina. Hay dos defensas y aquí se comprueban
+ * las dos: que ningún rótulo emitido supere el ancho de su celda según el
+ * estimador, y que todo texto viva dentro de un grupo con `clip-path`, que es la
+ * garantía dura por si el estimador se queda corto.
+ *
+ * Se comprueba sobre el SVG renderizado y no sobre una función pura porque la
+ * decisión de qué dibujar vive en el componente.
+ */
+
+function makePosition(
+	ticker: string,
+	name: string,
+	value: number,
+	targetWeight: number
+): PortfolioPosition {
+	return {
+		asset: {
+			ticker,
+			name,
+			isin: '',
+			targetWeight,
+			color: '#3b82f6',
+			icon: '📈',
+			ter: 0,
+			category: 'core',
+			instrumentType: 'fund'
+		},
+		holdings: value / 100,
+		avgCost: 100,
+		totalCost: value,
+		unitPrice: 100,
+		totalValue: value,
+		currentWeight: 0,
+		deviation: 0,
+		targetValue: 0,
+		targetHoldings: 0,
+		profit: 0,
+		profitPercent: 0,
+		dailyChangeValue: 0,
+		dailyChangePercent: 0
+	};
+}
+
+/**
+ * Una cartera con tickers largos en mayúsculas y posiciones muy desiguales: es
+ * la combinación que produce celdas diminutas con rótulos anchos.
+ */
+const POSITIONS = [
+	makePosition('VANGUARD-GLOBAL-STOCK', 'Vanguard Global Stock Index', 9000, 0.5),
+	makePosition('CASH-DEPOSITO', 'Depósito remunerado', 800, 0.2),
+	makePosition('MSCI-EMERGING-IMI', 'iShares Emerging Markets IMI', 150, 0.2),
+	makePosition('WWWWWWWW', 'Activo de nombre imposible', 40, 0.05),
+	makePosition('AAAA.MC', 'Acción española', 10, 0.05)
+];
+
+const store = {
+	portfolioState: { positions: POSITIONS },
+	satelliteState: { positions: [] as PortfolioPosition[] },
+	stockState: { positions: [] as PortfolioPosition[] }
+};
+
+vi.mock('$lib/stores/portfolio.svelte', () => ({
+	get portfolio() {
+		return store;
+	}
+}));
+
+/** Los grupos de celda: un `<rect>` propio y sus textos ya recortados. */
+function readCells(container: HTMLElement) {
+	const svg = container.querySelector('svg.treemap');
+	expect(svg, 'el treemap no se ha renderizado').not.toBeNull();
+
+	return [...svg!.querySelectorAll('g')]
+		.map((group) => {
+			const rect = group.querySelector(':scope > rect');
+			const clipped = group.querySelector(':scope > g[clip-path]');
+			if (!rect) return null;
+			return {
+				width: parseFloat(rect.getAttribute('width') ?? '0'),
+				height: parseFloat(rect.getAttribute('height') ?? '0'),
+				clipped,
+				texts: [...group.querySelectorAll('text')].map((text) => ({
+					content: text.textContent?.trim() ?? '',
+					fontSize: parseFloat(text.getAttribute('font-size') ?? '0')
+				}))
+			};
+		})
+		.filter((cell): cell is NonNullable<typeof cell> => cell !== null);
+}
+
+describe('DeviationTreemap.svelte', () => {
+	it('dibuja una celda por posición con valor', async () => {
+		const DeviationTreemap = (await import('./DeviationTreemap.svelte')).default;
+		const { container } = render(DeviationTreemap);
+		expect(readCells(container)).toHaveLength(POSITIONS.length);
+	});
+
+	it('ningún rótulo es más ancho que su celda', async () => {
+		const DeviationTreemap = (await import('./DeviationTreemap.svelte')).default;
+		const { container } = render(DeviationTreemap);
+
+		for (const cell of readCells(container)) {
+			for (const text of cell.texts) {
+				const width = approximateTextWidth(text.content, text.fontSize);
+				expect(
+					width,
+					`«${text.content}» mide ${width.toFixed(1)} en una celda de ${cell.width.toFixed(1)}`
+				).toBeLessThanOrEqual(cell.width);
+			}
+		}
+	});
+
+	it('ningún rótulo sobresale por abajo de su celda', async () => {
+		const DeviationTreemap = (await import('./DeviationTreemap.svelte')).default;
+		const { container } = render(DeviationTreemap);
+
+		const svg = container.querySelector('svg.treemap')!;
+		for (const group of svg.querySelectorAll('g')) {
+			const rect = group.querySelector(':scope > rect');
+			if (!rect) continue;
+			const top = parseFloat(rect.getAttribute('y') ?? '0');
+			const height = parseFloat(rect.getAttribute('height') ?? '0');
+
+			for (const text of group.querySelectorAll('text')) {
+				const baseline = parseFloat(text.getAttribute('y') ?? '0');
+				// La línea base más el descendente aproximado de la fuente.
+				const bottom = baseline + parseFloat(text.getAttribute('font-size') ?? '0') * 0.25;
+				expect(bottom, `«${text.textContent?.trim()}» se sale por abajo`).toBeLessThanOrEqual(
+					top + height
+				);
+			}
+		}
+	});
+
+	it('todo texto vive dentro de un grupo recortado', async () => {
+		// La garantía dura: aunque el estimador de anchos falle algún día, el
+		// `clipPath` impide que un rótulo invada la celda vecina.
+		const DeviationTreemap = (await import('./DeviationTreemap.svelte')).default;
+		const { container } = render(DeviationTreemap);
+
+		const svg = container.querySelector('svg.treemap')!;
+		for (const text of svg.querySelectorAll('text')) {
+			expect(
+				text.closest('g[clip-path]'),
+				`«${text.textContent?.trim()}» está fuera de un clip-path`
+			).not.toBeNull();
+		}
+	});
+
+	it('una celda diminuta se queda sin rótulo en vez de con uno recortado a la mitad', async () => {
+		const DeviationTreemap = (await import('./DeviationTreemap.svelte')).default;
+		const { container } = render(DeviationTreemap);
+
+		const cells = readCells(container);
+		const tiny = cells.reduce((min, cell) =>
+			cell.width * cell.height < min.width * min.height ? cell : min
+		);
+		expect(tiny.texts.length).toBe(0);
+	});
+
+	it('la celda mayor sí lleva su ticker y su peso', async () => {
+		const DeviationTreemap = (await import('./DeviationTreemap.svelte')).default;
+		const { container } = render(DeviationTreemap);
+
+		const cells = readCells(container);
+		const biggest = cells.reduce((max, cell) =>
+			cell.width * cell.height > max.width * max.height ? cell : max
+		);
+		expect(biggest.texts.length).toBeGreaterThanOrEqual(2);
+		// Y su rótulo cabe, aunque haya venido recortado.
+		expect(biggest.texts[0].content.length).toBeGreaterThan(0);
+	});
+
+	it('no revienta sin posiciones y muestra el mensaje de vacío', async () => {
+		store.portfolioState = { positions: [] };
+		const DeviationTreemap = (await import('./DeviationTreemap.svelte')).default;
+		const { container } = render(DeviationTreemap);
+
+		expect(container.querySelector('svg.treemap')).toBeNull();
+		expect(container.textContent).toContain('Añade activos');
+		store.portfolioState = { positions: POSITIONS };
+	});
+});
+
+describe('DeviationTreemap.svelte en móvil', () => {
+	/**
+	 * El `matchMedia` de `setupTest.ts` devuelve siempre `matches: false`, o sea
+	 * escritorio. En móvil la letra es bastante mayor sobre un lienzo más alto, y
+	 * las letras grandes son justamente las que desbordan, así que esa geometría
+	 * necesita su propia comprobación.
+	 */
+	function pretendNarrow() {
+		Object.defineProperty(window, 'matchMedia', {
+			writable: true,
+			value: vi.fn().mockImplementation((query: string) => ({
+				matches: query.includes('max-width: 640px'),
+				media: query,
+				onchange: null,
+				addListener: vi.fn(),
+				removeListener: vi.fn(),
+				addEventListener: vi.fn(),
+				removeEventListener: vi.fn(),
+				dispatchEvent: vi.fn()
+			}))
+		});
+	}
+
+	it('con la letra de móvil ningún rótulo se sale de su celda', async () => {
+		pretendNarrow();
+		const DeviationTreemap = (await import('./DeviationTreemap.svelte')).default;
+		const { container } = render(DeviationTreemap);
+
+		const cells = readCells(container);
+		expect(cells.length).toBe(POSITIONS.length);
+
+		// Y la letra es de verdad mayor que en escritorio, que es el objetivo.
+		const withText = cells.filter((cell) => cell.texts.length > 0);
+		expect(withText.length).toBeGreaterThan(0);
+		expect(Math.max(...withText.flatMap((c) => c.texts.map((t) => t.fontSize)))).toBeGreaterThan(3);
+
+		for (const cell of cells) {
+			for (const text of cell.texts) {
+				const width = approximateTextWidth(text.content, text.fontSize);
+				expect(
+					width,
+					`móvil: «${text.content}» mide ${width.toFixed(1)} en ${cell.width.toFixed(1)}`
+				).toBeLessThanOrEqual(cell.width);
+			}
+		}
+	});
+});
