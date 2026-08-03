@@ -14,6 +14,7 @@
 		"backtest": "node scripts/backtest-8020.mjs",
 		"indexnow": "node scripts/indexnow.mjs",
 		"seo:audit": "node scripts/seo-audit.mjs",
+		"measure:filters": "node scripts/measure-filters.mjs",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
