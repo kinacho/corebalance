@@ -69,13 +69,26 @@
 		}
 	}
 
+	/**
+	 * El siguiente color libre de la paleta, y si están todos ocupados, se
+	 * reutiliza **en orden** el que menos veces aparezca.
+	 *
+	 * Antes el respaldo era `ASSET_COLORS[Math.floor(Math.random() * …)]`, y un
+	 * tono al azar puede caer idéntico a otro que ya está en la cartera —
+	 * exactamente lo que no debe pasar en una paleta categórica. Repetir el menos
+	 * usado es determinista y reparte, y los tonos siguen siendo los seis
+	 * validados: nunca se genera uno nuevo.
+	 */
 	function getNextColor(): string {
-		const usedColors = new Set([
-			...portfolio.coreAssets.map(a => a.color),
-			...portfolio.satelliteAssets.map(a => a.color),
-			...portfolio.stockAssets.map(a => a.color)
-		]);
-		return ASSET_COLORS.find(c => !usedColors.has(c)) || ASSET_COLORS[Math.floor(Math.random() * ASSET_COLORS.length)];
+		const all = [...portfolio.coreAssets, ...portfolio.satelliteAssets, ...portfolio.stockAssets];
+		const timesUsed = new Map<string, number>(ASSET_COLORS.map((c) => [c, 0]));
+		for (const asset of all) {
+			if (timesUsed.has(asset.color)) timesUsed.set(asset.color, timesUsed.get(asset.color)! + 1);
+		}
+		// `ASSET_COLORS` marca el desempate, así que el reparto es reproducible.
+		return ASSET_COLORS.reduce((best, color) =>
+			timesUsed.get(color)! < timesUsed.get(best)! ? color : best
+		);
 	}
 
 	function addResult(result: SearchResult) {

@@ -197,50 +197,60 @@ describe('DeviationTreemap.svelte', () => {
 	});
 });
 
-describe('DeviationTreemap.svelte en móvil', () => {
-	/**
-	 * El `matchMedia` de `setupTest.ts` devuelve siempre `matches: false`, o sea
-	 * escritorio. En móvil la letra es bastante mayor sobre un lienzo más alto, y
-	 * las letras grandes son justamente las que desbordan, así que esa geometría
-	 * necesita su propia comprobación.
-	 */
-	function pretendNarrow() {
-		Object.defineProperty(window, 'matchMedia', {
-			writable: true,
-			value: vi.fn().mockImplementation((query: string) => ({
-				matches: query.includes('max-width: 640px'),
-				media: query,
-				onchange: null,
-				addListener: vi.fn(),
-				removeListener: vi.fn(),
-				addEventListener: vi.fn(),
-				removeEventListener: vi.fn(),
-				dispatchEvent: vi.fn()
-			}))
-		});
-	}
+/**
+ * Fija el ancho que `bind:clientWidth` va a leer.
+ *
+ * El tamaño de letra de los mapas se deriva del ancho **real del contenedor**, no
+ * de una media query: en su carril del carrusel el mapa mide unos 340 px también
+ * en escritorio, y ampliado pasa de mil. Así que la geometría que hay que probar
+ * se selecciona por píxeles, no falseando `matchMedia`.
+ */
+function withContainerWidth(px: number) {
+	Object.defineProperty(HTMLElement.prototype, 'clientWidth', {
+		configurable: true,
+		get: () => px
+	});
+}
 
-	it('con la letra de móvil ningún rótulo se sale de su celda', async () => {
-		pretendNarrow();
+describe.each([
+	{ name: 'carril estrecho del carrusel', width: 340 },
+	{ name: 'panel ampliado', width: 1080 }
+])('DeviationTreemap.svelte a $width px', ({ width }) => {
+	it('ningún rótulo se sale de su celda', async () => {
+		withContainerWidth(width);
 		const DeviationTreemap = (await import('./DeviationTreemap.svelte')).default;
 		const { container } = render(DeviationTreemap);
 
 		const cells = readCells(container);
 		expect(cells.length).toBe(POSITIONS.length);
 
-		// Y la letra es de verdad mayor que en escritorio, que es el objetivo.
-		const withText = cells.filter((cell) => cell.texts.length > 0);
-		expect(withText.length).toBeGreaterThan(0);
-		expect(Math.max(...withText.flatMap((c) => c.texts.map((t) => t.fontSize)))).toBeGreaterThan(3);
-
 		for (const cell of cells) {
 			for (const text of cell.texts) {
-				const width = approximateTextWidth(text.content, text.fontSize);
+				const estimated = approximateTextWidth(text.content, text.fontSize);
 				expect(
-					width,
-					`móvil: «${text.content}» mide ${width.toFixed(1)} en ${cell.width.toFixed(1)}`
+					estimated,
+					`${width}px: «${text.content}» mide ${estimated.toFixed(1)} en ${cell.width.toFixed(1)}`
 				).toBeLessThanOrEqual(cell.width);
 			}
+		}
+	});
+
+	it('el rótulo renderiza a un tamaño legible en píxeles', async () => {
+		withContainerWidth(width);
+		const DeviationTreemap = (await import('./DeviationTreemap.svelte')).default;
+		const { container } = render(DeviationTreemap);
+
+		// Las unidades del viewBox se convierten a píxeles con el ancho real. Lo que
+		// hay que garantizar es el resultado en píxeles, que es lo que se lee: con
+		// el tamaño atado a una media query salían rótulos de 9 px en escritorio.
+		const pxPerUnit = width / 100;
+		const sizes = readCells(container)
+			.flatMap((cell) => cell.texts.map((text) => text.fontSize * pxPerUnit))
+			.filter((size) => size > 0);
+
+		expect(sizes.length).toBeGreaterThan(0);
+		for (const size of sizes) {
+			expect(size, `${size.toFixed(1)}px es demasiado pequeño`).toBeGreaterThanOrEqual(9);
 		}
 	});
 });

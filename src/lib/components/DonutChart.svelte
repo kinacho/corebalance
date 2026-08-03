@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { Chart, DoughnutController, ArcElement, Tooltip, Legend } from 'chart.js';
+	import { CHART_NEUTRAL, MAX_CHART_SLICES } from '$lib/constants';
+	import { LL } from '$lib/i18n/i18n-svelte';
 
 	Chart.register(DoughnutController, ArcElement, Tooltip, Legend);
 
@@ -18,96 +20,158 @@
 
 	let canvas: HTMLCanvasElement;
 	let chart: Chart<'doughnut'> | null = null;
+	/** Índice de la porción bajo el puntero, para enlazar leyenda y arco. */
+	let hovered = $state<number | null>(null);
 
-	const prefersReducedMotion = typeof window !== 'undefined' 
-		&& window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+	const prefersReducedMotion =
+		typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-	function createChartConfig(chartData: ChartData) {
+	/**
+	 * Agrupa la cola en «Otros» y descarta las porciones sin valor.
+	 *
+	 * Un donut de doce porciones no se lee: las últimas son astillas de un píxel
+	 * con su fila de leyenda cada una. La paleta categórica tiene seis tonos
+	 * validados y la regla es que el séptimo no se inventa, así que lo que sobra
+	 * se agrupa en un gris neutro. También caían aquí las posiciones a cero, que
+	 * antes aparecían como filas de «0,00 %».
+	 */
+	const view = $derived.by(() => {
+		const slices = data.labels
+			.map((label, i) => ({ label, value: data.values[i], color: data.colors[i] }))
+			.filter((slice) => slice.value > 0.005)
+			.sort((a, b) => b.value - a.value);
+
+		if (slices.length <= MAX_CHART_SLICES) return slices;
+
+		const head = slices.slice(0, MAX_CHART_SLICES - 1);
+		const tail = slices.slice(MAX_CHART_SLICES - 1);
+		return [
+			...head,
+			{
+				label: $LL.charts.other_slices({ count: tail.length }),
+				value: tail.reduce((sum, slice) => sum + slice.value, 0),
+				color: CHART_NEUTRAL
+			}
+		];
+	});
+
+	function createChartConfig() {
 		return {
 			type: 'doughnut' as const,
 			data: {
-				labels: chartData.labels,
+				labels: view.map((slice) => slice.label),
 				datasets: [
 					{
-						data: chartData.values,
-						backgroundColor: chartData.colors.map((c) => c + 'CC'), // 0.8 alpha
-						borderColor: '#0a0a16',
-						borderWidth: 3,
-						hoverBorderWidth: 4,
-						hoverOffset: 12,
-						spacing: 4,
-						borderRadius: 6
+						data: view.map((slice) => slice.value),
+						backgroundColor: view.map((slice) => slice.color),
+						borderColor: 'rgba(5, 5, 10, 0.9)',
+						borderWidth: 2,
+						hoverBorderWidth: 2,
+						hoverOffset: 10,
+						// Separación de 2 px entre rellenos: es lo que permite distinguir
+						// porciones contiguas sin depender solo del tono.
+						spacing: 2,
+						borderRadius: 4
 					}
 				]
 			},
 			options: {
 				responsive: true,
 				maintainAspectRatio: true,
-				cutout: '72%',
-				layout: {
-					padding: 15
-				},
+				cutout: '70%',
+				layout: { padding: 12 },
 				plugins: {
 					legend: { display: false },
 					tooltip: {
-						backgroundColor: 'rgba(10, 10, 25, 0.95)',
+						backgroundColor: 'rgba(10, 10, 25, 0.96)',
 						titleColor: '#fff',
 						bodyColor: 'rgba(255, 255, 255, 0.8)',
-						borderColor: 'rgba(255, 255, 255, 0.1)',
+						borderColor: 'rgba(255, 255, 255, 0.12)',
 						borderWidth: 1,
-						cornerRadius: 12,
-						padding: 12,
-						titleFont: { family: 'Inter', weight: 'bold' as const, size: 13 },
-						bodyFont: { family: 'Inter', size: 12 },
+						cornerRadius: 10,
+						padding: 10,
+						// La fuente del proyecto. Antes decía `Inter`, que no se carga en
+						// ninguna parte, así que los tooltips salían con la sans del sistema.
+						titleFont: { family: 'Plus Jakarta Sans', weight: 'bold' as const, size: 13 },
+						bodyFont: { family: 'Plus Jakarta Sans', size: 12 },
 						displayColors: true,
 						boxWidth: 8,
 						boxHeight: 8,
 						boxPadding: 6,
 						callbacks: {
-							label: function (ctx: any) {
-								return ` ${ctx.parsed.toFixed(2)}%`;
-							}
+							label: (ctx: { parsed: number }) => ` ${ctx.parsed.toFixed(2)}%`
 						}
 					}
 				},
-				animation: prefersReducedMotion ? false : {
-					animateRotate: true,
-					duration: 1200,
-					easing: 'easeOutQuart' as const
-				}
+				animation: prefersReducedMotion
+					? (false as const)
+					: { animateRotate: true, duration: 900, easing: 'easeOutQuart' as const }
 			}
 		};
 	}
 
 	onMount(() => {
-		chart = new Chart(canvas, createChartConfig(data));
+		chart = new Chart(canvas, createChartConfig());
 		return () => chart?.destroy();
 	});
 
 	$effect(() => {
-		if (chart && data) {
-			chart.data.labels = data.labels;
-			chart.data.datasets[0].data = data.values;
-			chart.data.datasets[0].backgroundColor = data.colors.map((c) => c + 'CC');
-			chart.update();
-		}
+		if (!chart) return;
+		const config = createChartConfig();
+		chart.data.labels = config.data.labels;
+		chart.data.datasets[0].data = config.data.datasets[0].data;
+		chart.data.datasets[0].backgroundColor = config.data.datasets[0].backgroundColor;
+		chart.update();
 	});
+
+	/**
+	 * Resalta el arco correspondiente al pasar por su fila de leyenda.
+	 *
+	 * La leyenda era puramente decorativa: se veía el color pero no se podía
+	 * relacionar con el arco de un donut de seis porciones sin contarlas. Se usa
+	 * la API de elementos activos de Chart.js, que es la misma que emplea su
+	 * propio hover, así que el efecto es idéntico al de pasar por el gráfico.
+	 */
+	function highlight(index: number | null) {
+		hovered = index;
+		if (!chart) return;
+		chart.setActiveElements(
+			index === null ? [] : [{ datasetIndex: 0, index }]
+		);
+		chart.update();
+	}
 </script>
 
 <div class="donut-wrapper">
-	<div class="chart-container">
+	<!--
+		El canvas queda oculto para lectores de pantalla y la lista de abajo es la
+		alternativa textual: lleva etiqueta y valor de cada porción, así que la
+		identidad nunca depende solo del color. Es preferible a un `aria-label` que
+		resuma el gráfico, porque la lista da los datos y no una descripción.
+	-->
+	<div class="chart-container" aria-hidden="true">
 		<canvas bind:this={canvas}></canvas>
 	</div>
 
-	<div class="chart-legend">
-		{#each data.labels as label, i}
-			<div class="legend-item">
-				<span class="legend-dot" style="background: {data.colors[i]}"></span>
-				<span class="legend-label">{label}</span>
-				<span class="legend-value">{data.values[i].toFixed(2)}%</span>
-			</div>
+	<ul class="chart-legend" aria-label={$LL.charts.donut_aria({ count: view.length })}>
+		{#each view as slice, i (slice.label)}
+			<li>
+				<button
+					type="button"
+					class="legend-item"
+					class:is-hovered={hovered === i}
+					onmouseenter={() => highlight(i)}
+					onmouseleave={() => highlight(null)}
+					onfocus={() => highlight(i)}
+					onblur={() => highlight(null)}
+				>
+					<span class="legend-dot" style="--dot: {slice.color}"></span>
+					<span class="legend-label">{slice.label}</span>
+					<span class="legend-value">{slice.value.toFixed(2)}%</span>
+				</button>
+			</li>
 		{/each}
-	</div>
+	</ul>
 </div>
 
 <style>
@@ -123,56 +187,78 @@
 		.donut-wrapper {
 			flex-direction: row;
 			justify-content: center;
-			gap: 1.5rem;
-			align-items: flex-start; /* Alinear arriba para que todos los donuts empiecen a la misma altura */
+			gap: 1.25rem;
+			/* Arriba, para que todos los donuts de la fila empiecen a la misma altura */
+			align-items: flex-start;
 		}
 	}
 
 	.chart-container {
 		position: relative;
 		width: 100%;
-		max-width: 180px;
+		max-width: 170px;
 		aspect-ratio: 1;
-		filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
+		flex-shrink: 0;
 	}
 
 	.chart-legend {
 		display: flex;
 		flex-direction: column;
-		gap: 0.5rem;
+		gap: 0.3rem;
 		width: 100%;
-		max-width: 180px;
+		max-width: 190px;
+		list-style: none;
+		margin: 0;
+		padding: 0;
 	}
 
 	.legend-item {
 		display: flex;
 		align-items: center;
-		gap: 0.6rem;
-		padding: 0.4rem 0.6rem;
-		background: rgba(255, 255, 255, 0.03);
+		gap: 0.55rem;
+		width: 100%;
+		padding: 0.35rem 0.5rem;
+		background: none;
+		border: 1px solid transparent;
 		border-radius: 8px;
-		border: 1px solid rgba(255, 255, 255, 0.05);
+		cursor: default;
+		text-align: left;
+		transition:
+			background 0.15s ease,
+			border-color 0.15s ease;
+	}
+
+	.legend-item.is-hovered {
+		background: rgba(255, 255, 255, 0.05);
+		border-color: rgba(255, 255, 255, 0.1);
 	}
 
 	.legend-dot {
-		width: 8px;
-		height: 8px;
-		border-radius: 50%;
+		width: 9px;
+		height: 9px;
+		border-radius: 3px;
 		flex-shrink: 0;
-		box-shadow: 0 0 8px currentColor;
+		background: var(--dot);
 	}
 
 	.legend-label {
-		font-size: 0.7rem;
-		color: rgba(160, 160, 200, 0.7);
+		font-size: 0.72rem;
+		/* El texto lleva tinta de texto, no el color de la serie: el color lo
+		   carga el punto de al lado. */
+		color: rgba(160, 160, 200, 0.75);
 		font-weight: 600;
 		flex: 1;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
 	.legend-value {
-		font-size: 0.7rem;
+		font-size: 0.72rem;
 		color: #fff;
-		font-weight: 800;
-		font-family: 'Monaco', monospace;
+		font-weight: 700;
+		/* Sin `font-family` propia a propósito: `layout.css` ya le aplica
+		   `tabular-nums` sobre la fuente del proyecto. Antes forzaba
+		   `Monaco, monospace`, que solo existe en macOS. */
 	}
 </style>

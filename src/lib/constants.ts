@@ -1,11 +1,73 @@
 import type { Asset } from './types';
 
-/** Paleta de colores predefinida para asignar a nuevos activos */
+/**
+ * Paleta categórica para los activos, en **orden fijo**.
+ *
+ * Estos seis tonos y este orden no son una elección estética: son el resultado
+ * de pasar el validador de paleta de la guía de visualización contra la
+ * superficie oscura de la app (`#0d0d12`). Las seis comprobaciones pasan, con el
+ * peor par adyacente a ΔE 15,0 para visión con deficiencia de color.
+ *
+ * La paleta anterior tenía quince tonos y **fallaba**: `#d946ef` y `#0ea5e9`
+ * eran consecutivos y para una persona con deuteranopia —en torno al 6 % de los
+ * hombres— resultan indistinguibles (ΔE 1,8). Ocho de los quince estaban además
+ * fuera de la banda de luminancia.
+ *
+ * ⚠️ **El orden importa y hay restricciones que no son evidentes:**
+ *   - el verde no puede ir junto al rosa (ΔE 1,1 en deuteranopia),
+ *   - ni junto al cian (ΔE 11,8 incluso con visión normal),
+ *   - y el azul no puede ir junto al violeta (ΔE 0,4 en deuteranopia).
+ *
+ * Si se toca esta lista, hay que volver a pasar el validador. Y si hace falta un
+ * séptimo tono, **no se inventa**: las posiciones que sobran se agrupan en
+ * «Otros» a nivel de gráfico, con `CHART_NEUTRAL`.
+ */
 export const ASSET_COLORS = [
-	'#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899',
-	'#6366f1', '#14b8a6', '#f97316', '#06b6d4', '#ef4444',
-	'#84cc16', '#a855f7', '#0ea5e9', '#d946ef', '#22c55e'
+	'#d97706', // ámbar
+	'#2563eb', // azul
+	'#059669', // esmeralda
+	'#7c3aed', // violeta
+	'#0891b2', // cian
+	'#e11d48' // rosa
 ];
+
+/**
+ * Los tres bloques de estrategia, también validados como trío independiente
+ * (ΔE 32,3 en el peor par adyacente).
+ *
+ * Van aparte de `ASSET_COLORS` porque responden a otra pregunta: aquí el color
+ * identifica una categoría, no un activo.
+ */
+export const CATEGORY_COLORS = {
+	core: '#2563eb',
+	stocks: '#d97706',
+	satellite: '#7c3aed'
+} as const;
+
+/**
+ * Gris neutro para lo que no es una serie: el resto agrupado en «Otros» y el
+ * punto medio de las escalas divergentes.
+ *
+ * Tiene que ser **neutro de verdad**. Un tono en el centro de una escala
+ * divergente es un anti-patrón: compite con los dos extremos y hace que «en
+ * objetivo» parezca un estado tan señalado como «desviado», cuando es lo
+ * contrario.
+ */
+export const CHART_NEUTRAL = '#6b7280';
+
+/**
+ * Extremos de la escala divergente de desviación respecto al objetivo.
+ *
+ * Azul por debajo, ámbar por encima, y el neutro de arriba en el centro.
+ * Deliberadamente **no** verde en el centro: además del anti-patrón, el verde
+ * choca con el donut de categorías, que está en el panel de al lado del mismo
+ * carrusel y ahí el verde significaba otra cosa.
+ */
+export const DEVIATION_UNDER = '#2563eb';
+export const DEVIATION_OVER = '#d97706';
+
+/** Cuántas porciones se muestran antes de agrupar el resto en «Otros». */
+export const MAX_CHART_SLICES = 6;
 
 /** Iconos predefinidos para asignar a nuevos activos según tipo */
 export const ASSET_ICONS: Record<string, string> = {

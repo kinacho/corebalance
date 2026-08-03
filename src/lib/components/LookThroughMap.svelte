@@ -4,7 +4,8 @@
 	import { formatEUR, formatPercent } from '$lib/utils';
 	import { LL } from '$lib/i18n/i18n-svelte';
 	import { INDICES } from '$lib/lookthrough';
-	import { isNarrowViewport } from '$lib/viewport.svelte';
+	import { ASSET_COLORS, CHART_NEUTRAL } from '$lib/constants';
+	import MapFrame from './MapFrame.svelte';
 
 	/**
 	 * Lo que hay dentro de los fondos: exposición real por región y por sector, y
@@ -23,24 +24,28 @@
 
 	let { showTitle = true }: Props = $props();
 
-	const narrow = isNarrowViewport();
-
 	/**
-	 * Igual que el treemap de desviación: en móvil el lienzo se acerca al cuadrado
-	 * y las letras crecen, porque un rótulo de 8 px no lo lee nadie.
-	 *
-	 * Aquí además los nombres son largos de verdad («Consumo discrecional»,
-	 * «Asia emergente»), así que en pantalla estrecha las celdas muestran **solo
-	 * el porcentaje** y los nombres se leen en el ranking de debajo, que ya los
-	 * lista completos. Es preferible a un mapa lleno de «Consu…».
+	 * El ancho real del contenedor manda sobre el de la ventana: en su carril del
+	 * carrusel este mapa mide unos 340 px también en escritorio, y ampliado pasa a
+	 * más de mil. Ver la nota más larga en `DeviationTreemap.svelte`.
 	 */
+	let containerWidth = $state(0);
+	let expanded = $state(false);
+
 	const VIEW_W = 100;
-	// Ver la nota del mismo valor en `DeviationTreemap.svelte`: este panel es el
-	// más alto del carrusel y marca el alto de todos los demás.
-	const viewH = $derived(narrow.matches ? 88 : 55);
-	const fontLabel = $derived(narrow.matches ? 3.6 : 2.5);
-	const fontPct = $derived(narrow.matches ? 4.6 : 2.8);
-	const pad = $derived(narrow.matches ? 2.2 : 1.5);
+	const pxPerUnit = $derived(containerWidth > 0 ? containerWidth / VIEW_W : 3.4);
+	const isNarrow = $derived(containerWidth > 0 && containerWidth < 460);
+
+	/** Apaisado solo cuando hay ancho; si no, casi cuadrado. */
+	const viewH = $derived(containerWidth >= 560 ? 52 : 84);
+
+	function unitsFor(targetPx: number): number {
+		return targetPx / pxPerUnit;
+	}
+
+	const fontPct = $derived(unitsFor(expanded ? 15 : 13));
+	const fontLabel = $derived(unitsFor(expanded ? 12 : 10));
+	const pad = $derived(unitsFor(6));
 
 	let mode = $state<'regions' | 'sectors'>('regions');
 
@@ -48,22 +53,18 @@
 	const slices = $derived(mode === 'regions' ? data.regions : data.sectors);
 
 	/**
-	 * Paleta por posición en el orden, no por clave. Así la región mayor siempre
-	 * es el azul más fuerte y el mapa se lee igual sea cual sea la cartera.
+	 * La misma paleta categórica validada que el resto de la app, asignada **por
+	 * posición en el orden** y no por clave: así la región mayor siempre lleva el
+	 * primer tono y el mapa se lee igual sea cual sea la cartera.
+	 *
+	 * Pasado el cupo de tonos validados, el resto va al gris neutro en lugar de
+	 * inventar tonos nuevos, que es lo que hacía la paleta anterior de once
+	 * `rgba()` a mano con opacidades decrecientes: bajar el alfa sobre fondo
+	 * oscuro le quita chroma al tono y acerca los últimos entre sí.
 	 */
-	const PALETTE = [
-		'rgba(59, 130, 246, 0.75)',
-		'rgba(16, 185, 129, 0.7)',
-		'rgba(139, 92, 246, 0.7)',
-		'rgba(245, 158, 11, 0.7)',
-		'rgba(6, 182, 212, 0.65)',
-		'rgba(236, 72, 153, 0.6)',
-		'rgba(132, 204, 22, 0.6)',
-		'rgba(249, 115, 22, 0.55)',
-		'rgba(168, 85, 247, 0.5)',
-		'rgba(14, 165, 233, 0.5)',
-		'rgba(244, 63, 94, 0.45)'
-	];
+	function fillFor(index: number): string {
+		return index < ASSET_COLORS.length ? ASSET_COLORS[index] : CHART_NEUTRAL;
+	}
 
 	const cells = $derived.by(() => {
 		const rects = squarify(
@@ -80,9 +81,10 @@
 			const pctText = formatPercent(slice.weight, 0);
 			const showPct = labelFits(pctText, fontPct, rect.w, pad * 2) && rect.h >= fontPct * 1.5;
 
-			// El nombre solo en pantalla ancha, y solo si cabe entero o recortado
-			// con sentido. En móvil se deja al ranking de abajo.
-			const label = narrow.matches ? '' : truncateToWidth(full, fontLabel, rect.w, pad * 2);
+			// El nombre solo si hay ancho de sobra, y solo si cabe entero o recortado
+			// con sentido. En el carril estrecho se deja al ranking de abajo, porque
+			// un mapa lleno de «Consu…» no informa de nada.
+			const label = isNarrow ? '' : truncateToWidth(full, fontLabel, rect.w, pad * 2);
 			const showLabel = label !== '' && rect.h >= fontPct * 1.4 + fontLabel * 1.5;
 
 			return {
@@ -93,14 +95,18 @@
 				showLabel,
 				pctText,
 				showPct,
-				fill: PALETTE[index % PALETTE.length]
+				fill: fillFor(index)
 			};
 		});
 	});
 
-	/** Un id de clipPath válido: las claves son seguras, pero por si cambian. */
-	function clipId(key: string): string {
-		return `lt-clip-${key.replace(/[^a-zA-Z0-9]/g, '_')}`;
+	/**
+	 * El id de recorte va por índice, no por clave: sanear texto a
+	 * `[A-Za-z0-9_]` puede colisionar, y dos celdas con el mismo recorte hacen que
+	 * una escupa su rótulo fuera de su cuadro.
+	 */
+	function clipId(index: number): string {
+		return `lt-clip-${index}`;
 	}
 
 	function labelFor(key: string): string {
@@ -142,37 +148,36 @@
 	}
 </script>
 
-<div class="lookthrough">
-	<div class="head">
-		<div>
-			{#if showTitle}
-				<h4 class="title">{$LL.lookthrough.title()}</h4>
-			{/if}
-			<p class="subtitle">{$LL.lookthrough.subtitle()}</p>
+<MapFrame
+	title={$LL.lookthrough.title()}
+	subtitle={$LL.lookthrough.subtitle()}
+	{showTitle}
+	canExpand={data.coveredValue > 0}
+	bind:expanded
+	bind:contentWidth={containerWidth}
+>
+	{#if data.coveredValue > 0}
+		<div class="mode-switch" role="tablist">
+			<button
+				role="tab"
+				class="mode-btn"
+				class:active={mode === 'regions'}
+				aria-selected={mode === 'regions'}
+				onclick={() => (mode = 'regions')}
+			>
+				{$LL.lookthrough.tab_regions()}
+			</button>
+			<button
+				role="tab"
+				class="mode-btn"
+				class:active={mode === 'sectors'}
+				aria-selected={mode === 'sectors'}
+				onclick={() => (mode = 'sectors')}
+			>
+				{$LL.lookthrough.tab_sectors()}
+			</button>
 		</div>
-		{#if data.coveredValue > 0}
-			<div class="mode-switch" role="tablist">
-				<button
-					role="tab"
-					class="mode-btn"
-					class:active={mode === 'regions'}
-					aria-selected={mode === 'regions'}
-					onclick={() => (mode = 'regions')}
-				>
-					{$LL.lookthrough.tab_regions()}
-				</button>
-				<button
-					role="tab"
-					class="mode-btn"
-					class:active={mode === 'sectors'}
-					aria-selected={mode === 'sectors'}
-					onclick={() => (mode = 'sectors')}
-				>
-					{$LL.lookthrough.tab_sectors()}
-				</button>
-			</div>
-		{/if}
-	</div>
+	{/if}
 
 	{#if data.coveredValue <= 0}
 		<p class="empty">{$LL.lookthrough.empty()}</p>
@@ -191,8 +196,8 @@
 				<defs>
 					<!-- Recorte por celda: la garantía dura de que ningún rótulo se
 					     pinte encima de la celda vecina. -->
-					{#each cells as cell (cell.slice.key)}
-						<clipPath id={clipId(cell.slice.key)}>
+					{#each cells as cell, i (cell.slice.key)}
+						<clipPath id={clipId(i)}>
 							<rect
 								x={cell.rect.x}
 								y={cell.rect.y}
@@ -203,7 +208,7 @@
 					{/each}
 				</defs>
 
-				{#each cells as cell (cell.slice.key)}
+				{#each cells as cell, i (cell.slice.key)}
 					<g>
 						<title>{cell.full}: {formatPercent(cell.slice.weight, 1)}</title>
 						<rect
@@ -212,11 +217,11 @@
 							width={cell.rect.w}
 							height={cell.rect.h}
 							fill={cell.fill}
-							stroke="rgba(5, 5, 10, 0.85)"
-							stroke-width="0.4"
-							rx="0.8"
+							stroke="rgba(5, 5, 10, 0.9)"
+							stroke-width={unitsFor(2)}
+							rx={unitsFor(3)}
 						/>
-						<g clip-path="url(#{clipId(cell.slice.key)})">
+						<g clip-path="url(#{clipId(i)})">
 							{#if cell.showPct}
 								<text
 									class="cell-pct"
@@ -243,12 +248,11 @@
 			</svg>
 		{/if}
 
-		<!-- En móvil el mapa no lleva nombres, así que el ranking es donde el
-		     usuario lee de qué es cada rectángulo: va una fila más largo que en
-		     escritorio, pero sin dispararse, porque este panel marca el alto de
-		     todo el carrusel. -->
+		<!-- En el carril estrecho el mapa no lleva nombres, así que el ranking es
+		     donde el usuario lee de qué es cada rectángulo: va una fila más largo.
+		     Ampliado caben todas las franjas, que es media razón para ampliar. -->
 		<ol class="ranking">
-			{#each slices.slice(0, narrow.matches ? 6 : 5) as slice (slice.key)}
+			{#each slices.slice(0, expanded ? slices.length : isNarrow ? 6 : 5) as slice (slice.key)}
 				<li class="rank-row">
 					<span class="rank-swatch" aria-hidden="true" style="background: {cells.find((c) => c.slice.key === slice.key)?.fill ?? 'transparent'}"></span>
 					<span class="rank-label">{labelFor(slice.key)}</span>
@@ -263,7 +267,7 @@
 		{#if data.overlaps.length > 0}
 			<section class="overlaps">
 				<h5 class="overlap-heading">⚠️ {$LL.lookthrough.overlap_heading()}</h5>
-				{#each data.overlaps.slice(0, narrow.matches ? 2 : 4) as overlap (overlap.tickerA + overlap.tickerB)}
+				{#each data.overlaps.slice(0, expanded ? data.overlaps.length : isNarrow ? 2 : 3) as overlap (overlap.tickerA + overlap.tickerB)}
 					<p class="overlap-row">
 						{$LL.lookthrough.overlap_row({
 							a: overlap.nameA,
@@ -323,43 +327,17 @@
 			</div>
 		</details>
 	{/if}
-</div>
+</MapFrame>
 
 <style>
-	.lookthrough {
-		display: flex;
-		flex-direction: column;
-		gap: 0.85rem;
-		width: 100%;
-	}
-
-	.head {
-		display: flex;
-		align-items: flex-start;
-		justify-content: space-between;
-		gap: 0.75rem;
-		flex-wrap: wrap;
-	}
-
-	.title {
-		font-size: 0.8rem;
-		font-weight: 700;
-		color: var(--text-primary);
-		margin: 0;
-	}
-
-	.subtitle {
-		font-size: 0.7rem;
-		color: rgba(160, 160, 200, 0.6);
-		margin: 0.15rem 0 0 0;
-	}
-
+	/* El título, el subtítulo y el botón de ampliar los pone `MapFrame`. */
 	.mode-switch {
 		display: flex;
 		gap: 0.25rem;
 		background: rgba(0, 0, 0, 0.25);
 		border-radius: 999px;
 		padding: 0.2rem;
+		align-self: flex-start;
 	}
 
 	.mode-btn {
@@ -555,12 +533,6 @@
 	@media (max-width: 640px) {
 		/* El selector región/sector pasa a ocupar todo el ancho: dos objetivos
 		   grandes se aciertan con el pulgar, dos pastillas de 70 px no. */
-		.head {
-			flex-direction: column;
-			align-items: stretch;
-			gap: 0.6rem;
-		}
-
 		.mode-switch {
 			width: 100%;
 		}

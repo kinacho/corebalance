@@ -713,6 +713,14 @@ const es = {
     sources_label: 'Base legal',
     sources_body: 'art. 94 LIRPF (traspasos entre IIC), art. 37.2 (FIFO para valores homogéneos), art. 33.5 f) y g) (regla antiaplicación) y art. 66 (tipos de la base del ahorro).',
   },
+  // Gráficos, común
+  charts: {
+    other_slices: 'Otros ({count:number})',
+    donut_aria: 'Gráfico de anillo con {count:number} porciones. Los valores están en la lista contigua.',
+    expand: 'Ampliar',
+    collapse: 'Cerrar',
+    expanded_aria: 'Vista ampliada de {name:string}',
+  },
   // Mapa de desviación
   treemap: {
     title: 'Mapa de desviación',

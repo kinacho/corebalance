@@ -18,7 +18,7 @@
   import { portfolio } from "$lib/stores/portfolio.svelte";
   import { ui } from "$lib/stores/ui.svelte";
 
-  import { DASHBOARD_TABS, type TabId } from "$lib/constants";
+  import { DASHBOARD_TABS, CATEGORY_COLORS, type TabId } from "$lib/constants";
   import { browser } from "$app/environment";
   import { goto, beforeNavigate } from "$app/navigation";
   import { navigating } from "$app/stores";
@@ -118,17 +118,17 @@
       {
         name: `Core (${portfolio.targetLabel})`,
         value: portfolio.portfolioState.totalCapital,
-        color: "#3b82f6",
+        color: CATEGORY_COLORS.core,
       },
       {
         name: $LL.db.reclassify_stocks(),
         value: portfolio.stockState.totalCapital,
-        color: "#10b981",
+        color: CATEGORY_COLORS.stocks,
       },
       {
         name: $LL.db.reclassify_satellite(),
         value: portfolio.satelliteState.totalCapital,
-        color: "#f59e0b",
+        color: CATEGORY_COLORS.satellite,
       },
     ];
     const filtered = categories.filter((c) => c.value > 0);

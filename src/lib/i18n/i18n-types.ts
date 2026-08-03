@@ -2673,6 +2673,31 @@ type RootTranslation = {
 		 */
 		sources_body: string
 	}
+	charts: {
+		/**
+		 * O​t​r​o​s​ ​(​{​c​o​u​n​t​}​)
+		 * @param {number} count
+		 */
+		other_slices: RequiredParams<'count'>
+		/**
+		 * G​r​á​f​i​c​o​ ​d​e​ ​a​n​i​l​l​o​ ​c​o​n​ ​{​c​o​u​n​t​}​ ​p​o​r​c​i​o​n​e​s​.​ ​L​o​s​ ​v​a​l​o​r​e​s​ ​e​s​t​á​n​ ​e​n​ ​l​a​ ​l​i​s​t​a​ ​c​o​n​t​i​g​u​a​.
+		 * @param {number} count
+		 */
+		donut_aria: RequiredParams<'count'>
+		/**
+		 * A​m​p​l​i​a​r
+		 */
+		expand: string
+		/**
+		 * C​e​r​r​a​r
+		 */
+		collapse: string
+		/**
+		 * V​i​s​t​a​ ​a​m​p​l​i​a​d​a​ ​d​e​ ​{​n​a​m​e​}
+		 * @param {string} name
+		 */
+		expanded_aria: RequiredParams<'name'>
+	}
 	treemap: {
 		/**
 		 * M​a​p​a​ ​d​e​ ​d​e​s​v​i​a​c​i​ó​n
@@ -6332,6 +6357,28 @@ export type TranslationFunctions = {
 		 * art. 94 LIRPF (traspasos entre IIC), art. 37.2 (FIFO para valores homogéneos), art. 33.5 f) y g) (regla antiaplicación) y art. 66 (tipos de la base del ahorro).
 		 */
 		sources_body: () => LocalizedString
+	}
+	charts: {
+		/**
+		 * Otros ({count})
+		 */
+		other_slices: (arg: { count: number }) => LocalizedString
+		/**
+		 * Gráfico de anillo con {count} porciones. Los valores están en la lista contigua.
+		 */
+		donut_aria: (arg: { count: number }) => LocalizedString
+		/**
+		 * Ampliar
+		 */
+		expand: () => LocalizedString
+		/**
+		 * Cerrar
+		 */
+		collapse: () => LocalizedString
+		/**
+		 * Vista ampliada de {name}
+		 */
+		expanded_aria: (arg: { name: string }) => LocalizedString
 	}
 	treemap: {
 		/**

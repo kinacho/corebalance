@@ -711,6 +711,14 @@ const en: Translation = {
     sources_label: 'Legal basis',
     sources_body: 'Spanish income tax law: art. 94 (transfers between collective investment schemes), art. 37.2 (FIFO for homogeneous securities), art. 33.5 f) and g) (wash-sale rule) and art. 66 (savings-income rates).',
   },
+  // Charts, shared
+  charts: {
+    other_slices: 'Other ({count})',
+    donut_aria: 'Doughnut chart with {count} slices. The values are in the list next to it.',
+    expand: 'Expand',
+    collapse: 'Close',
+    expanded_aria: 'Expanded view of {name}',
+  },
   // Deviation map
   treemap: {
     title: 'Deviation map',
