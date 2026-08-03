@@ -16,6 +16,13 @@
 	 * patrimonio total, y lo que se queda fuera se dice en voz alta.
 	 */
 
+	interface Props {
+		/** Ver la nota del mismo `prop` en `DeviationTreemap.svelte`. */
+		showTitle?: boolean;
+	}
+
+	let { showTitle = true }: Props = $props();
+
 	const narrow = isNarrowViewport();
 
 	/**
@@ -28,7 +35,9 @@
 	 * lista completos. Es preferible a un mapa lleno de «Consu…».
 	 */
 	const VIEW_W = 100;
-	const viewH = $derived(narrow.matches ? 100 : 55);
+	// Ver la nota del mismo valor en `DeviationTreemap.svelte`: este panel es el
+	// más alto del carrusel y marca el alto de todos los demás.
+	const viewH = $derived(narrow.matches ? 88 : 55);
 	const fontLabel = $derived(narrow.matches ? 3.6 : 2.5);
 	const fontPct = $derived(narrow.matches ? 4.6 : 2.8);
 	const pad = $derived(narrow.matches ? 2.2 : 1.5);
@@ -136,7 +145,9 @@
 <div class="lookthrough">
 	<div class="head">
 		<div>
-			<h4 class="title">{$LL.lookthrough.title()}</h4>
+			{#if showTitle}
+				<h4 class="title">{$LL.lookthrough.title()}</h4>
+			{/if}
 			<p class="subtitle">{$LL.lookthrough.subtitle()}</p>
 		</div>
 		{#if data.coveredValue > 0}
@@ -232,10 +243,12 @@
 			</svg>
 		{/if}
 
-		<!-- En móvil el mapa no lleva nombres, así que el ranking se alarga: es
-		     donde el usuario lee de qué es cada rectángulo. -->
+		<!-- En móvil el mapa no lleva nombres, así que el ranking es donde el
+		     usuario lee de qué es cada rectángulo: va una fila más largo que en
+		     escritorio, pero sin dispararse, porque este panel marca el alto de
+		     todo el carrusel. -->
 		<ol class="ranking">
-			{#each slices.slice(0, narrow.matches ? 7 : 5) as slice (slice.key)}
+			{#each slices.slice(0, narrow.matches ? 6 : 5) as slice (slice.key)}
 				<li class="rank-row">
 					<span class="rank-swatch" aria-hidden="true" style="background: {cells.find((c) => c.slice.key === slice.key)?.fill ?? 'transparent'}"></span>
 					<span class="rank-label">{labelFor(slice.key)}</span>
@@ -250,7 +263,7 @@
 		{#if data.overlaps.length > 0}
 			<section class="overlaps">
 				<h5 class="overlap-heading">⚠️ {$LL.lookthrough.overlap_heading()}</h5>
-				{#each data.overlaps.slice(0, 4) as overlap (overlap.tickerA + overlap.tickerB)}
+				{#each data.overlaps.slice(0, narrow.matches ? 2 : 4) as overlap (overlap.tickerA + overlap.tickerB)}
 					<p class="overlap-row">
 						{$LL.lookthrough.overlap_row({
 							a: overlap.nameA,
@@ -271,31 +284,44 @@
 			</section>
 		{/if}
 
-		<div class="notes">
-			<p class="note">
-				{$LL.lookthrough.coverage_note({ amount: formatEUR(data.coveredValue) })}
+		<!--
+			Las notas van plegadas: son cuatro o cinco líneas de letra pequeña que se
+			leen una vez, y desplegadas hacían de este panel el más alto del
+			carrusel, lo que estira a todos los demás.
+
+			El aviso de estimación se queda **fuera** del plegado a propósito: dice
+			que una cifra del mapa no está contrastada, y eso no puede depender de
+			que al usuario le apetezca abrir un desplegable.
+		-->
+		{#if data.estimatedIndices.length > 0}
+			<p class="note estimated">
+				{$LL.lookthrough.estimated_warning({ indices: data.estimatedIndices.join(', ') })}
 			</p>
-			{#if data.uncoveredValue > 0}
+		{/if}
+
+		<details class="notes">
+			<summary class="notes-summary">{$LL.lookthrough.notes_summary()}</summary>
+			<div class="notes-body">
 				<p class="note">
-					{$LL.lookthrough.uncovered({
-						amount: formatEUR(data.uncoveredValue),
-						tickers: data.uncoveredTickers.slice(0, 6).join(', ')
-					})}
+					{$LL.lookthrough.coverage_note({ amount: formatEUR(data.coveredValue) })}
 				</p>
-			{/if}
-			{#if mode === 'sectors' && data.noSectorValue > 0}
-				<p class="note">
-					{$LL.lookthrough.no_sector({ amount: formatEUR(data.noSectorValue) })}
-				</p>
-			{/if}
-			<p class="note">{$LL.lookthrough.as_of({ date: data.asOf })}</p>
-			{#if data.estimatedIndices.length > 0}
-				<p class="note estimated">
-					{$LL.lookthrough.estimated_warning({ indices: data.estimatedIndices.join(', ') })}
-				</p>
-			{/if}
-			<p class="note">{$LL.lookthrough.disclaimer()}</p>
-		</div>
+				{#if data.uncoveredValue > 0}
+					<p class="note">
+						{$LL.lookthrough.uncovered({
+							amount: formatEUR(data.uncoveredValue),
+							tickers: data.uncoveredTickers.slice(0, 6).join(', ')
+						})}
+					</p>
+				{/if}
+				{#if mode === 'sectors' && data.noSectorValue > 0}
+					<p class="note">
+						{$LL.lookthrough.no_sector({ amount: formatEUR(data.noSectorValue) })}
+					</p>
+				{/if}
+				<p class="note">{$LL.lookthrough.as_of({ date: data.asOf })}</p>
+				<p class="note">{$LL.lookthrough.disclaimer()}</p>
+			</div>
+		</details>
 	{/if}
 </div>
 
@@ -469,11 +495,40 @@
 	}
 
 	.notes {
+		padding-top: 0.5rem;
+		border-top: 1px solid rgba(255, 255, 255, 0.05);
+	}
+
+	.notes-summary {
+		font-size: 0.68rem;
+		color: rgba(160, 160, 200, 0.6);
+		cursor: pointer;
+		list-style: none;
+		display: flex;
+		align-items: center;
+		gap: 0.35rem;
+		padding: 0.25rem 0;
+	}
+
+	.notes-summary::-webkit-details-marker {
+		display: none;
+	}
+
+	.notes-summary::before {
+		content: '▸';
+		font-size: 0.6rem;
+		transition: transform 0.2s ease;
+	}
+
+	.notes[open] .notes-summary::before {
+		transform: rotate(90deg);
+	}
+
+	.notes-body {
 		display: flex;
 		flex-direction: column;
 		gap: 0.3rem;
-		padding-top: 0.5rem;
-		border-top: 1px solid rgba(255, 255, 255, 0.05);
+		padding-top: 0.35rem;
 	}
 
 	.note {

@@ -13,6 +13,17 @@
 	 * reaccionar, que es justo el hábito que esta app existe para evitar.
 	 */
 
+	interface Props {
+		/**
+		 * El carrusel de gráficos pone su propia etiqueta encima de cada panel, así
+		 * que ahí el título propio del mapa sobraría. El subtítulo se queda en los
+		 * dos casos: explica qué significa el color, que no es evidente.
+		 */
+		showTitle?: boolean;
+	}
+
+	let { showTitle = true }: Props = $props();
+
 	const narrow = isNarrowViewport();
 
 	/**
@@ -24,7 +35,10 @@
 	 * porque el SVG escala con el contenedor.
 	 */
 	const VIEW_W = 100;
-	const viewH = $derived(narrow.matches ? 105 : 60);
+	// Casi cuadrado en móvil, pero sin pasarse: los mapas viven en el carrusel de
+	// gráficos y ahí todos los carriles comparten alto, así que un mapa muy alto
+	// deja a los donuts flotando en una caja enorme.
+	const viewH = $derived(narrow.matches ? 92 : 60);
 	const fontTicker = $derived(narrow.matches ? 4.4 : 2.8);
 	const fontFigure = $derived(narrow.matches ? 3.8 : 2.4);
 	const pad = $derived(narrow.matches ? 2.2 : 1.5);
@@ -101,11 +115,21 @@
 			: `rgba(59, 130, 246, ${alpha.toFixed(2)})`;
 	}
 
+	/**
+	 * Dos mensajes en lugar de uno con relleno.
+	 *
+	 * Antes se metía «sin objetivo» en el hueco `{target}` de «…objetivo
+	 * {target}», y salía «objetivo sin objetivo». Componer frases inyectando
+	 * frases produce eso; una plantilla por caso, no.
+	 */
 	function tooltipFor(weight: number, targetWeight: number, name: string): string {
+		if (targetWeight <= 0) {
+			return $LL.treemap.tooltip_no_target({ name, weight: formatPercent(weight, 1) });
+		}
 		return $LL.treemap.tooltip({
 			name,
 			weight: formatPercent(weight, 1),
-			target: targetWeight > 0 ? formatPercent(targetWeight, 1) : $LL.treemap.no_target()
+			target: formatPercent(targetWeight, 1)
 		});
 	}
 
@@ -117,7 +141,9 @@
 
 <div class="treemap-block">
 	<div class="treemap-head">
-		<h4 class="treemap-title">{$LL.treemap.title()}</h4>
+		{#if showTitle}
+			<h4 class="treemap-title">{$LL.treemap.title()}</h4>
+		{/if}
 		<p class="treemap-subtitle">{$LL.treemap.subtitle()}</p>
 	</div>
 

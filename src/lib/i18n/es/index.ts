@@ -722,7 +722,7 @@ const es = {
     legend_over: 'Por encima',
     legend_under: 'Por debajo',
     tooltip: '{name:string}: {weight:string} de tu cartera, objetivo {target:string}',
-    no_target: 'sin objetivo',
+    tooltip_no_target: '{name:string}: {weight:string} de tu cartera, sin objetivo fijado',
   },
   // Transparencia del subyacente
   lookthrough: {
@@ -757,6 +757,7 @@ const es = {
     uncovered: '{amount:string} sin analizar ({tickers:string}): acciones sueltas, efectivo o activos cuyo índice no reconocemos.',
     no_sector: '{amount:string} de renta fija se cuenta por región pero no por sector.',
     coverage_note: 'Los porcentajes son sobre lo analizado ({amount:string}), no sobre tu patrimonio total.',
+    notes_summary: 'Cómo se ha calculado esto',
     as_of: 'Pesos de índice a fecha {date:string}, tomados de las fichas oficiales de cada índice.',
     estimated_warning: 'Los pesos de {indices:string} son una estimación sin ficha contrastada, así que tómalos como orden de magnitud.',
     disclaimer: 'Estimación calculada a nivel de índice, no de posición individual: sirve para ver a qué estás expuesto, no como composición exacta de tu cartera.',
@@ -849,7 +850,7 @@ const es = {
       },
       maps: {
         title: 'Qué tienes de verdad',
-        description: 'El primer mapa colorea cada activo según lo lejos que está de su objetivo. El segundo abre tus fondos por dentro y te dice en qué regiones y sectores estás en realidad, y si dos de ellos apuntan a las mismas empresas.',
+        description: 'Este mapa colorea cada activo según lo lejos que está de su objetivo. En el panel siguiente, «Qué tienes de verdad» abre tus fondos por dentro: en qué regiones y sectores estás en realidad, y si dos de ellos apuntan a las mismas empresas.',
       },
       manage: {
         title: 'Cuando quieras cambiar algo',

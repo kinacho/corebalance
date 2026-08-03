@@ -2706,9 +2706,11 @@ type RootTranslation = {
 		 */
 		tooltip: RequiredParams<'name' | 'target' | 'weight'>
 		/**
-		 * s​i​n​ ​o​b​j​e​t​i​v​o
+		 * {​n​a​m​e​}​:​ ​{​w​e​i​g​h​t​}​ ​d​e​ ​t​u​ ​c​a​r​t​e​r​a​,​ ​s​i​n​ ​o​b​j​e​t​i​v​o​ ​f​i​j​a​d​o
+		 * @param {string} name
+		 * @param {string} weight
 		 */
-		no_target: string
+		tooltip_no_target: RequiredParams<'name' | 'weight'>
 	}
 	lookthrough: {
 		/**
@@ -2843,6 +2845,10 @@ type RootTranslation = {
 		 * @param {string} amount
 		 */
 		coverage_note: RequiredParams<'amount'>
+		/**
+		 * C​ó​m​o​ ​s​e​ ​h​a​ ​c​a​l​c​u​l​a​d​o​ ​e​s​t​o
+		 */
+		notes_summary: string
 		/**
 		 * P​e​s​o​s​ ​d​e​ ​í​n​d​i​c​e​ ​a​ ​f​e​c​h​a​ ​{​d​a​t​e​}​,​ ​t​o​m​a​d​o​s​ ​d​e​ ​l​a​s​ ​f​i​c​h​a​s​ ​o​f​i​c​i​a​l​e​s​ ​d​e​ ​c​a​d​a​ ​í​n​d​i​c​e​.
 		 * @param {string} date
@@ -3108,7 +3114,7 @@ type RootTranslation = {
 				 */
 				title: string
 				/**
-				 * E​l​ ​p​r​i​m​e​r​ ​m​a​p​a​ ​c​o​l​o​r​e​a​ ​c​a​d​a​ ​a​c​t​i​v​o​ ​s​e​g​ú​n​ ​l​o​ ​l​e​j​o​s​ ​q​u​e​ ​e​s​t​á​ ​d​e​ ​s​u​ ​o​b​j​e​t​i​v​o​.​ ​E​l​ ​s​e​g​u​n​d​o​ ​a​b​r​e​ ​t​u​s​ ​f​o​n​d​o​s​ ​p​o​r​ ​d​e​n​t​r​o​ ​y​ ​t​e​ ​d​i​c​e​ ​e​n​ ​q​u​é​ ​r​e​g​i​o​n​e​s​ ​y​ ​s​e​c​t​o​r​e​s​ ​e​s​t​á​s​ ​e​n​ ​r​e​a​l​i​d​a​d​,​ ​y​ ​s​i​ ​d​o​s​ ​d​e​ ​e​l​l​o​s​ ​a​p​u​n​t​a​n​ ​a​ ​l​a​s​ ​m​i​s​m​a​s​ ​e​m​p​r​e​s​a​s​.
+				 * E​s​t​e​ ​m​a​p​a​ ​c​o​l​o​r​e​a​ ​c​a​d​a​ ​a​c​t​i​v​o​ ​s​e​g​ú​n​ ​l​o​ ​l​e​j​o​s​ ​q​u​e​ ​e​s​t​á​ ​d​e​ ​s​u​ ​o​b​j​e​t​i​v​o​.​ ​E​n​ ​e​l​ ​p​a​n​e​l​ ​s​i​g​u​i​e​n​t​e​,​ ​«​Q​u​é​ ​t​i​e​n​e​s​ ​d​e​ ​v​e​r​d​a​d​»​ ​a​b​r​e​ ​t​u​s​ ​f​o​n​d​o​s​ ​p​o​r​ ​d​e​n​t​r​o​:​ ​e​n​ ​q​u​é​ ​r​e​g​i​o​n​e​s​ ​y​ ​s​e​c​t​o​r​e​s​ ​e​s​t​á​s​ ​e​n​ ​r​e​a​l​i​d​a​d​,​ ​y​ ​s​i​ ​d​o​s​ ​d​e​ ​e​l​l​o​s​ ​a​p​u​n​t​a​n​ ​a​ ​l​a​s​ ​m​i​s​m​a​s​ ​e​m​p​r​e​s​a​s​.
 				 */
 				description: string
 			}
@@ -6357,9 +6363,9 @@ export type TranslationFunctions = {
 		 */
 		tooltip: (arg: { name: string, target: string, weight: string }) => LocalizedString
 		/**
-		 * sin objetivo
+		 * {name}: {weight} de tu cartera, sin objetivo fijado
 		 */
-		no_target: () => LocalizedString
+		tooltip_no_target: (arg: { name: string, weight: string }) => LocalizedString
 	}
 	lookthrough: {
 		/**
@@ -6486,6 +6492,10 @@ export type TranslationFunctions = {
 		 * Los porcentajes son sobre lo analizado ({amount}), no sobre tu patrimonio total.
 		 */
 		coverage_note: (arg: { amount: string }) => LocalizedString
+		/**
+		 * Cómo se ha calculado esto
+		 */
+		notes_summary: () => LocalizedString
 		/**
 		 * Pesos de índice a fecha {date}, tomados de las fichas oficiales de cada índice.
 		 */
@@ -6745,7 +6755,7 @@ export type TranslationFunctions = {
 				 */
 				title: () => LocalizedString
 				/**
-				 * El primer mapa colorea cada activo según lo lejos que está de su objetivo. El segundo abre tus fondos por dentro y te dice en qué regiones y sectores estás en realidad, y si dos de ellos apuntan a las mismas empresas.
+				 * Este mapa colorea cada activo según lo lejos que está de su objetivo. En el panel siguiente, «Qué tienes de verdad» abre tus fondos por dentro: en qué regiones y sectores estás en realidad, y si dos de ellos apuntan a las mismas empresas.
 				 */
 				description: () => LocalizedString
 			}

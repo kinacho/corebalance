@@ -720,7 +720,7 @@ const en: Translation = {
     legend_over: 'Overweight',
     legend_under: 'Underweight',
     tooltip: '{name}: {weight} of your portfolio, target {target}',
-    no_target: 'no target',
+    tooltip_no_target: '{name}: {weight} of your portfolio, no target set',
   },
   // Look-through exposure
   lookthrough: {
@@ -755,6 +755,7 @@ const en: Translation = {
     uncovered: '{amount} not analysed ({tickers}): individual shares, cash, or assets whose index we do not recognise.',
     no_sector: '{amount} of fixed income is counted by region but not by sector.',
     coverage_note: 'Percentages are of what was analysed ({amount}), not of your total portfolio.',
+    notes_summary: 'How this was worked out',
     as_of: 'Index weights as of {date}, taken from each index\'s official factsheet.',
     estimated_warning: 'The weights for {indices} are an estimate with no factsheet checked against them, so treat them as an order of magnitude.',
     disclaimer: 'Estimated at index level, not position by position: useful for seeing what you are exposed to, not as the exact composition of your portfolio.',
@@ -847,7 +848,7 @@ const en: Translation = {
       },
       maps: {
         title: 'What you actually own',
-        description: 'The first map colours each asset by how far it sits from its target. The second one opens your funds up and tells you which regions and sectors you are really in, and whether two of them point at the same companies.',
+        description: 'This map colours each asset by how far it sits from its target. In the next panel, "What you actually own" opens your funds up: which regions and sectors you are really in, and whether two of them point at the same companies.',
       },
       manage: {
         title: 'When you want to change something',

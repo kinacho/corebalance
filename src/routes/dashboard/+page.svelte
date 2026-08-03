@@ -340,6 +340,12 @@
           <div class="charts-mobile-hint">
             <span>{$LL.db.swipe_hint()}</span>
           </div>
+          <!-- Los dos mapas viven aquí, dentro del carrusel, y no en una sección
+               propia: en móvil como tarjetas a pantalla completa ocupaban dos
+               pantallas de scroll, y deslizándose son dos paneles más.
+               Siempre montados como el resto, sin `{#if}`: el selector
+               región/sector del mapa del subyacente perdería su estado en cada
+               cambio de pestaña. -->
           <div class="charts-grid">
             <div class="chart-box">
               <h4 class="chart-label">{$LL.db.chart_actual_strategy()}</h4>
@@ -353,21 +359,15 @@
               <h4 class="chart-label">{$LL.db.chart_global_detail()}</h4>
               <DonutChart data={detailedChartData} />
             </div>
+            <div id="tour-maps" class="chart-box map-box">
+              <h4 class="chart-label">{$LL.treemap.title()}</h4>
+              <DeviationTreemap showTitle={false} />
+            </div>
+            <div class="chart-box map-box map-box-wide">
+              <h4 class="chart-label">{$LL.lookthrough.title()}</h4>
+              <LookThroughMap showTitle={false} />
+            </div>
           </div>
-        </div>
-      </section>
-
-      <!-- Mapas: desviación y transparencia del subyacente.
-           Van en la pestaña de gráficos y siempre montados, como el resto: el
-           treemap es SVG y no tiene estado que perder, pero el selector
-           región/sector del mapa del subyacente sí, y con un {#if} se
-           reiniciaría cada vez que el usuario cambia de pestaña. -->
-      <section id="tour-maps" class="maps-section" class:tab-hidden={activeTab !== "charts"}>
-        <div class="map-card card">
-          <DeviationTreemap />
-        </div>
-        <div class="map-card card">
-          <LookThroughMap />
         </div>
       </section>
 
@@ -671,41 +671,28 @@
     overflow: visible;
   }
 
-  /* Los dos mapas: en móvil apilados, en escritorio uno al lado del otro. */
-  .maps-section {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-  }
-
-  @media (max-width: 640px) {
-    .map-card {
-      /* Menos margen lateral para que el mapa gane ancho, que es lo escaso. */
-      padding: 1rem 0.85rem;
-      border-radius: 22px;
-    }
-  }
-
-  .map-card {
-    padding: 1.25rem;
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(24px) saturate(200%);
-    -webkit-backdrop-filter: blur(24px) saturate(200%);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 28px;
-    box-shadow: 0 12px 48px 0 rgba(0, 0, 0, 0.5);
-    min-width: 0;
-  }
-
   .charts-grid {
     display: grid;
-    grid-template-columns: repeat(3, 100%);
+    /* Cinco carriles: tres donuts y los dos mapas. */
+    grid-template-columns: repeat(5, 100%);
     gap: 0;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
     -ms-overflow-style: none;
+  }
+
+  /* Los mapas necesitan todo el ancho del carril; los donuts van centrados. */
+  .map-box {
+    align-items: stretch;
+    min-width: 0;
+  }
+
+  /* Cada carril a su alto natural: sin esto el carril más alto —el mapa del
+     subyacente— estira a los tres donuts y quedan flotando en el centro de una
+     caja enorme. */
+  .charts-grid > .chart-box {
+    align-self: start;
   }
   .charts-grid::-webkit-scrollbar {
     display: none;
@@ -749,7 +736,11 @@
       padding: 2rem;
     }
     .charts-grid {
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      /* Tres carriles fijos en vez de `auto-fit`: con cinco elementos hace falta
+         saber cuántos hay por fila para que el mapa del subyacente pueda ocupar
+         dos. A partir de 1024 px `auto-fit` daba tres de todas formas, así que
+         para los donuts no cambia nada. */
+      grid-template-columns: repeat(3, 1fr);
       gap: 2rem;
       overflow: visible;
       scroll-snap-type: none;
@@ -758,11 +749,13 @@
       padding: 0;
       align-items: flex-start;
     }
+    /* Segunda fila: el mapa de desviación en un carril y el del subyacente en
+       dos, que es lo que necesita para su ranking y sus avisos. */
+    .map-box-wide {
+      grid-column: span 2;
+    }
     .desktop-charts-section {
       display: block !important;
-    }
-    .maps-section {
-      grid-template-columns: 1fr 1fr;
     }
   }
 
@@ -988,12 +981,6 @@
 
     .sidebar-item.tab-hidden {
       display: flex !important;
-    }
-
-    /* En escritorio no hay pestañas y `.tab-hidden` revierte a `display: block`,
-       que aplastaría la rejilla de dos columnas de los mapas. */
-    .maps-section.tab-hidden {
-      display: grid !important;
     }
   }
 </style>
