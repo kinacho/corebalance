@@ -66,6 +66,19 @@ export const CHART_NEUTRAL = '#6b7280';
 export const DEVIATION_UNDER = '#2563eb';
 export const DEVIATION_OVER = '#d97706';
 
+/**
+ * Relleno de un activo **sin peso objetivo**, que no participa en la escala.
+ *
+ * Tiene que ser un gris apagado pero **claramente visible**. Antes era blanco al
+ * 6 % y en la práctica se veía negro: en una cartera donde solo el bloque
+ * principal tiene objetivos —la demo, y la mayoría de las carteras reales— eso
+ * dejaba seis de nueve recuadros invisibles y el mapa parecía roto.
+ *
+ * Distinto y bastante más oscuro que `CHART_NEUTRAL`, que significa otra cosa:
+ * ahí sí hay objetivo y está cumplido.
+ */
+export const NO_TARGET_FILL = '#4b5563';
+
 /** Cuántas porciones se muestran antes de agrupar el resto en «Otros». */
 export const MAX_CHART_SLICES = 6;
 

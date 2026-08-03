@@ -718,8 +718,7 @@ const es = {
     other_slices: 'Otros ({count:number})',
     donut_aria: 'Gráfico de anillo con {count:number} porciones. Los valores están en la lista contigua.',
     expand: 'Ampliar',
-    collapse: 'Cerrar',
-    expanded_aria: 'Vista ampliada de {name:string}',
+    collapse: 'Reducir',
   },
   // Mapa de desviación
   treemap: {
@@ -729,6 +728,7 @@ const es = {
     legend_on: 'En objetivo',
     legend_over: 'Por encima',
     legend_under: 'Por debajo',
+    legend_no_target: 'Sin objetivo',
     tooltip: '{name:string}: {weight:string} de tu cartera, objetivo {target:string}',
     tooltip_no_target: '{name:string}: {weight:string} de tu cartera, sin objetivo fijado',
   },

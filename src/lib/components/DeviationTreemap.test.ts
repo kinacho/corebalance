@@ -63,9 +63,13 @@ function makePosition(
 const POSITIONS = [
 	makePosition('VANGUARD-GLOBAL-STOCK', 'Vanguard Global Stock Index', 9000, 0.5),
 	makePosition('CASH-DEPOSITO', 'Depósito remunerado', 800, 0.2),
-	makePosition('MSCI-EMERGING-IMI', 'iShares Emerging Markets IMI', 150, 0.2),
-	makePosition('WWWWWWWW', 'Activo de nombre imposible', 40, 0.05),
-	makePosition('AAAA.MC', 'Acción española', 10, 0.05)
+	// Sin peso objetivo, como las acciones individuales de la demo: es el caso
+	// que se pintaba invisible.
+	makePosition('MSCI-EMERGING-IMI', 'iShares Emerging Markets IMI', 900, 0),
+	makePosition('WWWWWWWW', 'Activo de nombre imposible', 400, 0),
+	makePosition('AAAA.MC', 'Acción española', 200, 0),
+	// Deliberadamente minúscula: es la que no debe llevar rótulo.
+	makePosition('MIGAJA', 'Posición residual', 3, 0)
 ];
 
 const store = {
@@ -79,6 +83,25 @@ vi.mock('$lib/stores/portfolio.svelte', () => ({
 		return store;
 	}
 }));
+
+/**
+ * Luminancia media de un color, aceptando hex y `rgb()`.
+ *
+ * Los dos formatos conviven: los tonos fijos vienen de constantes en hex y la
+ * rampa divergente se calcula y sale como `rgb()`. Sacar los dígitos con una
+ * expresión regular genérica no vale: sobre `#3f3f52` devuelve «3», «3» y «52».
+ */
+function luminanceOf(color: string): number {
+	if (color.startsWith('#')) {
+		const hex = color.slice(1);
+		const [r, g, b] = [0, 2, 4].map((i) => parseInt(hex.slice(i, i + 2), 16));
+		return (r + g + b) / 3;
+	}
+	const parts = color.match(/rgba?\(([^)]+)\)/);
+	if (!parts) return 255;
+	const [r, g, b] = parts[1].split(',').map((n) => parseFloat(n));
+	return (r + g + b) / 3;
+}
 
 /** Los grupos de celda: un `<rect>` propio y sus textos ya recortados. */
 function readCells(container: HTMLElement) {
@@ -184,6 +207,40 @@ describe('DeviationTreemap.svelte', () => {
 		expect(biggest.texts.length).toBeGreaterThanOrEqual(2);
 		// Y su rótulo cabe, aunque haya venido recortado.
 		expect(biggest.texts[0].content.length).toBeGreaterThan(0);
+	});
+
+	it('ningún recuadro se pinta casi invisible', async () => {
+		// El defecto que motivó esto: los activos sin peso objetivo se rellenaban
+		// con blanco al 6 %, que sobre fondo oscuro es negro. En una cartera donde
+		// solo el bloque principal tiene objetivos —la demo, y la mayoría de las
+		// reales— eso dejaba seis de nueve recuadros invisibles.
+		const DeviationTreemap = (await import('./DeviationTreemap.svelte')).default;
+		const { container } = render(DeviationTreemap);
+
+		const fills = [...container.querySelectorAll('svg.treemap > g > rect')].map(
+			(rect) => rect.getAttribute('fill') ?? ''
+		);
+		expect(fills.length).toBe(POSITIONS.length);
+
+		for (const fill of fills) {
+			// Ni transparencias —sobre fondo oscuro se comen el tono— ni rellenos tan
+			// oscuros que no se distingan del hueco entre celdas.
+			expect(fill, `«${fill}» es translúcido`).not.toMatch(/rgba|transparent/);
+			expect(luminanceOf(fill), `«${fill}» es casi negro`).toBeGreaterThan(45);
+		}
+	});
+
+	it('un activo sin objetivo no muestra una desviación inventada', async () => {
+		// `deviation` es `peso − objetivo`; con objetivo 0 es el peso otra vez, y
+		// pintarlo como «+28,0 %» sugiere un exceso contra un objetivo que nadie
+		// ha fijado.
+		withContainerWidth(1080);
+		const DeviationTreemap = (await import('./DeviationTreemap.svelte')).default;
+		const { container } = render(DeviationTreemap);
+
+		// Ninguna de las posiciones de este fixture tiene objetivo salvo las dos
+		// primeras, así que tiene que aparecer la etiqueta de estado.
+		expect(container.textContent).toContain('Sin objetivo');
 	});
 
 	it('no revienta sin posiciones y muestra el mensaje de vacío', async () => {

@@ -4,7 +4,7 @@
 	import { formatEUR, formatPercent } from '$lib/utils';
 	import { LL } from '$lib/i18n/i18n-svelte';
 	import { INDICES } from '$lib/lookthrough';
-	import { ASSET_COLORS, CHART_NEUTRAL } from '$lib/constants';
+	import { ASSET_COLORS, CHART_NEUTRAL, MAX_CHART_SLICES } from '$lib/constants';
 	import MapFrame from './MapFrame.svelte';
 
 	/**
@@ -18,11 +18,12 @@
 	 */
 
 	interface Props {
-		/** Ver la nota del mismo `prop` en `DeviationTreemap.svelte`. */
+		/** Ver las notas de los mismos `props` en `DeviationTreemap.svelte`. */
 		showTitle?: boolean;
+		expanded?: boolean;
 	}
 
-	let { showTitle = true }: Props = $props();
+	let { showTitle = true, expanded = $bindable(false) }: Props = $props();
 
 	/**
 	 * El ancho real del contenedor manda sobre el de la ventana: en su carril del
@@ -30,7 +31,6 @@
 	 * más de mil. Ver la nota más larga en `DeviationTreemap.svelte`.
 	 */
 	let containerWidth = $state(0);
-	let expanded = $state(false);
 
 	const VIEW_W = 100;
 	const pxPerUnit = $derived(containerWidth > 0 ? containerWidth / VIEW_W : 3.4);
@@ -43,14 +43,43 @@
 		return targetPx / pxPerUnit;
 	}
 
-	const fontPct = $derived(unitsFor(expanded ? 15 : 13));
-	const fontLabel = $derived(unitsFor(expanded ? 12 : 10));
+	const fontPct = $derived(unitsFor(13));
+	const fontLabel = $derived(unitsFor(10));
 	const pad = $derived(unitsFor(6));
 
 	let mode = $state<'regions' | 'sectors'>('regions');
 
 	const data = $derived(portfolio.lookThrough);
-	const slices = $derived(mode === 'regions' ? data.regions : data.sectors);
+	const rawSlices = $derived(mode === 'regions' ? data.regions : data.sectors);
+
+	/**
+	 * Se muestran las franjas grandes y el resto se agrupa en una sola.
+	 *
+	 * Con nueve regiones y una paleta de seis tonos validados, las tres últimas
+	 * acababan en gris cada una: tres celdas apagadas y sin identidad propia,
+	 * cuando además eran astillas ilegibles. Una única franja «Otros» dice lo
+	 * mismo con un solo rectángulo, y los nombres exactos siguen en el ranking.
+	 *
+	 * Ampliado no se agrupa: hay sitio de sobra para todas.
+	 */
+	const slices = $derived.by(() => {
+		const limit = expanded ? ASSET_COLORS.length : MAX_CHART_SLICES - 1;
+		if (rawSlices.length <= limit + 1) return rawSlices;
+
+		const head = rawSlices.slice(0, limit);
+		const tail = rawSlices.slice(limit);
+		return [
+			...head,
+			{
+				key: OTHER_KEY,
+				value: tail.reduce((sum, slice) => sum + slice.value, 0),
+				weight: tail.reduce((sum, slice) => sum + slice.weight, 0)
+			}
+		];
+	});
+
+	/** Clave sintética de la franja agrupada; no existe en el dataset. */
+	const OTHER_KEY = '__other__';
 
 	/**
 	 * La misma paleta categórica validada que el resto de la app, asignada **por
@@ -62,8 +91,21 @@
 	 * `rgba()` a mano con opacidades decrecientes: bajar el alfa sobre fondo
 	 * oscuro le quita chroma al tono y acerca los últimos entre sí.
 	 */
-	function fillFor(index: number): string {
+	function fillFor(index: number, key: string): string {
+		if (key === OTHER_KEY) return CHART_NEUTRAL;
 		return index < ASSET_COLORS.length ? ASSET_COLORS[index] : CHART_NEUTRAL;
+	}
+
+	/**
+	 * Color de la muestra de una fila del ranking.
+	 *
+	 * Tiene que coincidir con lo que se ve en el mapa: las franjas que allí están
+	 * dentro de «Otros» llevan aquí el mismo neutro, o la muestra prometería un
+	 * rectángulo de color que no existe.
+	 */
+	function rankFill(index: number): string {
+		const drawnIndividually = slices.length > index && slices[index]?.key !== OTHER_KEY;
+		return drawnIndividually ? fillFor(index, slices[index].key) : CHART_NEUTRAL;
 	}
 
 	const cells = $derived.by(() => {
@@ -95,7 +137,7 @@
 				showLabel,
 				pctText,
 				showPct,
-				fill: fillFor(index)
+				fill: fillFor(index, slice.key)
 			};
 		});
 	});
@@ -110,6 +152,9 @@
 	}
 
 	function labelFor(key: string): string {
+		if (key === OTHER_KEY) {
+			return $LL.charts.other_slices({ count: rawSlices.length - (MAX_CHART_SLICES - 1) });
+		}
 		const table = mode === 'regions' ? regionLabels : sectorLabels;
 		return table[key] ?? key;
 	}
@@ -156,28 +201,30 @@
 	bind:expanded
 	bind:contentWidth={containerWidth}
 >
-	{#if data.coveredValue > 0}
-		<div class="mode-switch" role="tablist">
-			<button
-				role="tab"
-				class="mode-btn"
-				class:active={mode === 'regions'}
-				aria-selected={mode === 'regions'}
-				onclick={() => (mode = 'regions')}
-			>
-				{$LL.lookthrough.tab_regions()}
-			</button>
-			<button
-				role="tab"
-				class="mode-btn"
-				class:active={mode === 'sectors'}
-				aria-selected={mode === 'sectors'}
-				onclick={() => (mode = 'sectors')}
-			>
-				{$LL.lookthrough.tab_sectors()}
-			</button>
-		</div>
-	{/if}
+	{#snippet actions()}
+		{#if data.coveredValue > 0}
+			<div class="mode-switch" role="tablist">
+				<button
+					role="tab"
+					class="mode-btn"
+					class:active={mode === 'regions'}
+					aria-selected={mode === 'regions'}
+					onclick={() => (mode = 'regions')}
+				>
+					{$LL.lookthrough.tab_regions()}
+				</button>
+				<button
+					role="tab"
+					class="mode-btn"
+					class:active={mode === 'sectors'}
+					aria-selected={mode === 'sectors'}
+					onclick={() => (mode = 'sectors')}
+				>
+					{$LL.lookthrough.tab_sectors()}
+				</button>
+			</div>
+		{/if}
+	{/snippet}
 
 	{#if data.coveredValue <= 0}
 		<p class="empty">{$LL.lookthrough.empty()}</p>
@@ -251,10 +298,13 @@
 		<!-- En el carril estrecho el mapa no lleva nombres, así que el ranking es
 		     donde el usuario lee de qué es cada rectángulo: va una fila más largo.
 		     Ampliado caben todas las franjas, que es media razón para ampliar. -->
+		<!-- El ranking va sobre las franjas **sin agrupar**: el mapa junta la cola en
+		     «Otros» para no llenarse de grises, pero aquí es donde el usuario lee los
+		     nombres exactos, así que agruparlos otra vez sería perder el dato. -->
 		<ol class="ranking">
-			{#each slices.slice(0, expanded ? slices.length : isNarrow ? 6 : 5) as slice (slice.key)}
+			{#each rawSlices.slice(0, expanded ? rawSlices.length : isNarrow ? 6 : 5) as slice, i (slice.key)}
 				<li class="rank-row">
-					<span class="rank-swatch" aria-hidden="true" style="background: {cells.find((c) => c.slice.key === slice.key)?.fill ?? 'transparent'}"></span>
+					<span class="rank-swatch" aria-hidden="true" style="background: {rankFill(i)}"></span>
 					<span class="rank-label">{labelFor(slice.key)}</span>
 					<span class="rank-bar" aria-hidden="true">
 						<i style="width: {(slice.weight * 100).toFixed(1)}%"></i>

@@ -75,6 +75,20 @@
 
   // --- State ---
   let activeTab = $state<TabId>("assets");
+
+  /**
+   * Qué mapa está ampliado a la fila entera. Son excluyentes: dos mapas a fila
+   * completa dejarían la rejilla en una sola columna y nadie querría eso.
+   */
+  let deviationExpanded = $state(false);
+  let lookThroughExpanded = $state(false);
+
+  $effect(() => {
+    if (deviationExpanded) lookThroughExpanded = false;
+  });
+  $effect(() => {
+    if (lookThroughExpanded) deviationExpanded = false;
+  });
   let showManageAssets = $state(false);
   let tabsEl = $state<HTMLElement | null>(null);
   let scrollAnchor = $state<HTMLElement | null>(null);
@@ -359,13 +373,21 @@
               <h4 class="chart-label">{$LL.db.chart_global_detail()}</h4>
               <DonutChart data={detailedChartData} />
             </div>
-            <div id="tour-maps" class="chart-box map-box">
+            <!-- Ampliar un mapa lo lleva a ocupar la fila entera de la rejilla.
+                 El estado vive aquí porque un elemento de rejilla no puede
+                 salirse de su carril por sí solo, y los dos son excluyentes:
+                 ampliar uno reduce el otro. -->
+            <div
+              id="tour-maps"
+              class="chart-box map-box"
+              class:is-wide={deviationExpanded}
+            >
               <h4 class="chart-label">{$LL.treemap.title()}</h4>
-              <DeviationTreemap showTitle={false} />
+              <DeviationTreemap showTitle={false} bind:expanded={deviationExpanded} />
             </div>
-            <div class="chart-box map-box map-box-wide">
+            <div class="chart-box map-box" class:is-wide={lookThroughExpanded}>
               <h4 class="chart-label">{$LL.lookthrough.title()}</h4>
-              <LookThroughMap showTitle={false} />
+              <LookThroughMap showTitle={false} bind:expanded={lookThroughExpanded} />
             </div>
           </div>
         </div>
@@ -749,10 +771,10 @@
       padding: 0;
       align-items: flex-start;
     }
-    /* Segunda fila: el mapa de desviación en un carril y el del subyacente en
-       dos, que es lo que necesita para su ranking y sus avisos. */
-    .map-box-wide {
-      grid-column: span 2;
+    /* Un mapa ampliado ocupa la fila entera: los tres carriles. Es lo que
+       convierte «ampliar» en algo útil sin abrir ningún modal. */
+    .map-box.is-wide {
+      grid-column: 1 / -1;
     }
     .desktop-charts-section {
       display: block !important;

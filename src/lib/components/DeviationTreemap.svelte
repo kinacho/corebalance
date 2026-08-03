@@ -4,7 +4,7 @@
 	import { formatEUR, formatPercent } from '$lib/utils';
 	import { LL } from '$lib/i18n/i18n-svelte';
 	import { DEVIATION_BAND } from '$lib/traspaso';
-	import { CHART_NEUTRAL, DEVIATION_OVER, DEVIATION_UNDER } from '$lib/constants';
+	import { CHART_NEUTRAL, DEVIATION_OVER, DEVIATION_UNDER, NO_TARGET_FILL } from '$lib/constants';
 	import MapFrame from './MapFrame.svelte';
 
 	/**
@@ -30,9 +30,15 @@
 		 * dos casos: explica qué significa el color, que no es evidente.
 		 */
 		showTitle?: boolean;
+		/**
+		 * Sube al dashboard, que es quien puede ensanchar el carril de la rejilla.
+		 * Aquí no hace falta para nada más: el tamaño de letra y la proporción del
+		 * lienzo salen del ancho medido, así que se recalculan solos.
+		 */
+		expanded?: boolean;
 	}
 
-	let { showTitle = true }: Props = $props();
+	let { showTitle = true, expanded = $bindable(false) }: Props = $props();
 
 	/**
 	 * El ancho real del contenedor, no el de la ventana.
@@ -43,7 +49,6 @@
 	 * cuerpo de letra tiene que derivarse de los píxeles que hay de verdad.
 	 */
 	let containerWidth = $state(0);
-	let expanded = $state(false);
 
 	const VIEW_W = 100;
 
@@ -61,8 +66,10 @@
 		return targetPx / pxPerUnit;
 	}
 
-	const fontTicker = $derived(unitsFor(expanded ? 15 : 13));
-	const fontFigure = $derived(unitsFor(expanded ? 13 : 11));
+	// En píxeles, no en unidades: el objetivo es que el rótulo se lea igual mida el
+	// carril 340 px o 1100.
+	const fontTicker = $derived(unitsFor(13));
+	const fontFigure = $derived(unitsFor(11));
 	const pad = $derived(unitsFor(6));
 
 	const positions = $derived(
@@ -99,7 +106,14 @@
 				showTicker &&
 				rect.h >= fontTicker * 1.5 + fontFigure * 1.5 &&
 				labelFits(weightText, fontFigure, rect.w, pad * 2);
-			const deviationText = `${position.deviation >= 0 ? '+' : ''}${formatPercent(position.deviation, 1)}`;
+			// Un activo sin peso objetivo **no tiene desviación**: `deviation` es
+			// `peso − 0`, o sea el peso otra vez, y pintarlo como «+28,0 %» sugiere
+			// un exceso contra un objetivo que nadie ha fijado. Se rotula como lo
+			// que es.
+			const hasTarget = position.asset.targetWeight > 0;
+			const deviationText = hasTarget
+				? `${position.deviation >= 0 ? '+' : ''}${formatPercent(position.deviation, 1)}`
+				: $LL.treemap.legend_no_target();
 			const showDeviation =
 				showWeight &&
 				rect.h >= fontTicker * 1.5 + fontFigure * 3 &&
@@ -115,6 +129,7 @@
 				showWeight,
 				deviationText,
 				showDeviation,
+				hasTarget,
 				fill: fillFor(position.deviation, position.asset.targetWeight)
 			};
 		});
@@ -128,14 +143,19 @@
 	 * deja de distinguir «algo desviado» de «bastante desviado».
 	 */
 	function fillFor(deviation: number, targetWeight: number): string {
-		if (targetWeight <= 0) return 'rgba(255, 255, 255, 0.06)';
+		if (targetWeight <= 0) return NO_TARGET_FILL;
 		if (Math.abs(deviation) <= DEVIATION_BAND) return CHART_NEUTRAL;
 
 		const intensity = Math.min(1, Math.abs(deviation) / 0.1);
-		const base = deviation > 0 ? DEVIATION_OVER : DEVIATION_UNDER;
 		// Se mezcla con el neutro en lugar de bajar la opacidad: con alfa sobre un
 		// fondo oscuro el tono pierde chroma y los extremos se acercan entre sí.
-		return mix(CHART_NEUTRAL, base, 0.35 + intensity * 0.65);
+		//
+		// El suelo de la mezcla es alto —60 %— a propósito: si arranca bajo, una
+		// desviación que acaba de salirse de la banda queda casi gris y el mapa
+		// entero parece apagado. Fuera de banda significa «hay algo que mirar», y
+		// eso tiene que verse de color desde el primer punto porcentual.
+		const base = deviation > 0 ? DEVIATION_OVER : DEVIATION_UNDER;
+		return mix(CHART_NEUTRAL, base, 0.6 + intensity * 0.4);
 	}
 
 	/** Mezcla dos hex en el espacio sRGB. Suficiente para una rampa de dos pasos. */
@@ -246,6 +266,7 @@
 						{#if cell.showDeviation}
 							<text
 								class="cell-deviation"
+								class:is-untargeted={!cell.hasTarget}
 								x={cell.rect.x + pad}
 								y={cell.rect.y + pad + fontTicker * 0.85 + fontFigure * 2.5}
 								font-size={fontFigure * 0.9}
@@ -268,6 +289,11 @@
 			<span class="legend-item">
 				<i class="swatch" style="background: {DEVIATION_OVER}"></i>{$LL.treemap.legend_over()}
 			</span>
+			{#if cells.some((cell) => !cell.hasTarget)}
+				<span class="legend-item">
+					<i class="swatch" style="background: {NO_TARGET_FILL}"></i>{$LL.treemap.legend_no_target()}
+				</span>
+			{/if}
 			<span class="legend-total privacy-blur">{formatEUR(totalValue)}</span>
 		</div>
 	{/if}
@@ -304,6 +330,13 @@
 
 	.cell-deviation {
 		fill: rgba(255, 255, 255, 0.6);
+	}
+
+	/* «Sin objetivo» es una etiqueta de estado, no una cifra: va más apagada para
+	   que no se lea como un dato del mismo rango que el peso de encima. */
+	.cell-deviation.is-untargeted {
+		fill: rgba(255, 255, 255, 0.45);
+		font-style: italic;
 	}
 
 	.legend {

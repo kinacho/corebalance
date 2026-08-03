@@ -2689,14 +2689,9 @@ type RootTranslation = {
 		 */
 		expand: string
 		/**
-		 * C​e​r​r​a​r
+		 * R​e​d​u​c​i​r
 		 */
 		collapse: string
-		/**
-		 * V​i​s​t​a​ ​a​m​p​l​i​a​d​a​ ​d​e​ ​{​n​a​m​e​}
-		 * @param {string} name
-		 */
-		expanded_aria: RequiredParams<'name'>
 	}
 	treemap: {
 		/**
@@ -2723,6 +2718,10 @@ type RootTranslation = {
 		 * P​o​r​ ​d​e​b​a​j​o
 		 */
 		legend_under: string
+		/**
+		 * S​i​n​ ​o​b​j​e​t​i​v​o
+		 */
+		legend_no_target: string
 		/**
 		 * {​n​a​m​e​}​:​ ​{​w​e​i​g​h​t​}​ ​d​e​ ​t​u​ ​c​a​r​t​e​r​a​,​ ​o​b​j​e​t​i​v​o​ ​{​t​a​r​g​e​t​}
 		 * @param {string} name
@@ -6372,13 +6371,9 @@ export type TranslationFunctions = {
 		 */
 		expand: () => LocalizedString
 		/**
-		 * Cerrar
+		 * Reducir
 		 */
 		collapse: () => LocalizedString
-		/**
-		 * Vista ampliada de {name}
-		 */
-		expanded_aria: (arg: { name: string }) => LocalizedString
 	}
 	treemap: {
 		/**
@@ -6405,6 +6400,10 @@ export type TranslationFunctions = {
 		 * Por debajo
 		 */
 		legend_under: () => LocalizedString
+		/**
+		 * Sin objetivo
+		 */
+		legend_no_target: () => LocalizedString
 		/**
 		 * {name}: {weight} de tu cartera, objetivo {target}
 		 */

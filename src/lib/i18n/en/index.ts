@@ -716,8 +716,7 @@ const en: Translation = {
     other_slices: 'Other ({count})',
     donut_aria: 'Doughnut chart with {count} slices. The values are in the list next to it.',
     expand: 'Expand',
-    collapse: 'Close',
-    expanded_aria: 'Expanded view of {name}',
+    collapse: 'Shrink',
   },
   // Deviation map
   treemap: {
@@ -727,6 +726,7 @@ const en: Translation = {
     legend_on: 'On target',
     legend_over: 'Overweight',
     legend_under: 'Underweight',
+    legend_no_target: 'No target',
     tooltip: '{name}: {weight} of your portfolio, target {target}',
     tooltip_no_target: '{name}: {weight} of your portfolio, no target set',
   },
