@@ -192,18 +192,27 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 /**
  * Ventana de la regla antiaplicación, en meses.
  *
- * Son dos meses para valores admitidos a negociación (acciones y ETF) y un año
- * para los no admitidos, categoría en la que entran las participaciones de
- * fondos de inversión. La diferencia es enorme y va en la dirección incómoda:
- * con fondos hay que esperar **un año**, no dos meses. Aplicar dos meses a todo
- * sería el error cómodo y le costaría al usuario la deducción de la pérdida.
+ * Son **dos meses** para valores admitidos a negociación en un mercado
+ * secundario oficial —acciones y ETF, art. 33.5.f— y **un año** para los no
+ * admitidos, art. 33.5.g, categoría en la que entran las participaciones de
+ * fondos de inversión: no cotizan, se suscriben y reembolsan con la gestora.
+ *
+ * La diferencia es enorme y va en la dirección incómoda, así que conviene tener
+ * claro por qué es esta y no la otra: hay guías de divulgación que aplican los
+ * dos meses a los fondos, pero el manual práctico de Renta de la AEAT remite
+ * expresamente a la letra g) para reembolsos de participaciones de IIC no
+ * admitidas a negociación. Aplicar dos meses a todo sería el error cómodo y le
+ * diferiría al usuario una pérdida que creía compensada.
  */
 export function antiApplicationWindowMonths(type: InstrumentType): number {
 	return type === 'etf' || type === 'equity' ? 2 : 12;
 }
 
 export interface AntiApplicationCheck {
-	/** True si hay recompras en la ventana que bloquearían deducir la pérdida. */
+	/**
+	 * True si hay recompras en la ventana. La pérdida sigue existiendo y se
+	 * declara, pero no se integra en la base de este ejercicio.
+	 */
 	blocked: boolean;
 	windowMonths: number;
 	/** Compras dentro de la ventana, ordenadas por fecha. */
@@ -213,13 +222,18 @@ export interface AntiApplicationCheck {
 }
 
 /**
- * Comprueba la regla antiaplicación (art. 33.5.f LIRPF) para una venta con
- * pérdidas.
+ * Comprueba la regla antiaplicación (art. 33.5.f y 33.5.g LIRPF) para una venta
+ * con pérdidas.
  *
  * Es la mina más silenciosa del rebalanceo: vendes un fondo que va en pérdidas
- * para corregir pesos, recompras algo homogéneo dentro de la ventana y Hacienda
- * te deja la pérdida sin deducir. Nadie te avisa, y una app que propone ventas
- * es exactamente donde hay que avisar.
+ * para corregir pesos, recompras algo homogéneo dentro de la ventana y esa
+ * pérdida no te la puedes compensar en el ejercicio. Nadie te avisa, y una app
+ * que propone ventas es exactamente donde hay que avisar.
+ *
+ * ⚠️ **La pérdida no se pierde: se difiere.** Se declara igual en el ejercicio
+ * en que se generó, no se integra a efectos de liquidación, y se integra cuando
+ * se transmitan definitivamente las participaciones recompradas. Decirle al
+ * usuario que «no la puede deducir» a secas sería asustarle de más.
  *
  * La ventana mira **hacia los dos lados** de la venta: recomprar antes de
  * vender bloquea igual que recomprar después.

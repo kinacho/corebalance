@@ -629,7 +629,7 @@ const en: Translation = {
     timing_period_note: 'Figures for the period shown, not annualised.',
     legal_disclaimer: '<strong>Legal Disclaimer:</strong> CoreBalance is a purely informative and educational tool. It does not constitute financial, investment, or tax advice. The data displayed may be subject to delays or inaccuracies. The developer is not responsible for any financial losses resulting from the use of this application. Always invest at your own risk.',
     footer_tagline: 'Your control center for smart and balanced asset management.',
-    changelog_trigger: 'v1.11.0 🚀',
+    changelog_trigger: 'v1.12.0 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Made with ❤️ for the investing community',
     reclassify_stocks: 'Individual Stocks',
@@ -692,8 +692,6 @@ const en: Translation = {
     gain_label: 'Capital gain',
     loss_label: 'Loss',
     tax_label: 'Est. tax',
-    summary_free: '{amount} tax-free',
-    summary_taxable: '{amount} taxed',
     summary_tax: 'Total estimated tax cost',
     summary_deviation: 'Largest deviation: {before} → {after}',
     comparison_heading: 'Versus contributing only',
@@ -703,13 +701,15 @@ const en: Translation = {
     comparison_cost_verdict: 'Fixing it today costs {tax}. Waiting is free, but it means {months} months off target.',
     comparison_no_contribution: 'Set your monthly contribution in the panel above and I will tell you how long the slow route takes.',
     comparison_never: 'At your current contribution you would not reach the target band within twenty years.',
-    loss_blocked_title: 'You could not deduct this loss',
-    loss_blocked_desc: 'You bought {ticker} inside the {months}-month window of the Spanish wash-sale rule. If you sell at a loss now, you cannot offset it. You could after {days} days.',
+    loss_blocked_title: 'You could not offset this loss yet',
+    loss_blocked_desc: 'You bought {ticker} inside the {months}-month window of the Spanish wash-sale rule (art. 33.5 LIRPF). If you sell at a loss now, the loss is not forfeited — you still declare it — but it does not offset gains until you finally sell the repurchased units. Wait {days} more days and it offsets in this tax year.',
+    loss_blocked_window: 'The window is two months for ETFs and shares, and one year for fund units, which are not traded on a market.',
     partial_gain: 'Approximate gain: the transaction ledger is missing purchase history, so the acquisition value is incomplete.',
     excluded: 'Left out of the plan: {tickers}. The app does not know how they are taxed, so it will not propose moving them.',
     band_note: 'A deviation below one percentage point counts as "on target".',
     disclaimer: '<strong>An estimate, not a tax return.</strong> It does not know the rest of your savings tax base for this year, your carried-forward losses from previous years, or your personal situation. Rates are the {year} Spanish savings-income brackets. Check with your adviser before moving anything.',
     sources_label: 'Legal basis',
+    sources_body: 'Spanish income tax law: art. 94 (transfers between collective investment schemes), art. 37.2 (FIFO for homogeneous securities), art. 33.5 f) and g) (wash-sale rule) and art. 66 (savings-income rates).',
   },
   // Deviation map
   treemap: {
@@ -755,7 +755,8 @@ const en: Translation = {
     uncovered: '{amount} not analysed ({tickers}): individual shares, cash, or assets whose index we do not recognise.',
     no_sector: '{amount} of fixed income is counted by region but not by sector.',
     coverage_note: 'Percentages are of what was analysed ({amount}), not of your total portfolio.',
-    as_of: 'Index weights are approximate as of {date}.',
+    as_of: 'Index weights as of {date}, taken from each index\'s official factsheet.',
+    estimated_warning: 'The weights for {indices} are an estimate with no factsheet checked against them, so treat them as an order of magnitude.',
     disclaimer: 'Estimated at index level, not position by position: useful for seeing what you are exposed to, not as the exact composition of your portfolio.',
   },
   // Projections
@@ -879,6 +880,18 @@ const en: Translation = {
     close_aria: 'Close modal',
     btn_understand: 'Got it',
     releases: {
+      v1_12_0: {
+        date: 'August 3, 2026',
+        badge: 'Rebalancing without the tax bill',
+        changes: [
+          '🧾 **Rebalancing by fund transfer, at zero tax cost:** in Spain, moving money between investment funds is not a taxable event (tax deferral under art. 94 LIRPF). The app no longer makes you fix a drift over months of contributions when you can fix it today, exactly, and for free. It pairs fund with fund first, to use up all the tax-free room your portfolio allows.',
+          '💸 **And when you do have to pay, it tells you how much:** for ETFs and shares, which are outside the transfer regime, it works out the real capital gain by FIFO from your transaction ledger and the tax by savings-income brackets. Then it compares both routes: what fixing it today costs versus how many months the contribution-only route would take.',
+          '⚠️ **Wash-sale rule warning:** if you sell at a loss and bought the same thing inside the window (two months for ETFs and shares, one year for fund units), that loss does not offset gains until you finally sell what you repurchased. It is not forfeited, just deferred — and the app tells you how many days are left.',
+          '🗺️ **Deviation map:** your portfolio as rectangles, sized by what each position really weighs and coloured by how far it sits from its target. Coloured by deviation rather than by the daily move, on purpose.',
+          '🔍 **"What you actually own":** the exposure hiding inside your funds, by region and by sector, plus a warning when two positions point at the same companies — the classic World plus S&P 500. Computed at index level, with weights taken from official factsheets and a flag when any of them is an estimate.',
+          '🏷️ **Every asset now has an instrument type and a tracked index.** The app infers both and you can correct them from Manage Portfolio; the tax calculation depends on getting them right.'
+        ]
+      },
       v1_11_0: {
         date: 'August 2, 2026',
         badge: 'Honest returns & fixed currencies',

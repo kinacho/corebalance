@@ -23,7 +23,10 @@ CoreBalance hace ese cálculo en segundos y, sobre todo, **prioriza rebalancear 
 ## Características
 
 - **Rebalanceo por aportación (*cash-flow rebalancing*)** — reparte tu aportación mensual entre los activos infraponderados para corregir la desviación sin vender nada.
+- **Rebalanceo por traspaso, con coste fiscal cero** — entre fondos de inversión mover dinero no tributa en España (diferimiento del art. 94 LIRPF), así que calcula el movimiento exacto hasta el objetivo sin generar plusvalía. Y cuando toca vender ETFs o acciones, te dice cuánto cuesta de verdad: plusvalía por FIFO desde tu ledger e impuesto por los tramos del ahorro, comparado contra los meses que tardaría la vía de solo aportar.
+- **Aviso de la regla antiaplicación** — dos meses en cotizados, un año en participaciones de fondos. Antes de proponerte una venta con pérdidas, te avisa de si esa pérdida compensaría este ejercicio o quedaría diferida.
 - **Cálculo de desviación por bandas** — cuánto se ha ido cada activo de su peso objetivo y cuánto hay que mover para volver.
+- **Mapa de desviación y transparencia del subyacente** — la cartera en rectángulos coloreados por distancia al objetivo, y la exposición real por región y sector que hay dentro de tus fondos, con aviso cuando dos posiciones apuntan a las mismas empresas.
 - **Importación CSV de brókers** — MyInvestor, DEGIRO, Trading 212, Interactive Brokers y un formato genérico. El parser agrupa transacciones y calcula el precio medio ponderado.
 - **Ledger de transacciones** — compras, ventas, dividendos y traspasos por activo, con coste medio ponderado.
 - **Precios en tiempo real** — valor actual, P&L no realizado y evolución de la cartera.

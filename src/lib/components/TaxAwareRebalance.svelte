@@ -105,6 +105,7 @@
 									days: move.lossBlocked!.daysUntilSafeRepurchase ?? 0
 								})}
 							</p>
+							<p class="warning-note">{$LL.traspaso.loss_blocked_window()}</p>
 						</div>
 					{/each}
 
@@ -174,8 +175,7 @@
 						{@html $LL.traspaso.disclaimer({ year: SAVINGS_TAX_YEAR })}
 					</p>
 					<p class="footnote sources">
-						{$LL.traspaso.sources_label()}: art. 94 LIRPF (traspasos), art. 37.2 (FIFO),
-						art. 33.5.f (regla antiaplicación), art. 66 (tipos del ahorro).
+						{$LL.traspaso.sources_label()}: {$LL.traspaso.sources_body()}
 					</p>
 				{/if}
 			</div>
@@ -521,6 +521,12 @@
 		color: var(--text-muted);
 		margin: 0;
 		line-height: 1.5;
+	}
+
+	.warning-note {
+		margin-top: 0.4rem !important;
+		font-size: 0.68rem !important;
+		color: rgba(160, 160, 200, 0.5) !important;
 	}
 
 	.summary {

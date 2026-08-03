@@ -170,8 +170,11 @@ describe('TaxAwareRebalance.svelte', () => {
 		const { container } = render(TaxAwareRebalance);
 
 		expect(container.textContent).toContain('Obliga a vender');
-		expect(container.textContent).toContain('Esta pérdida no te la podrías deducir');
+		expect(container.textContent).toContain('Esta pérdida no la podrías compensar todavía');
 		expect(container.textContent).toContain('regla antiaplicación');
+		// Y dice que la pérdida se difiere, no que se pierda: es la diferencia que
+		// separa un aviso útil de un susto.
+		expect(container.textContent).toContain('la pérdida no se pierde');
 	});
 
 	it('dice que no hay nada que hacer cuando la cartera está en objetivo', async () => {

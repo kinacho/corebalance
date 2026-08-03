@@ -2353,7 +2353,7 @@ type RootTranslation = {
 		 */
 		footer_tagline: string
 		/**
-		 * v​1​.​1​1​.​0​ ​�​�
+		 * v​1​.​1​2​.​0​ ​�​�
 		 */
 		changelog_trigger: string
 		/**
@@ -2589,16 +2589,6 @@ type RootTranslation = {
 		 */
 		tax_label: string
 		/**
-		 * {​a​m​o​u​n​t​}​ ​s​i​n​ ​c​o​s​t​e​ ​f​i​s​c​a​l
-		 * @param {string} amount
-		 */
-		summary_free: RequiredParams<'amount'>
-		/**
-		 * {​a​m​o​u​n​t​}​ ​t​r​i​b​u​t​a​n​d​o
-		 * @param {string} amount
-		 */
-		summary_taxable: RequiredParams<'amount'>
-		/**
 		 * C​o​s​t​e​ ​f​i​s​c​a​l​ ​t​o​t​a​l​ ​e​s​t​i​m​a​d​o
 		 */
 		summary_tax: string
@@ -2642,16 +2632,20 @@ type RootTranslation = {
 		 */
 		comparison_never: string
 		/**
-		 * E​s​t​a​ ​p​é​r​d​i​d​a​ ​n​o​ ​t​e​ ​l​a​ ​p​o​d​r​í​a​s​ ​d​e​d​u​c​i​r
+		 * E​s​t​a​ ​p​é​r​d​i​d​a​ ​n​o​ ​l​a​ ​p​o​d​r​í​a​s​ ​c​o​m​p​e​n​s​a​r​ ​t​o​d​a​v​í​a
 		 */
 		loss_blocked_title: string
 		/**
-		 * H​a​s​ ​c​o​m​p​r​a​d​o​ ​{​t​i​c​k​e​r​}​ ​d​e​n​t​r​o​ ​d​e​ ​l​a​ ​v​e​n​t​a​n​a​ ​d​e​ ​{​m​o​n​t​h​s​}​ ​m​e​s​e​s​ ​d​e​ ​l​a​ ​r​e​g​l​a​ ​a​n​t​i​a​p​l​i​c​a​c​i​ó​n​.​ ​S​i​ ​v​e​n​d​e​s​ ​a​h​o​r​a​ ​e​n​ ​p​é​r​d​i​d​a​s​,​ ​n​o​ ​p​u​e​d​e​s​ ​c​o​m​p​e​n​s​a​r​l​a​s​.​ ​P​o​d​r​í​a​s​ ​a​ ​p​a​r​t​i​r​ ​d​e​ ​{​d​a​y​s​}​ ​d​í​a​s​.
+		 * H​a​s​ ​c​o​m​p​r​a​d​o​ ​{​t​i​c​k​e​r​}​ ​d​e​n​t​r​o​ ​d​e​ ​l​a​ ​v​e​n​t​a​n​a​ ​d​e​ ​{​m​o​n​t​h​s​}​ ​m​e​s​e​s​ ​d​e​ ​l​a​ ​r​e​g​l​a​ ​a​n​t​i​a​p​l​i​c​a​c​i​ó​n​ ​(​a​r​t​.​ ​3​3​.​5​ ​L​I​R​P​F​)​.​ ​S​i​ ​v​e​n​d​e​s​ ​a​h​o​r​a​ ​e​n​ ​p​é​r​d​i​d​a​s​,​ ​l​a​ ​p​é​r​d​i​d​a​ ​n​o​ ​s​e​ ​p​i​e​r​d​e​ ​—​s​e​ ​d​e​c​l​a​r​a​ ​i​g​u​a​l​—​ ​p​e​r​o​ ​n​o​ ​c​o​m​p​e​n​s​a​ ​g​a​n​a​n​c​i​a​s​ ​h​a​s​t​a​ ​q​u​e​ ​v​e​n​d​a​s​ ​d​e​f​i​n​i​t​i​v​a​m​e​n​t​e​ ​l​a​s​ ​p​a​r​t​i​c​i​p​a​c​i​o​n​e​s​ ​r​e​c​o​m​p​r​a​d​a​s​.​ ​S​i​ ​e​s​p​e​r​a​s​ ​{​d​a​y​s​}​ ​d​í​a​s​ ​m​á​s​,​ ​c​o​m​p​e​n​s​a​ ​e​s​t​e​ ​m​i​s​m​o​ ​e​j​e​r​c​i​c​i​o​.
 		 * @param {number} days
 		 * @param {number} months
 		 * @param {string} ticker
 		 */
 		loss_blocked_desc: RequiredParams<'days' | 'months' | 'ticker'>
+		/**
+		 * L​a​ ​v​e​n​t​a​n​a​ ​e​s​ ​d​e​ ​d​o​s​ ​m​e​s​e​s​ ​p​a​r​a​ ​E​T​F​ ​y​ ​a​c​c​i​o​n​e​s​,​ ​y​ ​d​e​ ​u​n​ ​a​ñ​o​ ​p​a​r​a​ ​p​a​r​t​i​c​i​p​a​c​i​o​n​e​s​ ​d​e​ ​f​o​n​d​o​s​,​ ​q​u​e​ ​n​o​ ​c​o​t​i​z​a​n​ ​e​n​ ​m​e​r​c​a​d​o​.
+		 */
+		loss_blocked_window: string
 		/**
 		 * P​l​u​s​v​a​l​í​a​ ​a​p​r​o​x​i​m​a​d​a​:​ ​f​a​l​t​a​ ​h​i​s​t​o​r​i​a​l​ ​d​e​ ​c​o​m​p​r​a​s​ ​e​n​ ​e​l​ ​l​i​b​r​o​ ​d​e​ ​t​r​a​n​s​a​c​c​i​o​n​e​s​,​ ​a​s​í​ ​q​u​e​ ​e​l​ ​v​a​l​o​r​ ​d​e​ ​a​d​q​u​i​s​i​c​i​ó​n​ ​e​s​t​á​ ​i​n​c​o​m​p​l​e​t​o​.
 		 */
@@ -2674,6 +2668,10 @@ type RootTranslation = {
 		 * B​a​s​e​ ​l​e​g​a​l
 		 */
 		sources_label: string
+		/**
+		 * a​r​t​.​ ​9​4​ ​L​I​R​P​F​ ​(​t​r​a​s​p​a​s​o​s​ ​e​n​t​r​e​ ​I​I​C​)​,​ ​a​r​t​.​ ​3​7​.​2​ ​(​F​I​F​O​ ​p​a​r​a​ ​v​a​l​o​r​e​s​ ​h​o​m​o​g​é​n​e​o​s​)​,​ ​a​r​t​.​ ​3​3​.​5​ ​f​)​ ​y​ ​g​)​ ​(​r​e​g​l​a​ ​a​n​t​i​a​p​l​i​c​a​c​i​ó​n​)​ ​y​ ​a​r​t​.​ ​6​6​ ​(​t​i​p​o​s​ ​d​e​ ​l​a​ ​b​a​s​e​ ​d​e​l​ ​a​h​o​r​r​o​)​.
+		 */
+		sources_body: string
 	}
 	treemap: {
 		/**
@@ -2846,10 +2844,15 @@ type RootTranslation = {
 		 */
 		coverage_note: RequiredParams<'amount'>
 		/**
-		 * P​e​s​o​s​ ​d​e​ ​í​n​d​i​c​e​ ​a​p​r​o​x​i​m​a​d​o​s​ ​a​ ​f​e​c​h​a​ ​{​d​a​t​e​}​.
+		 * P​e​s​o​s​ ​d​e​ ​í​n​d​i​c​e​ ​a​ ​f​e​c​h​a​ ​{​d​a​t​e​}​,​ ​t​o​m​a​d​o​s​ ​d​e​ ​l​a​s​ ​f​i​c​h​a​s​ ​o​f​i​c​i​a​l​e​s​ ​d​e​ ​c​a​d​a​ ​í​n​d​i​c​e​.
 		 * @param {string} date
 		 */
 		as_of: RequiredParams<'date'>
+		/**
+		 * L​o​s​ ​p​e​s​o​s​ ​d​e​ ​{​i​n​d​i​c​e​s​}​ ​s​o​n​ ​u​n​a​ ​e​s​t​i​m​a​c​i​ó​n​ ​s​i​n​ ​f​i​c​h​a​ ​c​o​n​t​r​a​s​t​a​d​a​,​ ​a​s​í​ ​q​u​e​ ​t​ó​m​a​l​o​s​ ​c​o​m​o​ ​o​r​d​e​n​ ​d​e​ ​m​a​g​n​i​t​u​d​.
+		 * @param {string} indices
+		 */
+		estimated_warning: RequiredParams<'indices'>
 		/**
 		 * E​s​t​i​m​a​c​i​ó​n​ ​c​a​l​c​u​l​a​d​a​ ​a​ ​n​i​v​e​l​ ​d​e​ ​í​n​d​i​c​e​,​ ​n​o​ ​d​e​ ​p​o​s​i​c​i​ó​n​ ​i​n​d​i​v​i​d​u​a​l​:​ ​s​i​r​v​e​ ​p​a​r​a​ ​v​e​r​ ​a​ ​q​u​é​ ​e​s​t​á​s​ ​e​x​p​u​e​s​t​o​,​ ​n​o​ ​c​o​m​o​ ​c​o​m​p​o​s​i​c​i​ó​n​ ​e​x​a​c​t​a​ ​d​e​ ​t​u​ ​c​a​r​t​e​r​a​.
 		 */
@@ -3189,6 +3192,42 @@ type RootTranslation = {
 		 */
 		btn_understand: string
 		releases: {
+			v1_12_0: {
+				/**
+				 * 3​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
+				 */
+				date: string
+				/**
+				 * R​e​b​a​l​a​n​c​e​o​ ​s​i​n​ ​p​a​s​a​r​ ​p​o​r​ ​H​a​c​i​e​n​d​a
+				 */
+				badge: string
+				changes: {
+					/**
+					 * �​�​ ​*​*​R​e​b​a​l​a​n​c​e​o​ ​p​o​r​ ​t​r​a​s​p​a​s​o​,​ ​c​o​n​ ​c​o​s​t​e​ ​f​i​s​c​a​l​ ​c​e​r​o​:​*​*​ ​e​n​t​r​e​ ​f​o​n​d​o​s​ ​d​e​ ​i​n​v​e​r​s​i​ó​n​,​ ​m​o​v​e​r​ ​d​i​n​e​r​o​ ​n​o​ ​t​r​i​b​u​t​a​ ​e​n​ ​E​s​p​a​ñ​a​ ​(​d​i​f​e​r​i​m​i​e​n​t​o​ ​d​e​l​ ​a​r​t​.​ ​9​4​ ​L​I​R​P​F​)​.​ ​L​a​ ​a​p​p​ ​y​a​ ​n​o​ ​t​e​ ​h​a​c​e​ ​c​o​r​r​e​g​i​r​ ​u​n​a​ ​d​e​s​v​i​a​c​i​ó​n​ ​a​ ​b​a​s​e​ ​d​e​ ​a​p​o​r​t​a​c​i​o​n​e​s​ ​d​u​r​a​n​t​e​ ​m​e​s​e​s​ ​c​u​a​n​d​o​ ​p​u​e​d​e​s​ ​c​o​r​r​e​g​i​r​l​a​ ​h​o​y​,​ ​e​x​a​c​t​a​ ​y​ ​s​i​n​ ​p​a​g​a​r​ ​u​n​ ​e​u​r​o​.​ ​E​m​p​a​r​e​j​a​ ​p​r​i​m​e​r​o​ ​f​o​n​d​o​ ​c​o​n​ ​f​o​n​d​o​ ​p​a​r​a​ ​a​p​r​o​v​e​c​h​a​r​ ​t​o​d​o​ ​e​l​ ​m​a​r​g​e​n​ ​g​r​a​t​u​i​t​o​ ​q​u​e​ ​t​u​ ​c​a​r​t​e​r​a​ ​p​e​r​m​i​t​a​.
+					 */
+					'0': string
+					/**
+					 * �​�​ ​*​*​Y​ ​c​u​a​n​d​o​ ​s​í​ ​t​o​c​a​ ​p​a​g​a​r​,​ ​t​e​ ​d​i​c​e​ ​c​u​á​n​t​o​:​*​*​ ​p​a​r​a​ ​E​T​F​ ​y​ ​a​c​c​i​o​n​e​s​,​ ​q​u​e​ ​e​s​t​á​n​ ​f​u​e​r​a​ ​d​e​l​ ​r​é​g​i​m​e​n​ ​d​e​ ​t​r​a​s​p​a​s​o​,​ ​c​a​l​c​u​l​a​ ​l​a​ ​p​l​u​s​v​a​l​í​a​ ​r​e​a​l​ ​p​o​r​ ​F​I​F​O​ ​d​e​s​d​e​ ​t​u​ ​l​i​b​r​o​ ​d​e​ ​t​r​a​n​s​a​c​c​i​o​n​e​s​ ​y​ ​e​l​ ​i​m​p​u​e​s​t​o​ ​p​o​r​ ​l​o​s​ ​t​r​a​m​o​s​ ​d​e​ ​l​a​ ​b​a​s​e​ ​d​e​l​ ​a​h​o​r​r​o​.​ ​D​e​s​p​u​é​s​ ​c​o​m​p​a​r​a​ ​l​a​s​ ​d​o​s​ ​v​í​a​s​:​ ​l​o​ ​q​u​e​ ​t​e​ ​c​u​e​s​t​a​ ​a​r​r​e​g​l​a​r​l​o​ ​h​o​y​ ​f​r​e​n​t​e​ ​a​ ​l​o​s​ ​m​e​s​e​s​ ​q​u​e​ ​t​a​r​d​a​r​í​a​s​ ​a​p​o​r​t​a​n​d​o​.
+					 */
+					'1': string
+					/**
+					 * ⚠​️​ ​*​*​A​v​i​s​o​ ​d​e​ ​l​a​ ​r​e​g​l​a​ ​a​n​t​i​a​p​l​i​c​a​c​i​ó​n​:​*​*​ ​s​i​ ​v​e​n​d​e​s​ ​e​n​ ​p​é​r​d​i​d​a​s​ ​y​ ​h​a​s​ ​c​o​m​p​r​a​d​o​ ​l​o​ ​m​i​s​m​o​ ​d​e​n​t​r​o​ ​d​e​ ​l​a​ ​v​e​n​t​a​n​a​ ​(​d​o​s​ ​m​e​s​e​s​ ​e​n​ ​E​T​F​ ​y​ ​a​c​c​i​o​n​e​s​,​ ​u​n​ ​a​ñ​o​ ​e​n​ ​f​o​n​d​o​s​)​,​ ​e​s​a​ ​p​é​r​d​i​d​a​ ​n​o​ ​c​o​m​p​e​n​s​a​ ​g​a​n​a​n​c​i​a​s​ ​h​a​s​t​a​ ​q​u​e​ ​v​e​n​d​a​s​ ​d​e​f​i​n​i​t​i​v​a​m​e​n​t​e​ ​l​o​ ​r​e​c​o​m​p​r​a​d​o​.​ ​N​o​ ​s​e​ ​p​i​e​r​d​e​,​ ​s​e​ ​d​i​f​i​e​r​e​,​ ​y​ ​l​a​ ​a​p​p​ ​t​e​ ​d​i​c​e​ ​c​u​á​n​t​o​s​ ​d​í​a​s​ ​f​a​l​t​a​n​.
+					 */
+					'2': string
+					/**
+					 * �​�​️​ ​*​*​M​a​p​a​ ​d​e​ ​d​e​s​v​i​a​c​i​ó​n​:​*​*​ ​t​u​ ​c​a​r​t​e​r​a​ ​e​n​ ​r​e​c​t​á​n​g​u​l​o​s​,​ ​e​l​ ​t​a​m​a​ñ​o​ ​s​e​g​ú​n​ ​l​o​ ​q​u​e​ ​p​e​s​a​ ​d​e​ ​v​e​r​d​a​d​ ​y​ ​e​l​ ​c​o​l​o​r​ ​s​e​g​ú​n​ ​l​o​ ​l​e​j​o​s​ ​q​u​e​ ​e​s​t​á​ ​d​e​ ​s​u​ ​o​b​j​e​t​i​v​o​.​ ​C​o​l​o​r​e​a​d​o​ ​p​o​r​ ​d​e​s​v​i​a​c​i​ó​n​ ​y​ ​n​o​ ​p​o​r​ ​e​l​ ​c​a​m​b​i​o​ ​d​e​l​ ​d​í​a​,​ ​a​ ​p​r​o​p​ó​s​i​t​o​.
+					 */
+					'3': string
+					/**
+					 * �​�​ ​*​*​"​Q​u​é​ ​t​i​e​n​e​s​ ​d​e​ ​v​e​r​d​a​d​"​:​*​*​ ​l​a​ ​e​x​p​o​s​i​c​i​ó​n​ ​q​u​e​ ​h​a​y​ ​d​e​n​t​r​o​ ​d​e​ ​t​u​s​ ​f​o​n​d​o​s​,​ ​p​o​r​ ​r​e​g​i​ó​n​ ​y​ ​p​o​r​ ​s​e​c​t​o​r​,​ ​y​ ​e​l​ ​a​v​i​s​o​ ​c​u​a​n​d​o​ ​d​o​s​ ​p​o​s​i​c​i​o​n​e​s​ ​a​p​u​n​t​a​n​ ​a​ ​l​a​s​ ​m​i​s​m​a​s​ ​e​m​p​r​e​s​a​s​ ​—​e​l​ ​c​l​á​s​i​c​o​ ​W​o​r​l​d​ ​m​á​s​ ​S​&​P​ ​5​0​0​—​.​ ​C​a​l​c​u​l​a​d​o​ ​a​ ​n​i​v​e​l​ ​d​e​ ​í​n​d​i​c​e​,​ ​c​o​n​ ​l​o​s​ ​p​e​s​o​s​ ​t​o​m​a​d​o​s​ ​d​e​ ​l​a​s​ ​f​i​c​h​a​s​ ​o​f​i​c​i​a​l​e​s​ ​y​ ​a​v​i​s​a​n​d​o​ ​c​u​a​n​d​o​ ​a​l​g​u​n​o​ ​e​s​ ​u​n​a​ ​e​s​t​i​m​a​c​i​ó​n​.
+					 */
+					'4': string
+					/**
+					 * �​�​️​ ​*​*​C​a​d​a​ ​a​c​t​i​v​o​ ​t​i​e​n​e​ ​a​h​o​r​a​ ​t​i​p​o​ ​d​e​ ​i​n​s​t​r​u​m​e​n​t​o​ ​y​ ​í​n​d​i​c​e​ ​r​e​p​l​i​c​a​d​o​.​*​*​ ​L​a​ ​a​p​p​ ​l​o​s​ ​d​e​d​u​c​e​ ​y​ ​p​u​e​d​e​s​ ​c​o​r​r​e​g​i​r​l​o​s​ ​d​e​s​d​e​ ​G​e​s​t​i​o​n​a​r​ ​C​a​r​t​e​r​a​;​ ​d​e​ ​a​h​í​ ​d​e​p​e​n​d​e​ ​q​u​e​ ​e​l​ ​c​á​l​c​u​l​o​ ​f​i​s​c​a​l​ ​s​e​a​ ​e​l​ ​c​o​r​r​e​c​t​o​.
+					 */
+					'5': string
+				}
+			}
 			v1_11_0: {
 				/**
 				 * 2​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
@@ -6000,7 +6039,7 @@ export type TranslationFunctions = {
 		 */
 		footer_tagline: () => LocalizedString
 		/**
-		 * v1.11.0 🚀
+		 * v1.12.0 🚀
 		 */
 		changelog_trigger: () => LocalizedString
 		/**
@@ -6232,14 +6271,6 @@ export type TranslationFunctions = {
 		 */
 		tax_label: () => LocalizedString
 		/**
-		 * {amount} sin coste fiscal
-		 */
-		summary_free: (arg: { amount: string }) => LocalizedString
-		/**
-		 * {amount} tributando
-		 */
-		summary_taxable: (arg: { amount: string }) => LocalizedString
-		/**
 		 * Coste fiscal total estimado
 		 */
 		summary_tax: () => LocalizedString
@@ -6276,13 +6307,17 @@ export type TranslationFunctions = {
 		 */
 		comparison_never: () => LocalizedString
 		/**
-		 * Esta pérdida no te la podrías deducir
+		 * Esta pérdida no la podrías compensar todavía
 		 */
 		loss_blocked_title: () => LocalizedString
 		/**
-		 * Has comprado {ticker} dentro de la ventana de {months} meses de la regla antiaplicación. Si vendes ahora en pérdidas, no puedes compensarlas. Podrías a partir de {days} días.
+		 * Has comprado {ticker} dentro de la ventana de {months} meses de la regla antiaplicación (art. 33.5 LIRPF). Si vendes ahora en pérdidas, la pérdida no se pierde —se declara igual— pero no compensa ganancias hasta que vendas definitivamente las participaciones recompradas. Si esperas {days} días más, compensa este mismo ejercicio.
 		 */
 		loss_blocked_desc: (arg: { days: number, months: number, ticker: string }) => LocalizedString
+		/**
+		 * La ventana es de dos meses para ETF y acciones, y de un año para participaciones de fondos, que no cotizan en mercado.
+		 */
+		loss_blocked_window: () => LocalizedString
 		/**
 		 * Plusvalía aproximada: falta historial de compras en el libro de transacciones, así que el valor de adquisición está incompleto.
 		 */
@@ -6303,6 +6338,10 @@ export type TranslationFunctions = {
 		 * Base legal
 		 */
 		sources_label: () => LocalizedString
+		/**
+		 * art. 94 LIRPF (traspasos entre IIC), art. 37.2 (FIFO para valores homogéneos), art. 33.5 f) y g) (regla antiaplicación) y art. 66 (tipos de la base del ahorro).
+		 */
+		sources_body: () => LocalizedString
 	}
 	treemap: {
 		/**
@@ -6464,9 +6503,13 @@ export type TranslationFunctions = {
 		 */
 		coverage_note: (arg: { amount: string }) => LocalizedString
 		/**
-		 * Pesos de índice aproximados a fecha {date}.
+		 * Pesos de índice a fecha {date}, tomados de las fichas oficiales de cada índice.
 		 */
 		as_of: (arg: { date: string }) => LocalizedString
+		/**
+		 * Los pesos de {indices} son una estimación sin ficha contrastada, así que tómalos como orden de magnitud.
+		 */
+		estimated_warning: (arg: { indices: string }) => LocalizedString
 		/**
 		 * Estimación calculada a nivel de índice, no de posición individual: sirve para ver a qué estás expuesto, no como composición exacta de tu cartera.
 		 */
@@ -6800,6 +6843,42 @@ export type TranslationFunctions = {
 		 */
 		btn_understand: () => LocalizedString
 		releases: {
+			v1_12_0: {
+				/**
+				 * 3 de Agosto, 2026
+				 */
+				date: () => LocalizedString
+				/**
+				 * Rebalanceo sin pasar por Hacienda
+				 */
+				badge: () => LocalizedString
+				changes: {
+					/**
+					 * 🧾 **Rebalanceo por traspaso, con coste fiscal cero:** entre fondos de inversión, mover dinero no tributa en España (diferimiento del art. 94 LIRPF). La app ya no te hace corregir una desviación a base de aportaciones durante meses cuando puedes corregirla hoy, exacta y sin pagar un euro. Empareja primero fondo con fondo para aprovechar todo el margen gratuito que tu cartera permita.
+					 */
+					'0': () => LocalizedString
+					/**
+					 * 💸 **Y cuando sí toca pagar, te dice cuánto:** para ETF y acciones, que están fuera del régimen de traspaso, calcula la plusvalía real por FIFO desde tu libro de transacciones y el impuesto por los tramos de la base del ahorro. Después compara las dos vías: lo que te cuesta arreglarlo hoy frente a los meses que tardarías aportando.
+					 */
+					'1': () => LocalizedString
+					/**
+					 * ⚠️ **Aviso de la regla antiaplicación:** si vendes en pérdidas y has comprado lo mismo dentro de la ventana (dos meses en ETF y acciones, un año en fondos), esa pérdida no compensa ganancias hasta que vendas definitivamente lo recomprado. No se pierde, se difiere, y la app te dice cuántos días faltan.
+					 */
+					'2': () => LocalizedString
+					/**
+					 * 🗺️ **Mapa de desviación:** tu cartera en rectángulos, el tamaño según lo que pesa de verdad y el color según lo lejos que está de su objetivo. Coloreado por desviación y no por el cambio del día, a propósito.
+					 */
+					'3': () => LocalizedString
+					/**
+					 * 🔍 **"Qué tienes de verdad":** la exposición que hay dentro de tus fondos, por región y por sector, y el aviso cuando dos posiciones apuntan a las mismas empresas —el clásico World más S&P 500—. Calculado a nivel de índice, con los pesos tomados de las fichas oficiales y avisando cuando alguno es una estimación.
+					 */
+					'4': () => LocalizedString
+					/**
+					 * 🏷️ **Cada activo tiene ahora tipo de instrumento y índice replicado.** La app los deduce y puedes corregirlos desde Gestionar Cartera; de ahí depende que el cálculo fiscal sea el correcto.
+					 */
+					'5': () => LocalizedString
+				}
+			}
 			v1_11_0: {
 				/**
 				 * 2 de Agosto, 2026

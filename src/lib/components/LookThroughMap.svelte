@@ -224,6 +224,11 @@
 				</p>
 			{/if}
 			<p class="note">{$LL.lookthrough.as_of({ date: data.asOf })}</p>
+			{#if data.estimatedIndices.length > 0}
+				<p class="note estimated">
+					{$LL.lookthrough.estimated_warning({ indices: data.estimatedIndices.join(', ') })}
+				</p>
+			{/if}
 			<p class="note">{$LL.lookthrough.disclaimer()}</p>
 		</div>
 	{/if}
@@ -400,6 +405,11 @@
 		color: rgba(160, 160, 200, 0.55);
 		margin: 0;
 		line-height: 1.5;
+	}
+
+	.note.estimated {
+		color: var(--accent-orange);
+		opacity: 0.85;
 	}
 
 	.empty {

@@ -79,6 +79,25 @@ describe('integridad del dataset de índices', () => {
 	it('está fechado, porque son cifras que caducan', () => {
 		expect(INDICES_AS_OF).toMatch(/^\d{4}-\d{2}-\d{2}$/);
 	});
+
+	it('cada índice declara de dónde sale su cifra', () => {
+		// Sin esto se podría colar un bloque nuevo sin decir si está verificado, y
+		// la interfaz lo presentaría con la misma seguridad que los contrastados.
+		const valid = ['factsheet', 'derived', 'estimate'];
+		for (const [key, index] of Object.entries(INDICES)) {
+			expect(valid, `regiones de ${key}`).toContain(index.regionsConfidence);
+			expect(valid, `sectores de ${key}`).toContain(index.sectorsConfidence);
+		}
+	});
+
+	it('los índices que más se usan en España están contrastados con ficha', () => {
+		// Si alguno de estos pierde el respaldo, hay que enterarse: son los que
+		// aparecen en la mayoría de las carteras indexadas.
+		expect(INDICES['msci-world'].regionsConfidence).toBe('factsheet');
+		expect(INDICES['msci-world'].sectorsConfidence).toBe('factsheet');
+		expect(INDICES['sp500'].regionsConfidence).toBe('factsheet');
+		expect(INDICES['sp500'].sectorsConfidence).toBe('factsheet');
+	});
 });
 
 describe('resolveIndexKey', () => {
@@ -126,7 +145,7 @@ describe('calculateLookThrough', () => {
 		]);
 
 		const us = result.regions.find((r) => r.key === 'us');
-		// 90 % en un World que es 72 % EEUU = ~65 % del total.
+		// 90 % en un World que es 72,5 % EEUU = ~65 % del total.
 		expect(us!.weight).toBeGreaterThan(0.6);
 		expect(us!.weight).toBeLessThan(0.7);
 		// Y la primera región es EEUU con diferencia.
@@ -169,6 +188,40 @@ describe('calculateLookThrough', () => {
 		expect(result.sectors).toEqual([]);
 		expect(result.overlaps).toEqual([]);
 		expect(result.coveredValue).toBe(0);
+		expect(result.estimatedIndices).toEqual([]);
+	});
+
+	it('solo avisa de estimaciones que afectan a esta cartera', () => {
+		// Con World y S&P 500, los dos contrastados, no hay nada que advertir.
+		const verified = calculateLookThrough([
+			makePosition('IWDA', 'iShares Core MSCI World UCITS ETF', 5000),
+			makePosition('CSPX', 'iShares Core S&P 500 UCITS ETF', 5000)
+		]);
+		expect(verified.estimatedIndices).toEqual([]);
+
+		// Al meter un índice sin ficha contrastada, sí se avisa, y por su nombre.
+		const withEstimate = calculateLookThrough([
+			makePosition('IWDA', 'iShares Core MSCI World UCITS ETF', 5000),
+			makePosition('IESE', 'iShares MSCI Europe', 5000)
+		]);
+		expect(withEstimate.estimatedIndices).toContain('MSCI Europe');
+		expect(withEstimate.estimatedIndices).not.toContain('MSCI World');
+	});
+
+	it('la exposición a EEUU del MSCI World cuadra con su ficha', () => {
+		// 72,5 % a 30-jun-2026. Es la cifra más citada del dataset y la que más
+		// sorprende al usuario, así que se fija aquí.
+		const result = calculateLookThrough([
+			makePosition('IWDA', 'iShares Core MSCI World UCITS ETF', 10000)
+		]);
+		expect(result.regions.find((r) => r.key === 'us')!.weight).toBeCloseTo(0.725, 3);
+	});
+
+	it('el peso de tecnología del S&P 500 cuadra con su ficha', () => {
+		const result = calculateLookThrough([
+			makePosition('CSPX', 'iShares Core S&P 500 UCITS ETF', 10000)
+		]);
+		expect(result.sectors.find((s) => s.key === 'tech')!.weight).toBeCloseTo(0.38, 3);
 	});
 
 	it('ignora las posiciones sin valor', () => {

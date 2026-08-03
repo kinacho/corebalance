@@ -12,7 +12,13 @@ import type { Locales } from '$lib/i18n/i18n-types';
 export const FEATURE_LIST: Record<Locales, string[]> = {
 	es: [
 		'Cálculo de rebalanceo por aportación (cash-flow rebalancing): distribuye cada aportación entre los activos infraponderados sin necesidad de vender',
+		'Rebalanceo por traspaso entre fondos de inversión con coste fiscal cero, aprovechando el diferimiento fiscal español (art. 94 LIRPF): calcula el movimiento exacto hasta el objetivo sin generar ganancia patrimonial',
+		'Cálculo del coste fiscal real de rebalancear vendiendo ETFs o acciones: plusvalía por FIFO desde el libro de transacciones e impuesto por los tramos de la base del ahorro',
+		'Aviso de la regla antiaplicación del IRPF (dos meses para valores cotizados, un año para participaciones de fondos) antes de realizar una pérdida que no podría compensarse',
+		'Comparación entre corregir la desviación hoy y los meses que tardaría la vía de solo aportar',
 		'Asignación de activos con pesos objetivo y desviación en tiempo real, en tres bloques: cartera principal, satélite y acciones',
+		'Mapa de cartera coloreado por desviación respecto al objetivo, no por la variación diaria',
+		'Transparencia del subyacente: exposición real por región y por sector calculada a nivel de índice, con detección de solapamiento entre fondos que replican índices que se pisan',
 		'Precios en tiempo real de fondos indexados, ETFs y acciones (Yahoo Finance y Financial Times)',
 		'Importación CSV de MyInvestor, DEGIRO, Trading 212, Interactive Brokers y formato genérico, con mapeo manual de columnas si la detección automática falla',
 		'Libro de transacciones (compras, ventas, dividendos, traspasos) con cálculo automático del coste medio ponderado',
@@ -30,7 +36,13 @@ export const FEATURE_LIST: Record<Locales, string[]> = {
 	],
 	en: [
 		'Cash-flow rebalancing calculation: distributes each contribution across underweighted assets with no need to sell',
+		'Tax-free rebalancing by transfer between Spanish investment funds, using the tax deferral of art. 94 LIRPF: works out the exact move to target without realising a capital gain',
+		'Real tax cost of rebalancing by selling ETFs or shares: FIFO capital gain from the transaction ledger and tax by Spanish savings-income brackets',
+		'Spanish wash-sale rule warning (two months for listed securities, one year for fund units) before realising a loss that could not be offset',
+		'Comparison between fixing the drift today and how many months the contribution-only route would take',
 		'Asset allocation with target weights and real-time deviation, in three buckets: core portfolio, satellite and stocks',
+		'Portfolio map coloured by deviation from target rather than by daily change',
+		'Look-through exposure: real regional and sector exposure computed at index level, with overlap detection between funds tracking indices that contain each other',
 		'Real-time prices for index funds, ETFs and stocks (Yahoo Finance and Financial Times)',
 		'CSV import from MyInvestor, DEGIRO, Trading 212, Interactive Brokers and a generic format, with manual column mapping when auto-detection fails',
 		'Transaction ledger (buys, sells, dividends, transfers) with automatic weighted-average cost calculation',

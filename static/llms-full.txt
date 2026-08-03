@@ -66,6 +66,33 @@ If all assets are already at or above their target values (e.g. if the portfolio
 - Shares to buy:
   $$S_{buy,i} = \frac{A_i}{P_i}$$
 
+### Step 3: Tax-Aware Rebalancing (`calculateTaxAwareRebalance`)
+
+The contribution-only algorithm above is buy-only by design, to avoid realising capital gains. For a Spanish investor holding investment funds, that constraint is stricter than the law requires: **transfers between collective investment schemes are not a taxable event** (art. 94 of Law 35/2006, *traspaso* with tax deferral). CoreBalance therefore also computes the exact, immediate move to target and prices it.
+
+The plan is computed **per category** (`core`, `satellite`, `stocks`), because target weights are defined inside each bucket; moving capital across buckets is a change of strategy, not a rebalance.
+
+For each category, positions are split into sources ($V_i > V_{target,i}$) and destinations ($V_i < V_{target,i}$), and matched in **two passes**: first every pair that is tax-free, then the remainder. That ordering is not cosmetic — matching in arbitrary order lets a fund finance an ETF (a taxed redemption) while another fund with a deficit waits for next month's contribution.
+
+A move is tax-free if and only if:
+- the source is a **fund** and the destination is also a **fund** (a *traspaso*); a fund redeemed to buy an ETF is **not** a transfer and is taxed, or
+- the source is **cash**, where nothing is transmitted and so no capital gain arises.
+
+For taxed moves, the realised gain uses **FIFO**, which Spanish law mandates for homogeneous securities (art. 37.2): the oldest lots are considered sold first. Given lots $(d_k, s_k, c_k)$ sorted by date and $S_{sell}$ units to sell:
+
+$$Gain = S_{sell} \times P_{unit} - \sum_k \min(s_k, r_k) \times c_k$$
+
+where $r_k$ is the quantity still to be consumed when lot $k$ is reached.
+
+Tax is applied over the **savings-income base**, which is progressive and annual, so it cannot be computed move by move in isolation: gains are accumulated across the whole plan and each move is charged what it adds to the scale. The 2026 brackets are 19% up to €6,000, 21% to €50,000, 23% to €200,000, 27% to €300,000 and 30% above.
+
+Two consequences worth stating explicitly, because they are where naive implementations go wrong:
+
+1. **The FIFO acquisition value ignores dividends**, unlike the ledger model in section 2 below. Fiscally a dividend is investment income of the year it is received and does not alter the acquisition value of anything. Applying the ledger's criterion here would inflate the gain, and with it the estimated tax.
+2. **A loss caught by the wash-sale rule (art. 33.5) does not offset gains**, so it is excluded from the taxable base of the estimate. The window is **two months** for securities admitted to trading (shares, ETFs — letter f) and **one year** for those not admitted, which includes fund units, since they are subscribed and redeemed with the management company rather than traded (letter g). The loss is **not forfeited**: it is still declared and it is integrated when the repurchased units are definitively sold.
+
+The output is deliberately a comparison rather than a recommendation: the tax-free amount, the taxed amount with its estimated tax, and how many months the contribution-only route would need to bring every deviation inside a one-percentage-point band at current prices. Every figure is presented as an estimate, since the app cannot know the rest of the user's savings base, carried-forward losses from previous years, or personal circumstances.
+
 ---
 
 ## 2. Ledger Accounting Model (Weighted Average Cost)
@@ -145,6 +172,7 @@ Two additional simulators run **on the user's actual portfolio**, not on generic
 ### CoreBalance vs. Portfolio Performance (Desktop App)
 - **Complexity:** Portfolio Performance is a massive desktop program requiring user manuals to compute TWR/MWR and import PDFs of banking operations. CoreBalance focuses strictly on simplifying monthly rebalancing.
 - **Accessibility:** Portfolio Performance doesn't run on mobile phones. CoreBalance syncs seamlessly via IndexedDB/Firebase, allowing desktop-to-mobile usage.
+- **Spanish tax model:** Portfolio Performance, Ghostfolio and the international trackers reason in terms of "sell → capital gain → tax". None of them model the Spanish *traspaso*, where moving between investment funds is free of tax, so none of them can tell a Spanish investor that a given rebalance costs nothing. CoreBalance does, and it also warns about the wash-sale window before proposing a loss-making sale.
 
 ---
 

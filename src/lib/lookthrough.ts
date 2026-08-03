@@ -16,10 +16,22 @@ import type { Asset, PortfolioPosition } from './types';
  * como tal en la interfaz. Ver la nota del propio `indices.json`.
  */
 
+/**
+ * De dónde sale cada cifra del dataset.
+ *
+ * Existe porque no todos los índices se pudieron contrastar contra su ficha
+ * oficial, y un mapa que mezcla números leídos con números estimados sin
+ * distinguirlos es peor que uno que admite lo que no sabe. La interfaz avisa
+ * cuando la cartera del usuario depende de un bloque `estimate`.
+ */
+export type WeightConfidence = 'factsheet' | 'derived' | 'estimate';
+
 export interface IndexDefinition {
 	name: string;
 	assetClass: 'equity' | 'bond';
 	coverage: string;
+	regionsConfidence: WeightConfidence;
+	sectorsConfidence: WeightConfidence;
 	regions: Record<string, number>;
 	sectors: Record<string, number> | null;
 }
@@ -128,6 +140,12 @@ export interface LookThroughResult {
 	uncoveredTickers: string[];
 	/** Cubierto sin desglose sectorial: la renta fija no tiene sectores. */
 	noSectorValue: number;
+	/**
+	 * Nombres de los índices cuyos pesos son estimación sin ficha contrastada y
+	 * que **de hecho** pesan en esta cartera. Vacío si todo lo que el usuario
+	 * tiene está verificado, que es el caso de una cartera indexada corriente.
+	 */
+	estimatedIndices: string[];
 	asOf: string;
 }
 
@@ -194,6 +212,22 @@ export function calculateLookThrough(positions: PortfolioPosition[]): LookThroug
 			.map(([key, value]) => ({ key, value, weight: base > 0 ? value / base : 0 }))
 			.sort((a, b) => b.value - a.value);
 
+	// Solo se avisa de las estimaciones que afectan a esta cartera: listar las
+	// del dataset entero sería ruido sobre índices que el usuario no tiene.
+	const estimatedIndices = [
+		...new Set(
+			mapped
+				.filter(({ indexKey }) => {
+					const index = INDICES[indexKey];
+					return (
+						index.regionsConfidence === 'estimate' ||
+						(index.sectors !== null && index.sectorsConfidence === 'estimate')
+					);
+				})
+				.map(({ indexKey }) => INDICES[indexKey].name)
+		)
+	];
+
 	return {
 		regions: toSlices(regionTotals, coveredValue),
 		sectors: toSlices(sectorTotals, sectorBase),
@@ -202,6 +236,7 @@ export function calculateLookThrough(positions: PortfolioPosition[]): LookThroug
 		uncoveredValue,
 		uncoveredTickers,
 		noSectorValue,
+		estimatedIndices,
 		asOf: DATA.asOf
 	};
 }

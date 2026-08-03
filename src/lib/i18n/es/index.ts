@@ -631,7 +631,7 @@ const es = {
     timing_period_note: 'Cifras del periodo mostrado, sin anualizar.',
     legal_disclaimer: '<strong>Aviso Legal:</strong> CoreBalance es una herramienta puramente informativa y educativa. No constituye asesoramiento financiero, de inversión ni fiscal. Los datos mostrados pueden sufrir retrasos o ser inexactos. El desarrollador no se hace responsable de posibles pérdidas financieras derivadas del uso de esta aplicación. Invierte siempre bajo tu propia responsabilidad.',
     footer_tagline: 'Tu centro de mandos para una gestión de activos inteligente y equilibrada.',
-    changelog_trigger: 'v1.11.0 🚀',
+    changelog_trigger: 'v1.12.0 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Hecho con ❤️ para la comunidad inversora',
     reclassify_stocks: 'Acciones Individuales',
@@ -694,8 +694,6 @@ const es = {
     gain_label: 'Plusvalía',
     loss_label: 'Pérdida',
     tax_label: 'Impuesto est.',
-    summary_free: '{amount:string} sin coste fiscal',
-    summary_taxable: '{amount:string} tributando',
     summary_tax: 'Coste fiscal total estimado',
     summary_deviation: 'Desviación máxima: {before:string} → {after:string}',
     comparison_heading: 'Contra la vía de solo aportar',
@@ -705,13 +703,15 @@ const es = {
     comparison_cost_verdict: 'Corregir hoy te cuesta {tax:string}. Esperar es gratis, pero son {months:number} meses fuera de objetivo.',
     comparison_no_contribution: 'Configura tu aportación mensual en el panel de arriba y te digo cuánto tardaría la vía lenta.',
     comparison_never: 'Con la aportación actual no llegarías a la banda objetivo ni en veinte años.',
-    loss_blocked_title: 'Esta pérdida no te la podrías deducir',
-    loss_blocked_desc: 'Has comprado {ticker:string} dentro de la ventana de {months:number} meses de la regla antiaplicación. Si vendes ahora en pérdidas, no puedes compensarlas. Podrías a partir de {days:number} días.',
+    loss_blocked_title: 'Esta pérdida no la podrías compensar todavía',
+    loss_blocked_desc: 'Has comprado {ticker:string} dentro de la ventana de {months:number} meses de la regla antiaplicación (art. 33.5 LIRPF). Si vendes ahora en pérdidas, la pérdida no se pierde —se declara igual— pero no compensa ganancias hasta que vendas definitivamente las participaciones recompradas. Si esperas {days:number} días más, compensa este mismo ejercicio.',
+    loss_blocked_window: 'La ventana es de dos meses para ETF y acciones, y de un año para participaciones de fondos, que no cotizan en mercado.',
     partial_gain: 'Plusvalía aproximada: falta historial de compras en el libro de transacciones, así que el valor de adquisición está incompleto.',
     excluded: 'Fuera del plan: {tickers:string}. La app no sabe cómo tributan, así que no propone moverlos.',
     band_note: 'Se considera «en objetivo» una desviación de menos de un punto porcentual.',
     disclaimer: '<strong>Estimación, no una liquidación.</strong> No conoce el resto de tu base del ahorro de este año, ni tus pérdidas pendientes de compensar de ejercicios anteriores, ni tu situación personal. Los tipos usados son los de la base del ahorro de {year:number}. Contrasta con tu asesor antes de mover nada.',
     sources_label: 'Base legal',
+    sources_body: 'art. 94 LIRPF (traspasos entre IIC), art. 37.2 (FIFO para valores homogéneos), art. 33.5 f) y g) (regla antiaplicación) y art. 66 (tipos de la base del ahorro).',
   },
   // Mapa de desviación
   treemap: {
@@ -757,7 +757,8 @@ const es = {
     uncovered: '{amount:string} sin analizar ({tickers:string}): acciones sueltas, efectivo o activos cuyo índice no reconocemos.',
     no_sector: '{amount:string} de renta fija se cuenta por región pero no por sector.',
     coverage_note: 'Los porcentajes son sobre lo analizado ({amount:string}), no sobre tu patrimonio total.',
-    as_of: 'Pesos de índice aproximados a fecha {date:string}.',
+    as_of: 'Pesos de índice a fecha {date:string}, tomados de las fichas oficiales de cada índice.',
+    estimated_warning: 'Los pesos de {indices:string} son una estimación sin ficha contrastada, así que tómalos como orden de magnitud.',
     disclaimer: 'Estimación calculada a nivel de índice, no de posición individual: sirve para ver a qué estás expuesto, no como composición exacta de tu cartera.',
   },
   // Projections
@@ -881,6 +882,18 @@ const es = {
     close_aria: 'Cerrar modal',
     btn_understand: 'Entendido',
     releases: {
+      v1_12_0: {
+        date: '3 de Agosto, 2026',
+        badge: 'Rebalanceo sin pasar por Hacienda',
+        changes: [
+          '🧾 **Rebalanceo por traspaso, con coste fiscal cero:** entre fondos de inversión, mover dinero no tributa en España (diferimiento del art. 94 LIRPF). La app ya no te hace corregir una desviación a base de aportaciones durante meses cuando puedes corregirla hoy, exacta y sin pagar un euro. Empareja primero fondo con fondo para aprovechar todo el margen gratuito que tu cartera permita.',
+          '💸 **Y cuando sí toca pagar, te dice cuánto:** para ETF y acciones, que están fuera del régimen de traspaso, calcula la plusvalía real por FIFO desde tu libro de transacciones y el impuesto por los tramos de la base del ahorro. Después compara las dos vías: lo que te cuesta arreglarlo hoy frente a los meses que tardarías aportando.',
+          '⚠️ **Aviso de la regla antiaplicación:** si vendes en pérdidas y has comprado lo mismo dentro de la ventana (dos meses en ETF y acciones, un año en fondos), esa pérdida no compensa ganancias hasta que vendas definitivamente lo recomprado. No se pierde, se difiere, y la app te dice cuántos días faltan.',
+          '🗺️ **Mapa de desviación:** tu cartera en rectángulos, el tamaño según lo que pesa de verdad y el color según lo lejos que está de su objetivo. Coloreado por desviación y no por el cambio del día, a propósito.',
+          '🔍 **"Qué tienes de verdad":** la exposición que hay dentro de tus fondos, por región y por sector, y el aviso cuando dos posiciones apuntan a las mismas empresas —el clásico World más S&P 500—. Calculado a nivel de índice, con los pesos tomados de las fichas oficiales y avisando cuando alguno es una estimación.',
+          '🏷️ **Cada activo tiene ahora tipo de instrumento y índice replicado.** La app los deduce y puedes corregirlos desde Gestionar Cartera; de ahí depende que el cálculo fiscal sea el correcto.'
+        ]
+      },
       v1_11_0: {
         date: '2 de Agosto, 2026',
         badge: 'Rentabilidad honesta y divisas corregidas',
