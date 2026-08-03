@@ -1,8 +1,10 @@
 <script lang="ts">
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { ui } from '$lib/stores/ui.svelte';
-	import type { Asset, AssetCategory } from '$lib/types';
+	import type { Asset, AssetCategory, InstrumentType } from '$lib/types';
 	import { formatPercent } from '$lib/utils';
+	import { instrumentTypeOf } from '$lib/instrument-type';
+	import { indexKeyOf, INDICES } from '$lib/lookthrough';
 	import { focusTrap } from '$lib/actions/focusTrap';
 	import { LL } from '$lib/i18n/i18n-svelte';
 	import { onMount, onDestroy } from 'svelte';
@@ -26,6 +28,13 @@
 	let editName = $state('');
 	let editTer = $state('');
 	let editInterest = $state('');
+	let editInstrumentType = $state<InstrumentType>('other');
+	let editIndexKey = $state('');
+
+	/** Los índices del dataset, ordenados por nombre para el desplegable. */
+	const indexOptions = Object.entries(INDICES)
+		.map(([key, definition]) => ({ key, name: definition.name }))
+		.sort((a, b) => a.name.localeCompare(b.name));
 
 	let originalState: any;
 
@@ -172,6 +181,10 @@
 		editName = asset.name;
 		editTer = (asset.ter * 100).toFixed(2);
 		editInterest = ((asset.manualInterestRate ?? 0) * 100).toFixed(2);
+		// Se muestra el valor deducido, no vacío: así el usuario ve qué ha
+		// adivinado la app y solo tiene que intervenir si está mal.
+		editInstrumentType = instrumentTypeOf(asset);
+		editIndexKey = indexKeyOf(asset) ?? '';
 	}
 
 	function saveTerEdit(ticker: string) {
@@ -191,6 +204,13 @@
 		if (isCash && !isNaN(interest)) {
 			updates.manualInterestRate = interest / 100;
 		}
+
+		// El tipo de instrumento decide si la app puede proponer un traspaso sin
+		// coste fiscal, así que la corrección manual manda sobre la deducción.
+		updates.instrumentType = editInstrumentType;
+		// Cadena vacía = «ninguno», y hay que guardarlo como `undefined` para que
+		// no vuelva a deducirse solo en la siguiente carga.
+		updates.indexKey = editIndexKey || undefined;
 
 		if (Object.keys(updates).length > 0) {
 			portfolio.updateAsset(ticker, updates);
@@ -457,6 +477,39 @@
 															/>
 														</div>
 													{/if}
+													<div class="edit-field-group">
+														<label class="ter-label" for="itype-{asset.ticker}">
+															{$LL.manage.label_instrument_type()}
+														</label>
+														<select
+															id="itype-{asset.ticker}"
+															class="ter-input"
+															style="width: 130px;"
+															bind:value={editInstrumentType}
+														>
+															<option value="fund">{$LL.manage.itype_fund()}</option>
+															<option value="etf">{$LL.manage.itype_etf()}</option>
+															<option value="equity">{$LL.manage.itype_equity()}</option>
+															<option value="cash">{$LL.manage.itype_cash()}</option>
+															<option value="other">{$LL.manage.itype_other()}</option>
+														</select>
+													</div>
+													<div class="edit-field-group">
+														<label class="ter-label" for="idx-{asset.ticker}">
+															{$LL.manage.label_index()}
+														</label>
+														<select
+															id="idx-{asset.ticker}"
+															class="ter-input"
+															style="width: 160px;"
+															bind:value={editIndexKey}
+														>
+															<option value="">{$LL.manage.index_none()}</option>
+															{#each indexOptions as option (option.key)}
+																<option value={option.key}>{option.name}</option>
+															{/each}
+														</select>
+													</div>
 												</div>
 												<div class="edit-actions-stack">
 													<button class="ter-save" onclick={() => saveTerEdit(asset.ticker)}>✓</button>

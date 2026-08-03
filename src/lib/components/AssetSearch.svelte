@@ -7,6 +7,8 @@
 	import { ASSET_COLORS, ASSET_ICONS } from '$lib/constants';
 	import type { Asset, AssetCategory, SearchResult } from '$lib/types';
 	import { resolveAssetIcon } from '$lib/utils';
+	import { resolveInstrumentType } from '$lib/instrument-type';
+	import { resolveIndexKey } from '$lib/lookthrough';
 
 	interface Props {
 		category: AssetCategory;
@@ -87,7 +89,12 @@
 			color: getNextColor(),
 			icon: resolveAssetIcon(result.ticker, result.name, result.type),
 			ter: 0,
-			category
+			category,
+			// El `type` de Yahoo es la señal más fiable que vamos a tener de si esto
+			// es un fondo traspasable o un ETF que tributa, y solo la tenemos aquí:
+			// después ya no vuelve. Guardarla ahora ahorra adivinarla luego.
+			instrumentType: resolveInstrumentType(result.ticker, result.name, result.type),
+			indexKey: resolveIndexKey(result.ticker, result.name)
 		};
 
 		portfolio.addAsset(asset);

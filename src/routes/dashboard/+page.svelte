@@ -8,6 +8,9 @@
   import PendingEditsPanel from "$lib/components/PendingEditsPanel.svelte";
   import TimingCost from "$lib/components/TimingCost.svelte";
   import RebalancePanel from "$lib/components/RebalancePanel.svelte";
+  import TaxAwareRebalance from "$lib/components/TaxAwareRebalance.svelte";
+  import DeviationTreemap from "$lib/components/DeviationTreemap.svelte";
+  import LookThroughMap from "$lib/components/LookThroughMap.svelte";
   import Projections from "$lib/components/Projections.svelte";
   import CrisisSimulator from "$lib/components/CrisisSimulator.svelte";
   import PaypalDonation from "$lib/components/PaypalDonation.svelte";
@@ -354,6 +357,20 @@
         </div>
       </section>
 
+      <!-- Mapas: desviación y transparencia del subyacente.
+           Van en la pestaña de gráficos y siempre montados, como el resto: el
+           treemap es SVG y no tiene estado que perder, pero el selector
+           región/sector del mapa del subyacente sí, y con un {#if} se
+           reiniciaría cada vez que el usuario cambia de pestaña. -->
+      <section class="maps-section" class:tab-hidden={activeTab !== "charts"}>
+        <div class="map-card card">
+          <DeviationTreemap />
+        </div>
+        <div class="map-card card">
+          <LookThroughMap />
+        </div>
+      </section>
+
       <!-- Content Grid -->
       <div class="dashboard-grid">
         <!-- Assets Column -->
@@ -390,6 +407,10 @@
               contribution={portfolio.contribution}
               onContributionChange={(val) => portfolio.updateContribution(val)}
             />
+          </div>
+
+          <div class="sidebar-item" class:tab-hidden={activeTab !== "rebalance"}>
+            <TaxAwareRebalance />
           </div>
 
           <div class="sidebar-item" class:tab-hidden={activeTab !== "rebalance"}>
@@ -650,6 +671,25 @@
     overflow: visible;
   }
 
+  /* Los dos mapas: en móvil apilados, en escritorio uno al lado del otro. */
+  .maps-section {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .map-card {
+    padding: 1.25rem;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(24px) saturate(200%);
+    -webkit-backdrop-filter: blur(24px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 28px;
+    box-shadow: 0 12px 48px 0 rgba(0, 0, 0, 0.5);
+    min-width: 0;
+  }
+
   .charts-grid {
     display: grid;
     grid-template-columns: repeat(3, 100%);
@@ -712,6 +752,9 @@
     }
     .desktop-charts-section {
       display: block !important;
+    }
+    .maps-section {
+      grid-template-columns: 1fr 1fr;
     }
   }
 
@@ -937,6 +980,12 @@
 
     .sidebar-item.tab-hidden {
       display: flex !important;
+    }
+
+    /* En escritorio no hay pestañas y `.tab-hidden` revierte a `display: block`,
+       que aplastaría la rejilla de dos columnas de los mapas. */
+    .maps-section.tab-hidden {
+      display: grid !important;
     }
   }
 </style>

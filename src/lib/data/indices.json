@@ -1,0 +1,419 @@
+{
+  "asOf": "2026-06-30",
+  "precision": "approximate",
+  "note": "Pesos por región y sector de los índices que replican los fondos y ETF más habituales en carteras indexadas españolas. Redondeados a medio punto y normalizados a 100. Sirven para orientar sobre a qué estás expuesto de verdad, NO para declarar ni para decidir sobre cifras exactas: los pesos reales se mueven a diario y cada índice los publica en su propia ficha mensual. Revisar contra las fichas oficiales antes de citar.",
+  "sources": {
+    "msci": "https://www.msci.com/end-of-day-data-search",
+    "ftse": "https://www.ftserussell.com/products/indices/geis-series",
+    "sp": "https://www.spglobal.com/spdji/en/indices/equity/sp-500/",
+    "nasdaq": "https://www.nasdaq.com/market-activity/quotes/nasdaq-ndx-index",
+    "bloomberg": "https://www.bloomberg.com/professional/products/indices/fixed-income/"
+  },
+  "regionLabels": [
+    "us",
+    "canada",
+    "eurozone",
+    "uk",
+    "europe_other",
+    "japan",
+    "pacific_ex_japan",
+    "emerging_asia",
+    "emerging_other"
+  ],
+  "sectorLabels": [
+    "tech",
+    "financials",
+    "healthcare",
+    "consumer_disc",
+    "industrials",
+    "communication",
+    "consumer_staples",
+    "energy",
+    "materials",
+    "utilities",
+    "real_estate"
+  ],
+  "indices": {
+    "msci-world": {
+      "name": "MSCI World",
+      "assetClass": "equity",
+      "coverage": "Grandes y medianas empresas de mercados desarrollados",
+      "regions": {
+        "us": 72,
+        "canada": 3,
+        "eurozone": 8,
+        "uk": 4,
+        "europe_other": 4,
+        "japan": 5,
+        "pacific_ex_japan": 3,
+        "emerging_asia": 0,
+        "emerging_other": 1
+      },
+      "sectors": {
+        "tech": 27,
+        "financials": 17,
+        "healthcare": 10,
+        "consumer_disc": 10,
+        "industrials": 11,
+        "communication": 9,
+        "consumer_staples": 6,
+        "energy": 3.5,
+        "materials": 3,
+        "utilities": 2,
+        "real_estate": 1.5
+      }
+    },
+    "ftse-all-world": {
+      "name": "FTSE All-World / MSCI ACWI",
+      "assetClass": "equity",
+      "coverage": "Desarrollados y emergentes, grandes y medianas",
+      "regions": {
+        "us": 63,
+        "canada": 2.5,
+        "eurozone": 7,
+        "uk": 3.5,
+        "europe_other": 3.5,
+        "japan": 5.5,
+        "pacific_ex_japan": 3,
+        "emerging_asia": 8.5,
+        "emerging_other": 3.5
+      },
+      "sectors": {
+        "tech": 26,
+        "financials": 18,
+        "healthcare": 9,
+        "consumer_disc": 10,
+        "industrials": 11,
+        "communication": 9,
+        "consumer_staples": 6,
+        "energy": 4,
+        "materials": 3.5,
+        "utilities": 2,
+        "real_estate": 1.5
+      }
+    },
+    "sp500": {
+      "name": "S&P 500",
+      "assetClass": "equity",
+      "coverage": "Las 500 mayores empresas cotizadas de EEUU",
+      "regions": {
+        "us": 100,
+        "canada": 0,
+        "eurozone": 0,
+        "uk": 0,
+        "europe_other": 0,
+        "japan": 0,
+        "pacific_ex_japan": 0,
+        "emerging_asia": 0,
+        "emerging_other": 0
+      },
+      "sectors": {
+        "tech": 33.5,
+        "financials": 14,
+        "healthcare": 9,
+        "consumer_disc": 11,
+        "industrials": 8,
+        "communication": 10,
+        "consumer_staples": 5,
+        "energy": 3,
+        "materials": 2,
+        "utilities": 2.5,
+        "real_estate": 2
+      }
+    },
+    "nasdaq-100": {
+      "name": "Nasdaq 100",
+      "assetClass": "equity",
+      "coverage": "Las 100 mayores no financieras del Nasdaq",
+      "regions": {
+        "us": 97,
+        "canada": 0,
+        "eurozone": 1,
+        "uk": 0,
+        "europe_other": 1,
+        "japan": 0,
+        "pacific_ex_japan": 0,
+        "emerging_asia": 1,
+        "emerging_other": 0
+      },
+      "sectors": {
+        "tech": 50,
+        "financials": 1,
+        "healthcare": 6,
+        "consumer_disc": 13,
+        "industrials": 5,
+        "communication": 15,
+        "consumer_staples": 6,
+        "energy": 0.5,
+        "materials": 1,
+        "utilities": 2,
+        "real_estate": 0.5
+      }
+    },
+    "msci-emerging": {
+      "name": "MSCI Emerging Markets",
+      "assetClass": "equity",
+      "coverage": "Mercados emergentes",
+      "regions": {
+        "us": 0,
+        "canada": 0,
+        "eurozone": 0,
+        "uk": 0,
+        "europe_other": 0,
+        "japan": 0,
+        "pacific_ex_japan": 0,
+        "emerging_asia": 80,
+        "emerging_other": 20
+      },
+      "sectors": {
+        "tech": 25,
+        "financials": 23,
+        "healthcare": 3,
+        "consumer_disc": 13,
+        "industrials": 7,
+        "communication": 10,
+        "consumer_staples": 5,
+        "energy": 5,
+        "materials": 6,
+        "utilities": 2,
+        "real_estate": 1
+      }
+    },
+    "msci-europe": {
+      "name": "MSCI Europe",
+      "assetClass": "equity",
+      "coverage": "Mercados desarrollados europeos",
+      "regions": {
+        "us": 0,
+        "canada": 0,
+        "eurozone": 55,
+        "uk": 22,
+        "europe_other": 23,
+        "japan": 0,
+        "pacific_ex_japan": 0,
+        "emerging_asia": 0,
+        "emerging_other": 0
+      },
+      "sectors": {
+        "tech": 8,
+        "financials": 21,
+        "healthcare": 14,
+        "consumer_disc": 9,
+        "industrials": 17,
+        "communication": 4,
+        "consumer_staples": 9,
+        "energy": 5,
+        "materials": 6,
+        "utilities": 5,
+        "real_estate": 2
+      }
+    },
+    "msci-japan": {
+      "name": "MSCI Japan",
+      "assetClass": "equity",
+      "coverage": "Mercado desarrollado japonés",
+      "regions": {
+        "us": 0,
+        "canada": 0,
+        "eurozone": 0,
+        "uk": 0,
+        "europe_other": 0,
+        "japan": 100,
+        "pacific_ex_japan": 0,
+        "emerging_asia": 0,
+        "emerging_other": 0
+      },
+      "sectors": {
+        "tech": 13,
+        "financials": 13,
+        "healthcare": 7,
+        "consumer_disc": 19,
+        "industrials": 23,
+        "communication": 8,
+        "consumer_staples": 6,
+        "energy": 1,
+        "materials": 6,
+        "utilities": 1,
+        "real_estate": 3
+      }
+    },
+    "msci-world-small": {
+      "name": "MSCI World Small Cap",
+      "assetClass": "equity",
+      "coverage": "Pequeñas empresas de mercados desarrollados",
+      "regions": {
+        "us": 60,
+        "canada": 4,
+        "eurozone": 8,
+        "uk": 5,
+        "europe_other": 4,
+        "japan": 10,
+        "pacific_ex_japan": 5,
+        "emerging_asia": 0,
+        "emerging_other": 4
+      },
+      "sectors": {
+        "tech": 12,
+        "financials": 17,
+        "healthcare": 8,
+        "consumer_disc": 13,
+        "industrials": 21,
+        "communication": 3,
+        "consumer_staples": 5,
+        "energy": 4,
+        "materials": 7,
+        "utilities": 2,
+        "real_estate": 8
+      }
+    },
+    "ibex-35": {
+      "name": "IBEX 35",
+      "assetClass": "equity",
+      "coverage": "Las 35 mayores cotizadas españolas",
+      "regions": {
+        "us": 0,
+        "canada": 0,
+        "eurozone": 100,
+        "uk": 0,
+        "europe_other": 0,
+        "japan": 0,
+        "pacific_ex_japan": 0,
+        "emerging_asia": 0,
+        "emerging_other": 0
+      },
+      "sectors": {
+        "tech": 3,
+        "financials": 36,
+        "healthcare": 2,
+        "consumer_disc": 8,
+        "industrials": 14,
+        "communication": 6,
+        "consumer_staples": 3,
+        "energy": 8,
+        "materials": 4,
+        "utilities": 14,
+        "real_estate": 2
+      }
+    },
+    "global-agg-bond": {
+      "name": "Bloomberg Global Aggregate",
+      "assetClass": "bond",
+      "coverage": "Renta fija global con grado de inversión",
+      "regions": {
+        "us": 40,
+        "canada": 3,
+        "eurozone": 22,
+        "uk": 5,
+        "europe_other": 4,
+        "japan": 12,
+        "pacific_ex_japan": 2,
+        "emerging_asia": 8,
+        "emerging_other": 4
+      },
+      "sectors": null
+    },
+    "euro-govt-bond": {
+      "name": "Deuda pública de la zona euro",
+      "assetClass": "bond",
+      "coverage": "Bonos soberanos denominados en euros",
+      "regions": {
+        "us": 0,
+        "canada": 0,
+        "eurozone": 100,
+        "uk": 0,
+        "europe_other": 0,
+        "japan": 0,
+        "pacific_ex_japan": 0,
+        "emerging_asia": 0,
+        "emerging_other": 0
+      },
+      "sectors": null
+    }
+  },
+  "overlaps": [
+    {
+      "a": "msci-world",
+      "b": "sp500",
+      "sharedWeightOfA": 72,
+      "sharedWeightOfB": 97,
+      "note": "El S&P 500 es prácticamente toda la parte estadounidense del MSCI World."
+    },
+    {
+      "a": "msci-world",
+      "b": "nasdaq-100",
+      "sharedWeightOfA": 30,
+      "sharedWeightOfB": 95,
+      "note": "El Nasdaq 100 son las mayores tecnológicas, que ya pesan mucho dentro del MSCI World."
+    },
+    {
+      "a": "ftse-all-world",
+      "b": "sp500",
+      "sharedWeightOfA": 62,
+      "sharedWeightOfB": 97,
+      "note": "El S&P 500 está contenido en la parte estadounidense del All-World."
+    },
+    {
+      "a": "ftse-all-world",
+      "b": "nasdaq-100",
+      "sharedWeightOfA": 26,
+      "sharedWeightOfB": 95,
+      "note": "Las mayores tecnológicas estadounidenses ya van dentro del All-World."
+    },
+    {
+      "a": "ftse-all-world",
+      "b": "msci-world",
+      "sharedWeightOfA": 88,
+      "sharedWeightOfB": 99,
+      "note": "El All-World es el MSCI World más emergentes: casi todo el World está dentro."
+    },
+    {
+      "a": "ftse-all-world",
+      "b": "msci-emerging",
+      "sharedWeightOfA": 11,
+      "sharedWeightOfB": 95,
+      "note": "El All-World ya incluye emergentes; añadirlos aparte solo sobrepondera."
+    },
+    {
+      "a": "ftse-all-world",
+      "b": "msci-europe",
+      "sharedWeightOfA": 14,
+      "sharedWeightOfB": 90,
+      "note": "Europa desarrollada ya va dentro del All-World."
+    },
+    {
+      "a": "ftse-all-world",
+      "b": "msci-japan",
+      "sharedWeightOfA": 5.5,
+      "sharedWeightOfB": 95,
+      "note": "Japón ya va dentro del All-World."
+    },
+    {
+      "a": "msci-world",
+      "b": "msci-europe",
+      "sharedWeightOfA": 16,
+      "sharedWeightOfB": 90,
+      "note": "Europa desarrollada ya va dentro del MSCI World."
+    },
+    {
+      "a": "msci-world",
+      "b": "msci-japan",
+      "sharedWeightOfA": 5,
+      "sharedWeightOfB": 95,
+      "note": "Japón ya va dentro del MSCI World."
+    },
+    {
+      "a": "sp500",
+      "b": "nasdaq-100",
+      "sharedWeightOfA": 42,
+      "sharedWeightOfB": 90,
+      "note": "Casi todo el Nasdaq 100 está dentro del S&P 500."
+    },
+    {
+      "a": "msci-europe",
+      "b": "ibex-35",
+      "sharedWeightOfA": 4,
+      "sharedWeightOfB": 85,
+      "note": "Las grandes españolas ya van dentro del MSCI Europe."
+    }
+  ]
+}

@@ -1673,6 +1673,38 @@ type RootTranslation = {
 		 */
 		label_int: string
 		/**
+		 * T​i​p​o
+		 */
+		label_instrument_type: string
+		/**
+		 * F​o​n​d​o​ ​d​e​ ​i​n​v​e​r​s​i​ó​n
+		 */
+		itype_fund: string
+		/**
+		 * E​T​F
+		 */
+		itype_etf: string
+		/**
+		 * A​c​c​i​ó​n
+		 */
+		itype_equity: string
+		/**
+		 * E​f​e​c​t​i​v​o
+		 */
+		itype_cash: string
+		/**
+		 * O​t​r​o
+		 */
+		itype_other: string
+		/**
+		 * Í​n​d​i​c​e​ ​q​u​e​ ​r​e​p​l​i​c​a
+		 */
+		label_index: string
+		/**
+		 * N​i​n​g​u​n​o​ ​/​ ​n​o​ ​l​o​ ​s​é
+		 */
+		index_none: string
+		/**
 		 * C​o​n​f​i​g​u​r​a​r​ ​c​u​e​n​t​a
 		 */
 		tooltip_config: string
@@ -2476,6 +2508,352 @@ type RootTranslation = {
 		 * N​u​e​v​o​ ​C​a​p​i​t​a​l​ ​T​o​t​a​l
 		 */
 		new_capital: string
+	}
+	traspaso: {
+		/**
+		 * R​e​b​a​l​a​n​c​e​o​ ​s​i​n​ ​p​a​s​a​r​ ​p​o​r​ ​H​a​c​i​e​n​d​a
+		 */
+		title: string
+		/**
+		 * L​o​ ​q​u​e​ ​p​u​e​d​e​s​ ​m​o​v​e​r​ ​g​r​a​t​i​s​ ​y​ ​l​o​ ​q​u​e​ ​t​e​ ​c​u​e​s​t​a
+		 */
+		subtitle: string
+		/**
+		 * T​u​ ​c​a​r​t​e​r​a​ ​y​a​ ​e​s​t​á​ ​e​n​ ​s​u​ ​o​b​j​e​t​i​v​o​.​ ​N​o​ ​h​a​y​ ​n​a​d​a​ ​q​u​e​ ​m​o​v​e​r​.
+		 */
+		balanced: string
+		/**
+		 * E​s​p​e​r​a​n​d​o​ ​p​r​e​c​i​o​s​ ​p​a​r​a​ ​p​o​d​e​r​ ​c​a​l​c​u​l​a​r​ ​e​l​ ​p​l​a​n​.
+		 */
+		no_prices: string
+		/**
+		 * S​i​n​ ​c​o​s​t​e​ ​f​i​s​c​a​l
+		 */
+		free_heading: string
+		/**
+		 * O​b​l​i​g​a​ ​a​ ​v​e​n​d​e​r​ ​y​ ​t​r​i​b​u​t​a
+		 */
+		taxable_heading: string
+		/**
+		 * T​r​a​s​p​a​s​o
+		 */
+		kind_traspaso: string
+		/**
+		 * R​e​e​m​b​o​l​s​o
+		 */
+		kind_reembolso: string
+		/**
+		 * V​e​n​t​a
+		 */
+		kind_venta: string
+		/**
+		 * D​e​s​d​e​ ​e​f​e​c​t​i​v​o
+		 */
+		kind_efectivo: string
+		/**
+		 * F​o​n​d​o​ ​a​ ​f​o​n​d​o​:​ ​h​a​y​ ​d​i​f​e​r​i​m​i​e​n​t​o​ ​f​i​s​c​a​l​,​ ​a​s​í​ ​q​u​e​ ​n​o​ ​t​r​i​b​u​t​a​s​ ​n​a​d​a​ ​h​o​y​.
+		 */
+		kind_traspaso_hint: string
+		/**
+		 * E​l​ ​d​e​s​t​i​n​o​ ​n​o​ ​e​s​ ​u​n​ ​f​o​n​d​o​ ​d​e​ ​i​n​v​e​r​s​i​ó​n​,​ ​a​s​í​ ​q​u​e​ ​e​s​t​o​ ​e​s​ ​u​n​ ​r​e​e​m​b​o​l​s​o​ ​y​ ​t​r​i​b​u​t​a​.
+		 */
+		kind_reembolso_hint: string
+		/**
+		 * L​o​s​ ​E​T​F​ ​y​ ​l​a​s​ ​a​c​c​i​o​n​e​s​ ​e​s​t​á​n​ ​f​u​e​r​a​ ​d​e​l​ ​r​é​g​i​m​e​n​ ​d​e​ ​t​r​a​s​p​a​s​o​:​ ​h​a​y​ ​q​u​e​ ​v​e​n​d​e​r​.
+		 */
+		kind_venta_hint: string
+		/**
+		 * M​o​v​e​r​ ​e​f​e​c​t​i​v​o​ ​n​o​ ​t​r​a​n​s​m​i​t​e​ ​n​a​d​a​,​ ​a​s​í​ ​q​u​e​ ​n​o​ ​g​e​n​e​r​a​ ​g​a​n​a​n​c​i​a​ ​p​a​t​r​i​m​o​n​i​a​l​.
+		 */
+		kind_efectivo_hint: string
+		/**
+		 * −​{​s​h​a​r​e​s​}​ ​p​a​r​t​.
+		 * @param {string} shares
+		 */
+		sell_shares: RequiredParams<'shares'>
+		/**
+		 * +​{​s​h​a​r​e​s​}​ ​p​a​r​t​.
+		 * @param {string} shares
+		 */
+		buy_shares: RequiredParams<'shares'>
+		/**
+		 * P​l​u​s​v​a​l​í​a
+		 */
+		gain_label: string
+		/**
+		 * P​é​r​d​i​d​a
+		 */
+		loss_label: string
+		/**
+		 * I​m​p​u​e​s​t​o​ ​e​s​t​.
+		 */
+		tax_label: string
+		/**
+		 * {​a​m​o​u​n​t​}​ ​s​i​n​ ​c​o​s​t​e​ ​f​i​s​c​a​l
+		 * @param {string} amount
+		 */
+		summary_free: RequiredParams<'amount'>
+		/**
+		 * {​a​m​o​u​n​t​}​ ​t​r​i​b​u​t​a​n​d​o
+		 * @param {string} amount
+		 */
+		summary_taxable: RequiredParams<'amount'>
+		/**
+		 * C​o​s​t​e​ ​f​i​s​c​a​l​ ​t​o​t​a​l​ ​e​s​t​i​m​a​d​o
+		 */
+		summary_tax: string
+		/**
+		 * D​e​s​v​i​a​c​i​ó​n​ ​m​á​x​i​m​a​:​ ​{​b​e​f​o​r​e​}​ ​→​ ​{​a​f​t​e​r​}
+		 * @param {string} after
+		 * @param {string} before
+		 */
+		summary_deviation: RequiredParams<'after' | 'before'>
+		/**
+		 * C​o​n​t​r​a​ ​l​a​ ​v​í​a​ ​d​e​ ​s​o​l​o​ ​a​p​o​r​t​a​r
+		 */
+		comparison_heading: string
+		/**
+		 * A​p​o​r​t​a​n​d​o​ ​{​c​o​n​t​r​i​b​u​t​i​o​n​}​ ​a​l​ ​m​e​s​ ​t​a​r​d​a​r​í​a​s​ ​{​m​o​n​t​h​s​}​ ​m​e​s​e​s​ ​e​n​ ​l​l​e​g​a​r​ ​a​ ​l​o​ ​m​i​s​m​o​.
+		 * @param {string} contribution
+		 * @param {number} months
+		 */
+		comparison_months: RequiredParams<'contribution' | 'months'>
+		/**
+		 * A​p​o​r​t​a​n​d​o​ ​{​c​o​n​t​r​i​b​u​t​i​o​n​}​ ​a​l​ ​m​e​s​ ​l​l​e​g​a​r​í​a​s​ ​a​ ​l​o​ ​m​i​s​m​o​ ​e​n​ ​u​n​ ​m​e​s​.
+		 * @param {string} contribution
+		 */
+		comparison_month_one: RequiredParams<'contribution'>
+		/**
+		 * Y​ ​e​s​t​e​ ​p​l​a​n​ ​n​o​ ​t​e​ ​c​u​e​s​t​a​ ​n​a​d​a​,​ ​a​s​í​ ​q​u​e​ ​e​s​p​e​r​a​r​ ​n​o​ ​t​e​ ​a​h​o​r​r​a​ ​i​m​p​u​e​s​t​o​s​:​ ​s​o​l​o​ ​t​i​e​m​p​o​ ​d​e​s​v​i​a​d​o​.
+		 */
+		comparison_free_verdict: string
+		/**
+		 * C​o​r​r​e​g​i​r​ ​h​o​y​ ​t​e​ ​c​u​e​s​t​a​ ​{​t​a​x​}​.​ ​E​s​p​e​r​a​r​ ​e​s​ ​g​r​a​t​i​s​,​ ​p​e​r​o​ ​s​o​n​ ​{​m​o​n​t​h​s​}​ ​m​e​s​e​s​ ​f​u​e​r​a​ ​d​e​ ​o​b​j​e​t​i​v​o​.
+		 * @param {number} months
+		 * @param {string} tax
+		 */
+		comparison_cost_verdict: RequiredParams<'months' | 'tax'>
+		/**
+		 * C​o​n​f​i​g​u​r​a​ ​t​u​ ​a​p​o​r​t​a​c​i​ó​n​ ​m​e​n​s​u​a​l​ ​e​n​ ​e​l​ ​p​a​n​e​l​ ​d​e​ ​a​r​r​i​b​a​ ​y​ ​t​e​ ​d​i​g​o​ ​c​u​á​n​t​o​ ​t​a​r​d​a​r​í​a​ ​l​a​ ​v​í​a​ ​l​e​n​t​a​.
+		 */
+		comparison_no_contribution: string
+		/**
+		 * C​o​n​ ​l​a​ ​a​p​o​r​t​a​c​i​ó​n​ ​a​c​t​u​a​l​ ​n​o​ ​l​l​e​g​a​r​í​a​s​ ​a​ ​l​a​ ​b​a​n​d​a​ ​o​b​j​e​t​i​v​o​ ​n​i​ ​e​n​ ​v​e​i​n​t​e​ ​a​ñ​o​s​.
+		 */
+		comparison_never: string
+		/**
+		 * E​s​t​a​ ​p​é​r​d​i​d​a​ ​n​o​ ​t​e​ ​l​a​ ​p​o​d​r​í​a​s​ ​d​e​d​u​c​i​r
+		 */
+		loss_blocked_title: string
+		/**
+		 * H​a​s​ ​c​o​m​p​r​a​d​o​ ​{​t​i​c​k​e​r​}​ ​d​e​n​t​r​o​ ​d​e​ ​l​a​ ​v​e​n​t​a​n​a​ ​d​e​ ​{​m​o​n​t​h​s​}​ ​m​e​s​e​s​ ​d​e​ ​l​a​ ​r​e​g​l​a​ ​a​n​t​i​a​p​l​i​c​a​c​i​ó​n​.​ ​S​i​ ​v​e​n​d​e​s​ ​a​h​o​r​a​ ​e​n​ ​p​é​r​d​i​d​a​s​,​ ​n​o​ ​p​u​e​d​e​s​ ​c​o​m​p​e​n​s​a​r​l​a​s​.​ ​P​o​d​r​í​a​s​ ​a​ ​p​a​r​t​i​r​ ​d​e​ ​{​d​a​y​s​}​ ​d​í​a​s​.
+		 * @param {number} days
+		 * @param {number} months
+		 * @param {string} ticker
+		 */
+		loss_blocked_desc: RequiredParams<'days' | 'months' | 'ticker'>
+		/**
+		 * P​l​u​s​v​a​l​í​a​ ​a​p​r​o​x​i​m​a​d​a​:​ ​f​a​l​t​a​ ​h​i​s​t​o​r​i​a​l​ ​d​e​ ​c​o​m​p​r​a​s​ ​e​n​ ​e​l​ ​l​i​b​r​o​ ​d​e​ ​t​r​a​n​s​a​c​c​i​o​n​e​s​,​ ​a​s​í​ ​q​u​e​ ​e​l​ ​v​a​l​o​r​ ​d​e​ ​a​d​q​u​i​s​i​c​i​ó​n​ ​e​s​t​á​ ​i​n​c​o​m​p​l​e​t​o​.
+		 */
+		partial_gain: string
+		/**
+		 * F​u​e​r​a​ ​d​e​l​ ​p​l​a​n​:​ ​{​t​i​c​k​e​r​s​}​.​ ​L​a​ ​a​p​p​ ​n​o​ ​s​a​b​e​ ​c​ó​m​o​ ​t​r​i​b​u​t​a​n​,​ ​a​s​í​ ​q​u​e​ ​n​o​ ​p​r​o​p​o​n​e​ ​m​o​v​e​r​l​o​s​.
+		 * @param {string} tickers
+		 */
+		excluded: RequiredParams<'tickers'>
+		/**
+		 * S​e​ ​c​o​n​s​i​d​e​r​a​ ​«​e​n​ ​o​b​j​e​t​i​v​o​»​ ​u​n​a​ ​d​e​s​v​i​a​c​i​ó​n​ ​d​e​ ​m​e​n​o​s​ ​d​e​ ​u​n​ ​p​u​n​t​o​ ​p​o​r​c​e​n​t​u​a​l​.
+		 */
+		band_note: string
+		/**
+		 * <​s​t​r​o​n​g​>​E​s​t​i​m​a​c​i​ó​n​,​ ​n​o​ ​u​n​a​ ​l​i​q​u​i​d​a​c​i​ó​n​.​<​/​s​t​r​o​n​g​>​ ​N​o​ ​c​o​n​o​c​e​ ​e​l​ ​r​e​s​t​o​ ​d​e​ ​t​u​ ​b​a​s​e​ ​d​e​l​ ​a​h​o​r​r​o​ ​d​e​ ​e​s​t​e​ ​a​ñ​o​,​ ​n​i​ ​t​u​s​ ​p​é​r​d​i​d​a​s​ ​p​e​n​d​i​e​n​t​e​s​ ​d​e​ ​c​o​m​p​e​n​s​a​r​ ​d​e​ ​e​j​e​r​c​i​c​i​o​s​ ​a​n​t​e​r​i​o​r​e​s​,​ ​n​i​ ​t​u​ ​s​i​t​u​a​c​i​ó​n​ ​p​e​r​s​o​n​a​l​.​ ​L​o​s​ ​t​i​p​o​s​ ​u​s​a​d​o​s​ ​s​o​n​ ​l​o​s​ ​d​e​ ​l​a​ ​b​a​s​e​ ​d​e​l​ ​a​h​o​r​r​o​ ​d​e​ ​{​y​e​a​r​}​.​ ​C​o​n​t​r​a​s​t​a​ ​c​o​n​ ​t​u​ ​a​s​e​s​o​r​ ​a​n​t​e​s​ ​d​e​ ​m​o​v​e​r​ ​n​a​d​a​.
+		 * @param {number} year
+		 */
+		disclaimer: RequiredParams<'year'>
+		/**
+		 * B​a​s​e​ ​l​e​g​a​l
+		 */
+		sources_label: string
+	}
+	treemap: {
+		/**
+		 * M​a​p​a​ ​d​e​ ​d​e​s​v​i​a​c​i​ó​n
+		 */
+		title: string
+		/**
+		 * E​l​ ​t​a​m​a​ñ​o​ ​e​s​ ​e​l​ ​p​e​s​o​ ​r​e​a​l​;​ ​e​l​ ​c​o​l​o​r​,​ ​l​a​ ​d​i​s​t​a​n​c​i​a​ ​a​ ​t​u​ ​o​b​j​e​t​i​v​o
+		 */
+		subtitle: string
+		/**
+		 * A​ñ​a​d​e​ ​a​c​t​i​v​o​s​ ​c​o​n​ ​p​o​s​i​c​i​o​n​e​s​ ​p​a​r​a​ ​v​e​r​ ​e​l​ ​m​a​p​a​.
+		 */
+		empty: string
+		/**
+		 * E​n​ ​o​b​j​e​t​i​v​o
+		 */
+		legend_on: string
+		/**
+		 * P​o​r​ ​e​n​c​i​m​a
+		 */
+		legend_over: string
+		/**
+		 * P​o​r​ ​d​e​b​a​j​o
+		 */
+		legend_under: string
+		/**
+		 * {​n​a​m​e​}​:​ ​{​w​e​i​g​h​t​}​ ​d​e​ ​t​u​ ​c​a​r​t​e​r​a​,​ ​o​b​j​e​t​i​v​o​ ​{​t​a​r​g​e​t​}
+		 * @param {string} name
+		 * @param {string} target
+		 * @param {string} weight
+		 */
+		tooltip: RequiredParams<'name' | 'target' | 'weight'>
+		/**
+		 * s​i​n​ ​o​b​j​e​t​i​v​o
+		 */
+		no_target: string
+	}
+	lookthrough: {
+		/**
+		 * Q​u​é​ ​t​i​e​n​e​s​ ​d​e​ ​v​e​r​d​a​d
+		 */
+		title: string
+		/**
+		 * L​a​ ​e​x​p​o​s​i​c​i​ó​n​ ​q​u​e​ ​h​a​y​ ​d​e​n​t​r​o​ ​d​e​ ​t​u​s​ ​f​o​n​d​o​s
+		 */
+		subtitle: string
+		/**
+		 * A​ñ​a​d​e​ ​f​o​n​d​o​s​ ​o​ ​E​T​F​ ​i​n​d​e​x​a​d​o​s​ ​p​a​r​a​ ​v​e​r​ ​t​u​ ​e​x​p​o​s​i​c​i​ó​n​ ​r​e​a​l​.
+		 */
+		empty: string
+		/**
+		 * P​o​r​ ​r​e​g​i​ó​n
+		 */
+		tab_regions: string
+		/**
+		 * P​o​r​ ​s​e​c​t​o​r
+		 */
+		tab_sectors: string
+		/**
+		 * E​s​t​a​d​o​s​ ​U​n​i​d​o​s
+		 */
+		region_us: string
+		/**
+		 * C​a​n​a​d​á
+		 */
+		region_canada: string
+		/**
+		 * Z​o​n​a​ ​e​u​r​o
+		 */
+		region_eurozone: string
+		/**
+		 * R​e​i​n​o​ ​U​n​i​d​o
+		 */
+		region_uk: string
+		/**
+		 * R​e​s​t​o​ ​d​e​ ​E​u​r​o​p​a
+		 */
+		region_europe_other: string
+		/**
+		 * J​a​p​ó​n
+		 */
+		region_japan: string
+		/**
+		 * P​a​c​í​f​i​c​o​ ​(​s​i​n​ ​J​a​p​ó​n​)
+		 */
+		region_pacific_ex_japan: string
+		/**
+		 * A​s​i​a​ ​e​m​e​r​g​e​n​t​e
+		 */
+		region_emerging_asia: string
+		/**
+		 * R​e​s​t​o​ ​d​e​ ​e​m​e​r​g​e​n​t​e​s
+		 */
+		region_emerging_other: string
+		/**
+		 * T​e​c​n​o​l​o​g​í​a
+		 */
+		sector_tech: string
+		/**
+		 * F​i​n​a​n​c​i​e​r​o
+		 */
+		sector_financials: string
+		/**
+		 * S​a​l​u​d
+		 */
+		sector_healthcare: string
+		/**
+		 * C​o​n​s​u​m​o​ ​d​i​s​c​r​e​c​i​o​n​a​l
+		 */
+		sector_consumer_disc: string
+		/**
+		 * I​n​d​u​s​t​r​i​a​l
+		 */
+		sector_industrials: string
+		/**
+		 * C​o​m​u​n​i​c​a​c​i​ó​n
+		 */
+		sector_communication: string
+		/**
+		 * C​o​n​s​u​m​o​ ​b​á​s​i​c​o
+		 */
+		sector_consumer_staples: string
+		/**
+		 * E​n​e​r​g​í​a
+		 */
+		sector_energy: string
+		/**
+		 * M​a​t​e​r​i​a​l​e​s
+		 */
+		sector_materials: string
+		/**
+		 * S​e​r​v​i​c​i​o​s​ ​p​ú​b​l​i​c​o​s
+		 */
+		sector_utilities: string
+		/**
+		 * I​n​m​o​b​i​l​i​a​r​i​o
+		 */
+		sector_real_estate: string
+		/**
+		 * T​u​s​ ​f​o​n​d​o​s​ ​s​e​ ​p​i​s​a​n
+		 */
+		overlap_heading: string
+		/**
+		 * {​a​}​ ​y​ ​{​b​}​ ​a​p​u​n​t​a​n​ ​a​ ​l​a​s​ ​m​i​s​m​a​s​ ​e​m​p​r​e​s​a​s​ ​p​o​r​ ​u​n​o​s​ ​{​a​m​o​u​n​t​}​,​ ​u​n​ ​{​p​c​t​}​ ​d​e​ ​l​o​ ​a​n​a​l​i​z​a​d​o​.
+		 * @param {string} a
+		 * @param {string} amount
+		 * @param {string} b
+		 * @param {string} pct
+		 */
+		overlap_row: RequiredParams<'a' | 'amount' | 'b' | 'pct'>
+		/**
+		 * L​o​s​ ​d​o​s​ ​r​e​p​l​i​c​a​n​ ​e​l​ ​m​i​s​m​o​ ​í​n​d​i​c​e​:​ ​e​s​ ​d​u​p​l​i​c​a​c​i​ó​n​ ​c​o​m​p​l​e​t​a​.
+		 */
+		overlap_same_index: string
+		/**
+		 * {​a​m​o​u​n​t​}​ ​s​i​n​ ​a​n​a​l​i​z​a​r​ ​(​{​t​i​c​k​e​r​s​}​)​:​ ​a​c​c​i​o​n​e​s​ ​s​u​e​l​t​a​s​,​ ​e​f​e​c​t​i​v​o​ ​o​ ​a​c​t​i​v​o​s​ ​c​u​y​o​ ​í​n​d​i​c​e​ ​n​o​ ​r​e​c​o​n​o​c​e​m​o​s​.
+		 * @param {string} amount
+		 * @param {string} tickers
+		 */
+		uncovered: RequiredParams<'amount' | 'tickers'>
+		/**
+		 * {​a​m​o​u​n​t​}​ ​d​e​ ​r​e​n​t​a​ ​f​i​j​a​ ​s​e​ ​c​u​e​n​t​a​ ​p​o​r​ ​r​e​g​i​ó​n​ ​p​e​r​o​ ​n​o​ ​p​o​r​ ​s​e​c​t​o​r​.
+		 * @param {string} amount
+		 */
+		no_sector: RequiredParams<'amount'>
+		/**
+		 * L​o​s​ ​p​o​r​c​e​n​t​a​j​e​s​ ​s​o​n​ ​s​o​b​r​e​ ​l​o​ ​a​n​a​l​i​z​a​d​o​ ​(​{​a​m​o​u​n​t​}​)​,​ ​n​o​ ​s​o​b​r​e​ ​t​u​ ​p​a​t​r​i​m​o​n​i​o​ ​t​o​t​a​l​.
+		 * @param {string} amount
+		 */
+		coverage_note: RequiredParams<'amount'>
+		/**
+		 * P​e​s​o​s​ ​d​e​ ​í​n​d​i​c​e​ ​a​p​r​o​x​i​m​a​d​o​s​ ​a​ ​f​e​c​h​a​ ​{​d​a​t​e​}​.
+		 * @param {string} date
+		 */
+		as_of: RequiredParams<'date'>
+		/**
+		 * E​s​t​i​m​a​c​i​ó​n​ ​c​a​l​c​u​l​a​d​a​ ​a​ ​n​i​v​e​l​ ​d​e​ ​í​n​d​i​c​e​,​ ​n​o​ ​d​e​ ​p​o​s​i​c​i​ó​n​ ​i​n​d​i​v​i​d​u​a​l​:​ ​s​i​r​v​e​ ​p​a​r​a​ ​v​e​r​ ​a​ ​q​u​é​ ​e​s​t​á​s​ ​e​x​p​u​e​s​t​o​,​ ​n​o​ ​c​o​m​o​ ​c​o​m​p​o​s​i​c​i​ó​n​ ​e​x​a​c​t​a​ ​d​e​ ​t​u​ ​c​a​r​t​e​r​a​.
+		 */
+		disclaimer: string
 	}
 	projections: {
 		/**
@@ -4972,6 +5350,38 @@ export type TranslationFunctions = {
 		 */
 		label_int: () => LocalizedString
 		/**
+		 * Tipo
+		 */
+		label_instrument_type: () => LocalizedString
+		/**
+		 * Fondo de inversión
+		 */
+		itype_fund: () => LocalizedString
+		/**
+		 * ETF
+		 */
+		itype_etf: () => LocalizedString
+		/**
+		 * Acción
+		 */
+		itype_equity: () => LocalizedString
+		/**
+		 * Efectivo
+		 */
+		itype_cash: () => LocalizedString
+		/**
+		 * Otro
+		 */
+		itype_other: () => LocalizedString
+		/**
+		 * Índice que replica
+		 */
+		label_index: () => LocalizedString
+		/**
+		 * Ninguno / no lo sé
+		 */
+		index_none: () => LocalizedString
+		/**
 		 * Configurar cuenta
 		 */
 		tooltip_config: () => LocalizedString
@@ -5743,6 +6153,324 @@ export type TranslationFunctions = {
 		 * Nuevo Capital Total
 		 */
 		new_capital: () => LocalizedString
+	}
+	traspaso: {
+		/**
+		 * Rebalanceo sin pasar por Hacienda
+		 */
+		title: () => LocalizedString
+		/**
+		 * Lo que puedes mover gratis y lo que te cuesta
+		 */
+		subtitle: () => LocalizedString
+		/**
+		 * Tu cartera ya está en su objetivo. No hay nada que mover.
+		 */
+		balanced: () => LocalizedString
+		/**
+		 * Esperando precios para poder calcular el plan.
+		 */
+		no_prices: () => LocalizedString
+		/**
+		 * Sin coste fiscal
+		 */
+		free_heading: () => LocalizedString
+		/**
+		 * Obliga a vender y tributa
+		 */
+		taxable_heading: () => LocalizedString
+		/**
+		 * Traspaso
+		 */
+		kind_traspaso: () => LocalizedString
+		/**
+		 * Reembolso
+		 */
+		kind_reembolso: () => LocalizedString
+		/**
+		 * Venta
+		 */
+		kind_venta: () => LocalizedString
+		/**
+		 * Desde efectivo
+		 */
+		kind_efectivo: () => LocalizedString
+		/**
+		 * Fondo a fondo: hay diferimiento fiscal, así que no tributas nada hoy.
+		 */
+		kind_traspaso_hint: () => LocalizedString
+		/**
+		 * El destino no es un fondo de inversión, así que esto es un reembolso y tributa.
+		 */
+		kind_reembolso_hint: () => LocalizedString
+		/**
+		 * Los ETF y las acciones están fuera del régimen de traspaso: hay que vender.
+		 */
+		kind_venta_hint: () => LocalizedString
+		/**
+		 * Mover efectivo no transmite nada, así que no genera ganancia patrimonial.
+		 */
+		kind_efectivo_hint: () => LocalizedString
+		/**
+		 * −{shares} part.
+		 */
+		sell_shares: (arg: { shares: string }) => LocalizedString
+		/**
+		 * +{shares} part.
+		 */
+		buy_shares: (arg: { shares: string }) => LocalizedString
+		/**
+		 * Plusvalía
+		 */
+		gain_label: () => LocalizedString
+		/**
+		 * Pérdida
+		 */
+		loss_label: () => LocalizedString
+		/**
+		 * Impuesto est.
+		 */
+		tax_label: () => LocalizedString
+		/**
+		 * {amount} sin coste fiscal
+		 */
+		summary_free: (arg: { amount: string }) => LocalizedString
+		/**
+		 * {amount} tributando
+		 */
+		summary_taxable: (arg: { amount: string }) => LocalizedString
+		/**
+		 * Coste fiscal total estimado
+		 */
+		summary_tax: () => LocalizedString
+		/**
+		 * Desviación máxima: {before} → {after}
+		 */
+		summary_deviation: (arg: { after: string, before: string }) => LocalizedString
+		/**
+		 * Contra la vía de solo aportar
+		 */
+		comparison_heading: () => LocalizedString
+		/**
+		 * Aportando {contribution} al mes tardarías {months} meses en llegar a lo mismo.
+		 */
+		comparison_months: (arg: { contribution: string, months: number }) => LocalizedString
+		/**
+		 * Aportando {contribution} al mes llegarías a lo mismo en un mes.
+		 */
+		comparison_month_one: (arg: { contribution: string }) => LocalizedString
+		/**
+		 * Y este plan no te cuesta nada, así que esperar no te ahorra impuestos: solo tiempo desviado.
+		 */
+		comparison_free_verdict: () => LocalizedString
+		/**
+		 * Corregir hoy te cuesta {tax}. Esperar es gratis, pero son {months} meses fuera de objetivo.
+		 */
+		comparison_cost_verdict: (arg: { months: number, tax: string }) => LocalizedString
+		/**
+		 * Configura tu aportación mensual en el panel de arriba y te digo cuánto tardaría la vía lenta.
+		 */
+		comparison_no_contribution: () => LocalizedString
+		/**
+		 * Con la aportación actual no llegarías a la banda objetivo ni en veinte años.
+		 */
+		comparison_never: () => LocalizedString
+		/**
+		 * Esta pérdida no te la podrías deducir
+		 */
+		loss_blocked_title: () => LocalizedString
+		/**
+		 * Has comprado {ticker} dentro de la ventana de {months} meses de la regla antiaplicación. Si vendes ahora en pérdidas, no puedes compensarlas. Podrías a partir de {days} días.
+		 */
+		loss_blocked_desc: (arg: { days: number, months: number, ticker: string }) => LocalizedString
+		/**
+		 * Plusvalía aproximada: falta historial de compras en el libro de transacciones, así que el valor de adquisición está incompleto.
+		 */
+		partial_gain: () => LocalizedString
+		/**
+		 * Fuera del plan: {tickers}. La app no sabe cómo tributan, así que no propone moverlos.
+		 */
+		excluded: (arg: { tickers: string }) => LocalizedString
+		/**
+		 * Se considera «en objetivo» una desviación de menos de un punto porcentual.
+		 */
+		band_note: () => LocalizedString
+		/**
+		 * <strong>Estimación, no una liquidación.</strong> No conoce el resto de tu base del ahorro de este año, ni tus pérdidas pendientes de compensar de ejercicios anteriores, ni tu situación personal. Los tipos usados son los de la base del ahorro de {year}. Contrasta con tu asesor antes de mover nada.
+		 */
+		disclaimer: (arg: { year: number }) => LocalizedString
+		/**
+		 * Base legal
+		 */
+		sources_label: () => LocalizedString
+	}
+	treemap: {
+		/**
+		 * Mapa de desviación
+		 */
+		title: () => LocalizedString
+		/**
+		 * El tamaño es el peso real; el color, la distancia a tu objetivo
+		 */
+		subtitle: () => LocalizedString
+		/**
+		 * Añade activos con posiciones para ver el mapa.
+		 */
+		empty: () => LocalizedString
+		/**
+		 * En objetivo
+		 */
+		legend_on: () => LocalizedString
+		/**
+		 * Por encima
+		 */
+		legend_over: () => LocalizedString
+		/**
+		 * Por debajo
+		 */
+		legend_under: () => LocalizedString
+		/**
+		 * {name}: {weight} de tu cartera, objetivo {target}
+		 */
+		tooltip: (arg: { name: string, target: string, weight: string }) => LocalizedString
+		/**
+		 * sin objetivo
+		 */
+		no_target: () => LocalizedString
+	}
+	lookthrough: {
+		/**
+		 * Qué tienes de verdad
+		 */
+		title: () => LocalizedString
+		/**
+		 * La exposición que hay dentro de tus fondos
+		 */
+		subtitle: () => LocalizedString
+		/**
+		 * Añade fondos o ETF indexados para ver tu exposición real.
+		 */
+		empty: () => LocalizedString
+		/**
+		 * Por región
+		 */
+		tab_regions: () => LocalizedString
+		/**
+		 * Por sector
+		 */
+		tab_sectors: () => LocalizedString
+		/**
+		 * Estados Unidos
+		 */
+		region_us: () => LocalizedString
+		/**
+		 * Canadá
+		 */
+		region_canada: () => LocalizedString
+		/**
+		 * Zona euro
+		 */
+		region_eurozone: () => LocalizedString
+		/**
+		 * Reino Unido
+		 */
+		region_uk: () => LocalizedString
+		/**
+		 * Resto de Europa
+		 */
+		region_europe_other: () => LocalizedString
+		/**
+		 * Japón
+		 */
+		region_japan: () => LocalizedString
+		/**
+		 * Pacífico (sin Japón)
+		 */
+		region_pacific_ex_japan: () => LocalizedString
+		/**
+		 * Asia emergente
+		 */
+		region_emerging_asia: () => LocalizedString
+		/**
+		 * Resto de emergentes
+		 */
+		region_emerging_other: () => LocalizedString
+		/**
+		 * Tecnología
+		 */
+		sector_tech: () => LocalizedString
+		/**
+		 * Financiero
+		 */
+		sector_financials: () => LocalizedString
+		/**
+		 * Salud
+		 */
+		sector_healthcare: () => LocalizedString
+		/**
+		 * Consumo discrecional
+		 */
+		sector_consumer_disc: () => LocalizedString
+		/**
+		 * Industrial
+		 */
+		sector_industrials: () => LocalizedString
+		/**
+		 * Comunicación
+		 */
+		sector_communication: () => LocalizedString
+		/**
+		 * Consumo básico
+		 */
+		sector_consumer_staples: () => LocalizedString
+		/**
+		 * Energía
+		 */
+		sector_energy: () => LocalizedString
+		/**
+		 * Materiales
+		 */
+		sector_materials: () => LocalizedString
+		/**
+		 * Servicios públicos
+		 */
+		sector_utilities: () => LocalizedString
+		/**
+		 * Inmobiliario
+		 */
+		sector_real_estate: () => LocalizedString
+		/**
+		 * Tus fondos se pisan
+		 */
+		overlap_heading: () => LocalizedString
+		/**
+		 * {a} y {b} apuntan a las mismas empresas por unos {amount}, un {pct} de lo analizado.
+		 */
+		overlap_row: (arg: { a: string, amount: string, b: string, pct: string }) => LocalizedString
+		/**
+		 * Los dos replican el mismo índice: es duplicación completa.
+		 */
+		overlap_same_index: () => LocalizedString
+		/**
+		 * {amount} sin analizar ({tickers}): acciones sueltas, efectivo o activos cuyo índice no reconocemos.
+		 */
+		uncovered: (arg: { amount: string, tickers: string }) => LocalizedString
+		/**
+		 * {amount} de renta fija se cuenta por región pero no por sector.
+		 */
+		no_sector: (arg: { amount: string }) => LocalizedString
+		/**
+		 * Los porcentajes son sobre lo analizado ({amount}), no sobre tu patrimonio total.
+		 */
+		coverage_note: (arg: { amount: string }) => LocalizedString
+		/**
+		 * Pesos de índice aproximados a fecha {date}.
+		 */
+		as_of: (arg: { date: string }) => LocalizedString
+		/**
+		 * Estimación calculada a nivel de índice, no de posición individual: sirve para ver a qué estás expuesto, no como composición exacta de tu cartera.
+		 */
+		disclaimer: () => LocalizedString
 	}
 	projections: {
 		/**

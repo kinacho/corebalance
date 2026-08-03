@@ -1,6 +1,17 @@
 /** Categoría de un activo dentro de la cartera del usuario */
 export type AssetCategory = 'core' | 'satellite' | 'stocks';
 
+/**
+ * Tipo de instrumento. Es distinto de `AssetCategory`: la categoría es la
+ * *estrategia* del usuario (core/satélite/acciones) y esto es *qué es* el activo,
+ * que en España decide el trato fiscal.
+ *
+ * La distinción que importa es `fund` vs el resto: solo los fondos de inversión
+ * admiten traspaso con diferimiento fiscal (art. 94 LIRPF). Los ETF, aunque
+ * inviertan en lo mismo, están fuera de ese régimen y tributan al vender.
+ */
+export type InstrumentType = 'fund' | 'etf' | 'equity' | 'cash' | 'other';
+
 /** Definición de un activo de la cartera */
 export interface Asset {
 	ticker: string;
@@ -12,6 +23,18 @@ export interface Asset {
 	ter: number; // Total Expense Ratio (0.01 = 1%)
 	category: AssetCategory; // Categoría a la que pertenece
 	manualInterestRate?: number; // Rentabilidad anual manual (ej: 0.03 para 3%) para activos tipo "Cash"
+	/**
+	 * Opcional porque las carteras guardadas antes de que esto existiera no lo
+	 * traen. `resolveInstrumentType()` lo deduce, y la migración de
+	 * `loadFromStorage` lo rellena. Nunca leerlo directamente sin pasar por
+	 * `instrumentTypeOf()`.
+	 */
+	instrumentType?: InstrumentType;
+	/**
+	 * Clave del índice que replica, para el mapa del subyacente. La resuelve
+	 * `resolveIndexKey()`; el usuario puede corregirla a mano.
+	 */
+	indexKey?: string;
 }
 
 

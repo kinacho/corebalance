@@ -21,6 +21,34 @@ import { formatDate, resolveAssetIcon } from '$lib/utils';
 import { ui } from '$lib/stores/ui.svelte';
 import { goto } from '$app/navigation';
 import { detectSparklineChange, applyTerUpdates } from '$lib/stores/priceUtils';
+import { resolveInstrumentType } from '$lib/instrument-type';
+import { calculateLookThrough } from '$lib/lookthrough';
+import { resolveIndexKey } from '$lib/lookthrough';
+import { calculateTaxAwareRebalance } from '$lib/traspaso';
+
+/**
+ * Rellena los campos que las carteras guardadas antes de que existieran no
+ * traen: el icono, el tipo de instrumento y el índice replicado.
+ *
+ * Se aplica en los **dos** caminos de carga —local y nube— porque una cartera
+ * que entra por Firestore no pasa por `loadFromStorage` y se quedaría sin
+ * migrar, con el rebalanceo fiscal mudo justo para los usuarios registrados.
+ *
+ * Sin destruir lo que el usuario haya corregido a mano: solo escribe donde hay
+ * hueco.
+ */
+function normalizeAssets(assets: Asset[]): Asset[] {
+	return assets.map((a) => ({
+		...a,
+		icon: a.icon || resolveAssetIcon(a.ticker, a.name),
+		instrumentType:
+			a.instrumentType ??
+			(a.manualInterestRate !== undefined
+				? 'cash'
+				: resolveInstrumentType(a.ticker, a.name, '', a.isin)),
+		indexKey: a.indexKey ?? resolveIndexKey(a.ticker, a.name)
+	}));
+}
 
 export interface User { uid: string; displayName?: string | null; photoURL?: string | null; email?: string | null; }
 
@@ -354,6 +382,34 @@ export class PortfolioStore {
 	rebalanceResult: RebalanceResult | null = $derived(this.contribution > 0 && Object.keys(this.prices).length > 0 ? calculateRebalance(this.coreAssets, this.effectiveHoldings, this.pricesWithFx, this.contribution) : null);
 	hasAnyHoldings = $derived(Object.values(this.effectiveHoldings).some((h) => h.shares > 0));
 
+	/**
+	 * Rebalanceo con su coste fiscal: qué se puede mover gratis por traspaso y
+	 * qué obliga a vender.
+	 *
+	 * Se calcula por categoría porque es donde los pesos objetivo existen. La
+	 * aportación configurada entra para poder comparar «corregir hoy» contra
+	 * «corregir en N meses aportando».
+	 */
+	taxAwareRebalance = $derived.by(() =>
+		calculateTaxAwareRebalance(
+			[
+				{ category: 'core' as const, positions: this.portfolioState.positions },
+				{ category: 'satellite' as const, positions: this.satelliteState.positions },
+				{ category: 'stocks' as const, positions: this.stockState.positions }
+			],
+			this.transactions,
+			{ contribution: this.contribution }
+		)
+	);
+
+	/**
+	 * Exposición real por región y sector, y solapamiento entre posiciones.
+	 *
+	 * Sobre las tres categorías juntas: al usuario le da igual en qué cajón haya
+	 * puesto su S&P 500, lo que quiere saber es cuánto EEUU tiene en total.
+	 */
+	lookThrough = $derived.by(() => calculateLookThrough(this.allPositions));
+
 	get btcPrice() { return this.prices['BTC-EUR']?.price || 0; }
 	get ethPrice() { return this.prices['ETH-EUR']?.price || 0; }
 	get eurUsd() { return this.prices['EURUSD=X']?.price || 1.10; }
@@ -581,9 +637,9 @@ export class PortfolioStore {
 					this.holdings = this.sanitizeHoldings(userData.holdings || {});
 					this.contribution = userData.contribution || 0;
 					this.isPrivate = userData.isPrivate ?? this.isPrivate;
-					if (userData.coreAssets && Array.isArray(userData.coreAssets)) this.coreAssets = userData.coreAssets;
-					if (userData.satelliteAssets && Array.isArray(userData.satelliteAssets)) this.satelliteAssets = userData.satelliteAssets;
-					if (userData.stockAssets && Array.isArray(userData.stockAssets)) this.stockAssets = userData.stockAssets;
+					if (userData.coreAssets && Array.isArray(userData.coreAssets)) this.coreAssets = normalizeAssets(userData.coreAssets);
+					if (userData.satelliteAssets && Array.isArray(userData.satelliteAssets)) this.satelliteAssets = normalizeAssets(userData.satelliteAssets);
+					if (userData.stockAssets && Array.isArray(userData.stockAssets)) this.stockAssets = normalizeAssets(userData.stockAssets);
 
 					// Sincronizar localStorage con los datos cargados de la nube
 					this.syncLocalStorage();
@@ -741,14 +797,10 @@ export class PortfolioStore {
 			const savedAssets = localStorage.getItem(STORAGE_KEY_ASSETS);
 			if (savedAssets) {
 				const parsed = JSON.parse(savedAssets);
-				const ensureIcons = (assets: Asset[]) => assets.map(a => ({
-					...a,
-					icon: a.icon || resolveAssetIcon(a.ticker, a.name)
-				}));
 
-				if (parsed.coreAssets && Array.isArray(parsed.coreAssets)) this.coreAssets = ensureIcons(parsed.coreAssets);
-				if (parsed.satelliteAssets && Array.isArray(parsed.satelliteAssets)) this.satelliteAssets = ensureIcons(parsed.satelliteAssets);
-				if (parsed.stockAssets && Array.isArray(parsed.stockAssets)) this.stockAssets = ensureIcons(parsed.stockAssets);
+				if (parsed.coreAssets && Array.isArray(parsed.coreAssets)) this.coreAssets = normalizeAssets(parsed.coreAssets);
+				if (parsed.satelliteAssets && Array.isArray(parsed.satelliteAssets)) this.satelliteAssets = normalizeAssets(parsed.satelliteAssets);
+				if (parsed.stockAssets && Array.isArray(parsed.stockAssets)) this.stockAssets = normalizeAssets(parsed.stockAssets);
 			}
 			const savedHoldings = localStorage.getItem(STORAGE_KEY_HOLDINGS);
 
