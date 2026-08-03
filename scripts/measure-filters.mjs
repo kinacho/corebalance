@@ -15,7 +15,10 @@
  */
 
 import { spawn } from 'node:child_process';
-import { chromium } from 'playwright-core';
+// Desde `@playwright/test`, que es la dependencia declarada. Importar
+// `playwright-core` funcionaba por izado de node_modules, pero es una
+// dependencia transitiva: cambia el aplanado y el script deja de resolver.
+import { chromium } from '@playwright/test';
 import { existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
