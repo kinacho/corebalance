@@ -4,21 +4,31 @@ import * as path from 'path';
 import { importFromCSV } from './index';
 
 /**
- * Dry-run de todos los CSVs de entrenamiento.
+ * Dry-run de todos los CSV reales de bróker que hay en `training/`.
  * Garantiza que ningún parser lanza una excepción no controlada y que
  * los CSVs conocidos producen al menos una posición válida.
+ *
+ * ⚠️ **Apuntaba a `training_csv/`, una carpeta que la purga del historial
+ * eliminó**, así que desde entonces la suite entera se saltaba siempre: cero
+ * ficheros leídos, y con el mismo aspecto verde que si estuviera comprobando
+ * algo. Los CSV reales viven en `training/`, que es lo que lee también
+ * `parsers.test.ts`.
+ *
+ * El skip sigue siendo necesario y correcto: `training/` está ignorada por
+ * completo porque son exports de bróker con datos personales, así que en un clone
+ * limpio no existe y la batería tiene que pasar igual.
  */
-describe('Dry-run of all training_csv files', () => {
-	const dirPath = path.join(process.cwd(), 'training_csv');
+describe('Dry-run de los CSV reales de training/', () => {
+	const dirPath = path.join(process.cwd(), 'training');
 
-	// Omitir la suite si la carpeta no existe (ej. en CI sin los fixtures)
+	// Omitir la suite si la carpeta no existe (ej. en un clone limpio, sin fixtures)
 	const dirExists = fs.existsSync(dirPath);
 
-	it('training_csv directory exists', () => {
+	it('el directorio training/ existe', () => {
 		if (!dirExists) {
-			console.warn('[training_csv.test] Carpeta training_csv no encontrada — saltando tests de dry-run');
+			console.warn('[training_csv.test] Carpeta training/ no encontrada — saltando el dry-run');
 		}
-		// No se falla si no existe: la carpeta es opcional en CI
+		// No se falla si no existe: la carpeta es opcional fuera de la máquina del autor
 		expect(true).toBe(true);
 	});
 
