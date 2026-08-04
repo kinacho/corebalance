@@ -26,7 +26,7 @@ CoreBalance hace ese cálculo en segundos y, sobre todo, **prioriza rebalancear 
 - **Rebalanceo por traspaso, con coste fiscal cero** — entre fondos de inversión mover dinero no tributa en España (diferimiento del art. 94 LIRPF), así que calcula el movimiento exacto hasta el objetivo sin generar plusvalía. Y cuando toca vender ETFs o acciones, te dice cuánto cuesta de verdad: plusvalía por FIFO desde tu ledger e impuesto por los tramos del ahorro, comparado contra los meses que tardaría la vía de solo aportar.
 - **Aviso de la regla antiaplicación** — dos meses en cotizados, un año en participaciones de fondos. Antes de proponerte una venta con pérdidas, te avisa de si esa pérdida compensaría este ejercicio o quedaría diferida.
 - **Cálculo de desviación por bandas** — cuánto se ha ido cada activo de su peso objetivo y cuánto hay que mover para volver.
-- **Mapa de desviación y transparencia del subyacente** — la cartera en rectángulos coloreados por distancia al objetivo, y la exposición real por región y sector que hay dentro de tus fondos, con aviso cuando dos posiciones apuntan a las mismas empresas.
+- **Mapa de desviación y transparencia del subyacente** — la cartera en rectángulos, **seccionada por bloque de estrategia**: el bloque con objetivos se colorea por distancia a ellos y los que no los tienen llevan su propio tono, porque marcar como excepción a un activo que nunca tuvo objetivo no informa de nada. Y la exposición real por región y sector que hay dentro de tus fondos, con aviso cuando dos posiciones apuntan a las mismas empresas.
 - **Importación CSV de brókers** — MyInvestor, DEGIRO, Trading 212, Interactive Brokers y un formato genérico. El parser agrupa transacciones y calcula el precio medio ponderado.
 - **Ledger de transacciones** — compras, ventas, dividendos y traspasos por activo, con coste medio ponderado.
 - **Precios en tiempo real** — valor actual, P&L no realizado y evolución de la cartera.
@@ -40,10 +40,14 @@ CoreBalance hace ese cálculo en segundos y, sobre todo, **prioriza rebalancear 
 | | |
 |---|---|
 | 🧮 [Calculadora de TER](https://corebalance.app/herramientas/calculadora-ter) | TER ponderado y simulación de comisiones a largo plazo |
+| 📉 [Simulador de crisis](https://corebalance.app/herramientas/simulador-crisis) | Proyecta caídas históricas reales sobre tu cartera |
+| ➗ [Calculadora de precio medio](https://corebalance.app/herramientas/calculadora-precio-medio) | Coste medio ponderado de compras a distintos precios |
 | ✅ [¿Toca rebalancear?](https://corebalance.app/herramientas/checklist-rebalanceo) | Cuestionario de 4 preguntas con recomendación |
 | 📊 [vs Excel / Google Sheets](https://corebalance.app/comparativas/corebalance-vs-excel) | Comparativa frente a las hojas de cálculo |
 | 🤖 [vs Indexa Capital](https://corebalance.app/comparativas/corebalance-vs-indexa-capital) | Comparativa frente a un robo-advisor |
 | 🖥️ [vs Portfolio Performance](https://corebalance.app/comparativas/corebalance-vs-portfolio-performance) | Comparativa frente a la app de escritorio |
+| 🌐 [vs JustETF](https://corebalance.app/comparativas/corebalance-vs-justetf) | Comparativa frente al buscador y cartera de JustETF |
+| 🔓 [vs Ghostfolio](https://corebalance.app/comparativas/corebalance-vs-ghostfolio) | Comparativa frente a la alternativa autoalojable |
 
 Guías destacadas del blog: [cómo rebalancear una cartera indexada](https://corebalance.app/blog/como-rebalancear-cartera-indexada) · [rebalancear sin pagar impuestos en España](https://corebalance.app/blog/rebalancear-sin-pagar-impuestos-espana) · [traspasos de fondos indexados y Hacienda](https://corebalance.app/blog/traspasos-fondos-indexados-hacienda) · [IWDA vs VWCE](https://corebalance.app/blog/iwda-vs-vwce-comparativa) · [fondos indexados vs ETFs](https://corebalance.app/blog/fondos-indexados-vs-etfs-espana)
 
@@ -106,6 +110,9 @@ Los valores sólo hacen falta para funcionalidades concretas: `KV_REST_API_URL` 
 | `npm run og` | Regenera todas las imágenes Open Graph |
 | `npm run llms` | Regenera `llms.txt` y `llms-es.txt` desde las plantillas |
 | `npm run indexnow` | Avisa a IndexNow de las URLs modificadas |
+| `npm run preview` | Sirve el build de producción en local (necesario para `seo:audit`) |
+| `npm run backtest` | Regenera el dataset histórico 80/20 desde datos reales de Yahoo |
+| `npm run measure:filters` | Mide en móvil throttleado lo que cuestan el degradado, el ruido y los `backdrop-filter`. Imprime su propio suelo de ruido: léelo antes de creerte cualquier diferencia |
 
 ## Contribuir
 
