@@ -61,6 +61,32 @@
 		injectAnalytics({ mode: dev ? 'development' : 'production' });
 		injectSpeedInsights();
 
+		/**
+		 * Registro del service worker, **a mano y a propósito**.
+		 *
+		 * ⚠️ `injectRegister: 'auto'` no funciona en este proyecto y su fallo es
+		 * silencioso: el plugin genera `registerSW.js` y lo despliega —se sirve con
+		 * 200— pero no inserta la etiqueta `<script>` que lo carga en el HTML
+		 * prerenderizado de SvelteKit. Resultado medido en producción antes de este
+		 * cambio: `getRegistrations()` devolvía **0**, cero cachés, cero entradas, y
+		 * ni un error en consola. Es decir, la PWA entera —precache, modo offline,
+		 * `autoUpdate` y el `beforeinstallprompt` del que depende `InstallPrompt`—
+		 * nunca llegó a existir para ningún usuario, y las veinte líneas de
+		 * comentario que razonan sobre el fallback en `vite.config.ts` describían
+		 * código que no se ejecutaba.
+		 *
+		 * Importar el módulo virtual y llamarlo aquí no depende de que el plugin
+		 * acierte a inyectar nada. Si algún día vuelve a romperse, se rompe en un
+		 * sitio que se lee.
+		 */
+		import('virtual:pwa-register')
+			.then(({ registerSW }) => registerSW({ immediate: true }))
+			.catch((error) => {
+				// Nunca debe tumbar la app: sin service worker CoreBalance funciona igual,
+				// solo pierde instalación y offline.
+				console.warn('[pwa] no se pudo registrar el service worker', error);
+			});
+
 		if ((window as any).__deferredPrompt) {
 			ui.deferredPrompt = (window as any).__deferredPrompt;
 		}

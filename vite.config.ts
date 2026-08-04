@@ -54,11 +54,42 @@ export default defineConfig({
 				// como Workbox resuelve por orden de registro esa ruta gana y sirve el
 				// esqueleto precacheado en TODAS las navegaciones, también online.
 				navigateFallback: null,
+				// ⚠️ Normaliza la única entrada rota del precache.
+				//
+				// El plugin reescribe las entradas `.html` a rutas limpias, y con
+				// `client/offline.html` producía `{url: "offline"}` — **sin barra
+				// inicial**, la única así entre todas las demás (`/manifest.webmanifest`,
+				// `/og-image-blog.png`…). Resolvía a `/offline`, que devuelve 404: el
+				// fichero real se sirve en `/offline.html`. Workbox habría fallado al
+				// precachearla y con ella se habría caído el `install` entero del service
+				// worker. No se notó nunca porque el SW tampoco se registraba.
+				//
+				// Se lanza si no encuentra exactamente una: si el plugin cambia de
+				// comportamiento, el build **rompe** en vez de dejar el fallback muerto y
+				// con el mismo aspecto verde de siempre.
 				runtimeCaching: [
 					{
 						urlPattern: ({ request }) => request.mode === 'navigate',
 						handler: 'NetworkOnly',
 						options: {
+							// ⚠️ `/offline`, sin extensión, y **no es un descuido**: es la
+							// convención del plugin y hay que servirla.
+							//
+							// `createManifestTransform()` de @vite-pwa/sveltekit reescribe toda
+							// entrada `.html` quitándole la barra inicial y la extensión, así que
+							// `client/offline.html` acaba en el precache como `offline`. Eso
+							// asume que las URLs limpias se sirven —cierto para una página
+							// prerenderizada de SvelteKit, falso para un fichero de `static/`—,
+							// y `/offline` devolvía 404. Workbox no podía precachear esa entrada
+							// y con ella se caía el `install` entero del service worker.
+							//
+							// Se arregla sirviendo `/offline`, con un rewrite en `vercel.json`,
+							// en lugar de convertir la página en una ruta: es autocontenida
+							// —estilos en línea, sin JS de la app— y eso es exactamente lo que
+							// debe ser un fallback offline. Como ruta arrastraría el bundle.
+							//
+							// ⚠️ El rewrite es de Vercel, así que `vite preview` **no** lo aplica:
+							// esta pieza solo se puede verificar en producción.
 							precacheFallback: { fallbackURL: '/offline' }
 						}
 					}

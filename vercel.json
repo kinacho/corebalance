@@ -18,6 +18,19 @@
     "El historial de despliegues sigue existiendo en el panel de Vercel."
   ],
   "github": { "deploymentEnabled": false },
+  "//rewrites": [
+    "El service worker precachea la página offline bajo la clave `offline`, sin",
+    "barra ni extensión, porque @vite-pwa/sveltekit reescribe así toda entrada",
+    "`.html` de su manifest. Esa convención da por hecho que las URLs limpias se",
+    "sirven, y `static/offline.html` sólo respondía en `/offline.html`: `/offline`",
+    "daba 404, Workbox no podía precachear la entrada y se caía el `install`",
+    "completo del service worker.",
+    "",
+    "Este rewrite cierra el hueco sin duplicar la página ni convertirla en una ruta",
+    "de SvelteKit — es autocontenida, con los estilos en línea y sin JS de la app,",
+    "que es lo que debe ser un fallback offline; como ruta arrastraría el bundle."
+  ],
+  "rewrites": [{ "source": "/offline", "destination": "/offline.html" }],
   "headers": [
     {
       "source": "/.well-known/assetlinks.json",

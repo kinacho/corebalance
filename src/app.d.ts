@@ -1,5 +1,8 @@
 // See https://svelte.dev/docs/kit/types#app.d.ts
 // for information about these interfaces
+
+/// <reference types="vite-plugin-pwa/client" />
+
 declare global {
 	/** Versión de package.json, inyectada por Vite (ver `define` en vite.config.ts). */
 	const __APP_VERSION__: string;
