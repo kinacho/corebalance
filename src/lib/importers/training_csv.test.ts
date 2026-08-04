@@ -21,24 +21,32 @@ import { importFromCSV } from './index';
 describe('Dry-run de los CSV reales de training/', () => {
 	const dirPath = path.join(process.cwd(), 'training');
 
-	// Omitir la suite si la carpeta no existe (ej. en un clone limpio, sin fixtures)
-	const dirExists = fs.existsSync(dirPath);
+	/**
+	 * ⚠️ La condición para omitir es **que no haya CSVs**, no que falte el directorio.
+	 *
+	 * `training/README.md` sí está versionado, así que en un clon limpio la carpeta
+	 * **existe** y está vacía de fixtures. Comprobando `existsSync(dirPath)` la
+	 * guarda pasaba y reventaba la aserción de «al menos un CSV». Antes no se veía
+	 * porque la suite apuntaba a `training_csv/`, que no existe en absoluto y por eso
+	 * salía siempre por esta puerta. Lo cazó CI en su primera ejecución.
+	 */
+	const files = fs.existsSync(dirPath)
+		? fs.readdirSync(dirPath).filter((f) => f.endsWith('.csv'))
+		: [];
+	const hayFixtures = files.length > 0;
 
-	it('el directorio training/ existe', () => {
-		if (!dirExists) {
-			console.warn('[training_csv.test] Carpeta training/ no encontrada — saltando el dry-run');
+	it('hay fixtures de bróker en training/ o la suite se omite', () => {
+		if (!hayFixtures) {
+			console.warn(
+				'[training_csv.test] Sin CSVs en training/ — se omite el dry-run. ' +
+					'Es lo normal fuera de la máquina del autor: son exports reales con datos personales.'
+			);
 		}
-		// No se falla si no existe: la carpeta es opcional fuera de la máquina del autor
+		// No se falla: los fixtures son opcionales y un clon limpio tiene que pasar.
 		expect(true).toBe(true);
 	});
 
-	if (!dirExists) return;
-
-	const files = fs.readdirSync(dirPath).filter(f => f.endsWith('.csv'));
-
-	it('should have at least one CSV file to parse', () => {
-		expect(files.length).toBeGreaterThan(0);
-	});
+	if (!hayFixtures) return;
 
 	for (const file of files) {
 		it(`should parse ${file} without throwing`, () => {
