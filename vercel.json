@@ -1,4 +1,23 @@
 {
+  "//github": [
+    "Vercel deja de crear deployments y checks en GitHub.",
+    "",
+    "El motivo: la integración publica en el `environment_url` la URL inmutable del",
+    "despliegue (`<proyecto>-<hash>-<equipo>.vercel.app`), no el dominio propio, y",
+    "esa URL está detrás de la Deployment Protection. Resultado: el enlace",
+    "«Production» de un repositorio público llevaba a un login de Vercel — un enlace",
+    "muerto en la cara visible del proyecto. GitHub no permite editarlo: lo fija",
+    "quien crea el deployment status, y aquí es el bot de Vercel.",
+    "",
+    "Se apaga la integración en lugar de desactivar la protección a propósito. Abrir",
+    "esas URLs las haría rastreables sirviendo contenido idéntico al de",
+    "corebalance.app, o sea contenido duplicado multiplicado por cada despliegue. El",
+    "`canonical` apunta bien y suele bastar, pero es una mitigación; la protección es",
+    "una barrera. Se prefiere perder una pestaña que casi nadie visita.",
+    "",
+    "El historial de despliegues sigue existiendo en el panel de Vercel."
+  ],
+  "github": { "deploymentEnabled": false },
   "headers": [
     {
       "source": "/.well-known/assetlinks.json",
