@@ -62,12 +62,20 @@
 	 *
 	 * Ampliado no se agrupa: hay sitio de sobra para todas.
 	 */
-	const slices = $derived.by(() => {
-		const limit = expanded ? ASSET_COLORS.length : MAX_CHART_SLICES - 1;
-		if (rawSlices.length <= limit + 1) return rawSlices;
+	/**
+	 * Cuántas franjas se dibujan por separado antes de agrupar el resto.
+	 *
+	 * Va fuera de `slices` porque el rótulo «Otros (N)» necesita el mismo número:
+	 * cuando estaba escrito dos veces, el rótulo se quedó con la constante del
+	 * carril estrecho y ampliado prometía cuatro regiones agrupando tres.
+	 */
+	const sliceLimit = $derived(expanded ? ASSET_COLORS.length : MAX_CHART_SLICES - 1);
 
-		const head = rawSlices.slice(0, limit);
-		const tail = rawSlices.slice(limit);
+	const slices = $derived.by(() => {
+		if (rawSlices.length <= sliceLimit + 1) return rawSlices;
+
+		const head = rawSlices.slice(0, sliceLimit);
+		const tail = rawSlices.slice(sliceLimit);
 		return [
 			...head,
 			{
@@ -153,7 +161,7 @@
 
 	function labelFor(key: string): string {
 		if (key === OTHER_KEY) {
-			return $LL.charts.other_slices({ count: rawSlices.length - (MAX_CHART_SLICES - 1) });
+			return $LL.charts.other_slices({ count: rawSlices.length - sliceLimit });
 		}
 		const table = mode === 'regions' ? regionLabels : sectorLabels;
 		return table[key] ?? key;

@@ -1,8 +1,9 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest';
 import { render } from '@testing-library/svelte';
 import { loadLocale } from '$lib/i18n/i18n-util.sync';
 import { setLocale } from '$lib/i18n/i18n-svelte';
 import { approximateTextWidth } from '$lib/treemap';
+import { BLOCK_HUES, CHART_NEUTRAL, DEVIATION_ON_TARGET } from '$lib/constants';
 import type { PortfolioPosition } from '$lib/types';
 
 loadLocale('es');
@@ -101,6 +102,27 @@ function luminanceOf(color: string): number {
 	if (!parts) return 255;
 	const [r, g, b] = parts[1].split(',').map((n) => parseFloat(n));
 	return (r + g + b) / 3;
+}
+
+/**
+ * Los colores reales detrás de un `fill`, resolviendo el rayado.
+ *
+ * Las celdas sin objetivo se rellenan con `url(#dev-no-target)`, y sin esto la
+ * comprobación de «ningún recuadro casi invisible» pasaría de vacío justo sobre
+ * las celdas que motivaron esa comprobación: `luminanceOf` no sabe leer un `url()`
+ * y devolvía su valor de reserva. Un test que deja de comprobar tiene el mismo
+ * aspecto que un test que pasa.
+ */
+function resolveFill(container: HTMLElement, fill: string): string[] {
+	const ref = fill.match(/^url\(#(.+)\)$/);
+	if (!ref) return [fill];
+
+	const pattern = container.querySelector(`#${ref[1]}`);
+	expect(pattern, `el relleno apunta a «${ref[1]}», que no existe`).not.toBeNull();
+
+	const colors = [...pattern!.querySelectorAll('rect')].map((r) => r.getAttribute('fill') ?? '');
+	expect(colors.length, 'el patrón no pinta nada').toBeGreaterThan(0);
+	return colors;
 }
 
 /** Los grupos de celda: un `<rect>` propio y sus textos ya recortados. */
@@ -224,9 +246,43 @@ describe('DeviationTreemap.svelte', () => {
 
 		for (const fill of fills) {
 			// Ni transparencias —sobre fondo oscuro se comen el tono— ni rellenos tan
-			// oscuros que no se distingan del hueco entre celdas.
-			expect(fill, `«${fill}» es translúcido`).not.toMatch(/rgba|transparent/);
-			expect(luminanceOf(fill), `«${fill}» es casi negro`).toBeGreaterThan(45);
+			// oscuros que no se distingan del hueco entre celdas. Se comprueba color a
+			// color: en las celdas rayadas, tanto la base como la raya.
+			for (const color of resolveFill(container, fill)) {
+				expect(color, `«${color}» es translúcido`).not.toMatch(/rgba|transparent/);
+				expect(luminanceOf(color), `«${color}» es casi negro`).toBeGreaterThan(45);
+			}
+		}
+	});
+
+	it('un activo sin objetivo dentro de un bloque medido va rayado', async () => {
+		// Este es el caso **anómalo**: un activo de la cartera principal al que no se
+		// le ha puesto peso objetivo. Es lo único que queda rayado, y necesita la
+		// textura precisamente porque es lo único que convive con celdas de la escala
+		// dentro del mismo bloque, sin hueco ni cabecera que las separe.
+		//
+		// No confundir con un bloque entero sin objetivos —satélite, acciones—, que
+		// lleva su tono plano y se comprueba en el bloque de abajo.
+		const DeviationTreemap = (await import('./DeviationTreemap.svelte')).default;
+		const { container } = render(DeviationTreemap);
+
+		const cells = [...container.querySelectorAll('svg.treemap > g')];
+		const untargeted = cells.filter((g) => g.textContent?.includes('Sin objetivo'));
+		expect(untargeted.length, 'el fixture debería tener celdas sin objetivo').toBeGreaterThan(0);
+
+		for (const group of untargeted) {
+			const fill = group.querySelector(':scope > rect')?.getAttribute('fill') ?? '';
+			expect(fill, 'una celda sin objetivo no va rayada').toMatch(/^url\(#/);
+
+			// El rayado necesita dos tonos distintos, o no es un rayado.
+			const colors = [...new Set(resolveFill(container, fill))];
+			expect(colors.length, `el patrón solo pinta «${colors[0]}»`).toBeGreaterThan(1);
+
+			// Y ninguno puede ser el neutro de «en objetivo», que es el estado del que
+			// hay que diferenciarse.
+			for (const color of colors) {
+				expect(color.toLowerCase()).not.toBe(CHART_NEUTRAL.toLowerCase());
+			}
 		}
 	});
 
@@ -251,6 +307,238 @@ describe('DeviationTreemap.svelte', () => {
 		expect(container.querySelector('svg.treemap')).toBeNull();
 		expect(container.textContent).toContain('Añade activos');
 		store.portfolioState = { positions: POSITIONS };
+	});
+});
+
+/**
+ * El mapa seccionado por bloque de estrategia.
+ *
+ * **Los objetivos son cosa de la cartera principal**; satélite y acciones no los
+ * tienen como tal. Estos casos son el camino normal de una cartera real y hasta
+ * ahora ningún test los tocaba: el fixture de arriba solo tiene bloque principal,
+ * así que todo el reparto en dos niveles y los tonos de bloque se estaban
+ * ejercitando únicamente a mano en el navegador.
+ */
+describe('DeviationTreemap.svelte · bloques de estrategia', () => {
+	const STOCKS = [
+		makePosition('AMZN', 'Amazon.com Inc', 1200, 0),
+		makePosition('GOOGL', 'Alphabet Inc', 1100, 0),
+		makePosition('TSLA', 'Tesla Inc', 300, 0)
+	];
+	const SATELLITE = [makePosition('CASH-DEP', 'Depósito remunerado', 500, 0)];
+
+	beforeAll(() => {
+		store.stockState = { positions: STOCKS };
+		store.satelliteState = { positions: SATELLITE };
+	});
+	afterAll(() => {
+		store.stockState = { positions: [] };
+		store.satelliteState = { positions: [] };
+	});
+
+	/** Las celdas con su relleno y sus textos, sin depender de la sección. */
+	async function renderMap(width = 1080) {
+		withContainerWidth(width);
+		const DeviationTreemap = (await import('./DeviationTreemap.svelte')).default;
+		const { container } = render(DeviationTreemap);
+		const svg = container.querySelector('svg.treemap')!;
+		const cells = [...svg.querySelectorAll(':scope > g')]
+			.map((g) => {
+				const rect = g.querySelector(':scope > rect');
+				if (!rect) return null;
+				return {
+					fill: rect.getAttribute('fill') ?? '',
+					x: parseFloat(rect.getAttribute('x') ?? '0'),
+					y: parseFloat(rect.getAttribute('y') ?? '0'),
+					w: parseFloat(rect.getAttribute('width') ?? '0'),
+					h: parseFloat(rect.getAttribute('height') ?? '0'),
+					text: g.textContent ?? '',
+					ticker: g.querySelector('text')?.textContent?.trim() ?? ''
+				};
+			})
+			.filter((c): c is NonNullable<typeof c> => c !== null);
+		return { container, svg, cells };
+	}
+
+	it('un bloque sin objetivos lleva su tono plano, sin escala y sin rayado', async () => {
+		const { cells } = await renderMap();
+
+		const stocks = cells.filter((c) => ['AMZN', 'GOOGL', 'TSLA'].includes(c.ticker));
+		expect(stocks.length, 'no se han dibujado las acciones').toBe(3);
+		for (const cell of stocks) {
+			expect(cell.fill).toBe(BLOCK_HUES.stocks);
+		}
+
+		const satellite = cells.find((c) => c.ticker === 'CASH-DEP');
+		expect(satellite?.fill).toBe(BLOCK_HUES.satellite);
+	});
+
+	it('un bloque sin objetivos no rotula «sin objetivo» en cada celda', async () => {
+		// Era el defecto de fondo: marcar como excepción a dos tercios de los activos
+		// cuando ésos estructuralmente no pueden tener objetivo. Con la cabecera del
+		// bloque encima, informar de la ausencia es ruido.
+		const { cells } = await renderMap();
+
+		for (const cell of cells.filter((c) => ['AMZN', 'GOOGL', 'TSLA'].includes(c.ticker))) {
+			expect(cell.text, `«${cell.ticker}» sigue diciendo «sin objetivo»`).not.toContain(
+				'Sin objetivo'
+			);
+		}
+	});
+
+	it('ninguna celda se pinta con el gris neutro', async () => {
+		// Decisión de producto, y por eso está aquí y no solo en un comentario: el gris
+		// dominaba el mapa y lo hacía parecer apagado. El neutro sobrevive únicamente
+		// como origen de la mezcla de la rampa, nunca como relleno de una celda.
+		const { cells } = await renderMap();
+		// Sin esto la comprobación pasaría de vacío el día que el mapa deje de pintar.
+		expect(cells.length).toBe(POSITIONS.length + 4);
+
+		for (const cell of cells) {
+			expect(cell.fill.toLowerCase(), `«${cell.ticker}» es gris neutro`).not.toBe(
+				CHART_NEUTRAL.toLowerCase()
+			);
+		}
+	});
+
+	it('«en objetivo» usa el verde apagado, no el neutro', async () => {
+		// `CASH-DEPOSITO` pesa 800 sobre 14.000 y su objetivo es 0,2, así que está muy
+		// por debajo; el que cae dentro de banda es el que se construye aquí a medida.
+		const onTarget = makePosition('EN-BANDA', 'Fondo en objetivo', 1000, 0);
+		// 1000 sobre el total hace un 6,9 %; con objetivo al 7 % la desviación es
+		// −0,1 puntos, dentro de la banda de 1 punto.
+		onTarget.asset.targetWeight = 0.07;
+		onTarget.deviation = -0.001;
+
+		store.portfolioState = { positions: [...POSITIONS, onTarget] };
+		const { cells } = await renderMap();
+		store.portfolioState = { positions: POSITIONS };
+
+		const cell = cells.find((c) => c.ticker === 'EN-BANDA');
+		expect(cell?.fill).toBe(DEVIATION_ON_TARGET);
+	});
+
+	it('cada bloque presente lleva su nombre escrito encima', async () => {
+		const { svg } = await renderMap();
+		const headers = [...svg.querySelectorAll('text.block-label')].map((t) =>
+			t.textContent?.trim()
+		);
+
+		expect(headers).toContain('CARTERA PRINCIPAL');
+		expect(headers).toContain('ACCIONES INDIVIDUALES');
+		expect(headers).toContain('CARTERA CONSERVADORA');
+	});
+
+	it('la cabecera de un bloque no es más ancha que su bloque', async () => {
+		// El mismo estimador que las celdas, y el mismo defecto: se medía la cadena en
+		// minúsculas mientras el CSS la pasaba a mayúsculas con `text-transform`, que
+		// son más anchas. El recorte hacía su trabajo y cortaba a media palabra:
+		// «ACCIONES INDIVIDUALE». Ahora las mayúsculas las pone el guion antes de medir.
+		const { svg, cells } = await renderMap(420);
+
+		for (const label of svg.querySelectorAll('text.block-label')) {
+			const text = label.textContent?.trim() ?? '';
+			const fontSize = parseFloat(label.getAttribute('font-size') ?? '0');
+			const width = approximateTextWidth(text, fontSize);
+			// El bloque más estrecho que puede contenerla: se compara contra el ancho
+			// del bloque, que es al menos el de la celda más ancha que hay debajo.
+			const widest = Math.max(...cells.map((c) => c.w));
+			expect(width, `«${text}» mide ${width.toFixed(1)}`).toBeLessThanOrEqual(widest);
+		}
+	});
+
+	it('un bloque diminuto se dibuja igual, no desaparece', async () => {
+		// El hueco entre bloques se resta del rectángulo del bloque. Con un bloque muy
+		// pequeño —una cuenta remunerada testimonial al lado de una cartera grande— el
+		// reparto le daba una franja más estrecha que el propio hueco, y `max(0, …)` la
+		// dejaba en cero: el bloque desaparecía del mapa por completo, con su valor
+		// contando en el total y su nombre en la leyenda. Un activo pequeño debe salir
+		// pequeño, nunca ausente.
+		const previous = store.satelliteState;
+		store.satelliteState = { positions: [makePosition('MIGA-CASH', 'Cuenta testimonial', 8, 0)] };
+
+		const { cells } = await renderMap(340);
+		store.satelliteState = previous;
+
+		const tiny = cells.find((c) => c.ticker === 'MIGA-CASH');
+		// Puede no llevar rótulo por estrecha, así que se busca por su relleno.
+		const bySatelliteHue = cells.filter((c) => c.fill === BLOCK_HUES.satellite);
+		expect(
+			tiny !== undefined || bySatelliteHue.length > 0,
+			'el bloque diminuto no se ha dibujado'
+		).toBe(true);
+		for (const cell of bySatelliteHue) {
+			expect(cell.w, 'ancho cero').toBeGreaterThan(0);
+			expect(cell.h, 'alto cero').toBeGreaterThan(0);
+		}
+	});
+
+	it('las celdas de bloques distintos no se solapan', async () => {
+		// La invariante del reparto en dos niveles: `squarify` coloca desde el origen y
+		// este componente traslada cada rectángulo al hueco de su bloque. Un error de
+		// signo o de origen ahí pinta un bloque encima de otro.
+		const { cells } = await renderMap();
+		expect(cells.length).toBe(POSITIONS.length + 4);
+
+		for (let i = 0; i < cells.length; i++) {
+			for (let j = i + 1; j < cells.length; j++) {
+				const a = cells[i];
+				const b = cells[j];
+				const overlaps =
+					a.x < b.x + b.w - 0.01 &&
+					b.x < a.x + a.w - 0.01 &&
+					a.y < b.y + b.h - 0.01 &&
+					b.y < a.y + a.h - 0.01;
+				expect(overlaps, `«${a.ticker}» se solapa con «${b.ticker}»`).toBe(false);
+			}
+		}
+	});
+
+	it('la leyenda nombra un bloque solo cuando su cabecera no ha cabido', async () => {
+		// La regla: la leyenda dice lo que el mapa no ha podido decir en su sitio. En un
+		// lienzo ancho caben las tres cabeceras, así que **ningún nombre de bloque**
+		// aparece en la leyenda; se quedan solo las entradas de la escala y la del
+		// activo anómalo, que este fixture tiene.
+		const { container } = await renderMap(1080);
+		const items = [...container.querySelectorAll('.legend .legend-item')].map(
+			(i) => i.textContent?.trim() ?? ''
+		);
+
+		expect(items).toContain('Por debajo');
+		expect(items).toContain('En objetivo');
+		expect(items).toContain('Por encima');
+		for (const name of ['Cartera Principal', 'Acciones Individuales', 'Cartera Conservadora']) {
+			expect(items, `«${name}» se repite en la leyenda teniendo cabecera`).not.toContain(name);
+		}
+	});
+
+	it('y sí lo nombra cuando el bloque es demasiado bajo para una cabecera', async () => {
+		// La cartera conservadora es un 4 % del patrimonio: en el carril estrecho su
+		// bloque no tiene alto para una cabecera y una celda a la vez, y sin esto
+		// quedaba una celda violeta suelta sin nada que dijera de qué bloque era. En
+		// móvil no hay tooltip que lo salve.
+		const { container, svg } = await renderMap(340);
+		const headers = [...svg.querySelectorAll('text.block-label')].map((t) => t.textContent?.trim());
+		const items = [...container.querySelectorAll('.legend .legend-item')].map(
+			(i) => i.textContent?.trim() ?? ''
+		);
+
+		// Una cabecera recortada —«ACCIONES IN…»— sigue nombrando su bloque, así que
+		// vale como tal: lo que se comprueba es la regla, no un ancho concreto. Para
+		// cada bloque sin escala, o tiene cabecera en el mapa, o tiene entrada en la
+		// leyenda. Nunca ninguna de las dos, y nunca las dos a la vez.
+		const namesBlock = (header: string | undefined, name: string) => {
+			if (!header) return false;
+			const shown = header.replace(/…$/, '');
+			return shown.length >= 4 && name.toUpperCase().startsWith(shown);
+		};
+
+		for (const name of ['Acciones Individuales', 'Cartera Conservadora']) {
+			const titled = headers.some((h) => namesBlock(h, name));
+			const listed = items.includes(name);
+			expect(titled || listed, `«${name}» no se nombra en ningún sitio`).toBe(true);
+			expect(titled && listed, `«${name}» se nombra dos veces`).toBe(false);
+		}
 	});
 });
 

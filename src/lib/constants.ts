@@ -67,17 +67,80 @@ export const DEVIATION_UNDER = '#2563eb';
 export const DEVIATION_OVER = '#d97706';
 
 /**
- * Relleno de un activo **sin peso objetivo**, que no participa en la escala.
+ * Relleno de «en objetivo», el punto medio de la escala de desviación.
  *
- * Tiene que ser un gris apagado pero **claramente visible**. Antes era blanco al
- * 6 % y en la práctica se veía negro: en una cartera donde solo el bloque
- * principal tiene objetivos —la demo, y la mayoría de las carteras reales— eso
- * dejaba seis de nueve recuadros invisibles y el mapa parecía roto.
+ * **Verde apagado, y el número que importa es el croma: 0,073.** Es decisión de
+ * producto que «en objetivo» no se lea como ausencia de todo —era
+ * `CHART_NEUTRAL`, y un gris no dice «esto está bien»— pero un tono saturado en
+ * el punto medio de una escala divergente sí es un anti-patrón: compite con los
+ * dos polos. Este verde resuelve las dos cosas porque sigue **por debajo del
+ * suelo de croma categórico** del validador (o sea, el validador lo clasifica
+ * como «reads gray») siendo 3,2 veces más cromático que el gris que sustituye
+ * (0,023). Verde de verdad a la vista, casi-neutro para la escala.
  *
- * Distinto y bastante más oscuro que `CHART_NEUTRAL`, que significa otra cosa:
- * ahí sí hay objetivo y está cumplido.
+ * Medido con el validador de la habilidad `dataviz` sobre la superficie oscura
+ * `#0d0d12`, contra los colores que el mapa pinta **de verdad** —los suelos de
+ * rampa, no los polos puros—: banda de luminosidad ✓, contraste ≥ 3:1 ✓,
+ * separación en visión normal 17,7 contra el suelo azul y 21,4 contra el ámbar
+ * (mínimo 15), y en CVD 16,8 deutan / 7,0 tritan contra el azul y 11,8 protan /
+ * 25,6 tritan contra el ámbar.
+ *
+ * ⚠️ **La rampa divergente sigue arrancando de `CHART_NEUTRAL`, no de este
+ * verde.** Es la trampa de este cambio: la rampa *pasa por* su origen, y
+ * `mix(verde, ámbar, 0.6)` da `#ac8136`, un oliva sucio. Con el origen en el
+ * gris, el verde es solo el relleno plano de dentro de banda y no hay oliva. El
+ * pequeño salto de color al salir de la banda no es un defecto: marca justo el
+ * momento en que hay algo que mirar.
  */
-export const NO_TARGET_FILL = '#4b5563';
+export const DEVIATION_ON_TARGET = '#2f6b55';
+
+/**
+ * Tono de un bloque **que no se mide contra ningún objetivo**.
+ *
+ * Los objetivos son cosa de la cartera principal; satélite y acciones no los
+ * tienen *como tal*. Antes el mapa metía las tres carteras en un lienzo y luego
+ * marcaba como excepción («sin objetivo») a dos tercios de los activos, que es de
+ * donde salían todos sus problemas visuales: primero seis de nueve celdas
+ * invisibles, luego una plancha gris. Ahora el mapa se secciona por bloque y cada
+ * bloque sin objetivos lleva **su propio tono, sin escala**.
+ *
+ * ⚠️ **No se usan `CATEGORY_COLORS` aquí, y es contraintuitivo.** Sería lo
+ * coherente con el donut de categorías, pero `CATEGORY_COLORS.core` es
+ * *exactamente* `DEVIATION_UNDER` y `CATEGORY_COLORS.stocks` es *exactamente*
+ * `DEVIATION_OVER`: un bloque entero de ámbar que significa «estas son tus
+ * acciones», al lado de un bloque donde el ámbar significa «por encima del
+ * objetivo». Solo el violeta del satélite se puede reutilizar, y se reutiliza.
+ *
+ * El coste conocido, medido y aceptado: contra el suelo de la rampa azul, el cian
+ * queda a ΔE 12,0 en visión normal y el violeta a 6,9 con deuteranopia, los dos
+ * por debajo del umbral. Es un fallo **entre secciones distintas**, que es
+ * exactamente el caso que el faceteado resuelve —hueco visible, cabecera con el
+ * nombre del bloque y rótulo por celda— y el remedio que la propia habilidad
+ * `dataviz` prescribe para los fallos de «todos contra todos». Entre sí, que es
+ * el par que de verdad compite, cian y violeta están a ΔE 15,0 con deuteranopia.
+ */
+export const BLOCK_HUES = {
+	// Solo se usa si algún día la cartera principal se queda sin objetivos; con
+	// objetivos, este bloque lleva la escala divergente y no un tono plano.
+	core: '#059669',
+	stocks: '#0891b2',
+	satellite: '#7c3aed'
+} as const;
+
+/**
+ * Relleno de un activo sin objetivo **dentro de un bloque que sí se mide**.
+ *
+ * Este sí es una anomalía de verdad y merece verse apagado: un activo de la
+ * cartera principal al que no se le ha puesto peso objetivo. Va en pizarra y
+ * **rayado** con `UNTARGETED_STRIPE`, porque aquí la textura sí hace falta: es el
+ * único caso en que una celda sin escala convive con celdas de la escala dentro
+ * del mismo bloque, sin hueco ni cabecera que las separe.
+ *
+ * No confundir con `BLOCK_HUES`: eso es un bloque entero que no se mide, y es lo
+ * normal. Esto es un hueco en los datos de un bloque que sí se mide, y es raro.
+ */
+export const UNTARGETED_FILL = '#3b4250';
+export const UNTARGETED_STRIPE = '#5a6273';
 
 /** Cuántas porciones se muestran antes de agrupar el resto en «Otros». */
 export const MAX_CHART_SLICES = 6;

@@ -385,7 +385,10 @@
               <h4 class="chart-label">{$LL.treemap.title()}</h4>
               <DeviationTreemap showTitle={false} bind:expanded={deviationExpanded} />
             </div>
-            <div class="chart-box map-box" class:is-wide={lookThroughExpanded}>
+            <div
+              class="chart-box map-box is-lookthrough"
+              class:is-wide={lookThroughExpanded}
+            >
               <h4 class="chart-label">{$LL.lookthrough.title()}</h4>
               <LookThroughMap showTitle={false} bind:expanded={lookThroughExpanded} />
             </div>
@@ -770,6 +773,18 @@
     .chart-box {
       padding: 0;
       align-items: flex-start;
+    }
+    /* El mapa del subyacente ocupa dos de los tres carriles ya sin ampliar.
+       Es el que tiene densidad —nueve regiones, once sectores— y en un solo
+       carril dejaba la tercera columna de su fila completamente vacía: unos
+       400 px de hueco muerto justo debajo de los donuts. En dos carriles pasa
+       de 400 a 840 px, y como el mapa deriva todo de `contentWidth`, eso solo
+       ya le enciende los nombres de región dentro de los rectángulos.
+
+       El `:not(.is-wide)` es para que ampliar siga ganando: son la misma
+       propiedad y ampliado tiene que llegar a los tres carriles. */
+    .map-box.is-lookthrough:not(.is-wide) {
+      grid-column: span 2;
     }
     /* Un mapa ampliado ocupa la fila entera: los tres carriles. Es lo que
        convierte «ampliar» en algo útil sin abrir ningún modal. */
