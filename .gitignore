@@ -48,6 +48,9 @@ vite.config.ts.timestamp-*
 # llegaría a evaluarse nunca.
 /training/*
 !/training/README.md
+# Vestigio: `training_csv/` ya no existe —la purga del historial se lo llevó— y
+# ninguna suite lo lee. Se mantiene la regla a propósito, como red: si alguien
+# recrea ese directorio con exports reales, sigue ignorado desde el primer día.
 /training_csv/
 
 # Directorios de trabajo temporales

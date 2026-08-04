@@ -16,7 +16,7 @@ Las dos suites que los consumen comprueban primero si existen y se omiten si no:
 | Suite | Qué lee | Si falta |
 |---|---|---|
 | `src/lib/importers/parsers.test.ts` | `training/Account.csv` y `training/interactive_brokers_activity.csv` | Omite esos dos casos con un aviso; el resto de la suite (todos los detectores con fixtures en línea) sigue ejecutándose |
-| `src/lib/importers/training_csv.test.ts` | Todos los ficheros de `training_csv/` (directorio aparte, también ignorado) | Omite la suite entera con un aviso |
+| `src/lib/importers/training_csv.test.ts` | Todos los `*.csv` de **este** directorio, en dry-run | Omite la suite entera con un aviso |
 
 Es decir: **un clon limpio pasa `npm test` sin tener nada aquí.** Estos fixtures
 sólo añaden cobertura extra sobre ficheros reales.
@@ -24,8 +24,8 @@ sólo añaden cobertura extra sobre ficheros reales.
 ## Si quieres ejecutarlos con tus propios datos
 
 1. Exporta el CSV desde tu bróker (historial de transacciones o estado de cuenta).
-2. Déjalo en este directorio con el nombre que espera el test, o en `training_csv/`
-   para el dry-run genérico.
+2. Déjalo **en este directorio**. Con el nombre exacto si quieres activar uno de
+   los dos casos con nombre; con cualquier nombre para entrar en el dry-run.
 3. `npm test`.
 
 Nombres que buscan los tests hoy:
@@ -33,8 +33,13 @@ Nombres que buscan los tests hoy:
 ```
 training/Account.csv                         estado de cuenta de DEGIRO
 training/interactive_brokers_activity.csv    activity statement de IBKR
-training_csv/*.csv                           cualquier CSV, dry-run genérico
+training/*.csv                               cualquier CSV, dry-run genérico
 ```
+
+> El dry-run apuntaba a un directorio `training_csv/` que la purga del historial
+> eliminó, así que se saltaba **siempre** — cero ficheros leídos y con el mismo
+> aspecto verde que si comprobara algo. Ahora lee este directorio. El `skip`
+> cuando no existe sigue siendo necesario: en un clon limpio esta carpeta no está.
 
 ## Formatos soportados
 
