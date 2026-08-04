@@ -1,0 +1,74 @@
+name: CI
+
+# Se ejecuta en los dos momentos que sirven para algo distinto:
+#   - `pull_request`: avisa **antes** de que nada llegue a `main`.
+#   - `push` a `main`: red de seguridad para los merges directos.
+#
+# Existe por un motivo concreto: hasta ahora estas comprobaciones se lanzaban a
+# mano, y eso falla de dos maneras. Una, que alguien no se acuerde. Y otra que ya
+# ha pasado: validar un build leyendo su salida con `grep` en vez de su código de
+# salida — `grep -c 'rror:'` no casa con `error during build:` y daba verde con el
+# build roto. Un runner no interpreta texto, mira el código de salida.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Un push nuevo sobre la misma rama cancela el anterior: no tiene sentido pagar
+# minutos por verificar un commit que ya está superado.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verificar:
+    name: Tipos, tests, build y auditoría SEO
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v5
+
+      # `node-version-file` en vez de una versión escrita aquí: así la de CI y la
+      # de la máquina de desarrollo salen del mismo sitio y no pueden divergir sin
+      # que se note.
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      # `npm ci` y no `npm install`: respeta el lockfile en vez de reescribirlo. Y
+      # eso importa aquí — un `npm install` local movió cinco dependencias
+      # transitivas de paso, escondiendo un cambio de dependencias dentro de un
+      # commit de interfaz.
+      - name: Instalar dependencias
+        run: npm ci
+
+      # ⚠️ Imprescindible, y está documentado en el README: SvelteKit genera los
+      # tipos de `$env/static/public` a partir de las variables que existen, así
+      # que sin este fichero `npm run check` falla con
+      # `Module '"$env/static/public"' has no exported member 'PUBLIC_USE_FIREBASE'`.
+      # Con los valores de ejemplo basta: ninguna comprobación necesita secretos
+      # reales.
+      - name: Preparar entorno de ejemplo
+        run: cp .env.example .env
+
+      - name: Comprobación de tipos
+        run: npm run check
+
+      - name: Tests
+        run: npm test
+
+      # `build` lanza antes su `prebuild`, que regenera iconos, imágenes OG y los
+      # llms.txt. Que eso funcione en una máquina limpia es parte de lo que se
+      # comprueba.
+      - name: Build de producción
+        run: npm run build
+
+      # Necesita el build hecho: audita el HTML ya generado. Sólo falla por
+      # errores; los avisos no rompen.
+      - name: Auditoría SEO del HTML construido
+        run: npm run seo:audit
