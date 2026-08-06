@@ -17,6 +17,29 @@ import { abrirDashboard, sembrarCartera, SIN_OBJETIVOS } from './util/cartera';
 test.describe.configure({ mode: 'serial' });
 
 test.describe('Sin conexión', () => {
+	/**
+	 * Devolver la red **y desmontar el service worker** al terminar.
+	 *
+	 * ⚠️ Sin esto, el worker de Playwright no cerraba y había que matarlo a la fuerza —«did
+	 * not exit within 300000ms»—, con lo que la tanda completa pasaba de un minuto a cinco
+	 * y medio. Un worker instalado con peticiones a medias mantiene el contexto vivo. Y de
+	 * paso deja el origen limpio para los demás specs, que no esperan encontrarse un
+	 * service worker de una prueba anterior.
+	 */
+	test.afterEach(async ({ page, context }) => {
+		await context.setOffline(false);
+		await page
+			.evaluate(async () => {
+				const registros = await navigator.serviceWorker.getRegistrations();
+				await Promise.all(registros.map((r) => r.unregister()));
+				const nombres = await caches.keys();
+				await Promise.all(nombres.map((n) => caches.delete(n)));
+			})
+			.catch(() => {
+				// Si la página ya no está viva, no hay nada que limpiar.
+			});
+	});
+
 	test('el dashboard arranca de la copia local en vez de servir la página offline', async ({
 		page,
 		context
