@@ -7,6 +7,10 @@ node_modules
 .wrangler
 /.svelte-kit
 /build
+# El service worker de desarrollo que genera @vite-pwa/sveltekit con
+# `devOptions.enabled: true`. Aparece en cada `npm run dev` y en `vite preview`, y
+# no estaba ignorado: output generado a un paso de colarse en un repo público.
+/dev-dist
 
 # OS
 .DS_Store
