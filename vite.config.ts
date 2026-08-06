@@ -95,6 +95,20 @@ export default defineConfig({
 				],
 				globIgnores: ['server/**'],
 				modifyURLPrefix: { 'client/': '/' },
+				/**
+				 * ⚠️ **`?v=` tiene que ignorarse o el logo no existe sin red.**
+				 *
+				 * Cinco componentes piden `/logo.png?v=2` —un rompecachés a mano anterior al
+				 * service worker— y en el precache la entrada es `/logo.png`. Workbox solo
+				 * ignora `utm_*` y `fbclid` por defecto, así que el `?v=2` no casaba con nada y
+				 * la única petición que fallaba sin red en producción era el logo de la
+				 * cabecera. Se vio en el sitio real, no en `vite preview`: el spec de offline
+				 * comprobaba que la app arranca, no que sus imágenes carguen.
+				 *
+				 * Se ignora el parámetro en vez de quitar el `?v=2` de los cinco sitios porque
+				 * ese rompecachés sigue haciendo su trabajo para quien no tenga service worker.
+				 */
+				ignoreURLParametersMatching: [/^utm_/, /^fbclid$/, /^v$/],
 				// Fallback offline. Aquí había `navigateFallback: '/offline.html'` y no
 				// funcionaba por dos razones independientes:
 				//
