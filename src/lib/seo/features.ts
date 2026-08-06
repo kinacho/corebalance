@@ -6,8 +6,17 @@ import type { Locales } from '$lib/i18n/i18n-types';
  * preguntas concretas ("¿app que importe el CSV de DEGIRO?", "¿tracker con
  * cuentas remuneradas?"), y este campo es el sitio canónico donde declararlas.
  *
- * ⚠️ Cada entrada afirma algo verificable en el código. Al añadir una feature
- * nueva a la app, añadirla aquí y en las plantillas de `src/content/llms/`.
+ * ⚠️ Cada entrada afirma algo **verificable ejecutando la app**, no solo presente en
+ * el código. La distinción no es retórica y tiene un caso que la demuestra: «PWA
+ * instalable con soporte offline» llevaba meses aquí siendo falsa. El código existía
+ * —configuración del plugin, página offline, manifest— pero el service worker **nunca
+ * llegaba a registrarse en producción**, así que no había instalación ni modo offline
+ * para ningún usuario, y ni un error en consola que lo delatara. Se arregló el
+ * 6-ago-2026 y hoy la entrada es cierta.
+ *
+ * Las 22 entradas se verificaron una por una ese mismo día. Al añadir una feature
+ * nueva: añadirla aquí y en las plantillas de `src/content/llms/`, y comprobarla en la
+ * app, no en el código.
  */
 export const FEATURE_LIST: Record<Locales, string[]> = {
 	es: [
