@@ -1,0 +1,65 @@
+name: Comprobación de producción
+
+# Existe porque CI puede estar entero en verde y el sitio caído: `ci.yml` comprueba
+# tipos, tests, build y SEO sobre el HTML *construido*, y ni una de esas cosas abre
+# la URL pública. El 6-ago-2026 `corebalance.app` sirvió la página «Sin conexión» a
+# usuarios con conexión perfecta —los nameservers del registrador rompieron la
+# validación DNSSEC durante unos minutos— y ninguna guardia del repo podía verlo.
+#
+# Se dispara en tres momentos, y los tres hacen falta por razones distintas:
+on:
+  # 1. Tras cada despliegue de producción. La integración de Git de Vercel crea un
+  #    deployment de GitHub por commit, así que este evento llega cuando el
+  #    despliegue ya está listo. Es el momento de comprobar lo que el build no
+  #    puede: que el dominio resuelve, que `/offline` se sirve (ese rewrite es de
+  #    Vercel y `vite preview` no lo aplica) y que producción sirve *esta* versión.
+  deployment_status:
+
+  # 2. Cada seis horas, y es el disparador que de verdad habría cazado el incidente:
+  #    el DNS se rompió solo, sin que nadie desplegara nada. Un fallo de DNSSEC, un
+  #    dominio caducado o una caída del registrador no avisan con un commit.
+  schedule:
+    - cron: '23 */6 * * *'
+
+  # 3. A mano, para comprobar después de tocar el DNS o el `vercel.json`.
+  workflow_dispatch:
+    inputs:
+      base:
+        description: 'URL a comprobar (por defecto https://corebalance.app)'
+        required: false
+        default: 'https://corebalance.app'
+
+permissions:
+  contents: read
+
+jobs:
+  comprobar:
+    name: DNS, rutas, service worker y versión desplegada
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    # `deployment_status` llega también en previews y en estados que no son «listo».
+    # Sin este filtro el job correría varias veces por commit y comprobaría el
+    # dominio de producción a cuenta de un preview, que no tiene ningún sentido.
+    # Vercel escribe el nombre del entorno con mayúscula unas veces y sin ella
+    # otras, así que se aceptan las dos formas en vez de fiarse de una.
+    if: >-
+      github.event_name != 'deployment_status' ||
+      (github.event.deployment_status.state == 'success' &&
+       contains(fromJSON('["Production","production"]'), github.event.deployment_status.environment))
+
+    steps:
+      # En `deployment_status` el checkout se sitúa en el commit desplegado, que es
+      # justo lo que hace falta: la comprobación de versión compara el
+      # `package.json` de ese commit con el `softwareVersion` que sirve la landing.
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+
+      # Sin `npm ci` a propósito: el script sólo usa builtins de node y `fetch`, así
+      # que instalar dependencias serían dos minutos para no usar ninguna. Y esta
+      # comprobación tiene que poder correr cuando el repo esté en cualquier estado.
+      - name: Comprobar producción
+        run: npm run smoke:prod -- --base "${{ github.event.inputs.base || 'https://corebalance.app' }}"

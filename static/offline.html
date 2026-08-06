@@ -110,7 +110,15 @@
         }
     </style>
 </head>
-<body>
+<!--
+    `data-offline-fallback` es la marca por la que `scripts/prod-smoke.mjs`
+    reconoce esta página en producción, y sirve para dos cosas opuestas:
+    comprobar que `/offline` se sirve (el rewrite de `vercel.json`, que
+    `vite preview` no aplica) y comprobar que **no** se está sirviendo en `/` ni
+    en `/dashboard`. Se comprueba por atributo y no por el texto visible porque
+    el copy de abajo ya se reescribió una vez.
+-->
+<body data-offline-fallback>
     <div class="glow"></div>
 
     <div class="card">
@@ -126,10 +134,20 @@
             </svg>
         </div>
 
+        <!--
+            ⚠️ Este texto **no** puede afirmar que el problema es la red del
+            usuario, porque desde aquí no se sabe. Esta página la sirve el
+            service worker cuando la navegación falla, y falla igual sin wifi
+            que cuando el sitio es inalcanzable: el 6-ago-2026 los nameservers
+            del registrador rompieron la validación DNSSEC durante unos minutos
+            y todo el que entró leyó «Comprueba tu red» mientras su red estaba
+            perfecta. Decir las dos posibilidades cuesta una línea.
+        -->
         <h1>Sin conexión</h1>
         <p>
-            No hay conexión a Internet.<br />
-            Comprueba tu red y vuelve a intentarlo.
+            No hemos podido conectar con CoreBalance. Puede ser tu red o puede
+            ser el sitio: desde aquí no se distinguen.<br />
+            Tus datos siguen guardados en este dispositivo.
         </p>
 
         <button onclick="window.location.reload()">
