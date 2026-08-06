@@ -35,18 +35,24 @@ describe('Dry-run de los CSV reales de training/', () => {
 		: [];
 	const hayFixtures = files.length > 0;
 
-	it('hay fixtures de bróker en training/ o la suite se omite', () => {
-		if (!hayFixtures) {
-			console.warn(
-				'[training_csv.test] Sin CSVs en training/ — se omite el dry-run. ' +
-					'Es lo normal fuera de la máquina del autor: son exports reales con datos personales.'
-			);
-		}
-		// No se falla: los fixtures son opcionales y un clon limpio tiene que pasar.
-		expect(true).toBe(true);
-	});
+	if (!hayFixtures) {
+		/**
+		 * ⚠️ **Se omite con un test marcado como omitido, no con uno que pasa.**
+		 *
+		 * Antes esta rama emitía un `console.warn` y un `expect(true).toBe(true)`: en el
+		 * informe se veía una línea verde **idéntica** a la de haber comprobado los nueve
+		 * CSVs, y el aviso se perdía en stderr. Un `training/` vaciado por accidente en la
+		 * máquina del autor pasaba exactamente igual que un clon limpio.
+		 */
+		it.skip('omitido: no hay CSVs en training/ (lo normal fuera de la máquina del autor)', () => {});
+		return;
+	}
 
-	if (!hayFixtures) return;
+	it(`hay ${files.length} CSV de bróker que ejercitar`, () => {
+		// El número va en el nombre del test a propósito: el informe dice cuántos
+		// ficheros se han leído de verdad.
+		expect(files.length).toBeGreaterThan(0);
+	});
 
 	for (const file of files) {
 		it(`should parse ${file} without throwing`, () => {
@@ -74,10 +80,23 @@ describe('Dry-run de los CSV reales de training/', () => {
 				expect(hasIdentifier).toBe(true);
 			}
 
-			// Diagnóstico en consola (no falla, solo informa)
-			if (result!.positions.length === 0) {
-				console.warn(`[${file}] Sin posiciones detectadas. Broker: ${result!.broker.name}, Skipped: ${result!.skippedRows}`);
-			}
+			/**
+			 * ⚠️ **Cero posiciones falla.** Antes solo escribía un `console.warn`, así que
+			 * un detector que dejara de reconocer su formato —o un cambio en
+			 * `csv-utils` que rompiera la detección de cabeceras— seguía dando verde
+			 * mientras importaba exactamente nada. Es el modo de fallo que de verdad
+			 * importa aquí: el parser no revienta, simplemente no encuentra nada.
+			 *
+			 * Los nueve fixtures actuales producen posiciones. Si algún día se añade un
+			 * export que legítimamente no tenga ninguna —un extracto de cuenta con solo
+			 * movimientos de efectivo—, no pertenece a este dry-run: va a
+			 * `parsers.test.ts` con su propio caso y su propia expectativa.
+			 */
+			expect(
+				result!.positions.length,
+				`«${file}» no ha producido ni una posición. Bróker detectado: ` +
+					`${result!.broker.name}, filas descartadas: ${result!.skippedRows}`
+			).toBeGreaterThan(0);
 		});
 	}
 });
