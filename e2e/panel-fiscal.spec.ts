@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './util/test-base';
 import { abrirDashboard, sembrarCartera, FONDOS_DESVIADOS } from './util/cartera';
 
 /**
