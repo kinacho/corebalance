@@ -84,6 +84,10 @@ export default defineConfig({
 					// de glifos que esta app, en español e inglés, no pinta nunca.
 					'client/fonts/*-latin-*.woff2',
 					'client/offline.html',
+					// El logo entra porque ahora el dashboard **sí** funciona sin red, y son
+					// 20 KB: sin él, la cabecera de una app que arranca offline sale con el
+					// hueco de una imagen rota.
+					'client/logo.{png,webp}',
 					// El webmanifest **no** se lista: el plugin ya lo mete en el precache por
 					// su cuenta, como `manifest.webmanifest` sin barra inicial, y añadirlo
 					// aquí lo dejaba dos veces (la copia con barra y la suya).
@@ -121,6 +125,31 @@ export default defineConfig({
 				// sin barra eran nueve. Un comentario huérfano miente con más
 				// credibilidad que ningún otro sitio.)
 				runtimeCaching: [
+					{
+						/**
+						 * ⚠️ **El payload de datos del dashboard, sin el cual el esqueleto
+						 * cacheado no sirve para nada.**
+						 *
+						 * Al hidratar, el cliente de SvelteKit pide `/dashboard/__data.json`
+						 * para los `load` del servidor. Sin red esa petición falla y el router
+						 * **cae en su página de error**: «500 Ha ocurrido un error». Es decir,
+						 * cachear el esqueleto por sí solo dejaba el dashboard offline igual de
+						 * inútil que antes, solo con otro mensaje.
+						 *
+						 * Lo cazó el spec `e2e/offline.spec.ts` a la primera ejecución, un día
+						 * después de dar por arreglado lo del esqueleto. Ningún test unitario
+						 * puede ver esto: hace falta un service worker de verdad y una red
+						 * caída de verdad.
+						 */
+						urlPattern: ({ url }) =>
+							url.pathname.startsWith('/dashboard') && url.pathname.endsWith('__data.json'),
+						handler: 'NetworkFirst',
+						options: {
+							cacheName: 'corebalance-dashboard-data',
+							networkTimeoutSeconds: 3,
+							expiration: { maxEntries: 4 }
+						}
+					},
 					{
 						// ⚠️ `/dashboard` sin red servía la página offline **teniendo la
 						// cartera entera en local**, que es justo lo contrario de lo que la
