@@ -247,23 +247,31 @@ export function parseNumber(value: string): number {
 	// Detectar formato: si hay coma después del último punto, es europeo
 	const lastComma = cleaned.lastIndexOf(',');
 	const lastDot = cleaned.lastIndexOf('.');
-	
-	if (lastComma > lastDot) {
-		// Formato europeo: 1.234,56 → quitar puntos, reemplazar coma por punto
+	const puntos = (cleaned.match(/\./g) || []).length;
+
+	if (lastComma === -1 && puntos > 1) {
+		// Solo puntos y más de uno: son separadores de miles europeos («12.345.678»).
+		// Con un solo punto es ambiguo («12.345» puede ser decimal americano) y se deja como
+		// está, que es lo que hace el resto de la app con los precios de Yahoo.
+		cleaned = cleaned.replace(/\./g, '');
+	} else if (lastComma > lastDot) {
+		/**
+		 * Formato europeo: 1.234,56 → quitar puntos, reemplazar coma por punto.
+		 *
+		 * ⚠️ Esta rama atrapa **también** el caso «solo coma, sin punto», porque `lastDot`
+		 * vale −1 y cualquier posición de coma es mayor. Aquí había debajo una rama para ese
+		 * caso con la heurística «más de dos cifras tras la coma son miles americanos», y era
+		 * **inalcanzable**. Se ha borrado en lugar de rescatarla, y el motivo importa: al
+		 * hacerla alcanzable, **tres tests con CSV reales de bróker fallaron**. En los
+		 * ficheros que esta app importa, «1,835» son 1,835 participaciones —los títulos se
+		 * expresan con tres o más decimales— y no mil ochocientos treinta y cinco. La coma
+		 * sola siempre es decimal europeo, y el caso americano llega con punto («1,234.56»),
+		 * que sí distingue la rama de abajo.
+		 */
 		cleaned = cleaned.replace(/\./g, '').replace(',', '.');
 	} else if (lastDot > lastComma) {
 		// Formato americano: 1,234.56 → quitar comas
 		cleaned = cleaned.replace(/,/g, '');
-	} else if (lastComma !== -1 && lastDot === -1) {
-		// Solo coma, sin punto: podría ser "1234,56" (europeo) o "1,234" (americano con miles)
-		// Heurística: si hay exactamente 2 dígitos tras la coma, es decimal europeo
-		const afterComma = cleaned.substring(lastComma + 1);
-		if (afterComma.length <= 2) {
-			cleaned = cleaned.replace(',', '.');
-		} else {
-			// Separador de miles americano (ej: "1,234")
-			cleaned = cleaned.replace(',', '');
-		}
 	}
 	
 	const result = parseFloat(cleaned);
@@ -345,9 +353,13 @@ export function normalizeCurrency(value: string): string | null {
 	const v = value.trim().toUpperCase();
 	if (!v) return null;
 	if (/^[A-Z]{3}$/.test(v)) return v;
-	if (/€|eur/.test(v)) return 'EUR';
-	if (/\$|usd/.test(v)) return 'USD';
-	if (/£|gbp/.test(v)) return 'GBP';
+	// ⚠️ Las alternativas de texto iban en minúscula (`eur`, `usd`, `gbp`) sobre un valor
+	// que ya se ha pasado a mayúsculas, así que **no podían casar nunca**: solo funcionaban
+	// los símbolos. «Euro» o «Dólares USD» se devolvían tal cual, o sea un código de divisa
+	// inválido colándose en la cartera.
+	if (/€|EUR/.test(v)) return 'EUR';
+	if (/\$|USD/.test(v)) return 'USD';
+	if (/£|GBP/.test(v)) return 'GBP';
 	return v;
 }
 
