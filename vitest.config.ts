@@ -48,7 +48,8 @@ export default defineConfig({
 			thresholds: {
 				'src/lib/fiscal.ts': { statements: 96, branches: 95, functions: 92 },
 				'src/lib/traspaso.ts': { statements: 96, branches: 83, functions: 100 },
-				'src/lib/rebalance.ts': { statements: 97, branches: 86, functions: 100 },
+				// Subido el 6-ago-2026 al matar los mutantes del reparto: 97,19/86,25 → 100/97,22.
+				'src/lib/rebalance.ts': { statements: 100, branches: 97, functions: 100 },
 				'src/lib/lookthrough.ts': { statements: 96, branches: 84, functions: 100 },
 				'src/lib/treemap.ts': { statements: 92, branches: 91, functions: 88 },
 				'src/lib/instrument-type.ts': { statements: 90, branches: 92, functions: 100 }

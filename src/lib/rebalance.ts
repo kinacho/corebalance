@@ -68,7 +68,11 @@ export function calculatePortfolioState(
 			dailyChangePercent,
 			marketState: pData?.marketState,
 			lastUpdate: pData?.lastUpdate,
-			ytdChangePercent: asset.manualInterestRate !== undefined ? (asset.manualInterestRate / 1) : (pData?.ytdChangePercent !== undefined ? (pData.ytdChangePercent / 100) : undefined),
+			// Un tipo manual ya viene en tanto por uno (0,0365 = 3,65 %) y **no** se
+			// reescala; los porcentajes de Yahoo llegan como 3,65 y sí. Aquí había un
+			// `/ 1` que documentaba eso dividiendo por uno: además de ruido, era un mutante
+			// imposible de matar, porque `* 1` y `/ 1` son lo mismo.
+			ytdChangePercent: asset.manualInterestRate !== undefined ? asset.manualInterestRate : (pData?.ytdChangePercent !== undefined ? (pData.ytdChangePercent / 100) : undefined),
 			mtdChangePercent: pData?.mtdChangePercent !== undefined ? (pData.mtdChangePercent / 100) : undefined,
 			oneMonthChangePercent: pData?.oneMonthChangePercent !== undefined ? (pData.oneMonthChangePercent / 100) : undefined,
 			sparkline: pData?.sparkline
@@ -153,6 +157,39 @@ export function calculatePortfolioState(
 }
 
 /**
+ * De importe a asignación: los tres pasos que hacen falta para convertir euros en una
+ * orden de compra, en un solo sitio.
+ *
+ * ⚠️ Estaban escritos **dos veces** —una en la rama con déficit y otra en la de reparto
+ * por pesos— y esa duplicación tenía una consecuencia medible: el mutation testing
+ * encontraba los *mismos* mutantes vivos en las dos copias (18 de 47 supervivientes),
+ * porque cada test que probaba un camino dejaba el otro sin comprobar. Con una sola
+ * versión, los casos de divisa y de redondeo cubren los dos.
+ *
+ * El tipo de cambio entra aquí porque `unitPrice` está en la divisa del activo y el
+ * importe en la divisa base: dividir por el precio sin convertir compra un 8 % más de
+ * títulos de los que caben en el dinero aportado, con EURUSD a 1,08.
+ */
+function asignacionDe(
+	position: PortfolioPosition,
+	amountToInvest: number,
+	newTotalCapital: number,
+	prices: Record<string, PriceData>
+): RebalanceAllocation {
+	const price = position.unitPrice;
+	const fxRate = prices[position.asset.ticker]?.fxRate ?? 1;
+	const sharesToBuy = price > 0 && fxRate > 0 ? amountToInvest / (price * fxRate) : 0;
+	const newValue = position.totalValue + amountToInvest;
+
+	return {
+		asset: position.asset,
+		amountToInvest: Math.round(amountToInvest * 100) / 100,
+		sharesToBuy: Math.round(sharesToBuy * 1000) / 1000, // 3 decimales para fondos
+		resultingWeight: newTotalCapital > 0 ? newValue / newTotalCapital : 0
+	};
+}
+
+/**
  * Calcula cómo distribuir una nueva aportación entre los activos
  * para acercarse lo máximo posible a la distribución objetivo.
  *
@@ -207,21 +244,9 @@ export function calculateRebalance(
 		// Si el déficit total es mayor, prorrateamos la aportación
 		const factor = totalDeficit > contribution ? (contribution / totalDeficit) : 1;
 
-		allocations = deficits.map(({ position, deficit }) => {
-			const amountToInvest = deficit * factor;
-			const price = position.unitPrice;
-			const fxRate = prices[position.asset.ticker]?.fxRate ?? 1;
-			const sharesToBuy = (price > 0 && fxRate > 0) ? amountToInvest / (price * fxRate) : 0;
-			const newValue = position.totalValue + amountToInvest;
-			const resultingWeight = newTotalCapital > 0 ? newValue / newTotalCapital : 0;
-
-			return {
-				asset: position.asset,
-				amountToInvest: Math.round(amountToInvest * 100) / 100,
-				sharesToBuy: Math.round(sharesToBuy * 1000) / 1000, // 3 decimales para fondos
-				resultingWeight
-			};
-		});
+		allocations = deficits.map(({ position, deficit }) =>
+			asignacionDe(position, deficit * factor, newTotalCapital, prices)
+		);
 	} else {
 		// Caso especial: no hay déficits
 		// Distribuir según pesos objetivo, pero solo entre los que tienen precio > 0
@@ -229,24 +254,12 @@ export function calculateRebalance(
 		const totalValidWeight = validPositions.reduce((sum, p) => sum + p.asset.targetWeight, 0);
 
 		allocations = state.positions.map((pos) => {
-			let amountToInvest = 0;
-			if (pos.unitPrice > 0 && totalValidWeight > 0) {
-				const normalizedWeight = pos.asset.targetWeight / totalValidWeight;
-				amountToInvest = contribution * normalizedWeight;
-			}
-			
-			const price = pos.unitPrice;
-			const fxRate = prices[pos.asset.ticker]?.fxRate ?? 1;
-			const sharesToBuy = (price > 0 && fxRate > 0) ? amountToInvest / (price * fxRate) : 0;
-			const newValue = pos.totalValue + amountToInvest;
-			const resultingWeight = newTotalCapital > 0 ? newValue / newTotalCapital : 0;
+			const amountToInvest =
+				pos.unitPrice > 0 && totalValidWeight > 0
+					? contribution * (pos.asset.targetWeight / totalValidWeight)
+					: 0;
 
-			return {
-				asset: pos.asset,
-				amountToInvest: Math.round(amountToInvest * 100) / 100,
-				sharesToBuy: Math.round(sharesToBuy * 1000) / 1000,
-				resultingWeight
-			};
+			return asignacionDe(pos, amountToInvest, newTotalCapital, prices);
 		});
 	}
 
