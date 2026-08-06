@@ -39,7 +39,17 @@ export default defineConfig({
 			// con 200 que además hacía creer que la PWA estaba registrada.
 			injectRegister: false,
 			devOptions: {
-				enabled: true
+				enabled: true,
+				// ⚠️ En desarrollo el `globDirectory` de Workbox es `dev-dist/`, no el output
+				// del build, y ahí no hay nada que precachear **por diseño**: el service
+				// worker de dev existe para poder probar el registro, no para cachear. Así
+				// que cada patrón de `globPatterns` imprimía un «doesn't match any files» en
+				// cada arranque de `npm run dev` — cinco avisos por proceso desde que la
+				// lista es explícita, uno cuando era un solo patrón de brocha gorda.
+				//
+				// Es ruido sobre un directorio que no es el que se despliega, y silenciarlo
+				// no tapa nada del build: los avisos de `npm run build` siguen saliendo.
+				suppressWarnings: true
 			},
 			// Usamos modifyURLPrefix para que @vite-pwa/sveltekit salte su buildGlobPatterns
 			// interna (que siempre inyecta prerendered/**). Con este flag activo, el plugin
