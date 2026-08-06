@@ -105,6 +105,11 @@ Los valores sólo hacen falta para funcionalidades concretas: `KV_REST_API_URL` 
 | `npm run build` | Build de producción (lanza antes `prebuild`: iconos, OG images y `llms.txt`) |
 | `npm run check` | `svelte-check` sobre todo el proyecto |
 | `npm test` | Tests unitarios (Vitest) |
+| `npm run test:coverage` | Los mismos tests más los umbrales de cobertura por fichero de los módulos que calculan dinero. **Es lo que ejecuta CI**, así que si esto pasa, el pipeline pasa |
+| `npm run test:e2e` | Tests de navegador (Playwright) sobre el build. Requiere `npm run build` antes |
+| `npm run test:quality` | Busca tests que no pueden fallar: tautologías y tests sin ninguna aserción |
+| `npm run docs:check` | Busca identificadores y rutas citados en `CLAUDE.md` que ya no existen en el código |
+| `npm run test:mutation` | Mutation testing sobre los seis módulos de dinero: muta el código y comprueba si algún test se queja. Tarda ~18 min y no es una puerta de CI, es una auditoría (semanal). Se ejecuta con `npx`, no es una dependencia |
 | `npm run seo:audit` | Audita el HTML construido: metadatos duplicados, `hreflang`, JSON-LD, imágenes OG y enlaces rotos (requiere `npm run build` antes) |
 | `npm run icons` | Regenera los iconos de `static/` desde los masters de `assets/` |
 | `npm run og` | Regenera todas las imágenes Open Graph |
@@ -122,6 +127,11 @@ Los *pull requests* también, con dos peticiones para que no acabemos perdiendo 
 
 - **Para una funcionalidad nueva, abre antes una issue** y hablamos del enfoque. Un PR grande sin acuerdo previo es difícil de aceptar.
 - Correcciones de fallos, documentación y traducciones: adelante directamente.
+
+Antes de abrir el PR, `npm run test:coverage` te dice si va a pasar CI. Dos cosas que sorprenden a quien no las espera:
+
+- Los seis módulos que calculan dinero (`fiscal`, `traspaso`, `rebalance`, `lookthrough`, `treemap`, `instrument-type`) tienen **umbrales de cobertura por fichero**, puestos a la medida del día en que se escribieron. Solo pueden subir: código nuevo sin probar ahí rompe el pipeline.
+- Un test **sin ninguna aserción, o con una tautología**, hace fallar la batería (`npm run test:quality`). Si de verdad no hay nada que afirmar, usa `it.skip` con el motivo: en el informe sale como omitido, que es la verdad.
 
 CoreBalance lo mantiene **una sola persona en su tiempo libre**. Leo todo, pero no hay compromiso de plazo de respuesta ni garantía de que una propuesta acabe integrándose.
 

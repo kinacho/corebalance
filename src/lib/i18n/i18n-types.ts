@@ -2353,7 +2353,7 @@ type RootTranslation = {
 		 */
 		footer_tagline: string
 		/**
-		 * v​1​.​1​2​.​0​ ​�​�
+		 * v​1​.​1​2​.​1​ ​�​�
 		 */
 		changelog_trigger: string
 		/**
@@ -3232,6 +3232,34 @@ type RootTranslation = {
 		 */
 		btn_understand: string
 		releases: {
+			v1_12_1: {
+				/**
+				 * 6​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
+				 */
+				date: string
+				/**
+				 * L​a​ ​a​p​p​ ​y​a​ ​f​u​n​c​i​o​n​a​ ​s​i​n​ ​c​o​n​e​x​i​ó​n
+				 */
+				badge: string
+				changes: {
+					/**
+					 * �​�​ ​*​*​E​l​ ​d​a​s​h​b​o​a​r​d​ ​a​r​r​a​n​c​a​ ​s​i​n​ ​c​o​n​e​x​i​ó​n​.​*​*​ ​T​u​s​ ​d​a​t​o​s​ ​y​a​ ​v​i​v​í​a​n​ ​e​n​ ​t​u​ ​n​a​v​e​g​a​d​o​r​,​ ​p​e​r​o​ ​l​a​ ​a​p​p​ ​n​o​ ​s​a​b​í​a​ ​u​s​a​r​l​o​s​ ​s​i​n​ ​r​e​d​:​ ​t​e​ ​e​n​s​e​ñ​a​b​a​ ​l​a​ ​p​á​g​i​n​a​ ​d​e​ ​«​s​i​n​ ​c​o​n​e​x​i​ó​n​»​ ​t​e​n​i​e​n​d​o​ ​l​a​ ​c​a​r​t​e​r​a​ ​e​n​t​e​r​a​ ​e​n​ ​t​u​ ​p​r​o​p​i​o​ ​d​i​s​p​o​s​i​t​i​v​o​.​ ​A​h​o​r​a​ ​e​n​t​r​a​ ​i​g​u​a​l​,​ ​c​o​n​ ​l​a​ ​ú​l​t​i​m​a​ ​c​o​t​i​z​a​c​i​ó​n​ ​q​u​e​ ​t​u​v​i​e​r​a​ ​g​u​a​r​d​a​d​a​.​ ​H​a​c​e​ ​f​a​l​t​a​ ​h​a​b​e​r​l​a​ ​a​b​i​e​r​t​o​ ​a​l​ ​m​e​n​o​s​ ​u​n​a​ ​v​e​z​ ​c​o​n​ ​c​o​n​e​x​i​ó​n​.
+					 */
+					'0': string
+					/**
+					 * �​�​ ​*​*​I​n​s​t​a​l​a​r​l​a​ ​c​o​m​o​ ​a​p​l​i​c​a​c​i​ó​n​ ​v​u​e​l​v​e​ ​a​ ​f​u​n​c​i​o​n​a​r​.​*​*​ ​E​l​ ​s​e​r​v​i​c​e​ ​w​o​r​k​e​r​ ​n​o​ ​l​l​e​g​a​b​a​ ​a​ ​r​e​g​i​s​t​r​a​r​s​e​ ​—​n​i​ ​i​n​s​t​a​l​a​c​i​ó​n​,​ ​n​i​ ​m​o​d​o​ ​s​i​n​ ​c​o​n​e​x​i​ó​n​,​ ​n​i​ ​a​c​t​u​a​l​i​z​a​c​i​o​n​e​s​—​ ​y​ ​l​l​e​v​a​b​a​ ​a​s​í​ ​d​e​s​d​e​ ​e​l​ ​p​r​i​n​c​i​p​i​o​ ​s​i​n​ ​d​a​r​ ​u​n​ ​s​o​l​o​ ​e​r​r​o​r​.​ ​Y​ ​c​u​a​n​d​o​ ​a​h​o​r​a​ ​h​a​y​ ​v​e​r​s​i​ó​n​ ​n​u​e​v​a​ ​t​e​ ​a​v​i​s​a​ ​y​ ​r​e​c​a​r​g​a​s​ ​t​ú​:​ ​n​u​n​c​a​ ​e​n​ ​m​i​t​a​d​ ​d​e​ ​u​n​a​ ​i​m​p​o​r​t​a​c​i​ó​n​ ​d​e​ ​C​S​V​.
+					 */
+					'1': string
+					/**
+					 * ⚡​ ​*​*​L​a​ ​p​r​i​m​e​r​a​ ​v​i​s​i​t​a​ ​d​e​s​c​a​r​g​a​ ​2​,​5​ ​M​B​ ​e​n​ ​v​e​z​ ​d​e​ ​1​5​,​7​.​*​*​ ​S​e​ ​e​s​t​a​b​a​n​ ​p​r​e​c​a​r​g​a​n​d​o​ ​t​a​m​b​i​é​n​ ​l​a​s​ ​t​a​r​j​e​t​a​s​ ​d​e​ ​v​i​s​t​a​ ​p​r​e​v​i​a​ ​q​u​e​ ​s​o​l​o​ ​m​i​r​a​n​ ​T​w​i​t​t​e​r​ ​y​ ​L​i​n​k​e​d​I​n​.
+					 */
+					'2': string
+					/**
+					 * �​�​️​ ​*​*​E​l​ ​m​a​p​a​ ​d​e​ ​d​e​s​v​i​a​c​i​ó​n​ ​s​e​ ​e​x​p​l​i​c​a​ ​m​e​j​o​r​ ​c​u​a​n​d​o​ ​a​ú​n​ ​n​o​ ​h​a​s​ ​f​i​j​a​d​o​ ​o​b​j​e​t​i​v​o​s​:​*​*​ ​y​a​ ​n​o​ ​d​i​c​e​ ​q​u​e​ ​e​l​ ​c​o​l​o​r​ ​s​e​a​ ​«​l​a​ ​d​i​s​t​a​n​c​i​a​ ​a​ ​t​u​ ​o​b​j​e​t​i​v​o​»​ ​c​u​a​n​d​o​ ​n​o​ ​h​a​y​ ​n​i​n​g​u​n​o​,​ ​y​ ​n​i​n​g​ú​n​ ​a​c​t​i​v​o​ ​a​p​a​r​e​c​e​ ​s​e​ñ​a​l​a​d​o​ ​c​o​m​o​ ​s​i​ ​l​e​ ​f​a​l​t​a​r​a​ ​a​l​g​o​ ​q​u​e​ ​n​a​d​i​e​ ​e​s​p​e​r​a​b​a​ ​d​e​ ​é​l​.
+					 */
+					'3': string
+				}
+			}
 			v1_12_0: {
 				/**
 				 * 3​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
@@ -6079,7 +6107,7 @@ export type TranslationFunctions = {
 		 */
 		footer_tagline: () => LocalizedString
 		/**
-		 * v1.12.0 🚀
+		 * v1.12.1 🚀
 		 */
 		changelog_trigger: () => LocalizedString
 		/**
@@ -6917,6 +6945,34 @@ export type TranslationFunctions = {
 		 */
 		btn_understand: () => LocalizedString
 		releases: {
+			v1_12_1: {
+				/**
+				 * 6 de Agosto, 2026
+				 */
+				date: () => LocalizedString
+				/**
+				 * La app ya funciona sin conexión
+				 */
+				badge: () => LocalizedString
+				changes: {
+					/**
+					 * 📴 **El dashboard arranca sin conexión.** Tus datos ya vivían en tu navegador, pero la app no sabía usarlos sin red: te enseñaba la página de «sin conexión» teniendo la cartera entera en tu propio dispositivo. Ahora entra igual, con la última cotización que tuviera guardada. Hace falta haberla abierto al menos una vez con conexión.
+					 */
+					'0': () => LocalizedString
+					/**
+					 * 📲 **Instalarla como aplicación vuelve a funcionar.** El service worker no llegaba a registrarse —ni instalación, ni modo sin conexión, ni actualizaciones— y llevaba así desde el principio sin dar un solo error. Y cuando ahora hay versión nueva te avisa y recargas tú: nunca en mitad de una importación de CSV.
+					 */
+					'1': () => LocalizedString
+					/**
+					 * ⚡ **La primera visita descarga 2,5 MB en vez de 15,7.** Se estaban precargando también las tarjetas de vista previa que solo miran Twitter y LinkedIn.
+					 */
+					'2': () => LocalizedString
+					/**
+					 * 🗺️ **El mapa de desviación se explica mejor cuando aún no has fijado objetivos:** ya no dice que el color sea «la distancia a tu objetivo» cuando no hay ninguno, y ningún activo aparece señalado como si le faltara algo que nadie esperaba de él.
+					 */
+					'3': () => LocalizedString
+				}
+			}
 			v1_12_0: {
 				/**
 				 * 3 de Agosto, 2026
