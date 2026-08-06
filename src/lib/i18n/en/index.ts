@@ -656,6 +656,10 @@ const en: Translation = {
     pwa_install_desc: 'Access faster as a native app.',
     pwa_install_btn: 'Install',
     pwa_install_later: 'Not now',
+    pwa_update_title: 'New version available',
+    pwa_update_desc: 'Reload whenever suits you. Your data is untouched.',
+    pwa_update_btn: 'Reload',
+    pwa_update_later: 'Later',
   },
   // Rebalance Panel
   rebalance_panel: {
@@ -722,6 +726,7 @@ const en: Translation = {
   treemap: {
     title: 'Deviation map',
     subtitle: 'Size is real weight; colour is distance from your target',
+    subtitle_no_targets: 'Size is real weight; colour is which portfolio it belongs to. Set targets to see deviations',
     empty: 'Add assets with holdings to see the map.',
     legend_on: 'On target',
     legend_over: 'Overweight',
@@ -729,6 +734,7 @@ const en: Translation = {
     legend_no_target: 'No target',
     tooltip: '{name}: {weight} of your portfolio, target {target}',
     tooltip_no_target: '{name}: {weight} of your portfolio, no target set',
+    tooltip_weight_only: '{name}: {weight} of your portfolio',
   },
   // Look-through exposure
   lookthrough: {

@@ -46,15 +46,24 @@ const DEFAULT_CHAR = 0.53; // minúsculas
  * tocar el DOM, así que se estima. La estimación decide **si merece la pena
  * dibujar**; el `clipPath` por celda de los componentes es la garantía dura de
  * que nada se salga aunque la estimación falle.
+ *
+ * ⚠️ `letterSpacing` va en **em**, como en CSS, y hay que pasarlo siempre que el
+ * `<text>` lleve `letter-spacing`. Es el mismo error que medir en minúsculas lo
+ * que el CSS pinta en mayúsculas, un nivel más fino: la cabecera de bloque del
+ * mapa de desviación lleva `letter-spacing: 0.04em` y se medía sin contarlo, así
+ * que la estimación se quedaba corta —un 4 % del cuerpo por carácter— justo en el
+ * rótulo más largo del mapa, el que ya iba al límite. La regla es la de siempre:
+ * el CSS no puede cambiar el ancho de lo que ya has medido.
  */
-export function approximateTextWidth(text: string, fontSize: number): number {
+export function approximateTextWidth(text: string, fontSize: number, letterSpacing = 0): number {
 	let units = 0;
 	for (const char of text) {
 		if (/[A-ZÁÉÍÓÚÑÜ0-9@%&WMÆ]/.test(char)) units += WIDE_CHARS;
 		else if (/[iljtfr.,;:'’!|¡  ]/.test(char)) units += NARROW_CHARS;
 		else units += DEFAULT_CHAR;
 	}
-	return units * fontSize;
+	// CSS añade el espaciado detrás de **cada** carácter, incluido el último.
+	return (units + letterSpacing * [...text].length) * fontSize;
 }
 
 /** Si un rótulo cabe en un ancho dado, con un margen a cada lado. */
@@ -62,9 +71,10 @@ export function labelFits(
 	text: string,
 	fontSize: number,
 	availableWidth: number,
-	padding = 2.8
+	padding = 2.8,
+	letterSpacing = 0
 ): boolean {
-	return approximateTextWidth(text, fontSize) <= availableWidth - padding;
+	return approximateTextWidth(text, fontSize, letterSpacing) <= availableWidth - padding;
 }
 
 /**
@@ -81,17 +91,18 @@ export function truncateToWidth(
 	text: string,
 	fontSize: number,
 	availableWidth: number,
-	padding = 2.8
+	padding = 2.8,
+	letterSpacing = 0
 ): string {
-	if (labelFits(text, fontSize, availableWidth, padding)) return text;
+	if (labelFits(text, fontSize, availableWidth, padding, letterSpacing)) return text;
 
 	const usable = availableWidth - padding;
-	const ellipsis = approximateTextWidth('…', fontSize);
+	const ellipsis = approximateTextWidth('…', fontSize, letterSpacing);
 
 	let kept = '';
 	for (const char of text) {
 		const candidate = kept + char;
-		if (approximateTextWidth(candidate, fontSize) + ellipsis > usable) break;
+		if (approximateTextWidth(candidate, fontSize, letterSpacing) + ellipsis > usable) break;
 		kept = candidate;
 	}
 

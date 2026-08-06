@@ -1,5 +1,5 @@
 {
-  "github": { "deploymentEnabled": false },
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [{ "source": "/offline", "destination": "/offline.html" }],
   "headers": [
     {

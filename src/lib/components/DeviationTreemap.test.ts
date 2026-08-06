@@ -23,6 +23,15 @@ setLocale('es');
  * decisión de qué dibujar vive en el componente.
  */
 
+/**
+ * El `letter-spacing` de `.block-label`, en em.
+ *
+ * Está escrito en tres sitios —el CSS del componente, su `BLOCK_LABEL_TRACKING` y
+ * aquí— porque el valor calculado no se puede leer antes de dibujar. Que estén de
+ * acuerdo es precisamente lo que comprueba el test de anchos de cabecera.
+ */
+const BLOCK_LABEL_TRACKING = 0.04;
+
 function makePosition(
 	ticker: string,
 	name: string,
@@ -123,6 +132,21 @@ function resolveFill(container: HTMLElement, fill: string): string[] {
 	const colors = [...pattern!.querySelectorAll('rect')].map((r) => r.getAttribute('fill') ?? '');
 	expect(colors.length, 'el patrón no pinta nada').toBeGreaterThan(0);
 	return colors;
+}
+
+/**
+ * El rectángulo de un `clipPath` por su id, buscando **dentro** de este SVG.
+ *
+ * ⚠️ No vale `svg.querySelector('#id rect')`: los ids del mapa son fijos por bloque,
+ * así que un test que renderiza varias veces deja varios elementos con el mismo id
+ * en el documento, y el selector por id resuelve contra el mapa de ids del
+ * documento —o sea, contra el primer render— y luego devuelve `null` al comprobar
+ * que no es descendiente de este SVG. Un `null` que se lee como «no hay recorte».
+ */
+function clipRectById(svg: Element, id: string): Element | null {
+	if (!id) return null;
+	const clip = [...svg.querySelectorAll('defs *')].find((el) => el.getAttribute('id') === id);
+	return clip?.querySelector('rect') ?? null;
 }
 
 /** Los grupos de celda: un `<rect>` propio y sus textos ya recortados. */
@@ -429,22 +453,82 @@ describe('DeviationTreemap.svelte · bloques de estrategia', () => {
 		expect(headers).toContain('CARTERA CONSERVADORA');
 	});
 
-	it('la cabecera de un bloque no es más ancha que su bloque', async () => {
+	it('la cabecera de un bloque no es más ancha que su propio bloque', async () => {
 		// El mismo estimador que las celdas, y el mismo defecto: se medía la cadena en
 		// minúsculas mientras el CSS la pasaba a mayúsculas con `text-transform`, que
 		// son más anchas. El recorte hacía su trabajo y cortaba a media palabra:
 		// «ACCIONES INDIVIDUALE». Ahora las mayúsculas las pone el guion antes de medir.
-		const { svg, cells } = await renderMap(420);
+		//
+		// ⚠️ **Y este test no podía fallar.** Comparaba contra la celda más ancha de
+		// *todo* el mapa, así que solo cazaba un desbordamiento en el bloque mayor: una
+		// cabecera podía salirse del bloque estrecho por el triple y pasar en verde.
+		// Ahora cada cabecera se compara contra el ancho de su propio bloque, que es el
+		// rectángulo de su `clipPath`. Y se mide **con `letter-spacing`**, que es el otro
+		// defecto que este test tenía que cazar y no contaba.
+		//
+		// Y se barren varios anchos a propósito: el margen que se gana ignorando el
+		// espaciado es de un 4 % por carácter, así que solo desborda en una franja
+		// estrecha de anchos. Con un único ancho el test pasaba **también sin modelar el
+		// espaciado**, que es la definición de comprobación decorativa.
+		let comprobadas = 0;
 
-		for (const label of svg.querySelectorAll('text.block-label')) {
-			const text = label.textContent?.trim() ?? '';
-			const fontSize = parseFloat(label.getAttribute('font-size') ?? '0');
-			const width = approximateTextWidth(text, fontSize);
-			// El bloque más estrecho que puede contenerla: se compara contra el ancho
-			// del bloque, que es al menos el de la celda más ancha que hay debajo.
-			const widest = Math.max(...cells.map((c) => c.w));
-			expect(width, `«${text}» mide ${width.toFixed(1)}`).toBeLessThanOrEqual(widest);
+		for (const width of [320, 340, 360, 380, 400, 420, 460, 520, 600, 700, 900, 1080]) {
+			const { svg } = await renderMap(width);
+
+			for (const label of svg.querySelectorAll('text.block-label')) {
+				const text = label.textContent?.trim() ?? '';
+				const fontSize = parseFloat(label.getAttribute('font-size') ?? '0');
+
+				const reference = label.closest('g[clip-path]')?.getAttribute('clip-path') ?? '';
+				const id = reference.match(/^url\(#(.+)\)$/)?.[1] ?? '';
+				const clipRect = clipRectById(svg, id);
+				expect(clipRect, `la cabecera «${text}» no está recortada por su bloque`).not.toBeNull();
+
+				const blockX = parseFloat(clipRect!.getAttribute('x') ?? '0');
+				const blockWidth = parseFloat(clipRect!.getAttribute('width') ?? '0');
+				// El margen que el propio componente se ha dejado a la izquierda; se exige
+				// también a la derecha, que es lo que promete `truncateToWidth`. Comparar
+				// contra el ancho pelado del bloque no sirve: ese margen es mayor que el
+				// espaciado entre letras, así que absorbía el error y el test pasaba igual
+				// sin modelarlo.
+				const inset = parseFloat(label.getAttribute('x') ?? '0') - blockX;
+				const available = blockWidth - inset * 2;
+				const measured = approximateTextWidth(text, fontSize, BLOCK_LABEL_TRACKING);
+				expect(
+					measured,
+					`${width}px: «${text}» mide ${measured.toFixed(1)} y tiene ${available.toFixed(1)}`
+				).toBeLessThanOrEqual(available);
+				comprobadas++;
+			}
 		}
+
+		expect(comprobadas, 'no se ha comprobado ninguna cabecera').toBeGreaterThan(0);
+	});
+
+	it('el alto de la cabecera se reserva también en los bloques que no la llevan', async () => {
+		// ⚠️ El defecto: el alto de la cabecera se restaba **solo cuando se dibujaba**,
+		// así que al ensanchar el panel un bloque podía cruzar el umbral de «aquí cabe
+		// una cabecera», ganar la cabecera y **encogerse**, que es justo lo contrario de
+		// lo esperable al agrandar el panel. Reservando siempre, cruzar el umbral solo
+		// añade texto: la geometría no se mueve.
+		//
+		// Se comprueba en el bloque que *no* rotula: sus celdas tienen que empezar por
+		// debajo del techo del bloque igual que las de los que sí rotulan. Antes
+		// arrancaban exactamente en el techo.
+		const { svg, cells } = await renderMap(340);
+
+		const conservative = clipRectById(svg, 'dev-block-clip-satellite');
+		expect(conservative, 'el bloque conservador no se ha dibujado').not.toBeNull();
+		const blockTop = parseFloat(conservative!.getAttribute('y') ?? '0');
+
+		const satelliteCells = cells.filter((c) => c.fill === BLOCK_HUES.satellite);
+		expect(satelliteCells.length, 'el bloque conservador no tiene celdas').toBeGreaterThan(0);
+
+		const firstCellTop = Math.min(...satelliteCells.map((c) => c.y));
+		expect(
+			firstCellTop - blockTop,
+			'las celdas arrancan pegadas al techo del bloque: no se ha reservado la cabecera'
+		).toBeGreaterThan(0);
 	});
 
 	it('un bloque diminuto se dibuja igual, no desaparece', async () => {
@@ -538,6 +622,81 @@ describe('DeviationTreemap.svelte · bloques de estrategia', () => {
 			const listed = items.includes(name);
 			expect(titled || listed, `«${name}» no se nombra en ningún sitio`).toBe(true);
 			expect(titled && listed, `«${name}» se nombra dos veces`).toBe(false);
+		}
+	});
+});
+
+/**
+ * La cartera recién importada de un CSV, que es **el caso común y no el raro**:
+ * todo activo nace con `targetWeight: 0`, así que ningún bloque se mide, no hay
+ * escala en pantalla y el color solo dice de qué cartera es cada celda.
+ *
+ * Ningún test tocaba este estado —los fixtures de arriba siempre tienen algún
+ * objetivo—, y ahí se escondían tres defectos que el navegador sí enseñaba: el
+ * subtítulo seguía afirmando que el color era la distancia al objetivo, y el
+ * tooltip seguía diciendo «sin objetivo fijado» en celdas donde nadie ha dejado de
+ * fijar nada.
+ */
+describe('DeviationTreemap.svelte · cartera sin ningún objetivo', () => {
+	const SIN_OBJETIVOS = [
+		makePosition('VWCE', 'Vanguard FTSE All-World', 9000, 0),
+		makePosition('SXR8', 'iShares Core S&P 500', 4000, 0),
+		makePosition('CASH-DEP', 'Depósito remunerado', 800, 0)
+	];
+
+	beforeAll(() => {
+		store.portfolioState = { positions: SIN_OBJETIVOS };
+	});
+	afterAll(() => {
+		store.portfolioState = { positions: POSITIONS };
+	});
+
+	async function renderWide() {
+		withContainerWidth(1080);
+		const DeviationTreemap = (await import('./DeviationTreemap.svelte')).default;
+		return render(DeviationTreemap);
+	}
+
+	it('el subtítulo no afirma que el color mida la distancia al objetivo', async () => {
+		const { container } = await renderWide();
+		expect(container.textContent).not.toContain('la distancia a tu objetivo');
+		expect(container.textContent).toContain('a qué cartera pertenece');
+	});
+
+	it('la leyenda no muestra una escala que no se está usando', async () => {
+		const { container } = await renderWide();
+		const items = [...container.querySelectorAll('.legend .legend-item')].map(
+			(i) => i.textContent?.trim() ?? ''
+		);
+		expect(items).not.toContain('Por debajo');
+		expect(items).not.toContain('En objetivo');
+		expect(items).not.toContain('Por encima');
+	});
+
+	it('ningún tooltip acusa de no haber fijado un objetivo', async () => {
+		const { container } = await renderWide();
+		const tooltips = [...container.querySelectorAll('svg.treemap title')].map(
+			(t) => t.textContent?.trim() ?? ''
+		);
+		expect(tooltips.length, 'no hay tooltips que comprobar').toBe(SIN_OBJETIVOS.length);
+
+		for (const tip of tooltips) {
+			expect(tip, `«${tip}» sigue hablando de objetivos`).not.toMatch(/objetivo/i);
+			expect(tip, `«${tip}» no dice el peso`).toMatch(/de tu cartera/);
+		}
+	});
+
+	it('ninguna celda va rayada: el rayado es para la anomalía, no para lo normal', async () => {
+		// Sin bloques medidos no hay anomalías posibles, así que el patrón no debería ni
+		// declararse. Si aparece aquí, es que el mapa vuelve a tratar lo normal como
+		// excepción, que es el defecto de fondo del que salió todo esto.
+		const { container } = await renderWide();
+		const fills = [...container.querySelectorAll('svg.treemap > g > rect')].map(
+			(rect) => rect.getAttribute('fill') ?? ''
+		);
+		expect(fills.length).toBe(SIN_OBJETIVOS.length);
+		for (const fill of fills) {
+			expect(fill, 'una celda de un bloque sin escala va rayada').not.toMatch(/^url\(#/);
 		}
 	});
 });

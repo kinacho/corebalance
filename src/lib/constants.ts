@@ -111,19 +111,49 @@ export const DEVIATION_ON_TARGET = '#2f6b55';
  * acciones», al lado de un bloque donde el ámbar significa «por encima del
  * objetivo». Solo el violeta del satélite se puede reutilizar, y se reutiliza.
  *
- * El coste conocido, medido y aceptado: contra el suelo de la rampa azul, el cian
- * queda a ΔE 12,0 en visión normal y el violeta a 6,9 con deuteranopia, los dos
- * por debajo del umbral. Es un fallo **entre secciones distintas**, que es
- * exactamente el caso que el faceteado resuelve —hueco visible, cabecera con el
- * nombre del bloque y rótulo por celda— y el remedio que la propia habilidad
- * `dataviz` prescribe para los fallos de «todos contra todos». Entre sí, que es
- * el par que de verdad compite, cian y violeta están a ΔE 15,0 con deuteranopia.
+ * ⚠️ **El trío nunca se había validado como trío, y fallaba.** Era esmeralda
+ * (`#059669`) + cian + violeta, o sea justo la adyacencia que la nota de
+ * `ASSET_COLORS` de arriba declara prohibida: **ΔE 11,8 en visión normal** —por
+ * debajo del suelo de 15, que es un fallo duro— y 2,8 con tritanopia. Y no era un
+ * caso raro: en una cartera recién importada de un CSV, todos los activos nacen
+ * con `targetWeight: 0`, así que **ningún bloque se mide** y los tres tonos planos
+ * salen juntos en el mismo lienzo. Trío actual medido con el validador de la
+ * habilidad `dataviz` contra `#0d0d12`, todos los pares: las seis
+ * comprobaciones pasan, peor par cian↔violeta ΔE 15,0 con deuteranopia y
+ * cian↔lima 21,1 en visión normal.
+ *
+ * **Qué bloque lleva qué tono también está medido**, porque no es indiferente: el
+ * caso frecuente es cartera principal *con* objetivos —así que en pantalla hay
+ * escala azul/ámbar— y satélite y acciones planos. Los tonos que más conviven con
+ * los suelos de rampa son por tanto los de esos dos bloques, y ahí el lima es el
+ * mejor de los tres con diferencia: ΔE 31,2 en visión normal y 29,5 con
+ * protanopia contra el suelo azul, donde el cian que estaba en su sitio se
+ * quedaba en 12,0 (fallo). El cian se va a la cartera principal, que es la que
+ * casi nunca sale plana.
+ *
+ * El coste conocido, medido y aceptado: contra el suelo de la rampa azul el
+ * violeta queda a ΔE 14,0 en visión normal y 6,9 con deuteranopia, y el lima
+ * contra el suelo ámbar a 4,3 con deuteranopia (16,8 en visión normal, que sí
+ * pasa). El otro coste es el contraste del rótulo blanco de la celda: 3,09:1 sobre
+ * el lima, contra 3,64 del cian y 5,77 del violeta —del mismo orden que el cian
+ * que ocupaba antes el bloque de acciones, así que no empeora nada de lo que ya
+ * había—. ⚠️ Y por eso **no** se usa un lima más oscuro, que arreglaría ese
+ * contraste: `#4d7c0f` sube a 4,99:1 pero cae a ΔE 10,5 en visión normal contra
+ * `DEVIATION_ON_TARGET`, y ése sí es un par que convive en el caso corriente —un
+ * core medido con activos en banda al lado del bloque de acciones—; confundir «en
+ * objetivo» con «éstas son tus acciones» es peor que un rótulo con menos
+ * contraste. Es un fallo **entre secciones distintas**, que es exactamente el caso
+ * que el faceteado resuelve —hueco visible, cabecera con el nombre del bloque y
+ * rótulo por celda— y el remedio que la propia habilidad `dataviz` prescribe para
+ * los fallos de «todos contra todos». Dentro de una misma sección no hay ningún
+ * par por debajo del umbral, que es lo que antes no se cumplía.
  */
 export const BLOCK_HUES = {
-	// Solo se usa si algún día la cartera principal se queda sin objetivos; con
+	// Solo se usa si algún día la cartera principal se queda sin objetivos —o si
+	// aún no se le han puesto, que es el caso de una cartera recién importada. Con
 	// objetivos, este bloque lleva la escala divergente y no un tono plano.
-	core: '#059669',
-	stocks: '#0891b2',
+	core: '#0891b2',
+	stocks: '#65a30d',
 	satellite: '#7c3aed'
 } as const;
 

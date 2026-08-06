@@ -658,6 +658,10 @@ const es = {
     pwa_install_desc: 'Accede más rápido como app nativa.',
     pwa_install_btn: 'Instalar',
     pwa_install_later: 'Ahora no',
+    pwa_update_title: 'Nueva versión disponible',
+    pwa_update_desc: 'Recarga cuando te venga bien. Tus datos no se tocan.',
+    pwa_update_btn: 'Recargar',
+    pwa_update_later: 'Luego',
   },
   // Rebalance Panel
   rebalance_panel: {
@@ -724,6 +728,10 @@ const es = {
   treemap: {
     title: 'Mapa de desviación',
     subtitle: 'El tamaño es el peso real; el color, la distancia a tu objetivo',
+    // Cuando ningún bloque tiene objetivos —una cartera recién importada, donde todo
+    // nace con `targetWeight: 0`— el subtítulo de arriba afirma algo falso: el color
+    // no mide ninguna distancia porque no hay contra qué medirla.
+    subtitle_no_targets: 'El tamaño es el peso real; el color, a qué cartera pertenece. Fija objetivos para ver la desviación',
     empty: 'Añade activos con posiciones para ver el mapa.',
     legend_on: 'En objetivo',
     legend_over: 'Por encima',
@@ -731,6 +739,10 @@ const es = {
     legend_no_target: 'Sin objetivo',
     tooltip: '{name:string}: {weight:string} de tu cartera, objetivo {target:string}',
     tooltip_no_target: '{name:string}: {weight:string} de tu cartera, sin objetivo fijado',
+    // En un bloque que no se mide, «sin objetivo fijado» acusa de un descuido que no
+    // existe: las acciones individuales no tienen objetivo *como tal*. Ahí el tooltip
+    // dice solo el peso, igual que el mapa no escribe nada en la celda.
+    tooltip_weight_only: '{name:string}: {weight:string} de tu cartera',
   },
   // Transparencia del subyacente
   lookthrough: {

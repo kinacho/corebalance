@@ -2461,6 +2461,22 @@ type RootTranslation = {
 		 * A​h​o​r​a​ ​n​o
 		 */
 		pwa_install_later: string
+		/**
+		 * N​u​e​v​a​ ​v​e​r​s​i​ó​n​ ​d​i​s​p​o​n​i​b​l​e
+		 */
+		pwa_update_title: string
+		/**
+		 * R​e​c​a​r​g​a​ ​c​u​a​n​d​o​ ​t​e​ ​v​e​n​g​a​ ​b​i​e​n​.​ ​T​u​s​ ​d​a​t​o​s​ ​n​o​ ​s​e​ ​t​o​c​a​n​.
+		 */
+		pwa_update_desc: string
+		/**
+		 * R​e​c​a​r​g​a​r
+		 */
+		pwa_update_btn: string
+		/**
+		 * L​u​e​g​o
+		 */
+		pwa_update_later: string
 	}
 	rebalance_panel: {
 		/**
@@ -2703,6 +2719,10 @@ type RootTranslation = {
 		 */
 		subtitle: string
 		/**
+		 * E​l​ ​t​a​m​a​ñ​o​ ​e​s​ ​e​l​ ​p​e​s​o​ ​r​e​a​l​;​ ​e​l​ ​c​o​l​o​r​,​ ​a​ ​q​u​é​ ​c​a​r​t​e​r​a​ ​p​e​r​t​e​n​e​c​e​.​ ​F​i​j​a​ ​o​b​j​e​t​i​v​o​s​ ​p​a​r​a​ ​v​e​r​ ​l​a​ ​d​e​s​v​i​a​c​i​ó​n
+		 */
+		subtitle_no_targets: string
+		/**
 		 * A​ñ​a​d​e​ ​a​c​t​i​v​o​s​ ​c​o​n​ ​p​o​s​i​c​i​o​n​e​s​ ​p​a​r​a​ ​v​e​r​ ​e​l​ ​m​a​p​a​.
 		 */
 		empty: string
@@ -2735,6 +2755,12 @@ type RootTranslation = {
 		 * @param {string} weight
 		 */
 		tooltip_no_target: RequiredParams<'name' | 'weight'>
+		/**
+		 * {​n​a​m​e​}​:​ ​{​w​e​i​g​h​t​}​ ​d​e​ ​t​u​ ​c​a​r​t​e​r​a
+		 * @param {string} name
+		 * @param {string} weight
+		 */
+		tooltip_weight_only: RequiredParams<'name' | 'weight'>
 	}
 	lookthrough: {
 		/**
@@ -6160,6 +6186,22 @@ export type TranslationFunctions = {
 		 * Ahora no
 		 */
 		pwa_install_later: () => LocalizedString
+		/**
+		 * Nueva versión disponible
+		 */
+		pwa_update_title: () => LocalizedString
+		/**
+		 * Recarga cuando te venga bien. Tus datos no se tocan.
+		 */
+		pwa_update_desc: () => LocalizedString
+		/**
+		 * Recargar
+		 */
+		pwa_update_btn: () => LocalizedString
+		/**
+		 * Luego
+		 */
+		pwa_update_later: () => LocalizedString
 	}
 	rebalance_panel: {
 		/**
@@ -6385,6 +6427,10 @@ export type TranslationFunctions = {
 		 */
 		subtitle: () => LocalizedString
 		/**
+		 * El tamaño es el peso real; el color, a qué cartera pertenece. Fija objetivos para ver la desviación
+		 */
+		subtitle_no_targets: () => LocalizedString
+		/**
 		 * Añade activos con posiciones para ver el mapa.
 		 */
 		empty: () => LocalizedString
@@ -6412,6 +6458,10 @@ export type TranslationFunctions = {
 		 * {name}: {weight} de tu cartera, sin objetivo fijado
 		 */
 		tooltip_no_target: (arg: { name: string, weight: string }) => LocalizedString
+		/**
+		 * {name}: {weight} de tu cartera
+		 */
+		tooltip_weight_only: (arg: { name: string, weight: string }) => LocalizedString
 	}
 	lookthrough: {
 		/**

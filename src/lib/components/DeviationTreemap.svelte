@@ -153,6 +153,19 @@
 	const headerH = $derived(fontBlock * 1.7);
 
 	/**
+	 * `letter-spacing` de `.block-label`, en em, **duplicado a propósito** aquí y en
+	 * el CSS de abajo.
+	 *
+	 * No hay forma de leer el valor calculado antes de dibujar, y medir sin contarlo
+	 * es el mismo defecto que medir en minúsculas lo que se pinta en mayúsculas: la
+	 * estimación se queda corta y el recorte —la garantía dura— corta a media
+	 * palabra. Si se cambia el CSS hay que cambiar esta constante; el test de
+	 * `DeviationTreemap.test.ts` comprueba que la cabecera no se sale de su bloque,
+	 * que es lo que se rompe si se olvidan.
+	 */
+	const BLOCK_LABEL_TRACKING = 0.04;
+
+	/**
 	 * Reparto en dos niveles: primero el lienzo entre los bloques por valor, después
 	 * cada bloque entre sus activos.
 	 *
@@ -188,20 +201,35 @@
 			const bw = slot.w - gapX;
 			const bh = slot.h - gapY;
 
-			// La cabecera solo si cabe y si deja sitio de sobra para las celdas: un
-			// bloque del 4 % del patrimonio es una tira estrecha, y ahí el nombre lo
-			// dice la leyenda (ver `unlabelledBlocks`).
-			//
-			// ⚠️ **Se mide ya en mayúsculas.** Iba en `text-transform: uppercase` por
-			// CSS y se medía la cadena original: las mayúsculas son más anchas, así que
-			// la estimación se quedaba corta, y el recorte —que es la garantía dura—
-			// cortaba a media palabra: «ACCIONES INDIVIDUALE». La regla general es que
-			// el CSS no puede cambiar los glifos después de medirlos.
-			const label = truncateToWidth(block.label.toUpperCase(), fontBlock, bw, pad * 2);
-			const showHeader = label !== '' && bh >= headerH * 2.6;
+			// ⚠️ **El alto de la cabecera se reserva siempre, se dibuje o no**, y con el
+			// mismo tope de un cuarto que el hueco. Restarlo solo cuando se dibujaba
+			// hacía que un bloque **se encogiera al ensanchar el panel**, que es justo lo
+			// contrario de lo esperable: al crecer el carril el bloque cruzaba el umbral
+			// de «aquí cabe una cabecera», aparecía la cabecera y sus celdas perdían de
+			// golpe ese alto. Reservar de forma continua desacopla la geometría de la
+			// decisión de dibujar: al cruzar el umbral aparece el texto y nada más.
+			const reservedH = Math.min(headerH, bh / 4);
+			// ⚠️ **Se mide ya en mayúsculas y con su `letter-spacing`.** Iba en
+			// `text-transform: uppercase` por CSS y se medía la cadena original: las
+			// mayúsculas son más anchas, así que la estimación se quedaba corta, y el
+			// recorte —que es la garantía dura— cortaba a media palabra: «ACCIONES
+			// INDIVIDUALE». El espaciado entre letras es el mismo error un nivel más
+			// fino, y también hay que pasarlo. La regla general: el CSS no puede cambiar
+			// ni los glifos ni su ancho después de medirlos.
+			const label = truncateToWidth(
+				block.label.toUpperCase(),
+				fontBlock,
+				bw,
+				pad * 2,
+				BLOCK_LABEL_TRACKING
+			);
+			// El texto solo cuando la reserva ha cabido entera: un bloque del 4 % del
+			// patrimonio es una tira estrecha, y ahí el nombre lo dice la leyenda (ver
+			// `unlabelledBlocks`).
+			const showHeader = label !== '' && bh >= headerH * 4;
 
-			const contentY = by + (showHeader ? headerH : 0);
-			const contentH = Math.max(0, bh - (showHeader ? headerH : 0));
+			const contentY = by + reservedH;
+			const contentH = Math.max(0, bh - reservedH);
 
 			const cells = squarify(
 				block.positions.map((p) => ({ key: p.asset.ticker, value: p.totalValue })),
@@ -360,20 +388,33 @@
 	}
 
 	/**
-	 * Dos mensajes en lugar de uno con relleno.
+	 * Tres mensajes en lugar de uno con relleno, uno por cada caso del relleno.
 	 *
 	 * Antes se metía «sin objetivo» en el hueco `{target}` de «…objetivo
 	 * {target}», y salía «objetivo sin objetivo». Componer frases inyectando
 	 * frases produce eso; una plantilla por caso, no.
+	 *
+	 * ⚠️ Y el tercer caso faltaba: en un bloque **que no se mide**, decir «sin
+	 * objetivo fijado» acusa de un descuido que no existe —las acciones individuales
+	 * no tienen objetivo *como tal*— y contradice al propio mapa, que ahí no escribe
+	 * nada en la celda precisamente por eso. La etiqueta que se quitó del dibujo
+	 * seguía viva en el tooltip, que es donde nadie mira al revisar.
 	 */
-	function tooltipFor(weight: number, targetWeight: number, name: string): string {
-		if (targetWeight <= 0) {
-			return $LL.treemap.tooltip_no_target({ name, weight: formatPercent(weight, 1) });
+	function tooltipFor(cell: {
+		weight: number;
+		measured: boolean;
+		position: PortfolioPosition;
+	}): string {
+		const name = cell.position.asset.name;
+		const weight = formatPercent(cell.weight, 1);
+		if (!cell.measured) return $LL.treemap.tooltip_weight_only({ name, weight });
+		if (cell.position.asset.targetWeight <= 0) {
+			return $LL.treemap.tooltip_no_target({ name, weight });
 		}
 		return $LL.treemap.tooltip({
 			name,
-			weight: formatPercent(weight, 1),
-			target: formatPercent(targetWeight, 1)
+			weight,
+			target: formatPercent(cell.position.asset.targetWeight, 1)
 		});
 	}
 
@@ -415,9 +456,16 @@
 	const stripePeriod = $derived(unitsFor(9));
 </script>
 
+<!--
+	⚠️ El subtítulo cambia cuando **ningún** bloque tiene objetivos, porque el de
+	siempre —«el color, la distancia a tu objetivo»— afirma entonces algo falso: no
+	hay contra qué medir y el color solo dice de qué cartera es cada celda. Es el
+	caso de una cartera recién importada de un CSV, donde todo activo nace con
+	`targetWeight: 0`; o sea el primer mapa que ve casi cualquiera, no un caso raro.
+-->
 <MapFrame
 	title={$LL.treemap.title()}
-	subtitle={$LL.treemap.subtitle()}
+	subtitle={hasScale ? $LL.treemap.subtitle() : $LL.treemap.subtitle_no_targets()}
 	{showTitle}
 	canExpand={cells.length > 0}
 	bind:expanded
@@ -487,7 +535,7 @@
 			{#each cells as cell, i (cell.position.asset.ticker)}
 				<g>
 					<title>
-						{tooltipFor(cell.weight, cell.position.asset.targetWeight, cell.position.asset.name)}
+						{tooltipFor(cell)}
 					</title>
 					<rect
 						x={cell.rect.x}
@@ -599,9 +647,12 @@
 	.block-label {
 		fill: rgba(255, 255, 255, 0.5);
 		font-weight: 700;
+		/* ⚠️ Este valor está también en `BLOCK_LABEL_TRACKING`, arriba, y los dos
+		   tienen que ir a la vez: el ancho se estima en el guion y el espaciado entre
+		   letras cuenta. Y sin `text-transform`: las mayúsculas las pone también el
+		   guion, antes de medir. El CSS no puede cambiar ni los glifos ni su ancho
+		   después de que se hayan medido. */
 		letter-spacing: 0.04em;
-		/* Sin `text-transform`: las mayúsculas las pone el guion antes de medir el
-		   ancho. Ver la nota en el cálculo del rótulo. */
 	}
 
 	.cell-ticker {
