@@ -47,7 +47,8 @@ export default defineConfig({
 			reporter: ['text', 'json-summary'],
 			thresholds: {
 				'src/lib/fiscal.ts': { statements: 96, branches: 95, functions: 92 },
-				'src/lib/traspaso.ts': { statements: 96, branches: 83, functions: 100 },
+				// Subido el 6-ago-2026 al matar mutantes del motor fiscal: 96,40/83,54 → 98,20/89,87.
+				'src/lib/traspaso.ts': { statements: 98, branches: 89, functions: 100 },
 				// Subido el 6-ago-2026 al matar los mutantes del reparto: 97,19/86,25 → 100/97,22.
 				'src/lib/rebalance.ts': { statements: 100, branches: 97, functions: 100 },
 				'src/lib/lookthrough.ts': { statements: 96, branches: 84, functions: 100 },
