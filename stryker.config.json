@@ -9,6 +9,7 @@
     "src/lib/fiscal.ts",
     "src/lib/traspaso.ts",
     "src/lib/rebalance.ts",
+    "src/lib/ledger.ts",
     "src/lib/lookthrough.ts",
     "src/lib/treemap.ts",
     "src/lib/instrument-type.ts"
