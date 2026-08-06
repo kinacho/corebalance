@@ -1,0 +1,52 @@
+name: Mutation testing
+
+# Semanal y a mano, **no en cada PR**, por dos razones: tarda del orden de veinte
+# minutos, y no es una puerta sino una auditoría. Lo que responde no es «¿pasa?» sino
+# «¿alguno de estos tests dejaría pasar un cambio de comportamiento?», que es la
+# pregunta que este repo lleva fallando: en una sola revisión de código salieron tres
+# tests que no podían fallar. La cobertura no la contesta —un test sin aserciones da
+# 100 %— y un modelo tampoco: esto se demuestra mutando el código.
+on:
+  schedule:
+    # Lunes a las 6:00 UTC. El informe está listo antes de empezar la semana.
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mutantes:
+    name: Mutar los seis módulos de dinero
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Preparar entorno de ejemplo
+        run: cp .env.example .env
+
+      # ⚠️ Stryker se ejecuta con `npx` y **no está en `package.json`** a propósito: su
+      # árbol de dependencias arrastra un `qs` con una alerta moderada que `npm audit
+      # fix` no resuelve, y este repo es público con Dependabot. Una alerta permanente
+      # por una herramienta que se usa una vez a la semana es un mal cambio. La
+      # configuración sí está versionada, en `stryker.config.json`.
+      - name: Mutation testing
+        run: npx --yes -p @stryker-mutator/core -p @stryker-mutator/vitest-runner stryker run
+
+      - name: Guardar el informe
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mutation-report
+          path: reports/mutation/
+          retention-days: 30

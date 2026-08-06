@@ -629,7 +629,7 @@ const en: Translation = {
     timing_period_note: 'Figures for the period shown, not annualised.',
     legal_disclaimer: '<strong>Legal Disclaimer:</strong> CoreBalance is a purely informative and educational tool. It does not constitute financial, investment, or tax advice. The data displayed may be subject to delays or inaccuracies. The developer is not responsible for any financial losses resulting from the use of this application. Always invest at your own risk.',
     footer_tagline: 'Your control center for smart and balanced asset management.',
-    changelog_trigger: 'v1.12.0 🚀',
+    changelog_trigger: 'v1.12.1 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Made with ❤️ for the investing community',
     reclassify_stocks: 'Individual Stocks',
@@ -890,6 +890,16 @@ const en: Translation = {
     close_aria: 'Close modal',
     btn_understand: 'Got it',
     releases: {
+      v1_12_1: {
+        date: 'August 6, 2026',
+        badge: 'The app works offline now',
+        changes: [
+          '📴 **The dashboard starts without a connection.** Your data already lived in your browser, but the app did not know how to use it offline: it showed you the "no connection" page while your whole portfolio sat on your own device. Now it opens anyway, with the last prices it had saved. You need to have opened it online at least once.',
+          '📲 **Installing it as an app works again.** The service worker never managed to register — no install, no offline mode, no updates — and it had been like that from the start without a single error. And when there is a new version it now asks you first: never a reload in the middle of a CSV import.',
+          '⚡ **A first visit downloads 2.5 MB instead of 15.7.** It was also precaching the preview cards that only Twitter and LinkedIn ever look at.',
+          '🗺️ **The deviation map explains itself better before you set any targets:** it no longer claims the colour is "distance from your target" when there is no target, and no asset is flagged as if it were missing something nobody expected of it.'
+        ]
+      },
       v1_12_0: {
         date: 'August 3, 2026',
         badge: 'Rebalancing without the tax bill',

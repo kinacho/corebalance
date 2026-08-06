@@ -35,6 +35,29 @@ import {
 /** Por debajo de esto no merece la pena proponer un movimiento (en divisa base). */
 const MIN_MOVE_AMOUNT = 10;
 
+/**
+ * Si un importe da para proponer un movimiento.
+ *
+ * ⚠️ Esta comparación estaba escrita **cinco veces** —dos filtros y tres guardas del
+ * emparejamiento— y el mutation testing lo delataba: doce de los mutantes supervivientes
+ * eran el *mismo* cambio de `>` a `>=` repetido en cinco sitios, porque un test que pasa
+ * por el umbral en un sitio deja los otros cuatro sin comprobar. Con un solo predicado, el
+ * caso «desviación de 10 € justos» cubre las cinco.
+ *
+ * Es estrictamente mayor: 10 € justos no se mueven.
+ */
+function meritaMover(amount: number): boolean {
+	return amount > MIN_MOVE_AMOUNT;
+}
+
+/** De mayor a menor importe pendiente: se atiende primero la desviación más grande. */
+function porRestanteDescendente(
+	a: { remaining: number },
+	b: { remaining: number }
+): number {
+	return b.remaining - a.remaining;
+}
+
 /** Banda de tolerancia: una desviación menor que esto se considera «en objetivo». */
 export const DEVIATION_BAND = 0.01;
 
@@ -166,21 +189,22 @@ function pairSourcesToTargets(
 	// Dos pasadas: primero solo las parejas sin coste fiscal, luego el resto.
 	for (const freeOnly of [true, false]) {
 		for (const source of sources) {
-			if (source.remaining <= MIN_MOVE_AMOUNT) continue;
+			if (!meritaMover(source.remaining)) continue;
 			for (const target of targets) {
-				if (target.remaining <= MIN_MOVE_AMOUNT) continue;
+				if (!meritaMover(target.remaining)) continue;
 
 				const { taxFree } = classifyMove(source.position.asset, target.position.asset);
 				if (freeOnly && !taxFree) continue;
 
 				const amount = Math.min(source.remaining, target.remaining);
-				if (amount <= MIN_MOVE_AMOUNT) continue;
+				if (!meritaMover(amount)) continue;
 
 				pairs.push({ from: source.position, to: target.position, amount });
 				source.remaining -= amount;
 				target.remaining -= amount;
 
-				if (source.remaining <= MIN_MOVE_AMOUNT) break;
+				// Agotado el excedente, no hay nada más que repartir desde aquí.
+				if (!meritaMover(source.remaining)) break;
 			}
 		}
 	}
@@ -227,14 +251,16 @@ export function calculateTaxAwareRebalance(
 		// Excedente y déficit en divisa base. `targetValue` ya viene calculado
 		// sobre el capital de la categoría, así que los dos lados cuadran.
 		const sources = movable
-			.filter((p) => p.totalValue - p.targetValue > MIN_MOVE_AMOUNT)
+			.filter((p) => meritaMover(p.totalValue - p.targetValue))
 			.map((p) => ({ position: p, remaining: p.totalValue - p.targetValue }))
-			.sort((a, b) => b.remaining - a.remaining);
+			.sort(porRestanteDescendente);
 
+		// El destino necesita precio: sin él no se puede convertir el importe en
+		// participaciones, y proponer una compra a ciegas es peor que no proponerla.
 		const targets = movable
-			.filter((p) => p.targetValue - p.totalValue > MIN_MOVE_AMOUNT && p.unitPrice > 0)
+			.filter((p) => meritaMover(p.targetValue - p.totalValue) && p.unitPrice > 0)
 			.map((p) => ({ position: p, remaining: p.targetValue - p.totalValue }))
-			.sort((a, b) => b.remaining - a.remaining);
+			.sort(porRestanteDescendente);
 
 		const pairs = pairSourcesToTargets(sources, targets);
 		const moves: TransferMove[] = [];

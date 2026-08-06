@@ -631,7 +631,7 @@ const es = {
     timing_period_note: 'Cifras del periodo mostrado, sin anualizar.',
     legal_disclaimer: '<strong>Aviso Legal:</strong> CoreBalance es una herramienta puramente informativa y educativa. No constituye asesoramiento financiero, de inversión ni fiscal. Los datos mostrados pueden sufrir retrasos o ser inexactos. El desarrollador no se hace responsable de posibles pérdidas financieras derivadas del uso de esta aplicación. Invierte siempre bajo tu propia responsabilidad.',
     footer_tagline: 'Tu centro de mandos para una gestión de activos inteligente y equilibrada.',
-    changelog_trigger: 'v1.12.0 🚀',
+    changelog_trigger: 'v1.12.1 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Hecho con ❤️ para la comunidad inversora',
     reclassify_stocks: 'Acciones Individuales',
@@ -898,6 +898,16 @@ const es = {
     close_aria: 'Cerrar modal',
     btn_understand: 'Entendido',
     releases: {
+      v1_12_1: {
+        date: '6 de Agosto, 2026',
+        badge: 'La app ya funciona sin conexión',
+        changes: [
+          '📴 **El dashboard arranca sin conexión.** Tus datos ya vivían en tu navegador, pero la app no sabía usarlos sin red: te enseñaba la página de «sin conexión» teniendo la cartera entera en tu propio dispositivo. Ahora entra igual, con la última cotización que tuviera guardada. Hace falta haberla abierto al menos una vez con conexión.',
+          '📲 **Instalarla como aplicación vuelve a funcionar.** El service worker no llegaba a registrarse —ni instalación, ni modo sin conexión, ni actualizaciones— y llevaba así desde el principio sin dar un solo error. Y cuando ahora hay versión nueva te avisa y recargas tú: nunca en mitad de una importación de CSV.',
+          '⚡ **La primera visita descarga 2,5 MB en vez de 15,7.** Se estaban precargando también las tarjetas de vista previa que solo miran Twitter y LinkedIn.',
+          '🗺️ **El mapa de desviación se explica mejor cuando aún no has fijado objetivos:** ya no dice que el color sea «la distancia a tu objetivo» cuando no hay ninguno, y ningún activo aparece señalado como si le faltara algo que nadie esperaba de él.'
+        ]
+      },
       v1_12_0: {
         date: '3 de Agosto, 2026',
         badge: 'Rebalanceo sin pasar por Hacienda',
