@@ -1,0 +1,36 @@
+// Tests deliberadamente inútiles, para que la guardia tenga algo que cazar.
+//
+// ⚠️ Extensión `.txt` a propósito: si se llamara `*.test.ts`, vitest lo recogería y
+// ejecutaría estos tests de mentira. La guardia recibe su propio patrón de fichero.
+
+import { describe, it, test, expect } from 'vitest';
+
+describe('un contenedor, que no le toca afirmar nada', () => {
+	it('tautología pura', () => {
+		expect(true).toBe(true);
+	});
+
+	it('tautología con un número', () => {
+		expect(1).toBe(1);
+	});
+
+	it('afirma que un literal existe', () => {
+		expect(true).toBeTruthy();
+	});
+
+	it('no afirma absolutamente nada', () => {
+		const resultado = 2 + 2;
+		console.log(resultado);
+	});
+
+	// Éstos son legítimos y NO deben salir en el informe.
+	it.skip('omitido con motivo, y el informe lo dice', () => {});
+
+	it('éste sí comprueba algo', () => {
+		expect(2 + 2).toBe(4);
+	});
+
+	test('y éste también, con `test` en vez de `it`', () => {
+		expect('hola').toContain('ol');
+	});
+});
