@@ -81,6 +81,19 @@ export function marginalSavingsRate(accumulatedGain: number): number {
 	return SAVINGS_TAX_BRACKETS[SAVINGS_TAX_BRACKETS.length - 1].rate;
 }
 
+/**
+ * De más antigua a más reciente, que es el orden que FIFO da por supuesto.
+ *
+ * ⚠️ Estaba escrito dos veces, y no es cosmético: un CSV de bróker llega en cualquier
+ * orden —hay quien los exporta del más reciente al más antiguo— y si la ordenación falla,
+ * FIFO consume el lote equivocado y el valor de adquisición sale mal sin que nada avise.
+ * Con dos copias, el mutation testing encontraba el mismo mutante vivo en las dos, porque
+ * cada test cubría solo una.
+ */
+function porFechaAscendente(a: { date: number }, b: { date: number }): number {
+	return a.date - b.date;
+}
+
 /** Un paquete de participaciones compradas a la vez, para consumir por FIFO. */
 export interface FifoLot {
 	date: number;
@@ -107,7 +120,7 @@ export interface FifoLot {
 export function buildFifoLots(transactions: Transaction[], ticker: string): FifoLot[] {
 	const relevant = transactions
 		.filter((t) => t.ticker === ticker)
-		.sort((a, b) => a.date - b.date);
+		.sort(porFechaAscendente);
 
 	const lots: FifoLot[] = [];
 
@@ -256,7 +269,7 @@ export function checkAntiApplicationRule(
 				Math.abs(t.date - saleDate) <= windowMs
 		)
 		.map((t) => ({ date: t.date, shares: t.shares }))
-		.sort((a, b) => a.date - b.date);
+		.sort(porFechaAscendente);
 
 	// La espera se cuenta desde la compra más reciente dentro de la ventana:
 	// hasta que esa compra salga de la ventana, la pérdida sigue bloqueada.
