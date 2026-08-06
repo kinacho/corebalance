@@ -63,6 +63,20 @@ test.describe('Sin conexión', () => {
 			// Lo que NO debe pasar: la página offline. Es autocontenida y no monta la app.
 			await expect(page.locator('.metric-card').first()).toBeVisible({ timeout: 20_000 });
 			expect(await page.locator('svg.treemap').count()).toBeGreaterThan(0);
+
+			/**
+			 * Y las imágenes del esqueleto también, que es lo que este spec no comprobaba.
+			 *
+			 * ⚠️ En producción la única petición que fallaba sin red era `/logo.png?v=2`: la
+			 * cabecera lleva un rompecachés a mano y el precache tiene la entrada sin
+			 * parámetro, así que Workbox no las casaba. «La app arranca» no implica «la app
+			 * está completa», y aquí se comprueba lo segundo.
+			 */
+			const logoCargado = await page
+				.locator('img.logo-img')
+				.first()
+				.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0);
+			expect(logoCargado, 'el logo de la cabecera no carga sin red').toBe(true);
 		} finally {
 			await context.setOffline(false);
 		}
