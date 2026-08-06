@@ -53,7 +53,8 @@ export default defineConfig({
 				'src/lib/rebalance.ts': { statements: 100, branches: 97, functions: 100 },
 				'src/lib/lookthrough.ts': { statements: 96, branches: 84, functions: 100 },
 				'src/lib/treemap.ts': { statements: 92, branches: 91, functions: 88 },
-				'src/lib/instrument-type.ts': { statements: 90, branches: 92, functions: 100 }
+				// Subido el 6-ago-2026 con la tabla por señal: 90,00/92,10 → 100/100.
+				'src/lib/instrument-type.ts': { statements: 100, branches: 100, functions: 100 }
 			}
 		}
 	},
