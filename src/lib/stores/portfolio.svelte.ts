@@ -3,6 +3,7 @@ import { LL } from '$lib/i18n/i18n-svelte';
 import { DEFAULT_CORE_ASSETS, DEFAULT_SATELLITE_ASSETS, DEFAULT_STOCK_ASSETS, STORAGE_KEY_HOLDINGS, STORAGE_KEY_CONTRIBUTION, STORAGE_KEY_ASSETS, STORAGE_KEY_PRICES, STORAGE_KEY_EDITS } from '$lib/constants';
 import type { Asset, AssetCategory, HoldingData, HoldingsMap, PortfolioPosition, PortfolioState, PriceData, RebalanceResult, Transaction } from '$lib/types';
 import { calculatePortfolioState, calculateRebalance } from '$lib/rebalance';
+import { calculateLedgerHoldings, type LedgerHoldings } from '$lib/ledger';
 import type { EditReason, HoldingEdit, PerformanceSeries, PositionTimeline } from '$lib/history/types';
 import {
 	alignPriceSeries,
@@ -94,77 +95,24 @@ export class PortfolioStore {
 	private _backup: PortfolioBackup | null = null;
 
 	// --- Derived State ---
-	ledgerHoldings = $derived.by(() => {
-		const result: Record<string, { shares: number; avgCost: number; totalCostRaw: number; totalCostBase: number; accruedInterest: number; lastTxDate: number | null }> = {};
-		const sorted = [...this.transactions].sort((a, b) => a.date - b.date);
-		for (const t of sorted) {
-			if (!result[t.ticker]) {
-				result[t.ticker] = { shares: 0, avgCost: 0, totalCostRaw: 0, totalCostBase: 0, accruedInterest: 0, lastTxDate: null };
-			}
-			const pos = result[t.ticker];
-
-			// Calcular interés acumulado hasta la fecha de esta transacción
-			const asset = this.coreAssets.find(a => a.ticker === t.ticker) ||
-			              this.satelliteAssets.find(a => a.ticker === t.ticker) ||
-			              this.stockAssets.find(a => a.ticker === t.ticker);
-			const rate = asset?.manualInterestRate || 0;
-
-			if (pos.lastTxDate !== null && pos.shares > 0 && rate > 0) {
-				const diffTime = Math.max(0, t.date - pos.lastTxDate);
-				const diffDays = diffTime / (1000 * 60 * 60 * 24);
-				pos.accruedInterest += pos.shares * (rate / 365) * diffDays;
-			}
-			pos.lastTxDate = t.date;
-
-			if (t.type === 'buy' || t.type === 'initial_balance' || t.type === 'transfer') {
-				if (t.shares > 0) {
-					const txCostRaw = (t.shares * t.price) + (t.fees || 0); 
-					const txCostBase = txCostRaw * (t.fxRate || 1);
-					const newTotalCostRaw = pos.totalCostRaw + txCostRaw;
-					const newTotalCostBase = pos.totalCostBase + txCostBase;
-					const newShares = pos.shares + t.shares;
-					pos.avgCost = newShares > 0 ? newTotalCostRaw / newShares : 0;
-					pos.shares = newShares;
-					pos.totalCostRaw = newTotalCostRaw;
-					pos.totalCostBase = newTotalCostBase;
-				}
-			} else if (t.type === 'sell') {
-				if (pos.shares > 0) {
-					const ratio = Math.min(1, t.shares / pos.shares);
-					pos.totalCostRaw -= pos.totalCostRaw * ratio;
-					pos.totalCostBase -= pos.totalCostBase * ratio;
-					pos.shares = Math.max(0, pos.shares - t.shares);
-				}
-			} else if (t.type === 'dividend') {
-				const divAmountRaw = (t.shares * t.price) - (t.fees || 0);
-				const divAmountBase = divAmountRaw * (t.fxRate || 1);
-				pos.totalCostRaw -= divAmountRaw;
-				pos.totalCostBase -= divAmountBase;
-				pos.avgCost = pos.shares > 0 ? pos.totalCostRaw / pos.shares : 0;
-			}
-		}
-
-		const today = Date.now();
-		for (const ticker in result) {
-			const pos = result[ticker];
-			const asset = this.coreAssets.find(a => a.ticker === ticker) ||
-			              this.satelliteAssets.find(a => a.ticker === ticker) ||
-			              this.stockAssets.find(a => a.ticker === ticker);
-			const rate = asset?.manualInterestRate || 0;
-
-			if (pos.lastTxDate !== null && pos.shares > 0 && rate > 0) {
-				const diffTime = Math.max(0, today - pos.lastTxDate);
-				const diffDays = diffTime / (1000 * 60 * 60 * 24);
-				pos.accruedInterest += pos.shares * (rate / 365) * diffDays;
-			}
-
-			pos.shares = Math.round(pos.shares * 1000) / 1000;
-			pos.avgCost = Math.round(pos.avgCost * 1000) / 1000;
-			pos.totalCostBase = Math.round(pos.totalCostBase * 1000) / 1000;
-			pos.accruedInterest = Math.round(pos.accruedInterest * 1000) / 1000;
-		}
-		return result;
-	});
+	/**
+	 * La contabilidad del ledger vive en `$lib/ledger`, no aquí.
+	 *
+	 * Estaba escrita dentro de este `$derived.by()` y salió de aquí por dos motivos que el
+	 * mutation testing puso en números: leía `Date.now()` por dentro —así que el devengo de
+	 * intereses no se podía fijar en un test— y tenía dos predicados duplicados que hacían
+	 * que 26 de sus 43 mutantes supervivientes fueran el *mismo* mutante contado dos veces.
+	 *
+	 * El store sigue exponiendo `ledgerHoldings` con la misma forma, así que la suite de
+	 * `ledgerHoldings.test.ts` no cambió ni una línea al extraerlo.
+	 */
+	ledgerHoldings: LedgerHoldings = $derived.by(() =>
+		calculateLedgerHoldings(
+			this.transactions,
+			[...this.coreAssets, ...this.satelliteAssets, ...this.stockAssets],
+			Date.now()
+		)
+	);
 
 	effectiveHoldings: HoldingsMap = $derived.by(() => {
 		const merged: HoldingsMap = { ...this.holdings };

@@ -40,6 +40,7 @@ export default defineConfig({
 				'src/lib/fiscal.ts',
 				'src/lib/traspaso.ts',
 				'src/lib/rebalance.ts',
+				'src/lib/ledger.ts',
 				'src/lib/lookthrough.ts',
 				'src/lib/treemap.ts',
 				'src/lib/instrument-type.ts'
@@ -48,6 +49,8 @@ export default defineConfig({
 			thresholds: {
 				// Subido el 6-ago-2026 al matar mutantes del motor fiscal: 96,29/95,12 → 98,75/97,56.
 				'src/lib/fiscal.ts': { statements: 98, branches: 97, functions: 100 },
+				// Extraído del store el 6-ago-2026; medido al nacer.
+				'src/lib/ledger.ts': { statements: 100, branches: 88, functions: 100 },
 				// Subido el 6-ago-2026 al matar mutantes del motor fiscal: 96,40/83,54 → 98,20/89,87.
 				'src/lib/traspaso.ts': { statements: 98, branches: 89, functions: 100 },
 				// Subido el 6-ago-2026 al matar los mutantes del reparto: 97,19/86,25 → 100/97,22.

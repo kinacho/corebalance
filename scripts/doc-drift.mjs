@@ -43,6 +43,10 @@ const MENCIONES_HISTORICAS = new Map([
 	['tailwind.config.js', 'se cita justamente para decir que no existe: Tailwind v4 no lo usa'],
 	['static/sw.js', 'se cita para explicar que se borró y por qué no debe volver'],
 	['training_csv/', 'se cita como el directorio equivocado al que apuntaba un test'],
+	[
+		'ledgerHoldings.ts',
+		'se cita justamente para decir que NO existe: `stores/ledgerHoldings.test.ts` parece su suite y en realidad prueba el ledger a través del store, que es por lo que un recuento de «ficheros sin test» no la ve'
+	],
 	['.ai/', 'árbol de 61 ficheros borrado a propósito; se cita para que no vuelva'],
 	['page.waitForURL', 'API de Playwright, no de este repo; se cita como aviso de que no sirve con SvelteKit'],
 	// Rutas del **output del build**, no del repositorio: viven en
