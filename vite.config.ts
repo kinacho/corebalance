@@ -20,8 +20,24 @@ export default defineConfig({
 		sveltekit(),
 		...(process.env.ANALYZE === 'true' ? [visualizer({ emitFile: true, filename: 'stats.html' })] : []),
 		SvelteKitPWA({
-			registerType: 'autoUpdate',
-			injectRegister: 'auto',
+			// ⚠️ `prompt`, no `autoUpdate`, y no es una preferencia estética.
+			//
+			// Con `autoUpdate` el módulo virtual recarga la pestaña **sin preguntar** en
+			// cuanto el service worker nuevo toma el control (escucha `controlling` y
+			// llama a `location.reload()`). En una app cuyo estado vive en el cliente eso
+			// es pérdida de datos: un despliegue en mitad de un import de CSV, de una
+			// edición en Gestionar activos o del panel fiscal se lleva el trabajo por
+			// delante y el usuario no ha pedido nada. Y `onNeedRefresh` **no se invoca**
+			// en modo `autoUpdate`, así que no hay forma de avisar sin cambiar de modo.
+			//
+			// En `prompt` el worker nuevo espera; quien decide recargar es el usuario
+			// desde `UpdatePrompt.svelte`.
+			registerType: 'prompt',
+			// `false` a propósito: el registro es explícito en `+layout.svelte` (ver el
+			// comentario de allí). Con `'auto'` el plugin generaba y desplegaba un
+			// `registerSW.js` que nunca insertaba en el HTML — un fichero muerto servido
+			// con 200 que además hacía creer que la PWA estaba registrada.
+			injectRegister: false,
 			devOptions: {
 				enabled: true
 			},
@@ -30,8 +46,38 @@ export default defineConfig({
 			// delega el control de los patrones completamente al usuario. Precacheamos sólo
 			// los assets del cliente: el HTML público lo prerenderiza el build y lo sirve la CDN.
 			workbox: {
+				// ⚠️ **Lista explícita, y la razón es que el patrón de brocha gorda que
+				// había aquí precacheaba 281 ficheros y 15,7 MB en la primera visita.**
+				//
+				// Era `client/**/*.{js,css,html,ico,png,webp,woff2,svg,json,webmanifest}`,
+				// que barre todo el output de cliente: 122 PNG y 13 MB de ellos son las
+				// tarjetas OG (`og/`, 28 ficheros) y las imágenes del blog (`blog/`, 42),
+				// que solo existen para que las pinte Twitter o LinkedIn — nadie las abre
+				// desde la app y jamás hacen falta sin red. Y el `install` de Workbox es
+				// todo-o-nada: cuantos más ficheros, más probable que uno falle y se caiga
+				// el service worker entero (que es exactamente lo que pasaba con
+				// `/offline`, ver abajo).
+				//
+				// Se precachea el esqueleto de la SPA y nada más: JS, CSS, la tipografía
+				// latina, los iconos y la página offline. ~135 ficheros, ~2,4 MB.
+				//
+				// Dos exclusiones que importan y no se ven:
+				//   · `_app/version.json` — SvelteKit lo pide con `no-cache` para detectar
+				//     despliegues nuevos; servirlo del precache lo congelaría en la
+				//     versión vieja y `updated.current` nunca se pondría a `true`.
+				//   · `.well-known/assetlinks.json` y `llms*.txt` — los leen Android y los
+				//     crawlers, nunca la app.
 				globPatterns: [
-					'client/**/*.{js,css,html,ico,png,webp,woff2,svg,json,webmanifest}'
+					'client/_app/immutable/**/*.{js,css}',
+					'client/fonts/fonts.css',
+					// Solo los subconjuntos latinos: los cirílicos y vietnamitas son 150 KB
+					// de glifos que esta app, en español e inglés, no pinta nunca.
+					'client/fonts/*-latin-*.woff2',
+					'client/offline.html',
+					// El webmanifest **no** se lista: el plugin ya lo mete en el precache por
+					// su cuenta, como `manifest.webmanifest` sin barra inicial, y añadirlo
+					// aquí lo dejaba dos veces (la copia con barra y la suya).
+					'client/{favicon.ico,favicon.png,apple-touch-icon.png,pwa-192x192.png,pwa-512x512.png}'
 				],
 				globIgnores: ['server/**'],
 				modifyURLPrefix: { 'client/': '/' },
@@ -54,20 +100,46 @@ export default defineConfig({
 				// como Workbox resuelve por orden de registro esa ruta gana y sirve el
 				// esqueleto precacheado en TODAS las navegaciones, también online.
 				navigateFallback: null,
-				// ⚠️ Normaliza la única entrada rota del precache.
+				// ⚠️ El orden importa: Workbox resuelve por orden de registro y atiende la
+				// primera ruta que casa. La del dashboard tiene que ir antes que la
+				// genérica de navegación, o nunca se llega a ella.
 				//
-				// El plugin reescribe las entradas `.html` a rutas limpias, y con
-				// `client/offline.html` producía `{url: "offline"}` — **sin barra
-				// inicial**, la única así entre todas las demás (`/manifest.webmanifest`,
-				// `/og-image-blog.png`…). Resolvía a `/offline`, que devuelve 404: el
-				// fichero real se sirve en `/offline.html`. Workbox habría fallado al
-				// precachearla y con ella se habría caído el `install` entero del service
-				// worker. No se notó nunca porque el SW tampoco se registraba.
-				//
-				// Se lanza si no encuentra exactamente una: si el plugin cambia de
-				// comportamiento, el build **rompe** en vez de dejar el fallback muerto y
-				// con el mismo aspecto verde de siempre.
+				// (Aquí vivía un comentario que describía un `manifestTransforms` que se
+				// probó, se quitó del código y sobrevivió en prosa. Afirmaba que el
+				// manifest tenía «una única entrada sin barra inicial» y que el build
+				// rompía si no la encontraba: no había transform alguno, y las entradas
+				// sin barra eran nueve. Un comentario huérfano miente con más
+				// credibilidad que ningún otro sitio.)
 				runtimeCaching: [
+					{
+						// ⚠️ `/dashboard` sin red servía la página offline **teniendo la
+						// cartera entera en local**, que es justo lo contrario de lo que la
+						// app promete: los datos viven en IndexedDB y no necesitan conexión.
+						// La causa era tener una sola ruta `NetworkOnly` para todas las
+						// navegaciones: no distingue una página pública, que sin red no se
+						// puede pintar, de una SPA que solo necesita su esqueleto.
+						//
+						// `NetworkFirst` deja la red como fuente de verdad —estando online
+						// nunca se sirve un esqueleto viejo— y guarda una copia con la que
+						// arrancar sin conexión. El `precacheFallback` cubre el único caso
+						// que queda: no haber entrado nunca al dashboard con red, y por
+						// tanto no tener copia que servir.
+						//
+						// Es caché de runtime y no una entrada del precache porque el
+						// esqueleto **no existe como fichero**: `/dashboard` es `ssr = false`
+						// sin `prerender`, así que lo genera la función serverless.
+						urlPattern: ({ request, url }) =>
+							request.mode === 'navigate' && url.pathname.startsWith('/dashboard'),
+						handler: 'NetworkFirst',
+						options: {
+							cacheName: 'corebalance-dashboard-shell',
+							// Con red mala no se espera indefinidamente: a los 3 s entra la
+							// copia local, que es lo que el usuario quiere ver.
+							networkTimeoutSeconds: 3,
+							expiration: { maxEntries: 4 },
+							precacheFallback: { fallbackURL: '/offline' }
+						}
+					},
 					{
 						urlPattern: ({ request }) => request.mode === 'navigate',
 						handler: 'NetworkOnly',
@@ -95,15 +167,14 @@ export default defineConfig({
 					}
 				]
 			},
-			includeAssets: [
-				'favicon.png',
-				'favicon.ico',
-				'apple-touch-icon.png',
-				'logo.png',
-				'logo.webp',
-				'pwa-192x192.png',
-				'pwa-512x512.png'
-			],
+			// ⚠️ Sin `includeAssets`, y no es un descuido. Su único efecto es añadir
+			// ficheros al precache, y lo hacía **sin el prefijo `client/`**, así que
+			// `modifyURLPrefix` no los reescribía y acababan en el manifest sin barra
+			// inicial: el precache llevaba `/favicon.ico` *y* `favicon.ico`, los dos, siete
+			// iconos duplicados y el webmanifest dos veces. Los iconos entran por
+			// `globPatterns`, que es donde se ve lo que se precachea y en qué forma. Los
+			// iconos del manifest se declaran aparte, en `manifest.icons`, y no dependen
+			// de esto.
 			manifest: {
 				name: 'CoreBalance — Finanzas e Inversión',
 				short_name: 'CoreBalance',

@@ -25,6 +25,18 @@ class UIStore {
 	// Changelog Modal State
 	showChangelog = $state(false);
 
+	/**
+	 * Actualización de la PWA pendiente de aceptar.
+	 *
+	 * ⚠️ Recargar **es** decisión del usuario, no del despliegue: el estado de esta app
+	 * vive en el cliente, así que una recarga a traición en mitad de un import de CSV
+	 * o de una edición se lleva el trabajo por delante. `applySwUpdate` la aplica
+	 * (activa el worker nuevo y recarga) y la pone el propio registro del service
+	 * worker en `+layout.svelte`.
+	 */
+	swUpdateReady = $state(false);
+	applySwUpdate: (() => void) | null = null;
+
 	constructor() {
 		if (typeof localStorage !== 'undefined') {
 			const saved = localStorage.getItem('corebalance_currency');

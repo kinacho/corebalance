@@ -3,6 +3,7 @@
 	import SplashScreen from '$lib/components/SplashScreen.svelte';
 	import Toast from '$lib/components/Toast.svelte';
 	import InstallPrompt from '$lib/components/InstallPrompt.svelte';
+	import UpdatePrompt from '$lib/components/UpdatePrompt.svelte';
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { ui } from '$lib/stores/ui.svelte';
 	import { hasLocalHoldingsData } from '$lib/utils';
@@ -80,11 +81,34 @@
 		 * sitio que se lee.
 		 */
 		import('virtual:pwa-register')
-			.then(({ registerSW }) => registerSW({ immediate: true }))
+			.then(({ registerSW }) => {
+				const updateSW = registerSW({
+					immediate: true,
+					/**
+					 * Hay versión nueva esperando. Se avisa y **no se recarga solo**: con
+					 * `registerType: 'autoUpdate'` esto no se ejecutaba nunca y la pestaña se
+					 * recargaba sin preguntar en cada despliegue, capaz de llevarse por
+					 * delante un import de CSV a medio hacer. Ver `UpdatePrompt.svelte`.
+					 */
+					onNeedRefresh() {
+						ui.applySwUpdate = () => updateSW(true);
+						ui.swUpdateReady = true;
+					},
+					/**
+					 * ⚠️ Sin esto, un fallo real de registro es **mudo**: build verde,
+					 * consola limpia y PWA inexistente. Es exactamente el silencio que este
+					 * bloque decía cerrar, y se había dejado abierto — el `.catch()` de abajo
+					 * solo cubre que falle el `import()`, no que falle el registro.
+					 */
+					onRegisterError(error: unknown) {
+						console.error('[pwa] el registro del service worker falló', error);
+					}
+				});
+			})
 			.catch((error) => {
 				// Nunca debe tumbar la app: sin service worker CoreBalance funciona igual,
 				// solo pierde instalación y offline.
-				console.warn('[pwa] no se pudo registrar el service worker', error);
+				console.warn('[pwa] no se pudo cargar el registro del service worker', error);
 			});
 
 		if ((window as any).__deferredPrompt) {
@@ -120,6 +144,7 @@
 
 <Toast />
 <InstallPrompt />
+<UpdatePrompt />
 
 {#if ui.showSupportModal && SupportModal}
 	<SupportModal />
