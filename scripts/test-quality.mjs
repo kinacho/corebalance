@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /**
  * Guardia contra tests que no pueden fallar.
  *

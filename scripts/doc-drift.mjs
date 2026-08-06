@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /**
  * Comprobador de deriva de `CLAUDE.md`.
  *
