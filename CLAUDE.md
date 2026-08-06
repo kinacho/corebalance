@@ -18,9 +18,13 @@ The repo is really two apps:
 | `npm run dev` | Runs `vite dev` **and** the typesafe-i18n watcher in parallel. Editing `src/lib/i18n/es/index.ts` only regenerates types while this watcher runs. |
 | `npm run build` | `prebuild` first regenerates icons, OG images and `llms*.txt` (`scripts/*.mjs`). |
 | `npm run check` | `svelte-kit sync && svelte-check` (strict TS, `checkJs` too). |
-| `npm test` | Vitest unit tests. |
+| `npm test` | Vitest unit tests — including the two Layer-0 guards (`scripts/doc-drift.test.ts`, `scripts/test-quality.test.ts`). |
 | `npm test -- src/lib/rebalance.test.ts` | Run a single test file. |
-| `npm run test:e2e` | ⚠️ Declared, but **no `playwright.config.ts` or spec files exist** — E2E is not actually set up. |
+| `npm run test:coverage` | Same tests plus **per-file coverage thresholds** on the six money modules. What CI runs. |
+| `npm run test:e2e` | Playwright over `vite preview` — **needs `npm run build` first**. 11 specs in `e2e/`. |
+| `npm run test:quality` | Finds tests that cannot fail: literal tautologies and tests with no assertion at all. |
+| `npm run docs:check` | Finds identifiers and paths cited in `CLAUDE.md` that do not exist in the repo. |
+| `npm run test:mutation` | Mutation testing (Stryker) over the six money modules. ~20 min; weekly in CI, or on demand before/after touching that code. Run via `npx` — **not** a dependency. |
 | `npm run backtest` | Regenerates `src/lib/data/backtest-8020.json` from real Yahoo data (citable dataset). |
 | `npm run og` / `icons` / `llms` | Regenerate OG cards / icons / llms.txt manually. |
 | `npm run indexnow` | Ping IndexNow with recently-modified sitemap URLs. Deliberately **not** hooked to the build. |
@@ -136,6 +140,27 @@ Vitest + jsdom, `*.test.ts` **colocated next to the source file**. Setup in `src
 Tests must use **fixed dates**, never `Date.now()` — the fiscal windows are date arithmetic and a suite that passes today would fail in three months. `calculateTaxAwareRebalance()` takes `now` in its options for exactly that reason.
 
 `TaxAwareRebalance.test.ts` renders the component with a mocked store, and it exists for a specific reason: **the demo portfolio is exactly on target**, so in a browser that panel always says "nothing to move" and the populated path was never exercised anywhere.
+
+### The four mechanical guards (Layer 0)
+
+They exist because the recurring defect in this repo is not a wrong algorithm, it is **a check that cannot fail**: one adversarial review turned up three of them at once (a suite pointing at a directory that no longer existed and therefore skipped every run, an `expect(true).toBe(true)` standing in for "no fixtures", and a width assertion measured against the widest cell in the whole map, so only one cell of nine could ever fail it). Each guard answers a different question, and none replaces another — that is the point of having four.
+
+- **`scripts/doc-drift.mjs` — does the prose still name real code?** Every backticked identifier and path in `CLAUDE.md` must exist. Caught nothing today because it is what would have caught `NO_TARGET_HUES` / `DARK_SURFACE`. ⚠️ Two design details it cannot live without: `MENCIONES_HISTORICAS` (an allowlist **with a written reason per entry** — this file legitimately cites things that were deleted or never existed), and the fact that identifiers are searched in **code only, never in `.md`** — with markdown in the haystack the audited document validated its own claims, which the fixture caught. Its first version reported 53 orphans out of 53 (it compared `fs.existsSync` against `fiscal.ts`, `/dashboard`, `--accent-blue/green/orange`…); a guard with 53 false positives does not get fixed, it gets silenced.
+- **`scripts/test-quality.mjs` — is there an assertion at all?** Flags literal tautologies and tests with no `expect`. Two false positives it had to learn: comments are stripped (it was accusing the very comment that documented a fix) and so are template literals (a test whose *string* contains `it(...)` split the parser and hid its own assertions). `it.skip` is legitimate and exempt.
+- **Per-file coverage thresholds (`vitest.config.ts`) — did the line even run?** Only the six pure money modules, with floors set to the measured value rounded down, so the ratchet can only tighten. No global percentage: an 80 % across 147 files says nothing about any of them.
+- **`stryker.config.json` — would the test notice if the behaviour changed?** The only one that answers that, and the only one coverage cannot fake (a test with no assertions scores 100 % coverage). ⚠️ **Stryker is deliberately not a dependency**: its tree carries a `qs` advisory that `npm audit fix` does not resolve, and a permanent Dependabot alert on a public repo is a bad trade for a weekly tool. It runs through `npx` (`npm run test:mutation`, or the weekly `.github/workflows/mutation.yml`); ~18 min for the six modules, `break` set to 68 against a measured 70.39.
+  **First measurement, 6-ago-2026, and it is the most useful number the guards produced:** coverage 90–97 % against a mutation score of 62–80 % — `rebalance.ts` **61.92 %** (89 survivors) with 97.19 % statement coverage, `traspaso.ts` 66.14 %, `instrument-type.ts` 68.13 %, `fiscal.ts` 75.26 %, `treemap.ts` 76.98 %, `lookthrough.ts` 79.66 %. That gap *is* the difference between "the line ran" and "a test would notice if the behaviour changed", and it says where to work: `rebalance.ts` and `traspaso.ts` first, which is exactly where being wrong costs the user money. Concrete survivor to start with: `w >= h` → `w > h` in `treemap.ts`, the split direction of the entire layout, which no test pins.
+
+### E2E (`e2e/`, `playwright.config.ts`)
+
+Runs against `vite preview`, so **`npm run build` first**; the service worker, the precache and hashed chunks only exist in a build. It covers what unit tests structurally cannot: that the dashboard boots at all (it is `ssr = false`, so a hydration error yields a blank page with a green build), that the service worker registers and precaches ~145 entries, the deviation map in both states, the tax panel with a real plan in it, and `/dashboard` **with the network off**.
+
+Three things learned writing it, all of which will bite again:
+- ⚠️ **Fix the locale.** `hooks.server.ts` resolves language from `Accept-Language` when there is no cookie, so the dashboard renders in English or Spanish depending on the browser; specs that assert Spanish text failed as a timeout on an empty locator, which points at the assertion and not at the cause. `use.locale` + `Accept-Language` are pinned in the config, and the map panels are located by `.map-box:not(.is-lookthrough)` rather than by their title.
+- ⚠️ **Intercept `/api/prices`.** Otherwise the store overwrites the seeded prices with whatever Yahoo says, fixture tickers resolve to 0, and the positions vanish from the map by the value filter.
+- ⚠️ **A service worker never controls the navigation that installs it**, so the offline specs need a second visit before anything is cached. The first version failed with "the shell was not cached" and the defect was in my expectation, not in the code.
+
+**The offline spec earned its keep on its first run**, one day after the service-worker fix was called done: it found that the cached shell alone is useless, because on hydration SvelteKit fetches `/dashboard/__data.json` and, with that request failing, the client router lands on its own "500 Ha ocurrido un error" page. Hence the second runtime route (`corebalance-dashboard-data`). No unit test can see this: it needs a real worker and a really dead network.
 
 ## Gotchas
 
