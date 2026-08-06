@@ -12,6 +12,13 @@ node_modules
 # no estaba ignorado: output generado a un paso de colarse en un repo público.
 /dev-dist
 
+# Informes de la capa 0: cobertura, E2E y mutation testing. Todos se regeneran.
+/coverage
+/playwright-report
+/test-results
+/reports
+/.stryker-tmp
+
 # OS
 .DS_Store
 Thumbs.db

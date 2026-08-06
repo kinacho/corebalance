@@ -1,0 +1,21 @@
+{
+  "$schema": "https://raw.githubusercontent.com/stryker-mutator/stryker-js/master/packages/api/schema/stryker-core.json",
+  "testRunner": "vitest",
+  "vitest": { "configFile": "vitest.config.ts" },
+  "coverageAnalysis": "perTest",
+  "mutate": [
+    "src/lib/fiscal.ts",
+    "src/lib/traspaso.ts",
+    "src/lib/rebalance.ts",
+    "src/lib/lookthrough.ts",
+    "src/lib/treemap.ts",
+    "src/lib/instrument-type.ts"
+  ],
+  "reporters": ["clear-text", "progress", "json"],
+  "jsonReporter": { "fileName": "reports/mutation/mutation.json" },
+  "thresholds": { "high": 85, "low": 70, "break": 68 },
+  "timeoutMS": 20000,
+  "concurrency": 4,
+  "tempDirName": ".stryker-tmp",
+  "ignoreStatic": true
+}
