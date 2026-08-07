@@ -286,3 +286,70 @@ describe('approximateTextWidth, una señal por caso', () => {
 		expect(approximateTextWidth('', F, 0.5)).toBe(0);
 	});
 });
+
+/**
+ * Los tres mutantes del orden y los tres del punto de corte sobrevivían a la suite
+ * anterior, y la investigación del 7-ago-2026 demostró que **no eran equivalentes**:
+ * cambian la salida. Lo que faltaba era un test que mirase el reparto y no sólo sus
+ * invariantes — área conservada, sin solapes, dentro del lienzo y determinista se
+ * cumplen igual con el orden roto.
+ */
+describe('el reparto en sí, no sólo sus invariantes', () => {
+	it('coloca primero el mayor aunque llegue el último', () => {
+		// Sin el `.sort` descendente, el primero colocado sería `a`.
+		const out = squarify(
+			[
+				{ key: 'a', value: 1 },
+				{ key: 'b', value: 5 },
+				{ key: 'c', value: 20 }
+			],
+			200,
+			100
+		);
+		expect(out[0].key).toBe('c');
+		expect(out[0].x).toBe(0);
+		expect(out[0].y).toBe(0);
+	});
+
+	it('el orden de entrada no cambia el resultado', () => {
+		const items = [
+			{ key: 'a', value: 1 },
+			{ key: 'b', value: 5 },
+			{ key: 'c', value: 20 }
+		];
+		const asc = squarify(items, 200, 100);
+		const desc = squarify([...items].reverse(), 200, 100);
+		expect(desc).toEqual(asc);
+	});
+
+	/**
+	 * El punto de corte parte por la mitad del valor. Con seis elementos iguales eso
+	 * son tres y tres, así que los tres primeros tienen que ocupar **media superficie**.
+	 * Es la propiedad que distingue el corte correcto de moverlo un elemento — y de
+	 * romperlo del todo, que provoca recursión infinita.
+	 */
+	it('parte por la mitad del valor: seis iguales se reparten tres y tres', () => {
+		const out = squarify(
+			Array.from({ length: 6 }, (_, i) => ({ key: `k${i}`, value: 10 })),
+			300,
+			200
+		);
+		expect(out).toHaveLength(6);
+
+		const enLaIzquierda = out.filter((r) => r.x < 150).length;
+		expect(enLaIzquierda).toBe(3);
+
+		/**
+		 * ⚠️ Y hace falta fijar además la **forma** del primer rectángulo, no sólo el
+		 * reparto tres y tres. Comprobado aplicando los mutantes del corte: mover el
+		 * punto un elemento sigue dejando tres a cada lado y sigue conservando el área
+		 * —el reparto es proporcional—, así que ni contar elementos ni medir superficie
+		 * distinguen nada. Lo que cambia es cómo se subdividen por dentro: 150×66,7 con
+		 * el corte correcto, 100×100 al mover la comparación a `>=`, 75×133,3 al
+		 * cambiarle el signo. Es un valor pinchado a propósito, y el algoritmo es
+		 * determinista justo para que se pueda pinchar.
+		 */
+		expect(out[0].w).toBeCloseTo(150, 1);
+		expect(out[0].h).toBeCloseTo(66.7, 1);
+	});
+});
