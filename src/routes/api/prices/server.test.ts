@@ -20,6 +20,7 @@ vi.mock('./priceHelpers', async (importOriginal) => ({
 }));
 
 import { GET } from './+server';
+import { FT_ONLY_ASSETS } from '$lib/ft-assets';
 
 /** Una cotización de Yahoo con lo mínimo que el endpoint lee. */
 const cotizacion = (symbol: string, extra: Record<string, unknown> = {}) => ({
@@ -187,6 +188,57 @@ describe('GET /api/prices', () => {
 
 			expect(prices['CALIENTE.DE']).toBeUndefined();
 			expect(errors.join(' ')).toContain('CALIENTE.DE');
+		});
+	});
+
+	/**
+	 * Fondos que sólo existen en Financial Times, con el ISIN haciendo de ticker.
+	 *
+	 * ⚠️ Este bloque no existía y su ausencia dejaba la función rota a medias, de la
+	 * peor manera posible: `/api/search` y `/api/resolve` ya sabían encontrar estos
+	 * ISIN, así que se podían buscar, resolver y meter en la cartera — y entonces el
+	 * precio se le pedía a Yahoo, que no los tiene. Poder añadir algo que la app no
+	 * sabe valorar es peor que no poder añadirlo.
+	 */
+	describe('fondos que sólo existen en Financial Times', () => {
+		const ISIN = Object.keys(FT_ONLY_ASSETS)[0];
+
+		it('coge el precio de FT y no se lo pide a Yahoo', async () => {
+			fetchFTPrice.mockResolvedValue({ price: 463.15, change: -0.18 });
+			const { prices, errors } = await (await pedir(ISIN)).json();
+
+			expect(prices[ISIN]).toMatchObject({
+				price: 463.15,
+				change: -0.18,
+				currency: FT_ONLY_ASSETS[ISIN].currency,
+				name: FT_ONLY_ASSETS[ISIN].name
+			});
+			expect(errors).toEqual([]);
+			// Preguntarle a Yahoo por este ISIN sólo puede devolver un error.
+			expect(quote.mock.calls[0][0]).not.toContain(ISIN);
+		});
+
+		/**
+		 * Sin red de seguridad: los de `RELIABLE_FT_MAPPINGS` caen a Yahoo si FT cambia
+		 * su maquetación, éstos no tienen debajo a nadie. Lo que no puede pasar es que
+		 * el activo desaparezca en silencio, que era el defecto de esta misma mañana.
+		 */
+		it('si FT no da precio, lo dice en errores en vez de callarse', async () => {
+			fetchFTPrice.mockResolvedValue(null);
+			const { prices, errors } = await (await pedir(ISIN)).json();
+
+			expect(prices[ISIN]).toBeUndefined();
+			expect(errors.join(' ')).toContain(ISIN);
+			expect(errors.join(' ')).toContain(FT_ONLY_ASSETS[ISIN].name);
+		});
+
+		it('no estorba a los tickers normales de la misma petición', async () => {
+			fetchFTPrice.mockResolvedValue({ price: 463.15, change: -0.18 });
+			const { prices, errors } = await (await pedir(`${ISIN},VWCE.DE`)).json();
+
+			expect(prices[ISIN].price).toBe(463.15);
+			expect(prices['VWCE.DE'].price).toBe(100);
+			expect(errors).toEqual([]);
 		});
 	});
 

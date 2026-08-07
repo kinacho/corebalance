@@ -36,6 +36,7 @@ import {
 	correctSubunitCurrencies,
 	calculateHistoricalMetrics
 } from './priceHelpers';
+import { FT_ONLY_ASSETS, isFtOnlyAsset } from '$lib/ft-assets';
 
 // --- Rate Limiting ---
 const RATE_LIMIT = 30;       // max requests
@@ -109,10 +110,59 @@ for (const t of cashTickers) {
 		return json({ prices, timestamp: new Date().toISOString(), errors });
 	}
 
+	/**
+	 * Fondos que **sólo existen en Financial Times**, con el ISIN haciendo de ticker.
+	 *
+	 * ⚠️ Este bloque faltaba, y su ausencia dejaba la función rota a medias de la peor
+	 * manera: `/api/search` y `/api/resolve` ya sabían encontrar estos ISIN, así que el
+	 * usuario podía buscarlos, resolverlos y meterlos en su cartera — y entonces el
+	 * precio se le pedía a Yahoo, que no los tiene, y el activo se quedaba sin valorar.
+	 * Poder añadir algo que la app no sabe valorar es peor que no poder añadirlo.
+	 *
+	 * Se resuelven **antes** del bulk y salen de esa lista: preguntarle a Yahoo por
+	 * ellos sólo puede gastar una petición y devolver un error.
+	 *
+	 * ⚠️ Sin red de seguridad, y conviene saberlo: los de `RELIABLE_FT_MAPPINGS` caen a
+	 * Yahoo si FT cambia su maquetación; éstos no tienen debajo a nadie. Si el scraper
+	 * deja de casar, aquí sale un error visible en `errors` —que es lo que corresponde—
+	 * en vez de un activo que desaparece en silencio.
+	 */
+	const ftOnlyTickers = realTickers.filter((t) => isFtOnlyAsset(t));
+	if (ftOnlyTickers.length > 0) {
+		const resultadosFt = await Promise.all(
+			ftOnlyTickers.map(async (ticker) => ({
+				ticker,
+				datos: await fetchFTPrice(ticker.toUpperCase())
+			}))
+		);
+		for (const { ticker, datos } of resultadosFt) {
+			const entrada = FT_ONLY_ASSETS[ticker.toUpperCase()];
+			if (!datos) {
+				errors.push(
+					`No se pudo obtener el precio de ${ticker} (${entrada.name}) en Financial Times.`
+				);
+				continue;
+			}
+			prices[ticker] = {
+				price: datos.price,
+				currency: entrada.currency,
+				name: entrada.name,
+				change: datos.change,
+				lastUpdate: Date.now()
+			};
+		}
+	}
+
+	const tickersParaYahoo = realTickers.filter((t) => !isFtOnlyAsset(t));
+
+	if (tickersParaYahoo.length === 0) {
+		return json({ prices, timestamp: new Date().toISOString(), errors });
+	}
+
 	// 1. Obtener todas las cotizaciones de golpe (Bulk fetch) para mejorar rendimiento
 	let quotesResult: any[] = [];
 	try {
-		quotesResult = await yahooFinance.quote(realTickers);
+		quotesResult = await yahooFinance.quote(tickersParaYahoo);
 	} catch (error: any) {
 		console.error("Error en bulk quote:", error);
 		errors.push("Error general obteniendo cotizaciones: " + error.message);
@@ -130,7 +180,7 @@ for (const t of cashTickers) {
 
 	// Pre-verificar caché en paralelo para todos los tickers
 	const cacheCheckResults = await Promise.all(
-		realTickers.map(async (ticker) => {
+		tickersParaYahoo.map(async (ticker) => {
 			const cached = await getCachedHistory(ticker) as any;
 			if (cached && (now - (cached.timestamp || 0) < CACHE_TTL_MS)) {
 				return { ticker, cached, isMiss: false };

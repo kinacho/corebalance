@@ -2,6 +2,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { yahooFinance } from '$lib/server/yahoo';
 import { checkRateLimit } from '$lib/server/rateLimit';
+import { FT_ONLY_ASSETS, isFtOnlyAsset } from '$lib/ft-assets';
 
 // Rate limiting
 const RATE_LIMIT = 5;
@@ -59,11 +60,13 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 	// Resolver ISINs buscándolos en Yahoo Finance
 	for (const isin of isins) {
 		const cleanIsin = isin.trim().toUpperCase();
-		if (cleanIsin === 'IE00B2NXKW18') {
+		// Los activos que sólo existen en FT se resuelven a sí mismos: su ISIN *es* el
+		// ticker interno. Se lee del registro, no de una copia escrita aquí.
+		if (isFtOnlyAsset(cleanIsin)) {
 			results.push({
 				query: isin,
-				ticker: 'IE00B2NXKW18',
-				name: 'Seilern World Growth EUR U R',
+				ticker: cleanIsin,
+				name: FT_ONLY_ASSETS[cleanIsin].name,
 				type: 'MUTUALFUND',
 				exchange: 'Financial Times'
 			});

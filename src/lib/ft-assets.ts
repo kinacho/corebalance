@@ -40,16 +40,37 @@ export function isFtOnlyAsset(isin: string): boolean {
 }
 
 /**
- * Devuelve los activos FT-only que coinciden con una query de búsqueda
- * (por ISIN exacto o por alias de nombre)
+ * Devuelve los activos FT-only que coinciden con una query de búsqueda.
+ *
+ * ⚠️ Coincide por **principio de palabra, y con todos los términos**, no por
+ * subcadena suelta. La comparación va en el sentido contrario al que uno espera —no
+ * es que la consulta contenga el nombre del fondo, es que el nombre lo contenga a
+ * él—, así que con `includes()` buscar `ow` casaba con «Gr**ow**th» y colaba un
+ * fondo boutique en una búsqueda que no tenía nada que ver. Exigir todos los
+ * términos es lo que además permite que el alias declarado «world growth» funcione
+ * como alias y que «seilern» seguido de otra cosa deje de casar.
+ *
+ * El ISIN se compara por prefijo, que es como se teclea o se pega desde un extracto.
  */
 export function searchFtAssets(query: string): Array<{ isin: string } & FtAssetEntry> {
-	const lowerQuery = query.toLowerCase().trim();
+	const terminos = query
+		.toLowerCase()
+		.split(/[^a-z0-9]+/i)
+		.filter(Boolean);
+	if (terminos.length === 0) return [];
+
 	return Object.entries(FT_ONLY_ASSETS)
-		.filter(([isin, entry]) =>
-			isin.toLowerCase().includes(lowerQuery) ||
-			entry.name.toLowerCase().includes(lowerQuery) ||
-			entry.searchAliases.some(alias => alias.includes(lowerQuery))
-		)
+		.filter(([isin, entry]) => {
+			// El ISIN por prefijo tiene la última palabra: es una señal inequívoca.
+			if (isin.toLowerCase().startsWith(terminos.join(''))) return true;
+
+			const palabras = [entry.name, ...entry.searchAliases]
+				.join(' ')
+				.toLowerCase()
+				.split(/[^a-z0-9]+/i)
+				.filter(Boolean);
+
+			return terminos.every((t) => palabras.some((p) => p.startsWith(t)));
+		})
 		.map(([isin, entry]) => ({ isin, ...entry }));
 }
