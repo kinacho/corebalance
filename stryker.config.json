@@ -12,7 +12,8 @@
     "src/lib/ledger.ts",
     "src/lib/lookthrough.ts",
     "src/lib/treemap.ts",
-    "src/lib/instrument-type.ts"
+    "src/lib/instrument-type.ts",
+    "src/lib/weights.ts"
   ],
   "reporters": [
     "clear-text",
