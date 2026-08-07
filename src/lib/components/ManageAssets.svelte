@@ -4,6 +4,11 @@
 	import type { Asset, AssetCategory, InstrumentType } from '$lib/types';
 	import { formatPercent } from '$lib/utils';
 	import { instrumentTypeOf } from '$lib/instrument-type';
+	import {
+		redistributeWeights,
+		equalizeWeights as repartirIgual,
+		roundWeight
+	} from '$lib/weights';
 	import { indexKeyOf, INDICES } from '$lib/lookthrough';
 	import { focusTrap } from '$lib/actions/focusTrap';
 	import { LL } from '$lib/i18n/i18n-svelte';
@@ -38,10 +43,12 @@
 
 	let originalState: any;
 
-	function roundDec(val: number, dec: number = 4): number {
-		const factor = Math.pow(10, dec);
-		return Math.round(val * factor) / factor;
-	}
+	/**
+	 * El reparto de pesos vive en `$lib/weights`, no aquí. No es interfaz: decide los
+	 * `targetWeight`, que son la entrada de `calculateRebalance()`. Aquí queda sólo
+	 * aplicar el resultado al store y el aviso al usuario.
+	 */
+	const roundDec = roundWeight;
 
 	const dnd = createDragDropManager({
 		onAssetMoved: moveAssetSafely,
@@ -104,75 +111,27 @@
 		showSearch = true;
 	}
 
-	function adjustSumToExact100() {
-		const assets = portfolio.coreAssets;
-		if (assets.length === 0) return;
-		
-		let total = 0;
-		assets.forEach(a => total += a.targetWeight);
-		
-		const diff = 1.0 - total;
-		if (Math.abs(diff) > 0.00001) {
-			const adjustable = assets.find(a => !lockedAssets[a.ticker]);
-			if (adjustable) {
-				portfolio.updateAsset(adjustable.ticker, { 
-					targetWeight: Math.max(0, roundDec(adjustable.targetWeight + diff, 4)) 
-				});
-			} else if (assets.length > 0) {
-				portfolio.updateAsset(assets[0].ticker, { 
-					targetWeight: Math.max(0, roundDec(assets[0].targetWeight + diff, 4)) 
-				});
-			}
+	/** Vuelca al store los pesos que ha calculado el módulo. */
+	function aplicarPesos(pesos: Record<string, number>) {
+		for (const [ticker, targetWeight] of Object.entries(pesos)) {
+			portfolio.updateAsset(ticker, { targetWeight });
 		}
 	}
 
 	function handleWeightChange(ticker: string, newPercent: number) {
-		const assets = portfolio.coreAssets;
-		if (assets.length <= 1) {
-			portfolio.updateAsset(ticker, { targetWeight: 1.0 });
-			return;
-		}
+		const { weights, error } = redistributeWeights(
+			portfolio.coreAssets,
+			ticker,
+			newPercent,
+			lockedAssets
+		);
 
-		let lockedSum = 0;
-		assets.forEach(a => {
-			if (a.ticker !== ticker && lockedAssets[a.ticker]) {
-				lockedSum += a.targetWeight;
-			}
-		});
-
-		const otherFreeAssets = assets.filter(a => a.ticker !== ticker && !lockedAssets[a.ticker]);
-		if (otherFreeAssets.length === 0) {
+		if (error === 'no-free-assets') {
 			ui.addToast($LL.toasts.no_free_assets(), 'error');
 			return;
 		}
 
-		const maxPercent = Math.max(0, 100 - roundDec(lockedSum * 100, 2));
-		const clampedPercent = Math.max(0, Math.min(maxPercent, newPercent));
-		const newWeight = roundDec(clampedPercent / 100, 4);
-
-		const availableWeight = roundDec(1.0 - newWeight - lockedSum, 4);
-
-		let otherFreeSum = 0;
-		otherFreeAssets.forEach(a => {
-			otherFreeSum += a.targetWeight;
-		});
-
-		if (otherFreeSum > 0) {
-			otherFreeAssets.forEach(a => {
-				const proportionalWeight = a.targetWeight * (availableWeight / otherFreeSum);
-				const rounded = roundDec(proportionalWeight, 4);
-				portfolio.updateAsset(a.ticker, { targetWeight: rounded });
-			});
-		} else {
-			const equalShare = availableWeight / otherFreeAssets.length;
-			otherFreeAssets.forEach(a => {
-				const rounded = roundDec(equalShare, 4);
-				portfolio.updateAsset(a.ticker, { targetWeight: rounded });
-			});
-		}
-
-		portfolio.updateAsset(ticker, { targetWeight: newWeight });
-		adjustSumToExact100();
+		aplicarPesos(weights);
 		ui.hapticFeedback('light');
 	}
 
@@ -240,16 +199,9 @@
 	/** Distribuir pesos equitativamente entre activos del core */
 	function equalizeWeights() {
 		lockedAssets = {}; // Liberar todos los candados al igualar
-		const count = portfolio.coreAssets.length;
-		if (count === 0) return;
-		
-		const baseWeight = roundDec(1.0 / count, 4);
-		
-		portfolio.coreAssets.forEach((asset) => {
-			portfolio.updateAsset(asset.ticker, { targetWeight: baseWeight });
-		});
-		
-		adjustSumToExact100();
+		if (portfolio.coreAssets.length === 0) return;
+
+		aplicarPesos(repartirIgual(portfolio.coreAssets));
 		ui.hapticFeedback('medium');
 	}
 

@@ -44,6 +44,9 @@ export default defineConfig({
 				'src/lib/lookthrough.ts',
 				'src/lib/treemap.ts',
 				'src/lib/instrument-type.ts',
+				// Sacado de `ManageAssets.svelte` el 7-ago-2026: decide los `targetWeight`,
+				// que son la entrada de `calculateRebalance()`.
+				'src/lib/weights.ts',
 				// Añadidos el 7-ago-2026. No son «módulos de dinero» puros como los de
 				// arriba, pero fallan igual de caro y más callado: un precio malo no da
 				// error en ninguna parte, se convierte en una desviación mal calculada y
@@ -65,6 +68,8 @@ export default defineConfig({
 				'src/lib/treemap.ts': { statements: 92, branches: 91, functions: 88 },
 				// Subido el 6-ago-2026 con la tabla por señal: 90,00/92,10 → 100/100.
 				'src/lib/instrument-type.ts': { statements: 100, branches: 100, functions: 100 },
+				// Medido al nacer, 7-ago-2026.
+				'src/lib/weights.ts': { statements: 100, branches: 93, functions: 100 },
 				// Medidos al nacer la suite, 7-ago-2026. Las funciones no llegan a 100 en
 				// `priceHelpers` por el callback del `setTimeout` que aborta la petición a
 				// FT: sólo corre cuando FT tarda más de ocho segundos.
