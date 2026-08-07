@@ -74,5 +74,14 @@ jobs:
       # Sin `npm ci` a propósito: el script sólo usa builtins de node y `fetch`, así
       # que instalar dependencias serían dos minutos para no usar ninguna. Y esta
       # comprobación tiene que poder correr cuando el repo esté en cualquier estado.
+      # `--version-aviso` sólo en las ejecuciones por cron: ahí la comprobación no
+      # acompaña a ningún despliegue, así que ver la versión anterior puede
+      # significar sencillamente que hay un build de Vercel en curso. En
+      # `deployment_status` sigue siendo error, que es donde la pregunta «¿llegó a
+      # promocionarse este despliegue?» tiene sentido. Sin esto, bajar el cron a
+      # media hora habría cambiado un rojo falso por otro.
       - name: Comprobar producción
-        run: npm run smoke:prod -- --base "${{ github.event.inputs.base || 'https://corebalance.app' }}"
+        run: |
+          npm run smoke:prod -- \
+            --base "${{ github.event.inputs.base || 'https://corebalance.app' }}" \
+            ${{ github.event_name == 'schedule' && '--version-aviso' || '' }}

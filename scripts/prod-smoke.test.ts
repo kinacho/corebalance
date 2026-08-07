@@ -90,6 +90,7 @@ async function ejecutar(
 		dns?: Record<string, { normal: RespuestaDns; cd: RespuestaDns }>;
 		porResolver?: PorResolver;
 		getRevienta?: string;
+		versionBlanda?: boolean;
 	} = {}
 ) {
 	const respuestas = ajustes.respuestas ?? respuestasSanas();
@@ -118,7 +119,14 @@ async function ejecutar(
 		return opts.cd ? entrada.cd : entrada.normal;
 	};
 
-	return runSmoke({ get, doh, versionEsperada: VERSION, base: BASE, host: HOST });
+	return runSmoke({
+		get,
+		doh,
+		versionEsperada: VERSION,
+		base: BASE,
+		host: HOST,
+		versionBlanda: ajustes.versionBlanda ?? false
+	});
 }
 
 /** Texto de los errores de una comprobación concreta, para afirmar sobre el diagnóstico y no sólo sobre el recuento. */
@@ -383,6 +391,25 @@ describe('prod-smoke', () => {
 			const mensaje = textoDe(errores, 'version');
 			expect(mensaje).toContain('1.0.0');
 			expect(mensaje).toContain(VERSION);
+		});
+
+		/**
+		 * La misma discrepancia de versión es error o aviso según quién pregunte, y esa
+		 * distinción nació al bajar el cron a media hora: una ejecución programada que
+		 * cae en los dos o tres minutos entre el merge de una release y el final del
+		 * build de Vercel ve legítimamente la versión anterior. Con 48 ejecuciones al
+		 * día eso es un rojo falso por release — exactamente lo que este script acaba
+		 * de dejar de producir por el lado del DNS.
+		 */
+		it('en una ejecución por cron, la versión vieja avisa en vez de romper', async () => {
+			const respuestas = respuestasSanas();
+			respuestas.set('/', ok(PORTADA.replace(VERSION, '1.0.0')));
+			const { errores, avisos } = await ejecutar({ respuestas, versionBlanda: true });
+
+			expect(textoDe(errores)).toBe('');
+			const mensaje = textoDe(avisos, 'version');
+			expect(mensaje).toContain('1.0.0');
+			expect(mensaje).toContain('build de Vercel en curso');
 		});
 
 		it('avisa —sin romper— si la portada ya no lleva softwareVersion', async () => {

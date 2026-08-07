@@ -131,7 +131,14 @@ export const RESOLVERS = [
  * @param {string} [opciones.host]
  * @returns {Promise<{errores: Array<{comprobacion: string, mensaje: string}>, avisos: Array<{comprobacion: string, mensaje: string}>}>}
  */
-export async function runSmoke({ get, doh, versionEsperada, base = BASE, host = HOST }) {
+export async function runSmoke({
+	get,
+	doh,
+	versionEsperada,
+	base = BASE,
+	host = HOST,
+	versionBlanda = false
+}) {
 	const errores = [];
 	const avisos = [];
 	const fallo = (comprobacion, mensaje) => errores.push({ comprobacion, mensaje });
@@ -306,11 +313,30 @@ export async function runSmoke({ get, doh, versionEsperada, base = BASE, host = 
 		if (!servida) {
 			aviso('version', `no se encontró "softwareVersion" en la portada; no se pudo comparar la versión.`);
 		} else if (servida !== versionEsperada) {
-			fallo(
-				'version',
+			/**
+			 * ⚠️ En las ejecuciones por cron esto es un aviso, no un error, y la
+			 * distinción nació al bajar el cron a media hora. La comprobación de
+			 * versión existe para cazar **un despliegue que no llegó a promocionarse**,
+			 * y eso sólo tiene sentido preguntárselo al evento que acompaña a un
+			 * despliegue. Un cron que cae en los dos o tres minutos entre el merge de
+			 * una release y el final del build de Vercel ve legítimamente la versión
+			 * anterior: con 48 ejecuciones al día eso es un rojo falso por release, y
+			 * el rojo falso es justo lo que este script acaba de dejar de producir por
+			 * el otro lado. En `deployment_status` sigue siendo error.
+			 */
+			const mensaje =
 				`producción sirve la versión ${servida} y el commit desplegado es la ${versionEsperada}: ` +
-					`el despliegue no llegó, o la CDN está sirviendo HTML viejo.`
-			);
+				`el despliegue no llegó, o la CDN está sirviendo HTML viejo.`;
+			if (versionBlanda) {
+				aviso(
+					'version',
+					`${mensaje} Esta ejecución no acompaña a ningún despliegue, así que puede ser sencillamente ` +
+						`un build de Vercel en curso; si sigue apareciendo en las ejecuciones siguientes, entonces ` +
+						`no llegó de verdad.`
+				);
+			} else {
+				fallo('version', mensaje);
+			}
 		}
 	});
 
@@ -487,6 +513,9 @@ async function main() {
 	};
 	const base = (valorDe('--base') ?? BASE).replace(/\/$/, '');
 	const comoJson = argv.includes('--json');
+	// Lo pasa el workflow sólo en las ejecuciones por `schedule`. Ver el bloque de
+	// la portada para por qué la versión no puede ser un error ahí.
+	const versionBlanda = argv.includes('--version-aviso');
 	const host = new URL(base).hostname;
 	const versionEsperada = leerVersion();
 
@@ -503,7 +532,14 @@ async function main() {
 
 	let resultado;
 	for (let intento = 1; intento <= INTENTOS; intento++) {
-		resultado = await runSmoke({ get: getReal, doh: dohReal, versionEsperada, base, host });
+		resultado = await runSmoke({
+			get: getReal,
+			doh: dohReal,
+			versionEsperada,
+			base,
+			host,
+			versionBlanda
+		});
 		if (resultado.errores.length === 0) break;
 		if (intento < INTENTOS) {
 			if (!comoJson) {
