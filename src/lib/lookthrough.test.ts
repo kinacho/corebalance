@@ -364,6 +364,31 @@ describe('las guardas de la detección de solapamiento', () => {
 		expect([...valores].sort((a, b) => b - a)).toEqual(valores);
 	});
 
+	/**
+	 * ⚠️ Ya había un test del orden y **no mataba a sus mutantes**: sus posiciones daban
+	 * un orden natural que ya era descendente, así que quitar el `sort` no cambiaba nada.
+	 * Mismo error que un fixture anterior — un test que no puede distinguir el arreglo de
+	 * su ausencia no defiende nada.
+	 *
+	 * Esta forma sí: los pares se generan con i<j, así que con dos posiciones minúsculas
+	 * delante y dos enormes detrás, el **último** par es el mayor y el orden natural es
+	 * ascendente. Es la única disposición en la que ordenar cambia el resultado.
+	 */
+	it('ordena de mayor a menor aunque el par grande se genere el último', () => {
+		const r = calculateLookThrough([
+			makePosition('P1', 'Vanguard Global Stock Index Fund', 10),
+			makePosition('P2', 'iShares Developed World Index Fund', 10),
+			makePosition('G1', 'Amundi Index MSCI World', 50000),
+			makePosition('G2', 'Fidelity MSCI World Index Fund', 50000)
+		]);
+
+		expect(r.overlaps.length).toBeGreaterThan(1);
+		expect(r.overlaps[0].duplicatedValue).toBe(50000);
+
+		const valores = r.overlaps.map((o) => o.duplicatedValue);
+		expect([...valores].sort((a, b) => b - a)).toEqual(valores);
+	});
+
 	it('una sola posición no se solapa consigo misma', () => {
 		const r = calculateLookThrough([
 			makePosition('A', 'Vanguard Global Stock Index Fund', 5000)
