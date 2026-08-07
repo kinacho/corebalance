@@ -2,6 +2,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { yahooFinance } from '$lib/server/yahoo';
 import { checkRateLimit } from '$lib/server/rateLimit';
+import { searchFtAssets } from '$lib/ft-assets';
 
 // --- Rate Limiting ---
 const SEARCH_RATE_LIMIT = 20;   // max requests
@@ -62,19 +63,36 @@ export const GET: RequestHandler = async ({ url, getClientAddress }) => {
 				currency: q.currency || undefined
 			}));
 
-		// Inyectar activo personalizado de Financial Times si coincide con la búsqueda
-		const lowerQuery = query.toLowerCase().trim();
-		if (lowerQuery.includes('ie00b2nxkw18') || lowerQuery.includes('seilern')) {
-			const hasSeilern = results.some(r => r.ticker === 'IE00B2NXKW18');
-			if (!hasSeilern) {
-				results.unshift({
-					ticker: 'IE00B2NXKW18',
-					name: 'Seilern World Growth EUR U R',
-					type: 'Fondo',
-					exchange: 'Financial Times',
-					currency: 'EUR'
-				});
-			}
+		/**
+		 * Inyectar los activos que sólo existen en Financial Times.
+		 *
+		 * ⚠️ Esto llevaba el ISIN y el nombre del fondo **escritos a mano aquí**, y era
+		 * una de cuatro copias del mismo dato: `src/lib/ft-assets.ts` es el registro que
+		 * debía gobernarlo, `/api/resolve` tenía la suya, y `priceHelpers.ts` llevaba
+		 * una cuarta en un `PURE_FT_TICKERS` que no leía nadie. Cuatro sitios para un
+		 * fondo, y aun así el precio no funcionaba, porque el único que de verdad
+		 * importaba —`/api/prices`— era justo el que no tenía copia. Ahora todos leen el
+		 * registro, y añadir un fondo vuelve a ser lo que su documentación prometía:
+		 * una entrada, en un solo sitio.
+		 */
+		const consulta = query.trim().toUpperCase();
+		for (const activo of searchFtAssets(query)) {
+			if (results.some((r) => r.ticker === activo.isin)) continue;
+			const entrada: SearchResult = {
+				ticker: activo.isin,
+				name: activo.name,
+				type: activo.type,
+				exchange: 'Financial Times',
+				currency: activo.currency
+			};
+			/**
+			 * Sólo encabeza la lista quien busca el ISIN, que es una señal inequívoca.
+			 * Por nombre va al final: es un fondo boutique y quien escribe «world» busca
+			 * casi siempre un indexado global. Encabezar por coincidencia de nombre lo
+			 * pondría por delante de doce resultados más probables.
+			 */
+			if (activo.isin === consulta) results.unshift(entrada);
+			else results.push(entrada);
 		}
 
 		return json({ results }, {

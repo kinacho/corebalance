@@ -38,6 +38,14 @@ vi.mock('yahoo-finance2', () => {
 				if (query === 'EMPTY') {
 					return { quotes: [] };
 				}
+				// Escenario para el caso «Yahoo ya lo devuelve»: no debe duplicarse.
+				if (query.toLowerCase().includes('growth')) {
+					return {
+						quotes: [
+							{ symbol: 'IE00B2NXKW18', shortname: 'Seilern desde Yahoo', quoteType: 'MUTUALFUND' }
+						]
+					};
+				}
 				return {
 					quotes: [
 						{ symbol: 'AAPL', shortname: 'Apple Inc.', quoteType: 'EQUITY', exchDisp: 'NASDAQ', currency: 'USD' },
@@ -123,6 +131,50 @@ describe('Search API', () => {
 		const freshIp = () => '192.168.50.1';
 		const response = await GET({ url, getClientAddress: freshIp } as any);
 		expect(response.status).toBe(200);
+	});
+
+	/**
+	 * Los fondos que sólo existen en Financial Times se inyectan aquí, y desde ahora
+	 * se leen del registro `src/lib/ft-assets.ts` en vez de estar escritos a mano en
+	 * este endpoint. Eran cuatro copias del mismo fondo repartidas por el repo —aquí,
+	 * en `/api/resolve`, en el propio registro y en un `PURE_FT_TICKERS` que no leía
+	 * nadie— y aun así el precio no funcionaba, porque el único sitio que importaba,
+	 * `/api/prices`, era justo el que no tenía copia.
+	 */
+	describe('activos que sólo existen en Financial Times', () => {
+		const ISIN = 'IE00B2NXKW18';
+		const buscar = async (q: string) => {
+			const url = new URL(`http://localhost/api/search?q=${encodeURIComponent(q)}`);
+			const r = await GET({ url, getClientAddress: () => '10.7.0.1' } as any);
+			return (await r.json()).results as Array<{ ticker: string; name: string }>;
+		};
+
+		it('encabeza la lista cuando se busca el ISIN, que es una señal inequívoca', async () => {
+			const results = await buscar(ISIN);
+			expect(results[0].ticker).toBe(ISIN);
+			expect(results[0].name).toContain('Seilern');
+		});
+
+		/**
+		 * Por nombre va al final a propósito: es un fondo boutique, y quien escribe
+		 * «seilern» puede estar buscándolo, pero encabezar la lista por coincidencia de
+		 * nombre lo pondría por delante de doce resultados más probables.
+		 */
+		it('aparece —pero no encabeza— cuando se busca por nombre', async () => {
+			const results = await buscar('seilern');
+			expect(results.map((r) => r.ticker)).toContain(ISIN);
+			expect(results[0].ticker).not.toBe(ISIN);
+		});
+
+		it('no se duplica si Yahoo ya lo devuelve', async () => {
+			const results = await buscar('growth');
+			expect(results.filter((r) => r.ticker === ISIN)).toHaveLength(1);
+		});
+
+		it('no se cuela en una búsqueda que no tiene nada que ver', async () => {
+			const results = await buscar('Apple');
+			expect(results.map((r) => r.ticker)).not.toContain(ISIN);
+		});
 	});
 
 	it('handles getClientAddress failure gracefully', async () => {
