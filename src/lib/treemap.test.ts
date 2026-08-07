@@ -194,3 +194,95 @@ describe('rótulos que no se pisan', () => {
 		expect(labelFits('Japón', 2.5, width, 4)).toBe(false);
 	});
 });
+
+/**
+ * Casos escritos leyendo el informe de mutación (7-ago-2026, 76,98 % en este
+ * fichero). No son casos nuevos inventados: son las **señales que se probaban en
+ * bloque** y por eso podían desaparecer de una en una sin que nada fallara. Cada
+ * guarda degenerada tenía su mutante vivo porque el único test que las tocaba las
+ * comprobaba las tres a la vez.
+ */
+describe('las guardas de squarify, una por una', () => {
+	const UNO = [{ key: 'a', value: 10 }];
+
+	it('sin elementos no dibuja nada', () => {
+		expect(squarify([], 100, 100)).toEqual([]);
+	});
+
+	it('con ancho cero o negativo no dibuja nada', () => {
+		expect(squarify(UNO, 0, 100)).toEqual([]);
+		expect(squarify(UNO, -5, 100)).toEqual([]);
+	});
+
+	it('con alto cero o negativo no dibuja nada', () => {
+		expect(squarify(UNO, 100, 0)).toEqual([]);
+		expect(squarify(UNO, 100, -5)).toEqual([]);
+	});
+
+	it('con lienzo válido y un elemento válido sí dibuja: el control de las tres anteriores', () => {
+		expect(squarify(UNO, 100, 100)).toHaveLength(1);
+	});
+
+	/**
+	 * El reparto elige un punto de corte acumulando hasta la mitad del total. Las dos
+	 * protecciones de ese bucle —que el primer grupo nunca quede vacío y que nunca se
+	 * lo lleve todo— son las que evitan la recursión infinita, y cada una necesita su
+	 * propia forma de datos para verse.
+	 */
+	it('un elemento que se lleva casi todo el total no deja grupos vacíos', () => {
+		const items = [
+			{ key: 'gigante', value: 1000 },
+			{ key: 'b', value: 1 },
+			{ key: 'c', value: 1 }
+		];
+		const out = squarify(items, 200, 100);
+		expect(out).toHaveLength(3);
+		expect(out.every((r) => r.w > 0 && r.h > 0)).toBe(true);
+	});
+
+	it('muchos elementos iguales se reparten sin perder ninguno', () => {
+		const items = Array.from({ length: 12 }, (_, i) => ({ key: `k${i}`, value: 10 }));
+		const out = squarify(items, 400, 300);
+		expect(out).toHaveLength(12);
+		expect(new Set(out.map((r) => r.key)).size).toBe(12);
+	});
+});
+
+describe('approximateTextWidth, una señal por caso', () => {
+	const F = 10;
+
+	it('un carácter ancho mide más que uno normal', () => {
+		expect(approximateTextWidth('W', F)).toBeGreaterThan(approximateTextWidth('o', F));
+		expect(approximateTextWidth('8', F)).toBeGreaterThan(approximateTextWidth('o', F));
+	});
+
+	/**
+	 * La rama estrecha tenía mutantes vivos: sin un caso propio, borrarla no rompía
+	 * nada y las `i` y los puntos pasaban a medir como una `o`. Es lo que hace que un
+	 * rótulo se declare más ancho de lo que es y se recorte sin necesidad.
+	 */
+	it('un carácter estrecho mide menos que uno normal', () => {
+		expect(approximateTextWidth('i', F)).toBeLessThan(approximateTextWidth('o', F));
+		expect(approximateTextWidth('.', F)).toBeLessThan(approximateTextWidth('o', F));
+	});
+
+	/**
+	 * ⚠️ El espaciado se suma **detrás de cada carácter, incluido el último**, que es lo
+	 * que hace CSS. Contar uno menos parece inocente y es el error que ya se coló una
+	 * vez por la puerta de al lado: infraestimar el ancho y recortar a mitad de palabra.
+	 */
+	it('el espaciado entre letras cuenta también el último carácter', () => {
+		const sin = approximateTextWidth('abc', F, 0);
+		const con = approximateTextWidth('abc', F, 0.1);
+		expect(con - sin).toBeCloseTo(3 * 0.1 * F, 6);
+	});
+
+	it('el ancho escala con el cuerpo de letra', () => {
+		expect(approximateTextWidth('abc', 20)).toBeCloseTo(approximateTextWidth('abc', 10) * 2, 6);
+	});
+
+	it('el texto vacío no mide nada', () => {
+		expect(approximateTextWidth('', F)).toBe(0);
+		expect(approximateTextWidth('', F, 0.5)).toBe(0);
+	});
+});

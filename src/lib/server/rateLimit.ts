@@ -15,11 +15,30 @@ export interface RateLimitConfig {
  */
 export async function checkRateLimit(ip: string, config: RateLimitConfig): Promise<boolean> {
 	if (redis) {
+		const key = `rl:${config.prefix}:${ip}`;
 		try {
-			const key = `rl:${config.prefix}:${ip}`;
 			const count = await redis.incr(key);
 			if (count === 1) {
-				await redis.expire(key, config.windowSeconds);
+				/**
+				 * ⚠️ `incr` y `expire` son dos peticiones HTTP distintas contra Upstash, y
+				 * si la primera funciona y la segunda no, la clave queda **sin caducidad**:
+				 * el contador ya no se reinicia nunca, sigue creciendo con cada visita y en
+				 * cuanto pasa del límite esa IP queda bloqueada **para siempre**. Basta un
+				 * blip de red entre las dos llamadas.
+				 *
+				 * Antes esto vivía dentro del `try` general, así que el fallo se tragaba
+				 * como cualquier otro y se devolvía «pasa» — el problema no se veía hasta
+				 * que un usuario dejaba de poder usar la app, sin nada en los logs que lo
+				 * relacionara. Ahora se borra la clave: perder el contador de esta ventana
+				 * es infinitamente más barato que dejar una clave inmortal.
+				 */
+				try {
+					await redis.expire(key, config.windowSeconds);
+				} catch (e) {
+					console.error(`No se pudo caducar la clave de rate limit ${key}:`, e);
+					await redis.del(key).catch(() => {});
+					return true;
+				}
 			}
 			return count <= config.limit;
 		} catch (e) {

@@ -360,7 +360,23 @@ export function normalizeCurrency(value: string): string | null {
 	if (/€|EUR/.test(v)) return 'EUR';
 	if (/\$|USD/.test(v)) return 'USD';
 	if (/£|GBP/.test(v)) return 'GBP';
-	return v;
+	/**
+	 * ⚠️ Aquí había un `return v` que devolvía **cualquier cosa** tal cual, y eso tenía
+	 * dos consecuencias de distinto tamaño.
+	 *
+	 * La pequeña: un texto que no es una divisa —«Euros», «Dólar»— entraba en la
+	 * cartera como si fuera un código ISO. Los llamantes de `parsers.ts` ya rematan con
+	 * `|| 'EUR'`, así que devolver `null` les da el valor por defecto, que es lo que
+	 * querían.
+	 *
+	 * La grande: `analyzeColumns` usa esta función como **detector**
+	 * (`normalizeCurrency(val) !== null`), y con el `return v` decía que sí a
+	 * absolutamente todo. Así que **cada columna no vacía de cualquier CSV sumaba 0,4
+	 * al rol de divisa** —por encima del umbral de 0,25 del mapeo automático—, y la
+	 * primera columna del fichero podía acabar mapeada como divisa sin que nada
+	 * chirriara. Un detector que nunca dice que no es un detector roto.
+	 */
+	return null;
 }
 
 /** Comprueba si una cadena de texto tiene la forma estructural de un ISIN */
@@ -396,6 +412,16 @@ export function looksLikeDateValue(value: string): boolean {
 	if (!v) return false;
 	if (/^[a-fA-F0-9]{16,40}$/.test(v)) return false; // Evitar hashes alfanuméricos largos
 	if (/^\d{1,4}[-/.]\d{1,2}[-/.]\d{1,4}(\s+\d{2}:\d{2}(:\d{2})?)?$/.test(v)) return true;
+	/**
+	 * ⚠️ Un número suelto no es una fecha, y hay que decirlo explícitamente porque
+	 * `Date.parse` opina lo contrario: `Date.parse('10')` devuelve un instante válido
+	 * —el 1 de octubre de 2001— y `Date.parse('2026')` también. Sin este corte,
+	 * **cualquier columna numérica puntuaba 0,5 como fecha**, por encima del umbral del
+	 * mapeo automático, de modo que la columna de participaciones podía acabar mapeada
+	 * como la fecha de la operación. Y eso no da error en ninguna parte: da una cartera
+	 * con las cantidades en el sitio equivocado.
+	 */
+	if (/^[+-]?[\d.,\s]+$/.test(v)) return false;
 	const ts = Date.parse(v);
 	return !isNaN(ts);
 }
