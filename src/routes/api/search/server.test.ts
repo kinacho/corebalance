@@ -1,6 +1,32 @@
 import { describe, it, expect, vi } from 'vitest';
 import { GET } from './+server';
 
+/**
+ * ⚠️ Sin este mock, los tests de rate limit hablan con **Upstash de verdad**.
+ *
+ * `src/lib/server/redis.ts` construye el cliente si hay `KV_REST_API_URL` y
+ * `KV_REST_API_TOKEN`, y esas variables están en el `.env` de quien desarrolla. Así
+ * que `checkRateLimit` no usaba su fallback en memoria —el que estos tests dan por
+ * supuesto— sino contadores reales con TTL de 60 s que **sobreviven entre
+ * ejecuciones**. Consecuencias medidas el 7-ago-2026 al repetir la suite:
+ *
+ *  - Las tres primeras vueltas pasan; a partir de la cuarta empiezan a caer tests
+ *    en cadena, porque las claves de la vuelta anterior siguen vivas.
+ *  - Los fallos van en las dos direcciones: «espera 429, llega 200» cuando la clave
+ *    expira a mitad de las veinte peticiones, y «espera 200, llega 429» cuando el
+ *    contador viene cargado de antes.
+ *
+ * En CI no pasaba y por eso nadie lo veía: `ci.yml` copia `.env.example`, donde esas
+ * claves van vacías, así que allí el fallback en memoria sí se usa y todo es
+ * determinista. Un test que sólo miente en la máquina del autor es exactamente la
+ * clase de señal falsa que este repo lleva persiguiendo.
+ *
+ * Nota de alcance: con esto la rama de Redis de `checkRateLimit` no se ejercita en
+ * ningún sitio — tampoco se ejercitaba en CI. Cubrirla pide inyectar el cliente en
+ * vez de importarlo, y `rateLimit.ts` está en la lista de zonas pendientes.
+ */
+vi.mock('$lib/server/redis', () => ({ redis: null }));
+
 // Mock YahooFinance
 vi.mock('yahoo-finance2', () => {
 	return {
