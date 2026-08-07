@@ -14,7 +14,10 @@ import {
 	looksLikeIsinValue,
 	looksLikeTickerValue,
 	looksLikeNumericValue,
-	looksLikeDateValue
+	looksLikeDateValue,
+	analyzeColumns,
+	suggestMappingFromAnalysis,
+	generateCsvSignature
 } from './csv-utils';
 
 /**
@@ -263,10 +266,30 @@ describe('normalizeCurrency', () => {
 		expect(normalizeCurrency('Dólares USD')).toBe('USD');
 	});
 
-	it('vacío es null, y lo desconocido se devuelve en mayúsculas', () => {
+	/**
+	 * ⚠️ **Cambio de contrato, 7-ago-2026.** Antes lo desconocido se devolvía en
+	 * mayúsculas (`'rublos'` → `'RUBLOS'`) y este test lo daba por bueno. Ahora es
+	 * `null`, por dos razones de distinto tamaño.
+	 *
+	 * La pequeña: un texto que no es una divisa entraba en la cartera como si fuera un
+	 * código ISO. Los llamantes de `parsers.ts` rematan todos con `|| 'EUR'`, así que
+	 * `null` les da exactamente el valor por defecto que ya querían.
+	 *
+	 * La grande: `analyzeColumns` usa esta función como **detector**, y devolviendo
+	 * siempre algo decía que sí a todo — cada columna no vacía de cualquier CSV sumaba
+	 * 0,4 al rol de divisa, por encima del umbral del mapeo automático. Un detector que
+	 * nunca dice que no es un detector roto.
+	 *
+	 * Verificado contra los CSV reales de bróker de `training/`: siguen pasando.
+	 */
+	it('lo que no es una divisa reconocible es null, no un código inventado', () => {
 		expect(normalizeCurrency('')).toBeNull();
 		expect(normalizeCurrency('   ')).toBeNull();
-		expect(normalizeCurrency('rublos')).toBe('RUBLOS');
+		expect(normalizeCurrency('rublos')).toBeNull();
+		expect(normalizeCurrency('---')).toBeNull();
+		// Un código ISO de tres letras sí se acepta, aunque no lo conozcamos de nombre.
+		expect(normalizeCurrency('chf')).toBe('CHF');
+		expect(normalizeCurrency('sek')).toBe('SEK');
 	});
 });
 
@@ -298,6 +321,42 @@ describe('las formas que reconoce el mapeo automático de columnas', () => {
 		expect(looksLikeDateValue('15-01-2026')).toBe(true);
 		expect(looksLikeDateValue('VWCE')).toBe(false);
 	});
+
+	/**
+	 * ⚠️ Un número suelto no es una fecha, y hay que decírselo: `Date.parse('10')`
+	 * devuelve un instante válido —el 1 de octubre de 2001— y `Date.parse('2026')`
+	 * también. Sin este corte, **cualquier columna numérica puntuaba 0,5 como fecha**,
+	 * por encima del umbral del mapeo automático, así que la columna de participaciones
+	 * podía acabar mapeada como la fecha de la operación. Y eso no da error en ninguna
+	 * parte: da una cartera con las cantidades en el sitio equivocado.
+	 */
+	it('un número suelto no es una fecha, aunque Date.parse opine lo contrario', () => {
+		for (const n of ['10', '2026', '0,5', '1.234,56', '-3']) {
+			expect(looksLikeDateValue(n), `«${n}» se tomó por fecha`).toBe(false);
+		}
+	});
+
+	it('y por tanto una columna de cantidades no puntúa como fecha', () => {
+		/**
+		 * Enteros sueltos a propósito, y comprobado revirtiendo el arreglo: con `25,5`
+		 * en la muestra sólo dos de tres valores casaban, la proporción se quedaba en
+		 * 0,67 —por debajo del umbral de 0,8— y este test pasaba **igual sin la
+		 * corrección**. Así no defendía nada.
+		 */
+		const col = analyzeColumns(['Participaciones'], [['10'], ['2026'], ['5']])[0];
+		expect(col.roleScores.date).toBe(0);
+		expect(col.roleScores.quantity).toBeGreaterThan(0);
+	});
+
+	/**
+	 * El mismo defecto por el otro lado: `normalizeCurrency` devolvía cualquier cosa,
+	 * así que como detector decía que sí a todo y cada columna sumaba 0,4 al rol de
+	 * divisa.
+	 */
+	it('y una columna que no son divisas no puntúa como divisa', () => {
+		const col = analyzeColumns(['Descripcion'], [['Compra de fondo'], ['Dividendo']])[0];
+		expect(col.roleScores.currency).toBe(0);
+	});
 });
 
 describe('createSkipRow', () => {
@@ -322,5 +381,192 @@ describe('createSkipRow', () => {
 		contador.skipRow(0, ['a'], 'r1');
 		contador.skipRow(1, ['b'], 'r2');
 		expect(contador.skipped).toBe(2);
+	});
+});
+
+/**
+ * El análisis de columnas: el paso que decide, sin preguntar a nadie, qué columna de
+ * un CSV desconocido es la cantidad y cuál el precio. Es un clasificador, así que se
+ * prueba como tal — **una fila por señal** —, que es la forma que este repo ya
+ * aprendió con `instrument-type`: cada rol se decide sumando dos señales
+ * independientes, la cabecera y el contenido, y si sólo se prueban juntas cualquiera
+ * de las dos puede desaparecer sin que ningún test se entere.
+ */
+describe('analyzeColumns', () => {
+	const analizar = (header: string, valores: string[]) =>
+		analyzeColumns([header], valores.map((v) => [v]))[0];
+
+	describe('cada rol se reconoce por la cabecera sola y por el contenido solo', () => {
+		const CASOS: Array<{
+			rol: 'isin' | 'ticker' | 'quantity' | 'currency' | 'name' | 'date' | 'type';
+			cabecera: string;
+			valores: string[];
+		}> = [
+			{ rol: 'isin', cabecera: 'ISIN', valores: ['IE00B4L5Y983', 'LU0908500753'] },
+			{ rol: 'ticker', cabecera: 'Ticker', valores: ['VWCE', 'SXR8'] },
+			{ rol: 'quantity', cabecera: 'Cantidad', valores: ['10', '25,5'] },
+			{ rol: 'currency', cabecera: 'Divisa', valores: ['EUR', 'USD'] },
+			{ rol: 'name', cabecera: 'Nombre', valores: ['Vanguard Global Stock', 'iShares Core World'] },
+			{ rol: 'date', cabecera: 'Fecha', valores: ['01/02/2026', '15/03/2026'] },
+			{ rol: 'type', cabecera: 'Tipo', valores: ['buy', 'sell'] }
+		];
+
+		// Contenido deliberadamente inservible: sólo puede puntuar la cabecera.
+		const SIN_CONTENIDO = [['---'], ['---']];
+
+		it.each(CASOS)('$rol: la cabecera sola ya puntúa', ({ rol, cabecera }) => {
+			expect(analyzeColumns([cabecera], SIN_CONTENIDO)[0].roleScores[rol]).toBeGreaterThan(0);
+		});
+
+		it.each(CASOS)('$rol: el contenido solo ya puntúa', ({ rol, valores }) => {
+			expect(analizar('col', valores).roleScores[rol]).toBeGreaterThan(0);
+		});
+
+		it.each(CASOS)('$rol: juntas puntúan más que cada una por separado', ({ rol, cabecera, valores }) => {
+			const soloCabecera = analyzeColumns([cabecera], SIN_CONTENIDO)[0].roleScores[rol];
+			const soloContenido = analizar('col', valores).roleScores[rol];
+			const ambas = analizar(cabecera, valores).roleScores[rol];
+
+			expect(ambas).toBeGreaterThan(soloCabecera);
+			expect(ambas).toBeGreaterThan(soloContenido);
+		});
+	});
+
+	it('una columna vacía no puntúa para nada, en vez de puntuar para todo', () => {
+		const col = analyzeColumns(['Cantidad'], [[''], ['  ']])[0];
+		expect(Object.values(col.roleScores).every((s) => s === 0)).toBe(true);
+		expect(col.sampleValues).toEqual([]);
+	});
+
+	/**
+	 * Saxo y DEGIRO meten cantidad, precio y operación en una sola celda descriptiva.
+	 * La heurística del arroba marca esa columna como candidata a los tres roles a la
+	 * vez, que es lo que permite que el parser la reviente después.
+	 */
+	it('reconoce la celda descriptiva con arroba como cantidad, precio y tipo a la vez', () => {
+		const col = analizar('Descripcion', ['Buy 10 VWCE @ 95,20', 'Sell 5 SXR8 @ 480,10']);
+
+		expect(col.roleScores.quantity).toBeGreaterThanOrEqual(0.85);
+		expect(col.roleScores.price).toBeGreaterThanOrEqual(0.85);
+		expect(col.roleScores.type).toBeGreaterThanOrEqual(0.8);
+	});
+
+	it('no confunde una descripción cualquiera con la celda del arroba', () => {
+		const col = analizar('Descripcion', ['Dividendo trimestral', 'Comision de custodia']);
+		expect(col.roleScores.quantity).toBeLessThan(0.85);
+	});
+
+	it('sólo mira las primeras 50 filas, que es lo que lo hace barato en un CSV largo', () => {
+		const filas = [
+			...Array.from({ length: 50 }, () => ['IE00B4L5Y983']),
+			...Array.from({ length: 200 }, () => ['basura'])
+		];
+		const col = analyzeColumns(['col'], filas)[0];
+		expect(col.sampleValues).toHaveLength(50);
+		expect(col.roleScores.isin).toBeGreaterThan(0);
+	});
+
+	it('devuelve una entrada por columna, con su índice y su cabecera', () => {
+		const analisis = analyzeColumns(['ISIN', 'Cantidad'], [['IE00B4L5Y983', '10']]);
+		expect(analisis).toHaveLength(2);
+		expect(analisis[0]).toMatchObject({ index: 0, header: 'ISIN' });
+		expect(analisis[1].index).toBe(1);
+	});
+});
+
+describe('suggestMappingFromAnalysis', () => {
+	const CABECERAS = ['ISIN', 'Nombre', 'Cantidad', 'Precio', 'Divisa'];
+	const FILAS = [
+		['IE00B4L5Y983', 'Vanguard Global Stock', '10', '95,20', 'EUR'],
+		['LU0908500753', 'Amundi Index MSCI World', '25', '480,10', 'EUR']
+	];
+
+	it('mapea un CSV claro sin ayuda', () => {
+		const m = suggestMappingFromAnalysis(analyzeColumns(CABECERAS, FILAS));
+
+		expect(m.isin).toBe(0);
+		expect(m.name).toBe(1);
+		expect(m.shares).toBe(2);
+		expect(m.currency).toBe(4);
+	});
+
+	it('deja sin mapear un rol que no aparece por ninguna parte', () => {
+		const m = suggestMappingFromAnalysis(
+			analyzeColumns(['ISIN', 'Cantidad'], [['IE00B4L5Y983', '10']])
+		);
+		expect(m.date).toBeUndefined();
+		expect(m.type).toBeUndefined();
+	});
+
+	/**
+	 * Dos columnas igual de plausibles no se resuelven a cara o cruz: se dejan sin
+	 * mapear para que el usuario confirme. Adivinar aquí es lo que mete la cantidad de
+	 * una columna en el precio de otra, y eso no da error en ninguna parte.
+	 */
+	it('ante un empate, prefiere no mapear a acertar por suerte', () => {
+		const m = suggestMappingFromAnalysis(
+			analyzeColumns(['Fecha', 'Fecha valor'], [['01/02/2026', '03/02/2026']])
+		);
+		expect(m.date).toBeUndefined();
+	});
+
+	/**
+	 * ⚠️ Filo conocido: la cantidad es obligatoria, así que cuando el empate la deja
+	 * sin decidir **cae en la columna 0**, que puede ser un ISIN o una fecha. Queda
+	 * fijado porque es una decisión con consecuencia visible, no un descuido — el
+	 * mapeo se le enseña al usuario para que lo confirme. Si algún día se quita ese
+	 * fallback, este test lo verá.
+	 */
+	it('la cantidad, que es obligatoria, cae en la primera columna si no hay ganador', () => {
+		const m = suggestMappingFromAnalysis(
+			analyzeColumns(['Fecha', 'Fecha valor'], [['01/02/2026', '03/02/2026']])
+		);
+		expect(m.shares).toBe(0);
+	});
+
+	it('una señal débil no basta: por debajo del umbral no se mapea', () => {
+		const m = suggestMappingFromAnalysis(analyzeColumns(['col_a'], [['---'], ['---']]));
+		expect(m.isin).toBeUndefined();
+		expect(m.currency).toBeUndefined();
+	});
+});
+
+describe('generateCsvSignature', () => {
+	const CABECERAS = ['ISIN', 'Cantidad', 'Fecha'];
+	const FILAS = [['IE00B4L5Y983', '10', '01/02/2026']];
+
+	it('dos CSV del mismo bróker dan la misma firma aunque cambien los valores', () => {
+		const a = generateCsvSignature(CABECERAS, FILAS);
+		const b = generateCsvSignature(CABECERAS, [['LU0908500753', '999', '15/03/2026']]);
+		expect(a).toBe(b);
+	});
+
+	it('cambiar el número de columnas cambia la firma', () => {
+		expect(generateCsvSignature([...CABECERAS, 'Extra'], [[...FILAS[0], 'x']])).not.toBe(
+			generateCsvSignature(CABECERAS, FILAS)
+		);
+	});
+
+	it('cambiar el nombre de una cabecera cambia la firma', () => {
+		expect(generateCsvSignature(['ISIN', 'Titulos', 'Fecha'], FILAS)).not.toBe(
+			generateCsvSignature(CABECERAS, FILAS)
+		);
+	});
+
+	/**
+	 * La firma lleva el tipo de cada columna —N(úmero), D(fecha), T(exto)—, así que
+	 * dos CSV con las mismas cabeceras pero contenido de otra forma no se confunden.
+	 */
+	it('clasifica cada columna como número, fecha o texto', () => {
+		const firma = generateCsvSignature(['a', 'b', 'c'], [['10', '01/02/2026', 'Vanguard']]);
+		expect(firma).toContain('_NDT_');
+	});
+
+	it('sólo mira las primeras cinco filas', () => {
+		const muchas = [
+			...Array.from({ length: 5 }, () => ['10']),
+			...Array.from({ length: 50 }, () => ['texto'])
+		];
+		expect(generateCsvSignature(['a'], muchas)).toContain('_N_');
 	});
 });

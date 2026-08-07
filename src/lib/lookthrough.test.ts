@@ -291,3 +291,83 @@ describe('detección de solapamiento', () => {
 		}
 	});
 });
+
+/**
+ * Casos escritos leyendo el informe de mutación (7-ago-2026, 79,66 % en este
+ * fichero). Son las señales que se probaban en bloque: la detección de solapamiento
+ * se comprobaba con casos completos y correctos, así que las guardas intermedias
+ * podían caerse de una en una sin que nada fallara.
+ *
+ * ⚠️ Un grupo de supervivientes se deja vivo a propósito y conviene saber por qué:
+ * los de la lista `estimatedIndices` son **inalcanzables con los datos actuales**,
+ * porque hoy ningún índice de `indices.json` está marcado como `estimate` ni tiene
+ * los sectores a nulo. Cubrirlos exigiría falsear el JSON de índices, y entonces el
+ * test afirmaría sobre datos inventados en vez de sobre los que la app usa. Es la
+ * misma lección de `csv-utils`: código inalcanzable no siempre es un bug esperando.
+ */
+describe('las guardas de la detección de solapamiento', () => {
+	/**
+	 * Una posición sin índice reconocido no comparte nada con nadie, y tiene que
+	 * salirse del emparejamiento por los dos lados. Sin un caso por lado, la mitad de
+	 * la condición puede desaparecer sin que ningún test se entere.
+	 */
+	it('una posición sin índice reconocido no genera solapamiento, esté a la izquierda o a la derecha', () => {
+		const conocida = makePosition('IWDA', 'iShares Core MSCI World UCITS ETF', 5000);
+		const desconocida = makePosition('RARO', 'Fondo Artesanal Sin Índice', 5000);
+
+		expect(calculateLookThrough([desconocida, conocida]).overlaps).toEqual([]);
+		expect(calculateLookThrough([conocida, desconocida]).overlaps).toEqual([]);
+	});
+
+	/**
+	 * El valor duplicado es el **mínimo** de lo que aporta cada lado, no el de uno
+	 * cualquiera ni la suma: lo que se solapa no puede ser más de lo que tiene la
+	 * posición más pequeña. Con dos posiciones del mismo tamaño el mínimo no se nota,
+	 * que es justo por lo que sobrevivía el mutante.
+	 */
+	it('el valor duplicado lo manda la posición más pequeña', () => {
+		const grande = calculateLookThrough([
+			makePosition('A', 'Vanguard Global Stock Index Fund', 10000),
+			makePosition('B', 'iShares Developed World Index Fund', 1000)
+		]);
+		expect(grande.overlaps[0].duplicatedValue).toBe(1000);
+
+		// Y al revés, para que no pueda estar cogiendo siempre el segundo.
+		const alReves = calculateLookThrough([
+			makePosition('A', 'Vanguard Global Stock Index Fund', 1000),
+			makePosition('B', 'iShares Developed World Index Fund', 10000)
+		]);
+		expect(alReves.overlaps[0].duplicatedValue).toBe(1000);
+	});
+
+	it('el peso duplicado se mide sobre el total de la cartera', () => {
+		const r = calculateLookThrough([
+			makePosition('A', 'Vanguard Global Stock Index Fund', 2500),
+			makePosition('B', 'iShares Developed World Index Fund', 2500)
+		]);
+		expect(r.overlaps[0].duplicatedWeight).toBeCloseTo(0.5, 6);
+	});
+
+	/**
+	 * El orden no es decorativo: la interfaz enseña los primeros, así que un
+	 * solapamiento pequeño por delante de uno grande esconde justo lo que hay que ver.
+	 */
+	it('los solapamientos salen del mayor al menor', () => {
+		const r = calculateLookThrough([
+			makePosition('A', 'Vanguard Global Stock Index Fund', 10000),
+			makePosition('B', 'iShares Developed World Index Fund', 6000),
+			makePosition('C', 'iShares Core S&P 500 UCITS ETF', 1000)
+		]);
+
+		expect(r.overlaps.length).toBeGreaterThan(1);
+		const valores = r.overlaps.map((o) => o.duplicatedValue);
+		expect([...valores].sort((a, b) => b - a)).toEqual(valores);
+	});
+
+	it('una sola posición no se solapa consigo misma', () => {
+		const r = calculateLookThrough([
+			makePosition('A', 'Vanguard Global Stock Index Fund', 5000)
+		]);
+		expect(r.overlaps).toEqual([]);
+	});
+});
