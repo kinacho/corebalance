@@ -43,7 +43,13 @@ export default defineConfig({
 				'src/lib/ledger.ts',
 				'src/lib/lookthrough.ts',
 				'src/lib/treemap.ts',
-				'src/lib/instrument-type.ts'
+				'src/lib/instrument-type.ts',
+				// Añadidos el 7-ago-2026. No son «módulos de dinero» puros como los de
+				// arriba, pero fallan igual de caro y más callado: un precio malo no da
+				// error en ninguna parte, se convierte en una desviación mal calculada y
+				// acaba siendo un consejo de rebalanceo equivocado.
+				'src/routes/api/prices/priceHelpers.ts',
+				'src/routes/api/prices/+server.ts'
 			],
 			reporter: ['text', 'json-summary'],
 			thresholds: {
@@ -58,7 +64,15 @@ export default defineConfig({
 				'src/lib/lookthrough.ts': { statements: 96, branches: 84, functions: 100 },
 				'src/lib/treemap.ts': { statements: 92, branches: 91, functions: 88 },
 				// Subido el 6-ago-2026 con la tabla por señal: 90,00/92,10 → 100/100.
-				'src/lib/instrument-type.ts': { statements: 100, branches: 100, functions: 100 }
+				'src/lib/instrument-type.ts': { statements: 100, branches: 100, functions: 100 },
+				// Medidos al nacer la suite, 7-ago-2026. Las funciones no llegan a 100 en
+				// `priceHelpers` por el callback del `setTimeout` que aborta la petición a
+				// FT: sólo corre cuando FT tarda más de ocho segundos.
+				'src/routes/api/prices/priceHelpers.ts': { statements: 98, branches: 91, functions: 88 },
+				// El endpoint es el más bajo de la lista y es honesto que lo sea: le quedan
+				// sin cubrir el troceado en lotes, el fallback de YTD para ETPs de cripto y
+				// la rama de Redis, que necesitan otro arnés.
+				'src/routes/api/prices/+server.ts': { statements: 84, branches: 65, functions: 92 }
 			}
 		}
 	},

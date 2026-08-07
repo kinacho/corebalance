@@ -32,7 +32,6 @@ async function setCachedHistory(ticker: string, data: any) {
 
 import {
 	RELIABLE_FT_MAPPINGS,
-	PURE_FT_TICKERS,
 	fetchFTPrice,
 	correctSubunitCurrencies,
 	calculateHistoricalMetrics
@@ -160,10 +159,25 @@ for (const t of cashTickers) {
 	const chunks = chunkArray(missTickers, 3);
 	const results: PromiseSettledResult<{ ticker: string, quote: any, sparkline: number[], ytd: number | undefined, mtd: number | undefined, oneMonth: number | undefined }>[] = [];
 
-	// Añadir los hits de caché ya formateados como fulfilled
+	/**
+	 * Añadir los hits de caché ya formateados como fulfilled.
+	 *
+	 * ⚠️ Un ticker sin cotización tiene que **fallar igual aquí que en el camino de
+	 * caché fría**, y antes no lo hacía: este bucle era `if (hit.quote) push(...)`,
+	 * sin `else`. Así que cuando Yahoo dejaba de devolver un símbolo, el usuario veía
+	 * el error «No se encontró cotización» o **no veía absolutamente nada** —ni precio
+	 * ni error, el activo desaparecía de la respuesta— según si la caché de históricos
+	 * estaba caliente, que es un estado que él no controla ni puede observar. El mismo
+	 * fallo contándose de dos maneras según el azar es peor que cualquiera de las dos.
+	 */
 	for (const hit of hitResults) {
 		if (hit.quote) {
 			results.push({ status: 'fulfilled', value: hit });
+		} else {
+			results.push({
+				status: 'rejected',
+				reason: new Error(`No se encontró cotización para ${hit.ticker}`)
+			});
 		}
 	}
 
@@ -269,10 +283,6 @@ for (const t of cashTickers) {
 				if (ftData) {
 					p = ftData.price;
 					change = ftData.change;
-					// Si FT tiene YTD y Yahoo no, lo usamos
-					if (ftData.ytd !== undefined && (ytd === undefined || isNaN(ytd))) {
-						ytd = ftData.ytd;
-					}
 				}
 			}
 
