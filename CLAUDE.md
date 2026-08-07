@@ -179,6 +179,14 @@ They exist because the recurring defect in this repo is not a wrong algorithm, i
   Coverage moved with it: `rebalance.ts` and `instrument-type.ts` are now at 100 % statements, `traspaso.ts` at 98.2, and the per-file ratchets were tightened to match.
   ⚠️ Two settings that are not optional: **`tsconfigFile: ""`** (Stryker's tsconfig preprocessor cannot resolve modules when run through `npx`, and the tests go through vite anyway, so it has nothing to contribute) and **`ignorePatterns`** for `node_modules/.vite` and the build dirs — without it Windows dies with `EPERM: rmdir` on the sandbox's vite cache. CI runs on Ubuntu, where that class of failure does not happen, so the weekly job is the authoritative measurement.
 
+### What is deliberately not unit-tested, and why
+
+⚠️ **The big components carry no unit tests, and that is a decision rather than a backlog item.** `dashboard/+page.svelte` (1.023 lines), `LedgerModal.svelte` (890), `AssetCard.svelte` (856), `Header.svelte` (843) and what remains of `ManageAssets.svelte` (~1.380) are layout, wiring and presentation. Rendering assertions over them cost a lot per hour and mostly re-state the markup; what they could actually break — the dashboard not booting, the map not drawing, the tax panel showing nothing — is already covered by `e2e/`, which exercises the real thing.
+
+The line that decides what gets a unit test is not "is it big" but **"does it decide something?"**. When a component turns out to be deciding, the answer is to take that piece *out* of the component, not to test the component: that is what happened to the target-weight split on 7-ago-2026 (`weights.ts`) and to the ledger before it (`ledger.ts`). Three component suites exist (`DeviationTreemap`, `HeroSummary`, `TaxAwareRebalance`) and each has a specific reason to — the last one because the demo portfolio is exactly on target, so the populated path of that panel is never exercised in a browser.
+
+If someone later adds real logic to one of these files, the fix is the extraction, not a rendering test.
+
 ### E2E (`e2e/`, `playwright.config.ts`)
 
 Runs against `vite preview`, so **`npm run build` first**; the service worker, the precache and hashed chunks only exist in a build. It covers what unit tests structurally cannot: that the dashboard boots at all (it is `ssr = false`, so a hydration error yields a blank page with a green build), that the service worker registers and precaches ~145 entries, the deviation map in both states, the tax panel with a real plan in it, and `/dashboard` **with the network off**.
