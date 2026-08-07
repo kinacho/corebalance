@@ -4,25 +4,33 @@ import type { Transaction } from '$lib/types';
 import type { HoldingEdit } from '$lib/history/types';
 
 class LazyStorageProvider implements StorageProvider {
+	/**
+	 * Una sola memorización, y antes había dos.
+	 *
+	 * ⚠️ Había también un campo `provider` con su propia guarda de salida temprana, y las
+	 * dos se solapaban: cada una bastaba por sí sola, así que **romper cualquiera de ellas
+	 * no cambiaba el comportamiento** y ningún test podía notarlo. Con una, «el backend se
+	 * construye una sola vez» vuelve a ser una afirmación comprobable.
+	 *
+	 * Memorizar la promesa y no la instancia tiene además la propiedad que hace falta: dos
+	 * llamadas concurrentes antes de que resuelva el `import()` comparten la misma carga en
+	 * vez de construir dos backends.
+	 */
 	private providerPromise: Promise<StorageProvider> | null = null;
-	private provider: StorageProvider | null = null;
 
 	get isLocal(): boolean {
 		return PUBLIC_USE_FIREBASE !== 'true';
 	}
 
-	private async getProvider(): Promise<StorageProvider> {
-		if (this.provider) return this.provider;
+	private getProvider(): Promise<StorageProvider> {
 		if (!this.providerPromise) {
 			this.providerPromise = (async () => {
 				if (PUBLIC_USE_FIREBASE === 'true') {
 					const { FirebaseStorage } = await import('./FirebaseStorage');
-					this.provider = new FirebaseStorage();
-				} else {
-					const { LocalDBStorage } = await import('./LocalDBStorage');
-					this.provider = new LocalDBStorage();
+					return new FirebaseStorage();
 				}
-				return this.provider;
+				const { LocalDBStorage } = await import('./LocalDBStorage');
+				return new LocalDBStorage();
 			})();
 		}
 		return this.providerPromise;
