@@ -59,7 +59,9 @@ function respuestasSanas(): Map<string, Respuesta> {
 			'/manifest.webmanifest',
 			ok(JSON.stringify({ start_url: '/', icons: [{ src: 'pwa-192x192.png', sizes: '192x192' }] }))
 		],
-		['/_app/version.json', ok('{"version":"1754500000000"}')]
+		['/_app/version.json', ok('{"version":"1754500000000"}')],
+		// El estado sano de `www` cuando existe: redirección permanente al canónico.
+		['www:/', { status: 308, headers: { location: `${BASE}/` }, body: '' }]
 	]);
 }
 
@@ -97,7 +99,10 @@ async function ejecutar(
 	const dns = ajustes.dns ?? dnsSano();
 
 	const get = async (url: string): Promise<Respuesta> => {
-		const ruta = new URL(url).pathname;
+		const { hostname, pathname } = new URL(url);
+		// `www` se indexa aparte: desde que la comprobación de `www` hace HTTP, el
+		// escenario tiene que poder responder distinto en el apex y en el subdominio.
+		const ruta = hostname.startsWith('www.') ? `www:${pathname}` : pathname;
 		if (ajustes.getRevienta === ruta) throw new Error('socket colgado');
 		const respuesta = respuestas.get(ruta);
 		if (!respuesta) throw new Error(`el escenario no define ${ruta}`);
@@ -305,12 +310,74 @@ describe('prod-smoke', () => {
 			});
 		});
 
-		it('avisa —sin romper— si www no resuelve', async () => {
-			const dns = dnsSano();
-			dns[`www.${HOST}`].normal = { Status: 2 };
-			const { errores, avisos } = await ejecutar({ dns });
-			expect(textoDe(errores)).toBe('');
-			expect(textoDe(avisos, 'dns-www')).toContain('no resuelve');
+		/**
+		 * ⚠️ Que `www` no exista **no se reporta**, y este bloque fija ese silencio.
+		 *
+		 * Antes era un aviso fijo: cierto, pero un estado conocido y aceptado —el
+		 * canónico es el apex y `www` no aparece en el repo—. Con el cron cada media
+		 * hora eran 48 avisos idénticos al día, y un aviso que sale siempre entrena a no
+		 * leer la salida. Lo que sí se vigila es el estado que sería nuevo y sí estaría
+		 * roto: `www` resolviendo a algo que no lleva al sitio.
+		 */
+		describe('www', () => {
+			const conWwwAusente = () => {
+				const dns = dnsSano();
+				dns[`www.${HOST}`].normal = { Status: 3 };
+				return dns;
+			};
+
+			it('calla si www no existe, que es el estado aceptado', async () => {
+				const { errores, avisos } = await ejecutar({ dns: conWwwAusente() });
+				expect(textoDe(errores)).toBe('');
+				expect(textoDe(avisos)).toBe('');
+			});
+
+			it('calla si www existe y redirige al canónico', async () => {
+				const { errores, avisos } = await ejecutar();
+				expect(textoDe(errores)).toBe('');
+				expect(textoDe(avisos)).toBe('');
+			});
+
+			it('calla si www existe y sirve el sitio directamente', async () => {
+				const respuestas = respuestasSanas();
+				respuestas.set('www:/', ok('<html><body>portada</body></html>'));
+				const { avisos } = await ejecutar({ respuestas });
+				expect(textoDe(avisos, 'dns-www')).toBe('');
+			});
+
+			/**
+			 * El agujero que esta comprobación existe para cazar: crear el CNAME en el
+			 * registrador antes de dar de alta el dominio en Vercel. El nombre resuelve,
+			 * Vercel no sabe de quién es y sirve su página de error — peor que el
+			 * NXDOMAIN de partida, porque parece que el sitio está roto.
+			 */
+			it('avisa si www resuelve pero no lleva al sitio', async () => {
+				const respuestas = respuestasSanas();
+				respuestas.set('www:/', { status: 404, headers: {}, body: 'DEPLOYMENT_NOT_FOUND' });
+				const { errores, avisos } = await ejecutar({ respuestas });
+
+				expect(textoDe(errores)).toBe('');
+				const mensaje = textoDe(avisos, 'dns-www');
+				expect(mensaje).toContain('no lleva al sitio');
+				expect(mensaje).toContain('Vercel');
+			});
+
+			it('avisa —y no rompe— si www resuelve pero no se puede abrir', async () => {
+				const { errores, avisos } = await ejecutar({ getRevienta: 'www:/' });
+				expect(textoDe(errores)).toBe('');
+				expect(textoDe(avisos, 'dns-www')).toContain('certificado');
+			});
+
+			it('avisa si www redirige a un dominio ajeno en vez de al canónico', async () => {
+				const respuestas = respuestasSanas();
+				respuestas.set('www:/', {
+					status: 302,
+					headers: { location: 'https://un-sitio-cualquiera.example/' },
+					body: ''
+				});
+				const { avisos } = await ejecutar({ respuestas });
+				expect(textoDe(avisos, 'dns-www')).toContain('no lleva al sitio');
+			});
 		});
 	});
 

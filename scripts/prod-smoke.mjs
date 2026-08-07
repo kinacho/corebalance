@@ -278,14 +278,50 @@ export async function runSmoke({
 	// su ausencia es un hueco, no un fallo: aviso y no error.
 	await aislada('dns-www', async () => {
 		const respuesta = await doh(`www.${host}`, 'A');
-		const tiene = (respuesta.Answer ?? []).some(
-			(r) => r.type === TIPO_A || r.type === TIPO_CNAME
-		);
-		if (respuesta.Status !== 0 || !tiene) {
+		const existe =
+			respuesta.Status === 0 &&
+			(respuesta.Answer ?? []).some((r) => r.type === TIPO_A || r.type === TIPO_CNAME);
+
+		/**
+		 * ⚠️ Que `www` no exista **no se reporta**, y ese silencio es deliberado.
+		 *
+		 * Antes esto era un aviso fijo. Era cierto —quien escriba `www` ve un error del
+		 * navegador— pero es un estado **conocido y aceptado**: el canónico es el apex y
+		 * `www` no aparece en ninguna línea del repo. Con el cron cada media hora eso son
+		 * 48 avisos idénticos al día, y un aviso que sale siempre no informa de nada:
+		 * entrena a no leer la salida, y el día que aparezca uno distinto tampoco se
+		 * mira. Este script existe justo para no producir esa clase de ruido.
+		 *
+		 * Lo que sí se comprueba es el estado que **sería nuevo y sí estaría roto**:
+		 * `www` resolviendo a algo que no lleva al sitio. Es exactamente el agujero de
+		 * crear el CNAME en el registrador antes de dar de alta el dominio en Vercel —el
+		 * hostname resuelve, Vercel no sabe de quién es, y el visitante se come un aviso
+		 * de certificado y una página de error ajena—, que es *peor* que el NXDOMAIN de
+		 * hoy. Mientras `www` no exista esto calla; en cuanto exista, empieza a vigilar.
+		 */
+		if (!existe) return;
+
+		try {
+			const r = await get(`https://www.${host}/`);
+			const location = r.headers?.location ?? r.headers?.Location ?? '';
+			const redirigeAlApex = r.status >= 300 && r.status < 400 && location.includes(host);
+			const sirveElSitio = r.status === 200 && !r.body.includes(MARCA_OFFLINE);
+			if (!redirigeAlApex && !sirveElSitio) {
+				aviso(
+					'dns-www',
+					`www.${host} ya resuelve, pero no lleva al sitio: responde ${r.status}` +
+						`${location ? ` hacia ${location}` : ''}. El caso típico es haber creado el CNAME en el ` +
+						`registrador antes de dar de alta el dominio en Vercel: el nombre resuelve, Vercel no sabe a ` +
+						`qué proyecto pertenece y sirve su propia página de error. Se arregla dándolo de alta en Vercel.`
+				);
+			}
+		} catch (error) {
+			// Un fallo de TLS aquí es lo que se ve cuando el certificado de `www` no
+			// existe todavía. Es un aviso, no un error: el sitio canónico está en pie.
 			aviso(
 				'dns-www',
-				`www.${host} no resuelve (Status ${respuesta.Status}). Quien lo escriba con www ve un error del ` +
-					`navegador. El canónico es el apex, así que no rompe el sitio; se arregla con un CNAME en el registrador.`
+				`www.${host} resuelve pero no se pudo abrir (${error.message}). Lo habitual es que aún no tenga ` +
+					`certificado, que es lo que pasa si el CNAME existe y el dominio no está dado de alta en Vercel.`
 			);
 		}
 	});
