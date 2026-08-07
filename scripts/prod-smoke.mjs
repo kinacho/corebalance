@@ -25,6 +25,11 @@
  *     la consulta normal falla y la de `cd=1` responde, el fallo es de DNSSEC y
  *     hay que decirlo con ese nombre: es lo único que apunta al panel del
  *     registrador en vez de al código.
+ *  3. **Y hay que preguntárselo a varios resolvers.** Añadida el 7-ago-2026: esa
+ *     firma de «DNSSEC roto» —validando falla, `cd=1` responde— la produce
+ *     igualita un validador que en ese instante no logra traerse el DNSKEY. Con
+ *     un solo resolver, un rojo falso es indistinguible del bueno. Ver
+ *     `RESOLVERS` y la regla de mayoría de la comprobación `dns`.
  *
  * Cubre además la pieza que `CLAUDE.md` declara imposible de verificar en local:
  * el rewrite `/offline` → `/offline.html` es de Vercel, así que `vite preview` no
@@ -67,6 +72,48 @@ const TIPO_A = 1;
 const TIPO_CNAME = 5;
 
 /**
+ * A quién se le pregunta, y por qué son varios.
+ *
+ * ⚠️ Este script preguntaba a **un solo resolver** (`dns.google`), y eso era un
+ * generador de rojos falsos. Un validador que en ese instante no consigue traerse
+ * el DNSKEY devuelve SERVFAIL mientras la consulta con `cd=1` sigue respondiendo:
+ * **exactamente la misma firma que una zona rota**. Pasó el 7-ago-2026 durante una
+ * revisión —dos consultas seguidas a Cloudflare fallando, cuarenta muestras
+ * inmediatamente después impecables— y con un único resolver eso habría disparado
+ * el error duro «DNSSEC roto», con toda su prosa señalando al panel del
+ * registrador, por un hipo ajeno a la zona.
+ *
+ * Y una guardia que se pone roja al azar acaba ignorada, que es peor que no
+ * tenerla. De ahí la regla de mayoría de más abajo: un resolver no puede
+ * distinguir su propio fallo del de la zona, tres sí.
+ *
+ * Los tres están elegidos midiendo, no por fama. El criterio fue que sirvieran
+ * JSON, aceptaran `cd=1` y —lo que de verdad importa— que **detectaran de verdad
+ * una zona rota**: los tres devuelven SERVFAIL para `dnssec-failed.org` y
+ * responden a la misma consulta con `cd=1`. Quad9 (`:5053`) y `doh.sb` quedaron
+ * fuera porque no devuelven JSON utilizable.
+ *
+ * `reportaAd` existe porque AdGuard **valida pero no marca el bit AD** en su JSON:
+ * incluirlo en la comprobación de autenticidad daría un aviso permanente y falso.
+ * Vota sobre el Status, no sobre el AD.
+ */
+export const RESOLVERS = [
+	{ id: 'google', nombre: 'dns.google', endpoint: 'https://dns.google/resolve', reportaAd: true },
+	{
+		id: 'cloudflare',
+		nombre: 'cloudflare-dns.com',
+		endpoint: 'https://cloudflare-dns.com/dns-query',
+		reportaAd: true
+	},
+	{
+		id: 'adguard',
+		nombre: 'dns.adguard-dns.com',
+		endpoint: 'https://dns.adguard-dns.com/resolve',
+		reportaAd: false
+	}
+];
+
+/**
  * El corazón del script, y a propósito **sin nada de red dentro**: recibe los
  * dos transportes (`get` para HTTP, `doh` para DNS) inyectados.
  *
@@ -78,13 +125,20 @@ const TIPO_CNAME = 5;
  *
  * @param {object} opciones
  * @param {(url: string) => Promise<{status: number, headers: Record<string,string>, body: string}>} opciones.get
- * @param {(nombre: string, tipo: string, opts?: {cd?: boolean}) => Promise<any>} opciones.doh
+ * @param {(nombre: string, tipo: string, opts?: {cd?: boolean, resolver?: string}) => Promise<any>} opciones.doh
  * @param {string} opciones.versionEsperada Versión de `package.json` del commit desplegado.
  * @param {string} [opciones.base]
  * @param {string} [opciones.host]
  * @returns {Promise<{errores: Array<{comprobacion: string, mensaje: string}>, avisos: Array<{comprobacion: string, mensaje: string}>}>}
  */
-export async function runSmoke({ get, doh, versionEsperada, base = BASE, host = HOST }) {
+export async function runSmoke({
+	get,
+	doh,
+	versionEsperada,
+	base = BASE,
+	host = HOST,
+	versionBlanda = false
+}) {
 	const errores = [];
 	const avisos = [];
 	const fallo = (comprobacion, mensaje) => errores.push({ comprobacion, mensaje });
@@ -106,43 +160,116 @@ export async function runSmoke({ get, doh, versionEsperada, base = BASE, host = 
 
 	// ── DNS ───────────────────────────────────────────────────────────────────
 	await aislada('dns', async () => {
-		const validando = await doh(host, 'A');
-		const sinValidar = await doh(host, 'A', { cd: true });
-
 		const registros = (respuesta) =>
 			(respuesta.Answer ?? []).filter((r) => r.type === TIPO_A).map((r) => r.data);
 
-		if (validando.Status !== 0 && sinValidar.Status === 0) {
-			fallo(
-				'dns-dnssec',
-				`DNSSEC roto en ${host}: los resolvers que validan devuelven SERVFAIL (Status ${validando.Status}) ` +
-					`mientras la misma consulta sin validar (cd=1) responde ${registros(sinValidar).join(', ')}. ` +
-					`El dominio es invisible para Google, Cloudflare y Quad9 aunque los autoritativos contesten bien, ` +
-					`y el navegador no lo distingue de no tener red: el service worker sirve la página offline. ` +
-					`Se arregla en el panel del registrador (DS del registro vs. DNSKEY de la zona), no en este repo.`
-			);
-			return;
-		}
+		/**
+		 * Se pregunta a los tres a la vez, y un resolver que revienta **se abstiene**
+		 * en vez de contar como SERVFAIL. La distinción es la que sostiene todo lo
+		 * demás: que el endpoint de AdGuard esté caído no dice absolutamente nada
+		 * sobre la zona de `corebalance.app`, y contarlo como voto de fallo sería
+		 * fabricar la evidencia que este bloque existe para pesar.
+		 */
+		const votos = await Promise.all(
+			RESOLVERS.map(async (resolver) => {
+				try {
+					return { resolver, respuesta: await doh(host, 'A', { resolver: resolver.id }) };
+				} catch (error) {
+					return { resolver, error };
+				}
+			})
+		);
 
-		if (validando.Status !== 0) {
+		const nombres = (lista) => lista.map((v) => v.resolver.nombre).join(', ');
+		const opinaron = votos.filter((v) => v.respuesta);
+		const mudos = votos.filter((v) => !v.respuesta);
+
+		if (opinaron.length === 0) {
 			fallo(
 				'dns',
-				`${host} no resuelve: Status ${validando.Status} validando y ${sinValidar.Status} sin validar. ` +
-					`Que fallen las dos apunta a la delegación o a la zona, no a DNSSEC.`
+				`ningún resolver DoH pudo responder (${nombres(mudos)}): no se ha podido comprobar si ${host} ` +
+					`resuelve. Esto no dice nada sobre la zona; lo más probable es que sea la red desde la que corre ` +
+					`esta comprobación.`
 			);
 			return;
 		}
 
-		if (registros(validando).length === 0) {
+		const fallaron = opinaron.filter((v) => v.respuesta.Status !== 0);
+		const sanos = opinaron.filter((v) => v.respuesta.Status === 0);
+
+		if (fallaron.length > 0) {
+			// La segunda pregunta, sin validar, al mismo resolver que falló: es lo único
+			// que separa «el dominio no existe» de «existe y su DNSSEC está roto», que
+			// son problemas con arreglos opuestos.
+			const sinValidar = await doh(host, 'A', { cd: true, resolver: fallaron[0].resolver.id });
+			const respondeSinValidar = sinValidar.Status === 0 && registros(sinValidar).length > 0;
+
+			/**
+			 * Mayoría estricta de los que opinaron, y **mínimo dos opiniones** para
+			 * declarar nada roto. Con un solo voto no se puede distinguir el fallo del
+			 * validador del fallo de la zona, que es justamente el error que este
+			 * bloque viene a corregir: en ese caso se avisa y no se rompe.
+			 */
+			const mayoria = fallaron.length * 2 > opinaron.length;
+			const concluyente = opinaron.length >= 2 && mayoria;
+			const reparto =
+				`${fallaron.length} de ${opinaron.length} validadores fallan (${nombres(fallaron)})` +
+				(sanos.length > 0 ? ` y ${nombres(sanos)} responde${sanos.length > 1 ? 'n' : ''} bien` : '') +
+				(mudos.length > 0 ? `; sin respuesta: ${nombres(mudos)}` : '');
+
+			if (respondeSinValidar && concluyente) {
+				fallo(
+					'dns-dnssec',
+					`DNSSEC roto en ${host}: ${reparto}, mientras la misma consulta sin validar (cd=1) responde ` +
+						`${registros(sinValidar).join(', ')}. El dominio es invisible para todo resolver que valide, ` +
+						`aunque los autoritativos contesten bien, y el navegador no lo distingue de no tener red: el ` +
+						`service worker sirve la página offline. Se arregla en el panel del registrador (DS del ` +
+						`registro vs. DNSKEY de la zona), no en este repo.`
+				);
+				return;
+			}
+
+			if (respondeSinValidar) {
+				aviso(
+					'dns-dnssec',
+					`Fallo de validación **no concluyente** en ${host}: ${reparto}. Sin validar (cd=1) responde ` +
+						`${registros(sinValidar).join(', ')}. Un validador que en ese momento no logra traerse el ` +
+						`DNSKEY produce exactamente esta firma sin que la zona tenga nada malo, así que con este dato ` +
+						`no se declara rota. Si se repite en varias ejecuciones seguidas, entonces sí mira el registrador.`
+				);
+			} else if (concluyente) {
+				fallo(
+					'dns',
+					`${host} no resuelve: ${reparto}, y sin validar (cd=1) tampoco responde (Status ` +
+						`${sinValidar.Status}). Que fallen las dos apunta a la delegación o a la zona, no a DNSSEC.`
+				);
+				return;
+			} else {
+				aviso(
+					'dns',
+					`Resolución inestable en ${host}: ${reparto}, y sin validar tampoco responde (Status ` +
+						`${sinValidar.Status}). No hay mayoría suficiente para darlo por caído.`
+				);
+			}
+		}
+
+		if (sanos.length === 0) return;
+
+		if (registros(sanos[0].respuesta).length === 0) {
 			fallo('dns', `${host} resuelve pero no devuelve ningún registro A.`);
 			return;
 		}
 
-		if (validando.AD !== true) {
+		// Sólo votan aquí los que marcan el bit AD, y hace falta que **todos** ellos lo
+		// nieguen: un único resolver que no lo marque no es evidencia de que la zona
+		// haya dejado de estar firmada.
+		const conAd = sanos.filter((v) => v.resolver.reportaAd);
+		if (conAd.length > 0 && conAd.every((v) => v.respuesta.AD !== true)) {
 			aviso(
 				'dns-dnssec',
-				`${host} resuelve, pero la respuesta no viene autenticada (AD=false): la zona ha dejado de estar ` +
-					`firmada o el DS ya no está publicado. No rompe nada hoy, y quita la protección que sí había.`
+				`${host} resuelve, pero la respuesta no viene autenticada (AD=false) en ${nombres(conAd)}: la zona ` +
+					`ha dejado de estar firmada o el DS ya no está publicado. No rompe nada hoy, y quita la ` +
+					`protección que sí había.`
 			);
 		}
 	});
@@ -186,11 +313,30 @@ export async function runSmoke({ get, doh, versionEsperada, base = BASE, host = 
 		if (!servida) {
 			aviso('version', `no se encontró "softwareVersion" en la portada; no se pudo comparar la versión.`);
 		} else if (servida !== versionEsperada) {
-			fallo(
-				'version',
+			/**
+			 * ⚠️ En las ejecuciones por cron esto es un aviso, no un error, y la
+			 * distinción nació al bajar el cron a media hora. La comprobación de
+			 * versión existe para cazar **un despliegue que no llegó a promocionarse**,
+			 * y eso sólo tiene sentido preguntárselo al evento que acompaña a un
+			 * despliegue. Un cron que cae en los dos o tres minutos entre el merge de
+			 * una release y el final del build de Vercel ve legítimamente la versión
+			 * anterior: con 48 ejecuciones al día eso es un rojo falso por release, y
+			 * el rojo falso es justo lo que este script acaba de dejar de producir por
+			 * el otro lado. En `deployment_status` sigue siendo error.
+			 */
+			const mensaje =
 				`producción sirve la versión ${servida} y el commit desplegado es la ${versionEsperada}: ` +
-					`el despliegue no llegó, o la CDN está sirviendo HTML viejo.`
-			);
+				`el despliegue no llegó, o la CDN está sirviendo HTML viejo.`;
+			if (versionBlanda) {
+				aviso(
+					'version',
+					`${mensaje} Esta ejecución no acompaña a ningún despliegue, así que puede ser sencillamente ` +
+						`un build de Vercel en curso; si sigue apareciendo en las ejecuciones siguientes, entonces ` +
+						`no llegó de verdad.`
+				);
+			} else {
+				fallo('version', mensaje);
+			}
 		}
 	});
 
@@ -334,18 +480,22 @@ async function getReal(url) {
 }
 
 /**
- * DNS por HTTPS contra `dns.google`, que es un resolver **que valida DNSSEC** — es
- * justo lo que hace falta para reproducir el fallo del 6-ago. `cd=1` desactiva esa
- * validación y devuelve lo que digan los autoritativos, y comparar las dos
- * respuestas es lo que separa «no existe» de «DNSSEC roto».
+ * DNS por HTTPS contra el resolver que se le pida —todos los de `RESOLVERS`
+ * **validan DNSSEC**, que es lo que hace falta para reproducir el fallo del 6-ago—.
+ * `cd=1` desactiva esa validación y devuelve lo que digan los autoritativos, y
+ * comparar las dos respuestas es lo que separa «no existe» de «DNSSEC roto».
+ *
+ * Sin `resolver` cae en el primero de la lista: lo usa la comprobación de `www`,
+ * que sólo genera avisos y no necesita votación.
  */
 async function dohReal(nombre, tipo, opciones = {}) {
-	const url = new URL('https://dns.google/resolve');
+	const resolver = RESOLVERS.find((r) => r.id === opciones.resolver) ?? RESOLVERS[0];
+	const url = new URL(resolver.endpoint);
 	url.searchParams.set('name', nombre);
 	url.searchParams.set('type', tipo);
 	if (opciones.cd) url.searchParams.set('cd', '1');
 	const respuesta = await fetch(url, { headers: { accept: 'application/dns-json' } });
-	if (!respuesta.ok) throw new Error(`el resolver DoH respondió ${respuesta.status}`);
+	if (!respuesta.ok) throw new Error(`${resolver.nombre} respondió ${respuesta.status}`);
 	return respuesta.json();
 }
 
@@ -363,6 +513,9 @@ async function main() {
 	};
 	const base = (valorDe('--base') ?? BASE).replace(/\/$/, '');
 	const comoJson = argv.includes('--json');
+	// Lo pasa el workflow sólo en las ejecuciones por `schedule`. Ver el bloque de
+	// la portada para por qué la versión no puede ser un error ahí.
+	const versionBlanda = argv.includes('--version-aviso');
 	const host = new URL(base).hostname;
 	const versionEsperada = leerVersion();
 
@@ -379,7 +532,14 @@ async function main() {
 
 	let resultado;
 	for (let intento = 1; intento <= INTENTOS; intento++) {
-		resultado = await runSmoke({ get: getReal, doh: dohReal, versionEsperada, base, host });
+		resultado = await runSmoke({
+			get: getReal,
+			doh: dohReal,
+			versionEsperada,
+			base,
+			host,
+			versionBlanda
+		});
 		if (resultado.errores.length === 0) break;
 		if (intento < INTENTOS) {
 			if (!comoJson) {

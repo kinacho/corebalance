@@ -15,11 +15,24 @@ on:
   #    Vercel y `vite preview` no lo aplica) y que producción sirve *esta* versión.
   deployment_status:
 
-  # 2. Cada seis horas, y es el disparador que de verdad habría cazado el incidente:
+  # 2. Cada media hora, y es el disparador que de verdad habría cazado el incidente:
   #    el DNS se rompió solo, sin que nadie desplegara nada. Un fallo de DNSSEC, un
   #    dominio caducado o una caída del registrador no avisan con un commit.
+  #
+  #    ⚠️ Eran seis horas, y con ese intervalo la comprobación no servía para lo que
+  #    se escribió. El incidente del 6-ago duró unos cuatro minutos: la probabilidad
+  #    de que una ventana así caiga dentro de una ejecución cada seis horas es de
+  #    aproximadamente 1 entre 90. Es decir, existía el diagnóstico pero no la
+  #    detección — y el segundo episodio, el 7-ago, se vio de casualidad revisando a
+  #    mano. A 30 minutos son 48 ejecuciones al día en un repo público, donde los
+  #    minutos de Actions no se cobran, y el job son segundos: no hay `npm ci`, el
+  #    script usa sólo builtins de node y `fetch`.
+  #
+  #    Los minutos son 13 y 43 a propósito: GitHub encola los cron de todo el mundo
+  #    y el minuto 0 es el más congestionado, así que las ejecuciones en punto son
+  #    las que más se retrasan o se pierden.
   schedule:
-    - cron: '23 */6 * * *'
+    - cron: '13,43 * * * *'
 
   # 3. A mano, para comprobar después de tocar el DNS o el `vercel.json`.
   workflow_dispatch:
@@ -61,5 +74,14 @@ jobs:
       # Sin `npm ci` a propósito: el script sólo usa builtins de node y `fetch`, así
       # que instalar dependencias serían dos minutos para no usar ninguna. Y esta
       # comprobación tiene que poder correr cuando el repo esté en cualquier estado.
+      # `--version-aviso` sólo en las ejecuciones por cron: ahí la comprobación no
+      # acompaña a ningún despliegue, así que ver la versión anterior puede
+      # significar sencillamente que hay un build de Vercel en curso. En
+      # `deployment_status` sigue siendo error, que es donde la pregunta «¿llegó a
+      # promocionarse este despliegue?» tiene sentido. Sin esto, bajar el cron a
+      # media hora habría cambiado un rojo falso por otro.
       - name: Comprobar producción
-        run: npm run smoke:prod -- --base "${{ github.event.inputs.base || 'https://corebalance.app' }}"
+        run: |
+          npm run smoke:prod -- \
+            --base "${{ github.event.inputs.base || 'https://corebalance.app' }}" \
+            ${{ github.event_name == 'schedule' && '--version-aviso' || '' }}

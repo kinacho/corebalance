@@ -1,6 +1,9 @@
 import { describe, it, expect } from 'vitest';
 // @ts-expect-error - módulo .mjs sin tipos propios; la firma está en su JSDoc
-import { runSmoke, MARCA_OFFLINE } from './prod-smoke.mjs';
+import { runSmoke, MARCA_OFFLINE, RESOLVERS } from './prod-smoke.mjs';
+
+type Resolver = { id: string; nombre: string; endpoint: string; reportaAd: boolean };
+const RESOLVERS_TIPADOS = RESOLVERS as Resolver[];
 
 /**
  * Un comprobador de producción roto y un sitio sano se leen exactamente igual:
@@ -73,11 +76,21 @@ function dnsSano(): Record<string, { normal: RespuestaDns; cd: RespuestaDns }> {
 	};
 }
 
+/**
+ * Respuesta distinta por resolver para la consulta *validando* del apex. Es lo que
+ * permite montar los escenarios de la regla de mayoría, que es justo lo que un
+ * único transporte no podía expresar. `'muda'` simula el endpoint DoH caído: tiene
+ * que contar como abstención, nunca como voto de fallo.
+ */
+type PorResolver = Record<string, RespuestaDns | 'muda'>;
+
 async function ejecutar(
 	ajustes: {
 		respuestas?: Map<string, Respuesta>;
 		dns?: Record<string, { normal: RespuestaDns; cd: RespuestaDns }>;
+		porResolver?: PorResolver;
 		getRevienta?: string;
+		versionBlanda?: boolean;
 	} = {}
 ) {
 	const respuestas = ajustes.respuestas ?? respuestasSanas();
@@ -91,13 +104,29 @@ async function ejecutar(
 		return respuesta;
 	};
 
-	const doh = async (nombre: string, _tipo: string, opts: { cd?: boolean } = {}) => {
+	const doh = async (
+		nombre: string,
+		_tipo: string,
+		opts: { cd?: boolean; resolver?: string } = {}
+	) => {
+		if (ajustes.porResolver && nombre === HOST && !opts.cd) {
+			const propia = ajustes.porResolver[opts.resolver ?? RESOLVERS_TIPADOS[0].id];
+			if (propia === 'muda') throw new Error('el endpoint DoH no responde');
+			if (propia) return propia;
+		}
 		const entrada = dns[nombre];
 		if (!entrada) throw new Error(`el escenario no define DNS para ${nombre}`);
 		return opts.cd ? entrada.cd : entrada.normal;
 	};
 
-	return runSmoke({ get, doh, versionEsperada: VERSION, base: BASE, host: HOST });
+	return runSmoke({
+		get,
+		doh,
+		versionEsperada: VERSION,
+		base: BASE,
+		host: HOST,
+		versionBlanda: ajustes.versionBlanda ?? false
+	});
 }
 
 /** Texto de los errores de una comprobación concreta, para afirmar sobre el diagnóstico y no sólo sobre el recuento. */
@@ -158,6 +187,122 @@ describe('prod-smoke', () => {
 			const { errores, avisos } = await ejecutar({ dns });
 			expect(textoDe(errores)).toBe('');
 			expect(textoDe(avisos, 'dns-dnssec')).toContain('AD=false');
+		});
+
+		/**
+		 * Estos seis existen por un rojo falso concreto. El 7-ago-2026, revisando el
+		 * DNS a mano, dos consultas seguidas al resolver de Cloudflare devolvieron
+		 * SERVFAIL mientras `cd=1` respondía — la firma exacta de «DNSSEC roto»— y
+		 * cuarenta muestras inmediatamente después salieron impecables en dos
+		 * resolvers. Con un solo resolver, este script habría cantado zona rota y
+		 * mandado a alguien al panel del registrador a buscar un problema inexistente.
+		 *
+		 * La regla que se pina aquí: **hacen falta al menos dos opiniones y mayoría
+		 * estricta** para declarar nada roto, y un endpoint caído se abstiene.
+		 */
+		describe('regla de mayoría entre resolvers', () => {
+			const idsDe = () => RESOLVERS_TIPADOS.map((r) => r.id);
+			const apexSano: RespuestaDns = {
+				Status: 0,
+				AD: true,
+				Answer: [{ type: 1, data: '216.198.79.1' }]
+			};
+
+			it('un solo resolver en SERVFAIL avisa, pero no declara la zona rota', async () => {
+				const [uno, ...resto] = idsDe();
+				const porResolver: PorResolver = { [uno]: { Status: 2 } };
+				for (const id of resto) porResolver[id] = apexSano;
+
+				const { errores, avisos } = await ejecutar({ porResolver });
+
+				expect(textoDe(errores)).toBe('');
+				const mensaje = textoDe(avisos, 'dns-dnssec');
+				expect(mensaje).toContain('no concluyente');
+				// El reparto del voto es el dato que permite juzgar: quién falla y quién no.
+				expect(mensaje).toContain('1 de 3');
+			});
+
+			it('la mayoría en SERVFAIL sí declara DNSSEC roto', async () => {
+				const [uno, dos, tres] = idsDe();
+				const porResolver: PorResolver = {
+					[uno]: { Status: 2 },
+					[dos]: { Status: 2 },
+					[tres]: apexSano
+				};
+
+				const { errores } = await ejecutar({ porResolver });
+
+				const mensaje = textoDe(errores, 'dns-dnssec');
+				expect(mensaje).toContain('DNSSEC roto');
+				expect(mensaje).toContain('2 de 3');
+				expect(mensaje).toContain('panel del registrador');
+			});
+
+			it('un endpoint DoH caído se abstiene: no cuenta como voto de fallo', async () => {
+				const [uno, ...resto] = idsDe();
+				const porResolver: PorResolver = { [uno]: 'muda' };
+				for (const id of resto) porResolver[id] = apexSano;
+
+				const { errores, avisos } = await ejecutar({ porResolver });
+
+				// Que un proveedor de DoH esté caído no dice nada de la zona.
+				expect(textoDe(errores)).toBe('');
+				expect(textoDe(avisos)).toBe('');
+			});
+
+			it('con un mudo y un fallo, uno de dos no es mayoría', async () => {
+				const [uno, dos, tres] = idsDe();
+				const porResolver: PorResolver = {
+					[uno]: 'muda',
+					[dos]: { Status: 2 },
+					[tres]: apexSano
+				};
+
+				const { errores, avisos } = await ejecutar({ porResolver });
+
+				expect(textoDe(errores)).toBe('');
+				expect(textoDe(avisos, 'dns-dnssec')).toContain('no concluyente');
+			});
+
+			it('si ningún resolver responde, lo dice sin culpar a la zona', async () => {
+				const porResolver: PorResolver = {};
+				for (const id of idsDe()) porResolver[id] = 'muda';
+
+				const { errores } = await ejecutar({ porResolver });
+
+				const mensaje = textoDe(errores, 'dns');
+				expect(mensaje).toContain('ningún resolver');
+				// El diagnóstico correcto apunta a la red desde la que se comprueba.
+				expect(mensaje).toContain('no dice nada sobre la zona');
+				expect(mensaje).not.toContain('DNSSEC roto');
+			});
+
+			it('el resolver que no marca AD no puede, él solo, declarar la zona sin firmar', async () => {
+				/**
+				 * AdGuard valida DNSSEC pero **no marca el bit AD** en su JSON. Si contara
+				 * en esa votación, diría «AD=false» de una zona perfectamente firmada.
+				 *
+				 * El escenario tiene que dejarlo solo —los otros dos mudos— porque con
+				 * ellos presentes la regla del `every` ya lo tapa, y el test pasaría
+				 * igual sin la corrección: comprobado revirtiéndola.
+				 */
+				const porResolver: PorResolver = {};
+				for (const r of RESOLVERS_TIPADOS) {
+					porResolver[r.id] = r.reportaAd ? 'muda' : { ...apexSano, AD: false };
+				}
+
+				const { errores, avisos } = await ejecutar({ porResolver });
+
+				expect(textoDe(errores)).toBe('');
+				expect(textoDe(avisos)).toBe('');
+			});
+
+			it('la lista de resolvers sostiene la regla: tres votantes y dos que marcan AD', async () => {
+				// Reducirla a uno devolvería el rojo falso que todo esto viene a cerrar.
+				expect(RESOLVERS_TIPADOS.length).toBeGreaterThanOrEqual(3);
+				expect(RESOLVERS_TIPADOS.filter((r) => r.reportaAd).length).toBeGreaterThanOrEqual(2);
+				expect(new Set(idsDe()).size).toBe(RESOLVERS_TIPADOS.length);
+			});
 		});
 
 		it('avisa —sin romper— si www no resuelve', async () => {
@@ -246,6 +391,25 @@ describe('prod-smoke', () => {
 			const mensaje = textoDe(errores, 'version');
 			expect(mensaje).toContain('1.0.0');
 			expect(mensaje).toContain(VERSION);
+		});
+
+		/**
+		 * La misma discrepancia de versión es error o aviso según quién pregunte, y esa
+		 * distinción nació al bajar el cron a media hora: una ejecución programada que
+		 * cae en los dos o tres minutos entre el merge de una release y el final del
+		 * build de Vercel ve legítimamente la versión anterior. Con 48 ejecuciones al
+		 * día eso es un rojo falso por release — exactamente lo que este script acaba
+		 * de dejar de producir por el lado del DNS.
+		 */
+		it('en una ejecución por cron, la versión vieja avisa en vez de romper', async () => {
+			const respuestas = respuestasSanas();
+			respuestas.set('/', ok(PORTADA.replace(VERSION, '1.0.0')));
+			const { errores, avisos } = await ejecutar({ respuestas, versionBlanda: true });
+
+			expect(textoDe(errores)).toBe('');
+			const mensaje = textoDe(avisos, 'version');
+			expect(mensaje).toContain('1.0.0');
+			expect(mensaje).toContain('build de Vercel en curso');
 		});
 
 		it('avisa —sin romper— si la portada ya no lleva softwareVersion', async () => {
