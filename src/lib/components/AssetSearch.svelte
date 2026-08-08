@@ -4,7 +4,8 @@
 	import { ui } from '$lib/stores/ui.svelte';
 	import { focusTrap } from '$lib/actions/focusTrap';
 	import { LL } from '$lib/i18n/i18n-svelte';
-	import { ASSET_COLORS, ASSET_ICONS } from '$lib/constants';
+	import { ASSET_ICONS } from '$lib/constants';
+	import { nextAssetColor } from '$lib/asset-colors';
 	import type { Asset, AssetCategory, SearchResult } from '$lib/types';
 	import { resolveAssetIcon } from '$lib/utils';
 	import { resolveInstrumentType } from '$lib/instrument-type';
@@ -69,26 +70,13 @@
 		}
 	}
 
-	/**
-	 * El siguiente color libre de la paleta, y si están todos ocupados, se
-	 * reutiliza **en orden** el que menos veces aparezca.
-	 *
-	 * Antes el respaldo era `ASSET_COLORS[Math.floor(Math.random() * …)]`, y un
-	 * tono al azar puede caer idéntico a otro que ya está en la cartera —
-	 * exactamente lo que no debe pasar en una paleta categórica. Repetir el menos
-	 * usado es determinista y reparte, y los tonos siguen siendo los seis
-	 * validados: nunca se genera uno nuevo.
-	 */
+	/** La regla vive en `$lib/asset-colors`, compartida con la importación de CSV. */
 	function getNextColor(): string {
-		const all = [...portfolio.coreAssets, ...portfolio.satelliteAssets, ...portfolio.stockAssets];
-		const timesUsed = new Map<string, number>(ASSET_COLORS.map((c) => [c, 0]));
-		for (const asset of all) {
-			if (timesUsed.has(asset.color)) timesUsed.set(asset.color, timesUsed.get(asset.color)! + 1);
-		}
-		// `ASSET_COLORS` marca el desempate, así que el reparto es reproducible.
-		return ASSET_COLORS.reduce((best, color) =>
-			timesUsed.get(color)! < timesUsed.get(best)! ? color : best
-		);
+		return nextAssetColor([
+			...portfolio.coreAssets,
+			...portfolio.satelliteAssets,
+			...portfolio.stockAssets
+		]);
 	}
 
 	function addResult(result: SearchResult) {

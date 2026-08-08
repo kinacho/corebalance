@@ -5,7 +5,8 @@
 	import { LL } from '$lib/i18n/i18n-svelte';
 	import { importFromCSV, importWithMapping, generateCsvSignature } from '$lib/importers';
 	import type { ImportResult, ParsedPosition, MappingConfig, SkippedDetail } from '$lib/importers';
-	import { ASSET_COLORS, ASSET_ICONS } from '$lib/constants';
+	import { ASSET_ICONS } from '$lib/constants';
+	import { nextAssetColor } from '$lib/asset-colors';
 	import type { Asset, AssetCategory } from '$lib/types';
 	import { resolveAssetIcon } from '$lib/utils';
 	import { onMount, onDestroy } from 'svelte';
@@ -186,13 +187,22 @@
 		}
 	}
 
+	/**
+	 * ⚠️ **Esta función era la copia vieja y rota.** `AssetSearch.svelte` tenía la
+	 * misma escrita a mano, se arregló allí el respaldo aleatorio
+	 * (`ASSET_COLORS[Math.floor(Math.random() * …)]`, que puede devolver un tono
+	 * ya presente en la cartera) y aquí se quedó como estaba — así que la ruta de
+	 * importación de CSV, que es por donde entra una cartera entera de golpe,
+	 * seguía repartiendo colores al azar en cuanto se pasaba de seis activos.
+	 * Ahora las dos llaman a `$lib/asset-colors`, que es el único sitio con la
+	 * regla y tiene sus tests.
+	 */
 	function getNextColor(): string {
-		const usedColors = new Set([
-			...portfolio.coreAssets.map(a => a.color),
-			...portfolio.satelliteAssets.map(a => a.color),
-			...portfolio.stockAssets.map(a => a.color)
+		return nextAssetColor([
+			...portfolio.coreAssets,
+			...portfolio.satelliteAssets,
+			...portfolio.stockAssets
 		]);
-		return ASSET_COLORS.find(c => !usedColors.has(c)) || ASSET_COLORS[Math.floor(Math.random() * ASSET_COLORS.length)];
 	}
 
 	function mapType(type: string | null): string {
