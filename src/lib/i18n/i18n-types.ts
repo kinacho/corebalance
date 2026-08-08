@@ -2307,7 +2307,43 @@ type RootTranslation = {
 		 */
 		chart_twr_hint: string
 		/**
-		 * A​ñ​o
+		 * C​o​m​p​o​s​i​c​i​ó​n
+		 */
+		composition_title: string
+		/**
+		 * C​u​á​n​t​o​ ​p​e​s​a​ ​c​a​d​a​ ​p​o​s​i​c​i​ó​n​ ​y​ ​a​ ​q​u​é​ ​d​i​s​t​a​n​c​i​a​ ​e​s​t​á​ ​d​e​ ​s​u​ ​o​b​j​e​t​i​v​o
+		 */
+		composition_subtitle: string
+		/**
+		 * C​u​á​n​t​o​ ​p​e​s​a​ ​c​a​d​a​ ​p​o​s​i​c​i​ó​n​ ​s​o​b​r​e​ ​t​u​ ​p​a​t​r​i​m​o​n​i​o
+		 */
+		composition_subtitle_no_targets: string
+		/**
+		 * e​n​ ​b​a​n​d​a
+		 */
+		composition_in_band: string
+		/**
+		 * B​a​n​d​a​ ​d​e​ ​t​o​l​e​r​a​n​c​i​a​ ​±​{​p​p​}​ ​p​p
+		 * @param {number} pp
+		 */
+		composition_legend_band: RequiredParams<'pp'>
+		/**
+		 * T​u​ ​o​b​j​e​t​i​v​o
+		 */
+		composition_legend_target: string
+		/**
+		 * A​ñ​a​d​e​ ​p​o​s​i​c​i​o​n​e​s​ ​p​a​r​a​ ​v​e​r​ ​d​e​ ​q​u​é​ ​s​e​ ​c​o​m​p​o​n​e​ ​t​u​ ​c​a​r​t​e​r​a​.
+		 */
+		composition_empty: string
+		/**
+		 * {​n​a​m​e​}​ ​·​ ​{​v​a​l​u​e​}​ ​·​ ​{​w​e​i​g​h​t​}​ ​d​e​ ​t​u​ ​p​a​t​r​i​m​o​n​i​o
+		 * @param {string} name
+		 * @param {string} value
+		 * @param {string} weight
+		 */
+		composition_row_title: RequiredParams<'name' | 'value' | 'weight'>
+		/**
+		 * Y​T​D
 		 */
 		chart_range_ytd: string
 		/**
@@ -6099,7 +6135,39 @@ export type TranslationFunctions = {
 		 */
 		chart_twr_hint: () => LocalizedString
 		/**
-		 * Año
+		 * Composición
+		 */
+		composition_title: () => LocalizedString
+		/**
+		 * Cuánto pesa cada posición y a qué distancia está de su objetivo
+		 */
+		composition_subtitle: () => LocalizedString
+		/**
+		 * Cuánto pesa cada posición sobre tu patrimonio
+		 */
+		composition_subtitle_no_targets: () => LocalizedString
+		/**
+		 * en banda
+		 */
+		composition_in_band: () => LocalizedString
+		/**
+		 * Banda de tolerancia ±{pp} pp
+		 */
+		composition_legend_band: (arg: { pp: number }) => LocalizedString
+		/**
+		 * Tu objetivo
+		 */
+		composition_legend_target: () => LocalizedString
+		/**
+		 * Añade posiciones para ver de qué se compone tu cartera.
+		 */
+		composition_empty: () => LocalizedString
+		/**
+		 * {name} · {value} · {weight} de tu patrimonio
+		 */
+		composition_row_title: (arg: { name: string, value: string, weight: string }) => LocalizedString
+		/**
+		 * YTD
 		 */
 		chart_range_ytd: () => LocalizedString
 		/**

@@ -15,9 +15,17 @@
 
 	interface Props {
 		data: ChartData;
+		/**
+		 * Qué poner en el hueco del donut.
+		 *
+		 * Con `cutout: '70%'` el agujero es el 49 % del área del gráfico, y estaba
+		 * vacío. Es el sitio natural de la cifra que el anillo reparte —el total—,
+		 * y es lo que distingue un donut cuidado de uno por defecto.
+		 */
+		center?: { label: string; value: string; blur?: boolean };
 	}
 
-	let { data }: Props = $props();
+	let { data, center }: Props = $props();
 
 	let canvas: HTMLCanvasElement;
 	let chart: Chart<'doughnut'> | null = null;
@@ -151,6 +159,14 @@
 	-->
 	<div class="chart-container" aria-hidden="true">
 		<canvas bind:this={canvas}></canvas>
+		{#if center}
+			<!-- Encima del lienzo, sin capturar el ratón: el hover de los arcos
+			     tiene que seguir llegando al canvas que hay debajo. -->
+			<div class="chart-center">
+				<span class="center-label">{center.label}</span>
+				<span class="center-value" class:privacy-blur={center.blur}>{center.value}</span>
+			</div>
+		{/if}
 	</div>
 
 	<ul class="chart-legend" aria-label={$LL.charts.donut_aria({ count: view.length })}>
@@ -199,6 +215,35 @@
 		max-width: 170px;
 		aspect-ratio: 1;
 		flex-shrink: 0;
+	}
+
+	.chart-center {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 0.1rem;
+		pointer-events: none;
+		text-align: center;
+		padding: 0 18%;
+	}
+
+	.center-label {
+		font-size: 0.55rem;
+		font-weight: 700;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: rgba(255, 255, 255, 0.38);
+	}
+
+	.center-value {
+		font-size: 0.92rem;
+		font-weight: 800;
+		color: #ffffff;
+		letter-spacing: -0.01em;
+		line-height: 1.15;
 	}
 
 	.chart-legend {

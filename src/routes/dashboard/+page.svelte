@@ -10,6 +10,7 @@
   import RebalancePanel from "$lib/components/RebalancePanel.svelte";
   import TaxAwareRebalance from "$lib/components/TaxAwareRebalance.svelte";
   import DeviationTreemap from "$lib/components/DeviationTreemap.svelte";
+import CompositionBars from "$lib/components/CompositionBars.svelte";
   import LookThroughMap from "$lib/components/LookThroughMap.svelte";
   import Projections from "$lib/components/Projections.svelte";
   import CrisisSimulator from "$lib/components/CrisisSimulator.svelte";
@@ -17,6 +18,7 @@
 
   import { portfolio } from "$lib/stores/portfolio.svelte";
   import { ui } from "$lib/stores/ui.svelte";
+import { formatCompactCurrency } from "$lib/chart-format";
 
   import { DASHBOARD_TABS, CATEGORY_COLORS, type TabId } from "$lib/constants";
   import { browser } from "$app/environment";
@@ -157,34 +159,10 @@
     };
   });
 
-  const detailedChartData = $derived.by(() => {
-    const allPositions = [
-      ...portfolio.portfolioState.positions,
-      ...portfolio.stockState.positions,
-      ...portfolio.satelliteState.positions,
-    ];
-    return {
-      labels: allPositions.map((p: PortfolioPosition) => p.asset.name),
-      values: allPositions.map((p: PortfolioPosition) =>
-        portfolio.globalCapital > 0
-          ? (p.totalValue / portfolio.globalCapital) * 100
-          : 0,
-      ),
-      colors: allPositions.map((p: PortfolioPosition) => p.asset.color),
-    };
-  });
-
-  const coreActualChartData = $derived.by(() => {
-    const positions = portfolio.portfolioState.positions;
-    const total = portfolio.portfolioState.totalCapital;
-    return {
-      labels: positions.map((p: PortfolioPosition) => p.asset.name),
-      values: positions.map((p: PortfolioPosition) =>
-        total > 0 ? (p.totalValue / total) * 100 : 0,
-      ),
-      colors: positions.map((p: PortfolioPosition) => p.asset.color),
-    };
-  });
+  // `detailedChartData` y `coreActualChartData` vivían aquí y alimentaban los
+  // dos donuts de activos. Los sustituye `CompositionBars`, que se construye a
+  // partir del store con `buildComposition()` y no necesita que la página le
+  // premastique nada.
 
   // --- Lifecycle ---
   onMount(() => {
@@ -381,17 +359,38 @@
                región/sector del mapa del subyacente perdería su estado en cada
                cambio de pestaña. -->
           <div class="charts-grid">
-            <div class="chart-box">
-              <h4 class="chart-label">{$LL.db.chart_actual_strategy()}</h4>
-              <DonutChart data={coreActualChartData} />
+            <!--
+              ⚠️ Aquí había tres donuts y ahora hay uno. «Estrategia actual» y
+              «Detalle global» eran los mismos activos con distinto denominador,
+              y con seis o más porciones el anillo no hacía ningún trabajo: nadie
+              lee 13,02 % contra 10,98 % de dos arcos, se lee de la leyenda —una
+              leyenda que además truncaba dos fondos de la misma gestora al mismo
+              texto—. Los sustituye `CompositionBars`, que además tiene sitio para
+              la marca del objetivo. El de categorías se queda: tres porciones es
+              justo donde un donut sí funciona.
+            -->
+            <div class="chart-box is-composition">
+              <h4 class="chart-label">{$LL.db.composition_title()}</h4>
+              <p class="chart-sub">
+                {portfolio.portfolioState.positions.some((p) => p.asset.targetWeight > 0)
+                  ? $LL.db.composition_subtitle()
+                  : $LL.db.composition_subtitle_no_targets()}
+              </p>
+              <CompositionBars />
             </div>
             <div class="chart-box">
               <h4 class="chart-label">{$LL.db.chart_global_weight()}</h4>
-              <DonutChart data={categoryChartData} />
-            </div>
-            <div class="chart-box">
-              <h4 class="chart-label">{$LL.db.chart_global_detail()}</h4>
-              <DonutChart data={detailedChartData} />
+              <DonutChart
+                data={categoryChartData}
+                center={{
+                  label: $LL.dashboard.total_value_label(),
+                  // Compacto y no el importe exacto: el hueco tiene 119 px de
+                  // diámetro y `116.052,36 €` se sale por los dos lados. La cifra
+                  // al céntimo ya está en el hero, justo encima.
+                  value: formatCompactCurrency(portfolio.globalCapital, ui.baseCurrency),
+                  blur: true
+                }}
+              />
             </div>
             <!-- Ampliar un mapa lo lleva a ocupar la fila entera de la rejilla.
                  El estado vive aquí porque un elemento de rejilla no puede
@@ -718,8 +717,8 @@
 
   .charts-grid {
     display: grid;
-    /* Cinco carriles: tres donuts y los dos mapas. */
-    grid-template-columns: repeat(5, 100%);
+    /* Cuatro carriles: composición, donut de categorías y los dos mapas. */
+    grid-template-columns: repeat(4, 100%);
     gap: 0;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
@@ -761,6 +760,23 @@
     letter-spacing: 0.05em;
   }
 
+  .chart-sub {
+    margin: -0.6rem 0 0;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    text-align: center;
+  }
+
+  /* El panel de composición es una lista, no una figura centrada. */
+  .chart-box.is-composition {
+    align-items: stretch;
+  }
+
+  .chart-box.is-composition .chart-label,
+  .chart-box.is-composition .chart-sub {
+    text-align: left;
+  }
+
   .charts-mobile-hint {
     display: flex;
     justify-content: center;
@@ -793,6 +809,13 @@
     .chart-box {
       padding: 0;
       align-items: flex-start;
+    }
+    /* Cuatro elementos en una rejilla de tres columnas: cada fila lleva uno
+       ancho y uno estrecho. Arriba composición (2) + donut (1); abajo mapa de
+       desviación (1) + mapa del subyacente (2). Sin esto, la composición cae en
+       un carril de 400 px y el donut deja media fila muerta. */
+    .chart-box.is-composition:not(.is-wide) {
+      grid-column: span 2;
     }
     /* El mapa del subyacente ocupa dos de los tres carriles ya sin ampliar.
        Es el que tiene densidad —nueve regiones, once sectores— y en un solo
