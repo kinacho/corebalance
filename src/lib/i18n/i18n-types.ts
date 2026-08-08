@@ -2381,6 +2381,22 @@ type RootTranslation = {
 		 */
 		composition_row_title: RequiredParams<'name' | 'value' | 'weight'>
 		/**
+		 * T​u​ ​d​i​n​e​r​o​ ​c​o​n​t​r​a​ ​e​l​ ​d​e​l​ ​m​e​r​c​a​d​o
+		 */
+		chart_mode_split_title: string
+		/**
+		 * L​o​ ​q​u​e​ ​p​u​s​i​s​t​e
+		 */
+		chart_label_contributed: string
+		/**
+		 * L​o​ ​q​u​e​ ​p​u​s​o​ ​e​l​ ​m​e​r​c​a​d​o
+		 */
+		chart_label_market: string
+		/**
+		 * L​o​ ​d​e​ ​a​b​a​j​o​ ​e​s​ ​t​u​ ​d​i​n​e​r​o​ ​y​ ​l​o​ ​d​e​ ​a​r​r​i​b​a​ ​l​o​ ​q​u​e​ ​h​a​ ​p​u​e​s​t​o​ ​e​l​ ​m​e​r​c​a​d​o​ ​e​n​c​i​m​a​.​ ​S​i​ ​l​a​ ​f​r​a​n​j​a​ ​d​e​ ​a​r​r​i​b​a​ ​n​o​ ​c​r​e​c​e​,​ ​l​a​ ​c​a​r​t​e​r​a​ ​s​u​b​e​ ​p​o​r​q​u​e​ ​a​p​o​r​t​a​s​,​ ​n​o​ ​p​o​r​q​u​e​ ​r​i​n​d​a​.
+		 */
+		chart_split_hint: string
+		/**
 		 * Y​T​D
 		 */
 		chart_range_ytd: string
@@ -6276,6 +6292,22 @@ export type TranslationFunctions = {
 		 * {name} · {value} · {weight} de tu patrimonio
 		 */
 		composition_row_title: (arg: { name: string, value: string, weight: string }) => LocalizedString
+		/**
+		 * Tu dinero contra el del mercado
+		 */
+		chart_mode_split_title: () => LocalizedString
+		/**
+		 * Lo que pusiste
+		 */
+		chart_label_contributed: () => LocalizedString
+		/**
+		 * Lo que puso el mercado
+		 */
+		chart_label_market: () => LocalizedString
+		/**
+		 * Lo de abajo es tu dinero y lo de arriba lo que ha puesto el mercado encima. Si la franja de arriba no crece, la cartera sube porque aportas, no porque rinda.
+		 */
+		chart_split_hint: () => LocalizedString
 		/**
 		 * YTD
 		 */

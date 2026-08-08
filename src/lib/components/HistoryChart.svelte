@@ -22,7 +22,9 @@
 		categoryAxis,
 		valueAxis,
 		motionAllowed,
-		CHART_SURFACE
+		CHART_SURFACE,
+		CONTRIBUTED_FILL,
+		MARKET_FILL
 	} from '$lib/chart-theme';
 	import { CATEGORY_COLORS } from '$lib/constants';
 	import { ui } from '$lib/stores/ui.svelte';
@@ -38,10 +40,12 @@
 	 * Mezclar la primera con la segunda es lo que convertía una venta en una
 	 * pérdida aparente del 40 %.
 	 */
-	type ViewMode = 'value' | 'twr' | 'gain';
+	type ViewMode = 'value' | 'twr' | 'gain' | 'split';
 
 	let canvas: HTMLCanvasElement;
 	let chart: Chart;
+	/** El degradado del área. Se crea en `onMount`, cuando ya hay contexto 2D. */
+	let areaFill: CanvasGradient | string = 'transparent';
 
 	/**
 	 * ⚠️ **Los rangos eran 7D / 14D / 30D y eso contradecía a la propia app.**
@@ -151,6 +155,15 @@
 	});
 
 	const isPercentMode = $derived(viewMode === 'twr');
+	/**
+	 * ⚠️ **La pregunta que ningún gráfico de patrimonio contesta: ¿esto sube o
+	 * simplemente he metido más?** El modo divide la serie en dos franjas
+	 * apiladas —abajo lo aportado, arriba la revalorización— y con eso se ve de
+	 * un vistazo. El dato ya estaba en el store (`invested` y `gain`); lo que
+	 * había era una quinta línea escalonada que salía apagada por defecto, o sea
+	 * la respuesta escondida detrás de un interruptor.
+	 */
+	const isSplitMode = $derived(viewMode === 'split');
 
 	/**
 	 * En los días sin desglose por categoría se devuelve `null` para que el
@@ -188,11 +201,15 @@
 				? $LL.db.chart_label_return()
 				: viewMode === 'gain'
 					? $LL.db.chart_label_gain()
-					: $LL.db.chart_label_total();
+					: isSplitMode
+						? $LL.db.chart_label_market()
+						: $LL.db.chart_label_total();
 		chart.data.datasets[1].label = $LL.db.chart_label_core();
 		chart.data.datasets[2].label = $LL.db.chart_label_stocks();
 		chart.data.datasets[3].label = $LL.db.chart_label_satellite();
-		chart.data.datasets[4].label = $LL.db.chart_label_invested();
+		chart.data.datasets[4].label = isSplitMode
+			? $LL.db.chart_label_contributed()
+			: $LL.db.chart_label_invested();
 
 		chart.data.datasets[0].data =
 			viewMode === 'twr'
@@ -216,7 +233,45 @@
 		// El capital aportado es una escalera real, no el invertido de hoy repetido
 		// hacia atrás como si nunca hubieras aportado nada.
 		chart.data.datasets[4].data = view.invested;
-		chart.data.datasets[4].hidden = !showCategories || hiddenDatasets.includes('Invertido');
+		// En modo split lo aportado no es opcional: es la mitad de abajo del
+		// gráfico, así que ignora el interruptor de la leyenda.
+		chart.data.datasets[4].hidden = isSplitMode
+			? false
+			: !showCategories || hiddenDatasets.includes('Invertido');
+
+		/**
+		 * ⚠️ Las dos franjas se montan **reconfigurando datasets que ya existen**,
+		 * no añadiendo otros: Chart.js resuelve `fill: { target }` por índice, así
+		 * que insertar uno delante rompería el relleno de forma silenciosa. El 0
+		 * (total) se rellena hasta el 4 (aportado) y el 4 hasta el origen.
+		 */
+		const d0 = chart.data.datasets[0] as unknown as Record<string, unknown>;
+		const d4 = chart.data.datasets[4] as unknown as Record<string, unknown>;
+
+		d0.fill = isSplitMode ? { target: 4 } : true;
+		d0.backgroundColor = isSplitMode ? MARKET_FILL : areaFill;
+		d0.borderColor = isSplitMode ? 'rgba(255,255,255,0.85)' : '#ffffff';
+
+		d4.fill = isSplitMode ? 'origin' : false;
+		d4.backgroundColor = isSplitMode ? CONTRIBUTED_FILL : 'transparent';
+		d4.borderColor = isSplitMode ? 'rgba(255,255,255,0.35)' : 'rgba(255, 255, 255, 0.32)';
+		d4.borderDash = isSplitMode ? [] : [6, 4];
+
+		/**
+		 * ⚠️ **En modo apilado el eje ARRANCA EN CERO, y no es una preferencia.**
+		 * Con el eje empezando en 60k —que es lo correcto para una línea, porque
+		 * ahí lo que se lee es la forma— las dos franjas dejan de ser
+		 * proporcionales a lo que valen: lo aportado quedaba como una tira de
+		 * 10 px bajo una mancha enorme, sugiriendo que el 95 % del patrimonio lo
+		 * puso el mercado cuando son 64.265 € de 116.052 €. Un área apilada cuyo
+		 * eje no llega al cero no es un gráfico impreciso, es un gráfico que dice
+		 * otra cosa. Salió al mirar la captura.
+		 */
+		const yScale = chart.options.scales?.y as { beginAtZero?: boolean; min?: number } | undefined;
+		if (yScale) {
+			yScale.beginAtZero = isSplitMode;
+			yScale.min = isSplitMode ? 0 : undefined;
+		}
 
 		if (chart.options.scales?.y) {
 			const yAxis = chart.options.scales.y as any;
@@ -263,9 +318,9 @@
 		 * sea invisible: ocupaba código y no se veía. A 0,16 sí lee como volumen
 		 * bajo la línea, que es lo que le da cuerpo al gráfico.
 		 */
-		const areaFill = ctx.createLinearGradient(0, 0, 0, 320);
-		areaFill.addColorStop(0, 'rgba(255, 255, 255, 0.16)');
-		areaFill.addColorStop(1, 'rgba(255, 255, 255, 0)');
+		areaFill = ctx.createLinearGradient(0, 0, 0, 320);
+		(areaFill as CanvasGradient).addColorStop(0, 'rgba(255, 255, 255, 0.16)');
+		(areaFill as CanvasGradient).addColorStop(1, 'rgba(255, 255, 255, 0)');
 
 		/** Discontinuo en los tramos que la app no observó, solo reconstruyó. */
 		const dashEstimated = (c: any) => (view.estimated[c.p1DataIndex] ? [4, 4] : undefined);
@@ -429,13 +484,15 @@
 		{
 			key: 'Total',
 			swatch: 'dot' as const,
-			color: '#ffffff',
+			color: isSplitMode ? MARKET_FILL : '#ffffff',
 			label:
 				viewMode === 'twr'
 					? $LL.db.chart_label_return()
 					: viewMode === 'gain'
 						? $LL.db.chart_label_gain()
-						: $LL.db.chart_label_total()
+						: isSplitMode
+							? $LL.db.chart_label_market()
+							: $LL.db.chart_label_total()
 		},
 		{ key: 'Principal', swatch: 'dot' as const, color: CATEGORY_COLORS.core, label: $LL.db.chart_label_core() },
 		{ key: 'Acciones', swatch: 'dot' as const, color: CATEGORY_COLORS.stocks, label: $LL.db.chart_label_stocks() },
@@ -445,7 +502,12 @@
 			color: CATEGORY_COLORS.satellite,
 			label: $LL.db.chart_label_satellite()
 		},
-		{ key: 'Invertido', swatch: 'line' as const, color: 'rgba(255,255,255,0.32)', label: $LL.db.chart_label_invested() }
+		{
+			key: 'Invertido',
+			swatch: isSplitMode ? ('dot' as const) : ('line' as const),
+			color: isSplitMode ? CONTRIBUTED_FILL : 'rgba(255,255,255,0.32)',
+			label: isSplitMode ? $LL.db.chart_label_contributed() : $LL.db.chart_label_invested()
+		}
 	]);
 </script>
 
@@ -453,11 +515,19 @@
 	<div class="chart-header">
 		<div class="legend">
 			{#each legendItems as item (item.key)}
-				{#if item.key === 'Total' || viewMode === 'value'}
+				{#if isSplitMode ? item.key === 'Total' || item.key === 'Invertido' : item.key === 'Total' || viewMode === 'value'}
+					<!--
+						En modo apilado las dos franjas no son opcionales —son el gráfico—,
+						así que la fila ni se apaga ni responde al clic. Sin esto, «lo que
+						pusiste» salía con la muestra hueca (sigue marcada como oculta en
+						`localStorage`) mientras su banda se dibujaba abajo: la leyenda
+						contradiciendo al gráfico.
+					-->
 					<button
 						class="legend-item"
-						class:is-off={hiddenDatasets.includes(item.key)}
-						aria-pressed={!hiddenDatasets.includes(item.key)}
+						class:is-off={!isSplitMode && hiddenDatasets.includes(item.key)}
+						aria-pressed={isSplitMode || !hiddenDatasets.includes(item.key)}
+						disabled={isSplitMode}
 						onclick={() => toggleDataset(item.key)}
 					>
 						<!--
@@ -497,6 +567,18 @@
 					onclick={() => (viewMode = 'gain')}
 					title={$LL.db.chart_mode_gain_title()}>±</button
 				>
+				<button
+					class="toggle-btn"
+					class:active={viewMode === 'split'}
+					onclick={() => (viewMode = 'split')}
+					title={$LL.db.chart_mode_split_title()}
+					aria-label={$LL.db.chart_mode_split_title()}
+				>
+					<svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+						<rect x="1" y="8" width="14" height="6" rx="1" fill="currentColor" opacity="0.45" />
+						<rect x="1" y="3" width="14" height="4" rx="1" fill="currentColor" />
+					</svg>
+				</button>
 			</div>
 
 			<div class="range-selector">
@@ -520,6 +602,9 @@
 	<div class="chart-notes">
 		{#if viewMode === 'twr'}
 			<p class="note accent">{$LL.db.chart_twr_hint()}</p>
+		{/if}
+		{#if isSplitMode}
+			<p class="note accent">{$LL.db.chart_split_hint()}</p>
 		{/if}
 		{#if rangeIsClipped}
 			<p class="note">{$LL.db.chart_range_short()}</p>
@@ -621,8 +706,12 @@
 		transition: background 0.18s ease;
 	}
 
-	.legend-item:hover {
+	.legend-item:hover:not(:disabled) {
 		background: rgba(255, 255, 255, 0.05);
+	}
+
+	.legend-item:disabled {
+		cursor: default;
 	}
 
 	.swatch {

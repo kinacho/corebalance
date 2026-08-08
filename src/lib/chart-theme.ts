@@ -87,6 +87,24 @@ export const valueAxis = {
 };
 
 /**
+ * **Tu dinero contra el del mercado**, en dos pasos del mismo azul.
+ *
+ * No son dos categorías que compiten, son las dos partes de un total, así que
+ * la rampa es secuencial y no categórica. Y viven aquí, compartidos, porque la
+ * misma distinción aparece dos veces: en el histórico —lo que ya pusiste contra
+ * lo que el mercado puso encima— y en la proyección —lo que aportarás contra lo
+ * que podría añadir—. Que el pasado y el futuro usen tonos distintos para la
+ * misma idea es el defecto que este módulo existe para no repetir.
+ *
+ * Medidos con el validador de `dataviz` contra `#0d0d12`: ΔE 34,5 en visión
+ * normal, 32,2 con protanopia. El oscuro se queda a 2,89:1 de contraste, por
+ * debajo de 3:1, y por eso los dos gráficos que los usan llevan leyenda con
+ * rótulos.
+ */
+export const CONTRIBUTED_FILL = '#1d4ed8';
+export const MARKET_FILL = '#93c5fd';
+
+/**
  * ¿Toca animar?
  *
  * Se consulta una vez por componente. Devuelve `false` cuando el sistema pide
