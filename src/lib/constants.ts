@@ -172,6 +172,39 @@ export const BLOCK_HUES = {
 export const UNTARGETED_FILL = '#3b4250';
 export const UNTARGETED_STRIPE = '#5a6273';
 
+/**
+ * El par de **estado**: sube / baja. Reservado, y nunca una serie.
+ *
+ * Es una capa distinta de `ASSET_COLORS` y `CATEGORY_COLORS`: aquellas
+ * identifican *qué* es algo, ésta dice *cómo va*. Mezclarlas era el defecto de
+ * fondo del tablero — el verde llegó a significar seis cosas a la vez (acciones,
+ * dinero que entra, beneficio, rentabilidad positiva, «en objetivo» y «con
+ * DCA»), y un color que significa seis cosas no significa ninguna.
+ *
+ * **No son tonos nuevos: son dos de los que ya estaban, y sobran tres.** Antes
+ * convivían `#34d399`, `#10b981` y `var(--accent-green)` para lo positivo y
+ * `#f87171`, `#f43f5e`, `#fca5a5` y `#ef4444` para lo negativo, repartidos por
+ * componente según quién lo escribiera. El peor par de los que coincidían en
+ * pantalla quedaba a **ΔE 6,5 con deuteranopia**; éste está a **12,0**, medido
+ * con el validador de la habilidad `dataviz` contra `#0d0d12` (visión normal
+ * 36,0, contraste ≥ 3:1 los dos). O sea: la mejora salió de *quitar*, no de
+ * añadir.
+ *
+ * ⚠️ **Coste conocido y medido: `STATE_NEGATIVE` está a ΔE 6,0 en visión normal
+ * de `ASSET_COLORS[5]`** (el rosa `#e11d48`), que es un fallo duro si los dos
+ * fueran marcas del mismo gráfico. No lo son, y ésa es toda la defensa: el color
+ * de estado sale en *texto y distintivos* (una cifra, un badge), nunca como
+ * relleno de una celda o de un arco, y **siempre acompañado del signo** `+`/`−`,
+ * que es la codificación secundaria que la guía exige para los colores de
+ * estado. No hay rojo que pase a la vez contra el verde, contra ese rosa y
+ * contra el ámbar de `DEVIATION_OVER` —se probaron seis— porque la paleta
+ * categórica ya ocupa la rueda entera; el único que lo lograba era un fucsia,
+ * y un fucsia no dice «pérdida». Si algún día una celda de gráfico necesita
+ * pintarse de estado, este par hay que rehacerlo.
+ */
+export const STATE_POSITIVE = '#34d399';
+export const STATE_NEGATIVE = '#f43f5e';
+
 /** Cuántas porciones se muestran antes de agrupar el resto en «Otros». */
 export const MAX_CHART_SLICES = 6;
 
