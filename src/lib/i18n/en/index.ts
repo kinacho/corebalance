@@ -619,6 +619,9 @@ const en: Translation = {
     chart_estimated_note: 'The dashed stretch is rebuilt from the asset price, assuming you already held those shares before the app started recording changes.',
     chart_gaps_note: 'Days stored without a per-category breakdown are left broken rather than filled in.',
     chart_twr_hint: 'Contributing or selling does not move this line: only the price of your assets does.',
+    chart_range_ytd: 'YTD',
+    chart_range_all: 'All',
+    chart_range_short: 'There is not that much history yet: showing from the first recorded day.',
     timing_title: 'The cost of your timing',
     timing_assets: 'Your assets',
     timing_you: 'Your portfolio',
@@ -779,8 +782,8 @@ const en: Translation = {
     title: 'Future Projections',
     subtitle: 'Estimated financial freedom',
     simulation_base: 'Simulation Base Capital',
-    real_portfolio: '📊 Real Portfolio',
-    custom_capital: '✏️ Custom',
+    real_portfolio: 'Real portfolio',
+    custom_capital: 'Custom',
     savings: 'Savings',
     annual_interest: 'Annual Interest',
     horizon: 'Horizon',
@@ -789,6 +792,9 @@ const en: Translation = {
     total_investment: 'Total Investment',
     generated_interest: 'Interests Generated',
     disclaimer: 'Past performance does not guarantee future results. Estimate based on constant contribution.',
+    legend_invested: 'Contributed',
+    legend_profit: 'Growth',
+    axis_years: 'Years',
   },
   // Crisis Simulator
   crisis_simulator: {
@@ -808,6 +814,8 @@ const en: Translation = {
     less_wait: 'Less waiting time',
     never: 'Never',
     total_dca: 'Total contributed via DCA: {total}',
+    original_capital: 'Original capital',
+    axis_months: 'Months since the drop',
     crises: {
       dotcom: {
         recovery: '7 years',

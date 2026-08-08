@@ -129,8 +129,8 @@
 	}
 
 	.figure.delta.gain {
-		background: rgba(16, 185, 129, 0.1);
-		border-color: rgba(16, 185, 129, 0.28);
+		background: rgba(52, 211, 153, 0.1);
+		border-color: rgba(52, 211, 153, 0.28);
 	}
 
 	.figure-label {
@@ -147,8 +147,8 @@
 		color: var(--text-primary);
 	}
 
-	.figure-value.positive { color: var(--accent-green); }
-	.figure-value.negative { color: #f43f5e; }
+	.figure-value.positive { color: var(--state-positive); }
+	.figure-value.negative { color: var(--state-negative); }
 
 	.explainer {
 		margin: 0;

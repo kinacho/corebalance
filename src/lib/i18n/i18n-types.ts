@@ -2307,6 +2307,18 @@ type RootTranslation = {
 		 */
 		chart_twr_hint: string
 		/**
+		 * A​ñ​o
+		 */
+		chart_range_ytd: string
+		/**
+		 * T​o​d​o
+		 */
+		chart_range_all: string
+		/**
+		 * T​o​d​a​v​í​a​ ​n​o​ ​h​a​y​ ​t​a​n​t​o​ ​h​i​s​t​o​r​i​a​l​:​ ​s​e​ ​m​u​e​s​t​r​a​ ​d​e​s​d​e​ ​e​l​ ​p​r​i​m​e​r​ ​d​í​a​ ​r​e​g​i​s​t​r​a​d​o​.
+		 */
+		chart_range_short: string
+		/**
 		 * E​l​ ​c​o​s​t​e​ ​d​e​ ​t​u​ ​t​i​m​i​n​g
 		 */
 		timing_title: string
@@ -2928,11 +2940,11 @@ type RootTranslation = {
 		 */
 		simulation_base: string
 		/**
-		 * �​�​ ​C​a​r​t​e​r​a​ ​R​e​a​l
+		 * C​a​r​t​e​r​a​ ​r​e​a​l
 		 */
 		real_portfolio: string
 		/**
-		 * ✏​️​ ​P​e​r​s​o​n​a​l​i​z​a​d​o
+		 * P​e​r​s​o​n​a​l​i​z​a​d​o
 		 */
 		custom_capital: string
 		/**
@@ -2969,6 +2981,18 @@ type RootTranslation = {
 		 * R​e​n​d​i​m​i​e​n​t​o​s​ ​p​a​s​a​d​o​s​ ​n​o​ ​g​a​r​a​n​t​i​z​a​n​ ​r​e​s​u​l​t​a​d​o​s​ ​f​u​t​u​r​o​s​.​ ​E​s​t​i​m​a​c​i​ó​n​ ​b​a​s​a​d​a​ ​e​n​ ​a​p​o​r​t​a​c​i​ó​n​ ​c​o​n​s​t​a​n​t​e​.
 		 */
 		disclaimer: string
+		/**
+		 * A​p​o​r​t​a​d​o
+		 */
+		legend_invested: string
+		/**
+		 * R​e​v​a​l​o​r​i​z​a​c​i​ó​n
+		 */
+		legend_profit: string
+		/**
+		 * A​ñ​o​s
+		 */
+		axis_years: string
 	}
 	crisis_simulator: {
 		/**
@@ -3037,6 +3061,14 @@ type RootTranslation = {
 		 * @param {string} total
 		 */
 		total_dca: RequiredParams<'total'>
+		/**
+		 * C​a​p​i​t​a​l​ ​o​r​i​g​i​n​a​l
+		 */
+		original_capital: string
+		/**
+		 * M​e​s​e​s​ ​d​e​s​d​e​ ​l​a​ ​c​a​í​d​a
+		 */
+		axis_months: string
 		crises: {
 			dotcom: {
 				/**
@@ -6067,6 +6099,18 @@ export type TranslationFunctions = {
 		 */
 		chart_twr_hint: () => LocalizedString
 		/**
+		 * Año
+		 */
+		chart_range_ytd: () => LocalizedString
+		/**
+		 * Todo
+		 */
+		chart_range_all: () => LocalizedString
+		/**
+		 * Todavía no hay tanto historial: se muestra desde el primer día registrado.
+		 */
+		chart_range_short: () => LocalizedString
+		/**
 		 * El coste de tu timing
 		 */
 		timing_title: () => LocalizedString
@@ -6647,11 +6691,11 @@ export type TranslationFunctions = {
 		 */
 		simulation_base: () => LocalizedString
 		/**
-		 * 📊 Cartera Real
+		 * Cartera real
 		 */
 		real_portfolio: () => LocalizedString
 		/**
-		 * ✏️ Personalizado
+		 * Personalizado
 		 */
 		custom_capital: () => LocalizedString
 		/**
@@ -6686,6 +6730,18 @@ export type TranslationFunctions = {
 		 * Rendimientos pasados no garantizan resultados futuros. Estimación basada en aportación constante.
 		 */
 		disclaimer: () => LocalizedString
+		/**
+		 * Aportado
+		 */
+		legend_invested: () => LocalizedString
+		/**
+		 * Revalorización
+		 */
+		legend_profit: () => LocalizedString
+		/**
+		 * Años
+		 */
+		axis_years: () => LocalizedString
 	}
 	crisis_simulator: {
 		/**
@@ -6752,6 +6808,14 @@ export type TranslationFunctions = {
 		 * Total aportado vía DCA: {total}
 		 */
 		total_dca: (arg: { total: string }) => LocalizedString
+		/**
+		 * Capital original
+		 */
+		original_capital: () => LocalizedString
+		/**
+		 * Meses desde la caída
+		 */
+		axis_months: () => LocalizedString
 		crises: {
 			dotcom: {
 				/**

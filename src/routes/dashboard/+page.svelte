@@ -317,7 +317,27 @@
               class:active={activeTab === tab.id}
               onclick={() => switchTab(tab.id)}
             >
-              <span class="tab-icon">{tab.icon}</span>
+              <!-- Iconos de trazo, no emojis: un emoji lo dibuja la fuente del
+                   sistema, cambia de estilo en cada plataforma y no hereda el
+                   color del estado activo. Los `icon` de `DASHBOARD_TABS` siguen
+                   ahí porque los usa el tour. -->
+              <span class="tab-icon" aria-hidden="true">
+                {#if tab.id === "assets"}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 19V9M10 19V5M16 19v-7M22 19H2" />
+                  </svg>
+                {:else if tab.id === "rebalance"}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="8" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                {:else}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 17l5-5 4 3 8-8" />
+                    <path d="M14 6h6v6" />
+                  </svg>
+                {/if}
+              </span>
               <span class="tab-label">
                 {#if tab.id === 'assets'}
                   {$LL.db.tab_assets()}
@@ -638,19 +658,19 @@
   }
 
   .tab-icon {
-    font-size: 1.2rem;
+    display: block;
     margin-bottom: 2px;
-    transition: transform 0.3s ease;
+  }
+
+  .tab-icon :global(svg) {
+    width: 19px;
+    height: 19px;
+    display: block;
   }
 
   .tab-btn.active {
-    background: rgba(59, 130, 246, 0.15);
-    color: #60a5fa;
-    box-shadow: 0 0 20px rgba(59, 130, 246, 0.1);
-  }
-
-  .tab-btn.active .tab-icon {
-    transform: translateY(-2px) scale(1.1);
+    background: rgba(37, 99, 235, 0.16);
+    color: #bfdbfe;
   }
 
   /* --- Layout Grid --- */

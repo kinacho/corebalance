@@ -26,30 +26,20 @@ vi.mock('$lib/stores/portfolio.svelte', () => {
 			portfolioState: { totalCapital: 7000, positions: [] },
 			stockState: { totalCapital: 2000 },
 			satelliteState: { totalCapital: 1000 },
+			/**
+			 * Las cajas de «Invertido» y «Rentabilidad» dibujan una sparkline con
+			 * estas series. El mock no las traía y el componente reventaba al
+			 * añadirlas — que es justo lo que tiene que pasar: si el store deja de
+			 * publicar `performanceSeries`, esto se entera.
+			 */
+			performanceSeries: {
+				invested: [9000, 9200, 9350, 9500],
+				gain: [100, 260, 380, 500]
+			},
 			prices: { 'AAPL': {} } // Just to pass the `Object.keys(portfolio.prices).length > 0` condition
 		}
 	};
 });
-
-// Mock motion to execute immediately for testing without waiting for animations
-vi.mock('svelte/motion', () => ({
-	tweened: (initial: any) => {
-		let value = initial;
-		const subscribers: any[] = [];
-		return {
-			subscribe: (cb: any) => {
-				subscribers.push(cb);
-				cb(value);
-				return () => {};
-			},
-			set: (newValue: any) => {
-				value = newValue;
-				subscribers.forEach(cb => cb(value));
-				return Promise.resolve();
-			}
-		};
-	}
-}));
 
 describe('HeroSummary.svelte', () => {
 	it('renders total capital formatted', async () => {
@@ -98,4 +88,28 @@ describe('HeroSummary.svelte', () => {
 	        portfolio.stockState.totalCapital = 0;
 	        const { container } = render(HeroSummary);
 	        expect(container.querySelector('.capital-breakdown')).toBeNull();
+	});
+
+	it('dibuja una sparkline en las dos cajas que tienen serie, y solo en ésas', async () => {
+	        const { portfolio } = await import('$lib/stores/portfolio.svelte');
+	        portfolio.loading = false;
+	        portfolio.prices = { 'AAPL': { price: 150, currency: 'USD', name: 'Apple Inc', change: 1.5 } };
+	        const { container } = render(HeroSummary);
+	        // Cuatro cajas, dos líneas: «Cambio hoy» y el TER son cifras de un
+	        // instante y no tienen historia que dibujar.
+	        expect(container.querySelectorAll('.metric-card').length).toBe(4);
+	        expect(container.querySelectorAll('.metric-spark svg').length).toBe(2);
+	});
+
+	it('no dibuja la sparkline cuando la serie es plana', async () => {
+	        const { portfolio } = await import('$lib/stores/portfolio.svelte');
+	        portfolio.loading = false;
+	        portfolio.prices = { 'AAPL': { price: 150, currency: 'USD', name: 'Apple Inc', change: 1.5 } };
+	        portfolio.performanceSeries = {
+	                ...portfolio.performanceSeries,
+	                invested: [9500, 9500, 9500, 9500],
+	                gain: [500, 500, 500, 500]
+	        };
+	        const { container } = render(HeroSummary);
+	        expect(container.querySelectorAll('.metric-spark svg').length).toBe(0);
 	});	});

@@ -587,7 +587,7 @@
 	}
 
 	.ledger-badge.active {
-		box-shadow: 0 0 10px rgba(167, 139, 250, 0.2);
+		box-shadow: none;
 	}
 
 	.card-body {
@@ -737,8 +737,8 @@
 		color: #fff;
 	}
 
-	.pnl-metric.positive .metric-value { color: #10b981; }
-	.pnl-metric.negative .metric-value { color: #fca5a5; }
+	.pnl-metric.positive .metric-value { color: var(--state-positive); }
+	.pnl-metric.negative .metric-value { color: var(--state-negative); }
 
 	.profit-tag {
 		font-size: 0.65rem;
@@ -750,13 +750,13 @@
 	}
 
 	.pnl-metric.positive .profit-tag { 
-		background: rgba(16, 185, 129, 0.15); 
-		color: #10b981;
+		background: rgba(52, 211, 153, 0.15); 
+		color: var(--state-positive);
 	}
 
 	.pnl-metric.negative .profit-tag { 
-		background: rgba(239, 68, 68, 0.15); 
-		color: #fca5a5;
+		background: rgba(244, 63, 94, 0.15); 
+		color: var(--state-negative);
 	}
 
 	.cost-metric .metric-value {
@@ -776,7 +776,7 @@
 		border: none;
 		border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
 		width: 100%;
-		color: #10b981;
+		color: var(--state-positive);
 		font-size: 0.85rem;
 		padding: 0;
 		outline: none;
@@ -811,8 +811,8 @@
 	}
 
 	[data-level='ok'] { color: rgba(160, 160, 200, 0.6); }
-	[data-level='above'] { color: #10b981; }
-	[data-level='below'] { color: #ef4444; }
+	[data-level='above'] { color: var(--state-positive); }
+	[data-level='below'] { color: var(--state-negative); }
 
 	.progress-container {
 		height: 8px;
@@ -833,7 +833,6 @@
 		background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 80%, white));
 		border-radius: 4px;
 		transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-		box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 30%, transparent);
 	}
 
 	.target-marker {
@@ -844,7 +843,6 @@
 		background: #fff;
 		border-radius: 2px;
 		transform: translateX(-50%);
-		box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
 		z-index: 2;
 	}
 

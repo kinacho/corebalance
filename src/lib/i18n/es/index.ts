@@ -621,6 +621,9 @@ const es = {
     chart_estimated_note: 'El tramo discontinuo está reconstruido a partir del precio del activo, asumiendo que ya tenías esas participaciones antes de que la app empezara a registrar cambios.',
     chart_gaps_note: 'Los días guardados sin desglose por categoría aparecen cortados en lugar de rellenados.',
     chart_twr_hint: 'Aportar o vender no mueve esta línea: solo la mueve el precio de tus activos.',
+    chart_range_ytd: 'YTD',
+    chart_range_all: 'Todo',
+    chart_range_short: 'Todavía no hay tanto historial: se muestra desde el primer día registrado.',
     timing_title: 'El coste de tu timing',
     timing_assets: 'Tus activos',
     timing_you: 'Tu cartera',
@@ -787,8 +790,8 @@ const es = {
     title: 'Proyección de Futuro',
     subtitle: 'Libertad financiera estimada',
     simulation_base: 'Capital Base de Simulación',
-    real_portfolio: '📊 Cartera Real',
-    custom_capital: '✏️ Personalizado',
+    real_portfolio: 'Cartera real',
+    custom_capital: 'Personalizado',
     savings: 'Aportación',
     annual_interest: 'Interés Anual',
     horizon: 'Horizonte',
@@ -797,6 +800,9 @@ const es = {
     total_investment: 'Inversión Total',
     generated_interest: 'Intereses Generados',
     disclaimer: 'Rendimientos pasados no garantizan resultados futuros. Estimación basada en aportación constante.',
+    legend_invested: 'Aportado',
+    legend_profit: 'Revalorización',
+    axis_years: 'Años',
   },
   // Crisis Simulator
   crisis_simulator: {
@@ -816,6 +822,8 @@ const es = {
     less_wait: 'Menos de espera',
     never: 'Nunca',
     total_dca: 'Total aportado vía DCA: {total:string}',
+    original_capital: 'Capital original',
+    axis_months: 'Meses desde la caída',
     crises: {
       dotcom: {
         recovery: '7 años',
