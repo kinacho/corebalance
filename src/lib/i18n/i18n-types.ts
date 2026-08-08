@@ -3056,6 +3056,42 @@ type RootTranslation = {
 		 */
 		disclaimer: string
 		/**
+		 * V​o​l​a​t​i​l​i​d​a​d​ ​a​n​u​a​l
+		 */
+		volatility: string
+		/**
+		 * E​s​c​e​n​a​r​i​o​ ​c​e​n​t​r​a​l​ ​e​n​ ​{​y​e​a​r​s​}​ ​a​ñ​o​s
+		 * @param {number} years
+		 */
+		scenario_median: RequiredParams<'years'>
+		/**
+		 * E​n​ ​8​ ​d​e​ ​c​a​d​a​ ​1​0​ ​s​i​m​u​l​a​c​i​o​n​e​s​ ​a​c​a​b​a​s​ ​e​n​t​r​e​ ​{​l​o​w​}​ ​y​ ​{​h​i​g​h​}​.
+		 * @param {string} high
+		 * @param {string} low
+		 */
+		scenario_range: RequiredParams<'high' | 'low'>
+		/**
+		 * M​e​d​i​a​n​a
+		 */
+		legend_median: string
+		/**
+		 * 8​ ​d​e​ ​c​a​d​a​ ​1​0
+		 */
+		legend_p80: string
+		/**
+		 * 5​ ​d​e​ ​c​a​d​a​ ​1​0
+		 */
+		legend_p50: string
+		/**
+		 * L​o​ ​q​u​e​ ​h​a​b​r​á​s​ ​a​p​o​r​t​a​d​o
+		 */
+		legend_contributed: string
+		/**
+		 * C​o​n​o​ ​d​e​ ​{​p​a​t​h​s​}​ ​s​i​m​u​l​a​c​i​o​n​e​s​.​ ​L​a​ ​l​í​n​e​a​ ​c​e​n​t​r​a​l​ ​c​o​m​p​o​n​e​ ​a​l​ ​i​n​t​e​r​é​s​ ​q​u​e​ ​h​a​s​ ​e​l​e​g​i​d​o​;​ ​e​l​ ​a​n​c​h​o​ ​l​o​ ​m​a​r​c​a​ ​l​a​ ​v​o​l​a​t​i​l​i​d​a​d​.
+		 * @param {number} paths
+		 */
+		sim_note: RequiredParams<'paths'>
+		/**
 		 * A​p​o​r​t​a​d​o
 		 */
 		legend_invested: string
@@ -6872,6 +6908,38 @@ export type TranslationFunctions = {
 		 * Rendimientos pasados no garantizan resultados futuros. Estimación basada en aportación constante.
 		 */
 		disclaimer: () => LocalizedString
+		/**
+		 * Volatilidad anual
+		 */
+		volatility: () => LocalizedString
+		/**
+		 * Escenario central en {years} años
+		 */
+		scenario_median: (arg: { years: number }) => LocalizedString
+		/**
+		 * En 8 de cada 10 simulaciones acabas entre {low} y {high}.
+		 */
+		scenario_range: (arg: { high: string, low: string }) => LocalizedString
+		/**
+		 * Mediana
+		 */
+		legend_median: () => LocalizedString
+		/**
+		 * 8 de cada 10
+		 */
+		legend_p80: () => LocalizedString
+		/**
+		 * 5 de cada 10
+		 */
+		legend_p50: () => LocalizedString
+		/**
+		 * Lo que habrás aportado
+		 */
+		legend_contributed: () => LocalizedString
+		/**
+		 * Cono de {paths} simulaciones. La línea central compone al interés que has elegido; el ancho lo marca la volatilidad.
+		 */
+		sim_note: (arg: { paths: number }) => LocalizedString
 		/**
 		 * Aportado
 		 */

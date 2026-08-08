@@ -2,6 +2,7 @@
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { formatEUR } from '$lib/utils';
 	import { formatCompactCurrency, formatEstimate, niceTicks } from '$lib/chart-format';
+	import { simulateScenarios } from '$lib/montecarlo';
 	import { ui } from '$lib/stores/ui.svelte';
 	import { LL } from '$lib/i18n/i18n-svelte';
 
@@ -15,13 +16,23 @@
 	 * determinista dibujada como 21 barras no añade nada** sobre las tres cifras
 	 * que hay encima.
 	 *
-	 * Un total que se descompone en dos partes a lo largo del tiempo es un área
-	 * apilada. En SVG y no en Chart.js por lo mismo que los dos mapas: hereda
-	 * `.privacy-blur` y los tokens sin puente, y el eje se controla entero.
+	 * Pasó a ser un área apilada en SVG, y de ahí a lo que es ahora: **un cono de
+	 * escenarios**, porque dibujar bonita una única línea determinista seguía
+	 * siendo dibujar bonita una única línea determinista. En SVG y no en Chart.js
+	 * por lo mismo que los dos mapas: hereda `.privacy-blur` y los tokens sin
+	 * puente, y el eje se controla entero.
 	 */
 
 	// Parámetros de simulación
 	let expectedReturn = $state(7); // 7% anual por defecto
+	/**
+	 * Volatilidad anual, en porcentaje. El 15 % por defecto es el orden de
+	 * magnitud de una cartera de renta variable global; se deja como control y
+	 * no como constante escondida a propósito: **el ancho del cono es una
+	 * suposición del usuario, igual que el rendimiento**, y esconderla sería
+	 * volver a vender una cifra inventada como si fuera un dato.
+	 */
+	let volatility = $state(15);
 	let years = $state(20);
 	let monthlySavings = $state(500); // Aportación mensual proyectada
 	let isOpen = $state(false);
@@ -35,53 +46,32 @@
 		}
 	});
 
-	const projections = $derived.by(() => {
-		const annualReturn = expectedReturn / 100;
-		const monthlyContribution = monthlySavings;
-		const initialCapital = useCustomBase ? customBase : portfolio.globalCapital;
-		const months = years * 12;
+	/**
+	 * ⚠️ **Esto era una única línea determinista, y era la mentira más educada
+	 * del panel.** Decía «en veinte años tendrás 702.854,19 €» cuando lo que
+	 * quería decir es «si aciertas el 7 % los 240 meses seguidos, saldría esto».
+	 * Ningún año rinde su media. Ahora es un cono de escenarios: la aritmética
+	 * está en `$lib/montecarlo`, con semilla fija para que el gráfico no cambie
+	 * de forma al mover un deslizador que no le afecta.
+	 */
+	const PATHS = 600;
 
-		let finalValue = initialCapital;
-		const history: { month: number; value: number; invested: number }[] = [];
+	const bands = $derived(
+		simulateScenarios({
+			initial: useCustomBase ? customBase : portfolio.globalCapital,
+			monthlyContribution: monthlySavings,
+			years,
+			annualReturn: expectedReturn / 100,
+			annualVolatility: volatility / 100,
+			paths: PATHS
+		})
+	);
 
-		if (annualReturn === 0) {
-			finalValue = initialCapital + monthlyContribution * months;
-			for (let m = 0; m <= months; m++) {
-				if (m % 12 === 0 || m === months) {
-					history.push({
-						month: m,
-						value: initialCapital + monthlyContribution * m,
-						invested: initialCapital + monthlyContribution * m
-					});
-				}
-			}
-		} else {
-			const monthlyReturn = Math.pow(1 + annualReturn, 1 / 12) - 1;
-
-			// Fórmula de interés compuesto:
-			// Capital Final = Capital Inicial * (1+r)^n + Aportación * [((1+r)^n - 1) / r]
-			finalValue =
-				initialCapital * Math.pow(1 + monthlyReturn, months) +
-				monthlyContribution * ((Math.pow(1 + monthlyReturn, months) - 1) / monthlyReturn);
-
-			for (let m = 0; m <= months; m++) {
-				if (m % 12 === 0 || m === months) {
-					const val =
-						initialCapital * Math.pow(1 + monthlyReturn, m) +
-						(m > 0
-							? monthlyContribution * ((Math.pow(1 + monthlyReturn, m) - 1) / monthlyReturn)
-							: 0);
-					history.push({ month: m, value: val, invested: initialCapital + monthlyContribution * m });
-				}
-			}
-		}
-
-		return {
-			finalValue,
-			totalInvested: initialCapital + monthlyContribution * months,
-			totalProfit: finalValue - (initialCapital + monthlyContribution * months),
-			history
-		};
+	const last = $derived(bands.at(-1)!);
+	const projections = $derived({
+		finalValue: last.p50,
+		totalInvested: last.contributed,
+		totalProfit: last.p50 - last.contributed
 	});
 
 	/**
@@ -109,39 +99,49 @@
 		const w = chartWidth || 320;
 		const plotW = Math.max(10, w - PAD.left - PAD.right);
 		const plotH = CHART_H - PAD.top - PAD.bottom;
-		const pts = projections.history;
-		const axis = niceTicks(projections.finalValue, 4);
+		const pts = bands;
+		if (pts.length === 0) return null;
+
+		// El eje llega hasta el percentil 90, que es el techo de lo dibujado.
+		const axis = niceTicks(Math.max(...pts.map((b) => b.p90)), 4);
 
 		const x = (i: number) => PAD.left + (pts.length < 2 ? plotW : (i / (pts.length - 1)) * plotW);
 		const y = (v: number) => PAD.top + plotH * (1 - v / axis.max);
 
-		if (pts.length === 0) return null;
-
-		// El área de lo aportado va de la línea base hasta su propia curva.
-		const investedPath =
-			`M ${x(0)} ${y(0)} ` +
-			pts.map((p, i) => `L ${x(i)} ${y(p.invested)}`).join(' ') +
-			` L ${x(pts.length - 1)} ${y(0)} Z`;
-
-		// La revalorización es la banda entre las dos curvas: ida por el total,
-		// vuelta por lo aportado.
-		const growthPath =
-			`M ${x(0)} ${y(pts[0].invested)} ` +
-			pts.map((p, i) => `L ${x(i)} ${y(p.value)}`).join(' ') +
-			' ' +
+		/** Cinta entre dos series: ida por arriba, vuelta por abajo. */
+		const ribbon = (hi: (b: (typeof pts)[number]) => number, lo: (b: (typeof pts)[number]) => number) =>
+			'M ' +
+			pts.map((b, i) => `${x(i)} ${y(hi(b))}`).join(' L ') +
+			' L ' +
 			pts
-				.map((p, i) => `L ${x(pts.length - 1 - i)} ${y(pts[pts.length - 1 - i].invested)}`)
-				.join(' ') +
+				.map((_, i) => {
+					const j = pts.length - 1 - i;
+					return `${x(j)} ${y(lo(pts[j]))}`;
+				})
+				.join(' L ') +
 			' Z';
 
-		const totalLine = 'M ' + pts.map((p, i) => `${x(i)} ${y(p.value)}`).join(' L ');
+		const line = (get: (b: (typeof pts)[number]) => number) =>
+			'M ' + pts.map((b, i) => `${x(i)} ${y(get(b))}`).join(' L ');
 
 		/** Una etiqueta cada cinco años, y siempre la última. */
 		const xLabels = pts
-			.map((p, i) => ({ i, year: Math.round(p.month / 12) }))
+			.map((b, i) => ({ i, year: b.year }))
 			.filter(({ year, i }) => year % 5 === 0 || i === pts.length - 1);
 
-		return { x, y, plotW, plotH, investedPath, growthPath, totalLine, axis, xLabels, pts };
+		return {
+			x,
+			y,
+			plotW,
+			plotH,
+			axis,
+			xLabels,
+			pts,
+			p80: ribbon((b) => b.p90, (b) => b.p10),
+			p50: ribbon((b) => b.p75, (b) => b.p25),
+			median: line((b) => b.p50),
+			contributed: line((b) => b.contributed)
+		};
 	});
 
 	/** Índice bajo el puntero, para la guía vertical y el tooltip. */
@@ -225,6 +225,13 @@
 					</div>
 					<div class="control-item">
 						<div class="control-header">
+							<label class="control-label" for="vol-range">{$LL.projections.volatility()}</label>
+							<span class="control-value">{volatility}%</span>
+						</div>
+						<input id="vol-range" type="range" min="0" max="30" step="1" bind:value={volatility} />
+					</div>
+					<div class="control-item">
+						<div class="control-header">
 							<label class="control-label" for="years-range">{$LL.projections.horizon()}</label>
 							<span class="control-value">{$LL.projections.years({ years })}</span>
 						</div>
@@ -234,7 +241,7 @@
 
 				<div class="results-card">
 					<div class="main-metric">
-						<span class="metric-label">{$LL.projections.estimated_capital({ years })}</span>
+						<span class="metric-label">{$LL.projections.scenario_median({ years })}</span>
 						<!--
 							⚠️ Sin céntimos, y sin contador animado. `702.854,19 €` en una
 							proyección que depende de acertar el 7 % anual es precisión
@@ -243,6 +250,17 @@
 							después de soltar el deslizador.
 						-->
 						<span class="metric-value privacy-blur">{formatEstimate(projections.finalValue, ui.baseCurrency)}</span>
+						<!--
+							El rango va debajo de la cifra y no en una nota al pie: es lo que
+							convierte «tendrás X» en «podrías acabar entre A y B», que es la
+							diferencia entre una estimación y una promesa.
+						-->
+						<p class="metric-range privacy-blur">
+							{$LL.projections.scenario_range({
+								low: formatEstimate(last.p10, ui.baseCurrency),
+								high: formatEstimate(last.p90, ui.baseCurrency)
+							})}
+						</p>
 					</div>
 
 					<div class="sub-metrics">
@@ -262,12 +280,20 @@
 				<div class="chart-block">
 					<div class="chart-legend">
 						<span class="legend-entry">
-							<span class="legend-swatch" style="--swatch: {GROWTH_FILL}"></span>
-							{$LL.projections.legend_profit()}
+							<span class="legend-swatch is-line"></span>
+							{$LL.projections.legend_median()}
 						</span>
 						<span class="legend-entry">
-							<span class="legend-swatch" style="--swatch: {INVESTED_FILL}"></span>
-							{$LL.projections.legend_invested()}
+							<span class="legend-swatch" style="--swatch: {GROWTH_FILL}; opacity: .55"></span>
+							{$LL.projections.legend_p50()}
+						</span>
+						<span class="legend-entry">
+							<span class="legend-swatch" style="--swatch: {INVESTED_FILL}; opacity: .55"></span>
+							{$LL.projections.legend_p80()}
+						</span>
+						<span class="legend-entry">
+							<span class="legend-swatch is-dashed"></span>
+							{$LL.projections.legend_contributed()}
 						</span>
 					</div>
 
@@ -296,9 +322,32 @@
 									</text>
 								{/each}
 
-								<path d={geometry.investedPath} fill={INVESTED_FILL} />
-								<path d={geometry.growthPath} fill={GROWTH_FILL} />
-								<path d={geometry.totalLine} fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linejoin="round" />
+								<!--
+									Dos cintas del mismo azul en dos pasos, no dos tonos distintos:
+									están anidadas, no compiten. La de fuera es 8 de cada 10
+									escenarios y la de dentro 5 de cada 10. ⚠️ Sobre fondo oscuro
+									**la más probable es la más clara**, no la más oscura: aquí
+									claro es lo que destaca. La interior se dibuja encima de la
+									exterior, así que el alfa no es decoración —es lo que hace que
+									se lean como anidadas y no como dos manchas sueltas—, y deja
+									pasar la rejilla, que si no quedaría tapada justo donde hay que
+									leer cifras.
+
+									La línea blanca es la mediana. La punteada es lo que habrás
+									aportado, que no es una estimación sino aritmética, y por eso
+									va en tinta neutra y no en un tono de la escala.
+								-->
+								<path d={geometry.p80} fill={INVESTED_FILL} opacity="0.34" />
+								<path d={geometry.p50} fill={GROWTH_FILL} opacity="0.30" />
+								<path d={geometry.median} fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linejoin="round" />
+								<path
+									d={geometry.contributed}
+									fill="none"
+									stroke="rgba(255,255,255,0.45)"
+									stroke-width="1.3"
+									stroke-dasharray="5 4"
+									stroke-linejoin="round"
+								/>
 
 								{#each geometry.xLabels as label (label.i)}
 									<text x={geometry.x(label.i)} y={CHART_H - 6} text-anchor="middle" class="axis-label">
@@ -307,17 +356,22 @@
 								{/each}
 
 								{#if hovered !== null && geometry.pts[hovered]}
+									{@const b = geometry.pts[hovered]}
+									<!-- El tramo vertical del cono en el año señalado. -->
 									<line
 										x1={geometry.x(hovered)}
 										x2={geometry.x(hovered)}
-										y1={PAD.top}
-										y2={CHART_H - PAD.bottom}
-										stroke="rgba(255,255,255,0.5)"
+										y1={geometry.y(b.p90)}
+										y2={geometry.y(b.p10)}
+										stroke="rgba(255,255,255,0.55)"
 										stroke-width="1"
 									/>
+								{/if}
+
+								{#if hovered !== null && geometry.pts[hovered]}
 									<circle
 										cx={geometry.x(hovered)}
-										cy={geometry.y(geometry.pts[hovered].value)}
+										cy={geometry.y(geometry.pts[hovered].p50)}
 										r="3.5"
 										fill="#ffffff"
 									/>
@@ -352,14 +406,15 @@
 										(chartWidth || 320) - 70
 									)}px"
 								>
-									<strong>{$LL.projections.years({ years: Math.round(p.month / 12) })}</strong>
-									<span>{formatEstimate(p.value, ui.baseCurrency)}</span>
+									<strong>{$LL.projections.years({ years: p.year })}</strong>
+									<span>{formatEstimate(p.p50, ui.baseCurrency)}</span>
+									<span class="tooltip-part">
+										{$LL.projections.legend_p80()}: {formatEstimate(p.p10, ui.baseCurrency)} –
+										{formatEstimate(p.p90, ui.baseCurrency)}
+									</span>
 									<span class="tooltip-part"
-										>{$LL.projections.legend_invested()}: {formatEstimate(p.invested, ui.baseCurrency)}</span
-									>
-									<span class="tooltip-part"
-										>{$LL.projections.legend_profit()}: {formatEstimate(
-											p.value - p.invested,
+										>{$LL.projections.legend_contributed()}: {formatEstimate(
+											p.contributed,
 											ui.baseCurrency
 										)}</span
 									>
@@ -371,7 +426,7 @@
 				</div>
 
 				<footer class="legal-footer">
-					<p>{$LL.projections.disclaimer()}</p>
+					<p>{$LL.projections.sim_note({ paths: PATHS })} {$LL.projections.disclaimer()}</p>
 				</footer>
 			</div>
 		</div>
@@ -620,6 +675,28 @@
 		height: 9px;
 		border-radius: 3px;
 		background: var(--swatch);
+	}
+
+	.legend-swatch.is-line {
+		width: 13px;
+		height: 2px;
+		border-radius: 1px;
+		background: #ffffff;
+	}
+
+	.legend-swatch.is-dashed {
+		width: 13px;
+		height: 0;
+		border-radius: 0;
+		background: none;
+		border-top: 2px dashed rgba(255, 255, 255, 0.45);
+	}
+
+	.metric-range {
+		margin: 0.5rem 0 0;
+		font-size: 0.72rem;
+		line-height: 1.45;
+		color: var(--text-muted);
 	}
 
 	.chart-canvas {
