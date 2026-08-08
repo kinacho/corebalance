@@ -2307,6 +2307,44 @@ type RootTranslation = {
 		 */
 		chart_twr_hint: string
 		/**
+		 * D​e​r​i​v​a​ ​c​o​n​t​r​a​ ​t​u​ ​o​b​j​e​t​i​v​o
+		 */
+		drift_title: string
+		/**
+		 * A​ ​q​u​é​ ​d​i​s​t​a​n​c​i​a​ ​d​e​ ​s​u​ ​o​b​j​e​t​i​v​o​ ​h​a​ ​e​s​t​a​d​o​ ​c​a​d​a​ ​a​c​t​i​v​o​,​ ​d​í​a​ ​a​ ​d​í​a
+		 */
+		drift_subtitle: string
+		/**
+		 * P​o​n​l​e​ ​u​n​ ​p​e​s​o​ ​o​b​j​e​t​i​v​o​ ​a​ ​l​o​s​ ​a​c​t​i​v​o​s​ ​d​e​ ​t​u​ ​c​a​r​t​e​r​a​ ​p​r​i​n​c​i​p​a​l​ ​y​ ​a​q​u​í​ ​v​e​r​á​s​ ​c​ó​m​o​ ​s​e​ ​s​e​p​a​r​a​ ​c​a​d​a​ ​u​n​o​.
+		 */
+		drift_empty_no_targets: string
+		/**
+		 * A​ú​n​ ​n​o​ ​h​a​y​ ​h​i​s​t​o​r​i​a​l​ ​c​o​n​ ​d​e​s​g​l​o​s​e​ ​p​o​r​ ​a​c​t​i​v​o​.​ ​E​s​t​e​ ​g​r​á​f​i​c​o​ ​s​e​ ​i​r​á​ ​l​l​e​n​a​n​d​o​ ​s​e​g​ú​n​ ​l​a​ ​a​p​p​ ​r​e​g​i​s​t​r​e​ ​d​í​a​s​.
+		 */
+		drift_empty_no_history: string
+		/**
+		 * T​o​d​o​ ​d​e​n​t​r​o​ ​d​e​ ​b​a​n​d​a
+		 */
+		drift_all_in_band: string
+		/**
+		 * F​u​e​r​a​ ​d​e​ ​b​a​n​d​a​ ​d​e​s​d​e​ ​h​a​c​e​ ​{​d​a​y​s​}​ ​d​í​a​s
+		 * @param {number} days
+		 */
+		drift_out_streak: RequiredParams<'days'>
+		/**
+		 * A​l​g​o​ ​s​e​ ​h​a​ ​s​a​l​i​d​o​ ​d​e​ ​b​a​n​d​a​ ​h​o​y
+		 */
+		drift_out_today: string
+		/**
+		 * B​a​n​d​a​ ​±​{​p​p​}​ ​p​p
+		 * @param {number} pp
+		 */
+		drift_band_legend: RequiredParams<'pp'>
+		/**
+		 * P​u​n​t​o​s​ ​p​o​r​c​e​n​t​u​a​l​e​s​ ​r​e​s​p​e​c​t​o​ ​a​ ​t​u​ ​o​b​j​e​t​i​v​o
+		 */
+		drift_axis: string
+		/**
 		 * C​o​m​p​o​s​i​c​i​ó​n
 		 */
 		composition_title: string
@@ -6134,6 +6172,42 @@ export type TranslationFunctions = {
 		 * Aportar o vender no mueve esta línea: solo la mueve el precio de tus activos.
 		 */
 		chart_twr_hint: () => LocalizedString
+		/**
+		 * Deriva contra tu objetivo
+		 */
+		drift_title: () => LocalizedString
+		/**
+		 * A qué distancia de su objetivo ha estado cada activo, día a día
+		 */
+		drift_subtitle: () => LocalizedString
+		/**
+		 * Ponle un peso objetivo a los activos de tu cartera principal y aquí verás cómo se separa cada uno.
+		 */
+		drift_empty_no_targets: () => LocalizedString
+		/**
+		 * Aún no hay historial con desglose por activo. Este gráfico se irá llenando según la app registre días.
+		 */
+		drift_empty_no_history: () => LocalizedString
+		/**
+		 * Todo dentro de banda
+		 */
+		drift_all_in_band: () => LocalizedString
+		/**
+		 * Fuera de banda desde hace {days} días
+		 */
+		drift_out_streak: (arg: { days: number }) => LocalizedString
+		/**
+		 * Algo se ha salido de banda hoy
+		 */
+		drift_out_today: () => LocalizedString
+		/**
+		 * Banda ±{pp} pp
+		 */
+		drift_band_legend: (arg: { pp: number }) => LocalizedString
+		/**
+		 * Puntos porcentuales respecto a tu objetivo
+		 */
+		drift_axis: () => LocalizedString
 		/**
 		 * Composición
 		 */

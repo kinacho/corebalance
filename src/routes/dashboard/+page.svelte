@@ -11,6 +11,7 @@
   import TaxAwareRebalance from "$lib/components/TaxAwareRebalance.svelte";
   import DeviationTreemap from "$lib/components/DeviationTreemap.svelte";
 import CompositionBars from "$lib/components/CompositionBars.svelte";
+import DriftChart from "$lib/components/DriftChart.svelte";
   import LookThroughMap from "$lib/components/LookThroughMap.svelte";
   import Projections from "$lib/components/Projections.svelte";
   import CrisisSimulator from "$lib/components/CrisisSimulator.svelte";
@@ -392,6 +393,17 @@ import { formatCompactCurrency } from "$lib/chart-format";
                 }}
               />
             </div>
+            <!--
+              La deriva: cuánto tiempo llevas fuera de banda. El mapa de
+              desviación contesta esa pregunta para hoy; ésta la contesta para
+              los últimos meses, que es lo que permite ver si los rebalanceos
+              que hiciste sirvieron de algo.
+            -->
+            <div class="chart-box is-drift">
+              <h4 class="chart-label">{$LL.db.drift_title()}</h4>
+              <p class="chart-sub">{$LL.db.drift_subtitle()}</p>
+              <DriftChart />
+            </div>
             <!-- Ampliar un mapa lo lleva a ocupar la fila entera de la rejilla.
                  El estado vive aquí porque un elemento de rejilla no puede
                  salirse de su carril por sí solo, y los dos son excluyentes:
@@ -717,8 +729,8 @@ import { formatCompactCurrency } from "$lib/chart-format";
 
   .charts-grid {
     display: grid;
-    /* Cuatro carriles: composición, donut de categorías y los dos mapas. */
-    grid-template-columns: repeat(4, 100%);
+    /* Cinco carriles: composición, donut de categorías, deriva y los dos mapas. */
+    grid-template-columns: repeat(5, 100%);
     gap: 0;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
@@ -816,6 +828,18 @@ import { formatCompactCurrency } from "$lib/chart-format";
        un carril de 400 px y el donut deja media fila muerta. */
     .chart-box.is-composition:not(.is-wide) {
       grid-column: span 2;
+    }
+    /* Tres filas limpias en la rejilla de tres columnas: composición (2) +
+       donut (1); deriva a fila completa, que es una serie temporal y el ancho
+       es lo que le da resolución; y abajo mapa de desviación (1) + mapa del
+       subyacente (2). */
+    .chart-box.is-drift {
+      grid-column: 1 / -1;
+      align-items: stretch;
+    }
+    .chart-box.is-drift .chart-label,
+    .chart-box.is-drift .chart-sub {
+      text-align: left;
     }
     /* El mapa del subyacente ocupa dos de los tres carriles ya sin ampliar.
        Es el que tiene densidad —nueve regiones, once sectores— y en un solo

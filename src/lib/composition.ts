@@ -31,6 +31,25 @@ import type { PortfolioPosition, PortfolioState } from './types';
  */
 export const TOLERANCE_BAND_PP = 5;
 
+/**
+ * ⚠️ **El borde exacto de la banda no se puede comparar sin tolerancia.**
+ * Un activo justo en el límite —15 % con objetivo del 20 % y banda de 5 pp—
+ * calcula `0,15 − 0,2 = −0,05000000000000002`, o sea **−5,000000000000002 pp**,
+ * y un `<=` pelado lo declara fuera. La misma cuenta por el otro lado
+ * (`0,85 − 0,8`) da 4,999999999999993 y sale dentro: el resultado depende del
+ * signo, que es la peor clase de arbitrariedad.
+ *
+ * Lo cazó el test del borde en `drift.test.ts`. Dos milbillonésimas de punto
+ * porcentual no son una desviación, así que la comparación las perdona — y vive
+ * en una función compartida para que los dos módulos que preguntan lo mismo no
+ * puedan volver a responder distinto.
+ */
+const BAND_EPSILON_PP = 1e-9;
+
+export function isWithinBand(deviationPp: number, bandPp: number): boolean {
+	return Math.abs(deviationPp) <= bandPp + BAND_EPSILON_PP;
+}
+
 export type BlockKey = 'core' | 'stocks' | 'satellite';
 
 export interface CompositionRow {
@@ -104,7 +123,7 @@ function buildBlock(
 				value: p.totalValue,
 				target: hasTarget ? p.asset.targetWeight : null,
 				deviationPp,
-				inBand: deviationPp === null ? null : Math.abs(deviationPp) <= bandPp
+				inBand: deviationPp === null ? null : isWithinBand(deviationPp, bandPp)
 			};
 		})
 		.sort((a, b) => b.weightOfTotal - a.weightOfTotal);
