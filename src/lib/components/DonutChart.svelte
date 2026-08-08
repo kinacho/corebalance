@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { Chart, DoughnutController, ArcElement, Tooltip, Legend } from 'chart.js';
 	import { CHART_NEUTRAL, MAX_CHART_SLICES } from '$lib/constants';
+	import { applyChartDefaults, tooltipStyle, motionAllowed } from '$lib/chart-theme';
 	import { LL } from '$lib/i18n/i18n-svelte';
 
 	Chart.register(DoughnutController, ArcElement, Tooltip, Legend);
@@ -23,8 +24,7 @@
 	/** Índice de la porción bajo el puntero, para enlazar leyenda y arco. */
 	let hovered = $state<number | null>(null);
 
-	const prefersReducedMotion =
-		typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+	const allowMotion = motionAllowed();
 
 	/**
 	 * Agrupa la cola en «Otros» y descarta las porciones sin valor.
@@ -43,8 +43,17 @@
 
 		if (slices.length <= MAX_CHART_SLICES) return slices;
 
-		const head = slices.slice(0, MAX_CHART_SLICES - 1);
-		const tail = slices.slice(MAX_CHART_SLICES - 1);
+		/**
+		 * ⚠️ **Se dibujan los seis tonos, no cinco.** Antes la cabeza era
+		 * `MAX_CHART_SLICES - 1`, así que con nueve activos salían cinco porciones
+		 * de color y una gris con el 18 % — o sea que **«Otros» era la segunda
+		 * porción del gráfico**, y un cubo de descarte no puede ser lo segundo más
+		 * grande de lo que estás mirando. La paleta tiene seis tonos validados y
+		 * el gris es el séptimo elemento, no el sexto: usando los seis, esa misma
+		 * cartera deja «Otros» en torno al 10 %.
+		 */
+		const head = slices.slice(0, MAX_CHART_SLICES);
+		const tail = slices.slice(MAX_CHART_SLICES);
 		return [
 			...head,
 			{
@@ -82,35 +91,26 @@
 				layout: { padding: 12 },
 				plugins: {
 					legend: { display: false },
+					// El estilo del tooltip vive en `chart-theme.ts`: éste era el único
+					// de los cuatro lienzos que declaraba la fuente del proyecto, y los
+					// otros tres salían con la sans del sistema.
 					tooltip: {
-						backgroundColor: 'rgba(10, 10, 25, 0.96)',
-						titleColor: '#fff',
-						bodyColor: 'rgba(255, 255, 255, 0.8)',
-						borderColor: 'rgba(255, 255, 255, 0.12)',
-						borderWidth: 1,
-						cornerRadius: 10,
-						padding: 10,
-						// La fuente del proyecto. Antes decía `Inter`, que no se carga en
-						// ninguna parte, así que los tooltips salían con la sans del sistema.
-						titleFont: { family: 'Plus Jakarta Sans', weight: 'bold' as const, size: 13 },
-						bodyFont: { family: 'Plus Jakarta Sans', size: 12 },
+						...tooltipStyle,
 						displayColors: true,
-						boxWidth: 8,
-						boxHeight: 8,
-						boxPadding: 6,
 						callbacks: {
 							label: (ctx: { parsed: number }) => ` ${ctx.parsed.toFixed(2)}%`
 						}
 					}
 				},
-				animation: prefersReducedMotion
-					? (false as const)
-					: { animateRotate: true, duration: 900, easing: 'easeOutQuart' as const }
+				animation: allowMotion
+					? { animateRotate: true, duration: 520, easing: 'easeOutQuart' as const }
+					: (false as const)
 			}
 		};
 	}
 
 	onMount(() => {
+		applyChartDefaults();
 		chart = new Chart(canvas, createChartConfig());
 		return () => chart?.destroy();
 	});

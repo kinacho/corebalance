@@ -1,9 +1,24 @@
 <script lang="ts">
 	import { portfolio } from '$lib/stores/portfolio.svelte';
-	import { formatEUR, formatPercent } from '$lib/utils';
-	import { tweened } from 'svelte/motion';
-	import { cubicOut } from 'svelte/easing';
+	import { formatEUR } from '$lib/utils';
+	import { formatCompactCurrency, formatEstimate, niceTicks } from '$lib/chart-format';
+	import { ui } from '$lib/stores/ui.svelte';
 	import { LL } from '$lib/i18n/i18n-svelte';
+
+	/**
+	 * ⚠️ **Esto era un gráfico de 21 barras apiladas hechas con `div`s, y estaba
+	 * mal de tres maneras a la vez.** La pila iba del revés —`invested` primero en
+	 * un `flex-direction: column`, o sea *arriba*, con el beneficio debajo
+	 * sosteniéndolo—, no tenía eje, ni leyenda, ni tooltip, y los rellenos eran
+	 * translúcidos sobre una malla con degradado, que es justo lo que el test de
+	 * `DeviationTreemap` prohíbe en el otro mapa. Y de fondo: **una exponencial
+	 * determinista dibujada como 21 barras no añade nada** sobre las tres cifras
+	 * que hay encima.
+	 *
+	 * Un total que se descompone en dos partes a lo largo del tiempo es un área
+	 * apilada. En SVG y no en Chart.js por lo mismo que los dos mapas: hereda
+	 * `.privacy-blur` y los tokens sin puente, y el eje se controla entero.
+	 */
 
 	// Parámetros de simulación
 	let expectedReturn = $state(7); // 7% anual por defecto
@@ -25,60 +40,135 @@
 		const monthlyContribution = monthlySavings;
 		const initialCapital = useCustomBase ? customBase : portfolio.globalCapital;
 		const months = years * 12;
-		
+
 		let finalValue = initialCapital;
-		const history: { month: number, value: number, invested: number }[] = [];
+		const history: { month: number; value: number; invested: number }[] = [];
 
 		if (annualReturn === 0) {
-			finalValue = initialCapital + (monthlyContribution * months);
+			finalValue = initialCapital + monthlyContribution * months;
 			for (let m = 0; m <= months; m++) {
 				if (m % 12 === 0 || m === months) {
 					history.push({
 						month: m,
-						value: initialCapital + (monthlyContribution * m),
-						invested: initialCapital + (monthlyContribution * m)
+						value: initialCapital + monthlyContribution * m,
+						invested: initialCapital + monthlyContribution * m
 					});
 				}
 			}
 		} else {
-			const monthlyReturn = Math.pow(1 + annualReturn, 1/12) - 1;
-			
+			const monthlyReturn = Math.pow(1 + annualReturn, 1 / 12) - 1;
+
 			// Fórmula de interés compuesto:
 			// Capital Final = Capital Inicial * (1+r)^n + Aportación * [((1+r)^n - 1) / r]
-			finalValue = initialCapital * Math.pow(1 + monthlyReturn, months) + 
-						 monthlyContribution * ((Math.pow(1 + monthlyReturn, months) - 1) / monthlyReturn);
+			finalValue =
+				initialCapital * Math.pow(1 + monthlyReturn, months) +
+				monthlyContribution * ((Math.pow(1 + monthlyReturn, months) - 1) / monthlyReturn);
 
 			for (let m = 0; m <= months; m++) {
 				if (m % 12 === 0 || m === months) {
-					const val = initialCapital * Math.pow(1 + monthlyReturn, m) + 
-								(m > 0 ? monthlyContribution * ((Math.pow(1 + monthlyReturn, m) - 1) / monthlyReturn) : 0);
-					history.push({ 
-						month: m, 
-						value: val, 
-						invested: initialCapital + (monthlyContribution * m) 
-					});
+					const val =
+						initialCapital * Math.pow(1 + monthlyReturn, m) +
+						(m > 0
+							? monthlyContribution * ((Math.pow(1 + monthlyReturn, m) - 1) / monthlyReturn)
+							: 0);
+					history.push({ month: m, value: val, invested: initialCapital + monthlyContribution * m });
 				}
 			}
 		}
 
 		return {
 			finalValue,
-			totalInvested: initialCapital + (monthlyContribution * months),
-			totalProfit: finalValue - (initialCapital + (monthlyContribution * months)),
+			totalInvested: initialCapital + monthlyContribution * months,
+			totalProfit: finalValue - (initialCapital + monthlyContribution * months),
 			history
 		};
 	});
 
-	const tweenedValue = tweened(0, { duration: 800, easing: cubicOut });
-	$effect(() => {
-		tweenedValue.set(projections.finalValue);
+	/**
+	 * Los dos tonos son **dos pasos del mismo azul**, no dos colores distintos, y
+	 * eso es deliberado: lo aportado y la revalorización no son dos categorías
+	 * sin relación, son las dos partes de un mismo total. Una rampa secuencial lo
+	 * dice; dos tonos categóricos dirían que compiten. De paso esquiva el
+	 * problema de fondo del tablero — el verde ya significa «positivo» y no puede
+	 * significar además «revalorización».
+	 *
+	 * Medidos con el validador de `dataviz` contra `#0d0d12`: ΔE 34,5 en visión
+	 * normal y 32,2 con protanopia. El azul oscuro se queda a 2,89:1 de contraste
+	 * con el fondo, por debajo de 3:1, y por eso el gráfico lleva leyenda con
+	 * rótulos y las tres cifras completas encima — que es el relieve que la guía
+	 * exige cuando el contraste avisa.
+	 */
+	const INVESTED_FILL = '#1d4ed8';
+	const GROWTH_FILL = '#93c5fd';
+
+	let chartWidth = $state(0);
+	const CHART_H = 160;
+	const PAD = { top: 10, right: 6, bottom: 20, left: 46 };
+
+	const geometry = $derived.by(() => {
+		const w = chartWidth || 320;
+		const plotW = Math.max(10, w - PAD.left - PAD.right);
+		const plotH = CHART_H - PAD.top - PAD.bottom;
+		const pts = projections.history;
+		const axis = niceTicks(projections.finalValue, 4);
+
+		const x = (i: number) => PAD.left + (pts.length < 2 ? plotW : (i / (pts.length - 1)) * plotW);
+		const y = (v: number) => PAD.top + plotH * (1 - v / axis.max);
+
+		if (pts.length === 0) return null;
+
+		// El área de lo aportado va de la línea base hasta su propia curva.
+		const investedPath =
+			`M ${x(0)} ${y(0)} ` +
+			pts.map((p, i) => `L ${x(i)} ${y(p.invested)}`).join(' ') +
+			` L ${x(pts.length - 1)} ${y(0)} Z`;
+
+		// La revalorización es la banda entre las dos curvas: ida por el total,
+		// vuelta por lo aportado.
+		const growthPath =
+			`M ${x(0)} ${y(pts[0].invested)} ` +
+			pts.map((p, i) => `L ${x(i)} ${y(p.value)}`).join(' ') +
+			' ' +
+			pts
+				.map((p, i) => `L ${x(pts.length - 1 - i)} ${y(pts[pts.length - 1 - i].invested)}`)
+				.join(' ') +
+			' Z';
+
+		const totalLine = 'M ' + pts.map((p, i) => `${x(i)} ${y(p.value)}`).join(' L ');
+
+		/** Una etiqueta cada cinco años, y siempre la última. */
+		const xLabels = pts
+			.map((p, i) => ({ i, year: Math.round(p.month / 12) }))
+			.filter(({ year, i }) => year % 5 === 0 || i === pts.length - 1);
+
+		return { x, y, plotW, plotH, investedPath, growthPath, totalLine, axis, xLabels, pts };
 	});
+
+	/** Índice bajo el puntero, para la guía vertical y el tooltip. */
+	let hovered = $state<number | null>(null);
+
+	function trackPointer(event: PointerEvent) {
+		const g = geometry;
+		if (!g) return;
+		const rect = (event.currentTarget as SVGRectElement).getBoundingClientRect();
+		const ratio = (event.clientX - rect.left) / rect.width;
+		const i = Math.round(ratio * (g.pts.length - 1));
+		hovered = Math.min(g.pts.length - 1, Math.max(0, i));
+	}
 </script>
 
 <div id="tour-projections" class="panel" class:open={isOpen}>
-	<button class="panel-header" onclick={() => isOpen = !isOpen} aria-expanded={isOpen}>
+	<button class="panel-header" onclick={() => (isOpen = !isOpen)} aria-expanded={isOpen}>
 		<div class="panel-info">
-			<div class="panel-icon">🚀</div>
+			<!-- Icono de trazo en lugar del emoji 🚀: un emoji se dibuja con la fuente
+			     del sistema, cambia de estilo en cada plataforma y es el detalle que
+			     más abarata una interfaz financiera. -->
+			<div class="panel-icon" aria-hidden="true">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+					<path d="M3 17l6-6 4 4 7-7" />
+					<path d="M14 7h6v6" />
+				</svg>
+			</div>
 			<div class="panel-text">
 				<h2 class="panel-title">{$LL.projections.title()}</h2>
 				<p class="panel-subtitle">{$LL.projections.subtitle()}</p>
@@ -98,33 +188,21 @@
 					<div class="control-item full-width-capital">
 						<div class="control-header">
 							<span class="control-label">{$LL.projections.simulation_base()}</span>
-							<span class="control-value highlight">{formatEUR(useCustomBase ? customBase : portfolio.globalCapital)}</span>
+							<span class="control-value highlight"
+								>{formatEUR(useCustomBase ? customBase : portfolio.globalCapital)}</span
+							>
 						</div>
 						<div class="capital-selector-pills">
-							<button 
-								class="pill-btn" 
-								class:active={!useCustomBase} 
-								onclick={() => useCustomBase = false}
-							>
+							<button class="pill-btn" class:active={!useCustomBase} onclick={() => (useCustomBase = false)}>
 								{$LL.projections.real_portfolio()}
 							</button>
-							<button 
-								class="pill-btn" 
-								class:active={useCustomBase} 
-								onclick={() => useCustomBase = true}
-							>
+							<button class="pill-btn" class:active={useCustomBase} onclick={() => (useCustomBase = true)}>
 								{$LL.projections.custom_capital()}
 							</button>
-							
+
 							{#if useCustomBase}
 								<div class="custom-capital-input-wrapper">
-									<input 
-										type="number" 
-										class="custom-capital-input" 
-										min="0" 
-										step="1000"
-										bind:value={customBase}
-									/>
+									<input type="number" class="custom-capital-input" min="0" step="1000" bind:value={customBase} />
 									<span class="currency-symbol">€</span>
 								</div>
 							{/if}
@@ -157,33 +235,141 @@
 				<div class="results-card">
 					<div class="main-metric">
 						<span class="metric-label">{$LL.projections.estimated_capital({ years })}</span>
-						<span class="metric-value privacy-blur">{formatEUR($tweenedValue)}</span>
+						<!--
+							⚠️ Sin céntimos, y sin contador animado. `702.854,19 €` en una
+							proyección que depende de acertar el 7 % anual es precisión
+							inventada, y el usuario la lee como una promesa. El contador
+							además iba en contra del control: la cifra llegaba 800 ms
+							después de soltar el deslizador.
+						-->
+						<span class="metric-value privacy-blur">{formatEstimate(projections.finalValue, ui.baseCurrency)}</span>
 					</div>
-					
+
 					<div class="sub-metrics">
 						<div class="metric-box">
 							<span class="sub-label">{$LL.projections.total_investment()}</span>
-							<span class="sub-value privacy-blur">{formatEUR(projections.totalInvested)}</span>
+							<span class="sub-value privacy-blur">{formatEstimate(projections.totalInvested, ui.baseCurrency)}</span>
 						</div>
 						<div class="metric-box success">
 							<span class="sub-label">{$LL.projections.generated_interest()}</span>
-							<span class="sub-value privacy-blur">+{formatEUR(projections.totalProfit)}</span>
+							<span class="sub-value privacy-blur"
+								>+{formatEstimate(projections.totalProfit, ui.baseCurrency)}</span
+							>
 						</div>
 					</div>
 				</div>
 
-				<div class="chart-container">
-					<div class="chart-bars">
-						{#each projections.history as point}
-							<div class="bar-group" style="height: {(point.value / projections.finalValue) * 100}%">
-								<div class="bar-fill invested" style="height: {(point.invested / point.value) * 100}%"></div>
-								<div class="bar-fill profit"></div>
-								<span class="bar-label">{point.month / 12}y</span>
-							</div>
-						{/each}
+				<div class="chart-block">
+					<div class="chart-legend">
+						<span class="legend-entry">
+							<span class="legend-swatch" style="--swatch: {GROWTH_FILL}"></span>
+							{$LL.projections.legend_profit()}
+						</span>
+						<span class="legend-entry">
+							<span class="legend-swatch" style="--swatch: {INVESTED_FILL}"></span>
+							{$LL.projections.legend_invested()}
+						</span>
 					</div>
+
+					<div class="chart-canvas privacy-blur" bind:clientWidth={chartWidth}>
+						{#if geometry}
+							<svg viewBox="0 0 {chartWidth || 320} {CHART_H}" width="100%" height={CHART_H} role="img"
+								aria-label={$LL.projections.estimated_capital({ years })}>
+								<!-- Rejilla y marcas del eje de valores -->
+								{#each geometry.axis.ticks as tick (tick)}
+									<line
+										x1={PAD.left}
+										x2={(chartWidth || 320) - PAD.right}
+										y1={geometry.y(tick)}
+										y2={geometry.y(tick)}
+										stroke="var(--chart-grid)"
+										stroke-width="1"
+									/>
+									<text
+										x={PAD.left - 8}
+										y={geometry.y(tick)}
+										text-anchor="end"
+										dominant-baseline="middle"
+										class="axis-label"
+									>
+										{formatCompactCurrency(tick, ui.baseCurrency, geometry.axis.step)}
+									</text>
+								{/each}
+
+								<path d={geometry.investedPath} fill={INVESTED_FILL} />
+								<path d={geometry.growthPath} fill={GROWTH_FILL} />
+								<path d={geometry.totalLine} fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linejoin="round" />
+
+								{#each geometry.xLabels as label (label.i)}
+									<text x={geometry.x(label.i)} y={CHART_H - 6} text-anchor="middle" class="axis-label">
+										{label.year}
+									</text>
+								{/each}
+
+								{#if hovered !== null && geometry.pts[hovered]}
+									<line
+										x1={geometry.x(hovered)}
+										x2={geometry.x(hovered)}
+										y1={PAD.top}
+										y2={CHART_H - PAD.bottom}
+										stroke="rgba(255,255,255,0.5)"
+										stroke-width="1"
+									/>
+									<circle
+										cx={geometry.x(hovered)}
+										cy={geometry.y(geometry.pts[hovered].value)}
+										r="3.5"
+										fill="#ffffff"
+									/>
+								{/if}
+
+								<!--
+									Zona de captura del puntero, por encima de todo lo demás. Lleva
+									`role="presentation"`: el gráfico ya se anuncia entero por el
+									`aria-label` del `<svg>`, así que este rectángulo no es un
+									objetivo con significado propio para un lector de pantalla —solo
+									existe para que el ratón tenga dónde moverse—, y las cifras que
+									enseña al pasar por encima están todas escritas arriba.
+								-->
+								<rect
+									role="presentation"
+									x={PAD.left}
+									y={PAD.top}
+									width={geometry.plotW}
+									height={geometry.plotH}
+									fill="transparent"
+									onpointermove={trackPointer}
+									onpointerleave={() => (hovered = null)}
+								/>
+							</svg>
+
+							{#if hovered !== null && geometry.pts[hovered]}
+								{@const p = geometry.pts[hovered]}
+								<div
+									class="chart-tooltip"
+									style="left: {Math.min(
+										Math.max(geometry.x(hovered), 70),
+										(chartWidth || 320) - 70
+									)}px"
+								>
+									<strong>{$LL.projections.years({ years: Math.round(p.month / 12) })}</strong>
+									<span>{formatEstimate(p.value, ui.baseCurrency)}</span>
+									<span class="tooltip-part"
+										>{$LL.projections.legend_invested()}: {formatEstimate(p.invested, ui.baseCurrency)}</span
+									>
+									<span class="tooltip-part"
+										>{$LL.projections.legend_profit()}: {formatEstimate(
+											p.value - p.invested,
+											ui.baseCurrency
+										)}</span
+									>
+								</div>
+							{/if}
+						{/if}
+					</div>
+					<p class="axis-caption">{$LL.projections.axis_years()}</p>
 				</div>
-				
+
 				<footer class="legal-footer">
 					<p>{$LL.projections.disclaimer()}</p>
 				</footer>
@@ -196,7 +382,6 @@
 	.panel {
 		width: 100%;
 		background: rgba(255, 255, 255, 0.03);
-
 		backdrop-filter: blur(24px) saturate(200%);
 		-webkit-backdrop-filter: blur(24px) saturate(200%);
 		border: 1px solid rgba(255, 255, 255, 0.08);
@@ -237,7 +422,12 @@
 		justify-content: center;
 		background: rgba(255, 255, 255, 0.05);
 		border-radius: 12px;
-		font-size: 1.25rem;
+		color: var(--accent-blue);
+	}
+
+	.panel-icon svg {
+		width: 20px;
+		height: 20px;
 	}
 
 	.panel-title {
@@ -268,7 +458,9 @@
 	.collapsible {
 		display: grid;
 		grid-template-rows: 1fr;
-		transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+		transition:
+			grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+			opacity 0.3s ease;
 		opacity: 1;
 	}
 
@@ -313,7 +505,7 @@
 	.control-label {
 		font-size: 0.65rem;
 		font-weight: 700;
-		color: rgba(255, 255, 255, 0.3);
+		color: rgba(255, 255, 255, 0.35);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 	}
@@ -321,10 +513,10 @@
 	.control-value {
 		font-size: 0.85rem;
 		font-weight: 700;
-		color: #3b82f6;
+		color: var(--accent-blue);
 	}
 
-	input[type="range"] {
+	input[type='range'] {
 		-webkit-appearance: none;
 		appearance: none;
 		width: 100%;
@@ -335,15 +527,14 @@
 		touch-action: pan-y pinch-zoom;
 	}
 
-	input[type="range"]::-webkit-slider-thumb {
+	input[type='range']::-webkit-slider-thumb {
 		-webkit-appearance: none;
 		width: 16px;
 		height: 16px;
-		background: #3b82f6;
+		background: var(--accent-blue);
 		border-radius: 50%;
 		cursor: pointer;
 		border: 2px solid #05050a;
-		box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
 	}
 
 	.results-card {
@@ -362,7 +553,7 @@
 
 	.metric-label {
 		font-size: 0.75rem;
-		color: rgba(255, 255, 255, 0.4);
+		color: rgba(255, 255, 255, 0.45);
 		display: block;
 		margin-bottom: 0.5rem;
 	}
@@ -388,7 +579,7 @@
 
 	.sub-label {
 		font-size: 0.65rem;
-		color: rgba(255, 255, 255, 0.3);
+		color: rgba(255, 255, 255, 0.35);
 	}
 
 	.sub-value {
@@ -398,69 +589,100 @@
 	}
 
 	.metric-box.success .sub-value {
-		color: #10b981;
+		color: var(--state-positive);
 	}
 
-	.chart-container {
-		height: 100px;
-		display: flex;
-		align-items: flex-end;
-		padding-top: 1rem;
-		margin-bottom: 0.5rem;
-	}
-
-	.chart-bars {
-		display: flex;
-		align-items: flex-end;
-		gap: 2px;
-		height: 100%;
-		width: 100%;
-	}
-
-	.bar-group {
-		flex: 1;
+	.chart-block {
 		display: flex;
 		flex-direction: column;
-		justify-content: flex-end;
+		gap: 0.5rem;
+	}
+
+	.chart-legend {
+		display: flex;
+		gap: 1rem;
+		flex-wrap: wrap;
+	}
+
+	.legend-entry {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+		font-size: 0.68rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: rgba(255, 255, 255, 0.55);
+	}
+
+	.legend-swatch {
+		width: 9px;
+		height: 9px;
+		border-radius: 3px;
+		background: var(--swatch);
+	}
+
+	.chart-canvas {
 		position: relative;
-		min-width: 2px;
-	}
-
-	.bar-fill {
 		width: 100%;
-		border-radius: 1px;
 	}
 
-	.bar-fill.invested {
-		background: #3b82f6;
-		opacity: 0.7;
-	}
-
-	.bar-fill.profit {
-		background: #10b981;
-		flex: 1;
-		opacity: 0.5;
-	}
-
-	.bar-label {
-		position: absolute;
-		bottom: -1.25rem;
-		left: 50%;
-		transform: translateX(-50%);
-		font-size: 0.55rem;
-		font-weight: 700;
-		color: rgba(255, 255, 255, 0.2);
-		white-space: nowrap;
-		display: none;
-	}
-
-	.bar-group:nth-child(5n) .bar-label {
+	.chart-canvas :global(svg) {
 		display: block;
+		overflow: visible;
+	}
+
+	.axis-label {
+		fill: var(--chart-axis);
+		font-size: 10px;
+		font-weight: 600;
+		font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+	}
+
+	.axis-caption {
+		margin: 0;
+		text-align: center;
+		font-size: 0.6rem;
+		font-weight: 700;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: rgba(255, 255, 255, 0.3);
+	}
+
+	.chart-tooltip {
+		position: absolute;
+		top: 0;
+		transform: translateX(-50%);
+		display: flex;
+		flex-direction: column;
+		gap: 0.1rem;
+		padding: 0.5rem 0.7rem;
+		background: rgba(13, 13, 18, 0.96);
+		border: 1px solid rgba(255, 255, 255, 0.12);
+		border-radius: 12px;
+		pointer-events: none;
+		white-space: nowrap;
+		font-size: 0.7rem;
+		color: #ffffff;
+		z-index: 2;
+	}
+
+	.chart-tooltip strong {
+		font-size: 0.65rem;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: rgba(255, 255, 255, 0.5);
+		font-weight: 700;
+	}
+
+	.tooltip-part {
+		color: rgba(255, 255, 255, 0.65);
+		font-size: 0.65rem;
 	}
 
 	.legal-footer {
 		font-size: 0.65rem;
-		color: rgba(255, 255, 255, 0.25);
+		color: rgba(255, 255, 255, 0.28);
 		text-align: center;
 		font-style: italic;
 		line-height: 1.4;
@@ -498,9 +720,9 @@
 	}
 
 	.pill-btn.active {
-		background: rgba(59, 130, 246, 0.15);
-		border-color: rgba(59, 130, 246, 0.4);
-		color: #60a5fa;
+		background: rgba(37, 99, 235, 0.18);
+		border-color: rgba(37, 99, 235, 0.45);
+		color: #bfdbfe;
 	}
 
 	.custom-capital-input-wrapper {

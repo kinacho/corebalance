@@ -1,8 +1,31 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { portfolio } from '$lib/stores/portfolio.svelte';
-	import { formatEUR, formatCurrency } from '$lib/utils';
-	import { Chart, type ChartConfiguration } from 'chart.js/auto';
+	import { formatEUR } from '$lib/utils';
+	/**
+	 * ⚠️ Registro selectivo, no `chart.js/auto`. `auto` arrastra **todos** los
+	 * controladores, escalas y plugins de la librería —incluidos radar, polar,
+	 * burbuja y barras— y tiraba por tierra el registro a mano que hacen los
+	 * otros dos lienzos, que para eso lo hacen.
+	 */
+	import {
+		Chart,
+		LineController,
+		LineElement,
+		PointElement,
+		LinearScale,
+		CategoryScale,
+		Filler,
+		Tooltip,
+		type ChartConfiguration
+	} from 'chart.js';
+
+	Chart.register(LineController, LineElement, PointElement, LinearScale, CategoryScale, Filler, Tooltip);
+
+	import { formatCompactCurrency, stepFromTicks } from '$lib/chart-format';
+	import { applyChartDefaults, tooltipStyle, categoryAxis, valueAxis, motionAllowed } from '$lib/chart-theme';
+	import { CATEGORY_COLORS } from '$lib/constants';
+	import { ui } from '$lib/stores/ui.svelte';
 	import { LL, locale } from '$lib/i18n/i18n-svelte';
 
 	import { fade, fly } from 'svelte/transition';
@@ -10,9 +33,9 @@
 	import { cubicOut } from 'svelte/easing';
 
 	const HISTORIC_CRISES = $derived([
-		{ name: 'DotCom (2000)', drop: 49, recovery: $LL.crisis_simulator.crises.dotcom.recovery(), emoji: '💻', desc: $LL.crisis_simulator.crises.dotcom.desc() },
-		{ name: 'Lehman (2008)', drop: 56, recovery: $LL.crisis_simulator.crises.lehman.recovery(), emoji: '🏦', desc: $LL.crisis_simulator.crises.lehman.desc() },
-		{ name: 'COVID-19 (2020)', drop: 34, recovery: $LL.crisis_simulator.crises.covid.recovery(), emoji: '🦠', desc: $LL.crisis_simulator.crises.covid.desc() }
+		{ name: 'DotCom (2000)', drop: 49, recovery: $LL.crisis_simulator.crises.dotcom.recovery(), desc: $LL.crisis_simulator.crises.dotcom.desc() },
+		{ name: 'Lehman (2008)', drop: 56, recovery: $LL.crisis_simulator.crises.lehman.recovery(), desc: $LL.crisis_simulator.crises.lehman.desc() },
+		{ name: 'COVID-19 (2020)', drop: 34, recovery: $LL.crisis_simulator.crises.covid.recovery(), desc: $LL.crisis_simulator.crises.covid.desc() }
 	]);
 
 	// --- State (Runes) ---
@@ -130,36 +153,48 @@
 		
 		const { pointsWithoutDca, pointsWithDca } = projectionData;
 		
+		/**
+		 * ⚠️ **Las etiquetas y los nombres de serie estaban en español a fuego**
+		 * (`Mes ${p.x}`, `'Original'`, `'Con DCA'`, `'Sin DCA'`) en una app
+		 * bilingüe — y como el tooltip imprime `dataset.label`, un usuario inglés
+		 * leía los tooltips en español.
+		 *
+		 * El eje lleva ahora solo el número del mes y el nombre va en un pie: con
+		 * «Mes» delante, siete etiquetas de ocho caracteres no caben y salían
+		 * pegadas unas a otras (`Mes 18Mes 27Mes 36`).
+		 */
 		const data = {
-			labels: pointsWithDca.map(p => `Mes ${p.x}`),
+			labels: pointsWithDca.map(p => String(p.x)),
 			datasets: [
 				{
-					label: 'Original',
+					label: $LL.crisis_simulator.original_capital(),
 					data: Array(pointsWithDca.length).fill(initialCapital),
-					borderColor: 'rgba(255, 255, 255, 0.3)',
+					borderColor: 'rgba(255, 255, 255, 0.32)',
 					borderDash: [5, 5],
-					borderWidth: 1,
+					borderWidth: 1.5,
 					pointRadius: 0,
 					fill: false
 				},
 				{
-					label: 'Con DCA',
+					// Un acento y el resto neutro: lo que este panel defiende es la
+					// línea con DCA, así que es la única que lleva color.
+					label: $LL.crisis_simulator.with_dca(),
 					data: pointsWithDca.map(p => p.y),
-					borderColor: '#10b981',
-					backgroundColor: 'rgba(16, 185, 129, 0.1)',
-					borderWidth: 3,
+					borderColor: CATEGORY_COLORS.core,
+					backgroundColor: 'rgba(37, 99, 235, 0.14)',
+					borderWidth: 2,
 					pointRadius: 0,
 					fill: true,
-					tension: 0.4
+					tension: 0
 				},
 				{
-					label: 'Sin DCA',
+					label: $LL.crisis_simulator.without_dca(),
 					data: pointsWithoutDca.map(p => p.y),
-					borderColor: '#f59e0b',
+					borderColor: 'rgba(255, 255, 255, 0.5)',
 					borderWidth: 2,
 					pointRadius: 0,
 					fill: false,
-					tension: 0.4
+					tension: 0
 				}
 			]
 		};
@@ -168,46 +203,41 @@
 			chart.data = data;
 			chart.update('none');
 		} else {
+			applyChartDefaults();
+
 			const config: ChartConfiguration = {
 				type: 'line',
 				data,
 				options: {
 					responsive: true,
 					maintainAspectRatio: false,
+					interaction: { mode: 'index', intersect: false },
+					animation: motionAllowed() ? { duration: 320 } : false,
 					plugins: {
 						legend: { display: false },
 						tooltip: {
-							mode: 'index',
-							intersect: false,
+							...tooltipStyle,
 							callbacks: {
 								label: (context) => {
 									const val = context.parsed.y;
-									return `${context.dataset.label}: ${formatEUR(val ?? 0)}`;
+									return ` ${context.dataset.label}: ${formatEUR(val ?? 0)}`;
 								}
 							}
 						}
 					},
 					scales: {
 						y: {
+							...valueAxis,
 							min: 0,
-							grid: { color: 'rgba(255, 255, 255, 0.05)' },
-							ticks: { 
-								color: 'rgba(255, 255, 255, 0.5)',
-								callback: (val) => formatCurrency(Number(val), 'EUR', 0)
-
+							ticks: {
+								...valueAxis.ticks,
+								callback: (val, _i, ticks) =>
+									formatCompactCurrency(Number(val), ui.baseCurrency, stepFromTicks(ticks))
 							}
 						},
-						x: {
-							grid: { display: false },
-							ticks: { 
-								color: 'rgba(255, 255, 255, 0.3)',
-								maxRotation: 0,
-								autoSkip: true,
-								maxTicksLimit: 10
-							}
-						}
+						x: { ...categoryAxis }
 					}
-				}
+				} as ChartConfiguration['options']
 			};
 			chart = new Chart(chartCanvas, config);
 		}
@@ -223,7 +253,13 @@
 <div id="tour-crisis" class="panel" class:open={isOpen}>
 	<button class="panel-header" onclick={() => isOpen = !isOpen} aria-expanded={isOpen}>
 		<div class="panel-info">
-			<div class="panel-icon">📉</div>
+			<!-- Icono de trazo en lugar del emoji 📉, por lo mismo que en Proyecciones. -->
+			<div class="panel-icon" aria-hidden="true">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+					<path d="M3 7l6 6 4-4 7 7" />
+					<path d="M14 17h6v-6" />
+				</svg>
+			</div>
 			<div class="panel-text">
 				<h2 class="panel-title">{$LL.crisis_simulator.title()}</h2>
 				<p class="panel-subtitle">{$LL.crisis_simulator.subtitle()}</p>
@@ -242,7 +278,12 @@
 				
 				<div class="crisis-edu-card">
 					<div class="edu-header">
-						<span class="edu-icon">⚙️</span>
+						<span class="edu-icon" aria-hidden="true">
+							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+								<circle cx="12" cy="12" r="9" />
+								<path d="M12 8v4M12 16h.01" />
+							</svg>
+						</span>
 						<div class="edu-content">
 							<h4 class="edu-title">{$LL.crisis_simulator.edu_title()}</h4>
 							<p class="edu-text">
@@ -271,7 +312,7 @@
 						<div class="presets">
 							{#each HISTORIC_CRISES as crisis}
 								<button class="preset-btn" class:active={dropPercent === crisis.drop} onclick={() => dropPercent = crisis.drop}>
-									{crisis.emoji} {crisis.name.split(' ')[0]} (-{crisis.drop}%)
+									{crisis.name.split(' ')[0]} (-{crisis.drop}%)
 								</button>
 							{/each}
 						</div>
@@ -280,7 +321,7 @@
 							{#if dropPercent === crisis.drop}
 								<div class="crisis-detail-toast" transition:fade={{ duration: 150 }}>
 									<div class="detail-header">
-										<span class="detail-title">{crisis.emoji} {crisis.name}</span>
+										<span class="detail-title">{crisis.name}</span>
 										<span class="recovery-badge">Recuperación: {crisis.recovery}</span>
 									</div>
 									<p class="detail-desc">{crisis.desc}</p>
@@ -306,9 +347,31 @@
 					</div>
 				</div>
 
+				<!--
+					⚠️ Tres líneas y `legend: { display: false }` sin leyenda propia: la
+					identidad dependía solo del color, en un gráfico cuyo mensaje entero
+					es la comparación entre dos de ellas. No había forma de saber cuál
+					era cuál salvo pasando el ratón por encima.
+				-->
+				<div class="chart-legend">
+					<span class="legend-entry">
+						<span class="legend-swatch" style="--swatch: {CATEGORY_COLORS.core}"></span>
+						{$LL.crisis_simulator.with_dca()}
+					</span>
+					<span class="legend-entry">
+						<span class="legend-swatch" style="--swatch: rgba(255,255,255,0.5)"></span>
+						{$LL.crisis_simulator.without_dca()}
+					</span>
+					<span class="legend-entry">
+						<span class="legend-swatch is-dashed"></span>
+						{$LL.crisis_simulator.original_capital()}
+					</span>
+				</div>
+
 				<div class="chart-container">
 					<canvas bind:this={chartCanvas}></canvas>
 				</div>
+				<p class="axis-caption">{$LL.crisis_simulator.axis_months()}</p>
 
 				<div class="stats-grid">
 					<div class="stat-card highlight-red">
@@ -388,7 +451,12 @@
 		justify-content: center;
 		background: rgba(255, 255, 255, 0.05);
 		border-radius: 12px;
-		font-size: 1.25rem;
+		color: var(--accent-blue);
+	}
+
+	.panel-icon svg {
+		width: 20px;
+		height: 20px;
 	}
 
 	.panel-title {
@@ -472,11 +540,11 @@
 	.control-value {
 		font-size: 0.85rem;
 		font-weight: 700;
-		color: #3b82f6;
+		color: var(--accent-blue);
 	}
 
 	.control-value.highlight {
-		color: #fca5a5;
+		color: var(--state-negative);
 	}
 
 	input[type="range"] {
@@ -495,7 +563,7 @@
 		appearance: none;
 		width: 16px;
 		height: 16px;
-		background: #3b82f6;
+		background: var(--accent-blue);
 		border-radius: 50%;
 		cursor: pointer;
 		border: 2px solid #05050a;
@@ -526,8 +594,8 @@
 	.preset-btn:hover { background: rgba(255, 255, 255, 0.1); }
 	.preset-btn.active {
 		background: rgba(59, 130, 246, 0.2);
-		border-color: #3b82f6;
-		color: #60a5fa;
+		border-color: var(--accent-blue);
+		color: #bfdbfe;
 	}
 
 	/* Educational persistent card */
@@ -546,9 +614,58 @@
 	}
 
 	.edu-icon {
-		font-size: 1.1rem;
-		margin-top: 0.1rem;
-		opacity: 0.8;
+		margin-top: 0.15rem;
+		flex-shrink: 0;
+		color: rgba(255, 255, 255, 0.45);
+	}
+
+	.edu-icon svg {
+		width: 16px;
+		height: 16px;
+		display: block;
+	}
+
+	.chart-legend {
+		display: flex;
+		gap: 1rem;
+		flex-wrap: wrap;
+		margin-bottom: -0.5rem;
+	}
+
+	.legend-entry {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+		font-size: 0.68rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: rgba(255, 255, 255, 0.55);
+	}
+
+	.legend-swatch {
+		width: 9px;
+		height: 9px;
+		border-radius: 3px;
+		background: var(--swatch);
+	}
+
+	.legend-swatch.is-dashed {
+		width: 12px;
+		height: 0;
+		border-radius: 0;
+		border-top: 2px dashed rgba(255, 255, 255, 0.32);
+		background: none;
+	}
+
+	.axis-caption {
+		margin: 0.25rem 0 0 0;
+		text-align: center;
+		font-size: 0.6rem;
+		font-weight: 700;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: rgba(255, 255, 255, 0.3);
 	}
 
 	.edu-content {
@@ -594,17 +711,17 @@
 	.detail-title {
 		font-size: 0.76rem;
 		font-weight: 700;
-		color: #93c5fd;
+		color: #bfdbfe;
 	}
 
 	.recovery-badge {
 		font-size: 0.65rem;
 		font-weight: 700;
-		background: rgba(16, 185, 129, 0.1);
-		color: #34d399;
+		background: rgba(52, 211, 153, 0.1);
+		color: var(--state-positive);
 		padding: 0.15rem 0.4rem;
 		border-radius: 6px;
-		border: 1px solid rgba(16, 185, 129, 0.15);
+		border: 1px solid rgba(52, 211, 153, 0.15);
 	}
 
 	.detail-desc {
@@ -659,9 +776,9 @@
 		color: rgba(160, 160, 200, 0.5);
 	}
 
-	.highlight-red { border-left: 3px solid #ef4444; }
-	.highlight-green { border-left: 3px solid #10b981; }
-	.text-green { color: #10b981; }
+	.highlight-red { border-left: 3px solid var(--state-negative); }
+	.highlight-green { border-left: 3px solid var(--state-positive); }
+	.text-green { color: var(--state-positive); }
 
 	.legal-footer {
 		font-size: 0.65rem;
