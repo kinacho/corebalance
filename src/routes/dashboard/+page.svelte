@@ -92,6 +92,23 @@ import { formatCompactCurrency } from "$lib/chart-format";
   $effect(() => {
     if (lookThroughExpanded) deviationExpanded = false;
   });
+
+  /**
+   * Los dos mapas van plegados en escritorio. No es ahorro de píxeles por sí
+   * mismo: con cinco paneles del mismo peso visual la pestaña se lee como una
+   * pared, y estos dos son los únicos que se consultan de vez en cuando y no de
+   * un vistazo.
+   *
+   * Se pliega con CSS, nunca con `{#if}`: desmontarlos perdería el conmutador
+   * región/sector del mapa del subyacente, igual que pasaría con los lienzos de
+   * Chart.js. Ocultos su `contentWidth` baja a 0, que los dos mapas ya tratan
+   * (`containerWidth > 0 ? … : 3.4`), y al abrirlos vuelven a medirse solos.
+   *
+   * En móvil no existe: ahí el carrusel ya da un carril por panel, así que
+   * `.maps-fold` es `display: contents` y los mapas siguen siendo carriles.
+   */
+  let mapsOpen = $state(false);
+
   let showManageAssets = $state(false);
   let tabsEl = $state<HTMLElement | null>(null);
   let scrollAnchor = $state<HTMLElement | null>(null);
@@ -404,24 +421,50 @@ import { formatCompactCurrency } from "$lib/chart-format";
               <p class="chart-sub">{$LL.db.drift_subtitle()}</p>
               <DriftChart />
             </div>
-            <!-- Ampliar un mapa lo lleva a ocupar la fila entera de la rejilla.
-                 El estado vive aquí porque un elemento de rejilla no puede
-                 salirse de su carril por sí solo, y los dos son excluyentes:
-                 ampliar uno reduce el otro. -->
-            <div
-              id="tour-maps"
-              class="chart-box map-box"
-              class:is-wide={deviationExpanded}
-            >
-              <h4 class="chart-label">{$LL.treemap.title()}</h4>
-              <DeviationTreemap showTitle={false} bind:expanded={deviationExpanded} />
-            </div>
-            <div
-              class="chart-box map-box is-lookthrough"
-              class:is-wide={lookThroughExpanded}
-            >
-              <h4 class="chart-label">{$LL.lookthrough.title()}</h4>
-              <LookThroughMap showTitle={false} bind:expanded={lookThroughExpanded} />
+            <!--
+              Los dos mapas, plegados en escritorio tras una sola línea. En
+              móvil este envoltorio es `display: contents`, así que los dos
+              vuelven a ser carriles del carrusel y la cabecera no se dibuja.
+            -->
+            <div class="maps-fold" class:is-open={mapsOpen}>
+              <button
+                type="button"
+                class="maps-fold-head"
+                onclick={() => (mapsOpen = !mapsOpen)}
+                aria-expanded={mapsOpen}
+                aria-controls="maps-row"
+              >
+                <span class="maps-fold-title">{$LL.db.maps_fold_title()}</span>
+                <span class="maps-fold-sub">{$LL.db.maps_fold_sub()}</span>
+                <span class="maps-fold-cta">
+                  {mapsOpen ? $LL.db.maps_fold_close() : $LL.db.maps_fold_open()}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 9l6 6 6-6" />
+                  </svg>
+                </span>
+              </button>
+
+              <!-- Ampliar un mapa lo lleva a ocupar la fila entera de la rejilla.
+                   El estado vive aquí porque un elemento de rejilla no puede
+                   salirse de su carril por sí solo, y los dos son excluyentes:
+                   ampliar uno reduce el otro. -->
+              <div class="maps-row" id="maps-row">
+                <div
+                  id="tour-maps"
+                  class="chart-box map-box"
+                  class:is-wide={deviationExpanded}
+                >
+                  <h4 class="chart-label">{$LL.treemap.title()}</h4>
+                  <DeviationTreemap showTitle={false} bind:expanded={deviationExpanded} />
+                </div>
+                <div
+                  class="chart-box map-box is-lookthrough"
+                  class:is-wide={lookThroughExpanded}
+                >
+                  <h4 class="chart-label">{$LL.lookthrough.title()}</h4>
+                  <LookThroughMap showTitle={false} bind:expanded={lookThroughExpanded} />
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -715,6 +758,23 @@ import { formatCompactCurrency } from "$lib/chart-format";
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
   }
 
+  /*
+   * `.section-title` no tenía ningún estilo aquí: el que existe vive dentro de
+   * `PortfolioSection.svelte` y los estilos de Svelte están encapsulados, así
+   * que esta cabecera se dibujaba con el `h3` por defecto del navegador.
+   */
+  .section-header {
+    margin-bottom: 0.9rem;
+  }
+
+  .section-title {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--text-primary);
+  }
+
   .charts-row-card {
     padding: 1.5rem;
     background: rgba(255, 255, 255, 0.03);
@@ -800,20 +860,70 @@ import { formatCompactCurrency } from "$lib/chart-format";
     letter-spacing: 0.05em;
   }
 
+  /*
+   * En móvil el plegado no existe: `display: contents` disuelve los dos
+   * envoltorios, así que los mapas vuelven a ser hijos directos de la rejilla y
+   * siguen siendo los carriles 4 y 5 del carrusel. Un envoltorio de verdad los
+   * habría metido a los dos en un solo carril.
+   */
+  .maps-fold,
+  .maps-row {
+    display: contents;
+  }
+  .maps-fold-head {
+    display: none;
+  }
+
   @media (min-width: 1024px) {
     .charts-mobile-hint {
       display: none;
     }
+    /*
+     * El histórico manda: a ancho completo, sin tarjeta y con el rótulo un
+     * punto mayor que los tres paneles de abajo. Lo que lo separa de la fila
+     * de gráficos es una línea, no un borde con sombra.
+     */
+    .history-section {
+      padding: 0 0 2rem;
+      background: none;
+      border: 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 0;
+      box-shadow: none;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+    .history-section .section-title {
+      font-size: 1.05rem;
+    }
+    /*
+     * En escritorio la fila de gráficos pierde su tarjeta.
+     *
+     * Eran cajas de cristal dentro de otra caja de cristal, y encima el
+     * histórico era una tercera igual: la pestaña se leía como una pila de
+     * losas del mismo peso. Sin marco, los paneles se apoyan en el fondo y los
+     * separa una línea de pelo. En móvil la tarjeta se queda, porque ahí lo que
+     * hay es un carrusel y el marco es lo que le da borde al carril.
+     */
     .charts-row-card {
       margin-bottom: 2rem;
-      padding: 2rem;
+      padding: 0;
+      background: none;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
     }
     .charts-grid {
-      /* Tres carriles fijos en vez de `auto-fit`: con cinco elementos hace falta
-         saber cuántos hay por fila para que el mapa del subyacente pueda ocupar
-         dos. A partir de 1024 px `auto-fit` daba tres de todas formas, así que
-         para los donuts no cambia nada. */
-      grid-template-columns: repeat(3, 1fr);
+      /*
+       * Los tres paneles de un vistazo, en una sola fila y con el mismo peso
+       * visual: composición, categorías y deriva. Los carriles no son iguales
+       * porque no lo son sus contenidos —la composición es una lista con
+       * nombres de fondo, y con un tercio justo trunca «iShares Core MSCI W…»,
+       * que es exactamente el defecto por el que se quitaron los donuts—.
+       */
+      grid-template-columns: 1.25fr 0.8fr 1.15fr;
       gap: 2rem;
       overflow: visible;
       scroll-snap-type: none;
@@ -822,42 +932,123 @@ import { formatCompactCurrency } from "$lib/chart-format";
       padding: 0;
       align-items: flex-start;
     }
-    /* Cuatro elementos en una rejilla de tres columnas: cada fila lleva uno
-       ancho y uno estrecho. Arriba composición (2) + donut (1); abajo mapa de
-       desviación (1) + mapa del subyacente (2). Sin esto, la composición cae en
-       un carril de 400 px y el donut deja media fila muerta. */
-    .chart-box.is-composition:not(.is-wide) {
-      grid-column: span 2;
-    }
-    /* Tres filas limpias en la rejilla de tres columnas: composición (2) +
-       donut (1); deriva a fila completa, que es una serie temporal y el ancho
-       es lo que le da resolución; y abajo mapa de desviación (1) + mapa del
-       subyacente (2). */
     .chart-box.is-drift {
-      grid-column: 1 / -1;
       align-items: stretch;
     }
     .chart-box.is-drift .chart-label,
     .chart-box.is-drift .chart-sub {
       text-align: left;
     }
-    /* El mapa del subyacente ocupa dos de los tres carriles ya sin ampliar.
-       Es el que tiene densidad —nueve regiones, once sectores— y en un solo
-       carril dejaba la tercera columna de su fila completamente vacía: unos
-       400 px de hueco muerto justo debajo de los donuts. En dos carriles pasa
-       de 400 a 840 px, y como el mapa deriva todo de `contentWidth`, eso solo
-       ya le enciende los nombres de región dentro de los rectángulos.
+    /* Aquí vivía `.map-box.is-lookthrough:not(.is-wide) { grid-column: span 2 }`.
+       Se quitó al pasar `.maps-row` a dos carriles iguales: con dos columnas,
+       `span 2` mandaba el subyacente a ocupar la fila entera y dejaba el de
+       desviación colgando en la de abajo, que es lo contrario de repartir. */
 
-       El `:not(.is-wide)` es para que ampliar siga ganando: son la misma
-       propiedad y ampliado tiene que llegar a los tres carriles. */
-    .map-box.is-lookthrough:not(.is-wide) {
-      grid-column: span 2;
-    }
-    /* Un mapa ampliado ocupa la fila entera: los tres carriles. Es lo que
-       convierte «ampliar» en algo útil sin abrir ningún modal. */
+    /* Un mapa ampliado ocupa la fila entera. Es lo que convierte «ampliar» en
+       algo útil sin abrir ningún modal, y sigue valiendo con dos carriles: el
+       otro mapa se va a la fila siguiente a su ancho completo. */
     .map-box.is-wide {
       grid-column: 1 / -1;
     }
+
+    /*
+     * El plegado de los mapas. Deja de ser `display: contents` para pasar a ser
+     * un elemento de rejilla de verdad, a fila completa, con su propia rejilla
+     * de dos carriles iguales dentro: un mapa cada mitad.
+     */
+    .maps-fold {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      grid-column: 1 / -1;
+      padding-top: 1.75rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .maps-row {
+      display: grid;
+      /*
+       * Mitad y mitad. Antes el subyacente ocupaba dos de tres carriles porque
+       * la fila de mapas convivía con los donuts y en un solo carril de 400 px
+       * dejaba media fila muerta. Plegados en su propia fila esa razón ya no
+       * existe: son dos paneles solos, así que repartirse el ancho a partes
+       * iguales es lo natural, y el de desviación pasa de ~425 a ~650 px, que
+       * es donde a sus cabeceras de bloque les sobra sitio.
+       *
+       * El subyacente sigue por encima de sus dos umbrales —`isNarrow` a
+       * 460 px y el alto de `viewBox` a 560—, así que conserva los nombres de
+       * región dentro de los rectángulos y su lienzo ancho.
+       */
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+    }
+    /* Cada mapa a su alto natural, como los carriles de arriba: sin esto el
+       más alto estira al otro y deja el pequeño flotando en una caja enorme. */
+    .maps-row > .chart-box {
+      align-self: start;
+    }
+    /* Plegado se oculta, no se desmonta: desmontar perdería el conmutador
+       región/sector, y los dos mapas ya toleran un ancho de 0. */
+    .maps-fold:not(.is-open) .maps-row {
+      display: none;
+    }
+    .maps-fold-head {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      width: 100%;
+      padding: 0.85rem 1.1rem;
+      background: none;
+      border: 1px dashed rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      color: inherit;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+      transition:
+        border-color 0.18s ease,
+        background 0.18s ease;
+    }
+    .maps-fold-head:hover {
+      background: rgba(255, 255, 255, 0.02);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+    .maps-fold-head:focus-visible {
+      outline: 2px solid var(--accent-blue);
+      outline-offset: 2px;
+    }
+    .maps-fold-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.82);
+      flex-shrink: 0;
+    }
+    .maps-fold-sub {
+      flex: 1;
+      min-width: 0;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .maps-fold-cta {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      flex-shrink: 0;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--accent-blue);
+    }
+    .maps-fold-cta svg {
+      width: 14px;
+      height: 14px;
+      transition: transform 0.18s ease;
+    }
+    .maps-fold.is-open .maps-fold-cta svg {
+      transform: rotate(180deg);
+    }
+
     .desktop-charts-section {
       display: block !important;
     }

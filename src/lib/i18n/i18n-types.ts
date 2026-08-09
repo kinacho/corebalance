@@ -2374,6 +2374,22 @@ type RootTranslation = {
 		 */
 		composition_empty: string
 		/**
+		 * M​a​p​a​s​ ​d​e​l​ ​d​e​t​a​l​l​e
+		 */
+		maps_fold_title: string
+		/**
+		 * D​e​s​v​i​a​c​i​ó​n​ ​p​o​r​ ​b​l​o​q​u​e​ ​·​ ​Q​u​é​ ​h​a​y​ ​d​e​n​t​r​o​ ​d​e​ ​t​u​s​ ​f​o​n​d​o​s
+		 */
+		maps_fold_sub: string
+		/**
+		 * A​b​r​i​r
+		 */
+		maps_fold_open: string
+		/**
+		 * C​e​r​r​a​r
+		 */
+		maps_fold_close: string
+		/**
 		 * {​n​a​m​e​}​ ​·​ ​{​v​a​l​u​e​}​ ​·​ ​{​w​e​i​g​h​t​}​ ​d​e​ ​t​u​ ​p​a​t​r​i​m​o​n​i​o
 		 * @param {string} name
 		 * @param {string} value
@@ -6288,6 +6304,22 @@ export type TranslationFunctions = {
 		 * Añade posiciones para ver de qué se compone tu cartera.
 		 */
 		composition_empty: () => LocalizedString
+		/**
+		 * Mapas del detalle
+		 */
+		maps_fold_title: () => LocalizedString
+		/**
+		 * Desviación por bloque · Qué hay dentro de tus fondos
+		 */
+		maps_fold_sub: () => LocalizedString
+		/**
+		 * Abrir
+		 */
+		maps_fold_open: () => LocalizedString
+		/**
+		 * Cerrar
+		 */
+		maps_fold_close: () => LocalizedString
 		/**
 		 * {name} · {value} · {weight} de tu patrimonio
 		 */

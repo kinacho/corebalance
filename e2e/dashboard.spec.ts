@@ -1,5 +1,11 @@
 import { test, expect } from './util/test-base';
-import { abrirDashboard, recogerErrores, sembrarCartera, SIN_OBJETIVOS } from './util/cartera';
+import {
+	abrirDashboard,
+	abrirMapas,
+	recogerErrores,
+	sembrarCartera,
+	SIN_OBJETIVOS
+} from './util/cartera';
 
 /**
  * Que el dashboard arranque con datos y sin errores.
@@ -29,6 +35,7 @@ test.describe('Dashboard', () => {
 		expect(textoMetricas).not.toMatch(/^0[,.]00/);
 
         // Los tres bloques de estrategia tienen posiciones, así que hay mapa.
+		await abrirMapas(page);
 		await expect(page.locator('svg.treemap').first()).toBeVisible();
 
 		expect(errores, `errores de consola: ${errores.join(' | ')}`).toEqual([]);
