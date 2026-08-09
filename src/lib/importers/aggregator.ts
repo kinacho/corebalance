@@ -3,8 +3,23 @@ import type { Transaction, ParsedPosition } from './types';
 /**
  * Reduce una lista de transacciones a una lista de posiciones consolidadas,
  * ordenándolas cronológicamente y aplicando el método contable del coste medio ponderado.
+ *
+ * ⚠️ Devuelve también `warnings`, y ese cambio de forma es el arreglo. Antes devolvía solo
+ * las posiciones, y era el **único punto del subsistema capaz de perder transacciones sin
+ * dejar rastro**: una venta cuya posición no existe todavía se descartaba con un `if
+ * (existing)` sin `else`, y una sobreventa se recortaba a cero en silencio. Ni `skipRow`,
+ * ni aviso, ni cuenta.
+ *
+ * No es un caso raro: es lo que pasa siempre que alguien descarga solo los últimos doce
+ * meses y las compras antiguas quedan fuera de la ventana. El usuario veía menos títulos
+ * de los que tiene —o ninguno, si el recorte llega a cero y la posición desaparece del
+ * listado— con `skippedRows: 0` y `warnings: []`, es decir, sin nada que mirar.
  */
-export function reduceTransactionsToPositions(transactions: Transaction[]): ParsedPosition[] {
+export function reduceTransactionsToPositions(transactions: Transaction[]): {
+	positions: ParsedPosition[];
+	warnings: string[];
+} {
+	const warnings: string[] = [];
 	// 1. Ordenar cronológicamente (de más antigua a más reciente)
 	const sorted = [...transactions].sort((a, b) => a.date.getTime() - b.date.getTime());
 
@@ -54,9 +69,22 @@ export function reduceTransactionsToPositions(transactions: Transaction[]): Pars
 					// Las ventas NO cambian el coste medio unitario de las acciones restantes.
 					existing.totalCost = existing.shares * prevAvgCost;
 				} else {
+					if (existing.shares < -0.0001) {
+						warnings.push(
+							`Se vendieron más títulos de ${existing.name} de los que constan comprados en el archivo ` +
+							`(faltan ${Math.abs(existing.shares).toLocaleString('es-ES')}). La posición queda a 0; ` +
+							`probablemente el histórico no incluye las compras más antiguas.`
+						);
+					}
 					existing.shares = 0;
 					existing.totalCost = 0;
 				}
+			} else {
+				warnings.push(
+					`Se ha ignorado una venta de ${tx.shares.toLocaleString('es-ES')} de ${tx.name} porque en el ` +
+					`archivo no consta ninguna compra previa. Si descargaste solo un periodo reciente, ` +
+					`las compras anteriores no están en el fichero.`
+				);
 			}
 		}
 	}
@@ -75,5 +103,5 @@ export function reduceTransactionsToPositions(transactions: Transaction[]): Pars
 		}
 	}
 
-	return consolidated;
+	return { positions: consolidated, warnings };
 }

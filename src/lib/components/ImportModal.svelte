@@ -240,14 +240,48 @@
 
 		let count = 0;
 
+		/**
+		 * ⚠️ Consolidar por ticker **antes** de escribir, no escribir una posición detrás de
+		 * otra.
+		 *
+		 * `updateHolding` sustituye, no suma. Dentro de un mismo fichero eso significaba que
+		 * dos posiciones que resuelven al mismo ticker de Yahoo —las dos clases de un fondo,
+		 * o el ISIN viejo y el nuevo de un split— se pisaban: sobrevivía la última, mientras
+		 * `importedCount` contaba las dos y le decía al usuario que había importado ambas.
+		 * La invariante «dos posiciones con el mismo identificador se consolidan con coste
+		 * medio ponderado» ya la aplican `aggregateParsedPositions` y
+		 * `reduceTransactionsToPositions` dentro del parser; se perdía justo al escribir.
+		 *
+		 * Lo que **no** se ha cambiado, y es deliberado: importar un segundo CSV sobre un
+		 * activo que ya existe sigue sustituyendo en vez de sumar. Sumar arreglaría el caso
+		 * «el mismo fondo en dos brókeres» y rompería uno peor y más frecuente —reimportar
+		 * el mismo fichero duplicaría la cartera—, y el badge «⟳ Actualizar» de la
+		 * previsualización ya anuncia que esa fila reemplaza.
+		 */
+		const porTicker = new Map<string, { shares: number; totalCost: number; pos: ParsedPosition }>();
 		for (const [idx, pos] of importResult.positions.entries()) {
 			if (!selectedPositions.has(String(idx))) continue;
 
 			const ticker = getResolvedTicker(pos);
 			if (!ticker) continue;
+
+			const previo = porTicker.get(ticker);
+			if (previo) {
+				previo.shares += pos.shares;
+				previo.totalCost += pos.shares * pos.avgCost;
+			} else {
+				porTicker.set(ticker, { shares: pos.shares, totalCost: pos.shares * pos.avgCost, pos });
+			}
+		}
+
+		for (const [ticker, agrupado] of porTicker) {
+			const pos = agrupado.pos;
+			const shares = agrupado.shares;
+			const avgCost = shares > 0 ? agrupado.totalCost / shares : 0;
+
 			if (portfolio.hasAsset(ticker)) {
 				// Update holdings only
-				portfolio.updateHolding(ticker, { shares: pos.shares, avgCost: pos.avgCost });
+				portfolio.updateHolding(ticker, { shares, avgCost });
 				count++;
 				continue;
 			}
@@ -267,7 +301,7 @@
 			};
 
 			portfolio.addAsset(asset);
-			portfolio.updateHolding(ticker, { shares: pos.shares, avgCost: pos.avgCost });
+			portfolio.updateHolding(ticker, { shares, avgCost });
 			count++;
 		}
 

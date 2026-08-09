@@ -10,6 +10,8 @@ import {
 	isValidISIN,
 	extractISIN,
 	createSkipRow,
+	normalizeText,
+	parseBrokerDate,
 	normalizeCurrency,
 	looksLikeIsinValue,
 	looksLikeTickerValue,
@@ -360,9 +362,9 @@ describe('las formas que reconoce el mapeo automático de columnas', () => {
 });
 
 describe('createSkipRow', () => {
-	it('cuenta las filas omitidas y guarda por qué', () => {
-		const { skipRow, skipped, skippedDetails } = createSkipRow();
-		expect(skipped).toBe(0);
+	it('guarda cada fila omitida y por qué', () => {
+		const { skipRow, skippedDetails } = createSkipRow();
+		expect(skippedDetails).toHaveLength(0);
 
 		skipRow(4, ['', 'VWCE', '', 'sin precio', 'x'], 'falta el precio');
 
@@ -374,13 +376,31 @@ describe('createSkipRow', () => {
 		expect(skippedDetails[0].preview).toBe('VWCE | sin precio | x');
 	});
 
-	it('el contador es una vista viva, no una copia congelada', () => {
-		// Se desestructura al principio del parser y se lee al final; si fuera una copia,
-		// el informe diría siempre cero filas omitidas.
+	/**
+	 * ⚠️ Este test sustituye a uno que **no podía fallar**. Se llamaba «el contador es una
+	 * vista viva, no una copia congelada» y leía `contador.skipped` **sin desestructurar**,
+	 * que es justo lo que ningún parser hacía: los seis escribían
+	 * `const { skipRow, skipped: _skipped } = createSkipRow()`, y desestructurar evalúa el
+	 * getter una sola vez, capturando el 0 inicial. Es decir, el test describía en su
+	 * comentario el patrón de producción y luego probaba el contrario, así que pasaba en
+	 * verde con el defecto presente y `skippedRows` valiendo siempre 0 para los usuarios.
+	 *
+	 * La forma de que no vuelva a pasar no es probar mejor el getter: es que no haya getter.
+	 * El contador y el array eran el mismo estado escrito dos veces, y la longitud de un
+	 * array no se puede congelar al desestructurar. Esto vigila que no se reintroduzca.
+	 */
+	it('no expone ningún contador aparte: el número sale de la longitud del array', () => {
 		const contador = createSkipRow();
 		contador.skipRow(0, ['a'], 'r1');
 		contador.skipRow(1, ['b'], 'r2');
-		expect(contador.skipped).toBe(2);
+
+		expect(Object.keys(contador).sort()).toEqual(['skipRow', 'skippedDetails']);
+		expect(contador.skippedDetails).toHaveLength(2);
+
+		// Y desestructurando —el patrón que rompía— sigue contando bien.
+		const { skippedDetails } = contador;
+		contador.skipRow(2, ['c'], 'r3');
+		expect(skippedDetails.length).toBe(3);
 	});
 });
 
@@ -568,5 +588,123 @@ describe('generateCsvSignature', () => {
 			...Array.from({ length: 50 }, () => ['texto'])
 		];
 		expect(generateCsvSignature(['a'], muchas)).toContain('_N_');
+	});
+});
+
+/**
+ * ⚠️ `parseNumber` con **más de una coma**. Es un caso distinto del que documenta el
+ * cuerpo de la función: aquella heurística borrada trataba de la coma *única* («1,835»
+ * son 1,835 participaciones y no mil ochocientos treinta y cinco), y sigue siendo así.
+ * Con dos comas la lectura europea es imposible, así que son miles americanos — y el
+ * `.replace(',', '.')` sin bandera global sustituía solo la primera, dejando el resto
+ * dentro para que `parseFloat` cortase ahí.
+ */
+describe('parseNumber con miles americanos', () => {
+	it('lee un número con varias comas como miles, no lo corta en la primera', () => {
+		expect(parseNumber('1,234,567')).toBe(1234567);
+		expect(parseNumber('12,345,678')).toBe(12345678);
+	});
+
+	it('y la coma única sigue siendo decimal europeo', () => {
+		// El control que impide reabrir la heurística que se borró por romper tres CSV reales.
+		expect(parseNumber('1,835')).toBe(1.835);
+		expect(parseNumber('1.234,56')).toBe(1234.56);
+		expect(parseNumber('1,234.56')).toBe(1234.56);
+	});
+});
+
+describe('normalizeText', () => {
+	it('quita los acentos, que es lo que las comparaciones de los parsers dan por hecho', () => {
+		expect(normalizeText('Suscripción')).toBe('suscripcion');
+		expect(normalizeText('APORTACIÓN')).toBe('aportacion');
+	});
+});
+
+/**
+ * El parseo de fechas es una fila por formato, y no por gusto: una fecha mal leída no da
+ * error en ninguna parte. `reduceTransactionsToPositions` ordena por fecha antes de aplicar
+ * el coste medio, así que barajar el orden hace desaparecer ventas y deja un coste medio
+ * que nunca ocurrió.
+ */
+describe('parseBrokerDate', () => {
+	const partes = (d: Date | null) => d && [d.getFullYear(), d.getMonth() + 1, d.getDate()];
+
+	it('lee ISO como año-mes-día', () => {
+		// El fallo de `parseDegiroDate`: leía las tres partes como día-mes-año, así que
+		// '2024-05-13' salía como día 2024 / mes 5 / año 13.
+		expect(partes(parseBrokerDate('2024-05-13'))).toEqual([2024, 5, 13]);
+		expect(partes(parseBrokerDate('2026-01-02'))).toEqual([2026, 1, 2]);
+	});
+
+	it('lee el formato europeo como día-primero', () => {
+		// El fallo de `new Date(str)`: '10/01/2024' salía como 1 de octubre.
+		expect(partes(parseBrokerDate('10/01/2024'))).toEqual([2024, 1, 10]);
+		expect(partes(parseBrokerDate('27-04-2026'))).toEqual([2026, 4, 27]);
+	});
+
+	it('acepta un día mayor que doce, que a `new Date` le parece inválido', () => {
+		// `new Date('15/01/2024')` es Invalid Date, y el código lo sustituía por hoy.
+		expect(partes(parseBrokerDate('15/01/2024'))).toEqual([2024, 1, 15]);
+	});
+
+	it('desambigua a mes-primero sólo cuando el segundo campo no puede ser un mes', () => {
+		expect(partes(parseBrokerDate('05/13/2024'))).toEqual([2024, 5, 13]);
+	});
+
+	it('completa el año de dos cifras', () => {
+		expect(partes(parseBrokerDate('15/01/24'))).toEqual([2024, 1, 15]);
+	});
+
+	it('coge la hora del segundo argumento y también la que venga pegada', () => {
+		const conArg = parseBrokerDate('15-01-2024', '14:05:30');
+		expect([conArg?.getHours(), conArg?.getMinutes(), conArg?.getSeconds()]).toEqual([14, 5, 30]);
+
+		// Trading 212 e IB traen la hora dentro del mismo campo.
+		const pegada = parseBrokerDate('2024-01-15 10:30:00');
+		expect(partes(pegada)).toEqual([2024, 1, 15]);
+		expect(pegada?.getHours()).toBe(10);
+
+		const conComa = parseBrokerDate('2024-01-15, 10:30:00');
+		expect(partes(conComa)).toEqual([2024, 1, 15]);
+		expect(conComa?.getHours()).toBe(10);
+	});
+
+	/**
+	 * ⚠️ Devuelve `null`, no «hoy». Sustituir una fecha ilegible por la de hoy era la otra
+	 * mitad del defecto: inventaba una fecha plausible que barajaba el orden igual de bien,
+	 * y sin dejar rastro. Con `null` el llamante descarta la fila y lo dice.
+	 */
+	it('devuelve null en vez de inventarse hoy cuando no entiende la fecha', () => {
+		expect(parseBrokerDate('')).toBeNull();
+		expect(parseBrokerDate('   ')).toBeNull();
+		expect(parseBrokerDate('no es una fecha')).toBeNull();
+		// 31 de febrero: `new Date(2024, 1, 31)` no falla, desborda al 2 de marzo.
+		expect(parseBrokerDate('31/02/2024')).toBeNull();
+		expect(parseBrokerDate('15/13/2024')).toBeNull();
+	});
+});
+
+/**
+ * ⚠️ `importe` y `amount` estaban en la lista de cantidad **y** en la de precio, así que
+ * una columna de importes competía por los dos roles a la vez.
+ */
+describe('los roles de cantidad y precio no comparten palabras clave', () => {
+	it('«Importe» no le gana el rol de cantidad a «Participaciones»', () => {
+		const analisis = analyzeColumns(
+			['ISIN', 'Participaciones', 'Importe'],
+			[
+				['IE00B4L5Y983', '12,5', '1500,00'],
+				['IE00B4L5Y983', '30,25', '3600,00'],
+				['IE00B4L5Y983', '7,75', '900,00']
+			]
+		);
+		const mapeo = suggestMappingFromAnalysis(analisis);
+		expect(mapeo.shares).toBe(1);
+		expect(mapeo.avgCost).toBe(2);
+	});
+
+	it('y una columna de importes sola no puntúa como cantidad', () => {
+		const col = analyzeColumns(['Importe'], [['1500,00'], ['3600,00'], ['900,00']])[0];
+		expect(col.roleScores.price).toBeGreaterThan(col.roleScores.quantity);
 	});
 });

@@ -52,7 +52,17 @@ export default defineConfig({
 				// error en ninguna parte, se convierte en una desviación mal calculada y
 				// acaba siendo un consejo de rebalanceo equivocado.
 				'src/routes/api/prices/priceHelpers.ts',
-				'src/routes/api/prices/+server.ts'
+				'src/routes/api/prices/+server.ts',
+				// Añadidos el 9-ago-2026, tras la revisión del subsistema de importación (15
+				// defectos, casi todos «el mismo predicado escrito varias veces y arreglado en
+				// una sola copia»). Es la ruta de alta de la mayoría de carteras reales y su
+				// salida se convierte en transacciones → `ledger.ts` → `fiscal.ts`: una
+				// cantidad, una fecha o un signo mal parseados no dan error en ninguna parte,
+				// se convierten en una plusvalía inventada. Era invisible a las cuatro
+				// guardias mecánicas del repo.
+				'src/lib/importers/parsers.ts',
+				'src/lib/importers/csv-utils.ts',
+				'src/lib/importers/aggregator.ts'
 			],
 			reporter: ['text', 'json-summary'],
 			thresholds: {
@@ -77,7 +87,20 @@ export default defineConfig({
 				// El endpoint es el más bajo de la lista y es honesto que lo sea: le quedan
 				// sin cubrir el troceado en lotes, el fallback de YTD para ETPs de cripto y
 				// la rama de Redis, que necesitan otro arnés.
-				'src/routes/api/prices/+server.ts': { statements: 84, branches: 65, functions: 92 }
+				'src/routes/api/prices/+server.ts': { statements: 84, branches: 65, functions: 92 },
+				/**
+				 * Medidos al añadirlos, 9-ago-2026, y **con `training/` apartado**: los dos tests
+				 * de integración con CSV reales se omiten en CI y en cualquier clon limpio, así
+				 * que medir en la máquina del autor daba `parsers.ts` once puntos más alto y el
+				 * trinquete habría roto en el primer push. El suelo es lo que mide CI.
+				 *
+				 * `parsers.ts` es con diferencia el más bajo de la lista y es honesto que lo sea:
+				 * son seis parsers de bróker y sólo cuatro tienen fixture sintético. Sube cuando
+				 * alguien añada casos, que es justo para lo que sirve un trinquete.
+				 */
+				'src/lib/importers/parsers.ts': { statements: 62, branches: 54, functions: 76 },
+				'src/lib/importers/csv-utils.ts': { statements: 96, branches: 93, functions: 100 },
+				'src/lib/importers/aggregator.ts': { statements: 91, branches: 70, functions: 100 }
 			}
 		}
 	},

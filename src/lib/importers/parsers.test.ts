@@ -11,11 +11,40 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { 
-  importFromCSV, detectHeaderRow, analyzeColumns, 
+import { existsSync, readFileSync } from 'fs';
+import { join } from 'path';
+import {
+  importFromCSV, importWithMapping, detectHeaderRow, analyzeColumns,
   suggestMappingFromAnalysis, normalizeCurrency, looksLikeIsinValue,
   parseCSVBlocks
 } from './index';
+
+/**
+ * Devuelve el `it` que corresponde según exista o no el fixture real en `training/`.
+ *
+ * ⚠️ Los dos tests de integración de este fichero hacían `console.warn` + `return`
+ * dentro del propio test cuando el fichero no estaba. `training/` está ignorada entera
+ * —son exports de bróker con datos personales—, así que **en CI y en cualquier clon
+ * limpio esos dos tests salían por esa puerta antes de la primera aserción y el informe
+ * mostraba dos líneas verdes idénticas a las de haberlo comprobado todo**. Es decir: se
+ * podía romper el parser de Interactive Brokers de arriba abajo y CI seguía en verde,
+ * que es exactamente el defecto que `training_csv.test.ts` ya había corregido con
+ * `it.skip` — una copia arreglada y la otra no, el patrón de siempre en este repo.
+ *
+ * Con `it.skip` el informe distingue «omitido» de «comprobado», que es toda la
+ * diferencia entre saber y creer.
+ */
+function fixtureReal(nombre: string) {
+  const ruta = join(process.cwd(), 'training', nombre);
+  const existe = existsSync(ruta);
+  return {
+    it: existe ? it : it.skip,
+    leer: () => readFileSync(ruta, 'utf-8')
+  };
+}
+
+const accountCsv = fixtureReal('Account.csv');
+const ibActivityCsv = fixtureReal('interactive_brokers_activity.csv');
 
 // ────────────────────────────────────────────────────────────────────────────
 // Helpers de construcción de CSV
@@ -295,23 +324,8 @@ describe('DEGIRO Account Statement parser', () => {
 
   // ── 10. Integración: Account.csv real completo ────────────────────────
 
-  it('procesa el Account.csv real completo con las posiciones correctas', async () => {
-    const { readFileSync } = await import('fs');
-    const { fileURLToPath } = await import('url');
-    const { dirname, join } = await import('path');
-
-    // Leer el CSV real desde training/
-    const csvPath = join(process.cwd(), 'training', 'Account.csv');
-    let csvContent: string;
-    try {
-      csvContent = readFileSync(csvPath, 'utf-8');
-    } catch {
-      // Si no existe el fichero en este entorno, saltar el test
-      console.warn('training/Account.csv no encontrado, test omitido');
-      return;
-    }
-
-    const result = importFromCSV(csvContent);
+  accountCsv.it('procesa el Account.csv real completo con las posiciones correctas', () => {
+    const result = importFromCSV(accountCsv.leer());
 
     // Broker detectado correctamente
     expect(result.broker.id).toBe('degiro');
@@ -459,21 +473,8 @@ describe('DEGIRO Account Statement parser', () => {
 
   // ── 13. Integración con Interactive Brokers Real (Activity Statement) ──
 
-  it('procesa el interactive_brokers_activity.csv real con resolución de ISINs cruzados', async () => {
-    const { readFileSync } = await import('fs');
-    const { join } = await import('path');
-
-    // Leer el CSV real de IBKR desde training/
-    const csvPath = join(process.cwd(), 'training', 'interactive_brokers_activity.csv');
-    let csvContent: string;
-    try {
-      csvContent = readFileSync(csvPath, 'utf-8');
-    } catch {
-      console.warn('training/interactive_brokers_activity.csv no encontrado, test omitido');
-      return;
-    }
-
-    const result = importFromCSV(csvContent);
+  ibActivityCsv.it('procesa el interactive_brokers_activity.csv real con resolución de ISINs cruzados', () => {
+    const result = importFromCSV(ibActivityCsv.leer());
 
     // Debe detectarse como Interactive Brokers
     expect(result.broker.id).toBe('interactive_brokers');
@@ -607,3 +608,209 @@ describe('DEGIRO Account Statement parser', () => {
     });
 
     });
+
+/**
+ * Los defectos que encontró la revisión del subsistema de importación, cada uno con el test
+ * que lo habría cazado. Casi todos comparten firma: **el mismo predicado escrito varias
+ * veces y arreglado en una sola copia**.
+ *
+ * Lo que hace peligrosa a esta capa es que su salida se convierte en transacciones →
+ * `ledger.ts` (coste medio) → `fiscal.ts` (FIFO, IRPF). Una cantidad, una fecha o un signo
+ * mal parseados no dan error en ninguna parte: se convierten en una plusvalía inventada.
+ */
+describe('regresiones de la revisión del importador', () => {
+  const T212_CABECERA =
+    'Action,Time,ISIN,Ticker,Name,No. of shares,Price / share,Currency (Price / share),Exchange rate';
+
+  /**
+   * ⚠️ El defecto que hacía invisibles a todos los demás: `createSkipRow` exponía `skipped`
+   * como getter y los seis parsers lo desestructuraban, congelándolo en 0. `ImportModal`
+   * dibuja el aviso «se han omitido N filas» bajo `{#if importResult.skippedRows > 0}`, así
+   * que ese panel —traducido y funcionando— no se mostró nunca.
+   */
+  it('informa de las filas omitidas en vez de decir siempre cero', () => {
+    const csv = [
+      T212_CABECERA,
+      'Deposit,2024-01-05T09:00:00.000Z,,,,,,,',
+      'Market buy,2024-01-10T10:32:14.000Z,IE00B3RBWM25,VWRL,Vanguard FTSE All-World,10,104.18,EUR,1'
+    ].join('\n');
+
+    const result = importFromCSV(csv);
+
+    expect(result.positions).toHaveLength(1);
+    expect(result.skippedRows).toBe(1);
+    // Y el contador coincide con el detalle, que es lo que se le enseña al usuario.
+    expect(result.skippedRows).toBe(result.skippedDetails?.length);
+  });
+
+  /**
+   * ⚠️ La guarda del precio existía escrita cuatro veces y sólo el histórico de DEGIRO la
+   * aplicaba. Una compra sin precio entra en el coste medio como si el título fuera gratis.
+   */
+  it('descarta una transacción sin precio en vez de meterla a coste cero', () => {
+    const csv = [
+      T212_CABECERA,
+      'Market buy,2024-01-10T10:32:14.000Z,IE00B3RBWM25,VWRL,Vanguard FTSE All-World,10,,EUR,1',
+      'Market buy,2024-02-10T10:32:14.000Z,IE00B3RBWM25,VWRL,Vanguard FTSE All-World,10,185,EUR,1'
+    ].join('\n');
+
+    const result = importFromCSV(csv);
+
+    expect(result.positions).toHaveLength(1);
+    expect(result.positions[0].shares).toBe(10);
+    // Con la fila de precio vacío dentro, el coste medio salía 92,5 en vez de 185.
+    expect(result.positions[0].avgCost).toBe(185);
+    expect(result.skippedRows).toBe(1);
+  });
+
+  /**
+   * ⚠️ MyInvestor comparaba `tipoOp.includes('suscripcion')` sobre un `toLowerCase()` a
+   * secas, así que «Suscripción» no casaba nunca y el fondo entero desaparecía de la cartera.
+   */
+  it('reconoce «Suscripción» con acento, que es como lo escribe MyInvestor', () => {
+    const csv = [
+      'Fecha operación;Fecha valor;Tipo operación;Nombre del fondo / valor;ISIN;Participaciones;Precio;Importe bruto;Gastos;Importe neto;Divisa',
+      '10/01/2024;10/01/2024;Suscripción;Vanguard Global Stock Index Fund EUR Acc;IE00B03HCZ61;12,3456;81,5432;1007,42;0,00;-1007,42;EUR',
+      '22/01/2024;22/01/2024;Suscripción;Vanguard Global Stock Index Fund EUR Acc;IE00B03HCZ61;5,6789;174,2310;989,16;0,00;-989,16;EUR'
+    ].join('\n');
+
+    const result = importFromCSV(csv);
+
+    expect(result.positions).toHaveLength(1);
+    expect(result.positions[0].shares).toBeCloseTo(18.0245, 4);
+    expect(result.skippedRows).toBe(0);
+  });
+
+  /**
+   * ⚠️ La instantánea de DEGIRO usaba `.set()` sobre un mapa llamado `accumulated`:
+   * sustituía en vez de acumular, así que un ISIN repetido perdía todas las filas menos la
+   * última, sin aviso y sin aparecer en `skippedDetails`.
+   */
+  it('suma las dos filas de un mismo ISIN en la instantánea de DEGIRO', () => {
+    const csv = [
+      'Producto,Symbol/ISIN,Cantidad,Precio de,Valor local,,Valor en EUR',
+      'ATLASCLEAR HOLDINGS INC,US1287452056,700,"0,22",USD,"155,47","133,67"',
+      'ATLASCLEAR HOLDINGS INC,US1287452056,300,"0,22",USD,"66,63","57,29"'
+    ].join('\n');
+
+    const result = importFromCSV(csv);
+
+    expect(result.positions).toHaveLength(1);
+    expect(result.positions[0].shares).toBe(1000);
+  });
+
+  /**
+   * ⚠️ Se prefería «Valor en EUR» como coste total y se etiquetaba `EUR`, pero el store
+   * guarda `avgCost` **en la divisa del activo** y lo multiplica luego por `fxRate`: el
+   * importe se convertía dos veces y el coste quedaba infravalorado ~14 %.
+   */
+  it('guarda el coste en la divisa del activo, no el valor ya convertido a euros', () => {
+    const csv = [
+      'Producto,Symbol/ISIN,Cantidad,Precio de,Valor local,,Valor en EUR',
+      'ATLASCLEAR HOLDINGS INC,US1287452056,700,"0,22",USD,"155,47","133,67"'
+    ].join('\n');
+
+    const result = importFromCSV(csv);
+
+    // 0,22 USD por título — lo que el propio CSV dice. Antes: 133,67/700 = 0,1909 «EUR».
+    expect(result.positions[0].avgCost).toBeCloseTo(0.22, 6);
+    expect(result.positions[0].currency).toBe('USD');
+  });
+
+  /**
+   * ⚠️ `buyKeywords` contenía `'in'` y se comprobaba antes que las de venta con `includes`,
+   * así que «Selling» y «Sending» casaban como compra: los títulos se sumaban en vez de
+   * restarse y el coste medio se recalculaba con un precio de venta.
+   */
+  it('no confunde una venta con una compra por una subcadena', () => {
+    const csv = [
+      'Fecha,ISIN,Tipo,Participaciones,Precio',
+      '10/01/2024,IE00B4L5Y983,Buying,10,100',
+      '15/02/2024,IE00B4L5Y983,Selling,4,150'
+    ].join('\n');
+
+    const result = importFromCSV(csv);
+
+    expect(result.positions).toHaveLength(1);
+    // Con el defecto, «Selling» entraba como compra y salían 14 títulos.
+    expect(result.positions[0].shares).toBe(6);
+  });
+
+  /**
+   * ⚠️ La ruta genérica leía la fecha con `new Date(str)`, que interpreta `10/01/2024` como
+   * 1 de octubre y devuelve Invalid Date con `15/01/2024` —sustituido entonces por hoy—.
+   * Con el orden barajado, una venta procesada antes de su compra se descartaba en silencio.
+   */
+  it('respeta el orden cronológico con fechas europeas', () => {
+    /**
+     * ⚠️ Las dos fechas están elegidas para que la lectura americana **invierta el orden**,
+     * y no valen otras: el primer intento usó 10/01 y 15/01, que al leerse al revés dan
+     * 1-oct e «inválida→hoy», o sea compra antes que venta igual, y el test pasaba con el
+     * defecto puesto. Hace falta `día1 > día2` con `mes1 < mes2`: en europeo es 10-ene
+     * seguido de 5-feb, y en americano 1-oct seguido de 2-may, es decir, la venta primero.
+     */
+    const csv = [
+      'Fecha,ISIN,Tipo,Participaciones,Precio',
+      '10/01/2024,IE00B4L5Y983,Compra,10,100',
+      '05/02/2024,IE00B4L5Y983,Venta,4,150'
+    ].join('\n');
+
+    const result = importFromCSV(csv);
+
+    expect(result.positions).toHaveLength(1);
+    expect(result.positions[0].shares).toBe(6);
+    expect(result.positions[0].avgCost).toBe(100);
+  });
+
+  /**
+   * ⚠️ Un `Transacciones.csv` de DEGIRO con la columna «Precio» vacía: su parser descarta
+   * las filas —correctamente, no tienen precio—, salta el respaldo genérico, y éste tomaba
+   * «Valor local», que es un **importe total**, como precio **unitario**.
+   *
+   * ⚠️ El primer intento de arreglo fue añadir `totalTransactions` al detector de DEGIRO, y
+   * el control negativo demostró que para este caso es un no-op: con todas las filas
+   * descartadas ese campo vale 0, exactamente lo mismo que estar ausente. Lo que hace daño
+   * es confundir un total con un precio, y ahí está el arreglo de verdad.
+   */
+  it('no toma un importe total por un precio unitario', () => {
+    const csv = [
+      'Fecha,Hora,Producto,ISIN,Cantidad,Precio,,Valor local',
+      '10/01/2024,10:30,Quantum eMotion,CA74767K1030,15,,EUR,"1.536,67"'
+    ].join('\n');
+
+    const result = importFromCSV(csv);
+
+    // Antes: 15 títulos a 1.536,67 € cada uno → 23.050 € de coste base para una posición
+    // de 2.805 €. Y ni un error por ninguna parte.
+    expect(result.positions.length).toBeGreaterThan(0);
+    for (const pos of result.positions) {
+      expect(pos.avgCost).toBeCloseTo(1536.67 / 15, 2);
+    }
+  });
+
+  /**
+   * ⚠️ `importWithMapping` reparseaba con `parseCSV`, que devuelve el **primer** bloque,
+   * mientras que el mapeo lo construyó el usuario sobre las cabeceras del bloque que
+   * `importFromCSV` eligió por confianza y le enseñó en `ColumnMapper`.
+   */
+  it('aplica el mapeo manual al mismo bloque que se le enseñó al usuario', () => {
+    const csv = [
+      'Resumen,Valor',
+      'Efectivo,1000',
+      '',
+      'Producto,ISIN,Cantidad,Precio',
+      'Vanguard FTSE All-World,IE00B3RBWM25,12,104.18'
+    ].join('\n');
+
+    const auto = importFromCSV(csv);
+    // El bloque elegido —y por tanto el que se le enseña al usuario— es el de posiciones.
+    expect(auto.rawHeaders).toEqual(['Producto', 'ISIN', 'Cantidad', 'Precio']);
+
+    const manual = importWithMapping(csv, { shares: 2, isin: 1, name: 0, avgCost: 3 });
+
+    expect(manual.rawHeaders).toEqual(auto.rawHeaders);
+    expect(manual.positions).toHaveLength(1);
+    expect(manual.positions[0].shares).toBe(12);
+    expect(manual.positions[0].isin).toBe('IE00B3RBWM25');
+  });
+});
