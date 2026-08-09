@@ -30,6 +30,31 @@ const almacen = vi.hoisted(() => ({
 
 vi.mock('$env/dynamic/private', () => ({ env: {} }));
 vi.mock('$app/navigation', () => ({ goto: vi.fn() }));
+
+/*
+ * ⚠️ Estas dos son imprescindibles y no son adorno: **esta es la única suite del
+ * repo que entra en la rama de nube**. Las otras tres que construyen un
+ * `PortfolioStore` declaran `isLocal: true` y un `onAuthStateChanged` de pega,
+ * así que nunca disparan el callback; aquí sí, y eso destapa dos importaciones
+ * dinámicas que el mock del barril `$lib/db` no cubre porque apuntan a otro sitio.
+ *
+ * - `$lib/firebase` lo importa `initAuth()` cuando el proveedor no es local, y
+ *   arrastra el SDK entero (`firebase/app`, `auth`, `firestore`) por el pipeline
+ *   de vite, además de llamar a `initializeApp` con las variables de entorno que
+ *   haya en la máquina. Medido: el primer test pasa de **244 ms a 60 ms** al
+ *   mockearlo, y los otros nueve estaban ya en 2–4 ms.
+ * - `$lib/db/LocalDBStorage` lo importa `loadHistory()` como respaldo cuando la
+ *   nube no trae historial —que es el caso de todos estos tests—, y va a Dexie de
+ *   verdad. En jsdom no hay IndexedDB, así que **cada test escupía un
+ *   `DatabaseClosedError`** por stderr que nadie leía. `localDB` a `null` es
+ *   además el estado que el propio código ya contempla y guarda.
+ *
+ * Mismo patrón que el `vi.mock('$lib/server/redis')` de los tests de rate limit:
+ * una suite unitaria que habla con una dependencia real no prueba lo que dice
+ * probar, y falla por motivos que no controla.
+ */
+vi.mock('$lib/firebase', () => ({ auth: null, db: null, googleProvider: null }));
+vi.mock('$lib/db/LocalDBStorage', () => ({ localDB: null }));
 vi.mock('$lib/db', () => ({
 	storageProvider: {
 		isLocal: false,
