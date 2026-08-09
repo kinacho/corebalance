@@ -2,6 +2,7 @@ import type { Page } from '@playwright/test';
 import { test, expect } from './util/test-base';
 import {
 	abrirDashboard,
+	abrirMapas,
 	mapaDesviacion,
 	mapaSubyacente,
 	sembrarCartera,
@@ -34,6 +35,7 @@ test.describe('Mapa de desviación · cartera sin ningún objetivo', () => {
 	test.beforeEach(async ({ page }) => {
 		await sembrarCartera(page, SIN_OBJETIVOS);
 		await abrirDashboard(page);
+		await abrirMapas(page);
 		await page.locator('svg.treemap').first().waitFor({ state: 'visible' });
 	});
 
@@ -75,6 +77,7 @@ test.describe('Mapa de desviación · cartera con objetivos', () => {
 	test('vuelve la escala divergente, su leyenda y el objetivo en el tooltip', async ({ page }) => {
 		await sembrarCartera(page, CON_OBJETIVOS);
 		await abrirDashboard(page);
+		await abrirMapas(page);
 		await page.locator('svg.treemap').first().waitFor({ state: 'visible' });
 
 		const panel = mapaDesviacion(page);
@@ -95,21 +98,43 @@ test.describe('Mapa de desviación · cartera con objetivos', () => {
 	});
 });
 
-test.describe('Mapa del subyacente', () => {
-	test('ocupa dos carriles de la rejilla en escritorio', async ({ page }) => {
-		// Regla que estuvo documentada en el CSS y en CLAUDE.md sin que nadie la
-		// implementara: la fila de mapas se veía como dos carriles y una columna muerta.
+test.describe('Los dos mapas', () => {
+	test('se reparten el ancho a partes iguales en escritorio', async ({ page }) => {
+		/*
+		 * ⚠️ Este test decía lo contrario —«el subyacente ocupa dos carriles de
+		 * tres»— y era correcto mientras la fila de mapas convivía con los donuts
+		 * en la misma rejilla: en un solo carril de 400 px dejaba media fila
+		 * muerta. Desde que los mapas viven plegados en su propia fila esa razón
+		 * desapareció, y son dos paneles solos repartiéndose el ancho. El cambio
+		 * de contrato se reescribe aquí, con su motivo, en vez de borrar el test.
+		 */
 		await sembrarCartera(page, CON_OBJETIVOS);
 		await abrirDashboard(page);
+		await abrirMapas(page);
 
-		const desviacion = mapaDesviacion(page);
-		const subyacente = mapaSubyacente(page);
-		await expect(subyacente).toBeVisible();
+		await expect(mapaSubyacente(page)).toBeVisible();
 
-		const anchoDesviacion = (await desviacion.boundingBox())!.width;
-		const anchoSubyacente = (await subyacente.boundingBox())!.width;
-		// Dos carriles de tres: claramente más ancho que el otro panel, sin exigir un
-		// número exacto que dependa del gap de la rejilla.
-		expect(anchoSubyacente).toBeGreaterThan(anchoDesviacion * 1.5);
+		const { desviacion, subyacente, fila } = await page.evaluate(() => {
+			const ancho = (sel: string) => document.querySelector(sel)!.getBoundingClientRect().width;
+			return {
+				desviacion: ancho('.map-box:not(.is-lookthrough)'),
+				subyacente: ancho('.map-box.is-lookthrough'),
+				fila: ancho('.maps-row')
+			};
+		});
+
+		// Mitades: la diferencia entre los dos tiene que ser ruido de redondeo,
+		// no un carril. Un `span 2` de vuelta daría una proporción de 1 a 2.
+		expect(
+			Math.abs(subyacente - desviacion),
+			`desviación ${desviacion} px contra subyacente ${subyacente} px`
+		).toBeLessThan(2);
+
+		// Y cada uno es media fila descontando el hueco de la rejilla (2rem).
+		expect(subyacente).toBeGreaterThan(fila / 2 - 40);
+
+		// El subyacente sigue por encima de su umbral de 460 px, que es lo que
+		// mantiene los nombres de región dentro de los rectángulos.
+		expect(subyacente).toBeGreaterThan(460);
 	});
 });

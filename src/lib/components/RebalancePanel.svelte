@@ -399,7 +399,7 @@
 	.alloc-value {
 		font-size: 0.9rem;
 		font-weight: 700;
-		color: #10b981;
+		color: var(--state-positive);
 	}
 
 	.alloc-percent {
@@ -483,7 +483,6 @@
 		height: 8px;
 		border-radius: 50%;
 		flex-shrink: 0;
-		box-shadow: 0 0 4px currentColor;
 	}
 
 	.comparison-name {
@@ -561,11 +560,11 @@
 	}
 
 	.convergence-label.improved {
-		color: #34d399;
+		color: var(--state-positive);
 	}
 
 	.convergence-label.perfect {
-		color: #10b981;
+		color: var(--state-positive);
 	}
 
 	.comparison-legend {

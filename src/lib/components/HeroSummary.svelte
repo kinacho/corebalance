@@ -1,21 +1,35 @@
 <script lang="ts">
 	import { portfolio } from '$lib/stores/portfolio.svelte';
-	import { tweened } from 'svelte/motion';
-	import { cubicOut } from 'svelte/easing';
 	import { LL } from '$lib/i18n/i18n-svelte';
+	import Sparkline from './Sparkline.svelte';
 
-	// Tweened values for smooth counting
-	const tweenedGlobalCapital = tweened(0, { duration: 1000, easing: cubicOut });
-	const tweenedGlobalProfit = tweened(0, { duration: 1000, easing: cubicOut });
-	const tweenedGlobalInvested = tweened(0, { duration: 1000, easing: cubicOut });
-	const tweenedDailyChange = tweened(0, { duration: 1000, easing: cubicOut });
+	/**
+	 * ⚠️ **Aquí había cuatro contadores animados y se han ido.** El *count-up*
+	 * sobre una cifra de dinero es cliché de fintech de 2020 y aquí costaba dos
+	 * cosas concretas: la cifra tardaba un segundo en ser cierta —arrancaba en 0,
+	 * así que lo primero que veías de tu patrimonio era un número falso— y el
+	 * baile de dígitos peleaba con el `tabular-nums` que `layout.css` aplica
+	 * justo a estas clases para que no bailen.
+	 */
 
-	$effect(() => {
-		tweenedGlobalCapital.set(portfolio.globalCapital);
-		tweenedGlobalProfit.set(portfolio.globalProfit);
-		tweenedGlobalInvested.set(portfolio.globalInvested);
-		tweenedDailyChange.set(portfolio.globalDailyChangeValue);
-	});
+	/**
+	 * Las dos cajas que tienen una serie detrás la enseñan. Las otras dos no:
+	 * «Cambio hoy» y el TER son cifras de un instante, y dibujarles una línea
+	 * sería inventar una historia que no existe.
+	 */
+	const series = $derived(portfolio.performanceSeries);
+	const SPARK_WINDOW = 30;
+
+	const investedSpark = $derived(series.invested.slice(-SPARK_WINDOW));
+	const gainSpark = $derived(series.gain.slice(-SPARK_WINDOW));
+
+	/** Una sparkline necesita variación: una recta plana no informa, decora. */
+	function worthDrawing(points: number[]): boolean {
+		if (points.length < 3) return false;
+		const min = Math.min(...points);
+		const max = Math.max(...points);
+		return max - min > Math.abs(max) * 1e-4;
+	}
 </script>
 
 {#if !portfolio.loading || Object.keys(portfolio.prices).length > 0}
@@ -23,7 +37,7 @@
 		<div class="hero-primary">
 
 			<span class="summary-label">{$LL.dashboard.total_value_label()}</span>
-			<div class="summary-value privacy-blur">{$LL.dashboard.currency($tweenedGlobalCapital)}</div>
+			<div class="summary-value privacy-blur">{$LL.dashboard.currency(portfolio.globalCapital)}</div>
 			{#if portfolio.satelliteState.totalCapital > 0 || portfolio.stockState.totalCapital > 0}
 				<div class="capital-breakdown">
 					<div class="breakdown-item">
@@ -51,21 +65,31 @@
 		<div class="hero-metrics">
 			<div class="metric-card">
 				<span class="metric-label">{$LL.dashboard.invested_label()}</span>
-				<span class="metric-value privacy-blur">{$LL.dashboard.currency($tweenedGlobalInvested)}</span>
+				<span class="metric-value privacy-blur">{$LL.dashboard.currency(portfolio.globalInvested)}</span>
+				{#if worthDrawing(investedSpark)}
+					<div class="metric-spark privacy-blur" aria-hidden="true">
+						<Sparkline data={investedSpark} color="rgba(255,255,255,0.35)" width={90} height={22} />
+					</div>
+				{/if}
 			</div>
-			
+
 			<div class="metric-card" class:positive={portfolio.globalProfit > 0} class:negative={portfolio.globalProfit < 0}>
 				<span class="metric-label">{$LL.dashboard.returns_label()}</span>
 				<div class="metric-row">
-					<span class="metric-value privacy-blur">{$LL.dashboard.currency($tweenedGlobalProfit)}</span>
+					<span class="metric-value privacy-blur">{$LL.dashboard.currency(portfolio.globalProfit)}</span>
 					<span class="metric-badge">{$LL.dashboard.percent(portfolio.globalProfitPercent)}</span>
 				</div>
+				{#if worthDrawing(gainSpark)}
+					<div class="metric-spark privacy-blur" aria-hidden="true">
+						<Sparkline data={gainSpark} width={90} height={22} filled />
+					</div>
+				{/if}
 			</div>
 
 			<div class="metric-card" class:positive={portfolio.globalDailyChangeValue > 0} class:negative={portfolio.globalDailyChangeValue < 0}>
 				<span class="metric-label">{$LL.dashboard.daily_change_label()}</span>
 				<div class="metric-row">
-					<span class="metric-value privacy-blur">{$tweenedDailyChange > 0 ? '+' : ''}{$LL.dashboard.currency($tweenedDailyChange)}</span>
+					<span class="metric-value privacy-blur">{portfolio.globalDailyChangeValue > 0 ? '+' : ''}{$LL.dashboard.currency(portfolio.globalDailyChangeValue)}</span>
 					<span class="metric-badge">{portfolio.globalDailyChangeValue > 0 ? '+' : ''}{$LL.dashboard.percent(portfolio.globalDailyChangePercent)}</span>
 				</div>
 			</div>
@@ -118,7 +142,7 @@
 		right: -10%;
 		width: 60%;
 		height: 60%;
-		background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+		background: radial-gradient(circle, rgba(37, 99, 235, 0.16) 0%, transparent 70%);
 		filter: blur(40px);
 		pointer-events: none;
 	}
@@ -186,6 +210,11 @@
 		text-overflow: ellipsis;
 	}
 
+	.metric-spark {
+		margin-top: 0.35rem;
+		opacity: 0.9;
+	}
+
 	.metric-row {
 		display: flex;
 		align-items: center;
@@ -210,11 +239,11 @@
 		white-space: nowrap;
 	}
 
-	.metric-card.positive .metric-value { color: #34d399; }
-	.metric-card.positive .metric-badge { color: #34d399; background: rgba(52, 211, 153, 0.12); }
+	.metric-card.positive .metric-value { color: var(--state-positive); }
+	.metric-card.positive .metric-badge { color: var(--state-positive); background: var(--state-positive-soft); }
 	
-	.metric-card.negative .metric-value { color: #f87171; }
-	.metric-card.negative .metric-badge { color: #f87171; background: rgba(248, 113, 113, 0.12); }
+	.metric-card.negative .metric-value { color: var(--state-negative); }
+	.metric-card.negative .metric-badge { color: var(--state-negative); background: var(--state-negative-soft); }
 
 	.metric-card.efficiency .metric-badge.neutral {
 		color: rgba(255, 255, 255, 0.6);
@@ -252,7 +281,8 @@
 		height: 6px;
 		border-radius: 50%;
 		background: var(--accent);
-		box-shadow: 0 0 10px var(--accent);
+		/* Sin halo. El resplandor de neón alrededor de cada punto de color es lo
+		   que más envejece un tablero oscuro: es el look de app cripto de 2021. */
 	}
 
 	.pill-text {

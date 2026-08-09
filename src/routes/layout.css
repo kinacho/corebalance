@@ -9,9 +9,39 @@
 		--text-primary: #ffffff;
 		--text-muted: rgba(160, 160, 200, 0.8);
 		--border-subtle: rgba(255, 255, 255, 0.08);
-		--accent-blue: #3b82f6;
-		--accent-green: #10b981;
-		--accent-orange: #f59e0b;
+
+		/*
+		 * Los acentos son ahora los mismos tonos que `CATEGORY_COLORS` en
+		 * `src/lib/constants.ts`, que están validados contra la superficie de
+		 * tarjeta `#0d0d12`. Antes eran `#3b82f6`, `#10b981` y `#f59e0b`: los tres
+		 * valores por defecto de Tailwind (blue-500, emerald-500, amber-500), o
+		 * sea la tríada más reconocible de internet. Los gráficos usaban ésos y
+		 * los donuts los validados, así que «Acciones» salía ámbar en un panel y
+		 * verde en el de al lado. Un tono por entidad, en un sitio.
+		 */
+		--accent-blue: #2563eb;
+		--accent-green: #059669;
+		--accent-orange: #d97706;
+
+		/*
+		 * Estado (sube/baja), espejo de `STATE_POSITIVE` / `STATE_NEGATIVE`. La
+		 * razón de que existan las dos copias es que el color entra tanto por CSS
+		 * como por JS —Chart.js recibe cadenas, no variables—; el docblock de
+		 * `constants.ts` explica por qué son éstos y qué coste tienen.
+		 */
+		--state-positive: #34d399;
+		--state-negative: #f43f5e;
+		--state-positive-soft: rgba(52, 211, 153, 0.12);
+		--state-negative-soft: rgba(244, 63, 94, 0.12);
+
+		/*
+		 * Cromo de los gráficos. Rejilla y ejes van recesivos a propósito: lo que
+		 * tiene que verse es el dato, no el andamio.
+		 */
+		--chart-grid: rgba(255, 255, 255, 0.05);
+		--chart-axis: rgba(255, 255, 255, 0.45);
+		--chart-ink: rgba(255, 255, 255, 0.75);
+		--chart-surface: #0d0d12;
 	}
 
 	* {

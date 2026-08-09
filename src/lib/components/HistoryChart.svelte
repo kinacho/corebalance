@@ -8,14 +8,26 @@
 		LinearScale,
 		CategoryScale,
 		Filler,
-		Tooltip,
-		Legend
+		Tooltip
 	} from 'chart.js';
 
-	Chart.register(LineController, LineElement, PointElement, LinearScale, CategoryScale, Filler, Tooltip, Legend);
+	Chart.register(LineController, LineElement, PointElement, LinearScale, CategoryScale, Filler, Tooltip);
 
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { formatEUR } from '$lib/utils';
+	import { formatCompactCurrency, formatAxisPercent, stepFromTicks } from '$lib/chart-format';
+	import {
+		applyChartDefaults,
+		tooltipStyle,
+		categoryAxis,
+		valueAxis,
+		motionAllowed,
+		CHART_SURFACE,
+		CONTRIBUTED_FILL,
+		MARKET_FILL
+	} from '$lib/chart-theme';
+	import { CATEGORY_COLORS } from '$lib/constants';
+	import { ui } from '$lib/stores/ui.svelte';
 	import { LL, locale } from '$lib/i18n/i18n-svelte';
 
 	/**
@@ -28,23 +40,41 @@
 	 * Mezclar la primera con la segunda es lo que convertía una venta en una
 	 * pérdida aparente del 40 %.
 	 */
-	type ViewMode = 'value' | 'twr' | 'gain';
+	type ViewMode = 'value' | 'twr' | 'gain' | 'split';
 
 	let canvas: HTMLCanvasElement;
 	let chart: Chart;
-	let currentRange = $state(30);
+	/** El degradado del área. Se crea en `onMount`, cuando ya hay contexto 2D. */
+	let areaFill: CanvasGradient | string = 'transparent';
+
+	/**
+	 * ⚠️ **Los rangos eran 7D / 14D / 30D y eso contradecía a la propia app.**
+	 * `CLAUDE.md` dice, sobre el mapa de desviación, que colorear por cambio
+	 * diario «enseña al usuario a mirar todos los días y reaccionar, que es justo
+	 * el hábito que la app existe para evitar» — y un selector cuyo horizonte más
+	 * largo es un mes dice exactamente eso con otras palabras. Para un inversor
+	 * indexado la ventana relevante es el año, no la quincena.
+	 *
+	 * Por defecto **todo el historial**: es el encuadre honesto, y además el único
+	 * que no miente cuando aún hay tres días de datos.
+	 */
+	type RangeId = '1M' | '3M' | 'YTD' | '1Y' | 'ALL';
+	let currentRange = $state<RangeId>('ALL');
 	let viewMode = $state<ViewMode>('value');
 
-	const prefersReducedMotion = typeof window !== 'undefined'
-		&& window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+	const allowMotion = motionAllowed();
 
-	const ranges = [
-		{ label: '7D', days: 7 },
-		{ label: '14D', days: 14 },
-		{ label: '30D', days: 30 }
-	];
+	const ranges = $derived([
+		{ id: '1M' as const, label: '1M', days: 30 },
+		{ id: '3M' as const, label: '3M', days: 90 },
+		{ id: 'YTD' as const, label: $LL.db.chart_range_ytd(), days: null },
+		{ id: '1Y' as const, label: '1A', days: 365 },
+		{ id: 'ALL' as const, label: $LL.db.chart_range_all(), days: null }
+	]);
 
-	// Por defecto solo la línea principal; las categorías se activan a mano.
+	// Por defecto solo la línea principal; las categorías se activan a mano. Las
+	// claves siguen en español porque son las que ya hay guardadas en el
+	// `localStorage` de quien usa la app desde antes.
 	let hiddenDatasets = $state<string[]>(['Principal', 'Acciones', 'Conservadora', 'Invertido']);
 
 	onMount(() => {
@@ -64,7 +94,7 @@
 
 	function toggleDataset(label: string) {
 		if (hiddenDatasets.includes(label)) {
-			hiddenDatasets = hiddenDatasets.filter(l => l !== label);
+			hiddenDatasets = hiddenDatasets.filter((l) => l !== label);
 		} else {
 			hiddenDatasets = [...hiddenDatasets, label];
 		}
@@ -72,10 +102,42 @@
 
 	const series = $derived(portfolio.performanceSeries);
 
+	/**
+	 * Primer índice visible según el rango.
+	 *
+	 * `YTD` se resuelve por fecha y no por número de días, que es lo que la hace
+	 * distinta de «12 meses»: en marzo son 90 días y en diciembre 365.
+	 */
+	const startIndex = $derived.by(() => {
+		const all = series.points;
+		if (all.length === 0) return 0;
+
+		if (currentRange === 'ALL') return 0;
+
+		if (currentRange === 'YTD') {
+			const year = new Date().getFullYear();
+			const first = all.findIndex((p) => new Date(p.date).getFullYear() === year);
+			return first === -1 ? Math.max(0, all.length - 1) : first;
+		}
+
+		const days = ranges.find((r) => r.id === currentRange)?.days ?? all.length;
+		return Math.max(0, all.length - days);
+	});
+
+	/**
+	 * Cuando el rango pedido es más largo que el historial guardado se enseña lo
+	 * que hay, y se dice. Sin esto, pulsar «1A» con tres semanas de datos deja la
+	 * misma imagen que «1M» y parece que el botón no hace nada.
+	 */
+	const rangeIsClipped = $derived.by(() => {
+		const days = ranges.find((r) => r.id === currentRange)?.days;
+		return days !== null && days !== undefined && series.points.length < days;
+	});
+
 	/** La ventana visible, con el índice TWR rebasado a su primer día. */
 	const view = $derived.by(() => {
 		const all = series.points;
-		const start = Math.max(0, all.length - currentRange);
+		const start = startIndex;
 		const points = all.slice(start);
 		const rawTwr = series.twr.slice(start);
 		const twrBase = rawTwr[0] > 0 ? rawTwr[0] : 100;
@@ -93,6 +155,15 @@
 	});
 
 	const isPercentMode = $derived(viewMode === 'twr');
+	/**
+	 * ⚠️ **La pregunta que ningún gráfico de patrimonio contesta: ¿esto sube o
+	 * simplemente he metido más?** El modo divide la serie en dos franjas
+	 * apiladas —abajo lo aportado, arriba la revalorización— y con eso se ve de
+	 * un vistazo. El dato ya estaba en el store (`invested` y `gain`); lo que
+	 * había era una quinta línea escalonada que salía apagada por defecto, o sea
+	 * la respuesta escondida detrás de un interruptor.
+	 */
+	const isSplitMode = $derived(viewMode === 'split');
 
 	/**
 	 * En los días sin desglose por categoría se devuelve `null` para que el
@@ -107,26 +178,45 @@
 		return amount > 0 ? $LL.db.chart_flow_in() : $LL.db.chart_flow_out();
 	}
 
+	/**
+	 * Formato del eje temporal. Con más de tres meses en pantalla el día sobra y
+	 * lo que se quiere leer es el mes; por debajo, al revés.
+	 */
+	function axisDate(iso: string, span: number): string {
+		const loc = $locale === 'es' ? 'es-ES' : 'en-US';
+		const opts: Intl.DateTimeFormatOptions =
+			span > 120 ? { month: 'short', year: '2-digit' } : { day: '2-digit', month: 'short' };
+		return new Date(iso).toLocaleDateString(loc, opts).replace('.', '');
+	}
+
 	/** Volcado de la serie al gráfico. */
 	function syncChart() {
 		if (!chart) return;
 
-		const loc = $locale === 'es' ? 'es-ES' : 'en-US';
-		chart.data.labels = view.points.map((p) =>
-			new Date(p.date).toLocaleDateString(loc, { day: '2-digit', month: 'short' }).replace('.', '')
-		);
+		const span = view.points.length;
+		chart.data.labels = view.points.map((p) => axisDate(p.date, span));
 
 		chart.data.datasets[0].label =
-			viewMode === 'twr' ? $LL.db.chart_label_return()
-			: viewMode === 'gain' ? $LL.db.chart_label_gain()
-			: $LL.db.chart_label_total();
+			viewMode === 'twr'
+				? $LL.db.chart_label_return()
+				: viewMode === 'gain'
+					? $LL.db.chart_label_gain()
+					: isSplitMode
+						? $LL.db.chart_label_market()
+						: $LL.db.chart_label_total();
 		chart.data.datasets[1].label = $LL.db.chart_label_core();
 		chart.data.datasets[2].label = $LL.db.chart_label_stocks();
 		chart.data.datasets[3].label = $LL.db.chart_label_satellite();
-		chart.data.datasets[4].label = $LL.db.chart_label_invested();
+		chart.data.datasets[4].label = isSplitMode
+			? $LL.db.chart_label_contributed()
+			: $LL.db.chart_label_invested();
 
 		chart.data.datasets[0].data =
-			viewMode === 'twr' ? view.twrPct : viewMode === 'gain' ? view.gain : view.points.map((p) => p.total);
+			viewMode === 'twr'
+				? view.twrPct
+				: viewMode === 'gain'
+					? view.gain
+					: view.points.map((p) => p.total);
 		chart.data.datasets[0].hidden = hiddenDatasets.includes('Total');
 
 		// Las categorías solo tienen sentido en euros: el desglose por categoría de
@@ -143,16 +233,61 @@
 		// El capital aportado es una escalera real, no el invertido de hoy repetido
 		// hacia atrás como si nunca hubieras aportado nada.
 		chart.data.datasets[4].data = view.invested;
-		chart.data.datasets[4].hidden = !showCategories || hiddenDatasets.includes('Invertido');
+		// En modo split lo aportado no es opcional: es la mitad de abajo del
+		// gráfico, así que ignora el interruptor de la leyenda.
+		chart.data.datasets[4].hidden = isSplitMode
+			? false
+			: !showCategories || hiddenDatasets.includes('Invertido');
+
+		/**
+		 * ⚠️ Las dos franjas se montan **reconfigurando datasets que ya existen**,
+		 * no añadiendo otros: Chart.js resuelve `fill: { target }` por índice, así
+		 * que insertar uno delante rompería el relleno de forma silenciosa. El 0
+		 * (total) se rellena hasta el 4 (aportado) y el 4 hasta el origen.
+		 */
+		const d0 = chart.data.datasets[0] as unknown as Record<string, unknown>;
+		const d4 = chart.data.datasets[4] as unknown as Record<string, unknown>;
+
+		d0.fill = isSplitMode ? { target: 4 } : true;
+		d0.backgroundColor = isSplitMode ? MARKET_FILL : areaFill;
+		d0.borderColor = isSplitMode ? 'rgba(255,255,255,0.85)' : '#ffffff';
+
+		d4.fill = isSplitMode ? 'origin' : false;
+		d4.backgroundColor = isSplitMode ? CONTRIBUTED_FILL : 'transparent';
+		d4.borderColor = isSplitMode ? 'rgba(255,255,255,0.35)' : 'rgba(255, 255, 255, 0.32)';
+		d4.borderDash = isSplitMode ? [] : [6, 4];
+
+		/**
+		 * ⚠️ **En modo apilado el eje ARRANCA EN CERO, y no es una preferencia.**
+		 * Con el eje empezando en 60k —que es lo correcto para una línea, porque
+		 * ahí lo que se lee es la forma— las dos franjas dejan de ser
+		 * proporcionales a lo que valen: lo aportado quedaba como una tira de
+		 * 10 px bajo una mancha enorme, sugiriendo que el 95 % del patrimonio lo
+		 * puso el mercado cuando son 64.265 € de 116.052 €. Un área apilada cuyo
+		 * eje no llega al cero no es un gráfico impreciso, es un gráfico que dice
+		 * otra cosa. Salió al mirar la captura.
+		 */
+		const yScale = chart.options.scales?.y as { beginAtZero?: boolean; min?: number } | undefined;
+		if (yScale) {
+			yScale.beginAtZero = isSplitMode;
+			yScale.min = isSplitMode ? 0 : undefined;
+		}
 
 		if (chart.options.scales?.y) {
 			const yAxis = chart.options.scales.y as any;
+			/**
+			 * ⚠️ El paso de la rejilla llega por el tercer argumento del callback y
+			 * hay que usarlo: sin él, una cartera que se mueve entre 116.000 y
+			 * 116.500 escribe `116k €` en las seis marcas. Ver `chart-format.ts`.
+			 */
 			if (isPercentMode) {
-				yAxis.ticks.callback = (value: number) => portfolio.isPrivate ? '****' : value.toFixed(1) + '%';
-				yAxis.title = { display: true, text: $LL.db.chart_performance_pct(), color: 'rgba(255,255,255,0.3)', font: { size: 10 } };
+				yAxis.ticks.callback = (value: number, _i: number, ticks: { value: number }[]) =>
+					portfolio.isPrivate ? '****' : formatAxisPercent(value, stepFromTicks(ticks));
 			} else {
-				yAxis.ticks.callback = (value: number) => portfolio.isPrivate ? '****' : formatEUR(value);
-				yAxis.title = { display: false };
+				yAxis.ticks.callback = (value: number, _i: number, ticks: { value: number }[]) =>
+					portfolio.isPrivate
+						? '****'
+						: formatCompactCurrency(value, ui.baseCurrency, stepFromTicks(ticks));
 			}
 		}
 
@@ -168,6 +303,7 @@
 		// Modo y visibilidad también son dependencias del volcado.
 		void viewMode;
 		void hiddenDatasets;
+		void currentRange;
 		if (hasData) syncChart();
 	});
 
@@ -175,16 +311,30 @@
 		const ctx = canvas.getContext('2d');
 		if (!ctx) return;
 
-		const createGradient = (color: string, opacity: number) => {
-			const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-			gradient.addColorStop(0, color.replace('1)', `${opacity})`));
-			gradient.addColorStop(1, color.replace('1)', '0)'));
-			return gradient;
-		};
+		applyChartDefaults();
+
+		/**
+		 * El degradado de área. Antes era blanco al 10 % sobre una malla oscura, o
+		 * sea invisible: ocupaba código y no se veía. A 0,16 sí lee como volumen
+		 * bajo la línea, que es lo que le da cuerpo al gráfico.
+		 */
+		areaFill = ctx.createLinearGradient(0, 0, 0, 320);
+		(areaFill as CanvasGradient).addColorStop(0, 'rgba(255, 255, 255, 0.16)');
+		(areaFill as CanvasGradient).addColorStop(1, 'rgba(255, 255, 255, 0)');
 
 		/** Discontinuo en los tramos que la app no observó, solo reconstruyó. */
-		const dashEstimated = (ctx: any) =>
-			view.estimated[ctx.p1DataIndex] ? [4, 4] : undefined;
+		const dashEstimated = (c: any) => (view.estimated[c.p1DataIndex] ? [4, 4] : undefined);
+
+		/**
+		 * ⚠️ **Un punto relleno es una entrada de dinero y un punto hueco una
+		 * salida — la diferencia es la forma, no el color, y es deliberado.**
+		 * Antes la salida se pintaba de ámbar, que en este tablero significa «por
+		 * encima del objetivo», y sobre todo se leía como una advertencia. Pero
+		 * este gráfico tiene un pie de tooltip escrito expresamente para decir que
+		 * **una venta no es una pérdida**; pintarla de color de alarma dice lo
+		 * contrario en el mismo sitio y más alto.
+		 */
+		const flowAt = (c: any) => view.flows[c.dataIndex] ?? 0;
 
 		// @ts-ignore - Chart.js types are too strict for this configuration
 		chart = new Chart(ctx, {
@@ -196,27 +346,29 @@
 						label: 'Total',
 						data: [],
 						borderColor: '#ffffff',
-						backgroundColor: createGradient('rgba(255, 255, 255, 1)', 0.1),
+						backgroundColor: areaFill,
 						fill: true,
-						tension: 0.45,
-						borderWidth: 3,
+						// ⚠️ Sin suavizado. Estaba en 0,45 y una spline no interpola: se
+						// pasa de largo. En un gráfico de patrimonio eso son picos y
+						// valles de dinero que nunca existieron, dibujados por el motor
+						// de curvas. Un patrimonio diario real es dentado.
+						tension: 0,
+						borderWidth: 2,
 						borderCapStyle: 'round',
 						borderJoinStyle: 'round',
 						segment: { borderDash: dashEstimated },
-						// Un punto visible solo donde hubo movimiento de dinero.
-						pointRadius: (ctx: any) => (view.flows[ctx.dataIndex] ? 5 : 0),
-						pointHoverRadius: (ctx: any) => (view.flows[ctx.dataIndex] ? 7 : 4),
-						pointBackgroundColor: (ctx: any) =>
-							view.flows[ctx.dataIndex] > 0 ? '#10b981' : '#f59e0b',
-						pointBorderColor: '#05050a',
+						pointRadius: (c: any) => (flowAt(c) ? 4 : 0),
+						pointHoverRadius: (c: any) => (flowAt(c) ? 6 : 4),
+						pointBackgroundColor: (c: any) => (flowAt(c) > 0 ? '#ffffff' : CHART_SURFACE),
+						pointBorderColor: '#ffffff',
 						pointBorderWidth: 2
 					},
 					{
 						label: 'Principal',
 						data: [],
-						borderColor: '#3b82f6',
+						borderColor: CATEGORY_COLORS.core,
 						fill: false,
-						tension: 0.45,
+						tension: 0,
 						pointRadius: 0,
 						borderWidth: 2,
 						borderCapStyle: 'round',
@@ -227,9 +379,9 @@
 					{
 						label: 'Acciones',
 						data: [],
-						borderColor: '#10b981',
+						borderColor: CATEGORY_COLORS.stocks,
 						fill: false,
-						tension: 0.45,
+						tension: 0,
 						pointRadius: 0,
 						borderWidth: 2,
 						borderCapStyle: 'round',
@@ -240,9 +392,9 @@
 					{
 						label: 'Conservadora',
 						data: [],
-						borderColor: '#f59e0b',
+						borderColor: CATEGORY_COLORS.satellite,
 						fill: false,
-						tension: 0.45,
+						tension: 0,
 						pointRadius: 0,
 						borderWidth: 2,
 						borderCapStyle: 'round',
@@ -253,7 +405,7 @@
 					{
 						label: 'Invertido',
 						data: [],
-						borderColor: 'rgba(255, 255, 255, 0.3)',
+						borderColor: 'rgba(255, 255, 255, 0.32)',
 						borderDash: [6, 4],
 						borderWidth: 1.5,
 						pointRadius: 0,
@@ -267,31 +419,18 @@
 			options: {
 				responsive: true,
 				maintainAspectRatio: false,
-				interaction: {
-					mode: 'index',
-					intersect: false,
-				},
+				interaction: { mode: 'index', intersect: false },
 				plugins: {
 					legend: { display: false },
 					tooltip: {
-						backgroundColor: 'rgba(15, 15, 30, 0.95)',
-						titleFont: { size: 13, weight: 800 },
-						bodyFont: { size: 12, weight: 600 },
-						footerFont: { size: 11, weight: 600 },
-						padding: 14,
-						cornerRadius: 16,
-						borderColor: 'rgba(255, 255, 255, 0.1)',
-						borderWidth: 1,
-						usePointStyle: true,
+						...tooltipStyle,
 						itemSort: (a: any, b: any) => (b.raw as number) - (a.raw as number),
 						callbacks: {
 							label: (context: any) => {
 								const label = context.dataset.label || '';
 								if (portfolio.isPrivate) return ` ${label}: ****`;
 								const yValue = context.parsed.y ?? 0;
-								const value = isPercentMode
-									? yValue.toFixed(2) + '%'
-									: formatEUR(yValue);
+								const value = isPercentMode ? yValue.toFixed(2) + '%' : formatEUR(yValue);
 								return ` ${label}: ${value}`;
 							},
 							/**
@@ -314,54 +453,19 @@
 						}
 					}
 				},
-				animation: prefersReducedMotion ? false : {
-					// Efecto de dibujo a mano alzada (progresivo)
-					x: {
-						type: 'number',
-						easing: 'easeInOutQuart',
-						duration: 20, // Duración por punto
-						from: NaN,
-						delay(ctx: any) {
-							if (ctx.type !== 'data' || ctx.xStarted) return 0;
-							ctx.xStarted = true;
-							return ctx.index * 20;
-						}
-					},
-					y: {
-						type: 'number',
-						easing: 'easeInOutQuart',
-						duration: 20,
-						from: (ctx: any) => ctx.chart.scales.y.getPixelForValue(ctx.chart.scales.y.min),
-						delay(ctx: any) {
-							if (ctx.type !== 'data' || ctx.yStarted) return 0;
-							ctx.yStarted = true;
-							return ctx.index * 20;
-						}
-					}
-				},
+				/**
+				 * ⚠️ Antes había una animación «a mano alzada» que retrasaba cada
+				 * punto 20 ms respecto al anterior: en una serie de 30 días eso son
+				 * seis décimas hasta poder leer la cifra, para no contar nada. El
+				 * dato aparece; lo que se atenúa es la entrada.
+				 */
+				animation: allowMotion ? { duration: 320, easing: 'easeOutQuart' as const } : false,
 				scales: {
-					x: {
-						grid: { display: false },
-						ticks: {
-							color: 'rgba(255, 255, 255, 0.5)',
-							font: { size: 11, weight: 600 },
-							maxRotation: 0,
-							autoSkip: true,
-							maxTicksLimit: 6
-						}
-					},
+					x: { ...categoryAxis },
 					y: {
+						...valueAxis,
 						beginAtZero: false,
-						position: 'right',
-						grid: {
-							color: 'rgba(255, 255, 255, 0.05)',
-						},
-						border: { display: false },
-						ticks: {
-							color: 'rgba(255, 255, 255, 0.5)',
-							font: { size: 11, weight: 600 },
-							padding: 10,
-						}
+						position: 'right'
 					}
 				}
 			} as any
@@ -374,57 +478,73 @@
 	onDestroy(() => {
 		if (chart) chart.destroy();
 	});
+
+	/** Las cinco entradas de leyenda, para no repetir el mismo bloque cinco veces. */
+	const legendItems = $derived([
+		{
+			key: 'Total',
+			swatch: 'dot' as const,
+			color: isSplitMode ? MARKET_FILL : '#ffffff',
+			label:
+				viewMode === 'twr'
+					? $LL.db.chart_label_return()
+					: viewMode === 'gain'
+						? $LL.db.chart_label_gain()
+						: isSplitMode
+							? $LL.db.chart_label_market()
+							: $LL.db.chart_label_total()
+		},
+		{ key: 'Principal', swatch: 'dot' as const, color: CATEGORY_COLORS.core, label: $LL.db.chart_label_core() },
+		{ key: 'Acciones', swatch: 'dot' as const, color: CATEGORY_COLORS.stocks, label: $LL.db.chart_label_stocks() },
+		{
+			key: 'Conservadora',
+			swatch: 'dot' as const,
+			color: CATEGORY_COLORS.satellite,
+			label: $LL.db.chart_label_satellite()
+		},
+		{
+			key: 'Invertido',
+			swatch: isSplitMode ? ('dot' as const) : ('line' as const),
+			color: isSplitMode ? CONTRIBUTED_FILL : 'rgba(255,255,255,0.32)',
+			label: isSplitMode ? $LL.db.chart_label_contributed() : $LL.db.chart_label_invested()
+		}
+	]);
 </script>
 
 <div class="chart-container">
 	<div class="chart-header">
 		<div class="legend">
-			<button
-				class="legend-item"
-				class:is-hidden={hiddenDatasets.includes('Total')}
-				onclick={() => toggleDataset('Total')}
-			>
-				<span class="dot total"></span>
-				<span class="label">
-					{viewMode === 'twr' ? $LL.db.chart_label_return()
-						: viewMode === 'gain' ? $LL.db.chart_label_gain()
-						: $LL.db.chart_label_total()}
-				</span>
-			</button>
-			{#if viewMode === 'value'}
-				<button
-					class="legend-item"
-					class:is-hidden={hiddenDatasets.includes('Principal')}
-					onclick={() => toggleDataset('Principal')}
-				>
-					<span class="dot core"></span>
-					<span class="label">{$LL.db.chart_label_core()}</span>
-				</button>
-				<button
-					class="legend-item"
-					class:is-hidden={hiddenDatasets.includes('Acciones')}
-					onclick={() => toggleDataset('Acciones')}
-				>
-					<span class="dot stocks"></span>
-					<span class="label">{$LL.db.chart_label_stocks()}</span>
-				</button>
-				<button
-					class="legend-item"
-					class:is-hidden={hiddenDatasets.includes('Conservadora')}
-					onclick={() => toggleDataset('Conservadora')}
-				>
-					<span class="dot satellite"></span>
-					<span class="label">{$LL.db.chart_label_satellite()}</span>
-				</button>
-				<button
-					class="legend-item"
-					class:is-hidden={hiddenDatasets.includes('Invertido')}
-					onclick={() => toggleDataset('Invertido')}
-				>
-					<span class="line invested"></span>
-					<span class="label">{$LL.db.chart_label_invested()}</span>
-				</button>
-			{/if}
+			{#each legendItems as item (item.key)}
+				{#if isSplitMode ? item.key === 'Total' || item.key === 'Invertido' : item.key === 'Total' || viewMode === 'value'}
+					<!--
+						En modo apilado las dos franjas no son opcionales —son el gráfico—,
+						así que la fila ni se apaga ni responde al clic. Sin esto, «lo que
+						pusiste» salía con la muestra hueca (sigue marcada como oculta en
+						`localStorage`) mientras su banda se dibujaba abajo: la leyenda
+						contradiciendo al gráfico.
+					-->
+					<button
+						class="legend-item"
+						class:is-off={!isSplitMode && hiddenDatasets.includes(item.key)}
+						aria-pressed={isSplitMode || !hiddenDatasets.includes(item.key)}
+						disabled={isSplitMode}
+						onclick={() => toggleDataset(item.key)}
+					>
+						<!--
+							Apagada, la muestra se vacía en lugar de teñirse de gris. Antes
+							era `opacity: .3` + `grayscale(1)` + tachado, o sea tres señales
+							para lo mismo y una fila casi invisible; como cuatro de las cinco
+							salen apagadas por defecto, la leyenda entera parecía rota.
+						-->
+						<span
+							class="swatch"
+							class:is-line={item.swatch === 'line'}
+							style="--swatch: {item.color}"
+						></span>
+						<span class="label">{item.label}</span>
+					</button>
+				{/if}
+			{/each}
 		</div>
 
 		<div class="controls-group">
@@ -432,35 +552,41 @@
 				<button
 					class="toggle-btn"
 					class:active={viewMode === 'value'}
-					onclick={() => viewMode = 'value'}
-					title={$LL.db.chart_mode_value_title()}
+					onclick={() => (viewMode = 'value')}
+					title={$LL.db.chart_mode_value_title()}>€</button
 				>
-					€
-				</button>
 				<button
 					class="toggle-btn"
 					class:active={viewMode === 'twr'}
-					onclick={() => viewMode = 'twr'}
-					title={$LL.db.chart_mode_twr_title()}
+					onclick={() => (viewMode = 'twr')}
+					title={$LL.db.chart_mode_twr_title()}>%</button
 				>
-					%
-				</button>
 				<button
 					class="toggle-btn"
 					class:active={viewMode === 'gain'}
-					onclick={() => viewMode = 'gain'}
-					title={$LL.db.chart_mode_gain_title()}
+					onclick={() => (viewMode = 'gain')}
+					title={$LL.db.chart_mode_gain_title()}>±</button
 				>
-					±
+				<button
+					class="toggle-btn"
+					class:active={viewMode === 'split'}
+					onclick={() => (viewMode = 'split')}
+					title={$LL.db.chart_mode_split_title()}
+					aria-label={$LL.db.chart_mode_split_title()}
+				>
+					<svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+						<rect x="1" y="8" width="14" height="6" rx="1" fill="currentColor" opacity="0.45" />
+						<rect x="1" y="3" width="14" height="4" rx="1" fill="currentColor" />
+					</svg>
 				</button>
 			</div>
 
 			<div class="range-selector">
-				{#each ranges as range}
+				{#each ranges as range (range.id)}
 					<button
 						class="range-btn"
-						class:active={currentRange === range.days}
-						onclick={() => currentRange = range.days}
+						class:active={currentRange === range.id}
+						onclick={() => (currentRange = range.id)}
 					>
 						{range.label}
 					</button>
@@ -477,6 +603,12 @@
 		{#if viewMode === 'twr'}
 			<p class="note accent">{$LL.db.chart_twr_hint()}</p>
 		{/if}
+		{#if isSplitMode}
+			<p class="note accent">{$LL.db.chart_split_hint()}</p>
+		{/if}
+		{#if rangeIsClipped}
+			<p class="note">{$LL.db.chart_range_short()}</p>
+		{/if}
 		{#if view.hasEstimated}
 			<p class="note">{$LL.db.chart_estimated_note()}</p>
 		{/if}
@@ -490,7 +622,7 @@
 	.chart-container {
 		display: flex;
 		flex-direction: column;
-		gap: 1.5rem;
+		gap: 1.25rem;
 		height: 100%;
 		padding: 0.5rem;
 	}
@@ -509,25 +641,41 @@
 		align-items: center;
 	}
 
-	.view-toggle {
+	.view-toggle,
+	.range-selector {
 		display: flex;
-		background: rgba(255, 255, 255, 0.05);
+		background: rgba(255, 255, 255, 0.04);
 		padding: 3px;
 		border-radius: 10px;
 		border: 1px solid rgba(255, 255, 255, 0.05);
 	}
 
-	.toggle-btn {
-		padding: 0.4rem 0.7rem;
+	.toggle-btn,
+	.range-btn {
 		border-radius: 8px;
-		font-size: 0.75rem;
+		font-size: 0.72rem;
 		font-weight: 700;
-		color: rgba(255, 255, 255, 0.4);
-		transition: all 0.2s ease;
+		color: rgba(255, 255, 255, 0.45);
+		transition:
+			background 0.18s ease,
+			color 0.18s ease;
 		background: transparent;
 		border: none;
 		cursor: pointer;
+	}
+
+	.toggle-btn {
+		padding: 0.4rem 0.7rem;
 		min-width: 32px;
+	}
+
+	.range-btn {
+		padding: 0.4rem 0.7rem;
+	}
+
+	.toggle-btn:hover,
+	.range-btn:hover {
+		color: #ffffff;
 	}
 
 	.toggle-btn.active {
@@ -535,97 +683,81 @@
 		color: #05050a;
 	}
 
+	.range-btn.active {
+		background: rgba(255, 255, 255, 0.1);
+		color: #ffffff;
+	}
+
 	.legend {
 		display: flex;
-		gap: 1rem;
+		gap: 0.75rem;
 		flex-wrap: wrap;
 	}
 
 	.legend-item {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
+		gap: 0.45rem;
 		background: transparent;
 		border: none;
 		cursor: pointer;
 		padding: 0.2rem 0.4rem;
 		border-radius: 6px;
-		transition: all 0.2s ease;
+		transition: background 0.18s ease;
 	}
 
-	.legend-item:hover {
+	.legend-item:hover:not(:disabled) {
 		background: rgba(255, 255, 255, 0.05);
 	}
 
-	.legend-item.is-hidden {
-		opacity: 0.3;
-		filter: grayscale(1);
+	.legend-item:disabled {
+		cursor: default;
 	}
 
-	.legend-item.is-hidden .label {
-		text-decoration: line-through;
+	.swatch {
+		width: 9px;
+		height: 9px;
+		border-radius: 3px;
+		background: var(--swatch);
+		border: 1.5px solid var(--swatch);
+		flex-shrink: 0;
+		/* Sin `box-shadow` de halo: el resplandor de neón alrededor de cada punto
+		   era lo que más envejecía el tablero. */
 	}
 
-	.dot {
-		width: 8px;
-		height: 8px;
-		border-radius: 50%;
-	}
-
-	.dot.total { background: #ffffff; box-shadow: 0 0 8px rgba(255, 255, 255, 0.4); }
-	.dot.core { background: #3b82f6; box-shadow: 0 0 8px rgba(59, 130, 246, 0.5); }
-	.dot.stocks { background: #10b981; box-shadow: 0 0 8px rgba(16, 185, 129, 0.5); }
-	.dot.satellite { background: #f59e0b; box-shadow: 0 0 8px rgba(245, 158, 11, 0.5); }
-
-	.line.invested {
+	.swatch.is-line {
 		width: 12px;
-		height: 2px;
-		background: rgba(255, 255, 255, 0.3);
-		border-radius: 1px;
+		height: 0;
+		border-radius: 0;
+		border-width: 0 0 2px 0;
+		border-style: dashed;
+		background: none;
+	}
+
+	.legend-item.is-off .swatch {
+		background: transparent;
+	}
+
+	.legend-item.is-off .swatch.is-line {
+		opacity: 0.4;
 	}
 
 	.label {
 		font-size: 0.7rem;
 		font-weight: 600;
-		color: rgba(255, 255, 255, 0.5);
+		color: rgba(255, 255, 255, 0.55);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 	}
 
-	.range-selector {
-		display: flex;
-		background: rgba(255, 255, 255, 0.05);
-		padding: 3px;
-		border-radius: 10px;
-		border: 1px solid rgba(255, 255, 255, 0.05);
-	}
-
-	.range-btn {
-		padding: 0.4rem 0.8rem;
-		border-radius: 8px;
-		font-size: 0.7rem;
-		font-weight: 700;
-		color: rgba(255, 255, 255, 0.4);
-		transition: all 0.2s ease;
-		background: transparent;
-		border: none;
-		cursor: pointer;
-	}
-
-	.range-btn:hover {
-		color: #ffffff;
-	}
-
-	.range-btn.active {
-		background: rgba(255, 255, 255, 0.1);
-		color: #ffffff;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+	.legend-item.is-off .label {
+		color: rgba(255, 255, 255, 0.32);
 	}
 
 	.canvas-wrapper {
 		flex: 1;
-		min-height: 280px;
-		height: 280px;
+		min-height: 300px;
+		height: 300px;
 		position: relative;
 	}
 
@@ -633,7 +765,6 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.35rem;
-		margin-top: -0.75rem;
 	}
 
 	.note {
@@ -659,8 +790,8 @@
 		}
 
 		.canvas-wrapper {
-			min-height: 220px;
-			height: 220px;
+			min-height: 230px;
+			height: 230px;
 		}
 	}
 </style>

@@ -4,6 +4,7 @@ import { DEFAULT_CORE_ASSETS, DEFAULT_SATELLITE_ASSETS, DEFAULT_STOCK_ASSETS, ST
 import type { Asset, AssetCategory, HoldingData, HoldingsMap, PortfolioPosition, PortfolioState, PriceData, RebalanceResult, Transaction } from '$lib/types';
 import { calculatePortfolioState, calculateRebalance } from '$lib/rebalance';
 import { calculateLedgerHoldings, type LedgerHoldings } from '$lib/ledger';
+import { assignAssetColors, nextAssetColor } from '$lib/asset-colors';
 import type { EditReason, HoldingEdit, PerformanceSeries, PositionTimeline } from '$lib/history/types';
 import {
 	alignPriceSeries,
@@ -1062,23 +1063,62 @@ export class PortfolioStore {
 		this.loading = true;
 		this.isInitialized = true;
 		
-		this.coreAssets = [
-			{ ticker: 'IWDA.AS', name: 'iShares Core MSCI World', isin: 'IE00B4L5Y983', targetWeight: 0.8, category: 'core', color: '#3b82f6', ter: 0.002, icon: resolveAssetIcon('IWDA.AS', 'iShares Core MSCI World') },
-			{ ticker: 'ZPRV.DE', name: 'SPDR MSCI USA Small Cap Value', isin: 'IE00BS166D92', targetWeight: 0.1, category: 'core', color: '#10b981', ter: 0.003, icon: resolveAssetIcon('ZPRV.DE', 'SPDR MSCI USA Small Cap Value') },
-			{ ticker: 'EMIM.AS', name: 'iShares Core MSCI EM IMI', isin: 'IE00BKM4GZ66', targetWeight: 0.1, category: 'core', color: '#f59e0b', ter: 0.0018, icon: resolveAssetIcon('EMIM.AS', 'iShares Core MSCI EM IMI') }
+		// Sin `color`: lo reparte `assignAssetColors` unas líneas más abajo.
+		type SinColor = Omit<Asset, 'color'>;
+
+		const demoCore: SinColor[] = [
+			{ ticker: 'IWDA.AS', name: 'iShares Core MSCI World', isin: 'IE00B4L5Y983', targetWeight: 0.8, category: 'core', ter: 0.002, icon: resolveAssetIcon('IWDA.AS', 'iShares Core MSCI World') },
+			{ ticker: 'ZPRV.DE', name: 'SPDR MSCI USA Small Cap Value', isin: 'IE00BS166D92', targetWeight: 0.1, category: 'core', ter: 0.003, icon: resolveAssetIcon('ZPRV.DE', 'SPDR MSCI USA Small Cap Value') },
+			{ ticker: 'EMIM.AS', name: 'iShares Core MSCI EM IMI', isin: 'IE00BKM4GZ66', targetWeight: 0.1, category: 'core', ter: 0.0018, icon: resolveAssetIcon('EMIM.AS', 'iShares Core MSCI EM IMI') }
 		];
 
-		this.stockAssets = [
-			{ ticker: 'MSFT', name: 'Microsoft Corp', isin: 'US5949181045', targetWeight: 0, category: 'stocks', color: '#00a4ef', icon: resolveAssetIcon('MSFT', 'Microsoft Corp'), ter: 0 },
-			{ ticker: 'AAPL', name: 'Apple Inc', isin: 'US0378331005', targetWeight: 0, category: 'stocks', color: '#555555', icon: resolveAssetIcon('AAPL', 'Apple Inc'), ter: 0 },
-			{ ticker: 'AMZN', name: 'Amazon.com Inc', isin: 'US0231351067', targetWeight: 0, category: 'stocks', color: '#ff9900', icon: resolveAssetIcon('AMZN', 'Amazon.com Inc'), ter: 0 },
-			{ ticker: 'GOOGL', name: 'Alphabet Inc', isin: 'US02079K3059', targetWeight: 0, category: 'stocks', color: '#4285f4', icon: resolveAssetIcon('GOOGL', 'Alphabet Inc'), ter: 0 },
-			{ ticker: 'TSLA', name: 'Tesla, Inc.', isin: 'US88160R1014', targetWeight: 0, category: 'stocks', color: '#e81010', icon: resolveAssetIcon('TSLA', 'Tesla, Inc.'), ter: 0 }
+		const demoStocks: SinColor[] = [
+			{ ticker: 'MSFT', name: 'Microsoft Corp', isin: 'US5949181045', targetWeight: 0, category: 'stocks', icon: resolveAssetIcon('MSFT', 'Microsoft Corp'), ter: 0 },
+			{ ticker: 'AAPL', name: 'Apple Inc', isin: 'US0378331005', targetWeight: 0, category: 'stocks', icon: resolveAssetIcon('AAPL', 'Apple Inc'), ter: 0 },
+			{ ticker: 'AMZN', name: 'Amazon.com Inc', isin: 'US0231351067', targetWeight: 0, category: 'stocks', icon: resolveAssetIcon('AMZN', 'Amazon.com Inc'), ter: 0 },
+			{ ticker: 'GOOGL', name: 'Alphabet Inc', isin: 'US02079K3059', targetWeight: 0, category: 'stocks', icon: resolveAssetIcon('GOOGL', 'Alphabet Inc'), ter: 0 },
+			{ ticker: 'TSLA', name: 'Tesla, Inc.', isin: 'US88160R1014', targetWeight: 0, category: 'stocks', icon: resolveAssetIcon('TSLA', 'Tesla, Inc.'), ter: 0 }
 		];
 
-		this.satelliteAssets = [
-			{ ticker: 'CASH-DEMO', name: 'Cuenta Remunerada (Demo)', isin: '', targetWeight: 0, category: 'satellite', color: '#6366f1', icon: resolveAssetIcon('CASH-DEMO', 'Cuenta Remunerada (Demo)'), ter: 0, manualInterestRate: 0.03 }
+		const demoSatellite: SinColor[] = [
+			{ ticker: 'CASH-DEMO', name: 'Cuenta Remunerada (Demo)', isin: '', targetWeight: 0, category: 'satellite', icon: resolveAssetIcon('CASH-DEMO', 'Cuenta Remunerada (Demo)'), ter: 0, manualInterestRate: 0.03 }
 		];
+
+		/**
+		 * ⚠️ **Los nueve activos del demo llevaban su color de marca a fuego**
+		 * —`#00a4ef` de Microsoft, `#4285f4` de Google, `#555555` de Apple,
+		 * `#ff9900` de Amazon— y como el demo es lo primero que ve cualquier
+		 * visitante, la cartera de ejemplo se saltaba entera la paleta validada:
+		 * tres azules casi idénticos en el mismo donut y un gris de activo que
+		 * chocaba con el gris de «Otros», o sea dos porciones grises con
+		 * significados distintos. Ahora reparte el mismo módulo que usa la app
+		 * cuando añades un activo de verdad.
+		 *
+		 * ⚠️ **El reparto va sobre los tres bloques juntos, no por bloque**: por
+		 * separado, la cartera principal y las acciones empezarían las dos por el
+		 * primer tono y chocarían en el donut de detalle global, que los mezcla.
+		 *
+		 * Y el orden no es el de declaración sino el del **peso esperado**, porque
+		 * `assignAssetColors` da los seis tonos distintos a los seis primeros: son
+		 * los que el donut dibuja por separado antes de plegar la cola en «Otros».
+		 * Con el orden de declaración, Alphabet caía séptimo, repetía el ámbar de
+		 * IWDA y los dos salían juntos en pantalla.
+		 */
+		const porPesoEsperado = ['IWDA.AS', 'ZPRV.DE', 'AMZN', 'GOOGL', 'EMIM.AS', 'AAPL', 'MSFT', 'CASH-DEMO', 'TSLA'];
+		const orden = (t: string) => {
+			const i = porPesoEsperado.indexOf(t);
+			return i === -1 ? porPesoEsperado.length : i;
+		};
+		const todos = [...demoCore, ...demoStocks, ...demoSatellite].sort(
+			(a, b) => orden(a.ticker) - orden(b.ticker)
+		);
+		const coloreados = new Map(assignAssetColors(todos).map((a) => [a.ticker, a.color]));
+		const pintar = (assets: SinColor[]): Asset[] =>
+			assets.map((a) => ({ ...a, color: coloreados.get(a.ticker) ?? nextAssetColor([]) }));
+
+		this.coreAssets = pintar(demoCore);
+		this.stockAssets = pintar(demoStocks);
+		this.satelliteAssets = pintar(demoSatellite);
 
 		this.holdings = {
 			'IWDA.AS': { shares: 450.5, avgCost: 72.4, useLedger: false },

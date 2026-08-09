@@ -403,8 +403,8 @@
 		gap: 0.4rem;
 	}
 
-	.perf-row.positive { color: #10b981; }
-	.perf-row.negative { color: #fca5a5; }
+	.perf-row.positive { color: var(--state-positive); }
+	.perf-row.negative { color: var(--state-negative); }
 	.perf-row:not(.positive):not(.negative) { color: rgba(255, 255, 255, 0.6); }
 
 	.clickable-perf {

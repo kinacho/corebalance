@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { Chart, DoughnutController, ArcElement, Tooltip, Legend } from 'chart.js';
 	import { CHART_NEUTRAL, MAX_CHART_SLICES } from '$lib/constants';
+	import { applyChartDefaults, tooltipStyle, motionAllowed } from '$lib/chart-theme';
 	import { LL } from '$lib/i18n/i18n-svelte';
 
 	Chart.register(DoughnutController, ArcElement, Tooltip, Legend);
@@ -14,17 +15,24 @@
 
 	interface Props {
 		data: ChartData;
+		/**
+		 * Qué poner en el hueco del donut.
+		 *
+		 * Con `cutout: '70%'` el agujero es el 49 % del área del gráfico, y estaba
+		 * vacío. Es el sitio natural de la cifra que el anillo reparte —el total—,
+		 * y es lo que distingue un donut cuidado de uno por defecto.
+		 */
+		center?: { label: string; value: string; blur?: boolean };
 	}
 
-	let { data }: Props = $props();
+	let { data, center }: Props = $props();
 
 	let canvas: HTMLCanvasElement;
 	let chart: Chart<'doughnut'> | null = null;
 	/** Índice de la porción bajo el puntero, para enlazar leyenda y arco. */
 	let hovered = $state<number | null>(null);
 
-	const prefersReducedMotion =
-		typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+	const allowMotion = motionAllowed();
 
 	/**
 	 * Agrupa la cola en «Otros» y descarta las porciones sin valor.
@@ -43,8 +51,17 @@
 
 		if (slices.length <= MAX_CHART_SLICES) return slices;
 
-		const head = slices.slice(0, MAX_CHART_SLICES - 1);
-		const tail = slices.slice(MAX_CHART_SLICES - 1);
+		/**
+		 * ⚠️ **Se dibujan los seis tonos, no cinco.** Antes la cabeza era
+		 * `MAX_CHART_SLICES - 1`, así que con nueve activos salían cinco porciones
+		 * de color y una gris con el 18 % — o sea que **«Otros» era la segunda
+		 * porción del gráfico**, y un cubo de descarte no puede ser lo segundo más
+		 * grande de lo que estás mirando. La paleta tiene seis tonos validados y
+		 * el gris es el séptimo elemento, no el sexto: usando los seis, esa misma
+		 * cartera deja «Otros» en torno al 10 %.
+		 */
+		const head = slices.slice(0, MAX_CHART_SLICES);
+		const tail = slices.slice(MAX_CHART_SLICES);
 		return [
 			...head,
 			{
@@ -82,35 +99,26 @@
 				layout: { padding: 12 },
 				plugins: {
 					legend: { display: false },
+					// El estilo del tooltip vive en `chart-theme.ts`: éste era el único
+					// de los cuatro lienzos que declaraba la fuente del proyecto, y los
+					// otros tres salían con la sans del sistema.
 					tooltip: {
-						backgroundColor: 'rgba(10, 10, 25, 0.96)',
-						titleColor: '#fff',
-						bodyColor: 'rgba(255, 255, 255, 0.8)',
-						borderColor: 'rgba(255, 255, 255, 0.12)',
-						borderWidth: 1,
-						cornerRadius: 10,
-						padding: 10,
-						// La fuente del proyecto. Antes decía `Inter`, que no se carga en
-						// ninguna parte, así que los tooltips salían con la sans del sistema.
-						titleFont: { family: 'Plus Jakarta Sans', weight: 'bold' as const, size: 13 },
-						bodyFont: { family: 'Plus Jakarta Sans', size: 12 },
+						...tooltipStyle,
 						displayColors: true,
-						boxWidth: 8,
-						boxHeight: 8,
-						boxPadding: 6,
 						callbacks: {
 							label: (ctx: { parsed: number }) => ` ${ctx.parsed.toFixed(2)}%`
 						}
 					}
 				},
-				animation: prefersReducedMotion
-					? (false as const)
-					: { animateRotate: true, duration: 900, easing: 'easeOutQuart' as const }
+				animation: allowMotion
+					? { animateRotate: true, duration: 520, easing: 'easeOutQuart' as const }
+					: (false as const)
 			}
 		};
 	}
 
 	onMount(() => {
+		applyChartDefaults();
 		chart = new Chart(canvas, createChartConfig());
 		return () => chart?.destroy();
 	});
@@ -151,6 +159,14 @@
 	-->
 	<div class="chart-container" aria-hidden="true">
 		<canvas bind:this={canvas}></canvas>
+		{#if center}
+			<!-- Encima del lienzo, sin capturar el ratón: el hover de los arcos
+			     tiene que seguir llegando al canvas que hay debajo. -->
+			<div class="chart-center">
+				<span class="center-label">{center.label}</span>
+				<span class="center-value" class:privacy-blur={center.blur}>{center.value}</span>
+			</div>
+		{/if}
 	</div>
 
 	<ul class="chart-legend" aria-label={$LL.charts.donut_aria({ count: view.length })}>
@@ -199,6 +215,35 @@
 		max-width: 170px;
 		aspect-ratio: 1;
 		flex-shrink: 0;
+	}
+
+	.chart-center {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 0.1rem;
+		pointer-events: none;
+		text-align: center;
+		padding: 0 18%;
+	}
+
+	.center-label {
+		font-size: 0.55rem;
+		font-weight: 700;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: rgba(255, 255, 255, 0.38);
+	}
+
+	.center-value {
+		font-size: 0.92rem;
+		font-weight: 800;
+		color: #ffffff;
+		letter-spacing: -0.01em;
+		line-height: 1.15;
 	}
 
 	.chart-legend {

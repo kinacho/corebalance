@@ -208,13 +208,13 @@
 	}
 
 	.header-badge.positive {
-		background: rgba(16, 185, 129, 0.1);
-		color: #10b981;
+		background: rgba(52, 211, 153, 0.1);
+		color: var(--state-positive);
 	}
 
 	.header-badge.negative {
-		background: rgba(239, 68, 68, 0.1);
-		color: #fca5a5;
+		background: rgba(244, 63, 94, 0.1);
+		color: var(--state-negative);
 	}
 
 	.header-badge.total {
@@ -223,13 +223,13 @@
 	}
 
 	.header-badge.total.positive {
-		color: #10b981;
-		border: 1px solid rgba(16, 185, 129, 0.2);
+		color: var(--state-positive);
+		border: 1px solid rgba(52, 211, 153, 0.2);
 	}
 
 	.header-badge.total.negative {
-		color: #fca5a5;
-		border: 1px solid rgba(239, 68, 68, 0.2);
+		color: var(--state-negative);
+		border: 1px solid rgba(244, 63, 94, 0.2);
 	}
 
 	.daily-arrow {
@@ -385,7 +385,6 @@
 		align-items: center;
 		justify-content: center;
 		margin-bottom: 1rem;
-		box-shadow: 0 0 30px rgba(59, 130, 246, 0.2);
 	}
 
 	.empty-icon {

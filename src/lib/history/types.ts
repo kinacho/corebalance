@@ -95,6 +95,20 @@ export interface DailyPoint {
 	observed?: boolean;
 	/** `false` cuando no hay desglose fiable por categoría. */
 	hasBreakdown: boolean;
+	/**
+	 * Valor de cada posición ese día, en divisa base.
+	 *
+	 * La reconstrucción ya lo calculaba activo por activo para sumarlo en
+	 * `total` y en la categoría; simplemente lo tiraba. Sin esto no se puede
+	 * dibujar la **deriva contra objetivo a lo largo del tiempo**, porque los
+	 * objetivos viven por activo dentro de su bloque y el desglose por categoría
+	 * no llega.
+	 *
+	 * Opcional a propósito: los puntos que vienen de un snapshot observado no
+	 * tienen desglose por activo, y decirlo con una ausencia es más honesto que
+	 * rellenar con ceros que se leerían como «ese día no tenías nada».
+	 */
+	byTicker?: Record<string, number>;
 }
 
 export interface PerformanceSeries {

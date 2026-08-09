@@ -70,7 +70,8 @@ export function reconstructDailySeries(input: ReconstructInput): DailyPoint[] {
 			stocks: 0,
 			netFlow: 0,
 			estimated: false,
-			hasBreakdown: true
+			hasBreakdown: true,
+			byTicker: {}
 		};
 
 		for (const timeline of timelines) {
@@ -85,6 +86,7 @@ export function reconstructDailySeries(input: ReconstructInput): DailyPoint[] {
 
 				const value = shares * unitValue * ratio;
 				point.total += value;
+				point.byTicker![timeline.ticker] = value;
 				const category = categoryOf[timeline.ticker];
 				if (category) point[category] += value;
 

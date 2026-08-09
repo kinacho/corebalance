@@ -187,3 +187,21 @@ export async function abrirDashboard(page: Page) {
  */
 export const mapaDesviacion = (page: Page) => page.locator('.map-box:not(.is-lookthrough)').first();
 export const mapaSubyacente = (page: Page) => page.locator('.map-box.is-lookthrough').first();
+
+/**
+ * Despliega los mapas del detalle.
+ *
+ * En escritorio nacen **plegados** detrás de una sola línea, y `display: none`
+ * deja los dos paneles en el DOM pero sin caja: `toBeVisible()` y
+ * `boundingBox()` fallan sobre ellos aunque el mapa esté perfectamente
+ * construido. En móvil el plegado no existe —los mapas son carriles del
+ * carrusel—, la cabecera no se dibuja y esto no hace nada.
+ */
+export async function abrirMapas(page: Page) {
+	const cabecera = page.locator('.maps-fold-head');
+	if (!(await cabecera.isVisible().catch(() => false))) return;
+	if ((await page.locator('.maps-fold.is-open').count()) === 0) {
+		await cabecera.click();
+	}
+	await page.locator('.maps-row').waitFor({ state: 'visible' });
+}

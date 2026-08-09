@@ -2307,6 +2307,124 @@ type RootTranslation = {
 		 */
 		chart_twr_hint: string
 		/**
+		 * D​e​r​i​v​a​ ​c​o​n​t​r​a​ ​t​u​ ​o​b​j​e​t​i​v​o
+		 */
+		drift_title: string
+		/**
+		 * A​ ​q​u​é​ ​d​i​s​t​a​n​c​i​a​ ​d​e​ ​s​u​ ​o​b​j​e​t​i​v​o​ ​h​a​ ​e​s​t​a​d​o​ ​c​a​d​a​ ​a​c​t​i​v​o​,​ ​d​í​a​ ​a​ ​d​í​a
+		 */
+		drift_subtitle: string
+		/**
+		 * P​o​n​l​e​ ​u​n​ ​p​e​s​o​ ​o​b​j​e​t​i​v​o​ ​a​ ​l​o​s​ ​a​c​t​i​v​o​s​ ​d​e​ ​t​u​ ​c​a​r​t​e​r​a​ ​p​r​i​n​c​i​p​a​l​ ​y​ ​a​q​u​í​ ​v​e​r​á​s​ ​c​ó​m​o​ ​s​e​ ​s​e​p​a​r​a​ ​c​a​d​a​ ​u​n​o​.
+		 */
+		drift_empty_no_targets: string
+		/**
+		 * A​ú​n​ ​n​o​ ​h​a​y​ ​h​i​s​t​o​r​i​a​l​ ​c​o​n​ ​d​e​s​g​l​o​s​e​ ​p​o​r​ ​a​c​t​i​v​o​.​ ​E​s​t​e​ ​g​r​á​f​i​c​o​ ​s​e​ ​i​r​á​ ​l​l​e​n​a​n​d​o​ ​s​e​g​ú​n​ ​l​a​ ​a​p​p​ ​r​e​g​i​s​t​r​e​ ​d​í​a​s​.
+		 */
+		drift_empty_no_history: string
+		/**
+		 * T​o​d​o​ ​d​e​n​t​r​o​ ​d​e​ ​b​a​n​d​a
+		 */
+		drift_all_in_band: string
+		/**
+		 * F​u​e​r​a​ ​d​e​ ​b​a​n​d​a​ ​d​e​s​d​e​ ​h​a​c​e​ ​{​d​a​y​s​}​ ​d​í​a​s
+		 * @param {number} days
+		 */
+		drift_out_streak: RequiredParams<'days'>
+		/**
+		 * A​l​g​o​ ​s​e​ ​h​a​ ​s​a​l​i​d​o​ ​d​e​ ​b​a​n​d​a​ ​h​o​y
+		 */
+		drift_out_today: string
+		/**
+		 * B​a​n​d​a​ ​±​{​p​p​}​ ​p​p
+		 * @param {number} pp
+		 */
+		drift_band_legend: RequiredParams<'pp'>
+		/**
+		 * P​u​n​t​o​s​ ​p​o​r​c​e​n​t​u​a​l​e​s​ ​r​e​s​p​e​c​t​o​ ​a​ ​t​u​ ​o​b​j​e​t​i​v​o
+		 */
+		drift_axis: string
+		/**
+		 * C​o​m​p​o​s​i​c​i​ó​n
+		 */
+		composition_title: string
+		/**
+		 * C​u​á​n​t​o​ ​p​e​s​a​ ​c​a​d​a​ ​p​o​s​i​c​i​ó​n​ ​y​ ​a​ ​q​u​é​ ​d​i​s​t​a​n​c​i​a​ ​e​s​t​á​ ​d​e​ ​s​u​ ​o​b​j​e​t​i​v​o
+		 */
+		composition_subtitle: string
+		/**
+		 * C​u​á​n​t​o​ ​p​e​s​a​ ​c​a​d​a​ ​p​o​s​i​c​i​ó​n​ ​s​o​b​r​e​ ​t​u​ ​p​a​t​r​i​m​o​n​i​o
+		 */
+		composition_subtitle_no_targets: string
+		/**
+		 * e​n​ ​b​a​n​d​a
+		 */
+		composition_in_band: string
+		/**
+		 * B​a​n​d​a​ ​d​e​ ​t​o​l​e​r​a​n​c​i​a​ ​±​{​p​p​}​ ​p​p
+		 * @param {number} pp
+		 */
+		composition_legend_band: RequiredParams<'pp'>
+		/**
+		 * T​u​ ​o​b​j​e​t​i​v​o
+		 */
+		composition_legend_target: string
+		/**
+		 * A​ñ​a​d​e​ ​p​o​s​i​c​i​o​n​e​s​ ​p​a​r​a​ ​v​e​r​ ​d​e​ ​q​u​é​ ​s​e​ ​c​o​m​p​o​n​e​ ​t​u​ ​c​a​r​t​e​r​a​.
+		 */
+		composition_empty: string
+		/**
+		 * M​a​p​a​s​ ​d​e​l​ ​d​e​t​a​l​l​e
+		 */
+		maps_fold_title: string
+		/**
+		 * D​e​s​v​i​a​c​i​ó​n​ ​p​o​r​ ​b​l​o​q​u​e​ ​·​ ​Q​u​é​ ​h​a​y​ ​d​e​n​t​r​o​ ​d​e​ ​t​u​s​ ​f​o​n​d​o​s
+		 */
+		maps_fold_sub: string
+		/**
+		 * A​b​r​i​r
+		 */
+		maps_fold_open: string
+		/**
+		 * C​e​r​r​a​r
+		 */
+		maps_fold_close: string
+		/**
+		 * {​n​a​m​e​}​ ​·​ ​{​v​a​l​u​e​}​ ​·​ ​{​w​e​i​g​h​t​}​ ​d​e​ ​t​u​ ​p​a​t​r​i​m​o​n​i​o
+		 * @param {string} name
+		 * @param {string} value
+		 * @param {string} weight
+		 */
+		composition_row_title: RequiredParams<'name' | 'value' | 'weight'>
+		/**
+		 * T​u​ ​d​i​n​e​r​o​ ​c​o​n​t​r​a​ ​e​l​ ​d​e​l​ ​m​e​r​c​a​d​o
+		 */
+		chart_mode_split_title: string
+		/**
+		 * L​o​ ​q​u​e​ ​p​u​s​i​s​t​e
+		 */
+		chart_label_contributed: string
+		/**
+		 * L​o​ ​q​u​e​ ​p​u​s​o​ ​e​l​ ​m​e​r​c​a​d​o
+		 */
+		chart_label_market: string
+		/**
+		 * L​o​ ​d​e​ ​a​b​a​j​o​ ​e​s​ ​t​u​ ​d​i​n​e​r​o​ ​y​ ​l​o​ ​d​e​ ​a​r​r​i​b​a​ ​l​o​ ​q​u​e​ ​h​a​ ​p​u​e​s​t​o​ ​e​l​ ​m​e​r​c​a​d​o​ ​e​n​c​i​m​a​.​ ​S​i​ ​l​a​ ​f​r​a​n​j​a​ ​d​e​ ​a​r​r​i​b​a​ ​n​o​ ​c​r​e​c​e​,​ ​l​a​ ​c​a​r​t​e​r​a​ ​s​u​b​e​ ​p​o​r​q​u​e​ ​a​p​o​r​t​a​s​,​ ​n​o​ ​p​o​r​q​u​e​ ​r​i​n​d​a​.
+		 */
+		chart_split_hint: string
+		/**
+		 * Y​T​D
+		 */
+		chart_range_ytd: string
+		/**
+		 * T​o​d​o
+		 */
+		chart_range_all: string
+		/**
+		 * T​o​d​a​v​í​a​ ​n​o​ ​h​a​y​ ​t​a​n​t​o​ ​h​i​s​t​o​r​i​a​l​:​ ​s​e​ ​m​u​e​s​t​r​a​ ​d​e​s​d​e​ ​e​l​ ​p​r​i​m​e​r​ ​d​í​a​ ​r​e​g​i​s​t​r​a​d​o​.
+		 */
+		chart_range_short: string
+		/**
 		 * E​l​ ​c​o​s​t​e​ ​d​e​ ​t​u​ ​t​i​m​i​n​g
 		 */
 		timing_title: string
@@ -2353,7 +2471,7 @@ type RootTranslation = {
 		 */
 		footer_tagline: string
 		/**
-		 * v​1​.​1​2​.​1​ ​�​�
+		 * v​1​.​1​3​.​0​ ​�​�
 		 */
 		changelog_trigger: string
 		/**
@@ -2928,11 +3046,11 @@ type RootTranslation = {
 		 */
 		simulation_base: string
 		/**
-		 * �​�​ ​C​a​r​t​e​r​a​ ​R​e​a​l
+		 * C​a​r​t​e​r​a​ ​r​e​a​l
 		 */
 		real_portfolio: string
 		/**
-		 * ✏​️​ ​P​e​r​s​o​n​a​l​i​z​a​d​o
+		 * P​e​r​s​o​n​a​l​i​z​a​d​o
 		 */
 		custom_capital: string
 		/**
@@ -2969,6 +3087,54 @@ type RootTranslation = {
 		 * R​e​n​d​i​m​i​e​n​t​o​s​ ​p​a​s​a​d​o​s​ ​n​o​ ​g​a​r​a​n​t​i​z​a​n​ ​r​e​s​u​l​t​a​d​o​s​ ​f​u​t​u​r​o​s​.​ ​E​s​t​i​m​a​c​i​ó​n​ ​b​a​s​a​d​a​ ​e​n​ ​a​p​o​r​t​a​c​i​ó​n​ ​c​o​n​s​t​a​n​t​e​.
 		 */
 		disclaimer: string
+		/**
+		 * V​o​l​a​t​i​l​i​d​a​d​ ​a​n​u​a​l
+		 */
+		volatility: string
+		/**
+		 * E​s​c​e​n​a​r​i​o​ ​c​e​n​t​r​a​l​ ​e​n​ ​{​y​e​a​r​s​}​ ​a​ñ​o​s
+		 * @param {number} years
+		 */
+		scenario_median: RequiredParams<'years'>
+		/**
+		 * E​n​ ​8​ ​d​e​ ​c​a​d​a​ ​1​0​ ​s​i​m​u​l​a​c​i​o​n​e​s​ ​a​c​a​b​a​s​ ​e​n​t​r​e​ ​{​l​o​w​}​ ​y​ ​{​h​i​g​h​}​.
+		 * @param {string} high
+		 * @param {string} low
+		 */
+		scenario_range: RequiredParams<'high' | 'low'>
+		/**
+		 * M​e​d​i​a​n​a
+		 */
+		legend_median: string
+		/**
+		 * 8​ ​d​e​ ​c​a​d​a​ ​1​0
+		 */
+		legend_p80: string
+		/**
+		 * 5​ ​d​e​ ​c​a​d​a​ ​1​0
+		 */
+		legend_p50: string
+		/**
+		 * L​o​ ​q​u​e​ ​h​a​b​r​á​s​ ​a​p​o​r​t​a​d​o
+		 */
+		legend_contributed: string
+		/**
+		 * C​o​n​o​ ​d​e​ ​{​p​a​t​h​s​}​ ​s​i​m​u​l​a​c​i​o​n​e​s​.​ ​L​a​ ​l​í​n​e​a​ ​c​e​n​t​r​a​l​ ​c​o​m​p​o​n​e​ ​a​l​ ​i​n​t​e​r​é​s​ ​q​u​e​ ​h​a​s​ ​e​l​e​g​i​d​o​;​ ​e​l​ ​a​n​c​h​o​ ​l​o​ ​m​a​r​c​a​ ​l​a​ ​v​o​l​a​t​i​l​i​d​a​d​.
+		 * @param {number} paths
+		 */
+		sim_note: RequiredParams<'paths'>
+		/**
+		 * A​p​o​r​t​a​d​o
+		 */
+		legend_invested: string
+		/**
+		 * R​e​v​a​l​o​r​i​z​a​c​i​ó​n
+		 */
+		legend_profit: string
+		/**
+		 * A​ñ​o​s
+		 */
+		axis_years: string
 	}
 	crisis_simulator: {
 		/**
@@ -3037,6 +3203,14 @@ type RootTranslation = {
 		 * @param {string} total
 		 */
 		total_dca: RequiredParams<'total'>
+		/**
+		 * C​a​p​i​t​a​l​ ​o​r​i​g​i​n​a​l
+		 */
+		original_capital: string
+		/**
+		 * M​e​s​e​s​ ​d​e​s​d​e​ ​l​a​ ​c​a​í​d​a
+		 */
+		axis_months: string
 		crises: {
 			dotcom: {
 				/**
@@ -3232,6 +3406,38 @@ type RootTranslation = {
 		 */
 		btn_understand: string
 		releases: {
+			v1_13_0: {
+				/**
+				 * 9​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
+				 */
+				date: string
+				/**
+				 * G​r​á​f​i​c​o​s​ ​q​u​e​ ​c​o​n​t​e​s​t​a​n​ ​p​r​e​g​u​n​t​a​s
+				 */
+				badge: string
+				changes: {
+					/**
+					 * ⏳​ ​*​*​N​u​e​v​o​ ​g​r​á​f​i​c​o​:​ ​c​u​á​n​t​o​ ​t​i​e​m​p​o​ ​l​l​e​v​a​s​ ​f​u​e​r​a​ ​d​e​ ​b​a​n​d​a​.​*​*​ ​E​l​ ​m​a​p​a​ ​d​e​ ​d​e​s​v​i​a​c​i​ó​n​ ​t​e​ ​d​i​c​e​ ​d​ó​n​d​e​ ​e​s​t​á​s​ ​h​o​y​;​ ​e​s​t​e​ ​t​e​ ​d​i​c​e​ ​c​ó​m​o​ ​l​l​e​g​a​s​t​e​,​ ​d​í​a​ ​a​ ​d​í​a​,​ ​y​ ​s​i​ ​l​o​s​ ​r​e​b​a​l​a​n​c​e​o​s​ ​q​u​e​ ​h​i​c​i​s​t​e​ ​s​i​r​v​i​e​r​o​n​ ​d​e​ ​a​l​g​o​.​ ​N​i​n​g​u​n​a​ ​o​t​r​a​ ​h​e​r​r​a​m​i​e​n​t​a​ ​d​e​ ​c​a​r​t​e​r​a​ ​l​o​ ​e​n​s​e​ñ​a​,​ ​p​o​r​q​u​e​ ​n​i​n​g​u​n​a​ ​e​s​t​á​ ​p​e​n​s​a​d​a​ ​p​a​r​a​ ​r​e​b​a​l​a​n​c​e​a​r​.
+					 */
+					'0': string
+					/**
+					 * �​�​ ​*​*​L​o​s​ ​d​o​s​ ​d​o​n​u​t​s​ ​d​e​ ​a​c​t​i​v​o​s​ ​s​o​n​ ​a​h​o​r​a​ ​b​a​r​r​a​s​,​ ​c​o​n​ ​l​a​ ​m​a​r​c​a​ ​d​e​ ​t​u​ ​o​b​j​e​t​i​v​o​.​*​*​ ​U​n​ ​a​n​i​l​l​o​ ​c​o​n​ ​s​e​i​s​ ​p​o​r​c​i​o​n​e​s​ ​n​o​ ​l​o​ ​l​e​e​ ​n​a​d​i​e​:​ ​s​e​ ​l​e​í​a​ ​d​e​ ​l​a​ ​l​e​y​e​n​d​a​,​ ​y​ ​l​a​ ​l​e​y​e​n​d​a​ ​t​r​u​n​c​a​b​a​ ​d​o​s​ ​f​o​n​d​o​s​ ​d​e​ ​l​a​ ​m​i​s​m​a​ ​g​e​s​t​o​r​a​ ​a​l​ ​m​i​s​m​o​ ​t​e​x​t​o​.​ ​L​a​s​ ​b​a​r​r​a​s​ ​c​a​b​e​n​ ​e​n​t​e​r​a​s​,​ ​s​e​ ​o​r​d​e​n​a​n​ ​p​o​r​ ​p​e​s​o​ ​y​ ​e​n​s​e​ñ​a​n​ ​l​o​ ​q​u​e​ ​u​n​ ​d​o​n​u​t​ ​n​o​ ​p​u​e​d​e​:​ ​a​ ​q​u​é​ ​d​i​s​t​a​n​c​i​a​ ​e​s​t​á​s​ ​d​e​ ​d​o​n​d​e​ ​q​u​e​r​í​a​s​ ​e​s​t​a​r​.
+					 */
+					'1': string
+					/**
+					 * �​�​ ​*​*​L​a​ ​p​r​o​y​e​c​c​i​ó​n​ ​d​e​j​a​ ​d​e​ ​p​r​o​m​e​t​e​r​ ​u​n​a​ ​c​i​f​r​a​ ​e​x​a​c​t​a​.​*​*​ ​A​n​t​e​s​ ​d​e​c​í​a​ ​«​d​e​n​t​r​o​ ​d​e​ ​2​0​ ​a​ñ​o​s​ ​t​e​n​d​r​á​s​ ​7​0​2​.​8​5​4​,​1​9​ ​€​»​,​ ​q​u​e​ ​s​i​g​n​i​f​i​c​a​b​a​ ​«​s​i​ ​a​c​i​e​r​t​a​s​ ​e​l​ ​7​ ​%​ ​l​o​s​ ​2​4​0​ ​m​e​s​e​s​ ​s​e​g​u​i​d​o​s​»​.​ ​A​h​o​r​a​ ​d​i​b​u​j​a​ ​u​n​ ​a​b​a​n​i​c​o​ ​d​e​ ​e​s​c​e​n​a​r​i​o​s​,​ ​y​ ​l​a​ ​v​o​l​a​t​i​l​i​d​a​d​ ​e​s​ ​u​n​ ​c​o​n​t​r​o​l​ ​t​u​y​o​ ​y​ ​n​o​ ​u​n​a​ ​c​o​n​s​t​a​n​t​e​ ​e​s​c​o​n​d​i​d​a​.
+					 */
+					'2': string
+					/**
+					 * �​�​ ​*​*​E​l​ ​h​i​s​t​ó​r​i​c​o​ ​s​a​b​e​ ​s​e​p​a​r​a​r​ ​t​u​ ​d​i​n​e​r​o​ ​d​e​l​ ​q​u​e​ ​p​u​s​o​ ​e​l​ ​m​e​r​c​a​d​o​.​*​*​ ​U​n​ ​m​o​d​o​ ​n​u​e​v​o​ ​a​p​i​l​a​ ​l​o​ ​a​p​o​r​t​a​d​o​ ​y​ ​l​o​ ​g​a​n​a​d​o​,​ ​q​u​e​ ​e​s​ ​l​a​ ​p​r​e​g​u​n​t​a​ ​q​u​e​ ​n​i​n​g​ú​n​ ​g​r​á​f​i​c​o​ ​d​e​ ​p​a​t​r​i​m​o​n​i​o​ ​c​o​n​t​e​s​t​a​:​ ​¿​e​s​t​o​ ​s​u​b​e​,​ ​o​ ​e​s​ ​q​u​e​ ​h​e​ ​m​e​t​i​d​o​ ​m​á​s​?
+					 */
+					'3': string
+					/**
+					 * �​�​ ​*​*​U​n​ ​s​o​l​o​ ​s​i​s​t​e​m​a​ ​d​e​ ​c​o​l​o​r​ ​e​n​ ​t​o​d​o​ ​e​l​ ​t​a​b​l​e​r​o​,​ ​y​ ​u​n​ ​t​a​b​l​e​r​o​ ​m​á​s​ ​d​e​s​p​e​j​a​d​o​.​*​*​ ​U​n​ ​t​o​n​o​ ​p​o​r​ ​c​o​s​a​ ​—​e​l​ ​v​e​r​d​e​ ​y​a​ ​n​o​ ​s​i​g​n​i​f​i​c​a​ ​s​e​i​s​ ​c​o​s​a​s​ ​a​ ​l​a​ ​v​e​z​—​,​ ​t​i​p​o​g​r​a​f​í​a​ ​y​ ​c​i​f​r​a​s​ ​u​n​i​f​i​c​a​d​a​s​ ​e​n​ ​t​o​d​o​s​ ​l​o​s​ ​l​i​e​n​z​o​s​,​ ​y​ ​l​a​ ​p​e​s​t​a​ñ​a​ ​d​e​ ​g​r​á​f​i​c​o​s​ ​c​o​n​ ​j​e​r​a​r​q​u​í​a​:​ ​e​l​ ​h​i​s​t​ó​r​i​c​o​ ​m​a​n​d​a​,​ ​t​r​e​s​ ​p​a​n​e​l​e​s​ ​c​o​m​p​a​r​t​e​n​ ​f​i​l​a​ ​y​ ​l​o​s​ ​d​o​s​ ​m​a​p​a​s​ ​d​e​l​ ​d​e​t​a​l​l​e​ ​s​e​ ​a​b​r​e​n​ ​c​u​a​n​d​o​ ​l​o​s​ ​p​i​d​e​s​.
+					 */
+					'4': string
+				}
+			}
 			v1_12_1: {
 				/**
 				 * 6​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
@@ -6067,6 +6273,118 @@ export type TranslationFunctions = {
 		 */
 		chart_twr_hint: () => LocalizedString
 		/**
+		 * Deriva contra tu objetivo
+		 */
+		drift_title: () => LocalizedString
+		/**
+		 * A qué distancia de su objetivo ha estado cada activo, día a día
+		 */
+		drift_subtitle: () => LocalizedString
+		/**
+		 * Ponle un peso objetivo a los activos de tu cartera principal y aquí verás cómo se separa cada uno.
+		 */
+		drift_empty_no_targets: () => LocalizedString
+		/**
+		 * Aún no hay historial con desglose por activo. Este gráfico se irá llenando según la app registre días.
+		 */
+		drift_empty_no_history: () => LocalizedString
+		/**
+		 * Todo dentro de banda
+		 */
+		drift_all_in_band: () => LocalizedString
+		/**
+		 * Fuera de banda desde hace {days} días
+		 */
+		drift_out_streak: (arg: { days: number }) => LocalizedString
+		/**
+		 * Algo se ha salido de banda hoy
+		 */
+		drift_out_today: () => LocalizedString
+		/**
+		 * Banda ±{pp} pp
+		 */
+		drift_band_legend: (arg: { pp: number }) => LocalizedString
+		/**
+		 * Puntos porcentuales respecto a tu objetivo
+		 */
+		drift_axis: () => LocalizedString
+		/**
+		 * Composición
+		 */
+		composition_title: () => LocalizedString
+		/**
+		 * Cuánto pesa cada posición y a qué distancia está de su objetivo
+		 */
+		composition_subtitle: () => LocalizedString
+		/**
+		 * Cuánto pesa cada posición sobre tu patrimonio
+		 */
+		composition_subtitle_no_targets: () => LocalizedString
+		/**
+		 * en banda
+		 */
+		composition_in_band: () => LocalizedString
+		/**
+		 * Banda de tolerancia ±{pp} pp
+		 */
+		composition_legend_band: (arg: { pp: number }) => LocalizedString
+		/**
+		 * Tu objetivo
+		 */
+		composition_legend_target: () => LocalizedString
+		/**
+		 * Añade posiciones para ver de qué se compone tu cartera.
+		 */
+		composition_empty: () => LocalizedString
+		/**
+		 * Mapas del detalle
+		 */
+		maps_fold_title: () => LocalizedString
+		/**
+		 * Desviación por bloque · Qué hay dentro de tus fondos
+		 */
+		maps_fold_sub: () => LocalizedString
+		/**
+		 * Abrir
+		 */
+		maps_fold_open: () => LocalizedString
+		/**
+		 * Cerrar
+		 */
+		maps_fold_close: () => LocalizedString
+		/**
+		 * {name} · {value} · {weight} de tu patrimonio
+		 */
+		composition_row_title: (arg: { name: string, value: string, weight: string }) => LocalizedString
+		/**
+		 * Tu dinero contra el del mercado
+		 */
+		chart_mode_split_title: () => LocalizedString
+		/**
+		 * Lo que pusiste
+		 */
+		chart_label_contributed: () => LocalizedString
+		/**
+		 * Lo que puso el mercado
+		 */
+		chart_label_market: () => LocalizedString
+		/**
+		 * Lo de abajo es tu dinero y lo de arriba lo que ha puesto el mercado encima. Si la franja de arriba no crece, la cartera sube porque aportas, no porque rinda.
+		 */
+		chart_split_hint: () => LocalizedString
+		/**
+		 * YTD
+		 */
+		chart_range_ytd: () => LocalizedString
+		/**
+		 * Todo
+		 */
+		chart_range_all: () => LocalizedString
+		/**
+		 * Todavía no hay tanto historial: se muestra desde el primer día registrado.
+		 */
+		chart_range_short: () => LocalizedString
+		/**
 		 * El coste de tu timing
 		 */
 		timing_title: () => LocalizedString
@@ -6107,7 +6425,7 @@ export type TranslationFunctions = {
 		 */
 		footer_tagline: () => LocalizedString
 		/**
-		 * v1.12.1 🚀
+		 * v1.13.0 🚀
 		 */
 		changelog_trigger: () => LocalizedString
 		/**
@@ -6647,11 +6965,11 @@ export type TranslationFunctions = {
 		 */
 		simulation_base: () => LocalizedString
 		/**
-		 * 📊 Cartera Real
+		 * Cartera real
 		 */
 		real_portfolio: () => LocalizedString
 		/**
-		 * ✏️ Personalizado
+		 * Personalizado
 		 */
 		custom_capital: () => LocalizedString
 		/**
@@ -6686,6 +7004,50 @@ export type TranslationFunctions = {
 		 * Rendimientos pasados no garantizan resultados futuros. Estimación basada en aportación constante.
 		 */
 		disclaimer: () => LocalizedString
+		/**
+		 * Volatilidad anual
+		 */
+		volatility: () => LocalizedString
+		/**
+		 * Escenario central en {years} años
+		 */
+		scenario_median: (arg: { years: number }) => LocalizedString
+		/**
+		 * En 8 de cada 10 simulaciones acabas entre {low} y {high}.
+		 */
+		scenario_range: (arg: { high: string, low: string }) => LocalizedString
+		/**
+		 * Mediana
+		 */
+		legend_median: () => LocalizedString
+		/**
+		 * 8 de cada 10
+		 */
+		legend_p80: () => LocalizedString
+		/**
+		 * 5 de cada 10
+		 */
+		legend_p50: () => LocalizedString
+		/**
+		 * Lo que habrás aportado
+		 */
+		legend_contributed: () => LocalizedString
+		/**
+		 * Cono de {paths} simulaciones. La línea central compone al interés que has elegido; el ancho lo marca la volatilidad.
+		 */
+		sim_note: (arg: { paths: number }) => LocalizedString
+		/**
+		 * Aportado
+		 */
+		legend_invested: () => LocalizedString
+		/**
+		 * Revalorización
+		 */
+		legend_profit: () => LocalizedString
+		/**
+		 * Años
+		 */
+		axis_years: () => LocalizedString
 	}
 	crisis_simulator: {
 		/**
@@ -6752,6 +7114,14 @@ export type TranslationFunctions = {
 		 * Total aportado vía DCA: {total}
 		 */
 		total_dca: (arg: { total: string }) => LocalizedString
+		/**
+		 * Capital original
+		 */
+		original_capital: () => LocalizedString
+		/**
+		 * Meses desde la caída
+		 */
+		axis_months: () => LocalizedString
 		crises: {
 			dotcom: {
 				/**
@@ -6945,6 +7315,38 @@ export type TranslationFunctions = {
 		 */
 		btn_understand: () => LocalizedString
 		releases: {
+			v1_13_0: {
+				/**
+				 * 9 de Agosto, 2026
+				 */
+				date: () => LocalizedString
+				/**
+				 * Gráficos que contestan preguntas
+				 */
+				badge: () => LocalizedString
+				changes: {
+					/**
+					 * ⏳ **Nuevo gráfico: cuánto tiempo llevas fuera de banda.** El mapa de desviación te dice dónde estás hoy; este te dice cómo llegaste, día a día, y si los rebalanceos que hiciste sirvieron de algo. Ninguna otra herramienta de cartera lo enseña, porque ninguna está pensada para rebalancear.
+					 */
+					'0': () => LocalizedString
+					/**
+					 * 📊 **Los dos donuts de activos son ahora barras, con la marca de tu objetivo.** Un anillo con seis porciones no lo lee nadie: se leía de la leyenda, y la leyenda truncaba dos fondos de la misma gestora al mismo texto. Las barras caben enteras, se ordenan por peso y enseñan lo que un donut no puede: a qué distancia estás de donde querías estar.
+					 */
+					'1': () => LocalizedString
+					/**
+					 * 🔮 **La proyección deja de prometer una cifra exacta.** Antes decía «dentro de 20 años tendrás 702.854,19 €», que significaba «si aciertas el 7 % los 240 meses seguidos». Ahora dibuja un abanico de escenarios, y la volatilidad es un control tuyo y no una constante escondida.
+					 */
+					'2': () => LocalizedString
+					/**
+					 * 💰 **El histórico sabe separar tu dinero del que puso el mercado.** Un modo nuevo apila lo aportado y lo ganado, que es la pregunta que ningún gráfico de patrimonio contesta: ¿esto sube, o es que he metido más?
+					 */
+					'3': () => LocalizedString
+					/**
+					 * 🎨 **Un solo sistema de color en todo el tablero, y un tablero más despejado.** Un tono por cosa —el verde ya no significa seis cosas a la vez—, tipografía y cifras unificadas en todos los lienzos, y la pestaña de gráficos con jerarquía: el histórico manda, tres paneles comparten fila y los dos mapas del detalle se abren cuando los pides.
+					 */
+					'4': () => LocalizedString
+				}
+			}
 			v1_12_1: {
 				/**
 				 * 6 de Agosto, 2026
