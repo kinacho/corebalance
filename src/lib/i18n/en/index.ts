@@ -657,7 +657,7 @@ const en: Translation = {
     timing_period_note: 'Figures for the period shown, not annualised.',
     legal_disclaimer: '<strong>Legal Disclaimer:</strong> CoreBalance is a purely informative and educational tool. It does not constitute financial, investment, or tax advice. The data displayed may be subject to delays or inaccuracies. The developer is not responsible for any financial losses resulting from the use of this application. Always invest at your own risk.',
     footer_tagline: 'Your control center for smart and balanced asset management.',
-    changelog_trigger: 'v1.12.1 🚀',
+    changelog_trigger: 'v1.13.0 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Made with ❤️ for the investing community',
     reclassify_stocks: 'Individual Stocks',
@@ -931,6 +931,17 @@ const en: Translation = {
     close_aria: 'Close modal',
     btn_understand: 'Got it',
     releases: {
+      v1_13_0: {
+        date: 'August 9, 2026',
+        badge: 'Charts that answer questions',
+        changes: [
+          '⏳ **New chart: how long you have been out of band.** The deviation map tells you where you are today; this one tells you how you got there, day by day, and whether the rebalances you made achieved anything. No other portfolio tool shows it, because none of them is built for rebalancing.',
+          '📊 **The two asset donuts are now bars, with your target marked on them.** Nobody reads a ring with six slices — you read the legend, and the legend truncated two funds from the same provider to the same text. Bars fit the full names, sort by weight, and show what a donut structurally cannot: how far you are from where you wanted to be.',
+          '🔮 **The projection stops promising an exact figure.** It used to say "in 20 years you will have €702,854.19", which meant "if you hit 7 % on each of 240 consecutive months". Now it draws a fan of scenarios, and volatility is a control you set rather than a constant hidden from you.',
+          '💰 **The history chart can separate your money from what the market added.** A new mode stacks what you put in against what it earned — the question no net-worth chart answers: is this going up, or have I just put more in?',
+          '🎨 **One colour system across the dashboard, and a calmer dashboard.** One hue per thing — green no longer means six things at once —, unified type and number formatting on every canvas, and a charts tab with hierarchy: the history chart leads, three panels share a row, and the two detail maps open when you ask for them.'
+        ]
+      },
       v1_12_1: {
         date: 'August 6, 2026',
         badge: 'The app works offline now',

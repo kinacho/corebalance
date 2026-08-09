@@ -2471,7 +2471,7 @@ type RootTranslation = {
 		 */
 		footer_tagline: string
 		/**
-		 * v​1​.​1​2​.​1​ ​�​�
+		 * v​1​.​1​3​.​0​ ​�​�
 		 */
 		changelog_trigger: string
 		/**
@@ -3406,6 +3406,38 @@ type RootTranslation = {
 		 */
 		btn_understand: string
 		releases: {
+			v1_13_0: {
+				/**
+				 * 9​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
+				 */
+				date: string
+				/**
+				 * G​r​á​f​i​c​o​s​ ​q​u​e​ ​c​o​n​t​e​s​t​a​n​ ​p​r​e​g​u​n​t​a​s
+				 */
+				badge: string
+				changes: {
+					/**
+					 * ⏳​ ​*​*​N​u​e​v​o​ ​g​r​á​f​i​c​o​:​ ​c​u​á​n​t​o​ ​t​i​e​m​p​o​ ​l​l​e​v​a​s​ ​f​u​e​r​a​ ​d​e​ ​b​a​n​d​a​.​*​*​ ​E​l​ ​m​a​p​a​ ​d​e​ ​d​e​s​v​i​a​c​i​ó​n​ ​t​e​ ​d​i​c​e​ ​d​ó​n​d​e​ ​e​s​t​á​s​ ​h​o​y​;​ ​e​s​t​e​ ​t​e​ ​d​i​c​e​ ​c​ó​m​o​ ​l​l​e​g​a​s​t​e​,​ ​d​í​a​ ​a​ ​d​í​a​,​ ​y​ ​s​i​ ​l​o​s​ ​r​e​b​a​l​a​n​c​e​o​s​ ​q​u​e​ ​h​i​c​i​s​t​e​ ​s​i​r​v​i​e​r​o​n​ ​d​e​ ​a​l​g​o​.​ ​N​i​n​g​u​n​a​ ​o​t​r​a​ ​h​e​r​r​a​m​i​e​n​t​a​ ​d​e​ ​c​a​r​t​e​r​a​ ​l​o​ ​e​n​s​e​ñ​a​,​ ​p​o​r​q​u​e​ ​n​i​n​g​u​n​a​ ​e​s​t​á​ ​p​e​n​s​a​d​a​ ​p​a​r​a​ ​r​e​b​a​l​a​n​c​e​a​r​.
+					 */
+					'0': string
+					/**
+					 * �​�​ ​*​*​L​o​s​ ​d​o​s​ ​d​o​n​u​t​s​ ​d​e​ ​a​c​t​i​v​o​s​ ​s​o​n​ ​a​h​o​r​a​ ​b​a​r​r​a​s​,​ ​c​o​n​ ​l​a​ ​m​a​r​c​a​ ​d​e​ ​t​u​ ​o​b​j​e​t​i​v​o​.​*​*​ ​U​n​ ​a​n​i​l​l​o​ ​c​o​n​ ​s​e​i​s​ ​p​o​r​c​i​o​n​e​s​ ​n​o​ ​l​o​ ​l​e​e​ ​n​a​d​i​e​:​ ​s​e​ ​l​e​í​a​ ​d​e​ ​l​a​ ​l​e​y​e​n​d​a​,​ ​y​ ​l​a​ ​l​e​y​e​n​d​a​ ​t​r​u​n​c​a​b​a​ ​d​o​s​ ​f​o​n​d​o​s​ ​d​e​ ​l​a​ ​m​i​s​m​a​ ​g​e​s​t​o​r​a​ ​a​l​ ​m​i​s​m​o​ ​t​e​x​t​o​.​ ​L​a​s​ ​b​a​r​r​a​s​ ​c​a​b​e​n​ ​e​n​t​e​r​a​s​,​ ​s​e​ ​o​r​d​e​n​a​n​ ​p​o​r​ ​p​e​s​o​ ​y​ ​e​n​s​e​ñ​a​n​ ​l​o​ ​q​u​e​ ​u​n​ ​d​o​n​u​t​ ​n​o​ ​p​u​e​d​e​:​ ​a​ ​q​u​é​ ​d​i​s​t​a​n​c​i​a​ ​e​s​t​á​s​ ​d​e​ ​d​o​n​d​e​ ​q​u​e​r​í​a​s​ ​e​s​t​a​r​.
+					 */
+					'1': string
+					/**
+					 * �​�​ ​*​*​L​a​ ​p​r​o​y​e​c​c​i​ó​n​ ​d​e​j​a​ ​d​e​ ​p​r​o​m​e​t​e​r​ ​u​n​a​ ​c​i​f​r​a​ ​e​x​a​c​t​a​.​*​*​ ​A​n​t​e​s​ ​d​e​c​í​a​ ​«​d​e​n​t​r​o​ ​d​e​ ​2​0​ ​a​ñ​o​s​ ​t​e​n​d​r​á​s​ ​7​0​2​.​8​5​4​,​1​9​ ​€​»​,​ ​q​u​e​ ​s​i​g​n​i​f​i​c​a​b​a​ ​«​s​i​ ​a​c​i​e​r​t​a​s​ ​e​l​ ​7​ ​%​ ​l​o​s​ ​2​4​0​ ​m​e​s​e​s​ ​s​e​g​u​i​d​o​s​»​.​ ​A​h​o​r​a​ ​d​i​b​u​j​a​ ​u​n​ ​a​b​a​n​i​c​o​ ​d​e​ ​e​s​c​e​n​a​r​i​o​s​,​ ​y​ ​l​a​ ​v​o​l​a​t​i​l​i​d​a​d​ ​e​s​ ​u​n​ ​c​o​n​t​r​o​l​ ​t​u​y​o​ ​y​ ​n​o​ ​u​n​a​ ​c​o​n​s​t​a​n​t​e​ ​e​s​c​o​n​d​i​d​a​.
+					 */
+					'2': string
+					/**
+					 * �​�​ ​*​*​E​l​ ​h​i​s​t​ó​r​i​c​o​ ​s​a​b​e​ ​s​e​p​a​r​a​r​ ​t​u​ ​d​i​n​e​r​o​ ​d​e​l​ ​q​u​e​ ​p​u​s​o​ ​e​l​ ​m​e​r​c​a​d​o​.​*​*​ ​U​n​ ​m​o​d​o​ ​n​u​e​v​o​ ​a​p​i​l​a​ ​l​o​ ​a​p​o​r​t​a​d​o​ ​y​ ​l​o​ ​g​a​n​a​d​o​,​ ​q​u​e​ ​e​s​ ​l​a​ ​p​r​e​g​u​n​t​a​ ​q​u​e​ ​n​i​n​g​ú​n​ ​g​r​á​f​i​c​o​ ​d​e​ ​p​a​t​r​i​m​o​n​i​o​ ​c​o​n​t​e​s​t​a​:​ ​¿​e​s​t​o​ ​s​u​b​e​,​ ​o​ ​e​s​ ​q​u​e​ ​h​e​ ​m​e​t​i​d​o​ ​m​á​s​?
+					 */
+					'3': string
+					/**
+					 * �​�​ ​*​*​U​n​ ​s​o​l​o​ ​s​i​s​t​e​m​a​ ​d​e​ ​c​o​l​o​r​ ​e​n​ ​t​o​d​o​ ​e​l​ ​t​a​b​l​e​r​o​,​ ​y​ ​u​n​ ​t​a​b​l​e​r​o​ ​m​á​s​ ​d​e​s​p​e​j​a​d​o​.​*​*​ ​U​n​ ​t​o​n​o​ ​p​o​r​ ​c​o​s​a​ ​—​e​l​ ​v​e​r​d​e​ ​y​a​ ​n​o​ ​s​i​g​n​i​f​i​c​a​ ​s​e​i​s​ ​c​o​s​a​s​ ​a​ ​l​a​ ​v​e​z​—​,​ ​t​i​p​o​g​r​a​f​í​a​ ​y​ ​c​i​f​r​a​s​ ​u​n​i​f​i​c​a​d​a​s​ ​e​n​ ​t​o​d​o​s​ ​l​o​s​ ​l​i​e​n​z​o​s​,​ ​y​ ​l​a​ ​p​e​s​t​a​ñ​a​ ​d​e​ ​g​r​á​f​i​c​o​s​ ​c​o​n​ ​j​e​r​a​r​q​u​í​a​:​ ​e​l​ ​h​i​s​t​ó​r​i​c​o​ ​m​a​n​d​a​,​ ​t​r​e​s​ ​p​a​n​e​l​e​s​ ​c​o​m​p​a​r​t​e​n​ ​f​i​l​a​ ​y​ ​l​o​s​ ​d​o​s​ ​m​a​p​a​s​ ​d​e​l​ ​d​e​t​a​l​l​e​ ​s​e​ ​a​b​r​e​n​ ​c​u​a​n​d​o​ ​l​o​s​ ​p​i​d​e​s​.
+					 */
+					'4': string
+				}
+			}
 			v1_12_1: {
 				/**
 				 * 6​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
@@ -6393,7 +6425,7 @@ export type TranslationFunctions = {
 		 */
 		footer_tagline: () => LocalizedString
 		/**
-		 * v1.12.1 🚀
+		 * v1.13.0 🚀
 		 */
 		changelog_trigger: () => LocalizedString
 		/**
@@ -7283,6 +7315,38 @@ export type TranslationFunctions = {
 		 */
 		btn_understand: () => LocalizedString
 		releases: {
+			v1_13_0: {
+				/**
+				 * 9 de Agosto, 2026
+				 */
+				date: () => LocalizedString
+				/**
+				 * Gráficos que contestan preguntas
+				 */
+				badge: () => LocalizedString
+				changes: {
+					/**
+					 * ⏳ **Nuevo gráfico: cuánto tiempo llevas fuera de banda.** El mapa de desviación te dice dónde estás hoy; este te dice cómo llegaste, día a día, y si los rebalanceos que hiciste sirvieron de algo. Ninguna otra herramienta de cartera lo enseña, porque ninguna está pensada para rebalancear.
+					 */
+					'0': () => LocalizedString
+					/**
+					 * 📊 **Los dos donuts de activos son ahora barras, con la marca de tu objetivo.** Un anillo con seis porciones no lo lee nadie: se leía de la leyenda, y la leyenda truncaba dos fondos de la misma gestora al mismo texto. Las barras caben enteras, se ordenan por peso y enseñan lo que un donut no puede: a qué distancia estás de donde querías estar.
+					 */
+					'1': () => LocalizedString
+					/**
+					 * 🔮 **La proyección deja de prometer una cifra exacta.** Antes decía «dentro de 20 años tendrás 702.854,19 €», que significaba «si aciertas el 7 % los 240 meses seguidos». Ahora dibuja un abanico de escenarios, y la volatilidad es un control tuyo y no una constante escondida.
+					 */
+					'2': () => LocalizedString
+					/**
+					 * 💰 **El histórico sabe separar tu dinero del que puso el mercado.** Un modo nuevo apila lo aportado y lo ganado, que es la pregunta que ningún gráfico de patrimonio contesta: ¿esto sube, o es que he metido más?
+					 */
+					'3': () => LocalizedString
+					/**
+					 * 🎨 **Un solo sistema de color en todo el tablero, y un tablero más despejado.** Un tono por cosa —el verde ya no significa seis cosas a la vez—, tipografía y cifras unificadas en todos los lienzos, y la pestaña de gráficos con jerarquía: el histórico manda, tres paneles comparten fila y los dos mapas del detalle se abren cuando los pides.
+					 */
+					'4': () => LocalizedString
+				}
+			}
 			v1_12_1: {
 				/**
 				 * 6 de Agosto, 2026

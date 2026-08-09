@@ -659,7 +659,7 @@ const es = {
     timing_period_note: 'Cifras del periodo mostrado, sin anualizar.',
     legal_disclaimer: '<strong>Aviso Legal:</strong> CoreBalance es una herramienta puramente informativa y educativa. No constituye asesoramiento financiero, de inversión ni fiscal. Los datos mostrados pueden sufrir retrasos o ser inexactos. El desarrollador no se hace responsable de posibles pérdidas financieras derivadas del uso de esta aplicación. Invierte siempre bajo tu propia responsabilidad.',
     footer_tagline: 'Tu centro de mandos para una gestión de activos inteligente y equilibrada.',
-    changelog_trigger: 'v1.12.1 🚀',
+    changelog_trigger: 'v1.13.0 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Hecho con ❤️ para la comunidad inversora',
     reclassify_stocks: 'Acciones Individuales',
@@ -939,6 +939,17 @@ const es = {
     close_aria: 'Cerrar modal',
     btn_understand: 'Entendido',
     releases: {
+      v1_13_0: {
+        date: '9 de Agosto, 2026',
+        badge: 'Gráficos que contestan preguntas',
+        changes: [
+          '⏳ **Nuevo gráfico: cuánto tiempo llevas fuera de banda.** El mapa de desviación te dice dónde estás hoy; este te dice cómo llegaste, día a día, y si los rebalanceos que hiciste sirvieron de algo. Ninguna otra herramienta de cartera lo enseña, porque ninguna está pensada para rebalancear.',
+          '📊 **Los dos donuts de activos son ahora barras, con la marca de tu objetivo.** Un anillo con seis porciones no lo lee nadie: se leía de la leyenda, y la leyenda truncaba dos fondos de la misma gestora al mismo texto. Las barras caben enteras, se ordenan por peso y enseñan lo que un donut no puede: a qué distancia estás de donde querías estar.',
+          '🔮 **La proyección deja de prometer una cifra exacta.** Antes decía «dentro de 20 años tendrás 702.854,19 €», que significaba «si aciertas el 7 % los 240 meses seguidos». Ahora dibuja un abanico de escenarios, y la volatilidad es un control tuyo y no una constante escondida.',
+          '💰 **El histórico sabe separar tu dinero del que puso el mercado.** Un modo nuevo apila lo aportado y lo ganado, que es la pregunta que ningún gráfico de patrimonio contesta: ¿esto sube, o es que he metido más?',
+          '🎨 **Un solo sistema de color en todo el tablero, y un tablero más despejado.** Un tono por cosa —el verde ya no significa seis cosas a la vez—, tipografía y cifras unificadas en todos los lienzos, y la pestaña de gráficos con jerarquía: el histórico manda, tres paneles comparten fila y los dos mapas del detalle se abren cuando los pides.'
+        ]
+      },
       v1_12_1: {
         date: '6 de Agosto, 2026',
         badge: 'La app ya funciona sin conexión',
