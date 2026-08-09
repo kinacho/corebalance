@@ -248,6 +248,7 @@ export function parseNumber(value: string): number {
 	const lastComma = cleaned.lastIndexOf(',');
 	const lastDot = cleaned.lastIndexOf('.');
 	const puntos = (cleaned.match(/\./g) || []).length;
+	const comas = (cleaned.match(/,/g) || []).length;
 
 	if (lastComma === -1 && puntos > 1) {
 		// Solo puntos y más de uno: son separadores de miles europeos («12.345.678»).
@@ -267,8 +268,20 @@ export function parseNumber(value: string): number {
 		 * expresan con tres o más decimales— y no mil ochocientos treinta y cinco. La coma
 		 * sola siempre es decimal europeo, y el caso americano llega con punto («1,234.56»),
 		 * que sí distingue la rama de abajo.
+		 *
+		 * ⚠️ Lo anterior vale para **una** coma. Con dos o más la lectura europea es
+		 * imposible —ningún decimal lleva dos comas—, así que son separadores de miles
+		 * americanos sin parte decimal («1,234,567»). Aquí había un `.replace(',', '.')`
+		 * **sin bandera global**, que sustituía solo la primera y dejaba el resto dentro:
+		 * `parseFloat('1.234,567')` corta en la coma y devuelve **1,234** por 1.234.567,
+		 * seis órdenes de magnitud, en silencio. Nótese que esto NO reabre la heurística
+		 * borrada: aquella decidía sobre la coma única, que sigue siendo decimal.
 		 */
-		cleaned = cleaned.replace(/\./g, '').replace(',', '.');
+		if (comas > 1) {
+			cleaned = cleaned.replace(/,/g, '');
+		} else {
+			cleaned = cleaned.replace(/\./g, '').replace(',', '.');
+		}
 	} else if (lastDot > lastComma) {
 		// Formato americano: 1,234.56 → quitar comas
 		cleaned = cleaned.replace(/,/g, '');
@@ -278,12 +291,26 @@ export function parseNumber(value: string): number {
 	return isNaN(result) ? 0 : result;
 }
 
-/** Normaliza una cabecera para comparación flexible (lowercase, sin acentos, sin espacios extra) */
-export function normalizeHeader(header: string): string {
-	return header
+/**
+ * Pasa un texto a minúsculas y le quita los acentos.
+ *
+ * ⚠️ Existe porque esta normalización estaba disponible **solo para cabeceras**, y los
+ * parsers comparan también **valores** contra literales escritos sin acento. El detector
+ * de MyInvestor hacía `tipoOp.includes('suscripcion')` sobre un `toLowerCase()` a secas,
+ * así que «Suscripción» —tal y como lo escribe MyInvestor— no casaba nunca y cada
+ * suscripción se descartaba como «tipo de operación no reconocido».
+ */
+export function normalizeText(value: string): string {
+	return value
 		.toLowerCase()
 		.normalize('NFD')
 		.replace(/[\u0300-\u036f]/g, '') // quitar acentos
+		.trim();
+}
+
+/** Normaliza una cabecera para comparación flexible (lowercase, sin acentos, sin espacios extra) */
+export function normalizeHeader(header: string): string {
+	return normalizeText(header)
 		.replace(/[^a-z0-9]/g, ' ')      // solo alfanuméricos
 		.replace(/\s+/g, ' ')
 		.trim();
@@ -325,18 +352,118 @@ export function extractISIN(text: string): string | null {
 }
 
 /**
+ * Parsea la fecha de una operación de bróker. **El único parseo de fechas del subsistema.**
+ *
+ * ⚠️ Había tres copias divergentes y ninguna era correcta del todo:
+ *
+ * - `parseDegiroDate` leía **cualquier** fecha de tres partes como día-primero, así que
+ *   un `2024-05-13` en ISO salía como día 2024 / mes 5 / año 13. Su respaldo `Date.parse`
+ *   solo se alcanzaba con un número de partes distinto de tres, o sea que era inalcanzable
+ *   justo para el formato que pretendía rescatar. Y MyInvestor reutilizaba ese parser,
+ *   con lo que heredaba el fallo para los CSV en ISO de Inversis/Renta 4/Bankinter.
+ * - Trading 212, Interactive Brokers y la ruta genérica usaban `new Date(str)` a pelo,
+ *   que lee `10/01/2024` como **1 de octubre** (criterio americano) y devuelve
+ *   `Invalid Date` con `15/01/2024`.
+ *
+ * Por qué importa tanto una fecha: `reduceTransactionsToPositions()` ordena por fecha
+ * antes de aplicar el coste medio, y una venta procesada **antes** que su compra no
+ * encuentra posición y se descarta. Es decir, una fecha mal leída no da un error: da una
+ * cartera con más títulos de los que existen y un coste medio que nunca ocurrió, que es
+ * exactamente lo que después alimenta al libro mayor y a la estimación de IRPF.
+ *
+ * ⚠️ Devuelve `null` en vez de `new Date()` cuando no entiende la entrada. Sustituir por
+ * «hoy» era la otra mitad del problema: inventaba una fecha plausible que barajaba el
+ * orden igual, y en silencio. Con `null`, el llamante descarta la fila y el motivo sale
+ * en `skippedDetails`.
+ */
+export function parseBrokerDate(dateStr: string, timeStr?: string): Date | null {
+	const trimmed = (dateStr || '').trim();
+	if (!trimmed) return null;
+
+	// Separar la fecha de una hora pegada: «2024-01-15 10:30:00», «15/01/2024, 10:30»
+	const [datePart, ...resto] = trimmed.split(/[\s,]+/);
+	const parts = datePart.split(/[-/.]/);
+
+	let year: number;
+	let month: number;
+	let day: number;
+
+	if (parts.length === 3) {
+		const [a, b, c] = parts.map(p => parseInt(p, 10));
+		if ([a, b, c].some(n => isNaN(n))) return null;
+
+		if (parts[0].length === 4) {
+			// ISO: YYYY-MM-DD
+			year = a;
+			month = b - 1;
+			day = c;
+		} else if (b > 12 && a <= 12) {
+			// El segundo campo no puede ser un mes y el primero sí: MM/DD/YYYY americano.
+			// Es la única desambiguación posible sin saber de qué bróker viene el fichero;
+			// en todo lo demás se asume día-primero, que es lo que exportan los europeos.
+			month = a - 1;
+			day = b;
+			year = c;
+		} else {
+			day = a;
+			month = b - 1;
+			year = c;
+		}
+		if (year < 100) year += 2000;
+	} else {
+		const ts = Date.parse(trimmed);
+		return isNaN(ts) ? null : new Date(ts);
+	}
+
+	if (month < 0 || month > 11 || day < 1 || day > 31) return null;
+
+	let hours = 0;
+	let minutes = 0;
+	let seconds = 0;
+	const horaStr = (timeStr && timeStr.trim()) || resto.join(' ');
+	const t = horaStr.match(/(\d{1,2}):(\d{2})(?::(\d{2}))?/);
+	if (t) {
+		hours = parseInt(t[1], 10);
+		minutes = parseInt(t[2], 10);
+		seconds = t[3] ? parseInt(t[3], 10) : 0;
+	}
+
+	const parsed = new Date(year, month, day, hours, minutes, seconds);
+	// `new Date(2024, 1, 31)` no falla: desborda al 2 de marzo. Un 31 de febrero en un CSV
+	// es un fichero corrupto, y vale más descartar la fila que inventarle otro día.
+	if (parsed.getFullYear() !== year || parsed.getMonth() !== month || parsed.getDate() !== day) {
+		return null;
+	}
+	return parsed;
+}
+
+/**
  * Crea una función `skipRow` con estado compartido para tracking de filas omitidas.
  * Elimina la duplicación de esta lógica en cada parser de bróker.
  *
+ * ⚠️ **No devuelve contador, y esa ausencia es el arreglo.** Antes exponía
+ * `get skipped()`, un getter, y los seis parsers lo **desestructuraban**
+ * (`const { skipRow, skipped: _skipped } = createSkipRow()`). Desestructurar evalúa
+ * el getter una sola vez, en ese instante, así que capturaban el 0 inicial y
+ * `ImportResult.skippedRows` valía **siempre 0** por muchas filas que se tiraran.
+ * Consecuencia visible: el aviso «se han omitido N filas» de `ImportModal` y su panel
+ * de motivos por fila —traducidos y funcionando— no se mostraron jamás, de modo que
+ * todos los demás fallos de estos parsers eran además invisibles.
+ *
+ * El contador y el array eran **el mismo estado escrito dos veces**; la longitud del
+ * array no se puede congelar, así que se ha borrado el contador en vez de convertirlo
+ * en función. Los llamantes hacen `skipped: skippedDetails.length` al construir su
+ * resultado, que se evalúa cuando toca.
+ *
  * @example
- * const { skipRow, skipped, skippedDetails } = createSkipRow();
+ * const { skipRow, skippedDetails } = createSkipRow();
+ * // …
+ * return { positions, warnings, skipped: skippedDetails.length, skippedDetails };
  */
 export function createSkipRow() {
-	let skipped = 0;
 	const skippedDetails: { rowNumber: number; preview: string; reason: string }[] = [];
 
 	function skipRow(rowIdx: number, row: string[], reason: string): void {
-		skipped++;
 		skippedDetails.push({
 			rowNumber: rowIdx + 1,
 			preview: row.filter(Boolean).slice(0, 3).join(' | '),
@@ -344,7 +471,7 @@ export function createSkipRow() {
 		});
 	}
 
-	return { skipRow, get skipped() { return skipped; }, skippedDetails };
+	return { skipRow, skippedDetails };
 }
 
 
@@ -477,7 +604,15 @@ export function analyzeColumns(headers: string[], rows: string[][]): ColumnAnaly
 			}
 			const numRatio = numCount / sampleValues.length;
 			let qtyScore = 0;
-			if (/\b(shares|quantity|cantidad|participaciones|units|posicion|position|size|tamaño|volumen|volume|titulos|acciones|antal|amount|importe|fiat|n|no|num)\b/i.test(normalized)) qtyScore += 0.5;
+			/**
+			 * ⚠️ `amount` e `importe` estaban aquí **y** en la lista de precio, así que una
+			 * columna de importes competía por los dos roles a la vez: puntuaba 0,9 como
+			 * cantidad y 0,8 como precio. En un extracto de fondos sin columna de
+			 * participaciones reconocible, «Importe» ganaba el rol de cantidad y el dinero
+			 * entraba en la cartera como si fueran títulos. Son dinero, no unidades: se
+			 * quedan solo en la lista de precio.
+			 */
+			if (/\b(shares|quantity|cantidad|participaciones|units|posicion|position|size|tamaño|volumen|volume|titulos|acciones|antal|fiat|n|no|num)\b/i.test(normalized)) qtyScore += 0.5;
 			if (numRatio > 0.8) qtyScore += 0.4;
 			scores.quantity = qtyScore;
 

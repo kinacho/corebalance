@@ -5,8 +5,8 @@
 
 import type { BrokerInfo, ParsedPosition, ImportResult, MappingConfig, SkippedDetail, Transaction, TransactionType, CSVBlock } from './types';
 import {
-	parseCSV, parseCSVBlocks, detectDelimiter, parseNumber, normalizeHeader,
-	findField, isValidISIN, extractISIN, createSkipRow,
+	parseCSVBlocks, detectDelimiter, parseNumber, normalizeHeader, normalizeText,
+	findField, isValidISIN, extractISIN, createSkipRow, parseBrokerDate,
 	analyzeColumns, suggestMappingFromAnalysis, normalizeCurrency
 } from './csv-utils';
 import { reduceTransactionsToPositions } from './aggregator';
@@ -106,30 +106,49 @@ function parseDegiroStockSplit(description: string): {
 	};
 }
 
-/** Parsea una fecha y hora con formato específico de DEGIRO */
-function parseDegiroDate(dateStr: string, timeStr?: string): Date {
-	const trimmed = dateStr.trim();
-	if (!trimmed) return new Date();
+/**
+ * Motivo con el que se descarta una fila cuya fecha no se entiende.
+ * Centralizado porque los cinco parsers lo necesitan con el mismo texto.
+ */
+function motivoFechaInvalida(dateStr: string): string {
+	return `Fecha no reconocida: "${(dateStr || '').trim() || 'vacía'}"`;
+}
 
-	// Formato: DD-MM-YYYY o DD/MM/YYYY
-	const parts = trimmed.split(/[-/]/);
-	if (parts.length === 3) {
-		const day = parseInt(parts[0], 10);
-		const month = parseInt(parts[1], 10) - 1; // 0-indexed en JS
-		const year = parseInt(parts[2], 10);
-
-		if (timeStr && timeStr.trim()) {
-			const timeParts = timeStr.trim().split(':');
-			const hours = parseInt(timeParts[0], 10) || 0;
-			const minutes = parseInt(timeParts[1], 10) || 0;
-			const seconds = timeParts[2] ? parseInt(timeParts[2], 10) : 0;
-			return new Date(year, month, day, hours, minutes, seconds);
-		}
-		return new Date(year, month, day);
+/** Longitud de la palabra más larga de la lista que aparece en el texto; 0 si ninguna. */
+function coincidenciaMasLarga(texto: string, palabras: string[]): number {
+	let mejor = 0;
+	for (const kw of palabras) {
+		if (kw.length > mejor && texto.includes(kw)) mejor = kw.length;
 	}
+	return mejor;
+}
 
-	const ts = Date.parse(trimmed);
-	return isNaN(ts) ? new Date() : new Date(ts);
+/**
+ * Clasifica el tipo de operación quedándose con la **coincidencia más larga** entre las dos
+ * listas, en vez de con la primera lista que casa.
+ *
+ * ⚠️ Antes era `buyKeywords.some(kw => typeRaw.includes(kw))` y, si no, las de venta. Dos
+ * defectos en una línea:
+ *
+ * - La lista de compra contenía `'in'`, de dos letras, así que **`'selling'` y `'sending'`
+ *   casaban como compra** por la «in» de dentro. Cada venta se importaba como compra: los
+ *   títulos se sumaban en vez de restarse y el coste medio se recalculaba con un precio de
+ *   venta.
+ * - Y el orden decidía los empates, así que `'koop'` (comprar) dentro de `'verkoop'`
+ *   (vender) hacía lo mismo con el neerlandés de DEGIRO — el peor caso posible, porque son
+ *   la compra y la venta del mismo bróker.
+ *
+ * Comparar longitudes resuelve los dos sin depender del orden y sin romper los gerundios:
+ * en `'verkoop'` gana `verkoop` (7) sobre `koop` (4), y en `'selling'` casa `sell` y nada de
+ * la lista de compra. Exigir palabra entera **no** vale: `'Selling'` y `'Buying'` dejarían
+ * de casar con nada y ambas caerían al valor por defecto, que es compra.
+ */
+function clasificarTipoOperacion(texto: string, compra: string[], venta: string[]): TransactionType | null {
+	const largoCompra = coincidenciaMasLarga(texto, compra);
+	const largoVenta = coincidenciaMasLarga(texto, venta);
+
+	if (largoCompra === 0 && largoVenta === 0) return null;
+	return largoVenta > largoCompra ? 'SELL' : 'BUY';
 }
 
 /** Devuelve el string si parece un código de divisa de 3 letras, null en caso contrario */
@@ -171,7 +190,7 @@ const degiroAccountStatementDetector: BrokerDetector = {
 	parse(headers, rows) {
 		const transactions: Transaction[] = [];
 		const warnings: string[] = [];
-		const { skipRow, skipped: _skipped, skippedDetails } = createSkipRow();
+		const { skipRow, skippedDetails } = createSkipRow();
 
 		for (const [rowIdx, row] of rows.entries()) {
 			try {
@@ -179,7 +198,7 @@ const degiroAccountStatementDetector: BrokerDetector = {
 				const description = findField(headers, row, 'Descripción', 'Description', 'Omschrijving', 'Descripcion');
 				const dateStr = findField(headers, row, 'Fecha', 'Date', 'Datum');
 				const timeStr = findField(headers, row, 'Hora', 'Time', 'Tijd');
-				const date = parseDegiroDate(dateStr, timeStr);
+				const date = parseBrokerDate(dateStr, timeStr);
 
 				// ── 1. Intentar parsear como STOCK SPLIT ───────────────────────────
 				const splitInfo = parseDegiroStockSplit(description);
@@ -208,6 +227,11 @@ const degiroAccountStatementDetector: BrokerDetector = {
 					if (splitInfo.shares === 0) {
 						// Split con 0 acciones — apunte fantasma sin cambio de posición, ignorar
 						skipRow(rowIdx, row, `Stock Split con 0 acciones (apunte contable sin efecto)`);
+						continue;
+					}
+
+					if (!date) {
+						skipRow(rowIdx, row, motivoFechaInvalida(dateStr));
 						continue;
 					}
 
@@ -242,6 +266,11 @@ const degiroAccountStatementDetector: BrokerDetector = {
 					continue;
 				}
 
+				if (!date) {
+					skipRow(rowIdx, row, motivoFechaInvalida(dateStr));
+					continue;
+				}
+
 				transactions.push({
 					date,
 					type: trade.type === 'buy' ? 'BUY' : 'SELL',
@@ -257,13 +286,14 @@ const degiroAccountStatementDetector: BrokerDetector = {
 		}
 
 		// Consolidar posiciones usando el agregador cronológico de coste medio ponderado
-		const positions = reduceTransactionsToPositions(transactions);
+		const { positions, warnings: avisosAgregador } = reduceTransactionsToPositions(transactions);
+		warnings.push(...avisosAgregador);
 
 		if (positions.length === 0 && rows.length > 0 && transactions.length === 0) {
 			warnings.push('No se encontraron operaciones de compra/venta en el extracto de cuenta. Asegúrate de que el CSV contiene transacciones con formato "Compra/Venta X Nombre@Precio DIVISA (ISIN)".');
 		}
 
-		return { positions, warnings, skipped: _skipped, skippedDetails, totalTransactions: transactions.length };
+		return { positions, warnings, skipped: skippedDetails.length, skippedDetails, totalTransactions: transactions.length };
 	}
 };
 
@@ -305,7 +335,7 @@ const degiroDetector: BrokerDetector = {
 	parse(headers, rows) {
 		const positions: ParsedPosition[] = [];
 		const warnings: string[] = [];
-		const { skipRow, skipped: getSkipped, skippedDetails } = createSkipRow();
+		const { skipRow, skippedDetails } = createSkipRow();
 
 		// Intentar detectar si es un portfolio snapshot o transacciones buscando el campo de precio en las primeras filas
 		let closingPrice = '';
@@ -339,15 +369,26 @@ const degiroDetector: BrokerDetector = {
 					
 					let currency = findField(headers, row, 'Moneda', 'Currency', 'Valuta');
 					if (!currency) {
-						// Heurística: DEGIRO a veces pone la divisa en una columna con cabecera "Valor local" o similar
-						const possibleIdx = headers.findIndex(h => {
-							const n = normalizeHeader(h);
-							return n.includes('valor local') || n.includes('precio de');
-						});
-						const possibleVal = potentialCurrency(row[possibleIdx]);
-						if (possibleVal) {
-							currency = possibleVal;
-						} else {
+						/**
+						 * Heurística: DEGIRO a veces pone la divisa en una columna con cabecera
+						 * «Valor local» o similar.
+						 *
+						 * ⚠️ Esto era un `findIndex` que se quedaba con la **primera cabecera que
+						 * casaba** y miraba solo esa celda. En el `Portfolio.csv` real las columnas
+						 * son `Producto, Symbol/ISIN, Cantidad, Precio de, Valor local, , Valor en
+						 * EUR`, así que «Precio de» casa antes que «Valor local», su celda es un
+						 * número y la búsqueda se daba por fallida — mientras el `USD` estaba en la
+						 * columna de al lado. Ahora se recorren **todas** las candidatas y se toma
+						 * la primera cuya celda es de verdad una divisa, que es lo que se quería.
+						 */
+						for (let i = 0; i < headers.length && !currency; i++) {
+							const n = normalizeHeader(headers[i]);
+							if (!n.includes('valor local') && !n.includes('precio de')) continue;
+							const val = potentialCurrency(row[i]);
+							if (val) currency = val;
+						}
+
+						if (!currency) {
 							// Heurística: divisa en columna sin cabecera justo después del precio o valor local
 							const priceIdx = headers.findIndex(h => {
 								const n = normalizeHeader(h);
@@ -368,17 +409,46 @@ const degiroDetector: BrokerDetector = {
 						}
 					}
 					
-					// Si tenemos el valor en EUR, lo preferimos para el coste total
-					const totalCost = valorEUR > 0 ? valorEUR : (shares * price);
-					const finalCurrency = valorEUR > 0 ? 'EUR' : (normalizeCurrency(currency || 'EUR') || 'EUR');
+					/**
+					 * ⚠️ El coste se toma **en la divisa del activo**, y por eso «Valor en EUR»
+					 * es el último recurso y no el preferido.
+					 *
+					 * `avgCost` viaja hasta el store, que lo multiplica por `fxRate` según la
+					 * divisa que Yahoo da para el ticker (ver el docblock de `pricesWithFx` en
+					 * `portfolio.svelte.ts`). Guardar aquí un importe **ya convertido a euros**
+					 * y etiquetarlo `EUR` no evitaba la conversión: la hacía **dos veces**. Con
+					 * el fixture real de DEGIRO, una posición en USD quedaba con el coste
+					 * infravalorado ~14 %, es decir, una plusvalía inventada en el panel fiscal.
+					 * El CSV trae el precio unitario en divisa local, así que `shares * price`
+					 * es tanto la respuesta correcta como la que ya estaba en el fichero.
+					 */
+					const detectedCurrency = normalizeCurrency(currency || '') || '';
+					const usaValorEUR = !(price > 0);
+					const totalCost = usaValorEUR ? valorEUR : shares * price;
+					const finalCurrency = usaValorEUR ? 'EUR' : (detectedCurrency || 'EUR');
 
 					if (shares > 0) {
-						accumulated.set(isin, {
-							name: name || isin,
-							shares,
-							totalCost,
-							currency: finalCurrency,
-						});
+						/**
+						 * ⚠️ Esto era `.set(...)` sobre un mapa llamado `accumulated`: sustituía
+						 * en vez de acumular, así que un ISIN repetido —la misma posición en dos
+						 * bolsas o en dos cuentas, o dos exportaciones concatenadas— perdía todas
+						 * las filas menos la última, sin aviso y sin aparecer en `skippedDetails`.
+						 * Las otras dos copias del mismo cometido (`aggregateParsedPositions` y
+						 * `reduceTransactionsToPositions`) sí consolidan con coste medio ponderado.
+						 */
+						const previo = accumulated.get(isin);
+						if (previo) {
+							previo.shares += shares;
+							previo.totalCost += totalCost;
+							if ((name || '').length > previo.name.length) previo.name = name;
+						} else {
+							accumulated.set(isin, {
+								name: name || isin,
+								shares,
+								totalCost,
+								currency: finalCurrency,
+							});
+						}
 					} else {
 						skipRow(rowIdx, row, `Cantidad <= 0 (valor: ${shares})`);
 					}
@@ -397,7 +467,7 @@ const degiroDetector: BrokerDetector = {
 				});
 			}
 
-			return { positions, warnings, skipped: getSkipped, skippedDetails };
+			return { positions, warnings, skipped: skippedDetails.length, skippedDetails };
 		} else {
 			// Transaction history: usar transacciones + agregador cronológico
 			const transactions: Transaction[] = [];
@@ -435,7 +505,12 @@ const degiroDetector: BrokerDetector = {
 					if (sharesRaw !== 0 && price > 0) {
 						const dateStr = findField(headers, row, 'Fecha', 'Date', 'Datum');
 						const timeStr = findField(headers, row, 'Hora', 'Time', 'Tijd');
-						const date = parseDegiroDate(dateStr, timeStr);
+						const date = parseBrokerDate(dateStr, timeStr);
+
+						if (!date) {
+							skipRow(rowIdx, row, motivoFechaInvalida(dateStr));
+							continue;
+						}
 
 						transactions.push({
 							date,
@@ -455,8 +530,17 @@ const degiroDetector: BrokerDetector = {
 				}
 			}
 
-			const consolidated = reduceTransactionsToPositions(transactions);
-			return { positions: consolidated, warnings, skipped: getSkipped, skippedDetails };
+			const { positions: consolidated, warnings: avisosAgregador } = reduceTransactionsToPositions(transactions);
+			warnings.push(...avisosAgregador);
+			/**
+			 * ⚠️ `totalTransactions` no es decorativo: es el campo con el que `importFromCSV`
+			 * distingue «este parser no entendió el fichero» de «lo entendió y el neto es
+			 * cero». Faltaba aquí y en Interactive Brokers —los otros tres sí lo devolvían—,
+			 * así que un `Transacciones.csv` cuyas filas se descartan todas caía al importador
+			 * genérico, que mapea «Valor local» como precio unitario e importa 15 títulos a
+			 * 1.536,67 € cada uno. La guarda existía; solo faltaba en dos de las cinco copias.
+			 */
+			return { positions: consolidated, warnings, skipped: skippedDetails.length, skippedDetails, totalTransactions: transactions.length };
 		}
 	}
 };
@@ -482,7 +566,7 @@ const trading212Detector: BrokerDetector = {
 	parse(headers, rows) {
 		const transactions: Transaction[] = [];
 		const warnings: string[] = [];
-		const { skipRow, skipped: getSkipped2, skippedDetails } = createSkipRow();
+		const { skipRow, skippedDetails } = createSkipRow();
 		
 		for (const [rowIdx, row] of rows.entries()) {
 			try {
@@ -509,19 +593,37 @@ const trading212Detector: BrokerDetector = {
 					skipRow(rowIdx, row, 'Cantidad de acciones = 0');
 					continue;
 				}
-				
+				/**
+				 * ⚠️ Esto era `price: price || 0` — es decir, se admitía la transacción con
+				 * precio cero. La misma guarda existía escrita cuatro veces y solo el
+				 * histórico de DEGIRO la aplicaba de verdad. Una compra con la celda de precio
+				 * vacía no es un redondeo: entra en el coste medio como si el título hubiera
+				 * sido gratis, así que la app presenta como plusvalía dinero que el usuario sí
+				 * pagó y el panel fiscal estima IRPF sobre una ganancia inventada. Mejor
+				 * descartar la fila y decirlo, que ahora además se ve.
+				 */
+				if (price <= 0) {
+					skipRow(rowIdx, row, `Precio por acción no válido (valor: "${findField(headers, row, 'Price / share', 'Price share') || 'vacío'}")`);
+					continue;
+				}
+
 				const isBuy = action.includes('buy');
 				const dateStr = findField(headers, row, 'Time', 'Date', 'Fecha');
-				const date = dateStr ? new Date(dateStr) : new Date();
+				const date = parseBrokerDate(dateStr);
+
+				if (!date) {
+					skipRow(rowIdx, row, motivoFechaInvalida(dateStr));
+					continue;
+				}
 
 				transactions.push({
-					date: isNaN(date.getTime()) ? new Date() : date,
+					date,
 					type: isBuy ? 'BUY' : 'SELL',
 					isin,
 					ticker: ticker || undefined,
 					name: name || ticker || isin,
 					shares,
-					price: price || 0,
+					price,
 					currency,
 				});
 			} catch {
@@ -529,8 +631,9 @@ const trading212Detector: BrokerDetector = {
 			}
 		}
 
-		const consolidated = reduceTransactionsToPositions(transactions);
-		return { positions: consolidated, warnings, skipped: getSkipped2, skippedDetails, totalTransactions: transactions.length };
+		const { positions: consolidated, warnings: avisosAgregador } = reduceTransactionsToPositions(transactions);
+		warnings.push(...avisosAgregador);
+		return { positions: consolidated, warnings, skipped: skippedDetails.length, skippedDetails, totalTransactions: transactions.length };
 	}
 };
 
@@ -562,7 +665,8 @@ const ibDetector: BrokerDetector = {
 	parse(headers, rows, blocks) {
 		const positions: ParsedPosition[] = [];
 		const warnings: string[] = [];
-		const { skipRow, skipped: getSkipped3, skippedDetails } = createSkipRow();
+		const { skipRow, skippedDetails } = createSkipRow();
+		let totalTransactions = 0;
 
 		// 1. Extraer mapeo de Símbolo a ISIN de todas partes del documento (ej: bloque Dividendos)
 		const symbolToIsinMap = new Map<string, string>();
@@ -639,9 +743,20 @@ const ibDetector: BrokerDetector = {
 							skipRow(rowIdx, row, `Cantidad = 0 para ${symbol}`);
 							continue;
 						}
-						
+						// Misma guarda que en DEGIRO y Trading 212: un trade sin precio entra en
+						// el coste medio como si el título hubiera sido gratis.
+						if (price <= 0) {
+							skipRow(rowIdx, row, `Precio no válido para ${symbol}`);
+							continue;
+						}
+
 						const dateStr = findField(block.headers, row, 'Date/Time', 'DateTime', 'Date', 'Fecha');
-						const date = dateStr ? new Date(dateStr) : new Date();
+						const date = parseBrokerDate(dateStr);
+
+						if (!date) {
+							skipRow(rowIdx, row, motivoFechaInvalida(dateStr));
+							continue;
+						}
 
 						// Determinar el ISIN desde nuestro mapa acumulado o columna si existe
 						let isin = findField(block.headers, row, 'ISIN');
@@ -650,13 +765,13 @@ const ibDetector: BrokerDetector = {
 						}
 
 						transactions.push({
-							date: isNaN(date.getTime()) ? new Date() : date,
+							date,
 							type: qty > 0 ? 'BUY' : 'SELL',
 							isin: isValidISIN(isin) ? isin : undefined,
 							ticker: symbol,
 							name: findField(block.headers, row, 'Description', 'Financial Instrument', 'Name') || symbol,
 							shares: Math.abs(qty),
-							price: price || 0,
+							price,
 							currency: normalizeCurrency(currency) || 'USD'
 						});
 					} catch {
@@ -666,7 +781,9 @@ const ibDetector: BrokerDetector = {
 			}
 
 			// Consolidar posiciones con coste medio ponderado
-			const consolidated = reduceTransactionsToPositions(transactions);
+			totalTransactions = transactions.length;
+			const { positions: consolidated, warnings: avisosAgregador } = reduceTransactionsToPositions(transactions);
+		warnings.push(...avisosAgregador);
 			positions.push(...consolidated);
 		} else {
 			// Si no hay bloques de transacciones, procesamos como snapshot de posiciones
@@ -724,7 +841,9 @@ const ibDetector: BrokerDetector = {
 			}
 		}
 
-		return { positions, warnings, skipped: getSkipped3, skippedDetails };
+		// Ver la nota de `totalTransactions` en el detector de DEGIRO: sin este campo, un
+		// fichero de trades cuyas filas se descartan todas cae al importador genérico.
+		return { positions, warnings, skipped: skippedDetails.length, skippedDetails, totalTransactions };
 	}
 };
 
@@ -756,12 +875,12 @@ const myinvestorDetector: BrokerDetector = {
 	parse(headers, rows) {
 		const transactions: Transaction[] = [];
 		const warnings: string[] = [];
-		const { skipRow, skipped: getSkipped4, skippedDetails } = createSkipRow();
-		
+		const { skipRow, skippedDetails } = createSkipRow();
+
 		for (const [rowIdx, row] of rows.entries()) {
 			try {
 				// Ignorar transacciones que no estén finalizadas o ejecutadas
-				const estado = findField(headers, row, 'Estado').toLowerCase();
+				const estado = normalizeText(findField(headers, row, 'Estado'));
 				if (estado && !estado.includes('finalizada') && !estado.includes('ejecutad')) {
 					skipRow(rowIdx, row, `Estado no procesable: "${estado}"`);
 					continue;
@@ -769,8 +888,16 @@ const myinvestorDetector: BrokerDetector = {
 
 				let isin = findField(headers, row, 'ISIN', 'Código ISIN', 'Codigo ISIN');
 				const name = findField(headers, row, 'Nombre fondo', 'Nombre del fondo', 'Producto', 'Nombre', 'Descripción');
+				/**
+				 * ⚠️ `normalizeText` y no `toLowerCase()`: las palabras con las que se compara
+				 * abajo van sin acento (`suscripcion`, `aportacion`), y MyInvestor escribe
+				 * «Suscripción». Con el `toLowerCase()` a secas no casaba **ninguna**
+				 * suscripción; medido contra el fixture real, las 5 filas de suscripción del
+				 * fichero se descartaban como «tipo de operación no reconocido» y el fondo
+				 * desaparecía entero de la cartera importada.
+				 */
 				const tipoOpRaw = findField(headers, row, 'Tipo operación', 'Operación', 'Tipo');
-				const tipoOp = tipoOpRaw ? tipoOpRaw.toLowerCase() : '';
+				const tipoOp = tipoOpRaw ? normalizeText(tipoOpRaw) : '';
 				
 				// Extraer ISIN del nombre si no hay campo dedicado
 				if (!isValidISIN(isin) && name) {
@@ -806,7 +933,12 @@ const myinvestorDetector: BrokerDetector = {
 				}
 
 				const dateStr = findField(headers, row, 'Fecha suscripcion', 'Fecha de la orden', 'Fecha valor', 'Fecha', 'Fecha de suscripción');
-				const date = parseDegiroDate(dateStr); // Utiliza el mismo parseador de DD/MM/YYYY o DD_MM_YYYY
+				const date = parseBrokerDate(dateStr);
+
+				if (!date) {
+					skipRow(rowIdx, row, motivoFechaInvalida(dateStr));
+					continue;
+				}
 
 				const importeTotal = parseNumber(findField(headers, row,
 					'Importe neto', 'Importe bruto', 'Importe', 'Valoracion', 'Valoración', 'Importe estimado'));
@@ -820,6 +952,14 @@ const myinvestorDetector: BrokerDetector = {
 					costPerShare = manualAvgCost;
 				} else if (Math.abs(shares) > 0 && Math.abs(importeTotal) > 0) {
 					costPerShare = Math.abs(importeTotal) / Math.abs(shares);
+				}
+
+				// Misma guarda que en los otros tres parsers: sin ninguna columna de importe
+				// el fondo entraba en la cartera con coste 0, y la app presentaba el 100 % de
+				// su valor de mercado como plusvalía.
+				if (costPerShare <= 0) {
+					skipRow(rowIdx, row, 'Sin importe ni precio medio: no se puede calcular el coste');
+					continue;
 				}
 
 				transactions.push({
@@ -836,8 +976,9 @@ const myinvestorDetector: BrokerDetector = {
 			}
 		}
 		
-		const consolidated = reduceTransactionsToPositions(transactions);
-		return { positions: consolidated, warnings, skipped: getSkipped4, skippedDetails, totalTransactions: transactions.length };
+		const { positions: consolidated, warnings: avisosAgregador } = reduceTransactionsToPositions(transactions);
+		warnings.push(...avisosAgregador);
+		return { positions: consolidated, warnings, skipped: skippedDetails.length, skippedDetails, totalTransactions: transactions.length };
 	}
 };
 
@@ -882,7 +1023,7 @@ export function parseGenericCSVWithMapping(
 	rows: string[][],
 	mapping: MappingConfig
 ): { positions: ParsedPosition[]; warnings: string[]; skipped: number; skippedDetails: SkippedDetail[] } {
-	const { skipRow, skipped: getSkipped5, skippedDetails } = createSkipRow();
+	const { skipRow, skippedDetails } = createSkipRow();
 	const warnings: string[] = [];
 
 	// 1. Detectar si el mapping contiene columna de fecha para flujo transaccional
@@ -963,14 +1104,24 @@ export function parseGenericCSVWithMapping(
 					if (mapping.type !== undefined && mapping.type !== -1 && mapping.type < row.length) {
 						const typeRaw = row[mapping.type]?.trim().toLowerCase() || '';
 
-						const buyKeywords = ['buy', 'compra', 'suscripcion', 'aportacion', 'adquirir', 'in', 'deposit', 'receive', 'incoming', 'koop', 'staking', 'stake reward', 'lockup reward', 'converted', 'dividend'];
+						const buyKeywords = ['buy', 'compra', 'suscripcion', 'aportacion', 'adquirir', 'deposit', 'receive', 'incoming', 'koop', 'staking', 'stake reward', 'lockup reward', 'converted'];
 						const sellKeywords = ['sell', 'venta', 'reembolso', 'salida', 'out', 'withdrawal', 'send', 'outgoing', 'verkoop'];
+						/**
+						 * ⚠️ `'dividend'` estaba en la lista de compra, así que una fila de
+						 * dividendo **sumaba participaciones**. Un dividendo es renta, no un
+						 * movimiento de títulos; en esta app además lo trata el ledger aparte
+						 * (reduce el coste medio). Se descarta y se dice por qué.
+						 */
+						const ignoreKeywords = ['dividend', 'dividendo'];
 
-						if (buyKeywords.some(kw => typeRaw.includes(kw))) {
-							type = 'BUY';
-							typeDetected = true;
-						} else if (sellKeywords.some(kw => typeRaw.includes(kw))) {
-							type = 'SELL';
+						if (coincidenciaMasLarga(typeRaw, ignoreKeywords) > 0) {
+							skipRow(rowIdx, row, `Apunte de dividendo, no es un movimiento de títulos: "${typeRaw}"`);
+							continue;
+						}
+
+						const clasificado = clasificarTipoOperacion(typeRaw, buyKeywords, sellKeywords);
+						if (clasificado) {
+							type = clasificado;
 							typeDetected = true;
 						}
 					}
@@ -984,12 +1135,39 @@ export function parseGenericCSVWithMapping(
 
 				const finalShares = Math.abs(sharesRaw);
 				const dateStr = mapping.date !== undefined && mapping.date !== -1 && mapping.date < row.length ? row[mapping.date] : '';
-				const date = dateStr ? new Date(dateStr) : new Date();
-				const finalDate = isNaN(date.getTime()) ? new Date() : date;
+				const finalDate = parseBrokerDate(dateStr);
+
+				if (!finalDate) {
+					skipRow(rowIdx, row, motivoFechaInvalida(dateStr));
+					continue;
+				}
 
 				if (!parsedFromDesc) {
 					const priceOrTotal = mapping.avgCost !== undefined && mapping.avgCost !== -1 && mapping.avgCost < row.length ? parseNumber(row[mapping.avgCost]) : 0;
-					unitPrice = Math.abs(priceOrTotal);
+					/**
+					 * ⚠️ La variable ya se llamaba `priceOrTotal` y se usaba **siempre como
+					 * precio unitario**. Cuando la columna mapeada es un importe total, eso
+					 * multiplica el coste por el número de títulos.
+					 *
+					 * No es hipotético: un `Transacciones.csv` de DEGIRO con la columna «Precio»
+					 * vacía hace que su parser descarte las filas, salte el respaldo genérico, y
+					 * éste mapee «Valor local» —un total— como precio unitario. Medido con el
+					 * caso real: 15 títulos a **1.536,67 € cada uno**, o sea 23.050 € de coste
+					 * base para una posición de 2.805 €. Eso viaja al coste medio, a la
+					 * desviación y a la estimación de IRPF sin que salte un solo error.
+					 *
+					 * El resto del subsistema ya sabía distinguirlo: el parser de MyInvestor
+					 * divide el importe entre las participaciones. Aquí se hace igual, mirando
+					 * el vocabulario de la cabecera mapeada.
+					 */
+					const cabeceraPrecio = mapping.avgCost !== undefined && mapping.avgCost !== -1 && mapping.avgCost < headers.length
+						? normalizeHeader(headers[mapping.avgCost])
+						: '';
+					const esImporteTotal = /\b(valor local|valor|importe|total|monto|proceeds|amount)\b/.test(cabeceraPrecio);
+
+					unitPrice = esImporteTotal && Math.abs(sharesRaw) > 0
+						? Math.abs(priceOrTotal) / Math.abs(sharesRaw)
+						: Math.abs(priceOrTotal);
 				}
 
 				const currencyRaw = mapping.currency !== undefined && mapping.currency !== -1 && mapping.currency < row.length ? row[mapping.currency] : 'EUR';
@@ -1010,8 +1188,9 @@ export function parseGenericCSVWithMapping(
 			}
 		}
 
-		const positions = reduceTransactionsToPositions(transactions);
-		return { positions, warnings, skipped: getSkipped5, skippedDetails };
+		const { positions, warnings: avisosAgregador } = reduceTransactionsToPositions(transactions);
+		warnings.push(...avisosAgregador);
+		return { positions, warnings, skipped: skippedDetails.length, skippedDetails };
 	} else {
 		// 2. Flujo instantánea de posiciones (Static positions list)
 		let positions: ParsedPosition[] = [];
@@ -1056,7 +1235,7 @@ export function parseGenericCSVWithMapping(
 		}
 
 		positions = aggregateParsedPositions(positions);
-		return { positions, warnings, skipped: getSkipped5, skippedDetails };
+		return { positions, warnings, skipped: skippedDetails.length, skippedDetails };
 	}
 }
 
@@ -1092,48 +1271,27 @@ const ALL_DETECTORS: BrokerDetector[] = [
 ];
 
 /**
- * Parsea un CSV utilizando un mapeo manual de columnas definido por el usuario.
+ * Elige sobre qué bloque del CSV se trabaja, y con qué detector.
+ *
+ * ⚠️ Existe para que `importWithMapping` e `importFromCSV` no puedan elegir bloques
+ * distintos, que es lo que pasaba. `importWithMapping` llamaba a `parseCSV`, que devuelve
+ * el **primer** bloque, mientras que el mapeo que el usuario acababa de confirmar se había
+ * construido sobre las cabeceras del bloque que `importFromCSV` eligió por confianza de
+ * detector y le enseñó en `ColumnMapper`. En un CSV con una tabla de resumen arriba y las
+ * posiciones debajo —el caso que parte `parseCSVBlocks` en dos—, el usuario mapeaba las
+ * columnas del segundo bloque y se aplicaban al primero: los índices apuntaban a columnas
+ * que significan otra cosa, así que o no salía ninguna posición («no se encontraron
+ * posiciones» justo después de mapear bien), o entraban cifras del resumen como si fueran
+ * participaciones.
  */
-export function importWithMapping(fileContent: string, mapping: MappingConfig): ImportResult {
-	const { headers, rows, delimiter } = parseCSV(fileContent);
-	const { positions, warnings, skipped, skippedDetails } = parseGenericCSVWithMapping(headers, rows, mapping);
-
-	return {
-		broker: { id: 'generic', name: 'Mapeo Manual', icon: '⚙️', confidence: 1 },
-		positions,
-		warnings,
-		skippedRows: skipped,
-		skippedDetails,
-		rawHeaders: headers,
-		rawRows: rows.slice(0, 10),
-		delimiter
-	};
-}
-
-
-/**
- * Punto de entrada principal: dado el contenido bruto de un archivo CSV,
- * detecta automáticamente el bróker y extrae las posiciones.
- */
-export function importFromCSV(fileContent: string): ImportResult {
+function seleccionarBloque(fileContent: string) {
 	const blocks = parseCSVBlocks(fileContent);
 	const delimiter = detectDelimiter(fileContent);
-	
-	if (blocks.length === 0) {
-		return {
-			broker: { id: 'generic', name: 'Desconocido', icon: '❓', confidence: 0 },
-			positions: [],
-			warnings: ['El archivo está vacío o no tiene un formato CSV válido.'],
-			skippedRows: 0,
-			delimiter
-		};
-	}
-	
-	// Detectar el bróker con mayor confianza recorriendo las cabeceras de todos los bloques
+
 	let bestDetector: BrokerDetector = genericDetector;
 	let bestConfidence = 0;
-	let bestBlock = blocks[0];
-	
+	let bestBlock: CSVBlock | undefined = blocks[0];
+
 	for (const detector of ALL_DETECTORS) {
 		for (const block of blocks) {
 			const confidence = detector.detect(block.headers);
@@ -1144,7 +1302,60 @@ export function importFromCSV(fileContent: string): ImportResult {
 			}
 		}
 	}
-	
+
+	return { blocks, delimiter, bestDetector, bestConfidence, bestBlock };
+}
+
+/**
+ * Parsea un CSV utilizando un mapeo manual de columnas definido por el usuario.
+ */
+export function importWithMapping(fileContent: string, mapping: MappingConfig): ImportResult {
+	const { blocks, delimiter, bestBlock } = seleccionarBloque(fileContent);
+
+	if (!bestBlock) {
+		return {
+			broker: { id: 'generic', name: 'Mapeo Manual', icon: '⚙️', confidence: 1 },
+			positions: [],
+			warnings: ['El archivo está vacío o no tiene un formato CSV válido.'],
+			skippedRows: 0,
+			delimiter
+		};
+	}
+
+	const { positions, warnings, skipped, skippedDetails } =
+		parseGenericCSVWithMapping(bestBlock.headers, bestBlock.rows, mapping);
+
+	return {
+		broker: { id: 'generic', name: 'Mapeo Manual', icon: '⚙️', confidence: 1 },
+		positions,
+		warnings,
+		skippedRows: skipped,
+		skippedDetails,
+		rawHeaders: bestBlock.headers,
+		rawRows: bestBlock.rows.slice(0, 10),
+		delimiter,
+		blocks
+	};
+}
+
+
+/**
+ * Punto de entrada principal: dado el contenido bruto de un archivo CSV,
+ * detecta automáticamente el bróker y extrae las posiciones.
+ */
+export function importFromCSV(fileContent: string): ImportResult {
+	const { blocks, delimiter, bestDetector, bestConfidence, bestBlock } = seleccionarBloque(fileContent);
+
+	if (!bestBlock) {
+		return {
+			broker: { id: 'generic', name: 'Desconocido', icon: '❓', confidence: 0 },
+			positions: [],
+			warnings: ['El archivo está vacío o no tiene un formato CSV válido.'],
+			skippedRows: 0,
+			delimiter
+		};
+	}
+
 	// Parsear con el mejor detector
 	let result = bestDetector.parse(
 		bestBlock.headers,
@@ -1167,8 +1378,11 @@ export function importFromCSV(fileContent: string): ImportResult {
 					...result.warnings,
 					`El detector automático sugirió '${bestDetector.name}' pero no pudo extraer activos de la tabla. Se ha utilizado el importador genérico como alternativa de respaldo.`
 				],
-				skippedRows: genericResult.skipped,
-				skippedDetails: genericResult.skippedDetails,
+				// ⚠️ Suma de los dos: el respaldo devolvía solo su propio contador y tiraba el
+				// del bróker, así que las filas que el detector original había descartado —el
+				// motivo por el que estamos en el failsafe— desaparecían del informe.
+				skippedRows: result.skipped + genericResult.skipped,
+				skippedDetails: [...(result.skippedDetails ?? []), ...(genericResult.skippedDetails ?? [])],
 				rawHeaders: bestBlock.headers,
 				rawRows: bestBlock.rows.slice(0, 10),
 				delimiter,
