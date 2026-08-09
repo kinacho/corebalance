@@ -41,6 +41,14 @@ const MENCIONES_HISTORICAS = new Map([
 		'paquete que se decidió NO instalar; se cita para explicar por qué el treemap es propio'
 	],
 	['tailwind.config.js', 'se cita justamente para decir que no existe: Tailwind v4 no lo usa'],
+	[
+		'toBeVisible',
+		'aserción de Playwright, no código de este repo; se cita para explicar qué falla sobre un mapa plegado'
+	],
+	[
+		'boundingBox',
+		'método de Playwright, no código de este repo; se cita por la misma razón que `toBeVisible`'
+	],
 	['static/sw.js', 'se cita para explicar que se borró y por qué no debe volver'],
 	['training_csv/', 'se cita como el directorio equivocado al que apuntaba un test'],
 	[
@@ -58,7 +66,14 @@ const MENCIONES_HISTORICAS = new Map([
 ]);
 
 /** Dónde se busca. El orden no importa: se concatena todo. */
-const RAICES = ['src', 'scripts', 'static', '.github'];
+/*
+ * `e2e` estaba reconocido como raíz de **rutas** válidas más abajo pero no
+ * entraba en el pajar de **identificadores**, así que cualquier ayudante citado
+ * en CLAUDE.md y definido en un spec —`abrirMapas`, por ejemplo— se denunciaba
+ * como inexistente. Añadir una raíz solo puede encontrar más identificadores,
+ * nunca inventar huérfanos nuevos.
+ */
+const RAICES = ['src', 'scripts', 'static', 'e2e', '.github'];
 const FICHEROS_SUELTOS = [
 	'package.json',
 	'vite.config.ts',
