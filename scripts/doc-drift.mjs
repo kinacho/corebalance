@@ -50,6 +50,10 @@ const MENCIONES_HISTORICAS = new Map([
 		'método de Playwright, no código de este repo; se cita por la misma razón que `toBeVisible`'
 	],
 	['static/sw.js', 'se cita para explicar que se borró y por qué no debe volver'],
+	[
+		'flowLabel',
+		'se borró al extraer `flowTooltipLine`; se cita para decir que se quitó en vez de dejarla como código muerto'
+	],
 	['training_csv/', 'se cita como el directorio equivocado al que apuntaba un test'],
 	[
 		'ledgerHoldings.ts',
