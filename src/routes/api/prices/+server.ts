@@ -10,9 +10,31 @@ const historyCache: Record<string, { timestamp: number, sparkline: number[], ytd
 const CACHE_TTL_SECONDS = 60 * 60 * 4; // 4 horas
 const CACHE_TTL_MS = CACHE_TTL_SECONDS * 1000;
 
+/**
+ * Días de cierres que se sirven por defecto, y el techo de lo que se puede pedir.
+ *
+ * ⚠️ **Lo que limitaba el histórico del patrimonio no era Yahoo: era este recorte.** La
+ * petición a Yahoo ya arranca el 20 de diciembre del año anterior —lo necesita
+ * `calculateHistoricalMetrics` para el YTD—, así que llegan entre 160 y 250 cierres y se
+ * tiraban todos menos los últimos 30. La constante `HISTORY_DAYS` del store decía «limitado
+ * por lo que da el sparkline de Yahoo» y era falso: lo limitaba esta línea.
+ *
+ * Sigue habiendo un motivo para no servirlos siempre: este array viaja en la respuesta de
+ * precios, que el cliente pide **cada 30 segundos**. Pasar de 30 a 250 puntos por activo son
+ * unos 20 KB extra por respuesta con una cartera de nueve, es decir megabytes por hora de un
+ * dato que no cambia durante la sesión. De ahí que el histórico largo se sirva **sólo cuando
+ * se pide** con `?historyDays=N`, y que el sondeo periódico no lo pida.
+ */
+/**
+ * ⚠️ La clave sube a `v2` porque **lo que se guarda ha cambiado de forma**: antes se cacheaba
+ * la serie ya recortada a 30 puntos, ahora se cachea completa y el recorte se hace al
+ * responder. Sin cambiar la clave, durante cuatro horas —el TTL— una petición de 250 días
+ * habría recibido las 30 que dejó ahí el sondeo anterior, y el gráfico habría salido corto
+ * sin ningún error de por medio.
+ */
 async function getCachedHistory(ticker: string) {
 	try {
-		return redis ? await redis.get(`price_history:${ticker}`) : historyCache[ticker];
+		return redis ? await redis.get(`price_history_v2:${ticker}`) : historyCache[ticker];
 	} catch (e) {
 		return historyCache[ticker];
 	}
@@ -21,7 +43,7 @@ async function getCachedHistory(ticker: string) {
 async function setCachedHistory(ticker: string, data: any) {
 	try {
 		if (redis) {
-			await redis.set(`price_history:${ticker}`, data, { ex: CACHE_TTL_SECONDS });
+			await redis.set(`price_history_v2:${ticker}`, data, { ex: CACHE_TTL_SECONDS });
 		} else {
 			historyCache[ticker] = { ...data, timestamp: Date.now() };
 		}
@@ -30,11 +52,13 @@ async function setCachedHistory(ticker: string, data: any) {
 	}
 }
 
+
 import {
 	RELIABLE_FT_MAPPINGS,
 	fetchFTPrice,
 	correctSubunitCurrencies,
-	calculateHistoricalMetrics
+	calculateHistoricalMetrics,
+	diasDeHistorialPedidos
 } from './priceHelpers';
 import { FT_ONLY_ASSETS, isFtOnlyAsset } from '$lib/ft-assets';
 
@@ -65,6 +89,7 @@ export const GET: RequestHandler = async ({ url, getClientAddress }) => {
 
 	// Aceptar tickers dinámicos del usuario, o usar los de pares de divisas como mínimo
 	const tickersParam = url.searchParams.get('tickers');
+	const diasHistorial = diasDeHistorialPedidos(url.searchParams.get('historyDays'));
 	
 	// Siempre incluir pares de divisas para conversión
 	const currencyPairs = ['BTC-EUR', 'EURUSD=X', 'EURCAD=X', 'EURGBP=X', 'EURCHF=X', 'EURAUD=X', 'EURJPY=X'];
@@ -251,7 +276,9 @@ for (const t of cashTickers) {
 					const chart = await yahooFinance.chart(ticker, queryOptions);
 					
 					const validQuotes = chart.quotes.filter(q => q.close !== null);
-					sparkline = validQuotes.slice(-30).map(q => q.close) as number[];
+					// Se guarda **entera** y se recorta al responder: así una petición corta no
+					// deja el caché sin datos para la siguiente petición larga.
+					sparkline = validQuotes.map(q => q.close) as number[];
 					
 					// Calcular métricas usando helper
 					if (validQuotes.length > 0) {
@@ -348,7 +375,9 @@ for (const t of cashTickers) {
 				currency: currency,
 				name: quote.shortName ?? quote.longName ?? ticker,
 				change: change ?? 0,
-				sparkline: correctedSparkline,
+				// El recorte se hace aquí y no al cachear: el caché guarda la serie completa y
+				// cada petición se lleva los días que ha pedido.
+				sparkline: correctedSparkline.slice(-diasHistorial),
 				marketState: quote.marketState,
 				lastUpdate: quote.regularMarketTime ? new Date(quote.regularMarketTime).getTime() : undefined,
 				ytdChangePercent: ytd,

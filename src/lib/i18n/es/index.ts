@@ -526,6 +526,7 @@ const es = {
     update_badge: 'Actualizar',
     placeholder_ticker: 'Ticker Yahoo (ej: IWDA.AS)',
     done_title: '{count:number} activos importados',
+    done_ledger: '{count:number} de ellos con su libro de operaciones: llevan las fechas y los precios de cada compra, así que tienes cálculo fiscal FIFO y el histórico real de tu patrimonio.',
     done_hint: 'Los precios se actualizarán automáticamente en unos segundos.',
     btn_import_assets: 'Importar {count:number} activos',
     // ColumnMapper

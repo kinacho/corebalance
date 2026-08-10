@@ -94,6 +94,21 @@ export interface ImportResult {
 	delimiter?: string;
 	/** Bloques detectados (para formatos multi-tabla) */
 	blocks?: CSVBlock[];
+	/**
+	 * Las operaciones tal y como venían en el fichero, cuando el CSV es transaccional.
+	 *
+	 * ⚠️ **Los parsers ya las construían y las tiraban.** Todos los formatos con fechas
+	 * levantan este array para pasarlo por `reduceTransactionsToPositions()` y quedarse
+	 * sólo con el resultado consolidado; de `importFromCSV` salían las posiciones y las
+	 * fechas se perdían ahí mismo. Y sin fechas no hay libro de operaciones: la cartera
+	 * importada nace en modo manual, `fiscal.ts` no puede aplicar FIFO —el panel de IRPF
+	 * queda apagado— y la reconstrucción del patrimonio no puede ir hacia atrás, porque
+	 * `sharesAt()` no sabe cuántas participaciones había en cada fecha y asume las de hoy.
+	 *
+	 * Está aquí en el formato del importador (`date` como `Date`, `BUY`/`SELL`); quien las
+	 * escriba tiene que convertirlas al `Transaction` de `$lib/types`, que es otro tipo.
+	 */
+	transactions?: Transaction[];
 }
 
 /** Tipo de operación de transacción */

@@ -3,6 +3,39 @@
  * These are stateless functions that can be tested independently.
  */
 
+/**
+ * Días de cierres que se sirven por defecto, y el techo de lo que se puede pedir.
+ *
+ * ⚠️ **Lo que limitaba el histórico del patrimonio no era Yahoo: era un `slice(-30)`.** La
+ * petición a Yahoo ya arranca el 20 de diciembre del año anterior —lo necesita
+ * `calculateHistoricalMetrics` para el YTD—, así que llegan entre 160 y 250 cierres y se
+ * tiraban todos menos los últimos 30. La constante `HISTORY_DAYS` del store decía «limitado
+ * por lo que da el sparkline de Yahoo» y describía este recorte, no la fuente.
+ *
+ * Sigue habiendo motivo para no servirlos siempre: este array viaja en la respuesta de
+ * precios, que el cliente pide **cada 30 segundos**. Pasar de 30 a 250 puntos por activo son
+ * unos 20 KB extra por respuesta con una cartera de nueve, o megabytes por hora de un dato
+ * que no se mueve durante la sesión. De ahí que el histórico largo se sirva **sólo cuando se
+ * pide** con `?historyDays=N`, y que el sondeo periódico no lo pida.
+ */
+export const SPARKLINE_DIAS_DEFECTO = 30;
+export const SPARKLINE_DIAS_MAX = 400;
+
+/**
+ * Cuántos cierres pide el cliente, acotado para que un parámetro absurdo no dispare nada.
+ *
+ * ⚠️ Vive aquí y no en `+server.ts` porque SvelteKit **prohíbe los exports arbitrarios** en un
+ * fichero de endpoint: sólo admite los verbos HTTP y unos pocos nombres reservados, así que
+ * exportarla allí rompe el build con «Invalid export». Y tenía que ser exportada para poder
+ * probarla: el `NaN` de `slice(-NaN)` devuelve el array entero, o sea justo la respuesta gorda
+ * que este parámetro existe para evitar.
+ */
+export function diasDeHistorialPedidos(param: string | null): number {
+	const pedido = Number(param);
+	if (!Number.isFinite(pedido) || pedido <= 0) return SPARKLINE_DIAS_DEFECTO;
+	return Math.min(Math.max(Math.trunc(pedido), SPARKLINE_DIAS_DEFECTO), SPARKLINE_DIAS_MAX);
+}
+
 // Mapeo de tickers problemáticos en Yahoo a ISINs/Symbols de Financial Times para mayor fiabilidad
 export const RELIABLE_FT_MAPPINGS: Record<string, string> = {
 	'0P0001XF40.F': 'IE000ZYRH0Q7', // BlackRock World
