@@ -4,7 +4,8 @@ import {
 	fetchFTPrice,
 	correctSubunitCurrencies,
 	calculateHistoricalMetrics,
-	RELIABLE_FT_MAPPINGS
+	RELIABLE_FT_MAPPINGS,
+	diasDeHistorialPedidos
 } from './priceHelpers';
 
 /**
@@ -248,5 +249,50 @@ describe('RELIABLE_FT_MAPPINGS', () => {
 			expect(tickerYahoo).toMatch(/^[A-Z0-9]+\.[A-Z]{1,2}$/);
 			expect(idFt).toMatch(/^[A-Z]{2}[A-Z0-9]{9,10}$|^[A-Z0-9]+:[A-Z]{3}$/);
 		}
+	});
+});
+
+/**
+ * ⚠️ **Este parámetro es lo que limitaba el histórico del patrimonio, no Yahoo.** El endpoint
+ * ya pedía desde el 20 de diciembre del año anterior —lo necesita `calculateHistoricalMetrics`
+ * para el YTD— y llegaban entre 160 y 250 cierres, que se tiraban con un `slice(-30)`. La
+ * constante del store decía «limitado por lo que da el sparkline de Yahoo» y describía ese
+ * recorte.
+ *
+ * Sigue habiendo motivo para no servir la serie larga siempre: viaja en la respuesta de
+ * precios, que el cliente pide cada 30 segundos. De ahí que haya que pedirla explícitamente.
+ */
+describe('diasDeHistorialPedidos', () => {
+	it('sin parámetro sirve los 30 días de siempre', () => {
+		expect(diasDeHistorialPedidos(null)).toBe(30);
+	});
+
+	it('respeta lo que se le pide', () => {
+		expect(diasDeHistorialPedidos('250')).toBe(250);
+	});
+
+	/** El mínimo protege a las tarjetas de activo, que dibujan su sparkline con 30 puntos. */
+	it('nunca baja de 30, aunque se pida menos', () => {
+		expect(diasDeHistorialPedidos('5')).toBe(30);
+		expect(diasDeHistorialPedidos('1')).toBe(30);
+	});
+
+	it('acota por arriba para que un parámetro absurdo no dispare nada', () => {
+		expect(diasDeHistorialPedidos('99999')).toBe(400);
+	});
+
+	/**
+	 * Viene de la URL, así que puede ser cualquier cosa. Sin la guarda, un `NaN` acabaría en
+	 * `slice(-NaN)`, que devuelve el array **entero**: justo la respuesta gorda que el
+	 * parámetro existe para evitar.
+	 */
+	it('la basura cae al valor por defecto', () => {
+		for (const entrada of ['', 'abc', '-1', '0', 'NaN', 'Infinity', '1e999']) {
+			expect(diasDeHistorialPedidos(entrada)).toBe(30);
+		}
+	});
+
+	it('un decimal se trunca en vez de propagarse', () => {
+		expect(diasDeHistorialPedidos('120.9')).toBe(120);
 	});
 });

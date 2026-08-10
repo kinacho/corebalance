@@ -203,6 +203,124 @@ describe('PortfolioStore - commitHoldingEdit', () => {
 		expect(edit!.sharesAfter).toBe(500);
 	});
 
+	/**
+	 * La ventana de la reconstrucción, que **la decide el dato y no una constante**.
+	 *
+	 * ⚠️ Ampliarla sin más no añade historia: las participaciones de una fecha pasada salen
+	 * del libro o del log de ediciones, y sin ninguno de los dos `sharesAt()` devuelve las de
+	 * hoy para todo el pasado y lo marca `estimated`. Es decir, se agrandaría el tramo
+	 * inventado — el mismo que se excluyó del cálculo de rentabilidades por contaminarlas.
+	 */
+	describe('ventana histórica', () => {
+		it('sin libro ni ediciones se queda en los 30 días de siempre', () => {
+			store.transactions = [];
+			store.holdingEdits = [];
+			expect(store.ventanaHistorica).toBe(PortfolioStore.HISTORY_DAYS);
+		});
+
+		it('con una operación antigua alcanza hasta ella', () => {
+			const haceCienDias = startOfUTCDay(new Date()) - 100 * DAY_MS;
+			store.transactions = [
+				{ id: 't1', ticker: 'VWCE', type: 'buy', date: haceCienDias, shares: 500, price: 70, currency: 'EUR', fees: 0, fxRate: 1 }
+			];
+
+			expect(store.ventanaHistorica).toBe(101);
+		});
+
+		it('el log de ediciones cuenta igual que el libro', () => {
+			const haceCincuenta = startOfUTCDay(new Date()) - 50 * DAY_MS;
+			store.transactions = [];
+			store.holdingEdits = [
+				{ id: 'e1', ticker: 'VWCE', sharesBefore: 0, sharesAfter: 500, date: haceCincuenta, reason: 'purchase' } as never
+			];
+
+			expect(store.ventanaHistorica).toBe(51);
+		});
+
+		it('una operación reciente no encoge la ventana por debajo del mínimo', () => {
+			store.transactions = [
+				{ id: 't1', ticker: 'VWCE', type: 'buy', date: Date.now(), shares: 1, price: 70, currency: 'EUR', fees: 0, fxRate: 1 }
+			];
+
+			expect(store.ventanaHistorica).toBe(PortfolioStore.HISTORY_DAYS);
+		});
+
+		/**
+		 * El techo existe porque el histórico de Yahoo tampoco es infinito y porque la serie
+		 * viaja en la respuesta de precios: pedir diez años sería pedir un array que nadie va
+		 * a dibujar.
+		 */
+		it('una operación de hace diez años se queda en el techo', () => {
+			const haceDiezAnios = startOfUTCDay(new Date()) - 3650 * DAY_MS;
+			store.transactions = [
+				{ id: 't1', ticker: 'VWCE', type: 'buy', date: haceDiezAnios, shares: 1, price: 70, currency: 'EUR', fees: 0, fxRate: 1 }
+			];
+
+			expect(store.ventanaHistorica).toBe(PortfolioStore.HISTORY_DAYS_MAX);
+		});
+
+		/**
+		 * Y la consecuencia que se ve: con libro largo la serie deja de tener 30 puntos. El
+		 * sparkline de este fixture sólo trae 30, así que los días sin precio los rellena la
+		 * reconstrucción marcándolos —`paddedBefore`—, que es exactamente lo que debe pasar
+		 * cuando el activo no tiene tanto histórico como el libro.
+		 */
+		/**
+		 * ⚠️ **El mecanismo cuyo fallo es invisible durante treinta segundos.** El histórico
+		 * largo se pide una sola vez —viaja en la respuesta de precios, que se sondea cada 30
+		 * s—, y `this.prices = data.prices` reemplaza en bloque. Sin fusionar, la serie larga
+		 * llegaba al cargar y el primer sondeo la dejaba otra vez en 30 puntos: el gráfico se
+		 * encogía solo, sin ningún error de por medio y con el usuario mirando.
+		 */
+		it('el sondeo corto no pisa el histórico largo ya recibido', async () => {
+			const haceNoventa = startOfUTCDay(new Date()) - 90 * DAY_MS;
+			store.transactions = [
+				{ id: 't1', ticker: 'VWCE', type: 'buy', date: haceNoventa, shares: 500, price: 70, currency: 'EUR', fees: 0, fxRate: 1 }
+			];
+
+			const urls: string[] = [];
+			const respuestaCon = (puntos: number) => ({
+				ok: true,
+				json: async () => ({
+					prices: {
+						VWCE: {
+							name: 'V', price: 80, currency: 'EUR', change: 0,
+							sparkline: new Array(puntos).fill(80)
+						}
+					},
+					timestamp: new Date().toISOString()
+				})
+			});
+
+			let llamada = 0;
+			vi.stubGlobal('fetch', vi.fn(async (url: string) => {
+				urls.push(url);
+				// La primera pide histórico; el sondeo siguiente ya no, y trae 30.
+				return respuestaCon(++llamada === 1 ? 91 : 30);
+			}));
+
+			await store.fetchPrices();
+			expect(urls[0]).toContain('historyDays=91');
+			expect(store.prices.VWCE.sparkline).toHaveLength(91);
+
+			await store.fetchPrices();
+			expect(urls[1]).not.toContain('historyDays');
+			// Lo que importa: sigue habiendo 91 puntos después del sondeo.
+			expect(store.prices.VWCE.sparkline).toHaveLength(91);
+
+			vi.unstubAllGlobals();
+		});
+
+		it('la serie de puntos crece con la ventana', () => {
+			const haceNoventa = startOfUTCDay(new Date()) - 90 * DAY_MS;
+			store.transactions = [
+				{ id: 't1', ticker: 'VWCE', type: 'buy', date: haceNoventa, shares: 500, price: 70, currency: 'EUR', fees: 0, fxRate: 1 }
+			];
+
+			expect(store.performanceSeries.points).toHaveLength(91);
+		});
+	});
+
 	it('classifyEdit convierte el pendiente en un flujo real', () => {
 		const edit = store.commitHoldingEdit('VWCE', 500, 200)!;
 		store.holdings = { VWCE: { shares: 200, avgCost: 70, useLedger: false } };
