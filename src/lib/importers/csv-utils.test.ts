@@ -708,3 +708,158 @@ describe('los roles de cantidad y precio no comparten palabras clave', () => {
 		expect(col.roleScores.price).toBeGreaterThan(col.roleScores.quantity);
 	});
 });
+
+/**
+ * Los cinco campos que un informe de aportaciones por lotes dejaba sin mapear, y que
+ * obligaban a corregir el mapeo a mano en el modal.
+ *
+ * La forma del fichero es la que trae un desglose fiscal por lotes: una fila por
+ * aportación, con la fecha de la compra **y** la fecha en que se generó el informe, el
+ * precio de compra **y** el valor de mercado de hoy. Esa duplicidad de pares es lo que
+ * rompía el mapeo: `suggestMappingFromAnalysis` descarta los empates de menos de 0,1
+ * devolviendo `-1`, así que cada par empatado dejaba su campo vacío.
+ *
+ * Y vaciarse no era inocuo en ningún caso: sin `avgCost` el activo entra **con coste 0**
+ * —beneficio inventado del 100 % y plusvalía fiscal por el valor íntegro—, y sin `date`
+ * las operaciones pierden su fecha, con lo que no hay libro y la reconstrucción del
+ * patrimonio no puede ir hacia atrás.
+ */
+describe('mapeo automático de un informe de aportaciones por lotes', () => {
+	const CABECERAS = [
+		'isin', 'fondo', 'indice', 'lote', 'fecha_fiscal', 'inversion_eur', 'participaciones',
+		'precio_medio_eur', 'valor_mercado_eur', 'resultado_eur', 'rentabilidad_pct',
+		'dias_antiguedad', 'vl_valoracion_eur', 'fecha_valoracion'
+	];
+	const FILAS = [
+		['IE00TEST0001', 'Acme Developed World Index Fund Class S Acc EUR', 'MSCI World', '1', '2025-02-10', '1000.00', '100.0000', '10.0000', '1200.00', '200.00', '20.00', '542', '12.000', '2026-08-06'],
+		['IE00TEST0001', 'Acme Developed World Index Fund Class S Acc EUR', 'MSCI World', '2', '2025-04-30', '500.00', '45.0000', '11.1111', '540.00', '40.00', '8.00', '463', '12.000', '2026-08-06'],
+		['IE00TEST0001', 'Acme Developed World Index Fund Class S Acc EUR', 'MSCI World', '3', '2025-07-02', '250.00', '21.0000', '11.9047', '252.00', '2.00', '0.80', '400', '12.000', '2026-08-06'],
+		['IE00TEST0002', 'Acme Emerging Markets Index Fund Class S Acc EUR', 'MSCI EM', '1', '2026-04-15', '300.00', '25.0000', '12.0000', '310.00', '10.00', '3.33', '117', '12.400', '2026-08-06']
+	];
+
+	const mapeo = () => suggestMappingFromAnalysis(analyzeColumns(CABECERAS, FILAS));
+	const idx = (cabecera: string) => CABECERAS.indexOf(cabecera);
+
+	it('mapea los cinco campos que decidían el resultado', () => {
+		const m = mapeo();
+		expect(m.shares).toBe(idx('participaciones'));
+		expect(m.isin).toBe(idx('isin'));
+		expect(m.name).toBe(idx('fondo'));
+		expect(m.avgCost).toBe(idx('precio_medio_eur'));
+		expect(m.date).toBe(idx('fecha_fiscal'));
+	});
+
+	/**
+	 * El rol `price` de este importador significa **coste de adquisición**, no «cuánto vale
+	 * hoy»: se escribe en `avgCost`. Con `valor` en la lista de sinónimos, la valoración
+	 * empataba con el precio de compra y ganaba el empate nadie.
+	 */
+	it('el precio de compra gana a la valoración de hoy, y no empatan', () => {
+		const analisis = analyzeColumns(CABECERAS, FILAS);
+		const compra = analisis[idx('precio_medio_eur')].roleScores.price;
+		const mercado = analisis[idx('valor_mercado_eur')].roleScores.price;
+		const liquidativo = analisis[idx('vl_valoracion_eur')].roleScores.price;
+
+		expect(compra).toBeGreaterThan(mercado + 0.1);
+		expect(compra).toBeGreaterThan(liquidativo + 0.1);
+	});
+
+	/**
+	 * ⚠️ El nombre del fondo acaba en «Class S Acc EUR» y `normalizeCurrency` busca `EUR`
+	 * *dentro* del texto —lo necesita para entender «Dólares USD»—, así que la columna del
+	 * nombre se mapeaba como divisa. Misma familia que el defecto ya documentado en esa
+	 * función: un detector demasiado generoso no informa de nada.
+	 */
+	it('un nombre de fondo que acaba en EUR no es una columna de divisa', () => {
+		const col = analyzeColumns(CABECERAS, FILAS)[idx('fondo')];
+		expect(col.roleScores.currency).toBe(0);
+		expect(mapeo().currency).not.toBe(idx('fondo'));
+	});
+
+	it('el índice de referencia no se confunde con el nombre del activo', () => {
+		const analisis = analyzeColumns(CABECERAS, FILAS);
+		expect(analisis[idx('fondo')].roleScores.name).toBeGreaterThan(
+			analisis[idx('indice')].roleScores.name + 0.1
+		);
+	});
+
+	/**
+	 * ⚠️ El test de arriba **no aisla** la penalización del índice: con `fondo` en la lista
+	 * de cabeceras conocidas su ventaja ya es de medio punto, así que pasa igual sin ella
+	 * —comprobado revirtiéndola—. Lo que la penalización decide de verdad es este otro
+	 * caso: la columna del nombre tiene una cabecera que el detector no conoce, así que
+	 * ambas puntúan sólo por su contenido, empatan, y el empate deja el nombre **sin
+	 * mapear**. Dos fondos distintos pueden seguir el mismo índice, así que mapearlo como
+	 * nombre fusiona posiciones que no son la misma.
+	 */
+	it('con una cabecera desconocida, el índice sigue sin ganar el rol de nombre', () => {
+		const analisis = analyzeColumns(
+			['referencia_interna', 'indice'],
+			[
+				['Acme Developed World Index Fund Class S', 'MSCI World'],
+				['Acme Emerging Markets Index Fund Class S', 'MSCI EM'],
+				['Acme Global Bond Index Fund Class S', 'Bloomberg Global']
+			]
+		);
+
+		expect(analisis[0].roleScores.name).toBeGreaterThan(analisis[1].roleScores.name + 0.1);
+		expect(suggestMappingFromAnalysis(analisis).name).toBe(0);
+	});
+
+	/**
+	 * El desempate que no depende del idioma ni del nombre de la columna: la fecha del
+	 * informe es la misma en todas las filas, la de la compra cambia en cada lote.
+	 */
+	it('una columna de fechas con un solo valor distinto no es la fecha de la operación', () => {
+		const analisis = analyzeColumns(CABECERAS, FILAS);
+		expect(analisis[idx('fecha_fiscal')].roleScores.date).toBeGreaterThan(
+			analisis[idx('fecha_valoracion')].roleScores.date + 0.1
+		);
+	});
+
+	it('el desempate por variabilidad funciona sin ayuda de la cabecera', () => {
+		// Dos columnas llamadas igual de bien, una constante y otra no.
+		const analisis = analyzeColumns(
+			['fecha_a', 'fecha_b'],
+			[
+				['2025-01-10', '2026-08-06'],
+				['2025-05-20', '2026-08-06'],
+				['2025-09-30', '2026-08-06']
+			]
+		);
+		expect(analisis[0].roleScores.date).toBeGreaterThan(analisis[1].roleScores.date);
+	});
+
+	it('los porcentajes, los días y el número de lote no compiten por ser la cantidad', () => {
+		const analisis = analyzeColumns(CABECERAS, FILAS);
+		const participaciones = analisis[idx('participaciones')].roleScores.quantity;
+
+		for (const cabecera of ['rentabilidad_pct', 'dias_antiguedad', 'lote', 'resultado_eur']) {
+			expect(analisis[idx(cabecera)].roleScores.quantity).toBeLessThan(participaciones);
+		}
+	});
+
+	/**
+	 * ⚠️ **El test de arriba no puede fallar** —comprobado revirtiendo la penalización— porque
+	 * `participaciones` ya gana medio punto por su cabecera. Lo que esa penalización decide
+	 * es el caso en que la columna de títulos **no** tiene una cabecera reconocible: entonces
+	 * empata con la de días o de porcentaje, y el empate no deja el campo vacío como en los
+	 * demás roles, porque la cantidad es obligatoria y `suggestMappingFromAnalysis` cae a
+	 * `shares: 0` — **la primera columna del fichero, que suele ser el ISIN**. Es decir, la
+	 * cartera se llevaría un código alfanumérico donde van los títulos.
+	 */
+	it('sin cabecera reconocible, la columna numérica gana a la de días y no cae al ISIN', () => {
+		const analisis = analyzeColumns(
+			['isin', 'saldo', 'dias_antiguedad'],
+			[
+				['IE00TEST0001', '166.5998', '542'],
+				['IE00TEST0002', '45.0404', '117'],
+				['IE00TEST0003', '12.3456', '80']
+			]
+		);
+
+		expect(analisis[1].roleScores.quantity).toBeGreaterThan(analisis[2].roleScores.quantity + 0.1);
+		// Y lo que de verdad importa: `shares` no acaba apuntando a la columna 0.
+		expect(suggestMappingFromAnalysis(analisis).shares).toBe(1);
+	});
+});

@@ -614,7 +614,17 @@ export function analyzeColumns(headers: string[], rows: string[][]): ColumnAnaly
 			 */
 			if (/\b(shares|quantity|cantidad|participaciones|units|posicion|position|size|tamaño|volumen|volume|titulos|acciones|antal|fiat|n|no|num)\b/i.test(normalized)) qtyScore += 0.5;
 			if (numRatio > 0.8) qtyScore += 0.4;
-			scores.quantity = qtyScore;
+			/**
+			 * ⚠️ Columnas que son números pero **nunca** son títulos. Sin esto todas
+			 * puntúan 0,40 sólo por ser numéricas —lote, resultado, rentabilidad, días de
+			 * antigüedad— y en un fichero cuya columna de participaciones no se llame así,
+			 * el número de lote o el porcentaje de rentabilidad pueden acabar mapeados como
+			 * cantidad. Eso no da error: pone la cifra equivocada en la cartera.
+			 */
+			if (/\b(pct|porcentaje|percent|rentabilidad|return|yield|resultado|result|ganancia|perdida|profit|loss|dias|days|antiguedad|lote|lot|id|orden|order|referencia|reference)\b/i.test(normalized)) {
+				qtyScore -= 0.35;
+			}
+			scores.quantity = Math.max(0, qtyScore);
 
 			// 4. Precio
 			let priceScore = 0;
@@ -622,12 +632,45 @@ export function analyzeColumns(headers: string[], rows: string[][]): ColumnAnaly
 			if (numRatio > 0.8) priceScore += 0.3;
 			const currencySymbolCount = sampleValues.filter(v => /[\$€£]/.test(v)).length;
 			if (currencySymbolCount / sampleValues.length > 0.5) priceScore += 0.2;
-			scores.price = priceScore;
+
+			/**
+			 * ⚠️ **Aquí el rol `price` significa «coste de adquisición», no «cuánto vale
+			 * hoy», y sin distinguirlos el precio se quedaba sin mapear.** Medido con un
+			 * CSV de aportaciones por lotes que trae las dos cosas: `precio_medio_eur` y
+			 * `valor_mercado_eur` puntuaban **0,80 las dos** —`valor` está en la lista de
+			 * arriba—, y `suggestMappingFromAnalysis` descarta los empates de menos de 0,1
+			 * devolviendo `-1`. Resultado: `avgCost` sin mapear, o sea **el activo entra en
+			 * la cartera con coste 0, como si fuera gratis**, con un beneficio inventado
+			 * del 100 % y una plusvalía fiscal por el valor íntegro.
+			 *
+			 * Así que la valoración actual se penaliza y el coste de compra se premia. No
+			 * basta con premiar: mientras las dos sigan a la misma distancia, el empate se
+			 * mantiene y el campo se queda vacío igual.
+			 */
+			if (/\b(mercado|market|valoracion|valuation|actual|current|hoy|today|liquidativo|nav)\b/i.test(normalized)) {
+				priceScore -= 0.45;
+			}
+			if (/\b(medio|media|average|avg|compra|purchase|adquisicion|acquisition|coste|cost)\b/i.test(normalized)) {
+				priceScore += 0.25;
+			}
+			scores.price = Math.max(0, priceScore);
 
 			// 5. Divisa
 			let curCount = 0;
 			for (const val of sampleValues) {
-				if (normalizeCurrency(val) !== null) curCount++;
+				/**
+				 * ⚠️ **La celda tiene que *ser* una divisa, no contenerla.**
+				 * `normalizeCurrency` busca `EUR` dentro del texto —lo necesita para
+				 * entender «Dólares USD»—, así que un nombre de fondo como «iShares
+				 * Developed World Index Fund (IE) Class S Acc **EUR**» daba positivo y la
+				 * columna del nombre se mapeaba como divisa. Es la misma familia del
+								 * defecto que ya se documenta en `normalizeCurrency`: un detector
+				 * demasiado generoso no informa de nada.
+				 *
+				 * Un código de divisa, un símbolo o su nombre caben de sobra en doce
+				 * caracteres; un nombre de producto, no.
+				 */
+				if (val.trim().length <= 12 && normalizeCurrency(val) !== null) curCount++;
 			}
 			const curRatio = curCount / sampleValues.length;
 			let curScore = 0;
@@ -645,9 +688,21 @@ export function analyzeColumns(headers: string[], rows: string[][]): ColumnAnaly
 			}
 			const textRatio = textCount / sampleValues.length;
 			let nameScore = 0;
-			if (/\b(name|nombre|producto|product|descripcion|description|asset|activo|security|instrumento|instrument|vardepapper)\b/i.test(normalized)) nameScore += 0.5;
+			/**
+			 * ⚠️ `fondo` y `fund` no estaban en esta lista, y por eso la columna con el
+			 * nombre del fondo no ganaba: puntuaba 0,50 sólo por el ratio de texto, igual
+			 * que la columna `indice` («MSCI World»), y el empate dejaba el nombre sin
+			 * mapear — la posición entraba en la cartera llamándose por su ISIN.
+			 */
+			if (/\b(name|nombre|producto|product|descripcion|description|asset|activo|security|instrumento|instrument|vardepapper|fondo|fund|isin fondo)\b/i.test(normalized)) nameScore += 0.5;
 			if (textRatio > 0.6) nameScore += 0.5;
-			scores.name = nameScore;
+			/**
+			 * Y el índice de referencia no es el nombre del activo: dos fondos distintos
+			 * pueden seguir el mismo, así que mapearlo como nombre fusiona posiciones
+			 * distintas bajo una etiqueta común.
+			 */
+			if (/\b(indice|index|benchmark|categoria|category)\b/i.test(normalized)) nameScore -= 0.4;
+			scores.name = Math.max(0, nameScore);
 
 			// 7. Fecha
 			let dateCount = 0;
@@ -658,7 +713,30 @@ export function analyzeColumns(headers: string[], rows: string[][]): ColumnAnaly
 			let dateScore = 0;
 			if (/\b(date|fecha|datum|tijd|time|hora|timestamp)\b/i.test(normalized)) dateScore += 0.5;
 			if (dateRatio > 0.8) dateScore += 0.5;
-			scores.date = dateScore;
+
+			/**
+			 * ⚠️ **Un fichero puede traer dos columnas de fecha, y elegir la equivocada —o
+			 * ninguna— es lo que impide que la cartera tenga historia.** Medido con un CSV
+			 * de aportaciones por lotes: `fecha_fiscal` (la de cada compra) y
+			 * `fecha_valoracion` (el día en que se sacó el informe) puntuaban **1,00 las
+			 * dos**, así que el empate dejaba `date` sin mapear y las veinticinco
+			 * operaciones perdían su fecha. Sin fecha no hay libro de operaciones, y sin
+			 * libro la reconstrucción del patrimonio no puede ir hacia atrás: todo el
+			 * pasado queda marcado como estimado.
+			 *
+			 * Dos desempates, y el segundo es el bueno porque no depende del idioma ni de
+			 * cómo se llame la columna: **una columna de fechas con un solo valor distinto
+			 * no es la fecha de la operación**. La del informe es la misma en todas las
+			 * filas; la de la compra cambia con cada lote.
+			 */
+			if (/\b(valoracion|valuation|extracto|informe|report|descarga|download|consulta|actualizacion|snapshot)\b/i.test(normalized)) {
+				dateScore -= 0.4;
+			}
+			if (dateRatio > 0.8 && sampleValues.length > 2) {
+				const distintas = new Set(sampleValues.map((v) => v.trim())).size;
+				if (distintas === 1) dateScore -= 0.45;
+			}
+			scores.date = Math.max(0, dateScore);
 
 			// 8. Tipo de operación (BUY/SELL)
 			let typeCount = 0;
