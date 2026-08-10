@@ -659,7 +659,7 @@ const en: Translation = {
     timing_period_note: 'Measured over the {days} days with real data, not annualised.',
     legal_disclaimer: '<strong>Legal Disclaimer:</strong> CoreBalance is a purely informative and educational tool. It does not constitute financial, investment, or tax advice. The data displayed may be subject to delays or inaccuracies. The developer is not responsible for any financial losses resulting from the use of this application. Always invest at your own risk.',
     footer_tagline: 'Your control center for smart and balanced asset management.',
-    changelog_trigger: 'v1.13.0 🚀',
+    changelog_trigger: 'v1.14.0 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Made with ❤️ for the investing community',
     reclassify_stocks: 'Individual Stocks',
@@ -933,6 +933,17 @@ const en: Translation = {
     close_aria: 'Close modal',
     btn_understand: 'Got it',
     releases: {
+      v1_14_0: {
+        date: 'August 10, 2026',
+        badge: 'Your CSV carries more than it seemed',
+        changes: [
+          '📖 **If your CSV has dates, your portfolio comes in with its transaction ledger.** The date and price of every purchase were already in the file and were being thrown away on import. They are kept now, and with them come FIFO tax figures — which need transactions to work at all — and the real history of your net worth. If the file is incomplete (a sale with no purchases behind it) nothing changes: a correct snapshot beats an invented ledger.',
+          '📈 **History is no longer always one month.** The window is not a constant any more: it reaches as far back as your transactions do, limited by whatever the asset itself has published. Index funds typically have close to a year of daily NAV.',
+          '🟢 **The net-worth line is drawn green above what you contributed and red below**, segment by segment, so you can see *when* you were down rather than only whether you are down today.',
+          '🔢 **A hand-made CSV no longer imports at zero cost.** The automatic mapping left five fields unassigned whenever the file brought lookalike columns — purchase price and market value, transaction date and report date — and with no cost the asset showed up as if it had been free, with a fabricated 100 % gain.',
+          '🩹 **Plus three fixes you will not see but will feel:** a sale could add shares instead of subtracting them depending on how the file was detected; the two figures in the timing panel included estimated days; and restoring an empty backup wiped the portfolio.'
+        ]
+      },
       v1_13_0: {
         date: 'August 9, 2026',
         badge: 'Charts that answer questions',

@@ -661,7 +661,7 @@ const es = {
     timing_period_note: 'Medido sobre los {days:number} días con datos reales, sin anualizar.',
     legal_disclaimer: '<strong>Aviso Legal:</strong> CoreBalance es una herramienta puramente informativa y educativa. No constituye asesoramiento financiero, de inversión ni fiscal. Los datos mostrados pueden sufrir retrasos o ser inexactos. El desarrollador no se hace responsable de posibles pérdidas financieras derivadas del uso de esta aplicación. Invierte siempre bajo tu propia responsabilidad.',
     footer_tagline: 'Tu centro de mandos para una gestión de activos inteligente y equilibrada.',
-    changelog_trigger: 'v1.13.0 🚀',
+    changelog_trigger: 'v1.14.0 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Hecho con ❤️ para la comunidad inversora',
     reclassify_stocks: 'Acciones Individuales',
@@ -941,6 +941,17 @@ const es = {
     close_aria: 'Cerrar modal',
     btn_understand: 'Entendido',
     releases: {
+      v1_14_0: {
+        date: '10 de Agosto, 2026',
+        badge: 'Tu CSV trae más de lo que parecía',
+        changes: [
+          '📖 **Si tu CSV lleva fechas, tu cartera entra con su libro de operaciones.** Las fechas y el precio de cada compra estaban en el fichero y se tiraban al importar. Ahora se guardan, y con ellas se enciende el cálculo fiscal FIFO —que necesita operaciones para funcionar— y el histórico real de tu patrimonio. Si el fichero está incompleto (una venta sin sus compras detrás) se queda como estaba: mejor una foto correcta que un libro inventado.',
+          '📈 **El histórico deja de ser siempre un mes.** La ventana ya no es una constante: llega hasta donde llegan tus operaciones, con el límite de lo que el propio activo tenga publicado. Los fondos indexados suelen tener cerca de un año de valor liquidativo diario.',
+          '🟢 **La línea del patrimonio se pinta verde por encima de lo que aportaste y roja por debajo**, por tramos, así que se ve *cuándo* estuviste en pérdidas y no solo si lo estás hoy.',
+          '🔢 **Un CSV hecho a mano ya no entra con coste cero.** El mapeo automático dejaba cinco campos sin asignar cuando el fichero traía columnas parecidas —precio de compra y valor de mercado, fecha de la operación y fecha del informe—, y sin coste el activo aparecía como si hubiera sido gratis, con un beneficio inventado del 100 %.',
+          '🩹 **Y tres arreglos que no se ven pero se notan:** una venta podía sumar títulos en vez de restarlos según cómo se detectara el fichero; las dos cifras del panel de timing incluían días estimados; y restaurar un respaldo vacío borraba la cartera.'
+        ]
+      },
       v1_13_0: {
         date: '9 de Agosto, 2026',
         badge: 'Gráficos que contestan preguntas',

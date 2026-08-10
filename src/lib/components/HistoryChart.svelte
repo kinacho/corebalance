@@ -24,7 +24,9 @@
 		motionAllowed,
 		CHART_SURFACE,
 		CONTRIBUTED_FILL,
-		MARKET_FILL
+		MARKET_FILL,
+		TREND_UP,
+		TREND_DOWN
 	} from '$lib/chart-theme';
 	import { CATEGORY_COLORS } from '$lib/constants';
 	import { clipNoticeFor, type RangeId } from '$lib/history/range';
@@ -353,6 +355,32 @@
 		 */
 		const flowAt = (c: any) => view.flows[c.dataIndex] ?? 0;
 
+		/**
+		 * El color de la línea principal: verde por encima de lo aportado, rojo por debajo.
+		 *
+		 * Se colorea **por tramos** y no la línea entera según el estado de hoy, que es la
+		 * diferencia entre informar y decorar: así se ve *cuándo* estuviste en pérdidas, que es
+		 * justo lo que un patrimonio de un solo color esconde.
+		 *
+		 * La referencia depende del modo, porque «positivo» no significa lo mismo en los tres:
+		 * en euros es estar por encima del capital aportado, y en rentabilidad o ganancia es
+		 * estar por encima de cero. En el modo apilado no se aplica: ahí la línea es el borde
+		 * de una banda cuyo significado ya lo dan los dos rellenos, y pintarla de rojo diría
+		 * dos cosas con un canal.
+		 */
+		const referenciaEn = (i: number) =>
+			viewMode === 'value' ? (view.invested[i] ?? 0) : 0;
+		const valorEn = (i: number) =>
+			viewMode === 'twr' ? (view.twrPct[i] ?? 0)
+			: viewMode === 'gain' ? (view.gain[i] ?? 0)
+			: (view.points[i]?.total ?? 0);
+
+		const colorDeTramo = (c: any) => {
+			if (isSplitMode) return undefined; // que mande el color base del dataset
+			const i = c.p1DataIndex ?? c.p0DataIndex ?? 0;
+			return valorEn(i) >= referenciaEn(i) ? TREND_UP : TREND_DOWN;
+		};
+
 		// @ts-ignore - Chart.js types are too strict for this configuration
 		chart = new Chart(ctx, {
 			type: 'line',
@@ -373,7 +401,7 @@
 						borderWidth: 2,
 						borderCapStyle: 'round',
 						borderJoinStyle: 'round',
-						segment: { borderDash: dashEstimated },
+						segment: { borderDash: dashEstimated, borderColor: colorDeTramo },
 						pointRadius: (c: any) => (flowAt(c) ? 4 : 0),
 						pointHoverRadius: (c: any) => (flowAt(c) ? 6 : 4),
 						pointBackgroundColor: (c: any) => (flowAt(c) > 0 ? '#ffffff' : CHART_SURFACE),
@@ -497,11 +525,37 @@
 	});
 
 	/** Las cinco entradas de leyenda, para no repetir el mismo bloque cinco veces. */
+	/**
+	 * El color del último tramo dibujado, que es el estado de hoy. Lo usa la muestra de la
+	 * leyenda; la línea lo decide tramo a tramo en `colorDeTramo`, dentro del gráfico.
+	 */
+	const colorActual = $derived.by(() => {
+		const i = view.points.length - 1;
+		if (i < 0) return '#ffffff';
+		const valor =
+			viewMode === 'twr' ? (view.twrPct[i] ?? 0)
+			: viewMode === 'gain' ? (view.gain[i] ?? 0)
+			: (view.points[i]?.total ?? 0);
+		const referencia = viewMode === 'value' ? (view.invested[i] ?? 0) : 0;
+		return valor >= referencia ? TREND_UP : TREND_DOWN;
+	});
+
 	const legendItems = $derived([
 		{
 			key: 'Total',
 			swatch: 'dot' as const,
-			color: isSplitMode ? MARKET_FILL : '#ffffff',
+			/**
+			 * ⚠️ **La muestra tiene que decir lo que la línea está pintando.** Se quedó en
+			 * blanco al colorear la línea por tramos, así que la leyenda enseñaba un punto
+			 * blanco junto a una línea verde o roja — la misma contradicción leyenda-gráfico
+			 * que ya pasó con la banda de «lo que pusiste», y otra vez encontrada mirando la
+			 * captura y no leyendo el código.
+			 *
+			 * Lleva el color del **último tramo**, que es el estado de hoy: es lo que hace
+			 * legible el par sin explicarlo, porque la cifra de la cabecera dice lo mismo con
+			 * signo. En el modo apilado la línea vuelve a su color base y la muestra también.
+			 */
+			color: isSplitMode ? MARKET_FILL : colorActual,
 			label:
 				viewMode === 'twr'
 					? $LL.db.chart_label_return()

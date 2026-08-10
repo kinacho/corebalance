@@ -6,7 +6,7 @@ import { yahooFinance } from '$lib/server/yahoo';
 import { checkRateLimit } from '$lib/server/rateLimit';
 
 // Fallback en memoria para desarrollo local si no hay KV configurado
-const historyCache: Record<string, { timestamp: number, sparkline: number[], ytd?: number, mtd?: number, oneMonth?: number }> = {};
+const historyCache: Record<string, { timestamp: number, sparkline: number[], ytd?: number, mtd?: number, oneMonth?: number, diasPedidos?: number }> = {};
 const CACHE_TTL_SECONDS = 60 * 60 * 4; // 4 horas
 const CACHE_TTL_MS = CACHE_TTL_SECONDS * 1000;
 
@@ -43,7 +43,8 @@ import {
 	fetchFTPrice,
 	correctSubunitCurrencies,
 	calculateHistoricalMetrics,
-	diasDeHistorialPedidos
+	diasDeHistorialPedidos,
+	SPARKLINE_DIAS_DEFECTO
 } from './priceHelpers';
 import { FT_ONLY_ASSETS, isFtOnlyAsset } from '$lib/ft-assets';
 
@@ -213,11 +214,34 @@ for (const t of cashTickers) {
 	const inicioVentanaPedida = new Date(now - diasHistorial * 24 * 60 * 60 * 1000);
 	const desdeCuando = inicioVentanaPedida < dec20PrevYear ? inicioVentanaPedida : dec20PrevYear;
 
-	// Pre-verificar caché en paralelo para todos los tickers
+	/**
+	 * Pre-verificar caché, y **una entrada que no cubre lo que se pide cuenta como fallo**.
+	 *
+	 * ⚠️ Sin esta segunda condición el arreglo del rango no servía de nada en la práctica, y
+	 * está medido en producción: con la entrada caliente, `?historyDays=550` devolvía **149
+	 * puntos** para un ticker y **383** para otro que tenía la caché fría. La diferencia era
+	 * sólo quién la había llenado antes.
+	 *
+	 * Y no es un caso de borde: el sondeo periódico pide el rango por defecto **cada 30
+	 * segundos**, mientras la petición larga se hace una sola vez al cargar. Así que la
+	 * entrada corta es la norma y la larga la excepción — el histórico largo casi nunca
+	 * llegaba.
+	 *
+	 * Se compara contra `diasPedidos` y no contra `sparkline.length`, porque son cosas
+	 * distintas: si a Yahoo se le piden 550 días de un fondo que sólo tiene 229 cierres, la
+	 * serie nunca alcanzará 550 y compararla daría fallo **en cada petición**, o sea una
+	 * llamada a Yahoo cada treinta segundos. Lo que hay que recordar es hasta dónde se
+	 * preguntó, no cuánto contestó.
+	 *
+	 * Las entradas anteriores a este cambio no llevan el campo: se tratan como el rango por
+	 * defecto, así que se refrescan solas en cuanto alguien pide más.
+	 */
 	const cacheCheckResults = await Promise.all(
 		tickersParaYahoo.map(async (ticker) => {
 			const cached = await getCachedHistory(ticker) as any;
-			if (cached && (now - (cached.timestamp || 0) < CACHE_TTL_MS)) {
+			const vigente = cached && (now - (cached.timestamp || 0) < CACHE_TTL_MS);
+			const alcanza = (cached?.diasPedidos ?? SPARKLINE_DIAS_DEFECTO) >= diasHistorial;
+			if (vigente && alcanza) {
 				return { ticker, cached, isMiss: false };
 			}
 			return { ticker, isMiss: true };
@@ -320,7 +344,9 @@ for (const t of cashTickers) {
 						}
 					}
 					
-					await setCachedHistory(ticker, { timestamp: now, sparkline, ytd, mtd, oneMonth });
+					// `diasPedidos` es lo que hace utilizable esta entrada: dice hasta dónde se
+					// preguntó, que es distinto de cuánto contestó Yahoo.
+					await setCachedHistory(ticker, { timestamp: now, sparkline, ytd, mtd, oneMonth, diasPedidos: diasHistorial });
 				} catch (e) {
 					console.error(`Error fetching history for ${ticker}:`, e);
 					const fallback = await getCachedHistory(ticker) as any;

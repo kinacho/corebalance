@@ -2482,7 +2482,7 @@ type RootTranslation = {
 		 */
 		footer_tagline: string
 		/**
-		 * v​1​.​1​3​.​0​ ​�​�
+		 * v​1​.​1​4​.​0​ ​�​�
 		 */
 		changelog_trigger: string
 		/**
@@ -3417,6 +3417,38 @@ type RootTranslation = {
 		 */
 		btn_understand: string
 		releases: {
+			v1_14_0: {
+				/**
+				 * 1​0​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
+				 */
+				date: string
+				/**
+				 * T​u​ ​C​S​V​ ​t​r​a​e​ ​m​á​s​ ​d​e​ ​l​o​ ​q​u​e​ ​p​a​r​e​c​í​a
+				 */
+				badge: string
+				changes: {
+					/**
+					 * �​�​ ​*​*​S​i​ ​t​u​ ​C​S​V​ ​l​l​e​v​a​ ​f​e​c​h​a​s​,​ ​t​u​ ​c​a​r​t​e​r​a​ ​e​n​t​r​a​ ​c​o​n​ ​s​u​ ​l​i​b​r​o​ ​d​e​ ​o​p​e​r​a​c​i​o​n​e​s​.​*​*​ ​L​a​s​ ​f​e​c​h​a​s​ ​y​ ​e​l​ ​p​r​e​c​i​o​ ​d​e​ ​c​a​d​a​ ​c​o​m​p​r​a​ ​e​s​t​a​b​a​n​ ​e​n​ ​e​l​ ​f​i​c​h​e​r​o​ ​y​ ​s​e​ ​t​i​r​a​b​a​n​ ​a​l​ ​i​m​p​o​r​t​a​r​.​ ​A​h​o​r​a​ ​s​e​ ​g​u​a​r​d​a​n​,​ ​y​ ​c​o​n​ ​e​l​l​a​s​ ​s​e​ ​e​n​c​i​e​n​d​e​ ​e​l​ ​c​á​l​c​u​l​o​ ​f​i​s​c​a​l​ ​F​I​F​O​ ​—​q​u​e​ ​n​e​c​e​s​i​t​a​ ​o​p​e​r​a​c​i​o​n​e​s​ ​p​a​r​a​ ​f​u​n​c​i​o​n​a​r​—​ ​y​ ​e​l​ ​h​i​s​t​ó​r​i​c​o​ ​r​e​a​l​ ​d​e​ ​t​u​ ​p​a​t​r​i​m​o​n​i​o​.​ ​S​i​ ​e​l​ ​f​i​c​h​e​r​o​ ​e​s​t​á​ ​i​n​c​o​m​p​l​e​t​o​ ​(​u​n​a​ ​v​e​n​t​a​ ​s​i​n​ ​s​u​s​ ​c​o​m​p​r​a​s​ ​d​e​t​r​á​s​)​ ​s​e​ ​q​u​e​d​a​ ​c​o​m​o​ ​e​s​t​a​b​a​:​ ​m​e​j​o​r​ ​u​n​a​ ​f​o​t​o​ ​c​o​r​r​e​c​t​a​ ​q​u​e​ ​u​n​ ​l​i​b​r​o​ ​i​n​v​e​n​t​a​d​o​.
+					 */
+					'0': string
+					/**
+					 * �​�​ ​*​*​E​l​ ​h​i​s​t​ó​r​i​c​o​ ​d​e​j​a​ ​d​e​ ​s​e​r​ ​s​i​e​m​p​r​e​ ​u​n​ ​m​e​s​.​*​*​ ​L​a​ ​v​e​n​t​a​n​a​ ​y​a​ ​n​o​ ​e​s​ ​u​n​a​ ​c​o​n​s​t​a​n​t​e​:​ ​l​l​e​g​a​ ​h​a​s​t​a​ ​d​o​n​d​e​ ​l​l​e​g​a​n​ ​t​u​s​ ​o​p​e​r​a​c​i​o​n​e​s​,​ ​c​o​n​ ​e​l​ ​l​í​m​i​t​e​ ​d​e​ ​l​o​ ​q​u​e​ ​e​l​ ​p​r​o​p​i​o​ ​a​c​t​i​v​o​ ​t​e​n​g​a​ ​p​u​b​l​i​c​a​d​o​.​ ​L​o​s​ ​f​o​n​d​o​s​ ​i​n​d​e​x​a​d​o​s​ ​s​u​e​l​e​n​ ​t​e​n​e​r​ ​c​e​r​c​a​ ​d​e​ ​u​n​ ​a​ñ​o​ ​d​e​ ​v​a​l​o​r​ ​l​i​q​u​i​d​a​t​i​v​o​ ​d​i​a​r​i​o​.
+					 */
+					'1': string
+					/**
+					 * �​�​ ​*​*​L​a​ ​l​í​n​e​a​ ​d​e​l​ ​p​a​t​r​i​m​o​n​i​o​ ​s​e​ ​p​i​n​t​a​ ​v​e​r​d​e​ ​p​o​r​ ​e​n​c​i​m​a​ ​d​e​ ​l​o​ ​q​u​e​ ​a​p​o​r​t​a​s​t​e​ ​y​ ​r​o​j​a​ ​p​o​r​ ​d​e​b​a​j​o​*​*​,​ ​p​o​r​ ​t​r​a​m​o​s​,​ ​a​s​í​ ​q​u​e​ ​s​e​ ​v​e​ ​*​c​u​á​n​d​o​*​ ​e​s​t​u​v​i​s​t​e​ ​e​n​ ​p​é​r​d​i​d​a​s​ ​y​ ​n​o​ ​s​o​l​o​ ​s​i​ ​l​o​ ​e​s​t​á​s​ ​h​o​y​.
+					 */
+					'2': string
+					/**
+					 * �​�​ ​*​*​U​n​ ​C​S​V​ ​h​e​c​h​o​ ​a​ ​m​a​n​o​ ​y​a​ ​n​o​ ​e​n​t​r​a​ ​c​o​n​ ​c​o​s​t​e​ ​c​e​r​o​.​*​*​ ​E​l​ ​m​a​p​e​o​ ​a​u​t​o​m​á​t​i​c​o​ ​d​e​j​a​b​a​ ​c​i​n​c​o​ ​c​a​m​p​o​s​ ​s​i​n​ ​a​s​i​g​n​a​r​ ​c​u​a​n​d​o​ ​e​l​ ​f​i​c​h​e​r​o​ ​t​r​a​í​a​ ​c​o​l​u​m​n​a​s​ ​p​a​r​e​c​i​d​a​s​ ​—​p​r​e​c​i​o​ ​d​e​ ​c​o​m​p​r​a​ ​y​ ​v​a​l​o​r​ ​d​e​ ​m​e​r​c​a​d​o​,​ ​f​e​c​h​a​ ​d​e​ ​l​a​ ​o​p​e​r​a​c​i​ó​n​ ​y​ ​f​e​c​h​a​ ​d​e​l​ ​i​n​f​o​r​m​e​—​,​ ​y​ ​s​i​n​ ​c​o​s​t​e​ ​e​l​ ​a​c​t​i​v​o​ ​a​p​a​r​e​c​í​a​ ​c​o​m​o​ ​s​i​ ​h​u​b​i​e​r​a​ ​s​i​d​o​ ​g​r​a​t​i​s​,​ ​c​o​n​ ​u​n​ ​b​e​n​e​f​i​c​i​o​ ​i​n​v​e​n​t​a​d​o​ ​d​e​l​ ​1​0​0​ ​%​.
+					 */
+					'3': string
+					/**
+					 * �​�​ ​*​*​Y​ ​t​r​e​s​ ​a​r​r​e​g​l​o​s​ ​q​u​e​ ​n​o​ ​s​e​ ​v​e​n​ ​p​e​r​o​ ​s​e​ ​n​o​t​a​n​:​*​*​ ​u​n​a​ ​v​e​n​t​a​ ​p​o​d​í​a​ ​s​u​m​a​r​ ​t​í​t​u​l​o​s​ ​e​n​ ​v​e​z​ ​d​e​ ​r​e​s​t​a​r​l​o​s​ ​s​e​g​ú​n​ ​c​ó​m​o​ ​s​e​ ​d​e​t​e​c​t​a​r​a​ ​e​l​ ​f​i​c​h​e​r​o​;​ ​l​a​s​ ​d​o​s​ ​c​i​f​r​a​s​ ​d​e​l​ ​p​a​n​e​l​ ​d​e​ ​t​i​m​i​n​g​ ​i​n​c​l​u​í​a​n​ ​d​í​a​s​ ​e​s​t​i​m​a​d​o​s​;​ ​y​ ​r​e​s​t​a​u​r​a​r​ ​u​n​ ​r​e​s​p​a​l​d​o​ ​v​a​c​í​o​ ​b​o​r​r​a​b​a​ ​l​a​ ​c​a​r​t​e​r​a​.
+					 */
+					'4': string
+				}
+			}
 			v1_13_0: {
 				/**
 				 * 9​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
@@ -6444,7 +6476,7 @@ export type TranslationFunctions = {
 		 */
 		footer_tagline: () => LocalizedString
 		/**
-		 * v1.13.0 🚀
+		 * v1.14.0 🚀
 		 */
 		changelog_trigger: () => LocalizedString
 		/**
@@ -7334,6 +7366,38 @@ export type TranslationFunctions = {
 		 */
 		btn_understand: () => LocalizedString
 		releases: {
+			v1_14_0: {
+				/**
+				 * 10 de Agosto, 2026
+				 */
+				date: () => LocalizedString
+				/**
+				 * Tu CSV trae más de lo que parecía
+				 */
+				badge: () => LocalizedString
+				changes: {
+					/**
+					 * 📖 **Si tu CSV lleva fechas, tu cartera entra con su libro de operaciones.** Las fechas y el precio de cada compra estaban en el fichero y se tiraban al importar. Ahora se guardan, y con ellas se enciende el cálculo fiscal FIFO —que necesita operaciones para funcionar— y el histórico real de tu patrimonio. Si el fichero está incompleto (una venta sin sus compras detrás) se queda como estaba: mejor una foto correcta que un libro inventado.
+					 */
+					'0': () => LocalizedString
+					/**
+					 * 📈 **El histórico deja de ser siempre un mes.** La ventana ya no es una constante: llega hasta donde llegan tus operaciones, con el límite de lo que el propio activo tenga publicado. Los fondos indexados suelen tener cerca de un año de valor liquidativo diario.
+					 */
+					'1': () => LocalizedString
+					/**
+					 * 🟢 **La línea del patrimonio se pinta verde por encima de lo que aportaste y roja por debajo**, por tramos, así que se ve *cuándo* estuviste en pérdidas y no solo si lo estás hoy.
+					 */
+					'2': () => LocalizedString
+					/**
+					 * 🔢 **Un CSV hecho a mano ya no entra con coste cero.** El mapeo automático dejaba cinco campos sin asignar cuando el fichero traía columnas parecidas —precio de compra y valor de mercado, fecha de la operación y fecha del informe—, y sin coste el activo aparecía como si hubiera sido gratis, con un beneficio inventado del 100 %.
+					 */
+					'3': () => LocalizedString
+					/**
+					 * 🩹 **Y tres arreglos que no se ven pero se notan:** una venta podía sumar títulos en vez de restarlos según cómo se detectara el fichero; las dos cifras del panel de timing incluían días estimados; y restaurar un respaldo vacío borraba la cartera.
+					 */
+					'4': () => LocalizedString
+				}
+			}
 			v1_13_0: {
 				/**
 				 * 9 de Agosto, 2026
