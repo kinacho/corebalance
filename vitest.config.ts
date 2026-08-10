@@ -68,7 +68,14 @@ export default defineConfig({
 				// `importAllData({history: []})` vaciaba las cuatro tablas sin restaurar nada.
 				// `db/index.test.ts` no lo cubría porque lo mockea: prueba el selector de
 				// backend, no el almacenamiento.
-				'src/lib/db/LocalDBStorage.ts'
+				'src/lib/db/LocalDBStorage.ts',
+				// Añadidos el 10-ago-2026. Son las dos rentabilidades que el usuario lee como
+				// suyas —«tus activos rindieron X»— y el rango del que se afirman. Estaban fuera
+				// de todo trinquete, y así fue como `twrPeriod` acabó incluyendo días estimados
+				// (13,33 % contra un 2,00 % real) y como los rangos `YTD` y `Todo` dejaron de
+				// avisar de que enseñan un mes.
+				'src/lib/history/performance.ts',
+				'src/lib/history/range.ts'
 			],
 			reporter: ['text', 'json-summary'],
 			thresholds: {
@@ -114,7 +121,10 @@ export default defineConfig({
 				 * `localDB` es `null` y no hay almacenamiento que probar. Esa rama ya la ejercita
 				 * `db/index.test.ts` con su backend pelado, que es donde tiene sentido.
 				 */
-				'src/lib/db/LocalDBStorage.ts': { statements: 82, branches: 67, functions: 89 }
+				'src/lib/db/LocalDBStorage.ts': { statements: 82, branches: 67, functions: 89 },
+				// Medidos al añadirlos, 10-ago-2026.
+				'src/lib/history/performance.ts': { statements: 94, branches: 90, functions: 100 },
+				'src/lib/history/range.ts': { statements: 100, branches: 95, functions: 100 }
 			}
 		}
 	},

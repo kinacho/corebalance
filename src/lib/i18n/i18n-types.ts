@@ -2425,6 +2425,11 @@ type RootTranslation = {
 		 */
 		chart_range_short: string
 		/**
+		 * E​l​ ​g​r​á​f​i​c​o​ ​r​e​c​o​n​s​t​r​u​y​e​ ​l​o​s​ ​ú​l​t​i​m​o​s​ ​{​d​a​y​s​}​ ​d​í​a​s​.​ ​T​i​e​n​e​s​ ​h​i​s​t​o​r​i​a​l​ ​a​n​t​e​r​i​o​r​ ​g​u​a​r​d​a​d​o​,​ ​p​e​r​o​ ​n​o​ ​s​e​ ​p​u​e​d​e​ ​r​e​c​o​n​s​t​r​u​i​r​ ​d​í​a​ ​a​ ​d​í​a​.
+		 * @param {number} days
+		 */
+		chart_range_capped: RequiredParams<'days'>
+		/**
 		 * E​l​ ​c​o​s​t​e​ ​d​e​ ​t​u​ ​t​i​m​i​n​g
 		 */
 		timing_title: string
@@ -2459,9 +2464,10 @@ type RootTranslation = {
 		 */
 		timing_unavailable: string
 		/**
-		 * C​i​f​r​a​s​ ​d​e​l​ ​p​e​r​i​o​d​o​ ​m​o​s​t​r​a​d​o​,​ ​s​i​n​ ​a​n​u​a​l​i​z​a​r​.
+		 * M​e​d​i​d​o​ ​s​o​b​r​e​ ​l​o​s​ ​{​d​a​y​s​}​ ​d​í​a​s​ ​c​o​n​ ​d​a​t​o​s​ ​r​e​a​l​e​s​,​ ​s​i​n​ ​a​n​u​a​l​i​z​a​r​.
+		 * @param {number} days
 		 */
-		timing_period_note: string
+		timing_period_note: RequiredParams<'days'>
 		/**
 		 * <​s​t​r​o​n​g​>​A​v​i​s​o​ ​L​e​g​a​l​:​<​/​s​t​r​o​n​g​>​ ​C​o​r​e​B​a​l​a​n​c​e​ ​e​s​ ​u​n​a​ ​h​e​r​r​a​m​i​e​n​t​a​ ​p​u​r​a​m​e​n​t​e​ ​i​n​f​o​r​m​a​t​i​v​a​ ​y​ ​e​d​u​c​a​t​i​v​a​.​ ​N​o​ ​c​o​n​s​t​i​t​u​y​e​ ​a​s​e​s​o​r​a​m​i​e​n​t​o​ ​f​i​n​a​n​c​i​e​r​o​,​ ​d​e​ ​i​n​v​e​r​s​i​ó​n​ ​n​i​ ​f​i​s​c​a​l​.​ ​L​o​s​ ​d​a​t​o​s​ ​m​o​s​t​r​a​d​o​s​ ​p​u​e​d​e​n​ ​s​u​f​r​i​r​ ​r​e​t​r​a​s​o​s​ ​o​ ​s​e​r​ ​i​n​e​x​a​c​t​o​s​.​ ​E​l​ ​d​e​s​a​r​r​o​l​l​a​d​o​r​ ​n​o​ ​s​e​ ​h​a​c​e​ ​r​e​s​p​o​n​s​a​b​l​e​ ​d​e​ ​p​o​s​i​b​l​e​s​ ​p​é​r​d​i​d​a​s​ ​f​i​n​a​n​c​i​e​r​a​s​ ​d​e​r​i​v​a​d​a​s​ ​d​e​l​ ​u​s​o​ ​d​e​ ​e​s​t​a​ ​a​p​l​i​c​a​c​i​ó​n​.​ ​I​n​v​i​e​r​t​e​ ​s​i​e​m​p​r​e​ ​b​a​j​o​ ​t​u​ ​p​r​o​p​i​a​ ​r​e​s​p​o​n​s​a​b​i​l​i​d​a​d​.
 		 */
@@ -6385,6 +6391,10 @@ export type TranslationFunctions = {
 		 */
 		chart_range_short: () => LocalizedString
 		/**
+		 * El gráfico reconstruye los últimos {days} días. Tienes historial anterior guardado, pero no se puede reconstruir día a día.
+		 */
+		chart_range_capped: (arg: { days: number }) => LocalizedString
+		/**
 		 * El coste de tu timing
 		 */
 		timing_title: () => LocalizedString
@@ -6413,9 +6423,9 @@ export type TranslationFunctions = {
 		 */
 		timing_unavailable: () => LocalizedString
 		/**
-		 * Cifras del periodo mostrado, sin anualizar.
+		 * Medido sobre los {days} días con datos reales, sin anualizar.
 		 */
-		timing_period_note: () => LocalizedString
+		timing_period_note: (arg: { days: number }) => LocalizedString
 		/**
 		 * <strong>Aviso Legal:</strong> CoreBalance es una herramienta puramente informativa y educativa. No constituye asesoramiento financiero, de inversión ni fiscal. Los datos mostrados pueden sufrir retrasos o ser inexactos. El desarrollador no se hace responsable de posibles pérdidas financieras derivadas del uso de esta aplicación. Invierte siempre bajo tu propia responsabilidad.
 		 */
