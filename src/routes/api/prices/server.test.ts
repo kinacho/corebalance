@@ -117,6 +117,40 @@ describe('GET /api/prices', () => {
 			// 550 días es el máximo que sirve `diasDeHistorialPedidos`.
 			expect(diasAtras(period1De())).toBeLessThanOrEqual(551);
 		});
+
+		/**
+		 * ⚠️ **Una entrada de caché que no cubre lo pedido tiene que contar como fallo**, o el
+		 * arreglo del rango no sirve de nada. Medido en producción: con la caché caliente,
+		 * `historyDays=550` devolvía 149 puntos de un ticker y 383 de otro, y la única
+		 * diferencia era quién la había llenado antes.
+		 *
+		 * No es un borde: el sondeo pide el rango corto **cada 30 segundos** y la petición larga
+		 * se hace una vez al cargar, así que la entrada corta es la norma.
+		 */
+		it('una caché corta no sirve una petición larga: se vuelve a preguntar', async () => {
+			// Primera vuelta con el rango por defecto: deja la entrada corta.
+			await pedir('CACHE1.DE');
+			expect(chart).toHaveBeenCalledTimes(1);
+
+			// Ahora se pide año y medio: no vale lo que hay guardado.
+			await pedir('CACHE1.DE', '&historyDays=550');
+			expect(chart).toHaveBeenCalledTimes(2);
+			expect(diasAtras(period1De(1))).toBeGreaterThanOrEqual(549);
+		});
+
+		/**
+		 * Y el simétrico, que es lo que evita una llamada a Yahoo cada treinta segundos: una
+		 * entrada pedida a lo grande vale para cualquier petición más corta. Se compara contra
+		 * los días **pedidos**, no contra la longitud de la serie — si a Yahoo se le piden 550
+		 * días de un fondo con 229 cierres, la serie nunca alcanzará 550.
+		 */
+		it('una caché larga sí sirve una petición corta, sin volver a preguntar', async () => {
+			await pedir('CACHE2.DE', '&historyDays=550');
+			expect(chart).toHaveBeenCalledTimes(1);
+
+			await pedir('CACHE2.DE');
+			expect(chart).toHaveBeenCalledTimes(1);
+		});
 	});
 
 	it('rechaza una petición con más tickers de los permitidos', async () => {
