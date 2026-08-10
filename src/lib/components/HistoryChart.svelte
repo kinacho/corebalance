@@ -683,7 +683,18 @@
 			<p class="note">{$LL.db.chart_range_capped({ days: series.points.length })}</p>
 		{/if}
 		{#if view.hasEstimated}
-			<p class="note">{$LL.db.chart_estimated_note()}</p>
+			<!--
+				Dos avisos porque son dos causas distintas, y el viejo se volvió falso al llegar
+				el libro de operaciones: decía «asumiendo que ya tenías esas participaciones»,
+				y con libro la app **sí** sabe las participaciones de cada día — lo que le falta
+				es el valor liquidativo. Cuando ese hueco se ha rellenado con el índice, hay que
+				decirlo: una estimación sin procedencia es indistinguible de un dato.
+			-->
+			<p class="note">
+				{series.reconstructedWithIndexDays > 0
+					? $LL.db.chart_estimated_note_index()
+					: $LL.db.chart_estimated_note()}
+			</p>
 		{/if}
 		{#if view.hasGaps && viewMode === 'value'}
 			<p class="note">{$LL.db.chart_gaps_note()}</p>

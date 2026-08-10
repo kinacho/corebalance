@@ -211,6 +211,64 @@ describe('PortfolioStore - commitHoldingEdit', () => {
 	 * hoy para todo el pasado y lo marca `estimated`. Es decir, se agrandaría el tramo
 	 * inventado — el mismo que se excluyó del cálculo de rentabilidades por contaminarlas.
 	 */
+	/**
+	 * Los ETF de referencia de índice, que sirven para reconstruir los días sin valor
+	 * liquidativo del fondo. Ver `priceProxyOf` y `alignPriceSeriesWithProxy`.
+	 */
+	describe('proxies de índice', () => {
+		it('pide el proxy del índice que replica la cartera', () => {
+			// VWCE replica el FTSE All-World, cuyo proxy declarado es VWCE.DE.
+			store.coreAssets = [{ ...VWCE, ticker: 'IE00BK5BQT80', indexKey: 'ftse-all-world' }];
+			expect(store.proxyTickers).toContain('VWCE.DE');
+		});
+
+		/**
+		 * ⚠️ Un proxy **no es una posición**: si entrara en la cartera aparecería como un activo
+		 * que el usuario no tiene, con su peso y su desviación.
+		 */
+		it('el proxy no entra en los tickers del usuario', () => {
+			store.coreAssets = [{ ...VWCE, ticker: 'IE00BK5BQT80', indexKey: 'ftse-all-world' }];
+			expect(store.allUserTickers).not.toContain('VWCE.DE');
+		});
+
+		/** Si el proxy ya es un activo del usuario no se pide dos veces. */
+		it('no duplica un proxy que ya está en la cartera', () => {
+			store.coreAssets = [{ ...VWCE, ticker: 'VWCE.DE', indexKey: 'ftse-all-world' }];
+			expect(store.proxyTickers).not.toContain('VWCE.DE');
+		});
+
+		/** Sin índice declarado no hay proxy que pedir, y no se inventa ninguno. */
+		it('un activo sin índice no arrastra proxy', () => {
+			store.coreAssets = [{ ...VWCE, ticker: 'RARO.XX', name: 'Algo sin índice', indexKey: undefined }];
+			expect(store.proxyTickers).toEqual([]);
+		});
+
+		/**
+		 * ⚠️ **El eslabón que los cuatro tests de arriba NO cubren**, y lo demostró su control
+		 * negativo: calculan `proxyTickers`, pero ninguno se enteraba de que los proxies dejaran
+		 * de viajar en la petición. Sin eso el derivado seguiría bien, el empalme no tendría
+		 * precios y el gráfico volvería al relleno plano **sin un error de por medio** — la firma
+		 * exacta de defecto que este proyecto persigue.
+		 */
+		it('el proxy viaja de verdad en la petición de precios', async () => {
+			store.coreAssets = [{ ...VWCE, ticker: 'IE00BK5BQT80', indexKey: 'ftse-all-world' }];
+
+			const urls: string[] = [];
+			vi.stubGlobal('fetch', vi.fn(async (url: string) => {
+				urls.push(url);
+				return { ok: true, json: async () => ({ prices: {}, timestamp: new Date().toISOString() }) };
+			}));
+
+			await store.fetchPrices();
+
+			const pedidos = decodeURIComponent(urls[0]);
+			expect(pedidos).toContain('IE00BK5BQT80');
+			expect(pedidos).toContain('VWCE.DE');
+
+			vi.unstubAllGlobals();
+		});
+	});
+
 	describe('ventana histórica', () => {
 		it('sin libro ni ediciones se queda en los 30 días de siempre', () => {
 			store.transactions = [];

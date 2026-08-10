@@ -167,7 +167,8 @@ export function periodReturn(index: number[]): number {
 export function buildPerformanceSeries(
 	points: DailyPoint[],
 	currentInvested: number,
-	oldestKnownDate: string | null = null
+	oldestKnownDate: string | null = null,
+	reconstructedWithIndexDays = 0
 ): PerformanceSeries {
 	const twr = twrIndex(points);
 	const invested = investedSeries(points, currentInvested);
@@ -188,6 +189,7 @@ export function buildPerformanceSeries(
 		timingCostPp: mwrPeriod === null ? null : (mwrPeriod - twrPeriod) * 100,
 		firstMeasuredIndex,
 		measuredDays: medido ? points.length - firstMeasuredIndex : 0,
-		oldestKnownDate
+		oldestKnownDate,
+		reconstructedWithIndexDays
 	};
 }

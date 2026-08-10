@@ -37,6 +37,75 @@ export function alignPriceSeries(
 }
 
 /**
+ * Igual que `alignPriceSeries`, pero rellenando el hueco inicial con **la forma del índice
+ * que el activo replica** en vez de con una recta al primer precio conocido.
+ *
+ * El problema que resuelve: cuando el libro de operaciones llega más atrás que la serie de
+ * precios del activo —un fondo que Yahoo sólo cubre desde hace un año contra aportaciones de
+ * hace año y medio—, el relleno plano afirma **0 % de variación** en todo ese tramo. Sobre el
+ * caso real que lo motivó, el mercado se movió en torno a un 10 % ahí, así que el error del
+ * relleno plano es de ese orden. Con el proxy, el error es el tracking difference y el TER:
+ * 0,12 % anual, o sea 0,06 % en seis meses.
+ *
+ * La fórmula es un arrastre por ratio y no una sustitución:
+ *
+ *     precio(d) = primer_precio_real × (proxy(d) / proxy(día_del_primer_precio_real))
+ *
+ * Así el punto de empalme coincide **exactamente** con el primer precio real —no hay escalón
+ * en la unión— y sólo se toma del proxy la *forma*, nunca su nivel. Que el ETF proxy cotice a
+ * 95 € y el fondo a 12 € da igual: sólo se usa su variación relativa.
+ *
+ * ⚠️ **`paddedBefore` no baja, y eso es deliberado.** Es lo que marca el tramo como estimado —
+ * trazo discontinuo y aviso—, y un tramo reconstruido con un proxy **sigue siendo una
+ * estimación**: no es el valor liquidativo del fondo, es lo que hizo su índice. Mejorar el
+ * número no lo convierte en dato observado, y presentarlo como tal sería justo el tipo de
+ * precisión inventada que este proyecto quita en otros sitios.
+ *
+ * `estimadoConProxy` cuenta cuántos de esos días llevan la forma del índice en lugar de la
+ * recta, para que la interfaz pueda decir con qué se ha reconstruido.
+ */
+export function alignPriceSeriesWithProxy(
+	sparkline: number[] | undefined,
+	days: number,
+	proxy: number[] | undefined
+): { series: number[]; paddedBefore: number; estimadoConProxy: number } {
+	const base = alignPriceSeries(sparkline, days);
+	if (base.paddedBefore === 0 || base.paddedBefore >= days) {
+		// Nada que rellenar, o no hay ni un precio real del que colgar el arrastre.
+		return { ...base, estimadoConProxy: 0 };
+	}
+
+	const proxyAlineado = alignPriceSeries(proxy, days);
+
+	/**
+	 * Aquí había una guarda para el caso «el proxy no cubre más atrás que el activo», y el
+	 * control negativo demostró que **no decidía nada**: el bucle de abajo arranca en el
+	 * `paddedBefore` del proxy y termina en el del activo, así que si el proxy es igual de
+	 * corto o más, el rango está vacío y no se toca ni un día. Se quitó en vez de dejarla
+	 * como red: una rama que no puede cambiar el resultado es una rama que hay que leer, y
+	 * hace creer que protege de algo.
+	 */
+	const ancla = base.paddedBefore;
+	const precioAncla = base.series[ancla];
+	const proxyAncla = proxyAlineado.series[ancla];
+	if (!(precioAncla > 0) || !(proxyAncla > 0)) {
+		return { ...base, estimadoConProxy: 0 };
+	}
+
+	const series = [...base.series];
+	let reconstruidos = 0;
+	for (let i = proxyAlineado.paddedBefore; i < ancla; i++) {
+		const p = proxyAlineado.series[i];
+		if (p > 0) {
+			series[i] = precioAncla * (p / proxyAncla);
+			reconstruidos++;
+		}
+	}
+
+	return { series, paddedBefore: base.paddedBefore, estimadoConProxy: reconstruidos };
+}
+
+/**
  * Reconstruye la serie diaria de la cartera tramo a tramo.
  *
  * El valor de una posición un día dado es

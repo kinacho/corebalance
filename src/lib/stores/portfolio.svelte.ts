@@ -8,6 +8,7 @@ import { assignAssetColors, nextAssetColor } from '$lib/asset-colors';
 import type { EditReason, HoldingEdit, PerformanceSeries, PositionTimeline } from '$lib/history/types';
 import {
 	alignPriceSeries,
+	alignPriceSeriesWithProxy,
 	buildPerformanceSeries,
 	buildTimelineFromEdits,
 	buildTimelineFromLedger,
@@ -25,7 +26,7 @@ import { goto } from '$app/navigation';
 import { detectSparklineChange, applyTerUpdates } from '$lib/stores/priceUtils';
 import { resolveInstrumentType } from '$lib/instrument-type';
 import { calculateLookThrough } from '$lib/lookthrough';
-import { resolveIndexKey } from '$lib/lookthrough';
+import { resolveIndexKey, priceProxyOf } from '$lib/lookthrough';
 import { calculateTaxAwareRebalance } from '$lib/traspaso';
 
 /**
@@ -147,6 +148,24 @@ export class PortfolioStore {
 		return [...tickers];
 	});
 
+	/**
+	 * Los ETF de referencia de los índices que replica la cartera, para poder reconstruir el
+	 * patrimonio de los días sin valor liquidativo del fondo. Ver `priceProxyOf`.
+	 *
+	 * Son **por índice y no por activo**, así que tres fondos World comparten una sola
+	 * petición y una sola entrada de caché. Y se piden aparte de `allUserTickers` a propósito:
+	 * un proxy no es una posición y no debe aparecer en la cartera — sólo su precio entra en el
+	 * mapa, que es inocuo porque las posiciones se construyen desde los activos.
+	 */
+	proxyTickers = $derived.by(() => {
+		const proxies = new Set<string>();
+		for (const a of [...this.coreAssets, ...this.satelliteAssets, ...this.stockAssets]) {
+			const p = priceProxyOf(a);
+			if (p && !this.allUserTickers.includes(p)) proxies.add(p);
+		}
+		return [...proxies];
+	});
+
 	getExchangeRateToEur(currency: string): number {
 		if (currency === 'EUR') return 1;
 		const pair = `EUR${currency}=X`;
@@ -205,6 +224,7 @@ export class PortfolioStore {
 	globalDailyChangePercent = $derived(this.globalCapital > 0 ? this.globalDailyChangeValue / this.globalCapital : 0);
 
 	sparklineVersion = $state(0); // Incrementa solo cuando cambian los sparklines de la API
+
 
 	/**
 	 * Días que cubre la reconstrucción **como mínimo**, y techo de lo que se llega a pedir.
@@ -311,10 +331,22 @@ export class PortfolioStore {
 		const priceSeries: Record<string, number[]> = {};
 		const paddedBefore: Record<string, number> = {};
 
+		/**
+		 * El hueco inicial de cada activo se rellena con **la forma de su índice** cuando hay
+		 * proxy, en vez de con una recta al primer precio conocido. El relleno plano afirmaba
+		 * 0 % de variación en meses enteros; ver `alignPriceSeriesWithProxy`.
+		 */
+		let diasConProxy = 0;
 		for (const pos of this.allPositions) {
-			const aligned = alignPriceSeries(this.prices[pos.asset.ticker]?.sparkline, days);
+			const proxyTicker = priceProxyOf(pos.asset);
+			const aligned = alignPriceSeriesWithProxy(
+				this.prices[pos.asset.ticker]?.sparkline,
+				days,
+				proxyTicker ? this.prices[proxyTicker]?.sparkline : undefined
+			);
 			priceSeries[pos.asset.ticker] = aligned.series;
 			paddedBefore[pos.asset.ticker] = aligned.paddedBefore;
+			diasConProxy = Math.max(diasConProxy, aligned.estimadoConProxy);
 		}
 
 		const reconstructed = reconstructDailySeries({
@@ -349,7 +381,7 @@ export class PortfolioStore {
 			null
 		);
 
-		return buildPerformanceSeries(points, this.globalInvested, oldestKnownDate);
+		return buildPerformanceSeries(points, this.globalInvested, oldestKnownDate, diasConProxy);
 	});
 
 	/** Cambios registrados que el usuario todavía no ha clasificado. */
@@ -859,7 +891,9 @@ export class PortfolioStore {
 		this.isFetching = true;
 		this.error = null;
 		try {
-			const tickerList = this.allUserTickers.join(',');
+			// Los proxies de índice viajan en la misma petición: son pocos, se comparten entre
+			// activos del mismo índice y su precio en el mapa no crea ninguna posición.
+			const tickerList = [...this.allUserTickers, ...this.proxyTickers].join(',');
 			if (!tickerList) { this.isFetching = false; return; }
 
 			/**

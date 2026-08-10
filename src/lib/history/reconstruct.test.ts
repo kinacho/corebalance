@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { alignPriceSeries, overlaySnapshots, reconstructDailySeries } from './reconstruct';
+import {
+	alignPriceSeries,
+	alignPriceSeriesWithProxy,
+	overlaySnapshots,
+	reconstructDailySeries
+} from './reconstruct';
 import { buildTimelineFromEdits } from './timeline';
 import type { DailyPoint, HoldingEdit } from './types';
 
@@ -38,6 +43,96 @@ describe('alignPriceSeries', () => {
 		const { series, paddedBefore } = alignPriceSeries([10, 20], 5);
 		expect(series).toEqual([10, 10, 10, 10, 20]);
 		expect(paddedBefore).toBe(3);
+	});
+});
+
+/**
+ * Rellenar el hueco inicial con **la forma del índice** en vez de con una recta.
+ *
+ * El caso real: el libro de operaciones llega año y medio atrás y la serie de precios del
+ * fondo sólo un año, porque Yahoo no cubre esa clase antes. El relleno plano afirma **0 % de
+ * variación** en los seis meses que faltan; sobre el tramo que lo motivó el mercado se movió
+ * en torno a un 10 %, así que ése es el error que se venía a corregir. El del proxy es el
+ * tracking difference más el TER: 0,06 % en seis meses.
+ */
+describe('alignPriceSeriesWithProxy', () => {
+	it('arrastra el hueco con el ratio del proxy y empalma sin escalón', () => {
+		// Un fondo con dos días conocidos (100, 110) y un proxy que sube desde 50 hasta 80.
+		const { series, estimadoConProxy } = alignPriceSeriesWithProxy(
+			[100, 110],
+			5,
+			[50, 60, 70, 75, 80]
+		);
+
+		// El día del empalme (índice 3) conserva EXACTAMENTE el precio real.
+		expect(series[3]).toBe(100);
+		expect(series[4]).toBe(110);
+		// Y los tres anteriores llevan la forma del proxy, escalada a ese ancla: 100 × p/75.
+		expect(series[0]).toBeCloseTo(100 * (50 / 75), 6);
+		expect(series[1]).toBeCloseTo(100 * (60 / 75), 6);
+		expect(series[2]).toBeCloseTo(100 * (70 / 75), 6);
+		expect(estimadoConProxy).toBe(3);
+	});
+
+	/**
+	 * Sólo se toma la **forma** del proxy, nunca su nivel: el ETF puede cotizar a 95 € y el
+	 * fondo a 12 €. Si se sustituyera en vez de arrastrar, el patrimonio pasado se multiplicaría
+	 * por ocho.
+	 */
+	it('no importa la escala del proxy, sólo su variación', () => {
+		const barato = alignPriceSeriesWithProxy([12], 3, [5, 6, 7]);
+		const caro = alignPriceSeriesWithProxy([12], 3, [500, 600, 700]);
+
+		expect(barato.series).toEqual(caro.series);
+		// Y ninguno se acerca al nivel del proxy.
+		expect(barato.series[0]).toBeCloseTo(12 * (5 / 7), 6);
+	});
+
+	/**
+	 * ⚠️ `paddedBefore` **no baja**, y es deliberado: es lo que marca el tramo como estimado
+	 * —trazo discontinuo y aviso—, y un tramo reconstruido con un proxy sigue siendo una
+	 * estimación. No es el valor liquidativo del fondo, es lo que hizo su índice.
+	 */
+	it('el tramo reconstruido sigue marcado como estimado', () => {
+		const { paddedBefore } = alignPriceSeriesWithProxy([100, 110], 5, [50, 60, 70, 75, 80]);
+		expect(paddedBefore).toBe(3);
+	});
+
+	it('sin proxy se comporta exactamente como antes', () => {
+		const con = alignPriceSeriesWithProxy([10, 20], 5, undefined);
+		const sin = alignPriceSeries([10, 20], 5);
+
+		expect(con.series).toEqual(sin.series);
+		expect(con.estimadoConProxy).toBe(0);
+	});
+
+	/**
+	 * Si el proxy no llega más atrás que el propio activo no aporta forma alguna, y hay que
+	 * dejarlo estar: inventar un arrastre con su relleno plano sería propagar el defecto en vez
+	 * de arreglarlo.
+	 */
+	it('un proxy igual de corto no cambia nada', () => {
+		const { series, estimadoConProxy } = alignPriceSeriesWithProxy([10, 20], 5, [7, 8]);
+
+		expect(series).toEqual([10, 10, 10, 10, 20]);
+		expect(estimadoConProxy).toBe(0);
+	});
+
+	it('un proxy que cubre sólo parte del hueco rellena esa parte', () => {
+		// Hueco de 3 días; el proxy sólo tiene datos reales para los dos últimos.
+		const { series, estimadoConProxy } = alignPriceSeriesWithProxy([100], 4, [60, 70, 75]);
+
+		expect(estimadoConProxy).toBe(2);
+		expect(series[3]).toBe(100);
+		// El primer día queda con el relleno plano, porque ahí el proxy tampoco sabe nada.
+		expect(series[0]).toBe(100);
+	});
+
+	it('sin ningún precio real del activo no hay ancla y no se inventa nada', () => {
+		const { series, estimadoConProxy } = alignPriceSeriesWithProxy([], 3, [10, 20, 30]);
+
+		expect(series).toEqual([0, 0, 0]);
+		expect(estimadoConProxy).toBe(0);
 	});
 
 	it('descarta ceros, nulos e infinitos', () => {

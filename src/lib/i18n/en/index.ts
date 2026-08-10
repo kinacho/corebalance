@@ -618,6 +618,7 @@ const en: Translation = {
     chart_flow_not_loss: 'not a loss',
     chart_estimated_short: 'Estimated stretch',
     chart_estimated_note: 'The dashed stretch is rebuilt from the asset price, assuming you already held those shares before the app started recording changes.',
+    chart_estimated_note_index: 'The dashed stretch is an estimate: there is no NAV for your funds on those days, so it has been rebuilt from how the index they track moved. The shape is the market\'s; the exact figure for each day is not.',
     chart_gaps_note: 'Days stored without a per-category breakdown are left broken rather than filled in.',
     chart_twr_hint: 'Contributing or selling does not move this line: only the price of your assets does.',
     drift_title: 'Drift against your target',
