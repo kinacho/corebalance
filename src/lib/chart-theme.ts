@@ -105,6 +105,36 @@ export const CONTRIBUTED_FILL = '#1d4ed8';
 export const MARKET_FILL = '#93c5fd';
 
 /**
+ * Verde y rojo para la **línea** del patrimonio: por encima o por debajo de lo aportado.
+ *
+ * ⚠️ **No son `STATE_POSITIVE`/`STATE_NEGATIVE`, y no puede ser un descuido.** Aquel par está
+ * calibrado para *texto con signo* — su propio docblock en `constants.ts` dice que toda su
+ * defensa es «sale en texto y distintivos, nunca como relleno de una celda o de un arco». Una
+ * línea es una marca, así que esa defensa no aplica; y medido con el validador de `dataviz`
+ * contra `#0d0d12`, `STATE_POSITIVE` (#34d399) **falla la banda de luminosidad** (L 0,773:
+ * demasiado claro para pintar sobre el fondo oscuro). Reutilizarlo habría sido gratis de
+ * escribir y falso de mirar.
+ *
+ * Estos dos pasan **las seis comprobaciones** junto a los tres colores de categoría que
+ * pueden dibujarse a la vez en este gráfico (`CATEGORY_COLORS`): banda de luminosidad, suelo
+ * de croma, separación CVD y contraste. Los números que importan, todos contra `#0d0d12`:
+ *
+ * - verde ↔ rojo: ΔE **32,0** en visión normal, **8,6** con deuteranopia.
+ * - rojo ↔ el ámbar de «Acciones»: ΔE **18,8** normal. ⚠️ Aquí murieron los candidatos
+ *   obvios: `#dc2626` se queda en **14,4**, por debajo del suelo de 15 que es fallo duro, y
+ *   `#e11d48` cae a 5,8 en deuteranopia contra el verde.
+ * - verde ↔ ámbar queda en 7,9 con protanopia, un WARN en la banda 6–8 que sólo es legal con
+ *   codificación secundaria: la hay, porque este gráfico siempre lleva leyenda.
+ *
+ * ⚠️ Y algo que salió al medir y **no lo introduce este par**: `CATEGORY_COLORS.core` (azul) y
+ * `.satellite` (violeta) están a ΔE **0,4 con deuteranopia y 12,4 en visión normal**, y las
+ * dos se dibujan como líneas simultáneas aquí. Es un fallo duro preexistente, y `CLAUDE.md`
+ * prohíbe esa pareja con esas mismas palabras para la paleta de activos. Queda anotado.
+ */
+export const TREND_UP = '#059669';
+export const TREND_DOWN = '#b91c1c';
+
+/**
  * ¿Toca animar?
  *
  * Se consulta una vez por componente. Devuelve `false` cuando el sistema pide
