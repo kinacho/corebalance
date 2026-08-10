@@ -158,6 +158,21 @@ describe('hooks.server: noindex del área privada', () => {
 	});
 
 	/**
+	 * `/sync` es el receptor del traspaso por QR: `ssr = false` —obligado, porque la
+	 * cartera viaja en el fragmento y el fragmento no llega al servidor—, así que un
+	 * rastreador ve otra cáscara vacía. Y no es una página que tenga sentido en un
+	 * índice: es el otro extremo de un código escaneado con la cámara.
+	 */
+	it('el receptor del traspaso por QR tampoco se indexa', async () => {
+		expect((await cabecerasDe('/sync')).get('X-Robots-Tag')).toBe('noindex, nofollow');
+	});
+
+	/** Y como `/dashboard`, sirve según cookie: sin esto el CDN mezcla idiomas. */
+	it('el receptor del traspaso varía por cookie', async () => {
+		expect((await cabecerasDe('/sync')).get('Vary')).toBe('Cookie');
+	});
+
+	/**
 	 * Y el contrapeso, que es lo que hace útil al test anterior: el contenido público —que
 	 * es justo lo que sí queremos indexado— no puede llevar la cabecera. Un `noindex`
 	 * escapado a las 70 URLs del sitemap sería mucho peor que el soft 404 que se venía a

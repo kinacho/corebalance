@@ -138,7 +138,18 @@ export const handle: Handle = async ({ event, resolve }) => {
 	 * sacar algo del índice hay que dejar rastrear y decir `noindex` — de ahí esta cabecera,
 	 * que además no depende de que el rastreador ejecute JavaScript.
 	 */
-	if (event.url.pathname === '/dashboard' || event.url.pathname.startsWith('/dashboard/')) {
+	/**
+	 * `/sync` va por el mismo camino y por la misma razón, más una propia: es
+	 * `ssr = false` —tiene que serlo, porque la cartera viaja en el fragmento de la
+	 * URL, que no llega al servidor—, así que un rastreador ve otra cáscara vacía. Y
+	 * además no es una página: es el receptor de un traspaso entre dos dispositivos, no
+	 * tiene sentido en un índice de búsqueda.
+	 */
+	if (
+		event.url.pathname === '/dashboard' ||
+		event.url.pathname.startsWith('/dashboard/') ||
+		event.url.pathname === '/sync'
+	) {
 		response.headers.set('X-Robots-Tag', 'noindex, nofollow');
 	}
 

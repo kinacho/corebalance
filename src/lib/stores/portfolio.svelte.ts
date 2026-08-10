@@ -19,6 +19,7 @@ import {
 	startOfUTCDay
 } from '$lib/history';
 import { storageProvider } from '$lib/db';
+import { SYNC_PAYLOAD_VERSION, type SyncPayload } from '$lib/sync-payload';
 import type { HistoryPoint } from '$lib/db/types';
 import { formatDate, resolveAssetIcon } from '$lib/utils';
 import { ui } from '$lib/stores/ui.svelte';
@@ -864,6 +865,61 @@ export class PortfolioStore {
 		} finally {
 			this.authLoading = false;
 		}
+	}
+
+	/**
+	 * La cartera de este navegador, lista para viajar a otro dispositivo.
+	 *
+	 * ⚠️ **Vive aquí y no en el proveedor de almacenamiento a propósito.** `SyncModal`
+	 * pedía los datos a `storageProvider.getAllData()`, y con `PUBLIC_USE_FIREBASE=true`
+	 * —el entorno que se publica— eso es `FirebaseStorage`, que empieza con
+	 * `if (!auth?.currentUser) throw`. Comprobado en pantalla: sin sesión, la pestaña
+	 * del QR decía «Debes iniciar sesión para exportar datos» y no dibujaba nada, o sea
+	 * que la función no existía para el usuario por defecto de una app cuyo argumento es
+	 * que los datos son suyos y locales. El store sí los tiene, siempre.
+	 *
+	 * No lleva el historial de snapshots ni la caché de precios: el otro dispositivo los
+	 * reconstruye, y meterlos es lo que sacaba el QR de su límite de tamaño.
+	 */
+	snapshotForTransfer(): SyncPayload {
+		return {
+			v: SYNC_PAYLOAD_VERSION,
+			assets: {
+				coreAssets: $state.snapshot(this.coreAssets) as Asset[],
+				satelliteAssets: $state.snapshot(this.satelliteAssets) as Asset[],
+				stockAssets: $state.snapshot(this.stockAssets) as Asset[]
+			},
+			holdings: $state.snapshot(this.holdings) as HoldingsMap,
+			contribution: this.contribution,
+			transactions: $state.snapshot(this.transactions) as Transaction[],
+			holdingEdits: $state.snapshot(this.holdingEdits) as HoldingEdit[]
+		};
+	}
+
+	/**
+	 * Aplica un traspaso recibido: **reemplaza** la cartera de este dispositivo.
+	 *
+	 * Reemplazar y no fusionar es deliberado —fusionar dos carteras sin preguntar activo
+	 * por activo produce posiciones duplicadas y participaciones sumadas que nadie
+	 * tiene—, y por eso `/sync` lo dice con palabras y pide confirmación antes de llamar
+	 * aquí. Los pesos objetivo se normalizan como en cualquier otra carga.
+	 *
+	 * Guarda por el camino de siempre, así que para quien ha iniciado sesión esto sube a
+	 * la nube solo, sin que el traspaso tenga que saber nada de la nube.
+	 */
+	applyTransfer(payload: SyncPayload) {
+		this.isDemo = false;
+		this.coreAssets = normalizeAssets(payload.assets.coreAssets ?? []);
+		this.satelliteAssets = normalizeAssets(payload.assets.satelliteAssets ?? []);
+		this.stockAssets = normalizeAssets(payload.assets.stockAssets ?? []);
+		this.holdings = this.sanitizeHoldings(payload.holdings ?? {});
+		this.contribution = payload.contribution ?? 0;
+		this.transactions = payload.transactions ?? [];
+		this.holdingEdits = payload.holdingEdits ?? [];
+		// El historial no viaja: el del dispositivo que recibe dejaría de corresponder a
+		// esta cartera, así que se descarta y se reconstruye.
+		this.history = [];
+		this.saveToStorage();
 	}
 
 	async logout() {

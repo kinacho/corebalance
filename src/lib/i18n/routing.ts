@@ -95,7 +95,16 @@ export function localeLink(href: string, lang: Locales): string {
 	return localizeInternalLink(href, lang);
 }
 
-/** Rutas que sirven contenido según cookie y por tanto no se pueden cachear en CDN. */
+/**
+ * Rutas que sirven contenido según cookie y por tanto no se pueden cachear en CDN.
+ *
+ * `/sync` entra por lo mismo que `/dashboard`: es `ssr = false`, así que lo que se
+ * sirve es la cáscara de `app.html` con su `%lang%` sustituido por el hook a partir de
+ * la cookie. Sin `Vary: Cookie` el CDN puede servirle a un inglés la cáscara marcada
+ * como española.
+ */
 export function isLocaleCookieRoute(pathname: string): boolean {
-	return pathname.startsWith('/dashboard') || pathname.startsWith('/api');
+	return (
+		pathname.startsWith('/dashboard') || pathname.startsWith('/api') || pathname === '/sync'
+	);
 }
