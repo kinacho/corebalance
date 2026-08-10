@@ -176,3 +176,31 @@ export function formatEstimate(value: number, currency = 'EUR', localeOverride?:
 		maximumFractionDigits: 0
 	}).format(value);
 }
+
+/**
+ * La línea del tooltip cuando un día tiene dinero entrando o saliendo.
+ *
+ * ⚠️ **«No es una pérdida» era para las salidas y se estaba diciendo también en las
+ * entradas.** El aclarado existe por un motivo concreto: cuando vendes, el patrimonio baja y
+ * el gráfico parece registrar una pérdida, así que el tooltip lo desmiente con palabras. Pero
+ * la condición era `if (flow)` —cualquier flujo—, así que una aportación mostraba
+ * **«Aportación: 1.000 € — no es una pérdida»**, que además de absurdo gasta el aclarado en
+ * el caso que no lo necesita y se lo devalúa al que sí. Es la trampa que este proyecto ya
+ * tiene descrita para los tooltips: son donde sobrevive una redacción retirada.
+ *
+ * El segundo arreglo va con el primero: el importe se escribe en **valor absoluto**, porque
+ * `formatEUR` de un flujo negativo daba «Salida: −24.000,00 €» y el signo repite lo que ya
+ * dice la palabra.
+ *
+ * Vive fuera del componente para poder probarla: decide qué se le cuenta al usuario en dos
+ * casos que no son el mismo.
+ */
+export function flowTooltipLine(
+	amount: number,
+	labels: { in: string; out: string; notALoss: string },
+	format: (value: number) => string
+): string {
+	const entra = amount > 0;
+	const linea = `${entra ? labels.in : labels.out}: ${format(Math.abs(amount))}`;
+	return entra ? linea : `${linea} — ${labels.notALoss}`;
+}
