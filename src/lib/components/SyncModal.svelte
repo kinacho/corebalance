@@ -2,6 +2,7 @@
 	import { fade, slide } from 'svelte/transition';
 	import { storageProvider } from '$lib/db';
 	import { onMount, onDestroy } from 'svelte';
+	import { bloquearScroll, desbloquearScroll } from '$lib/modal-lock';
 	import * as QRCode from 'qrcode';
 	import { LL } from '$lib/i18n/i18n-svelte';
 	import { formatDate, validateImportData } from '../utils';
@@ -12,13 +13,8 @@
 
 	let { onClose }: Props = $props();
 
-	onMount(() => {
-		document.body.classList.add('modal-open');
-	});
-
-	onDestroy(() => {
-		document.body.classList.remove('modal-open');
-	});
+	onMount(() => bloquearScroll());
+	onDestroy(() => desbloquearScroll());
 
 	let activeTab = $state<'file' | 'p2p'>('file');
 	

@@ -11,18 +11,19 @@
 	import type { Asset, AssetCategory } from '$lib/types';
 	import { resolveAssetIcon } from '$lib/utils';
 	import { onMount, onDestroy } from 'svelte';
+	import { bloquearScroll, desbloquearScroll } from '$lib/modal-lock';
 	import ColumnMapper from './ColumnMapper.svelte';
 
 	interface Props { onClose: () => void; }
 	let { onClose }: Props = $props();
 
-	onMount(() => {
-		document.body.classList.add('modal-open');
-	});
-
-	onDestroy(() => {
-		document.body.classList.remove('modal-open');
-	});
+	/**
+	 * ⚠️ Quitaba el bloqueo **siempre**, y este modal solo se abre desde dentro de
+	 * `ManageAssets`: al cerrarlo, la página de detrás volvía a moverse bajo el
+	 * panel de gestión, que seguía abierto. Ver `modal-lock.ts`.
+	 */
+	onMount(() => bloquearScroll());
+	onDestroy(() => desbloquearScroll());
 
 	// --- State Machine ---
 	type Step = 'upload' | 'mapping' | 'resolving' | 'preview' | 'done';

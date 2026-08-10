@@ -13,6 +13,7 @@
 	import { focusTrap } from '$lib/actions/focusTrap';
 	import { LL } from '$lib/i18n/i18n-svelte';
 	import { onMount, onDestroy } from 'svelte';
+	import { bloquearScroll, desbloquearScroll } from '$lib/modal-lock';
 	import AssetSearch from './AssetSearch.svelte';
 	import ImportModal from './ImportModal.svelte';
 	import LedgerModal from './LedgerModal.svelte';
@@ -59,7 +60,7 @@
 	});
 
 	onMount(() => {
-		document.body.classList.add('modal-open');
+		bloquearScroll();
 		originalState = {
 			core: JSON.parse(JSON.stringify(portfolio.coreAssets)),
 			satellite: JSON.parse(JSON.stringify(portfolio.satelliteAssets)),
@@ -69,7 +70,7 @@
 	});
 
 	onDestroy(() => {
-		document.body.classList.remove('modal-open');
+		desbloquearScroll();
 		dnd.cleanup();
 	});
 

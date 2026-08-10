@@ -5,6 +5,7 @@
 	import { formatEUR, formatCurrency, formatDate } from '$lib/utils';
 	import { fade, slide, fly } from 'svelte/transition';
 	import { onMount, onDestroy, untrack } from 'svelte';
+	import { bloquearScroll, desbloquearScroll } from '$lib/modal-lock';
 	import { LL, locale } from '$lib/i18n/i18n-svelte';
 
 	interface Props {
@@ -14,17 +15,16 @@
 
 	let { asset, onClose }: Props = $props();
 
-	// Bloquear scroll del body
-	onMount(() => {
-		document.body.classList.add('modal-open');
-	});
-
-	onDestroy(() => {
-		// Solo quitar si no hay otros modales abiertos (en este caso ManageAssets sigue detrás)
-		// Pero como este modal está encima de ManageAssets, al cerrar este NO debemos quitar el lock
-		// porque ManageAssets todavía necesita que el body esté bloqueado.
-		// El lock se quitará cuando se cierre ManageAssets.
-	});
+	/**
+	 * ⚠️ Aquí había un `onDestroy` **vacío**, con un comentario explicando que no
+	 * había que soltar el bloqueo porque `ManageAssets` sigue detrás. Cierto solo
+	 * en uno de los tres sitios desde los que se abre este modal: desde
+	 * `AssetCard` y `CompactAssetRow` no hay nada detrás, así que al cerrarlo el
+	 * `body` se quedaba con `overflow: hidden; height: 100vh` y el dashboard sin
+	 * scroll y recortado. Ahora se cuenta, ver `modal-lock.ts`.
+	 */
+	onMount(() => bloquearScroll());
+	onDestroy(() => desbloquearScroll());
 
 	// --- State ---
 	let useLedger = $state(false);
