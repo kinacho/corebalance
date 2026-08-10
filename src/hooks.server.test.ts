@@ -1,4 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { get } from 'svelte/store';
 import type { Handle, RequestEvent } from '@sveltejs/kit';
 import { handle } from './hooks.server';
@@ -126,5 +128,77 @@ describe('hooks.server: aislamiento del idioma entre peticiones', () => {
 		// que no escriba el store. Si algún día un endpoint necesita traducir,
 		// tendrá que usar `i18nObject(locale)` y no `setLocale`.
 		expect(duringRender).toBe('es');
+	});
+});
+
+/**
+ * El `noindex` del dashboard, que tiene que viajar en la **cabecera HTTP**.
+ *
+ * ⚠️ El `<meta name="robots">` de `dashboard/+page.svelte` no sirve para esto: esa página
+ * es `ssr = false`, así que el HTML servido es la cáscara de `app.html` y el `<meta>` sólo
+ * existe después de hidratar. Medido en producción el 10-ago-2026: `/dashboard` respondía
+ * 200 con 6.490 bytes, sin `noindex` en el HTML y sin `X-Robots-Tag`, y Search Console lo
+ * reportaba como «soft 404» — que es literalmente lo que ve quien no ejecuta JavaScript.
+ */
+async function cabecerasDe(pathname: string) {
+	const response = await (handle as Handle)({
+		event: fakeEvent(pathname),
+		resolve: async () => new Response('<html>%lang%</html>', { headers: { 'Content-Type': 'text/html' } })
+	} as Parameters<Handle>[0]);
+	return response.headers;
+}
+
+describe('hooks.server: noindex del área privada', () => {
+	it('el dashboard se sirve con X-Robots-Tag noindex', async () => {
+		expect((await cabecerasDe('/dashboard')).get('X-Robots-Tag')).toBe('noindex, nofollow');
+	});
+
+	it('también sus subrutas', async () => {
+		expect((await cabecerasDe('/dashboard/algo')).get('X-Robots-Tag')).toBe('noindex, nofollow');
+	});
+
+	/**
+	 * Y el contrapeso, que es lo que hace útil al test anterior: el contenido público —que
+	 * es justo lo que sí queremos indexado— no puede llevar la cabecera. Un `noindex`
+	 * escapado a las 70 URLs del sitemap sería mucho peor que el soft 404 que se venía a
+	 * arreglar.
+	 */
+	it('las páginas públicas no la llevan', async () => {
+		for (const ruta of ['/', '/en', '/herramientas', '/en/herramientas', '/blog']) {
+			expect((await cabecerasDe(ruta)).get('X-Robots-Tag')).toBeNull();
+		}
+	});
+});
+
+/**
+ * ⚠️ La coherencia entre `robots.txt` y esa cabecera, que es la parte que se olvida.
+ *
+ * `/dashboard` estuvo en `Disallow` y ahí está la trampa: una URL bloqueada no se rastrea,
+ * luego el buscador **nunca ve el `noindex`** y su estado en el informe no cambia nunca.
+ * Bloquear ahorra rastreo; no desindexa. Si alguien devuelve ese `Disallow`, la cabecera de
+ * arriba deja de servir para nada y el «soft 404» vuelve a quedarse congelado — sin que
+ * ningún otro test se entere, porque la cabecera seguiría estando ahí.
+ */
+describe('robots.txt', () => {
+	// `import.meta.url` no es un `file://` bajo el plugin de SvelteKit, así que se lee
+	// relativo al cwd, como ya hace `parsers.test.ts` con sus fixtures.
+	const robots = readFileSync(join(process.cwd(), 'static', 'robots.txt'), 'utf8');
+
+	it('no bloquea /dashboard, o el noindex de la cabecera no se leería nunca', () => {
+		const reglas = robots
+			.split('\n')
+			.filter((l) => /^\s*Disallow:/i.test(l))
+			.map((l) => l.split(':')[1].trim());
+
+		expect(reglas).not.toContain('/dashboard');
+		expect(reglas.some((r) => r !== '/' && '/dashboard'.startsWith(r))).toBe(false);
+	});
+
+	it('sigue bloqueando /api, que no tiene nada que indexar', () => {
+		expect(robots).toMatch(/^\s*Disallow:\s*\/api\s*$/m);
+	});
+
+	it('declara el sitemap', () => {
+		expect(robots).toMatch(/^Sitemap:\s*https:\/\/corebalance\.app\/sitemap\.xml\s*$/m);
 	});
 });

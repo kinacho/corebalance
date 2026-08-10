@@ -1,4 +1,4 @@
-import type { Handle, RequestEvent } from '@sveltejs/kit';
+﻿import type { Handle, RequestEvent } from '@sveltejs/kit';
 import { building } from '$app/environment';
 import { locales, detectLocale } from '$lib/i18n/i18n-util';
 import { loadLocaleAsync } from '$lib/i18n/i18n-util.async';
@@ -120,6 +120,26 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	if (dependsOnCookie) {
 		response.headers.set('Vary', 'Cookie');
+	}
+
+	/**
+	 * `noindex` para el dashboard **en la cabecera HTTP**, no en el `<head>`.
+	 *
+	 * ⚠️ El `<meta name="robots" content="noindex, nofollow">` de `dashboard/+page.svelte`
+	 * existe, pero esa página es `ssr = false`: el HTML que se sirve es la cáscara de
+	 * `app.html` y el `<meta>` sólo aparece **después de hidratar**. Medido en producción el
+	 * 10-ago-2026: `/dashboard` devuelve 200 con 6.490 bytes, sin `noindex` en el HTML y sin
+	 * `X-Robots-Tag`. Un rastreador ve una página sin contenido y la clasifica como
+	 * «soft 404», que es exactamente lo que Search Console reportaba.
+	 *
+	 * ⚠️ Y por eso `robots.txt` **ya no la bloquea**, que es lo contraintuitivo: una URL en
+	 * `Disallow` no se rastrea, luego el buscador nunca llega a ver ningún `noindex` y su
+	 * estado en el informe **no cambia nunca**. Bloquear ahorra rastreo; no desindexa. Para
+	 * sacar algo del índice hay que dejar rastrear y decir `noindex` — de ahí esta cabecera,
+	 * que además no depende de que el rastreador ejecute JavaScript.
+	 */
+	if (event.url.pathname === '/dashboard' || event.url.pathname.startsWith('/dashboard/')) {
+		response.headers.set('X-Robots-Tag', 'noindex, nofollow');
 	}
 
 	// --- Cabeceras de Seguridad ---

@@ -4,6 +4,16 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#0a0a16" />
+    <!--
+      Esta página se sirve con 200 en /offline y en /offline.html, y su contenido dice que
+      algo ha fallado: para un buscador es la definición de «soft 404». No está en el
+      sitemap, pero se despliega como fichero estático y cualquiera puede llegar a ella, así
+      que se declara noindex aquí. NO se bloquea en robots.txt a propósito: una URL
+      bloqueada no se rastrea, luego el buscador nunca ve el noindex y su estado en el
+      informe no cambia nunca. Para sacar algo del índice hay que dejar rastrear y decir
+      noindex; robots.txt sólo sirve para ahorrar rastreo.
+    -->
+    <meta name="robots" content="noindex, nofollow" />
     <title>Sin conexión — CoreBalance</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }

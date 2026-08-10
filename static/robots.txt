@@ -12,13 +12,21 @@
 # Incluye Googlebot, Bingbot (base de ChatGPT Search y Copilot), GPTBot,
 # ClaudeBot, OAI-SearchBot, PerplexityBot, Google-Extended (AI Overviews y
 # AI Mode), Applebot-Extended, meta-externalagent, Amazonbot, CCBot, etc.
-# Sin barra final a propósito: `Disallow: /dashboard/` NO cubre `/dashboard`, que es
-# la URL real. Bingbot la rastreó por esa rendija y la marcó como página sin meta
-# description — y lo está, porque el dashboard va con `ssr = false` y lo único que
-# recibe un rastreador es el esqueleto de `app.html`.
+# ⚠️ `/dashboard` YA NO se bloquea aquí, y quitarlo es el arreglo, no un descuido.
+#
+# Estaba en `Disallow` porque un rastreador sólo recibe el esqueleto de `app.html`
+# —el dashboard va con `ssr = false`— y eso es una página sin contenido. Pero
+# bloquear una URL **no la desindexa**: impide rastrearla, con lo que el buscador
+# nunca llega a ver un `noindex` y su estado en el informe se queda congelado. Search
+# Console la reportaba como «soft 404» y no había manera de que dejara de hacerlo,
+# porque la puerta por la que se le contesta estaba cerrada.
+#
+# Ahora se rastrea y `hooks.server.ts` responde `X-Robots-Tag: noindex, nofollow` en
+# la cabecera HTTP — no en el `<head>`, que en una página `ssr = false` sólo aparece
+# después de hidratar y por tanto no lo ve quien no ejecuta JavaScript. Robots.txt
+# sirve para ahorrar rastreo; para sacar algo del índice hace falta poder hablarle.
 User-agent: *
 Disallow: /api
-Disallow: /dashboard
 
 # ── 2. Scrapers comerciales de reventa de datos ───────────────────────────────
 # No indexan, no citan y no entrenan modelos que nos vayan a recomendar.
