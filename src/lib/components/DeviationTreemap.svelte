@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { squarify, labelFits, truncateToWidth } from '$lib/treemap';
+	import { assetLabelCandidates } from '$lib/asset-label';
 	import { formatEUR, formatPercent } from '$lib/utils';
 	import { LL } from '$lib/i18n/i18n-svelte';
 	import { DEVIATION_BAND } from '$lib/traspaso';
@@ -83,7 +84,7 @@
 
 	// En píxeles, no en unidades: el objetivo es que el rótulo se lea igual mida el
 	// carril 340 px o 1100.
-	const fontTicker = $derived(unitsFor(13));
+	const fontLabel = $derived(unitsFor(13));
 	const fontFigure = $derived(unitsFor(11));
 	const pad = $derived(unitsFor(6));
 
@@ -247,12 +248,26 @@
 				// Qué cabe se decide celda a celda, midiendo **ancho y alto por
 				// separado**. Decidirlo por área dejaba pasar celdas altas y estrechas,
 				// que escupían el rótulo encima de la vecina.
-				const ticker = truncateToWidth(position.asset.ticker, fontTicker, placed.w, pad * 2);
-				const showTicker = ticker !== '' && placed.h >= fontTicker * 1.6;
+				//
+				// ⚠️ **Aquí se escribía el ticker, y para un fondo el ticker es su ISIN**
+				// (`IE00B4L5Y983`) o el código `0P…` de Yahoo: no dice nada. Ahora se
+				// escribe el nombre, pero **no truncado a pelo**: `iShares Core MSCI
+				// World` e `iShares Core MSCI EM IMI` comparten los primeros 18
+				// caracteres, así que truncar los dos deja «iShares Core MS…» dos veces
+				// —el mismo defecto por el que se quitaron las leyendas de los donuts—.
+				// `assetLabelCandidates` da varios rótulos de más largo a más corto y
+				// aquí se dibuja el primero que cabe entero; si no cabe ninguno, se
+				// trunca el más corto. Ver `asset-label.ts`.
+				const candidatos = assetLabelCandidates(position.asset);
+				const cabeEntero = candidatos.find((c) => labelFits(c, fontLabel, placed.w, pad * 2));
+				const label =
+					cabeEntero ??
+					truncateToWidth(candidatos[candidatos.length - 1], fontLabel, placed.w, pad * 2);
+				const showLabel = label !== '' && placed.h >= fontLabel * 1.6;
 				const weightText = formatPercent(weight, 1);
 				const showWeight =
-					showTicker &&
-					placed.h >= fontTicker * 1.5 + fontFigure * 1.5 &&
+					showLabel &&
+					placed.h >= fontLabel * 1.5 + fontFigure * 1.5 &&
 					labelFits(weightText, fontFigure, placed.w, pad * 2);
 
 				// La tercera línea existe solo donde significa algo. En un bloque que no
@@ -270,15 +285,15 @@
 				const showDeviation =
 					deviationText !== '' &&
 					showWeight &&
-					placed.h >= fontTicker * 1.5 + fontFigure * 3 &&
+					placed.h >= fontLabel * 1.5 + fontFigure * 3 &&
 					labelFits(deviationText, fontFigure * 0.9, placed.w, pad * 2);
 
 				return {
 					rect: placed,
 					position,
 					weight,
-					ticker,
-					showTicker,
+					label,
+					showLabel,
 					weightText,
 					showWeight,
 					deviationText,
@@ -548,21 +563,21 @@
 						rx={unitsFor(3)}
 					/>
 					<g clip-path="url(#{clipId(i)})">
-						{#if cell.showTicker}
+						{#if cell.showLabel}
 							<text
-								class="cell-ticker"
+								class="cell-label"
 								x={cell.rect.x + pad}
-								y={cell.rect.y + pad + fontTicker * 0.85}
-								font-size={fontTicker}
+								y={cell.rect.y + pad + fontLabel * 0.85}
+								font-size={fontLabel}
 							>
-								{cell.ticker}
+								{cell.label}
 							</text>
 						{/if}
 						{#if cell.showWeight}
 							<text
 								class="cell-weight"
 								x={cell.rect.x + pad}
-								y={cell.rect.y + pad + fontTicker * 0.85 + fontFigure * 1.25}
+								y={cell.rect.y + pad + fontLabel * 0.85 + fontFigure * 1.25}
 								font-size={fontFigure}
 							>
 								{cell.weightText}
@@ -573,7 +588,7 @@
 								class="cell-deviation"
 								class:is-untargeted={cell.anomaly}
 								x={cell.rect.x + pad}
-								y={cell.rect.y + pad + fontTicker * 0.85 + fontFigure * 2.5}
+								y={cell.rect.y + pad + fontLabel * 0.85 + fontFigure * 2.5}
 								font-size={fontFigure * 0.9}
 							>
 								{cell.deviationText}
@@ -655,7 +670,7 @@
 		letter-spacing: 0.04em;
 	}
 
-	.cell-ticker {
+	.cell-label {
 		fill: #ffffff;
 		font-weight: 700;
 	}

@@ -349,7 +349,15 @@ describe('DeviationTreemap.svelte · bloques de estrategia', () => {
 		makePosition('GOOGL', 'Alphabet Inc', 1100, 0),
 		makePosition('TSLA', 'Tesla Inc', 300, 0)
 	];
-	const SATELLITE = [makePosition('CASH-DEP', 'Depósito remunerado', 500, 0)];
+	/**
+	 * ⚠️ Se llamaba «Depósito remunerado», **igual que la posición de la cartera
+	 * principal del fixture de arriba**, y desde que las celdas se rotulan con el
+	 * nombre eso hace ambigua la búsqueda: el `find` cazaba la del otro bloque y el
+	 * test comparaba el tono de una celda de la escala contra el tono de bloque.
+	 */
+	const SATELLITE = [makePosition('CASH-DEP', 'Cuenta remunerada', 500, 0)];
+	/** Trozos de nombre suficientes para identificar las tres acciones. */
+	const ACCIONES = ['Amazon', 'Alphabet', 'Tesla'];
 
 	beforeAll(() => {
 		store.stockState = { positions: STOCKS };
@@ -377,7 +385,15 @@ describe('DeviationTreemap.svelte · bloques de estrategia', () => {
 					w: parseFloat(rect.getAttribute('width') ?? '0'),
 					h: parseFloat(rect.getAttribute('height') ?? '0'),
 					text: g.textContent ?? '',
-					ticker: g.querySelector('text')?.textContent?.trim() ?? ''
+					/**
+					 * ⚠️ El primer `<text>` de una celda era el **ticker** y ahora es el
+					 * **nombre** del activo: para un fondo el ticker es su ISIN o su código
+					 * `0P…`, que no dice nada. Por eso las celdas se buscan aquí por un
+					 * trozo del nombre y no por una cadena exacta — cuánto nombre se dibuja
+					 * depende de lo que quepa en la celda, que es justo lo que decide
+					 * `assetLabelCandidates`.
+					 */
+					label: g.querySelector('text')?.textContent?.trim() ?? ''
 				};
 			})
 			.filter((c): c is NonNullable<typeof c> => c !== null);
@@ -387,14 +403,39 @@ describe('DeviationTreemap.svelte · bloques de estrategia', () => {
 	it('un bloque sin objetivos lleva su tono plano, sin escala y sin rayado', async () => {
 		const { cells } = await renderMap();
 
-		const stocks = cells.filter((c) => ['AMZN', 'GOOGL', 'TSLA'].includes(c.ticker));
+		const stocks = cells.filter((c) => ACCIONES.some((n) => c.label.includes(n)));
 		expect(stocks.length, 'no se han dibujado las acciones').toBe(3);
 		for (const cell of stocks) {
 			expect(cell.fill).toBe(BLOCK_HUES.stocks);
 		}
 
-		const satellite = cells.find((c) => c.ticker === 'CASH-DEP');
+		const satellite = cells.find((c) => c.label.includes('Cuenta'));
 		expect(satellite?.fill).toBe(BLOCK_HUES.satellite);
+	});
+
+	/**
+	 * El rótulo de la celda es el **nombre**, no el ticker, y para un fondo eso es
+	 * la diferencia entre `IE00B4L5Y983` y «MSCI World». Se comprueba también que dos
+	 * fondos de la misma gestora no acaben con el mismo rótulo, que es el defecto por
+	 * el que no basta con truncar el nombre.
+	 */
+	it('una celda rotula el nombre del fondo y no su ISIN', async () => {
+		const previas = store.portfolioState.positions;
+		store.portfolioState = {
+			positions: [
+				makePosition('IE00B4L5Y983', 'iShares Core MSCI World UCITS ETF', 9000, 0.5),
+				makePosition('IE00BKM4GZ66', 'iShares Core MSCI EM IMI UCITS ETF', 6000, 0.5)
+			]
+		};
+		const { cells } = await renderMap(1080);
+		store.portfolioState = { positions: previas };
+
+		const rotulos = cells.map((c) => c.label).filter(Boolean);
+		expect(rotulos.some((r) => r.includes('IE00'))).toBe(false);
+		expect(rotulos.some((r) => r.includes('World'))).toBe(true);
+		expect(rotulos.some((r) => r.includes('EM') || r.includes('IMI'))).toBe(true);
+		// Dos fondos distintos, dos rótulos distintos.
+		expect(new Set(rotulos).size).toBe(rotulos.length);
 	});
 
 	it('un bloque sin objetivos no rotula «sin objetivo» en cada celda', async () => {
@@ -403,8 +444,8 @@ describe('DeviationTreemap.svelte · bloques de estrategia', () => {
 		// bloque encima, informar de la ausencia es ruido.
 		const { cells } = await renderMap();
 
-		for (const cell of cells.filter((c) => ['AMZN', 'GOOGL', 'TSLA'].includes(c.ticker))) {
-			expect(cell.text, `«${cell.ticker}» sigue diciendo «sin objetivo»`).not.toContain(
+		for (const cell of cells.filter((c) => ACCIONES.some((n) => c.label.includes(n)))) {
+			expect(cell.text, `«${cell.label}» sigue diciendo «sin objetivo»`).not.toContain(
 				'Sin objetivo'
 			);
 		}
@@ -419,7 +460,7 @@ describe('DeviationTreemap.svelte · bloques de estrategia', () => {
 		expect(cells.length).toBe(POSITIONS.length + 4);
 
 		for (const cell of cells) {
-			expect(cell.fill.toLowerCase(), `«${cell.ticker}» es gris neutro`).not.toBe(
+			expect(cell.fill.toLowerCase(), `«${cell.label}» es gris neutro`).not.toBe(
 				CHART_NEUTRAL.toLowerCase()
 			);
 		}
@@ -438,7 +479,7 @@ describe('DeviationTreemap.svelte · bloques de estrategia', () => {
 		const { cells } = await renderMap();
 		store.portfolioState = { positions: POSITIONS };
 
-		const cell = cells.find((c) => c.ticker === 'EN-BANDA');
+		const cell = cells.find((c) => c.label.includes('objetivo'));
 		expect(cell?.fill).toBe(DEVIATION_ON_TARGET);
 	});
 
@@ -544,7 +585,7 @@ describe('DeviationTreemap.svelte · bloques de estrategia', () => {
 		const { cells } = await renderMap(340);
 		store.satelliteState = previous;
 
-		const tiny = cells.find((c) => c.ticker === 'MIGA-CASH');
+		const tiny = cells.find((c) => c.label.includes('testimonial'));
 		// Puede no llevar rótulo por estrecha, así que se busca por su relleno.
 		const bySatelliteHue = cells.filter((c) => c.fill === BLOCK_HUES.satellite);
 		expect(
@@ -573,7 +614,7 @@ describe('DeviationTreemap.svelte · bloques de estrategia', () => {
 					b.x < a.x + a.w - 0.01 &&
 					a.y < b.y + b.h - 0.01 &&
 					b.y < a.y + a.h - 0.01;
-				expect(overlaps, `«${a.ticker}» se solapa con «${b.ticker}»`).toBe(false);
+				expect(overlaps, `«${a.label}» se solapa con «${b.label}»`).toBe(false);
 			}
 		}
 	});
