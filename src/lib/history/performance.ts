@@ -63,6 +63,26 @@ interface PeriodFlow {
 	amount: number;
 }
 
+/**
+ * Instante en que un flujo del día `i` entra a rendir, en fracción de periodo.
+ *
+ * ⚠️ **Tiene que ser la misma convención que usa `twrIndex()`, y no lo era.** Allí una
+ * entrada cuenta *al inicio* del día (`base = begin + inflow`), así que el flujo del día
+ * `i` sí participa del retorno de ese día. Aquí se colocaba en `i / span` —el cierre del
+ * día `i`, un día más tarde—, de modo que las dos métricas medían exposiciones distintas
+ * y su resta, que es lo que la interfaz llama «el coste de tu timing», incluía un residuo
+ * que no era timing sino desalineación.
+ *
+ * No era despreciable: con `[1000, 2000 (+1000), 1800]` —aportar y comer entera la
+ * caída siguiente, sin ninguna decisión de calendario que juzgar— el desfase producía un
+ * MWR peor que el TWR, o sea un castigo inventado. Alineadas, ambas dan −10 %, que es lo
+ * que de verdad le pasó a ese dinero. El fenómeno real sigue midiéndose: cuando el
+ * dinero entra tras un tramo bueno y antes de uno malo, el MWR sigue cayendo por debajo.
+ */
+function flowTime(dayIndex: number, span: number): number {
+	return (dayIndex - 1) / span;
+}
+
 function npv(rate: number, flows: PeriodFlow[]): number {
 	let sum = 0;
 	for (const flow of flows) sum += flow.amount * Math.pow(1 + rate, 1 - flow.t);
@@ -87,7 +107,7 @@ export function moneyWeightedReturn(points: DailyPoint[]): number | null {
 
 	for (let i = 1; i < points.length; i++) {
 		if (Math.abs(points[i].netFlow) > 0.01) {
-			flows.push({ t: i / span, amount: -points[i].netFlow });
+			flows.push({ t: flowTime(i, span), amount: -points[i].netFlow });
 		}
 	}
 	flows.push({ t: 1, amount: points[points.length - 1].total });
@@ -131,16 +151,32 @@ export function periodReturn(index: number[]): number {
  * `timingCostPp` es `mwr − twr`: si es negativo, la forma de aportar del usuario
  * rindió menos que sus propios activos, y esa diferencia es el coste de su
  * timing, no del mercado.
+ *
+ * ⚠️ **Las dos rentabilidades se miden desde `firstMeasuredIndex`, no desde el día 0.**
+ * La reconstrucción marca `estimated` los días que no puede ver de verdad y los rellena
+ * con una estimación; el gráfico lo respeta —los dibuja distinto y lo advierte— pero
+ * estas dos cifras los metían en la aritmética sin decirlo. Medido: con dos días
+ * estimados al principio, el TWR del periodo pasaba de un **2,00 %** real a un
+ * **13,33 %**, y ese número es el que la interfaz presenta como el rendimiento de los
+ * activos del usuario. `firstMeasuredIndex` ya existía y ya tenía tests: lo que faltaba
+ * era que alguien lo leyera.
+ *
+ * Si la ventana entera es estimada (`-1`) no hay nada que medir: `twrPeriod` es 0 y
+ * `mwrPeriod` es `null`, con lo que el panel se apaga en vez de inventar una cifra.
  */
 export function buildPerformanceSeries(
 	points: DailyPoint[],
-	currentInvested: number
+	currentInvested: number,
+	oldestKnownDate: string | null = null
 ): PerformanceSeries {
 	const twr = twrIndex(points);
 	const invested = investedSeries(points, currentInvested);
 	const gain = points.map((point, i) => point.total - invested[i]);
-	const twrPeriod = periodReturn(twr);
-	const mwrPeriod = moneyWeightedReturn(points);
+	const firstMeasuredIndex = points.findIndex((point) => !point.estimated);
+
+	const medido = firstMeasuredIndex >= 0;
+	const twrPeriod = medido ? periodReturn(twr.slice(firstMeasuredIndex)) : 0;
+	const mwrPeriod = medido ? moneyWeightedReturn(points.slice(firstMeasuredIndex)) : null;
 
 	return {
 		points,
@@ -150,6 +186,8 @@ export function buildPerformanceSeries(
 		twrPeriod,
 		mwrPeriod,
 		timingCostPp: mwrPeriod === null ? null : (mwrPeriod - twrPeriod) * 100,
-		firstMeasuredIndex: points.findIndex((point) => !point.estimated)
+		firstMeasuredIndex,
+		measuredDays: medido ? points.length - firstMeasuredIndex : 0,
+		oldestKnownDate
 	};
 }
