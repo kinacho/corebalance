@@ -147,6 +147,17 @@ export interface PerformanceSeries {
 	 * `Todo` no avisaban de nada por eso, y `Todo` es el rango por defecto.
 	 */
 	oldestKnownDate: string | null;
+	/**
+	 * Días del tramo estimado que llevan **la forma del índice** en vez de una recta al primer
+	 * precio conocido. Ver `alignPriceSeriesWithProxy`.
+	 *
+	 * Lo lee el aviso del gráfico para decir *con qué* se ha reconstruido, que es la diferencia
+	 * entre una estimación explicada y una cifra sin procedencia. Viaja en la serie y no como
+	 * `$state` del store porque **escribir estado desde dentro de un `$derived` está prohibido
+	 * en runas** (`state_unsafe_mutation`), y con razón: el primer intento lo hacía y lo cazaron
+	 * diez tests de golpe.
+	 */
+	reconstructedWithIndexDays: number;
 }
 
 /** Entrada de la reconstrucción. Todo precalculado por el llamante. */

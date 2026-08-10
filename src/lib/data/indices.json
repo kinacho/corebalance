@@ -1,6 +1,7 @@
 {
   "asOf": "2026-06-30",
   "note": "Pesos por región y sector de los índices que replican los fondos y ETF más habituales en carteras indexadas españolas. Cada bloque declara de dónde sale su cifra en `regionsConfidence` y `sectorsConfidence`: `factsheet` = leído de la ficha oficial del índice a la fecha de `asOf`; `derived` = calculado a partir de otros índices verificados (por ejemplo el All-World como combinación de World y emergentes); `estimate` = orden de magnitud sin ficha contrastada. Sirven para orientar sobre a qué estás expuesto de verdad, NO para declarar ni para decidir sobre cifras exactas: los pesos reales se mueven a diario. La interfaz avisa cuando la cartera del usuario depende de un bloque `estimate`.",
+  "priceProxyNote": "`priceProxy` es un ETF que replica el índice y sirve SOLO para reconstruir el patrimonio de días en que no hay valor liquidativo del fondo del usuario. No es el índice: es un ETF cotizado, y se elige así a propósito. Los índices se publican en dólares, y arrastrar un fondo en euros con una serie en dólares mete el movimiento del EUR/USD del periodo —un 5-8% en seis meses, más error del que se venía a corregir—, así que TODOS los proxies cotizan en euros, la divisa base de la app. El TER y el tracking difference quedan dentro del error asumido: 0,12% anual son 0,06% en seis meses, ruido al lado de la divisa. Verificados contra Yahoo el 10-ago-2026: los cinco responden en EUR con ~915 cierres desde 2023, muy por encima del techo de 550 días que sirve el endpoint. Un índice SIN proxy no se rellena: el gráfico arranca donde hay dato real, que es más honesto que inventarlo plano.",
   "sources": {
     "msci-world": "https://www.msci.com/documents/10199/255599/msci-world-index.pdf",
     "sp500": "https://www.spglobal.com/spdji/en/documents/performance-reports/dashboard-us-sector.pdf",
@@ -36,6 +37,7 @@
     "msci-world": {
       "name": "MSCI World",
       "assetClass": "equity",
+      "priceProxy": { "ticker": "IWDA.AS", "currency": "EUR" },
       "coverage": "Grandes y medianas empresas de mercados desarrollados",
       "regionsConfidence": "factsheet",
       "sectorsConfidence": "factsheet",
@@ -67,6 +69,7 @@
     "ftse-all-world": {
       "name": "FTSE All-World / MSCI ACWI",
       "assetClass": "equity",
+      "priceProxy": { "ticker": "VWCE.DE", "currency": "EUR" },
       "coverage": "Desarrollados y emergentes, grandes y medianas",
       "regionsConfidence": "derived",
       "sectorsConfidence": "derived",
@@ -98,6 +101,7 @@
     "sp500": {
       "name": "S&P 500",
       "assetClass": "equity",
+      "priceProxy": { "ticker": "CSPX.AS", "currency": "EUR" },
       "coverage": "Las 500 mayores empresas cotizadas de EEUU",
       "regionsConfidence": "factsheet",
       "sectorsConfidence": "factsheet",
@@ -160,6 +164,7 @@
     "msci-emerging": {
       "name": "MSCI Emerging Markets",
       "assetClass": "equity",
+      "priceProxy": { "ticker": "EMIM.AS", "currency": "EUR" },
       "coverage": "Mercados emergentes",
       "regionsConfidence": "derived",
       "sectorsConfidence": "estimate",
@@ -253,6 +258,7 @@
     "msci-world-small": {
       "name": "MSCI World Small Cap",
       "assetClass": "equity",
+      "priceProxy": { "ticker": "IUSN.DE", "currency": "EUR" },
       "coverage": "Pequeñas empresas de mercados desarrollados",
       "regionsConfidence": "estimate",
       "sectorsConfidence": "estimate",

@@ -620,6 +620,7 @@ const es = {
     chart_flow_not_loss: 'no es una pérdida',
     chart_estimated_short: 'Tramo estimado',
     chart_estimated_note: 'El tramo discontinuo está reconstruido a partir del precio del activo, asumiendo que ya tenías esas participaciones antes de que la app empezara a registrar cambios.',
+    chart_estimated_note_index: 'El tramo discontinuo es una estimación: de esos días no hay valor liquidativo de tus fondos, así que se ha reconstruido con la evolución del índice que replican. La forma es la del mercado; el importe exacto de cada día, no.',
     chart_gaps_note: 'Los días guardados sin desglose por categoría aparecen cortados en lugar de rellenados.',
     chart_twr_hint: 'Aportar o vender no mueve esta línea: solo la mueve el precio de tus activos.',
     drift_title: 'Deriva contra tu objetivo',

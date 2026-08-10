@@ -107,6 +107,29 @@ export function indexKeyOf(asset: Asset): string | undefined {
 	return resolveIndexKey(asset.ticker, asset.name);
 }
 
+/**
+ * El ETF que sirve de **referencia de precio** para el índice de un activo, si lo hay.
+ *
+ * Se usa para reconstruir el patrimonio de los días en que no existe valor liquidativo del
+ * fondo del usuario —Yahoo no cubre todas las clases desde siempre— arrastrando el hueco con
+ * la forma del índice en lugar de con una recta. Ver `alignPriceSeriesWithProxy`.
+ *
+ * ⚠️ Devuelve un **ETF cotizado en euros**, no el índice: los índices se publican en dólares y
+ * arrastrar un fondo en euros con una serie en dólares mete el movimiento del par del periodo,
+ * que es más error del que se venía a corregir. El razonamiento completo y los datos de
+ * verificación están en `priceProxyNote` dentro de `indices.json`.
+ *
+ * Sólo cinco índices lo tienen (World, All-World, S&P 500, Emerging y World Small Cap). Los
+ * demás devuelven `undefined` a propósito: sin proxy no se rellena, y el gráfico arranca donde
+ * hay dato real.
+ */
+export function priceProxyOf(asset: Asset): string | undefined {
+	const key = indexKeyOf(asset);
+	if (!key) return undefined;
+	const index = (indicesData.indices as Record<string, { priceProxy?: { ticker: string } }>)[key];
+	return index?.priceProxy?.ticker;
+}
+
 export interface ExposureSlice {
 	key: string;
 	/** Fracción del patrimonio cubierto, 0–1. */

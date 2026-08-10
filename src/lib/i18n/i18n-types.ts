@@ -2304,6 +2304,10 @@ type RootTranslation = {
 		 */
 		chart_estimated_note: string
 		/**
+		 * E​l​ ​t​r​a​m​o​ ​d​i​s​c​o​n​t​i​n​u​o​ ​e​s​ ​u​n​a​ ​e​s​t​i​m​a​c​i​ó​n​:​ ​d​e​ ​e​s​o​s​ ​d​í​a​s​ ​n​o​ ​h​a​y​ ​v​a​l​o​r​ ​l​i​q​u​i​d​a​t​i​v​o​ ​d​e​ ​t​u​s​ ​f​o​n​d​o​s​,​ ​a​s​í​ ​q​u​e​ ​s​e​ ​h​a​ ​r​e​c​o​n​s​t​r​u​i​d​o​ ​c​o​n​ ​l​a​ ​e​v​o​l​u​c​i​ó​n​ ​d​e​l​ ​í​n​d​i​c​e​ ​q​u​e​ ​r​e​p​l​i​c​a​n​.​ ​L​a​ ​f​o​r​m​a​ ​e​s​ ​l​a​ ​d​e​l​ ​m​e​r​c​a​d​o​;​ ​e​l​ ​i​m​p​o​r​t​e​ ​e​x​a​c​t​o​ ​d​e​ ​c​a​d​a​ ​d​í​a​,​ ​n​o​.
+		 */
+		chart_estimated_note_index: string
+		/**
 		 * L​o​s​ ​d​í​a​s​ ​g​u​a​r​d​a​d​o​s​ ​s​i​n​ ​d​e​s​g​l​o​s​e​ ​p​o​r​ ​c​a​t​e​g​o​r​í​a​ ​a​p​a​r​e​c​e​n​ ​c​o​r​t​a​d​o​s​ ​e​n​ ​l​u​g​a​r​ ​d​e​ ​r​e​l​l​e​n​a​d​o​s​.
 		 */
 		chart_gaps_note: string
@@ -6311,6 +6315,10 @@ export type TranslationFunctions = {
 		 * El tramo discontinuo está reconstruido a partir del precio del activo, asumiendo que ya tenías esas participaciones antes de que la app empezara a registrar cambios.
 		 */
 		chart_estimated_note: () => LocalizedString
+		/**
+		 * El tramo discontinuo es una estimación: de esos días no hay valor liquidativo de tus fondos, así que se ha reconstruido con la evolución del índice que replican. La forma es la del mercado; el importe exacto de cada día, no.
+		 */
+		chart_estimated_note_index: () => LocalizedString
 		/**
 		 * Los días guardados sin desglose por categoría aparecen cortados en lugar de rellenados.
 		 */

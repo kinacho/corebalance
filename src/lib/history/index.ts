@@ -2,6 +2,7 @@ export * from './types';
 export { buildTimelineFromEdits, buildTimelineFromLedger, sharesAt, isEstimatedAt } from './timeline';
 export {
 	alignPriceSeries,
+	alignPriceSeriesWithProxy,
 	reconstructDailySeries,
 	overlaySnapshots,
 	startOfUTCDay,
