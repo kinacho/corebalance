@@ -816,6 +816,77 @@ describe('regresiones de la revisión del importador', () => {
 });
 
 /**
+ * Un informe de aportaciones por lotes hecho a mano, que es el formato con el que la gente
+ * lleva su cartera cuando la lleva ella: una fila por compra, con su fecha y su precio.
+ *
+ * Entraba **sin coste y sin nombre** —los pares precio/valoración y fecha-compra/fecha-informe
+ * empataban y `suggestMappingFromAnalysis` deja vacío lo que empata—, así que había que
+ * corregir el mapeo a mano en el modal. El detalle de por qué cada campo se quedaba vacío
+ * está en `csv-utils.test.ts`; aquí se comprueba el resultado de punta a punta, que es lo
+ * que acaba en la cartera.
+ */
+describe('informe de aportaciones por lotes', () => {
+  const CSV = [
+    'isin,fondo,indice,lote,fecha_fiscal,inversion_eur,participaciones,precio_medio_eur,valor_mercado_eur,resultado_eur,rentabilidad_pct,dias_antiguedad,vl_valoracion_eur,fecha_valoracion',
+    'IE00TEST0001,Acme Developed World Index Fund Class S Acc EUR,MSCI World,1,2025-02-10,1000.00,100.0000,10.0000,1200.00,200.00,20.00,542,12.000,2026-08-06',
+    'IE00TEST0001,Acme Developed World Index Fund Class S Acc EUR,MSCI World,2,2025-04-30,500.00,45.0000,11.1111,540.00,40.00,8.00,463,12.000,2026-08-06',
+    'IE00TEST0001,Acme Developed World Index Fund Class S Acc EUR,MSCI World,3,2025-07-02,250.00,21.0000,11.9047,252.00,2.00,0.80,400,12.000,2026-08-06',
+    'IE00TEST0002,Acme Emerging Markets Index Fund Class S Acc EUR,MSCI EM,1,2026-04-15,300.00,25.0000,12.0000,310.00,10.00,3.33,117,12.400,2026-08-06',
+    'IE00TEST0002,Acme Emerging Markets Index Fund Class S Acc EUR,MSCI EM,2,2026-05-20,200.00,16.0000,12.5000,198.40,-1.60,-0.80,82,12.400,2026-08-06'
+  ].join('\n');
+
+  it('consolida los lotes de cada ISIN con su coste medio ponderado', () => {
+    const result = importFromCSV(CSV);
+
+    expect(result.positions).toHaveLength(2);
+
+    const world = result.positions.find((p) => p.isin === 'IE00TEST0001')!;
+    // 100 + 45 + 21 participaciones, y 1.750 € invertidos entre ellas.
+    expect(world.shares).toBeCloseTo(166, 4);
+    expect(world.avgCost).toBeCloseTo(1750 / 166, 4);
+
+    const em = result.positions.find((p) => p.isin === 'IE00TEST0002')!;
+    expect(em.shares).toBeCloseTo(41, 4);
+    expect(em.avgCost).toBeCloseTo(500 / 41, 4);
+  });
+
+  /**
+   * ⚠️ El coste es lo que más caro sale de perder: sin él el activo entra como si fuera
+   * gratis, con un beneficio inventado del 100 % y una plusvalía fiscal por el valor
+   * íntegro. Antes salía **0,0000** en las dos posiciones.
+   */
+  it('ninguna posición entra con coste cero', () => {
+    for (const pos of importFromCSV(CSV).positions) {
+      expect(pos.avgCost).toBeGreaterThan(0);
+    }
+  });
+
+  it('la posición se llama como el fondo, no como su ISIN ni como su índice', () => {
+    const world = importFromCSV(CSV).positions.find((p) => p.isin === 'IE00TEST0001')!;
+
+    expect(world.name).toContain('Acme Developed World');
+    expect(world.name).not.toBe('IE00TEST0001');
+    expect(world.name).not.toContain('MSCI');
+  });
+
+  /**
+   * ⚠️ Y el contador tiene que describir el resultado que se enseña al lado. MyInvestor
+   * reclama este fichero, descarta sus filas por «tipo de operación no reconocido» y el
+   * failsafe genérico las entiende; sumando los dos intentos, el panel anunciaba «2
+   * posiciones y 5 filas omitidas» de un fichero de 5 filas — todas usadas, ninguna
+   * omitida. El aviso del failsafe sigue explicando qué detector falló.
+   */
+  it('no cuenta como omitidas las filas que el respaldo sí usó', () => {
+    const result = importFromCSV(CSV);
+
+    expect(result.positions.length).toBeGreaterThan(0);
+    expect(result.skippedRows).toBe(0);
+    expect(result.skippedDetails ?? []).toHaveLength(0);
+    expect(result.warnings.some((w) => /respaldo|genérico/i.test(w))).toBe(true);
+  });
+});
+
+/**
  * El defecto que salió de **abrir la app** el 10-ago-2026, no de leer el código: al mirar la
  * previsualización del importador, un CSV que compra 100 títulos y vende 30 mostraba 600.
  *

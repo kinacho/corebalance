@@ -1421,11 +1421,27 @@ export function importFromCSV(fileContent: string): ImportResult {
 					...result.warnings,
 					`El detector automático sugirió '${bestDetector.name}' pero no pudo extraer activos de la tabla. Se ha utilizado el importador genérico como alternativa de respaldo.`
 				],
-				// ⚠️ Suma de los dos: el respaldo devolvía solo su propio contador y tiraba el
-				// del bróker, así que las filas que el detector original había descartado —el
-				// motivo por el que estamos en el failsafe— desaparecían del informe.
-				skippedRows: result.skipped + genericResult.skipped,
-				skippedDetails: [...(result.skippedDetails ?? []), ...(genericResult.skippedDetails ?? [])],
+				/**
+				 * ⚠️ **Sólo las del intento que se está usando, y esto invierte lo que decía
+				 * el comentario anterior.** Aquí se sumaban las dos listas para que las filas
+				 * descartadas por el detector original no «desaparecieran del informe». El
+				 * razonamiento no se sostiene precisamente en el caso que provoca el
+				 * failsafe: el genérico ha procesado **esas mismas filas** y ha sacado
+				 * posiciones de ellas, así que declararlas omitidas es falso y encima
+				 * contradice el resultado que se enseña al lado.
+				 *
+				 * Medido con un informe de aportaciones por lotes: MyInvestor lo reclamaba,
+				 * descartaba sus 25 filas por «tipo de operación no reconocido», el genérico
+				 * las entendía y devolvía 2 posiciones — y el panel anunciaba «se importarán
+				 * 2 posiciones y se han omitido 25 filas» de un fichero que tiene 25 filas.
+				 * Nada omitido, todo usado.
+				 *
+				 * Por qué el descarte del detector fallido no se pierde: el aviso de arriba
+				 * ya dice cuál era y que no pudo con el fichero. Eso es lo que le sirve a
+				 * quien lee, no veinticinco líneas de detalle sobre un intento abandonado.
+				 */
+				skippedRows: genericResult.skipped,
+				skippedDetails: genericResult.skippedDetails,
 				rawHeaders: bestBlock.headers,
 				rawRows: bestBlock.rows.slice(0, 10),
 				delimiter,
