@@ -62,7 +62,13 @@ export default defineConfig({
 				// guardias mecánicas del repo.
 				'src/lib/importers/parsers.ts',
 				'src/lib/importers/csv-utils.ts',
-				'src/lib/importers/aggregator.ts'
+				'src/lib/importers/aggregator.ts',
+				// Añadido el 10-ago-2026. No calcula nada, pero es **dónde escribe cada usuario
+				// en cada cambio**, y sus dos operaciones destructivas no tenían red: hasta hoy
+				// `importAllData({history: []})` vaciaba las cuatro tablas sin restaurar nada.
+				// `db/index.test.ts` no lo cubría porque lo mockea: prueba el selector de
+				// backend, no el almacenamiento.
+				'src/lib/db/LocalDBStorage.ts'
 			],
 			reporter: ['text', 'json-summary'],
 			thresholds: {
@@ -100,7 +106,15 @@ export default defineConfig({
 				 */
 				'src/lib/importers/parsers.ts': { statements: 62, branches: 54, functions: 76 },
 				'src/lib/importers/csv-utils.ts': { statements: 96, branches: 93, functions: 100 },
-				'src/lib/importers/aggregator.ts': { statements: 91, branches: 70, functions: 100 }
+				'src/lib/importers/aggregator.ts': { statements: 91, branches: 70, functions: 100 },
+				/**
+				 * Medido al nacer la suite, 10-ago-2026. Las ramas se quedan en 67 y es honesto
+				 * que se queden: la mitad son los `if (!localDB) return` de cada método, que sólo
+				 * se toman durante el SSR, y la suite fuerza `browser: true` porque sin eso
+				 * `localDB` es `null` y no hay almacenamiento que probar. Esa rama ya la ejercita
+				 * `db/index.test.ts` con su backend pelado, que es donde tiene sentido.
+				 */
+				'src/lib/db/LocalDBStorage.ts': { statements: 82, branches: 67, functions: 89 }
 			}
 		}
 	},

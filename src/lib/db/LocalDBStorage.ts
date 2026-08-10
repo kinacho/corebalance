@@ -36,8 +36,15 @@ export class LocalDBStorage implements StorageProvider {
 	async saveUserData(userId: string, data: Partial<UserData>): Promise<void> {
 		if (!localDB) return;
 		const existing = await localDB.userData.get(userId);
-		
-		// Fill in missing fields with empty defaults if 'existing' is undefined
+
+		/**
+		 * El orden de este merge es el contrato de la clase: `defaults → existing → data`.
+		 * El store autoguarda **parcialmente** (manda sólo lo que ha cambiado), así que con
+		 * `...data` antes de `...existing` cada guardado revertiría los campos que no
+		 * menciona —la aportación a 0, la cartera a `{}`— sin error en ninguna parte. Los
+		 * defaults van delante porque el store itera esas tres listas sin comprobarlas.
+		 * El merge es **superficial** a propósito: `holdings` llega entero en cada guardado.
+		 */
 		const merged = {
 			id: userId,
 			holdings: {},
@@ -49,7 +56,7 @@ export class LocalDBStorage implements StorageProvider {
 			...existing,
 			...data
 		};
-		
+
 		await localDB.userData.put(merged as UserData & { id: string });
 	}
 
@@ -118,8 +125,24 @@ export class LocalDBStorage implements StorageProvider {
 		const holdingEdits = await localDB.holdingEdits.toArray();
 		return { userData, history, transactions, holdingEdits };
 	}
+
+	/**
+	 * ⚠️ La guarda era `if (!localDB || !data) return`, así que un objeto **sin nada que
+	 * restaurar** vaciaba las cuatro tablas y no ponía nada en su lugar: la restauración de
+	 * un respaldo se convertía en el borrado de la cartera, y `SyncModal` recarga la página
+	 * 1,5 s después, con lo que el usuario no llega a ver qué ha pasado. No basta con que el
+	 * llamante valide —`validateImportData()` da por bueno `{ history: [] }`, y así está
+	 * fijado en `utils.test.ts`—: la comprobación tiene que estar donde se hace el daño, que
+	 * es aquí. Vaciar no es un caso de uso de esta función; para eso está `deleteAccount()`.
+	 */
 	async importAllData(data: any): Promise<void> {
 		if (!localDB || !data) return;
+
+		const trae = (c: unknown) => Array.isArray(c) && c.length > 0;
+		if (!trae(data.userData) && !trae(data.history) && !trae(data.transactions) && !trae(data.holdingEdits)) {
+			return;
+		}
+
 		await localDB.transaction('rw', localDB.userData, localDB.history, localDB.transactions, localDB.holdingEdits, async () => {
 			await localDB.userData.clear();
 			await localDB.history.clear();
