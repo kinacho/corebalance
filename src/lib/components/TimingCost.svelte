@@ -20,7 +20,15 @@
 	const mwr = $derived(series.mwrPeriod);
 	const deltaPp = $derived(series.timingCostPp);
 
-	const hasFlows = $derived(series.points.some((p) => Math.abs(p.netFlow) > 0.01));
+	/**
+	 * Los flujos que cuentan son los del tramo **medido**, no los de toda la ventana: las
+	 * dos rentabilidades arrancan en `firstMeasuredIndex`, así que una aportación caída en
+	 * los días estimados ya no entra en el cálculo y no puede habilitar la comparación.
+	 */
+	const measuredPoints = $derived(
+		series.firstMeasuredIndex >= 0 ? series.points.slice(series.firstMeasuredIndex) : []
+	);
+	const hasFlows = $derived(measuredPoints.some((p) => Math.abs(p.netFlow) > 0.01));
 	const isComparable = $derived(hasFlows && mwr !== null && deltaPp !== null);
 	const isNeutral = $derived(isComparable && Math.abs(deltaPp!) < 0.05);
 
@@ -83,7 +91,7 @@
 				})}
 			{/if}
 		</p>
-		<p class="footnote">{$LL.db.timing_period_note()}</p>
+		<p class="footnote">{$LL.db.timing_period_note({ days: series.measuredDays })}</p>
 	{/if}
 </div>
 

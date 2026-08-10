@@ -27,6 +27,7 @@
 		MARKET_FILL
 	} from '$lib/chart-theme';
 	import { CATEGORY_COLORS } from '$lib/constants';
+	import { clipNoticeFor, type RangeId } from '$lib/history/range';
 	import { ui } from '$lib/stores/ui.svelte';
 	import { LL, locale } from '$lib/i18n/i18n-svelte';
 
@@ -58,7 +59,6 @@
 	 * Por defecto **todo el historial**: es el encuadre honesto, y además el único
 	 * que no miente cuando aún hay tres días de datos.
 	 */
-	type RangeId = '1M' | '3M' | 'YTD' | '1Y' | 'ALL';
 	let currentRange = $state<RangeId>('ALL');
 	let viewMode = $state<ViewMode>('value');
 
@@ -128,11 +128,28 @@
 	 * Cuando el rango pedido es más largo que el historial guardado se enseña lo
 	 * que hay, y se dice. Sin esto, pulsar «1A» con tres semanas de datos deja la
 	 * misma imagen que «1M» y parece que el botón no hace nada.
+	 *
+	 * ⚠️ **Se compara por fechas, no por `days`, porque `YTD` y `Todo` valen `null` y con
+	 * la comprobación anterior (`days !== null && points.length < days`) esos dos rangos
+	 * no avisaban nunca.** Y ese es justo el agujero que importa: la serie no puede pasar
+	 * de `HISTORY_DAYS` (30) porque la reconstrucción vive del sparkline de Yahoo, así que
+	 * **«Todo» —que además es el rango por defecto— enseñaba un mes llamándolo todo el
+	 * historial**, aunque hubiera años de snapshots guardados, y sin una palabra.
+	 *
+	 * La decisión vive en `$lib/history/range.ts`, fuera del componente, porque decide algo
+	 * y aquí no la miraba nadie. Distingue dos situaciones que el código anterior
+	 * confundía: `short` («todavía no llevas tanto tiempo», no falta nada) y `capped`
+	 * («hay historial anterior que la reconstrucción no alcanza»), donde el texto de
+	 * `short` sería mentira porque los datos sí existen.
 	 */
-	const rangeIsClipped = $derived.by(() => {
-		const days = ranges.find((r) => r.id === currentRange)?.days;
-		return days !== null && days !== undefined && series.points.length < days;
-	});
+	const clipNotice = $derived(
+		clipNoticeFor({
+			range: currentRange,
+			firstShownDate: series.points[0]?.date ?? null,
+			oldestKnownDate: series.oldestKnownDate,
+			today: new Date()
+		})
+	);
 
 	/** La ventana visible, con el índice TWR rebasado a su primer día. */
 	const view = $derived.by(() => {
@@ -606,8 +623,10 @@
 		{#if isSplitMode}
 			<p class="note accent">{$LL.db.chart_split_hint()}</p>
 		{/if}
-		{#if rangeIsClipped}
+		{#if clipNotice === 'short'}
 			<p class="note">{$LL.db.chart_range_short()}</p>
+		{:else if clipNotice === 'capped'}
+			<p class="note">{$LL.db.chart_range_capped({ days: series.points.length })}</p>
 		{/if}
 		{#if view.hasEstimated}
 			<p class="note">{$LL.db.chart_estimated_note()}</p>

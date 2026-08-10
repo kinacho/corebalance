@@ -301,7 +301,19 @@ export class PortfolioStore {
 			}))
 		);
 
-		return buildPerformanceSeries(points, this.globalInvested);
+		/**
+		 * La fecha guardada más antigua, que puede quedar muy por detrás de la ventana:
+		 * la reconstrucción llega hasta donde llega el sparkline (30 días) mientras los
+		 * snapshots se acumulan indefinidamente. Sin este dato el gráfico no puede
+		 * distinguir «no hay más historial» de «hay más y no cabe», y por eso sus rangos
+		 * `YTD` y `Todo` no advertían nada.
+		 */
+		const oldestKnownDate = this.history.reduce<string | null>(
+			(oldest, h) => (oldest === null || h.date < oldest ? h.date : oldest),
+			null
+		);
+
+		return buildPerformanceSeries(points, this.globalInvested, oldestKnownDate);
 	});
 
 	/** Cambios registrados que el usuario todavía no ha clasificado. */

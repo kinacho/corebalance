@@ -100,13 +100,57 @@ describe('moneyWeightedReturn', () => {
 		expect(mwr).toBeCloseTo(periodReturn(twrIndex(points)), 6);
 	});
 
-	it('penaliza aportar justo antes de una caída', () => {
-		// Los activos acaban planos, pero el dinero entró antes del tramo malo.
+	/**
+	 * ⚠️ **Este test medía un castigo inventado, y pasaba por ruido numérico.** Su
+	 * escenario era `[1000, 2000 (+1000), 1800]`: se aporta y a continuación *todo* el
+	 * dinero —el viejo y el nuevo— come entera la caída del último tramo, así que no hay
+	 * ninguna decisión de calendario que juzgar y las dos rentabilidades deben coincidir.
+	 * Salía `mwr < twr` porque el MWR fechaba los flujos un día más tarde que el TWR (ver
+	 * `flowTime`), y una vez alineados la diferencia medida es de **−3,2e−13**: la
+	 * aserción seguía en verde por la tolerancia de la bisección, no por el fenómeno.
+	 *
+	 * Reescrito con la forma en que el timing sí existe: el dinero entra **después** de un
+	 * tramo bueno y antes de uno malo, de modo que la parte nueva está expuesta a menos
+	 * subida y a la misma bajada.
+	 */
+	it('penaliza aportar tras una subida y justo antes de una caída', () => {
+		const points = [point(1000), point(1100), point(2100, 1000), point(1890)];
+		const twr = periodReturn(twrIndex(points));
+		const mwr = moneyWeightedReturn(points);
+
+		expect(mwr).not.toBeNull();
+		expect(mwr!).toBeLessThan(twr);
+		// Y la distancia es de puntos porcentuales, no de ruido de coma flotante.
+		expect(twr - mwr!).toBeGreaterThan(0.01);
+	});
+
+	it('premia aportar tras una caída, justo antes de la recuperación', () => {
+		const points = [point(1000), point(900), point(1900, 1000), point(2090)];
+		const twr = periodReturn(twrIndex(points));
+		const mwr = moneyWeightedReturn(points);
+
+		expect(mwr).not.toBeNull();
+		expect(mwr!).toBeGreaterThan(twr);
+	});
+
+	/**
+	 * El contrato que hace comparables a las dos métricas, y el que faltaba: un flujo
+	 * cuenta **al inicio de su día** en las dos. En `twrIndex` siempre fue así
+	 * (`base = begin + inflow`); el MWR lo colocaba en el cierre, un día más tarde, y esa
+	 * asimetría se presentaba al usuario como «el coste de tu timing».
+	 *
+	 * Cuando todo el dinero está expuesto exactamente al mismo tramo no hay timing que
+	 * medir, así que ambas cifras deben ser la misma con precisión de cálculo, no
+	 * parecidas.
+	 */
+	it('fecha los flujos igual que el TWR, así que sin timing ambas coinciden', () => {
 		const points = [point(1000), point(2000, 1000), point(1800)];
 		const twr = periodReturn(twrIndex(points));
 		const mwr = moneyWeightedReturn(points);
+
 		expect(mwr).not.toBeNull();
-		expect(mwr!).toBeLessThan(twr);
+		expect(mwr!).toBeCloseTo(twr, 9);
+		expect(mwr!).toBeCloseTo(-0.1, 9);
 	});
 
 	it('devuelve null cuando no hay dinero al principio ni al final', () => {
@@ -159,6 +203,60 @@ describe('buildPerformanceSeries', () => {
 	it('devuelve -1 si toda la ventana es estimada', () => {
 		const points = [{ ...point(1000), estimated: true }];
 		expect(buildPerformanceSeries(points, 1000).firstMeasuredIndex).toBe(-1);
+	});
+
+	/**
+	 * ⚠️ **Las dos rentabilidades incluían los días estimados**, que son los que la
+	 * reconstrucción no puede ver y rellena con una estimación. El gráfico los dibuja
+	 * distinto y lo advierte; estas cifras los metían en la aritmética en silencio, y son
+	 * las que la interfaz presenta como «lo que rindieron tus activos».
+	 *
+	 * El número de este caso es el que hay que recordar: **13,33 % contra 2,00 %**. Once
+	 * puntos de rentabilidad inventada. `firstMeasuredIndex` ya existía y ya estaba
+	 * probado; lo que faltaba era que alguien lo leyera.
+	 */
+	it('mide las rentabilidades desde el primer día real, no desde el estimado', () => {
+		const points = [
+			{ ...point(9000), estimated: true },
+			{ ...point(9500), estimated: true },
+			point(10000),
+			point(10200)
+		];
+		const series = buildPerformanceSeries(points, 9000);
+
+		// 10.200 / 10.000 − 1, y no 10.200 / 9.000 − 1.
+		expect(series.twrPeriod).toBeCloseTo(0.02, 6);
+		expect(series.measuredDays).toBe(2);
+	});
+
+	it('con toda la ventana estimada no inventa cifras: el panel se apaga', () => {
+		const points = [
+			{ ...point(1000), estimated: true },
+			{ ...point(1500, 400), estimated: true }
+		];
+		const series = buildPerformanceSeries(points, 1000);
+
+		expect(series.twrPeriod).toBe(0);
+		expect(series.mwrPeriod).toBeNull();
+		expect(series.timingCostPp).toBeNull();
+		expect(series.measuredDays).toBe(0);
+	});
+
+	it('`measuredDays` cuenta los días medidos, que es lo que el pie declara', () => {
+		const todosReales = buildPerformanceSeries([point(100), point(110), point(120)], 100);
+		expect(todosReales.measuredDays).toBe(3);
+	});
+
+	/**
+	 * La fecha más antigua guardada viaja con la serie porque el gráfico no puede saberla:
+	 * la reconstrucción se corta en 30 días y sin este dato no distingue «esto es todo lo
+	 * que tienes» de «hay más y no cabe». Ver `range.ts`.
+	 */
+	it('propaga la fecha guardada más antigua, y por defecto es null', () => {
+		expect(buildPerformanceSeries([point(100), point(110)], 100).oldestKnownDate).toBeNull();
+		expect(
+			buildPerformanceSeries([point(100), point(110)], 100, '2024-03-01').oldestKnownDate
+		).toBe('2024-03-01');
 	});
 
 	it('una venta no genera pérdida en la rentabilidad pero sí baja el patrimonio', () => {

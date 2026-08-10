@@ -127,6 +127,26 @@ export interface PerformanceSeries {
 	timingCostPp: number | null;
 	/** Índice del primer punto no estimado, o `-1` si todos lo son. */
 	firstMeasuredIndex: number;
+	/**
+	 * Días sobre los que se han medido `twrPeriod` y `mwrPeriod`, es decir los que van
+	 * desde el primer día no estimado hasta hoy. `0` si toda la ventana es estimada.
+	 *
+	 * Lo necesita la interfaz para **declarar el periodo del que habla**: el pie del panel
+	 * decía «cifras del periodo mostrado» cuando el gráfico puede estar mostrando otro
+	 * tramo, y ahora que las rentabilidades arrancan en el primer día medido tampoco
+	 * coincide con ninguno de los rangos del selector.
+	 */
+	measuredDays: number;
+	/**
+	 * Fecha del snapshot guardado más antiguo, aunque caiga fuera de la ventana
+	 * reconstruida. `null` si no hay historial guardado.
+	 *
+	 * Existe porque la serie no puede pasar de `HISTORY_DAYS` (30) —el sparkline de Yahoo
+	 * no da más— y sin este dato el gráfico no puede distinguir «esto es todo lo que
+	 * tienes» de «hay más historial y no cabe en la reconstrucción». Los rangos `YTD` y
+	 * `Todo` no avisaban de nada por eso, y `Todo` es el rango por defecto.
+	 */
+	oldestKnownDate: string | null;
 }
 
 /** Entrada de la reconstrucción. Todo precalculado por el llamante. */
