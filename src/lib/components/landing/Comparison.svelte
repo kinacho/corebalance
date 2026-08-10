@@ -250,5 +250,37 @@
   .links-sep {
     margin: 0 0.35rem;
   }
+
+  /**
+   * ⚠️ En móvil esta fila de enlaces **se salía de la pantalla y quedaba
+   * recortada**, no desplazada: medido a 390 px, un enlace ocupaba de 328 a 442 y
+   * el separador siguiente empezaba en 448, o sea fuera. Los enlaces llevan
+   * `white-space: nowrap` a propósito —«vs Portfolio Performance» partido en dos
+   * líneas se lee peor—, y con el párrafo centrado eso deja al último sin sitio
+   * donde caer. Como lista que envuelve de verdad, cada enlace ocupa su línea si
+   * hace falta; los separadores sobran ahí, que era su única función.
+   */
+  @media (max-width: 640px) {
+    .comparison-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.15rem 0.75rem;
+    }
+
+    .links-label {
+      margin-right: 0;
+      width: 100%;
+    }
+
+    .links-sep {
+      display: none;
+    }
+
+    /* Y con sitio para el dedo: 18 px de alto no es un objetivo de toque. */
+    .comparison-links a {
+      padding: 0.35rem 0;
+    }
+  }
 </style>
 

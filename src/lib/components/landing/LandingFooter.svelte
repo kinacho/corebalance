@@ -184,7 +184,10 @@
     background: transparent;
     border: none;
     cursor: pointer;
-    padding: 0;
+    /* Medidos a 390 px: 16-18 px de alto. Un pie de página es casi todo enlaces y
+       es lo último que se toca en móvil, así que van con sitio para el dedo. */
+    display: inline-block;
+    padding: 0.45rem 0;
     font-family: inherit;
     display: inline;
   }

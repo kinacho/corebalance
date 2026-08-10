@@ -231,7 +231,8 @@
 	}
 
 	.center-label {
-		font-size: 0.55rem;
+		/* El más pequeño de toda la app: 8,8 px medidos. Ver `--text-micro`. */
+		font-size: var(--text-micro);
 		font-weight: 700;
 		letter-spacing: 0.12em;
 		text-transform: uppercase;

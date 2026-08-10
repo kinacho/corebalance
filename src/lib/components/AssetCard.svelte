@@ -482,7 +482,9 @@
 	}
 
 	.asset-isin, .asset-ter, .asset-time {
-		font-size: clamp(0.55rem, 2.5vw, 0.65rem);
+		/* ⚠️ El `clamp()` tenía el suelo justo donde no hay que tenerlo: a 390 px de
+		   ancho, `2.5vw` son 9,75 px y ahí es donde caía siempre. Ver `--text-micro`. */
+		font-size: clamp(var(--text-micro), 2.5vw, 0.65rem);
 		color: rgba(160, 160, 200, 0.5);
 		font-family: 'Monaco', 'Menlo', monospace;
 	}
@@ -764,7 +766,7 @@
 	}
 
 	.cost-period {
-		font-size: 0.6rem;
+		font-size: var(--text-micro);
 		color: rgba(160, 160, 200, 0.4);
 		margin-left: 0.2rem;
 		font-weight: 600;
