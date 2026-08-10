@@ -18,7 +18,11 @@ const STATIC_PAGES: Record<string, { lastmod: string; priority: string; changefr
 	'/': { lastmod: '2026-08-01', priority: '1.0', changefreq: 'weekly' },
 	// Los dos hubs van a 0.8, por encima de sus hijas (0.7): son el destino del
 	// enlace de la navbar, que se repite en todas las páginas del sitio.
-	'/herramientas': { lastmod: '2026-08-02', priority: '0.8', changefreq: 'monthly' },
+	// 10-ago-2026: el índice pasó de 2.026 a 4.700 caracteres de contenido propio (el
+	// recorrido de cuatro pasos y las preguntas frecuentes), que es el arreglo del «soft 404»
+	// que Search Console reportaba en `/en/herramientas`. La fecha se toca porque cambió el
+	// contenido visible: es la única señal del sitemap que invita a revisitar la página.
+	'/herramientas': { lastmod: '2026-08-10', priority: '0.8', changefreq: 'monthly' },
 	'/comparativas': { lastmod: '2026-08-02', priority: '0.8', changefreq: 'monthly' },
 	'/comparativas/corebalance-vs-portfolio-performance': {
 		lastmod: '2026-08-01',

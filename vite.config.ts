@@ -38,6 +38,32 @@ export default defineConfig({
 			// `registerSW.js` que nunca insertaba en el HTML — un fichero muerto servido
 			// con 200 que además hacía creer que la PWA estaba registrada.
 			injectRegister: false,
+			/**
+			 * ⚠️ **Sin estas dos líneas el service worker sólo se registraba en la raíz y en
+			 * las rutas de primer nivel.** Por defecto el módulo virtual compila
+			 * `new Workbox('./sw.js', { scope: './' })` —comprobado leyendo el bundle— y una
+			 * URL relativa se resuelve contra el directorio de la página: en
+			 * `/en/herramientas` pide `/en/sw.js`, en `/blog/importar-csv-degiro` pide
+			 * `/blog/sw.js`, y las dos son 404. Sólo `/` y las rutas de un nivel
+			 * (`/herramientas`, `/blog`) acertaban, porque su directorio ya es la raíz.
+			 *
+			 * Medido en producción el 10-ago-2026 renderizando con Chromium: dos errores de
+			 * consola —404 del script y `TypeError` al registrar, con el scope delatando la
+			 * carpeta— en las 35 URLs inglesas, los 24 posts del blog, las cuatro
+			 * herramientas y las comparativas individuales. Cero errores en `/`.
+			 *
+			 * O sea que la PWA que se arregló para que «por fin existiera» seguía sin existir
+			 * para quien entra por un post desde Google, que es el caso normal: precache,
+			 * modo offline y `beforeinstallprompt` sólo funcionaban entrando por la home.
+			 * Es el mismo patrón que este repo ya tiene documentado dos veces en la PWA —un
+			 * fallo silencioso que deja la impresión de estar resuelto—, y salió mirando la
+			 * consola de una página `/en/*`, no leyendo el código.
+			 *
+			 * El scope tiene que ser `/` para que el worker controle todo el sitio, no sólo
+			 * la carpeta desde la que se registró.
+			 */
+			base: '/',
+			scope: '/',
 			devOptions: {
 				enabled: true,
 				// ⚠️ En desarrollo el `globDirectory` de Workbox es `dev-dist/`, no el output
