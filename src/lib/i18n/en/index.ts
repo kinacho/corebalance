@@ -402,9 +402,22 @@ const en: Translation = {
     step_1: 'Open your mobile {bold}',
     step_1_bold: 'camera',
     step_2: 'Point at the QR code above',
-    step_3: 'Tap the link — the app will open and import itself',
-    p2p_or: 'or also',
-    btn_scan: 'Scan from this device',
+    step_3: 'Tap the link — the app will open and ask you to confirm',
+    qr_note_history: 'The QR carries your assets and your transaction ledger. The net-worth history does not travel: the other device rebuilds it on its own from prices.',
+    receive_title: 'Bring a portfolio to this device',
+    receive_reading: 'Reading the code...',
+    receive_invalid: 'This link does not contain a valid CoreBalance portfolio. Generate the QR again on the other device.',
+    receive_empty: 'The link carries no data. Generate the QR from Synchronization on the other device.',
+    receive_label_assets: 'Assets',
+    receive_label_transactions: 'Transactions',
+    receive_label_edits: 'Share adjustments',
+    receive_warning: 'This {bold} on this device with the one you are bringing. What you have here now cannot be recovered.',
+    receive_warning_bold: 'replaces the portfolio',
+    receive_confirm: 'Replace and open the portfolio',
+    receive_cancel: 'Cancel and leave it as it is',
+    receive_importing: 'Importing...',
+    receive_done: 'Done. Opening your portfolio...',
+    receive_error: 'Could not import: {error}',
   },
   // Ledger
   ledger: {
@@ -660,7 +673,7 @@ const en: Translation = {
     timing_period_note: 'Measured over the {days} days with real data, not annualised.',
     legal_disclaimer: '<strong>Legal Disclaimer:</strong> CoreBalance is a purely informative and educational tool. It does not constitute financial, investment, or tax advice. The data displayed may be subject to delays or inaccuracies. The developer is not responsible for any financial losses resulting from the use of this application. Always invest at your own risk.',
     footer_tagline: 'Your control center for smart and balanced asset management.',
-    changelog_trigger: 'v1.14.0 🚀',
+    changelog_trigger: 'v1.15.0 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Made with ❤️ for the investing community',
     reclassify_stocks: 'Individual Stocks',
@@ -934,6 +947,17 @@ const en: Translation = {
     close_aria: 'Close modal',
     btn_understand: 'Got it',
     releases: {
+      v1_15_0: {
+        date: 'August 10, 2026',
+        badge: 'Make it visible, and make it work on a phone',
+        changes: [
+          '📱 **The history chart now fits on a phone screen.** The range buttons overflowed: the whole page scrolled sideways and "All" — the default range — sat off-screen, so the one button you could not reach was the range you were looking at. They are also twice as big for a thumb now.',
+          '🔎 **And you can read it.** Nine places in the app were writing nine-pixel labels: the total inside the donut, each card\'s ISIN and TER, the axis captions. On a phone they now have a floor.',
+          '🏷️ **The deviation map says the fund\'s name instead of its ISIN.** `IE00B4L5Y983` tells you nothing. And it is not a plain text swap: two funds from the same manager share their first eighteen characters, so the label is shortened where it hurts least until it fits without becoming indistinguishable.',
+          '📷 **Device-to-device transfer by QR actually exists now.** Scanning the code led to a page that had never been built, so it never imported anything; the code also tried to carry your whole history and did not fit, and it only worked if you were signed in. It now opens your portfolio on the other device, with no account and no servers, showing you what it will bring and asking for confirmation first.',
+          '🩹 **And the ledger modal no longer leaves the page stuck when you close it**, which is what happened if you opened it from a card.'
+        ]
+      },
       v1_14_0: {
         date: 'August 10, 2026',
         badge: 'Your CSV carries more than it seemed',

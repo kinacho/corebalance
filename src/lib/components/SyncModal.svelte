@@ -4,6 +4,8 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { bloquearScroll, desbloquearScroll } from '$lib/modal-lock';
 	import * as QRCode from 'qrcode';
+	import { MAX_SYNC_URL_LENGTH, encodeSyncPayload, syncUrl } from '$lib/sync-payload';
+	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { LL } from '$lib/i18n/i18n-svelte';
 	import { formatDate, validateImportData } from '../utils';
 
@@ -34,38 +36,38 @@
 		}
 	}
 
-	async function compressAndEncode(json: string): Promise<string> {
-		const blob = new Blob([json]);
-		const cs = new CompressionStream('deflate');
-		const compressed = await new Response(blob.stream().pipeThrough(cs)).blob();
-		const buffer = await compressed.arrayBuffer();
-		const bytes = new Uint8Array(buffer);
-		let binary = '';
-		for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
-		return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-	}
-
+	/**
+	 * ⚠️ El códec vivía aquí dentro y **no tenía pareja**: el QR apuntaba a `/sync`, una
+	 * ruta que no existía, y nada en el repo descomprimía ese fragmento. Ahora los dos
+	 * extremos comparten `$lib/sync-payload.ts`, que es la única forma de que emisor y
+	 * receptor no se separen; y el traspaso deja fuera el historial de snapshots, sin lo
+	 * cual el QR no cabía nunca (6.423 caracteres medidos contra un límite de 2.000).
+	 */
 	async function generateSyncQR() {
 		qrState = 'generating';
 		qrStatus = $LL.sync.qr_preparing();
 		qrCodeUrl = null;
 
 		try {
-			if (!storageProvider.getAllData) throw new Error($LL.sync.status_export_not_supported());
+			/**
+			 * ⚠️ La cartera se pide **al store**, no a `storageProvider.getAllData()`.
+			 * Con `PUBLIC_USE_FIREBASE=true` —el entorno que se publica— eso último es
+			 * `FirebaseStorage`, que lanza «Debes iniciar sesión para exportar datos»: la
+			 * pestaña entera estaba muerta para quien no ha iniciado sesión, que es el
+			 * usuario por defecto de esta app. Comprobado en pantalla antes de tocarlo.
+			 */
+			const payload = portfolio.snapshotForTransfer();
+			const json = JSON.stringify(payload);
+			const encoded = await encodeSyncPayload(payload);
+			const url = syncUrl(window.location.origin, encoded);
 
-			const data = await storageProvider.getAllData();
-			const json = JSON.stringify(data);
-			const encoded = await compressAndEncode(json);
-			const syncUrl = `${window.location.origin}/sync#${encoded}`;
-
-			// Max length for reliable scanning on screens is ~2000 chars
-			if (syncUrl.length > 2000) {
+			if (url.length > MAX_SYNC_URL_LENGTH) {
 				qrState = 'error';
 				qrStatus = $LL.sync.qr_too_large({ size: (json.length / 1024).toFixed(1) });
 				return;
 			}
 
-			qrCodeUrl = await QRCode.toDataURL(syncUrl, {
+			qrCodeUrl = await QRCode.toDataURL(url, {
 				width: 400, // Higher resolution for better clarity
 				margin: 4,  // More quiet zone
 				errorCorrectionLevel: 'L', // Lower density dots
@@ -258,16 +260,19 @@
 						</div>
 					{/if}
 
-					<div class="p2p-actions">
-						<div class="divider"><span>{$LL.sync.p2p_or()}</span></div>
-						<button class="action-btn receive-btn" onclick={() => window.location.href = '/sync'}>
-							<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
-								<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-								<circle cx="12" cy="13" r="4"></circle>
-							</svg>
-							{$LL.sync.btn_scan()}
-						</button>
-					</div>
+					<!--
+						⚠️ Aquí había un botón «Escanear desde este dispositivo» que hacía
+						`window.location.href = '/sync'`. Dos cosas mal a la vez: prometía un
+						lector de códigos que la app no tiene —`qrcode` los genera, no los lee— y
+						navegaba a una ruta que no existía, así que sacaba al usuario de la app a
+						un 404. Borrado en vez de arreglado: la ruta ahora existe, pero es la que
+						*recibe* un enlace escaneado con la cámara, no un escáner.
+
+						En su sitio, decir qué lleva el QR: es lo que explica por qué cabe.
+					-->
+					{#if qrState === 'ready'}
+						<p class="qr-note">{$LL.sync.qr_note_history()}</p>
+					{/if}
 				</div>
 			{/if}
 		</div>
@@ -537,36 +542,15 @@
 	}
 
 
-	.divider {
-		display: flex;
-		align-items: center;
-		text-align: center;
-		margin-bottom: 1.5rem;
-		color: rgba(160, 160, 200, 0.4);
-		font-size: 0.75rem;
-		text-transform: uppercase;
-		letter-spacing: 0.1em;
-	}
+	/* `.divider` y `.receive-btn` vivían aquí, y eran el separador «o también» y el
+	   botón de escanear que se han quitado del marcado: sin ellos son CSS muerto. */
 
-	.divider::before, .divider::after {
-		content: '';
-		flex: 1;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-	}
-
-	.divider:not(:empty)::before { margin-right: 1rem; }
-	.divider:not(:empty)::after { margin-left: 1rem; }
-
-	.receive-btn {
-		background: rgba(255, 255, 255, 0.03);
-		color: rgba(255, 255, 255, 0.8);
-		border: 1px dashed rgba(255, 255, 255, 0.15);
-	}
-
-	.receive-btn:hover {
-		background: rgba(255, 255, 255, 0.08);
-		border-style: solid;
-		color: white;
+	.qr-note {
+		margin: 0 0 1.25rem;
+		font-size: 0.72rem;
+		line-height: 1.5;
+		color: rgba(160, 160, 200, 0.55);
+		text-align: left;
 	}
 
 	.qr-instructions {

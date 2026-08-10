@@ -82,7 +82,13 @@ export default defineConfig({
 				// rótulo—, y `modal-lock.ts` decide si la página se queda usable al cerrar un
 				// modal, que era el defecto de escribirlo cinco veces a mano.
 				'src/lib/asset-label.ts',
-				'src/lib/modal-lock.ts'
+				'src/lib/modal-lock.ts',
+				// Añadido el 10-ago-2026. Es el códec del traspaso entre dispositivos y
+				// **decide qué se escribe encima de la cartera del usuario** a partir de una
+				// URL que cualquiera puede haber tocado: si `decodeSyncPayload` deja pasar
+				// basura, se importa basura. Su emisor no tenía receptor y por tanto tampoco
+				// tenía test.
+				'src/lib/sync-payload.ts'
 			],
 			reporter: ['text', 'json-summary'],
 			thresholds: {
@@ -91,6 +97,13 @@ export default defineConfig({
 				// no tener `document` en jsdom, y la guarda existe por el SSR.
 				'src/lib/asset-label.ts': { statements: 93, branches: 92, functions: 100 },
 				'src/lib/modal-lock.ts': { statements: 100, branches: 75, functions: 100 },
+				/**
+				 * Medido al nacer, 10-ago-2026: 100 en las cuatro. Nota para quien lea el
+				 * informe de texto y no lo encuentre: el reporter de v8 **omite de la tabla
+				 * los ficheros que están al 100 %**, así que «no aparece» no significa «no
+				 * está instrumentado». Se comprueba en `coverage/coverage-summary.json`.
+				 */
+				'src/lib/sync-payload.ts': { statements: 100, branches: 100, functions: 100 },
 				// Subido el 6-ago-2026 al matar mutantes del motor fiscal: 96,29/95,12 → 98,75/97,56.
 				'src/lib/fiscal.ts': { statements: 98, branches: 97, functions: 100 },
 				// Extraído del store el 6-ago-2026; medido al nacer.

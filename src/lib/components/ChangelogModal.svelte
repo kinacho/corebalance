@@ -26,6 +26,7 @@
 
 	// Mapeo dinámico desde el diccionario de traducciones
 	const releaseVersions = [
+		'v1_15_0',
 		'v1_14_0',
 		'v1_13_0',
 		'v1_12_1',
@@ -47,6 +48,7 @@
 	] as const;
 
 	const badgeColors: Record<string, string> = {
+		v1_15_0: '#0ea5e9',
 		v1_14_0: '#047857',
 		v1_13_0: '#a855f7',
 		v1_12_1: '#10b981',

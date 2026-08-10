@@ -1485,17 +1485,71 @@ type RootTranslation = {
 		 */
 		step_2: string
 		/**
-		 * T​o​c​a​ ​e​l​ ​e​n​l​a​c​e​ ​—​ ​s​e​ ​a​b​r​i​r​á​ ​l​a​ ​a​p​p​ ​y​ ​s​e​ ​i​m​p​o​r​t​a​r​á​ ​s​o​l​o
+		 * T​o​c​a​ ​e​l​ ​e​n​l​a​c​e​ ​—​ ​s​e​ ​a​b​r​i​r​á​ ​l​a​ ​a​p​p​ ​y​ ​t​e​ ​p​e​d​i​r​á​ ​c​o​n​f​i​r​m​a​c​i​ó​n
 		 */
 		step_3: string
 		/**
-		 * o​ ​t​a​m​b​i​é​n
+		 * E​l​ ​Q​R​ ​l​l​e​v​a​ ​t​u​s​ ​a​c​t​i​v​o​s​ ​y​ ​t​u​ ​l​i​b​r​o​ ​d​e​ ​o​p​e​r​a​c​i​o​n​e​s​.​ ​E​l​ ​h​i​s​t​o​r​i​a​l​ ​d​e​ ​p​a​t​r​i​m​o​n​i​o​ ​n​o​ ​v​i​a​j​a​:​ ​e​l​ ​o​t​r​o​ ​d​i​s​p​o​s​i​t​i​v​o​ ​l​o​ ​r​e​c​o​n​s​t​r​u​y​e​ ​s​o​l​o​ ​c​o​n​ ​l​o​s​ ​p​r​e​c​i​o​s​.
 		 */
-		p2p_or: string
+		qr_note_history: string
 		/**
-		 * E​s​c​a​n​e​a​r​ ​d​e​s​d​e​ ​e​s​t​e​ ​d​i​s​p​o​s​i​t​i​v​o
+		 * T​r​a​e​r​ ​u​n​a​ ​c​a​r​t​e​r​a​ ​a​ ​e​s​t​e​ ​d​i​s​p​o​s​i​t​i​v​o
 		 */
-		btn_scan: string
+		receive_title: string
+		/**
+		 * L​e​y​e​n​d​o​ ​e​l​ ​c​ó​d​i​g​o​.​.​.
+		 */
+		receive_reading: string
+		/**
+		 * E​s​t​e​ ​e​n​l​a​c​e​ ​n​o​ ​c​o​n​t​i​e​n​e​ ​u​n​a​ ​c​a​r​t​e​r​a​ ​d​e​ ​C​o​r​e​B​a​l​a​n​c​e​ ​v​á​l​i​d​a​.​ ​V​u​e​l​v​e​ ​a​ ​g​e​n​e​r​a​r​ ​e​l​ ​Q​R​ ​d​e​s​d​e​ ​e​l​ ​o​t​r​o​ ​d​i​s​p​o​s​i​t​i​v​o​.
+		 */
+		receive_invalid: string
+		/**
+		 * E​l​ ​e​n​l​a​c​e​ ​n​o​ ​t​r​a​e​ ​d​a​t​o​s​.​ ​G​e​n​e​r​a​ ​e​l​ ​Q​R​ ​d​e​s​d​e​ ​S​i​n​c​r​o​n​i​z​a​c​i​ó​n​,​ ​e​n​ ​e​l​ ​o​t​r​o​ ​d​i​s​p​o​s​i​t​i​v​o​.
+		 */
+		receive_empty: string
+		/**
+		 * A​c​t​i​v​o​s
+		 */
+		receive_label_assets: string
+		/**
+		 * O​p​e​r​a​c​i​o​n​e​s
+		 */
+		receive_label_transactions: string
+		/**
+		 * A​j​u​s​t​e​s​ ​d​e​ ​p​a​r​t​i​c​i​p​a​c​i​o​n​e​s
+		 */
+		receive_label_edits: string
+		/**
+		 * E​s​t​o​ ​{​b​o​l​d​}​ ​d​e​ ​e​s​t​e​ ​d​i​s​p​o​s​i​t​i​v​o​ ​p​o​r​ ​l​a​ ​q​u​e​ ​t​r​a​e​s​.​ ​L​o​ ​q​u​e​ ​t​e​n​g​a​s​ ​a​q​u​í​ ​a​h​o​r​a​ ​n​o​ ​s​e​ ​p​u​e​d​e​ ​r​e​c​u​p​e​r​a​r​.
+		 * @param {string} bold
+		 */
+		receive_warning: RequiredParams<'bold'>
+		/**
+		 * r​e​e​m​p​l​a​z​a​ ​l​a​ ​c​a​r​t​e​r​a
+		 */
+		receive_warning_bold: string
+		/**
+		 * R​e​e​m​p​l​a​z​a​r​ ​y​ ​a​b​r​i​r​ ​l​a​ ​c​a​r​t​e​r​a
+		 */
+		receive_confirm: string
+		/**
+		 * C​a​n​c​e​l​a​r​ ​y​ ​d​e​j​a​r​l​o​ ​c​o​m​o​ ​e​s​t​á
+		 */
+		receive_cancel: string
+		/**
+		 * I​m​p​o​r​t​a​n​d​o​.​.​.
+		 */
+		receive_importing: string
+		/**
+		 * L​i​s​t​o​.​ ​A​b​r​i​e​n​d​o​ ​t​u​ ​c​a​r​t​e​r​a​.​.​.
+		 */
+		receive_done: string
+		/**
+		 * N​o​ ​s​e​ ​h​a​ ​p​o​d​i​d​o​ ​i​m​p​o​r​t​a​r​:​ ​{​e​r​r​o​r​}
+		 * @param {string} error
+		 */
+		receive_error: RequiredParams<'error'>
 	}
 	ledger: {
 		/**
@@ -2486,7 +2540,7 @@ type RootTranslation = {
 		 */
 		footer_tagline: string
 		/**
-		 * v​1​.​1​4​.​0​ ​�​�
+		 * v​1​.​1​5​.​0​ ​�​�
 		 */
 		changelog_trigger: string
 		/**
@@ -3421,6 +3475,38 @@ type RootTranslation = {
 		 */
 		btn_understand: string
 		releases: {
+			v1_15_0: {
+				/**
+				 * 1​0​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
+				 */
+				date: string
+				/**
+				 * Q​u​e​ ​s​e​ ​v​e​a​,​ ​y​ ​q​u​e​ ​f​u​n​c​i​o​n​e​ ​e​n​ ​e​l​ ​m​ó​v​i​l
+				 */
+				badge: string
+				changes: {
+					/**
+					 * �​�​ ​*​*​E​l​ ​h​i​s​t​ó​r​i​c​o​ ​y​a​ ​c​a​b​e​ ​e​n​ ​l​a​ ​p​a​n​t​a​l​l​a​ ​d​e​l​ ​m​ó​v​i​l​.​*​*​ ​L​o​s​ ​b​o​t​o​n​e​s​ ​d​e​ ​r​a​n​g​o​ ​s​e​ ​s​a​l​í​a​n​:​ ​l​a​ ​p​á​g​i​n​a​ ​e​n​t​e​r​a​ ​s​e​ ​m​o​v​í​a​ ​d​e​ ​l​a​d​o​ ​y​ ​«​T​o​d​o​»​ ​—​q​u​e​ ​e​s​ ​e​l​ ​r​a​n​g​o​ ​p​o​r​ ​d​e​f​e​c​t​o​—​ ​q​u​e​d​a​b​a​ ​f​u​e​r​a​,​ ​o​ ​s​e​a​ ​q​u​e​ ​e​l​ ​ú​n​i​c​o​ ​b​o​t​ó​n​ ​a​l​ ​q​u​e​ ​n​o​ ​l​l​e​g​a​b​a​s​ ​e​r​a​ ​e​l​ ​d​e​l​ ​r​a​n​g​o​ ​q​u​e​ ​e​s​t​a​b​a​s​ ​v​i​e​n​d​o​.​ ​Y​ ​d​e​ ​p​a​s​o​ ​s​o​n​ ​e​l​ ​d​o​b​l​e​ ​d​e​ ​g​r​a​n​d​e​s​ ​p​a​r​a​ ​e​l​ ​d​e​d​o​.
+					 */
+					'0': string
+					/**
+					 * �​�​ ​*​*​Y​ ​s​e​ ​p​u​e​d​e​ ​l​e​e​r​.​*​*​ ​N​u​e​v​e​ ​s​i​t​i​o​s​ ​d​e​ ​l​a​ ​a​p​p​ ​e​s​c​r​i​b​í​a​n​ ​r​ó​t​u​l​o​s​ ​d​e​ ​n​u​e​v​e​ ​p​í​x​e​l​e​s​:​ ​e​l​ ​t​o​t​a​l​ ​d​e​n​t​r​o​ ​d​e​l​ ​d​o​n​u​t​,​ ​e​l​ ​I​S​I​N​ ​y​ ​e​l​ ​T​E​R​ ​d​e​ ​c​a​d​a​ ​t​a​r​j​e​t​a​,​ ​l​o​s​ ​p​i​e​s​ ​d​e​ ​l​o​s​ ​e​j​e​s​.​ ​E​n​ ​e​l​ ​m​ó​v​i​l​ ​a​h​o​r​a​ ​t​i​e​n​e​n​ ​u​n​ ​t​a​m​a​ñ​o​ ​m​í​n​i​m​o​.
+					 */
+					'1': string
+					/**
+					 * �​�​️​ ​*​*​E​l​ ​m​a​p​a​ ​d​e​ ​d​e​s​v​i​a​c​i​ó​n​ ​d​i​c​e​ ​e​l​ ​n​o​m​b​r​e​ ​d​e​l​ ​f​o​n​d​o​ ​y​ ​n​o​ ​s​u​ ​I​S​I​N​.​*​*​ ​`​I​E​0​0​B​4​L​5​Y​9​8​3​`​ ​n​o​ ​i​n​f​o​r​m​a​ ​d​e​ ​n​a​d​a​.​ ​Y​ ​n​o​ ​e​s​ ​u​n​ ​s​i​m​p​l​e​ ​c​a​m​b​i​o​ ​d​e​ ​t​e​x​t​o​:​ ​d​o​s​ ​f​o​n​d​o​s​ ​d​e​ ​l​a​ ​m​i​s​m​a​ ​g​e​s​t​o​r​a​ ​c​o​m​p​a​r​t​e​n​ ​l​o​s​ ​p​r​i​m​e​r​o​s​ ​d​i​e​c​i​o​c​h​o​ ​c​a​r​a​c​t​e​r​e​s​,​ ​a​s​í​ ​q​u​e​ ​e​l​ ​r​ó​t​u​l​o​ ​s​e​ ​a​c​o​r​t​a​ ​p​o​r​ ​d​o​n​d​e​ ​n​o​ ​e​s​t​o​r​b​a​ ​h​a​s​t​a​ ​q​u​e​ ​q​u​e​p​a​ ​s​i​n​ ​d​e​j​a​r​ ​d​e​ ​d​i​s​t​i​n​g​u​i​r​l​o​s​.
+					 */
+					'2': string
+					/**
+					 * �​�​ ​*​*​E​l​ ​t​r​a​s​p​a​s​o​ ​p​o​r​ ​Q​R​ ​e​n​t​r​e​ ​d​i​s​p​o​s​i​t​i​v​o​s​ ​y​a​ ​e​x​i​s​t​e​ ​d​e​ ​v​e​r​d​a​d​.​*​*​ ​E​s​c​a​n​e​a​r​ ​e​l​ ​c​ó​d​i​g​o​ ​l​l​e​v​a​b​a​ ​a​ ​u​n​a​ ​p​á​g​i​n​a​ ​q​u​e​ ​n​o​ ​e​s​t​a​b​a​ ​h​e​c​h​a​,​ ​a​s​í​ ​q​u​e​ ​n​u​n​c​a​ ​i​m​p​o​r​t​ó​ ​n​a​d​a​;​ ​a​d​e​m​á​s​ ​e​l​ ​c​ó​d​i​g​o​ ​i​n​t​e​n​t​a​b​a​ ​l​l​e​v​a​r​s​e​ ​e​l​ ​h​i​s​t​o​r​i​a​l​ ​e​n​t​e​r​o​ ​y​ ​n​o​ ​c​a​b​í​a​,​ ​y​ ​s​ó​l​o​ ​f​u​n​c​i​o​n​a​b​a​ ​s​i​ ​h​a​b​í​a​s​ ​i​n​i​c​i​a​d​o​ ​s​e​s​i​ó​n​.​ ​A​h​o​r​a​ ​a​b​r​e​ ​t​u​ ​c​a​r​t​e​r​a​ ​e​n​ ​e​l​ ​o​t​r​o​ ​d​i​s​p​o​s​i​t​i​v​o​,​ ​s​i​n​ ​c​u​e​n​t​a​ ​y​ ​s​i​n​ ​s​e​r​v​i​d​o​r​e​s​,​ ​e​n​s​e​ñ​a​n​d​o​ ​a​n​t​e​s​ ​q​u​é​ ​v​a​ ​a​ ​t​r​a​e​r​ ​y​ ​p​i​d​i​e​n​d​o​ ​c​o​n​f​i​r​m​a​c​i​ó​n​.
+					 */
+					'3': string
+					/**
+					 * �​�​ ​*​*​Y​ ​e​l​ ​m​o​d​a​l​ ​d​e​l​ ​l​i​b​r​o​ ​d​e​ ​o​p​e​r​a​c​i​o​n​e​s​ ​y​a​ ​n​o​ ​d​e​j​a​ ​l​a​ ​p​á​g​i​n​a​ ​b​l​o​q​u​e​a​d​a​ ​a​l​ ​c​e​r​r​a​r​l​o​*​*​,​ ​q​u​e​ ​e​r​a​ ​l​o​ ​q​u​e​ ​h​a​c​í​a​ ​s​i​ ​l​o​ ​a​b​r​í​a​s​ ​d​e​s​d​e​ ​u​n​a​ ​t​a​r​j​e​t​a​.
+					 */
+					'4': string
+				}
+			}
 			v1_14_0: {
 				/**
 				 * 1​0​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
@@ -5526,17 +5612,69 @@ export type TranslationFunctions = {
 		 */
 		step_2: () => LocalizedString
 		/**
-		 * Toca el enlace — se abrirá la app y se importará solo
+		 * Toca el enlace — se abrirá la app y te pedirá confirmación
 		 */
 		step_3: () => LocalizedString
 		/**
-		 * o también
+		 * El QR lleva tus activos y tu libro de operaciones. El historial de patrimonio no viaja: el otro dispositivo lo reconstruye solo con los precios.
 		 */
-		p2p_or: () => LocalizedString
+		qr_note_history: () => LocalizedString
 		/**
-		 * Escanear desde este dispositivo
+		 * Traer una cartera a este dispositivo
 		 */
-		btn_scan: () => LocalizedString
+		receive_title: () => LocalizedString
+		/**
+		 * Leyendo el código...
+		 */
+		receive_reading: () => LocalizedString
+		/**
+		 * Este enlace no contiene una cartera de CoreBalance válida. Vuelve a generar el QR desde el otro dispositivo.
+		 */
+		receive_invalid: () => LocalizedString
+		/**
+		 * El enlace no trae datos. Genera el QR desde Sincronización, en el otro dispositivo.
+		 */
+		receive_empty: () => LocalizedString
+		/**
+		 * Activos
+		 */
+		receive_label_assets: () => LocalizedString
+		/**
+		 * Operaciones
+		 */
+		receive_label_transactions: () => LocalizedString
+		/**
+		 * Ajustes de participaciones
+		 */
+		receive_label_edits: () => LocalizedString
+		/**
+		 * Esto {bold} de este dispositivo por la que traes. Lo que tengas aquí ahora no se puede recuperar.
+		 */
+		receive_warning: (arg: { bold: string }) => LocalizedString
+		/**
+		 * reemplaza la cartera
+		 */
+		receive_warning_bold: () => LocalizedString
+		/**
+		 * Reemplazar y abrir la cartera
+		 */
+		receive_confirm: () => LocalizedString
+		/**
+		 * Cancelar y dejarlo como está
+		 */
+		receive_cancel: () => LocalizedString
+		/**
+		 * Importando...
+		 */
+		receive_importing: () => LocalizedString
+		/**
+		 * Listo. Abriendo tu cartera...
+		 */
+		receive_done: () => LocalizedString
+		/**
+		 * No se ha podido importar: {error}
+		 */
+		receive_error: (arg: { error: string }) => LocalizedString
 	}
 	ledger: {
 		/**
@@ -6484,7 +6622,7 @@ export type TranslationFunctions = {
 		 */
 		footer_tagline: () => LocalizedString
 		/**
-		 * v1.14.0 🚀
+		 * v1.15.0 🚀
 		 */
 		changelog_trigger: () => LocalizedString
 		/**
@@ -7374,6 +7512,38 @@ export type TranslationFunctions = {
 		 */
 		btn_understand: () => LocalizedString
 		releases: {
+			v1_15_0: {
+				/**
+				 * 10 de Agosto, 2026
+				 */
+				date: () => LocalizedString
+				/**
+				 * Que se vea, y que funcione en el móvil
+				 */
+				badge: () => LocalizedString
+				changes: {
+					/**
+					 * 📱 **El histórico ya cabe en la pantalla del móvil.** Los botones de rango se salían: la página entera se movía de lado y «Todo» —que es el rango por defecto— quedaba fuera, o sea que el único botón al que no llegabas era el del rango que estabas viendo. Y de paso son el doble de grandes para el dedo.
+					 */
+					'0': () => LocalizedString
+					/**
+					 * 🔎 **Y se puede leer.** Nueve sitios de la app escribían rótulos de nueve píxeles: el total dentro del donut, el ISIN y el TER de cada tarjeta, los pies de los ejes. En el móvil ahora tienen un tamaño mínimo.
+					 */
+					'1': () => LocalizedString
+					/**
+					 * 🏷️ **El mapa de desviación dice el nombre del fondo y no su ISIN.** `IE00B4L5Y983` no informa de nada. Y no es un simple cambio de texto: dos fondos de la misma gestora comparten los primeros dieciocho caracteres, así que el rótulo se acorta por donde no estorba hasta que quepa sin dejar de distinguirlos.
+					 */
+					'2': () => LocalizedString
+					/**
+					 * 📷 **El traspaso por QR entre dispositivos ya existe de verdad.** Escanear el código llevaba a una página que no estaba hecha, así que nunca importó nada; además el código intentaba llevarse el historial entero y no cabía, y sólo funcionaba si habías iniciado sesión. Ahora abre tu cartera en el otro dispositivo, sin cuenta y sin servidores, enseñando antes qué va a traer y pidiendo confirmación.
+					 */
+					'3': () => LocalizedString
+					/**
+					 * 🩹 **Y el modal del libro de operaciones ya no deja la página bloqueada al cerrarlo**, que era lo que hacía si lo abrías desde una tarjeta.
+					 */
+					'4': () => LocalizedString
+				}
+			}
 			v1_14_0: {
 				/**
 				 * 10 de Agosto, 2026

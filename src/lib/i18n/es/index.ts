@@ -404,9 +404,35 @@ const es = {
     step_1: 'Abre la {bold:string} de tu móvil',
     step_1_bold: 'cámara',
     step_2: 'Apunta al código QR de arriba',
-    step_3: 'Toca el enlace — se abrirá la app y se importará solo',
-    p2p_or: 'o también',
-    btn_scan: 'Escanear desde este dispositivo',
+    step_3: 'Toca el enlace — se abrirá la app y te pedirá confirmación',
+    qr_note_history: 'El QR lleva tus activos y tu libro de operaciones. El historial de patrimonio no viaja: el otro dispositivo lo reconstruye solo con los precios.',
+    /**
+     * ⚠️ Aquí vivían `p2p_or` y `btn_scan` («Escanear desde este dispositivo»), y ese
+     * botón prometía algo que la app no puede hacer: `qrcode` genera códigos, no los
+     * lee. Encima navegaba a `/sync`, que no existía, así que te echaba de la app a un
+     * 404. Se quitó en vez de dejarlo: un botón que no puede funcionar es peor que no
+     * tener botón.
+     */
+    receive_title: 'Traer una cartera a este dispositivo',
+    receive_reading: 'Leyendo el código...',
+    receive_invalid: 'Este enlace no contiene una cartera de CoreBalance válida. Vuelve a generar el QR desde el otro dispositivo.',
+    receive_empty: 'El enlace no trae datos. Genera el QR desde Sincronización, en el otro dispositivo.',
+    /*
+     * Tres cifras etiquetadas y no una frase con plurales: con tres números en una
+     * sola cadena, la forma plural de typesafe-i18n se ata al último argumento y sale
+     * «1 activos». Además así se lee de un vistazo, que es lo que hace falta antes de
+     * pulsar algo irreversible.
+     */
+    receive_label_assets: 'Activos',
+    receive_label_transactions: 'Operaciones',
+    receive_label_edits: 'Ajustes de participaciones',
+    receive_warning: 'Esto {bold:string} de este dispositivo por la que traes. Lo que tengas aquí ahora no se puede recuperar.',
+    receive_warning_bold: 'reemplaza la cartera',
+    receive_confirm: 'Reemplazar y abrir la cartera',
+    receive_cancel: 'Cancelar y dejarlo como está',
+    receive_importing: 'Importando...',
+    receive_done: 'Listo. Abriendo tu cartera...',
+    receive_error: 'No se ha podido importar: {error:string}',
   },
   // Ledger
   ledger: {
@@ -662,7 +688,7 @@ const es = {
     timing_period_note: 'Medido sobre los {days:number} días con datos reales, sin anualizar.',
     legal_disclaimer: '<strong>Aviso Legal:</strong> CoreBalance es una herramienta puramente informativa y educativa. No constituye asesoramiento financiero, de inversión ni fiscal. Los datos mostrados pueden sufrir retrasos o ser inexactos. El desarrollador no se hace responsable de posibles pérdidas financieras derivadas del uso de esta aplicación. Invierte siempre bajo tu propia responsabilidad.',
     footer_tagline: 'Tu centro de mandos para una gestión de activos inteligente y equilibrada.',
-    changelog_trigger: 'v1.14.0 🚀',
+    changelog_trigger: 'v1.15.0 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Hecho con ❤️ para la comunidad inversora',
     reclassify_stocks: 'Acciones Individuales',
@@ -942,6 +968,17 @@ const es = {
     close_aria: 'Cerrar modal',
     btn_understand: 'Entendido',
     releases: {
+      v1_15_0: {
+        date: '10 de Agosto, 2026',
+        badge: 'Que se vea, y que funcione en el móvil',
+        changes: [
+          '📱 **El histórico ya cabe en la pantalla del móvil.** Los botones de rango se salían: la página entera se movía de lado y «Todo» —que es el rango por defecto— quedaba fuera, o sea que el único botón al que no llegabas era el del rango que estabas viendo. Y de paso son el doble de grandes para el dedo.',
+          '🔎 **Y se puede leer.** Nueve sitios de la app escribían rótulos de nueve píxeles: el total dentro del donut, el ISIN y el TER de cada tarjeta, los pies de los ejes. En el móvil ahora tienen un tamaño mínimo.',
+          '🏷️ **El mapa de desviación dice el nombre del fondo y no su ISIN.** `IE00B4L5Y983` no informa de nada. Y no es un simple cambio de texto: dos fondos de la misma gestora comparten los primeros dieciocho caracteres, así que el rótulo se acorta por donde no estorba hasta que quepa sin dejar de distinguirlos.',
+          '📷 **El traspaso por QR entre dispositivos ya existe de verdad.** Escanear el código llevaba a una página que no estaba hecha, así que nunca importó nada; además el código intentaba llevarse el historial entero y no cabía, y sólo funcionaba si habías iniciado sesión. Ahora abre tu cartera en el otro dispositivo, sin cuenta y sin servidores, enseñando antes qué va a traer y pidiendo confirmación.',
+          '🩹 **Y el modal del libro de operaciones ya no deja la página bloqueada al cerrarlo**, que era lo que hacía si lo abrías desde una tarjeta.'
+        ]
+      },
       v1_14_0: {
         date: '10 de Agosto, 2026',
         badge: 'Tu CSV trae más de lo que parecía',
