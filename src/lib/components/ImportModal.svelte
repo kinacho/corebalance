@@ -422,7 +422,7 @@
 
 					{#if importResult.skippedRows > 0}
 						<div class="import-summary-banner">
-							ℹ️ <strong>Resumen:</strong> {$LL.import.summary_banner({ positions: importResult.positions.length, skipped: importResult.skippedRows })}
+							ℹ️ {$LL.import.summary_banner({ positions: importResult.positions.length, skipped: importResult.skippedRows })}
 							{#if skippedDetails.length > 0}
 								<button class="skipped-toggle" onclick={() => showSkippedDetails = !showSkippedDetails}>
 									{showSkippedDetails ? $LL.import.btn_hide_details() : $LL.import.btn_show_details()}

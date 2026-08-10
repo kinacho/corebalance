@@ -513,7 +513,7 @@ const en: Translation = {
     assets_identified: 'Identified Assets',
     add_to: 'Add to:',
     warnings_resolve: 'Some assets might not have been found.',
-    summary_banner: 'We will import {positions} positions. {skipped} rows have been skipped (such as headers, deposits, fees, or empty cells).',
+    summary_banner: 'We will import {positions} positions and skipped {skipped} rows, each with its reason.',
     btn_hide_details: '▲ Hide details',
     btn_show_details: '▼ View skipped rows',
     skipped_line: 'Line {row}',

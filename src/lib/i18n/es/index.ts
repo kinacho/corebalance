@@ -515,7 +515,7 @@ const es = {
     assets_identified: 'Activos Identificados',
     add_to: 'Añadir a:',
     warnings_resolve: 'Algunos activos podrían no haberse encontrado.',
-    summary_banner: 'Se importarán {positions:number} posiciones. Se han omitido {skipped:number} filas (como cabeceras, depósitos, comisiones o celdas vacías).',
+    summary_banner: 'Se importarán {positions:number} posiciones y se han omitido {skipped:number} filas, cada una con su motivo.',
     btn_hide_details: '▲ Ocultar detalle',
     btn_show_details: '▼ Ver filas omitidas',
     skipped_line: 'Línea {row:number}',
