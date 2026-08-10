@@ -327,9 +327,30 @@ const degiroDetector: BrokerDetector = {
 		if (hasProduct) exactCount++;
 		if (hasQuantity) exactCount++;
 		if (hasPrice || hasClosing) exactCount++;
-		
-		if (exactCount >= 3) return 0.8;
-		
+
+		/**
+		 * ⚠️ Esta rama pedía solo tres de cuatro señales, y las tres genéricas —ISIN,
+		 * Cantidad, Precio— bastaban: **cualquier CSV en español con esas columnas se
+		 * importaba como DEGIRO**, sin una sola cabecera característica suya. No es
+		 * hipotético ni cosmético, porque el parser de DEGIRO deduce compra/venta *del
+		 * signo de la cantidad* (su `Transacciones.csv` pone las ventas en negativo). En
+		 * un fichero ajeno que trae columna «Tipo» y todas las cantidades en positivo
+		 * —MyInvestor, Renta 4, cualquier export hecho a mano— el signo no dice nada, así
+		 * que **toda venta y todo dividendo sumaban participaciones**: 100 títulos
+		 * comprados y 500 vendidos se importaban como 600. La familia de defectos de la
+		 * revisión del 9-ago otra vez, una capa más arriba: `clasificarTipoOperacion()`
+		 * está bien y no se llegaba a llamar.
+		 *
+		 * Se exige por tanto **una señal propia de DEGIRO** además de las genéricas.
+		 * `Producto` es la que cumple ese papel: la traen tanto el export de posiciones
+		 * como el de transacciones, en español y en neerlandés. Medido contra los nueve
+		 * CSV reales de `training/`: el único que dependía de esta rama es el
+		 * `Portfolio (1).csv` de DEGIRO —cuyo ISIN va en `Symbol/ISIN` y por eso no
+		 * alcanza el 0,95— y lleva `Producto`, así que sigue detectándose igual.
+		 */
+		const señalPropia = hasProduct || hasClosing;
+		if (exactCount >= 3 && señalPropia) return 0.8;
+
 		return 0;
 	},
 	parse(headers, rows) {
@@ -512,9 +533,31 @@ const degiroDetector: BrokerDetector = {
 							continue;
 						}
 
+						/**
+						 * El signo de la cantidad es la señal de DEGIRO y sigue siendo la
+						 * principal, pero si el fichero **también** trae una columna de tipo se
+						 * lee, y en una sola dirección: una venta declarada nunca se degrada a
+						 * compra, mientras que una compra declarada no puede contradecir un signo
+						 * negativo. Esa asimetría es deliberada —sumar títulos que no existen es
+						 * el daño que hay que evitar, y es irreversible para el usuario— y es la
+						 * red por si otro fichero ajeno vuelve a colarse por este parser pese al
+						 * endurecimiento del detector.
+						 */
+						const tipoDeclarado = findField(headers, row, 'Tipo', 'Type', 'Operación', 'Operacion', 'Transaction Type');
+						const tipoTexto = tipoDeclarado.trim().toLowerCase();
+
+						if (tipoTexto && coincidenciaMasLarga(tipoTexto, ['dividend', 'dividendo']) > 0) {
+							skipRow(rowIdx, row, `Apunte de dividendo, no es un movimiento de títulos: "${tipoTexto}"`);
+							continue;
+						}
+
+						const clasificado = tipoTexto
+							? clasificarTipoOperacion(tipoTexto, ['compra', 'buy', 'koop', 'suscripcion'], ['venta', 'sell', 'verkoop', 'reembolso'])
+							: null;
+
 						transactions.push({
 							date,
-							type: sharesRaw > 0 ? 'BUY' : 'SELL',
+							type: sharesRaw < 0 || clasificado === 'SELL' ? 'SELL' : 'BUY',
 							isin,
 							name,
 							shares: Math.abs(sharesRaw),

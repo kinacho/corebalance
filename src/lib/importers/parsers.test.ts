@@ -814,3 +814,121 @@ describe('regresiones de la revisión del importador', () => {
     expect(manual.positions[0].isin).toBe('IE00B3RBWM25');
   });
 });
+
+/**
+ * El defecto que salió de **abrir la app** el 10-ago-2026, no de leer el código: al mirar la
+ * previsualización del importador, un CSV que compra 100 títulos y vende 30 mostraba 600.
+ *
+ * La cadena era ésta, y ninguno de sus tres eslabones estaba roto por su cuenta:
+ *  1. el detector de DEGIRO se quedaba cualquier CSV con ISIN + Cantidad + Precio, sin exigir
+ *     una sola cabecera característica suya;
+ *  2. su parser deduce compra/venta **del signo de la cantidad**, que es la convención real
+ *     de DEGIRO —las ventas van en negativo— y por tanto es correcta *para DEGIRO*;
+ *  3. un fichero ajeno trae columna «Tipo» y todas las cantidades en positivo, así que el
+ *     signo no informa de nada y toda venta y todo dividendo **sumaban** participaciones.
+ *
+ * Es la firma que este subsistema ya tenía descrita —un predicado bueno que no se llega a
+ * llamar— y del peor tipo: `clasificarTipoOperacion()` estaba arreglado desde el 9-ago.
+ */
+describe('un CSV ajeno no se importa como DEGIRO', () => {
+  const CABECERA = 'Fecha,Tipo,ISIN,Nombre,Cantidad,Precio,Divisa';
+
+  /**
+   * El control negativo de este test es el que importa: con `exactCount >= 3` a secas, el
+   * detector devuelve 0,8 y la aserción falla. La señal que se exige es `Producto`, que traen
+   * los dos exports de DEGIRO —posiciones y transacciones— en español y en neerlandés.
+   */
+  it('el detector de DEGIRO no reclama un CSV sin ninguna cabecera suya', () => {
+    const ajeno = importFromCSV([
+      CABECERA,
+      '2024-01-15,Compra,IE00B4L5Y983,iShares Core MSCI World,100,72.40,EUR'
+    ].join('\n'));
+
+    expect(ajeno.broker?.id).not.toBe('degiro');
+  });
+
+  /**
+   * La otra mitad del contrato, y la razón de que el arreglo no sea «subir el umbral»: el
+   * `Portfolio (1).csv` real de DEGIRO **depende** de esa rama de 0,8, porque su ISIN viaja
+   * dentro de `Symbol/ISIN` y no alcanza las cuatro señales del 0,98.
+   */
+  it('sigue reconociendo el export de posiciones de DEGIRO, que depende de esa rama', () => {
+    const degiro = importFromCSV([
+      'Producto,Symbol/ISIN,Cantidad,Precio de,Valor local,,Valor en EUR',
+      'VANGUARD FTSE AW,IE00B3RBWM25,12,"104,18",EUR,"1250,16","1250,16"'
+    ].join('\n'));
+
+    expect(degiro.broker?.id).toBe('degiro');
+    expect(degiro.positions).toHaveLength(1);
+  });
+
+  /**
+   * El defecto tal y como se vio en pantalla. Las cantidades son todas **positivas**, que es
+   * lo que hace inútil al signo; con el detector viejo esto daba 130 títulos en vez de 70.
+   */
+  it('una venta resta participaciones aunque su cantidad venga en positivo', () => {
+    const result = importFromCSV([
+      CABECERA,
+      '2024-01-15,Compra,IE00B4L5Y983,iShares Core MSCI World,100,72.40,EUR',
+      '2024-05-02,Venta,IE00B4L5Y983,iShares Core MSCI World,30,80.00,EUR'
+    ].join('\n'));
+
+    expect(result.positions).toHaveLength(1);
+    expect(result.positions[0].shares).toBe(70);
+    // Una venta reduce el coste total sin mover el coste medio (ver `ledgerHoldings`).
+    expect(result.positions[0].avgCost).toBeCloseTo(72.4, 2);
+  });
+
+  /**
+   * Un dividendo es renta, no un movimiento de títulos. Entraba sumando participaciones al
+   * precio del dividendo, que además hundía el coste medio: 50 títulos a 105,20 € más un
+   * dividendo de «5 a 1,20» salían como 55 a 95,75 €.
+   */
+  it('un dividendo no suma participaciones ni hunde el coste medio', () => {
+    const result = importFromCSV([
+      CABECERA,
+      '2024-02-20,Compra,IE00BK5BQT80,Vanguard FTSE All-World,50,105.20,EUR',
+      '2024-03-15,Dividendo,IE00BK5BQT80,Vanguard FTSE All-World,5,1.20,EUR'
+    ].join('\n'));
+
+    expect(result.positions).toHaveLength(1);
+    expect(result.positions[0].shares).toBe(50);
+    expect(result.positions[0].avgCost).toBeCloseTo(105.2, 2);
+    expect(result.skippedDetails?.some(d => /dividendo/i.test(d.reason))).toBe(true);
+  });
+
+  /**
+   * La red de seguridad, que es la mitad del arreglo que **no** depende de acertar el umbral
+   * de ningún detector: si un fichero vuelve a colarse por el parser de DEGIRO llevando
+   * columna de tipo, una venta declarada no se degrada a compra. La asimetría es deliberada
+   * —el signo negativo sigue mandando para vender— porque sumar títulos que no existen es el
+   * daño irreversible. Aquí el fichero **sí** entra por DEGIRO: lleva `Producto`.
+   */
+  it('el parser de DEGIRO respeta una venta declarada en la columna de tipo', () => {
+    const result = importFromCSV([
+      'Fecha,Tipo,Producto,ISIN,Cantidad,Precio',
+      '15-01-2024,Compra,iShares Core MSCI World,IE00B4L5Y983,100,"72,40"',
+      '02-05-2024,Venta,iShares Core MSCI World,IE00B4L5Y983,30,"80,00"'
+    ].join('\n'));
+
+    expect(result.broker?.id).toBe('degiro');
+    expect(result.positions).toHaveLength(1);
+    expect(result.positions[0].shares).toBe(70);
+  });
+
+  /**
+   * Y el aviso que `reduceTransactionsToPositions()` ya sabía dar y que nadie había visto,
+   * porque con la venta contada como compra no había sobreventa que detectar. No es un caso
+   * raro: es lo que pasa siempre que alguien descarga sólo los últimos doce meses.
+   */
+  it('avisa de la sobreventa en vez de dejar la posición inflada', () => {
+    const result = importFromCSV([
+      CABECERA,
+      '2024-01-15,Compra,IE00B4L5Y983,iShares Core MSCI World,100,72.40,EUR',
+      '2024-05-02,Venta,IE00B4L5Y983,iShares Core MSCI World,500,80.00,EUR'
+    ].join('\n'));
+
+    expect(result.positions).toHaveLength(0);
+    expect(result.warnings.some(w => /m[áa]s t[íi]tulos/i.test(w))).toBe(true);
+  });
+});
