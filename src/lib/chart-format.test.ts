@@ -3,6 +3,7 @@ import {
 	formatCompactCurrency,
 	formatAxisPercent,
 	formatEstimate,
+	flowTooltipLine,
 	niceTicks,
 	stepFromTicks
 } from './chart-format';
@@ -137,5 +138,43 @@ describe('formatEstimate', () => {
 
 	it('no arrastra decimales en inglés tampoco', () => {
 		expect(n(formatEstimate(702_854.19, 'EUR', 'en-US'))).toBe('€702,854');
+	});
+});
+
+/**
+ * ⚠️ **«No es una pérdida» era para las salidas y se decía también en las entradas.**
+ *
+ * El aclarado existe por un motivo real: al vender, el patrimonio baja y el gráfico parece
+ * registrar una pérdida, así que el tooltip lo desmiente con palabras. Pero la condición era
+ * `if (flow)` —cualquier flujo—, de modo que una aportación mostraba **«Aportación: 1.000 € —
+ * no es una pérdida»**: absurdo en sí mismo, y además gasta el aclarado en el caso que no lo
+ * necesita, devaluándolo para el que sí. Es la trampa que este proyecto ya tiene descrita para
+ * los tooltips: son donde sobrevive una redacción retirada.
+ */
+describe('flowTooltipLine', () => {
+	const TEXTOS = { in: 'Aportación', out: 'Salida', notALoss: 'no es una pérdida' };
+	const euros = (v: number) => `${v.toFixed(2)} €`;
+	const linea = (importe: number) => flowTooltipLine(importe, TEXTOS, euros);
+
+	it('una aportación dice sólo lo que es', () => {
+		expect(linea(1000)).toBe('Aportación: 1000.00 €');
+		expect(linea(1000)).not.toContain('pérdida');
+	});
+
+	it('una salida sí lleva el aclarado, que es para lo que se escribió', () => {
+		expect(linea(-24000)).toBe('Salida: 24000.00 € — no es una pérdida');
+	});
+
+	/**
+	 * El segundo arreglo, que iba con el primero: `formatEUR` de un flujo negativo daba
+	 * «Salida: −24.000,00 €», y el signo repite lo que ya dice la palabra.
+	 */
+	it('el importe va en valor absoluto: el signo lo dice la etiqueta', () => {
+		expect(linea(-24000)).not.toContain('-24000');
+		expect(linea(-24000)).toContain('24000.00');
+	});
+
+	it('un importe negativo minúsculo sigue tratándose como salida', () => {
+		expect(linea(-0.01)).toContain('Salida');
 	});
 });

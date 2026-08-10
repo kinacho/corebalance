@@ -15,7 +15,12 @@
 
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { formatEUR } from '$lib/utils';
-	import { formatCompactCurrency, formatAxisPercent, stepFromTicks } from '$lib/chart-format';
+	import {
+		formatCompactCurrency,
+		formatAxisPercent,
+		stepFromTicks,
+		flowTooltipLine
+	} from '$lib/chart-format';
 	import {
 		applyChartDefaults,
 		tooltipStyle,
@@ -191,10 +196,6 @@
 	 */
 	function categorySeries(key: 'core' | 'stocks' | 'satellite'): (number | null)[] {
 		return view.points.map((p) => (p.hasBreakdown ? p[key] : null));
-	}
-
-	function flowLabel(amount: number): string {
-		return amount > 0 ? $LL.db.chart_flow_in() : $LL.db.chart_flow_out();
 	}
 
 	/**
@@ -489,7 +490,15 @@
 								const lines: string[] = [];
 								if (flow && !portfolio.isPrivate) {
 									lines.push(
-										`${flowLabel(flow)}: ${formatEUR(flow)} — ${$LL.db.chart_flow_not_loss()}`
+										flowTooltipLine(
+											flow,
+											{
+												in: $LL.db.chart_flow_in(),
+												out: $LL.db.chart_flow_out(),
+												notALoss: $LL.db.chart_flow_not_loss()
+											},
+											formatEUR
+										)
 									);
 								}
 								if (view.estimated[index]) lines.push($LL.db.chart_estimated_short());
