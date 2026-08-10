@@ -41,7 +41,28 @@ export const ASSET_COLORS = [
 export const CATEGORY_COLORS = {
 	core: '#2563eb',
 	stocks: '#d97706',
-	satellite: '#7c3aed'
+	/**
+	 * ⚠️ **Era `#7c3aed` (violeta) y a ΔE 0,4 de `core` bajo deuteranopia.** Este mismo
+	 * fichero declara esa pareja prohibida para `ASSET_COLORS` —azul no puede ir junto a
+	 * violeta— y aquí estaba, con las dos dibujándose como **líneas simultáneas** en el
+	 * histórico. En el donut se salvaba por el orden (el ámbar se cuela entre ellas y la
+	 * adyacencia se respeta); en un gráfico de líneas no hay adyacencia: las series se cruzan
+	 * y comparten espacio, así que el par hay que medirlo all-pairs, y ahí era fallo duro con
+	 * 12,4 en visión normal, por debajo del suelo de 15.
+	 *
+	 * El magenta arregla las dos cifras —**9,7 deutan y 22,6 normal**— y mantiene la familia
+	 * púrpura, así que el satélite sigue reconociéndose. Medido junto a los otros dos colores
+	 * de categoría y también junto al verde y el rojo de la línea del patrimonio, que son las
+	 * cinco series que pueden coincidir en ese lienzo.
+	 *
+	 * ⚠️ `BLOCK_HUES.satellite` **no cambia**, y no es un descuido: ese trío es un sistema
+	 * aparte, elegido por cómo convive con la rampa divergente del mapa, y ya no coincide con
+	 * éste en ninguna de sus otras dos entradas (cyan contra azul, lima contra ámbar). Medido:
+	 * contra el suelo azul de la rampa el magenta mejora la visión normal (14,0 → 19,9) pero
+	 * empeora el deutan (6,9 → 3,2), así que allí sería un intercambio y no una mejora. Aquí
+	 * es mejora en las dos.
+	 */
+	satellite: '#a21caf'
 } as const;
 
 /**

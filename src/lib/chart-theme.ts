@@ -119,7 +119,7 @@ export const MARKET_FILL = '#93c5fd';
  * pueden dibujarse a la vez en este gráfico (`CATEGORY_COLORS`): banda de luminosidad, suelo
  * de croma, separación CVD y contraste. Los números que importan, todos contra `#0d0d12`:
  *
- * - verde ↔ rojo: ΔE **32,0** en visión normal, **8,6** con deuteranopia.
+ * - verde ↔ rojo: ΔE **8,4** con deuteranopia, muy por encima en visión normal.
  * - rojo ↔ el ámbar de «Acciones»: ΔE **18,8** normal. ⚠️ Aquí murieron los candidatos
  *   obvios: `#dc2626` se queda en **14,4**, por debajo del suelo de 15 que es fallo duro, y
  *   `#e11d48` cae a 5,8 en deuteranopia contra el verde.
@@ -131,7 +131,16 @@ export const MARKET_FILL = '#93c5fd';
  * dos se dibujan como líneas simultáneas aquí. Es un fallo duro preexistente, y `CLAUDE.md`
  * prohíbe esa pareja con esas mismas palabras para la paleta de activos. Queda anotado.
  */
-export const TREND_UP = '#059669';
+/**
+ * ⚠️ El verde **no puede ser `#059669`**, y eso costó una segunda vuelta: es exactamente
+ * `ASSET_COLORS[2]`, la esmeralda con la que se pinta un activo. Reutilizarlo devolvería al
+ * tablero el defecto que este proyecto ya arregló por subtracción —«el verde significaba seis
+ * cosas a la vez»—, porque `CompositionBars` pinta activos con esa paleta en la fila de al
+ * lado: el mismo tono querría decir «vas ganando» y «esmeralda, el tercer activo».
+ * `#047857` es un paso más oscuro de la misma familia, está fuera de `ASSET_COLORS` y pasa
+ * las seis comprobaciones igual (peor par: rojo↔verde ΔE 8,4 deutan).
+ */
+export const TREND_UP = '#047857';
 export const TREND_DOWN = '#b91c1c';
 
 /**
