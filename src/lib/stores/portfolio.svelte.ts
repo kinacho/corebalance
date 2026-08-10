@@ -206,8 +206,43 @@ export class PortfolioStore {
 
 	sparklineVersion = $state(0); // Incrementa solo cuando cambian los sparklines de la API
 
-	/** Días que cubre la reconstrucción, limitado por lo que da el sparkline de Yahoo. */
+	/**
+	 * Días que cubre la reconstrucción **como mínimo**, y techo de lo que se llega a pedir.
+	 *
+	 * ⚠️ Esto era una sola constante de 30 que decía «limitado por lo que da el sparkline de
+	 * Yahoo», y era falso: `/api/prices` ya pedía a Yahoo desde el 20 de diciembre del año
+	 * anterior —entre 160 y 250 cierres— y los tiraba con un `slice(-30)`. Lo limitaba el
+	 * endpoint, no la fuente.
+	 */
 	static readonly HISTORY_DAYS = 30;
+	static readonly HISTORY_DAYS_MAX = 400;
+
+	/**
+	 * Hasta dónde tiene sentido reconstruir, decidido por **el dato y no por una constante**.
+	 *
+	 * La reconstrucción multiplica participaciones por el precio de cada día, y las
+	 * participaciones de una fecha pasada salen del libro de operaciones o del log de
+	 * ediciones. Sin ninguno de los dos, `sharesAt()` devuelve las de hoy para todo el pasado
+	 * y lo marca `estimated`: ampliar la ventana ahí no añade historia, **agranda el tramo
+	 * inventado**. Y ese tramo es justo el que se excluyó del cálculo de rentabilidades por
+	 * contaminarlas.
+	 *
+	 * Así que se pide tanto histórico como respalde el dato más antiguo que se conoce, con el
+	 * mínimo de 30 días de siempre para quien no lleva libro. El otro límite —hasta dónde
+	 * llega la serie de precios de cada activo— no se puede saber desde aquí y lo resuelve la
+	 * propia reconstrucción marcando `paddedBefore`: medido, Yahoo tiene 229 cierres de un
+	 * fondo indexado corriente y 515 de un ETF, así que varía por activo.
+	 */
+	ventanaHistorica: number = $derived.by(() => {
+		const fechas: number[] = [];
+		for (const t of this.transactions) fechas.push(t.date);
+		for (const e of this.holdingEdits) fechas.push(e.date);
+		if (fechas.length === 0) return PortfolioStore.HISTORY_DAYS;
+
+		const masAntigua = Math.min(...fechas);
+		const dias = Math.ceil((startOfUTCDay(new Date()) - startOfUTCDay(new Date(masAntigua))) / DAY_MS) + 1;
+		return Math.min(Math.max(dias, PortfolioStore.HISTORY_DAYS), PortfolioStore.HISTORY_DAYS_MAX);
+	});
 
 	/** A qué categoría pertenece cada ticker, sin depender de `asset.category`. */
 	private categoryByTicker = $derived.by(() => {
@@ -271,7 +306,7 @@ export class PortfolioStore {
 		// y no en cada tick de precio.
 		this.sparklineVersion;
 
-		const days = PortfolioStore.HISTORY_DAYS;
+		const days = this.ventanaHistorica;
 		const priceSeries: Record<string, number[]> = {};
 		const paddedBefore: Record<string, number> = {};
 
@@ -440,6 +475,8 @@ export class PortfolioStore {
 	private visibilityHandler: (() => void) | undefined;
 	private authUnsubscribe: (() => void) | undefined;
 	private isFetching = false;
+	/** Conjunto de tickers para el que ya se pidió el histórico largo. Ver `fetchPrices`. */
+	private firmaHistorialPedido = '';
 
 	// --- Cola de guardado en nube (evita race conditions) ---
 	private _cloudSavePending = false;
@@ -823,16 +860,52 @@ export class PortfolioStore {
 		try {
 			const tickerList = this.allUserTickers.join(',');
 			if (!tickerList) { this.isFetching = false; return; }
-			const response = await fetch(`/api/prices?tickers=${encodeURIComponent(tickerList)}&t=${Date.now()}`, { cache: 'no-store' });
+
+			/**
+			 * El histórico largo se pide **una vez por conjunto de tickers**, no en cada
+			 * sondeo. Ese array viaja en la respuesta de precios, que se pide cada 30 s: a
+			 * 250 puntos por activo son ~20 KB extra por respuesta con nueve activos, o
+			 * megabytes por hora de un dato que no se mueve durante la sesión.
+			 */
+			const quiereLargo = this.ventanaHistorica > PortfolioStore.HISTORY_DAYS;
+			const pedirLargo = quiereLargo && this.firmaHistorialPedido !== tickerList;
+			const paramHistorial = pedirLargo ? `&historyDays=${this.ventanaHistorica}` : '';
+
+			const response = await fetch(`/api/prices?tickers=${encodeURIComponent(tickerList)}${paramHistorial}&t=${Date.now()}`, { cache: 'no-store' });
 			if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
 			const data = await response.json();
 
-			if (detectSparklineChange(this.prices, data.prices)) {
+			/**
+			 * ⚠️ **Un sondeo corto no puede pisar la serie larga**, y esto no es una
+			 * optimización: `this.prices = data.prices` reemplaza en bloque, así que sin esta
+			 * fusión el histórico llegaba una vez y el siguiente sondeo —que pide 30 días para
+			 * no inflar la respuesta— lo dejaba en 30 otra vez. El gráfico se habría encogido
+			 * treinta segundos después de cargar, sin ningún error de por medio.
+			 *
+			 * Se conserva la más larga por activo. Los precios y todo lo demás vienen siempre
+			 * de la respuesta nueva, que es la fresca.
+			 */
+			const recibidos: Record<string, PriceData> = data.prices || {};
+			const fusionados: Record<string, PriceData> = {};
+			for (const ticker in recibidos) {
+				const nuevo = recibidos[ticker];
+				const previo = this.prices[ticker];
+				const conservarSparkline =
+					!pedirLargo &&
+					(previo?.sparkline?.length ?? 0) > (nuevo.sparkline?.length ?? 0);
+				fusionados[ticker] = conservarSparkline
+					? { ...nuevo, sparkline: previo.sparkline }
+					: nuevo;
+			}
+
+			if (pedirLargo) this.firmaHistorialPedido = tickerList;
+
+			if (detectSparklineChange(this.prices, fusionados)) {
 				this.sparklineVersion++;
 			}
 
-			this.prices = data.prices || {};
+			this.prices = fusionados;
 			this.timestamp = data.timestamp || new Date().toISOString();
 
 			// Resetear errores en éxito
@@ -866,6 +939,19 @@ export class PortfolioStore {
 	}
 
 	addTransaction(t: Transaction) { this.transactions = [...this.transactions, t]; this.saveToStorage(); }
+
+	/**
+	 * Alta en bloque, para la importación de un CSV con fechas.
+	 *
+	 * Existe por el coste: `addTransaction` guarda en cada llamada, así que un fichero de
+	 * veinticinco lotes son veinticinco escrituras a IndexedDB y veinticinco recálculos de
+	 * `ledgerHoldings` —que es un `$derived` sobre todo el array—. Aquí se escribe una vez.
+	 */
+	addTransactions(items: Transaction[]) {
+		if (items.length === 0) return;
+		this.transactions = [...this.transactions, ...items];
+		this.saveToStorage();
+	}
 	removeTransaction(id: string) { this.transactions = this.transactions.filter(t => t.id !== id); this.saveToStorage(); }
 	updateTransaction(id: string, updates: Partial<Transaction>) { this.transactions = this.transactions.map(t => t.id === id ? { ...t, ...updates } : t); this.saveToStorage(); }
 	toggleLedger(ticker: string, enabled: boolean) { this.updateHolding(ticker, { useLedger: enabled }); }

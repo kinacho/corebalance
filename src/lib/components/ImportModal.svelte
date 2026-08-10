@@ -5,6 +5,7 @@
 	import { LL } from '$lib/i18n/i18n-svelte';
 	import { importFromCSV, importWithMapping, generateCsvSignature } from '$lib/importers';
 	import type { ImportResult, ParsedPosition, MappingConfig, SkippedDetail } from '$lib/importers';
+	import { planificarImportacion } from '$lib/importers/ledger-import';
 	import { ASSET_ICONS } from '$lib/constants';
 	import { nextAssetColor } from '$lib/asset-colors';
 	import type { Asset, AssetCategory } from '$lib/types';
@@ -34,6 +35,8 @@
 	let targetCategory = $state<AssetCategory>('stocks');
 	let resolveError = $state<string | null>(null);
 	let importedCount = $state(0);
+	/** Cuántos activos han entrado con libro de operaciones, para decirlo al terminar. */
+	let conLibro = $state(0);
 	let activeSignature = $state<string>('');
 	let savedMapping = $state<MappingConfig | undefined>(undefined);
 	let showSkippedDetails = $state(false);
@@ -274,14 +277,47 @@
 			}
 		}
 
+		/**
+		 * Qué activos pueden entrar con **libro de operaciones**, decidido en
+		 * `ledger-import.ts` porque es lo que determina si la cartera enseña el número
+		 * correcto de participaciones. Un CSV con fechas trae la historia entera; sin
+		 * libro, el panel de IRPF queda apagado y la reconstrucción del patrimonio no
+		 * puede ir hacia atrás. Pero `effectiveHoldings` prefiere el libro a las
+		 * participaciones manuales, así que se activa sólo cuando cuadra.
+		 */
+		const plan = planificarImportacion({
+			posiciones: [...porTicker.entries()].map(([ticker, agrupado]) => ({
+				ticker,
+				posicion: agrupado.pos,
+				shares: agrupado.shares,
+				avgCost: agrupado.shares > 0 ? agrupado.totalCost / agrupado.shares : 0
+			})),
+			operaciones: importResult.transactions ?? [],
+			tickerDe: (op) => {
+				const porIsin = op.isin ? resolvedMap[op.isin]?.ticker : undefined;
+				return porIsin ?? (op.ticker ? op.ticker.toUpperCase() : null) ?? null;
+			}
+		});
+		const planPorTicker = new Map(plan.map((p) => [p.ticker, p]));
+
 		for (const [ticker, agrupado] of porTicker) {
 			const pos = agrupado.pos;
 			const shares = agrupado.shares;
 			const avgCost = shares > 0 ? agrupado.totalCost / shares : 0;
+			const suPlan = planPorTicker.get(ticker);
+
+			/**
+			 * El orden importa: primero las operaciones, después `useLedger`. Al revés,
+			 * `ledgerHoldings` se recalcularía con el libro vacío y la posición pasaría por
+			 * cero antes de aparecer, que es un parpadeo a cero en el patrimonio.
+			 */
+			if (suPlan?.conLibro) {
+				portfolio.addTransactions(suPlan.operaciones);
+			}
 
 			if (portfolio.hasAsset(ticker)) {
 				// Update holdings only
-				portfolio.updateHolding(ticker, { shares, avgCost });
+				portfolio.updateHolding(ticker, { shares, avgCost, useLedger: suPlan?.conLibro || undefined });
 				count++;
 				continue;
 			}
@@ -301,9 +337,11 @@
 			};
 
 			portfolio.addAsset(asset);
-			portfolio.updateHolding(ticker, { shares, avgCost });
+			portfolio.updateHolding(ticker, { shares, avgCost, useLedger: suPlan?.conLibro || undefined });
 			count++;
 		}
+
+		conLibro = plan.filter((p) => p.conLibro).length;
 
 		importedCount = count;
 		step = 'done';
@@ -507,6 +545,11 @@
 				<div class="done-state">
 					<div class="done-icon">✅</div>
 					<p class="done-title">{$LL.import.done_title({ count: importedCount })}</p>
+					<!-- Que el libro se haya activado tiene que verse: cambia de dónde salen las
+					     participaciones, enciende el panel fiscal y da historia al patrimonio. -->
+					{#if conLibro > 0}
+						<p class="done-ledger">📖 {$LL.import.done_ledger({ count: conLibro })}</p>
+					{/if}
 					<p class="done-hint">{$LL.import.done_hint()}</p>
 				</div>
 			{/if}
@@ -628,6 +671,7 @@
 	.done-icon { font-size:3rem; margin-bottom:.75rem; }
 	.done-title { font-size:1.2rem; font-weight:700; color:#fff; margin:0; }
 	.done-hint { font-size:.8rem; color:rgba(160,160,200,.5); margin:.5rem 0 0; }
+	.done-ledger { font-size:.82rem; line-height:1.55; color:var(--text-primary); margin:.6rem auto 0; max-width:46ch; }
 
 	/* Footer */
 	.import-footer { padding:1rem 1.5rem; border-top:1px solid rgba(255,255,255,.06); background:rgba(18,18,35,.95); display:flex; justify-content:center; }

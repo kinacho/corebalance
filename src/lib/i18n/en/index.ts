@@ -524,6 +524,7 @@ const en: Translation = {
     update_badge: 'Update',
     placeholder_ticker: 'Yahoo Ticker (e.g.: IWDA.AS)',
     done_title: '{count} assets imported',
+    done_ledger: '{count} of them with their transaction ledger: they carry the date and price of every purchase, so you get FIFO tax figures and the real history of your net worth.',
     done_hint: 'Prices will be updated automatically in a few seconds.',
     btn_import_assets: 'Import {count} assets',
     // ColumnMapper

@@ -1898,7 +1898,7 @@ type RootTranslation = {
 		 */
 		warnings_resolve: string
 		/**
-		 * S​e​ ​i​m​p​o​r​t​a​r​á​n​ ​{​p​o​s​i​t​i​o​n​s​}​ ​p​o​s​i​c​i​o​n​e​s​.​ ​S​e​ ​h​a​n​ ​o​m​i​t​i​d​o​ ​{​s​k​i​p​p​e​d​}​ ​f​i​l​a​s​ ​(​c​o​m​o​ ​c​a​b​e​c​e​r​a​s​,​ ​d​e​p​ó​s​i​t​o​s​,​ ​c​o​m​i​s​i​o​n​e​s​ ​o​ ​c​e​l​d​a​s​ ​v​a​c​í​a​s​)​.
+		 * S​e​ ​i​m​p​o​r​t​a​r​á​n​ ​{​p​o​s​i​t​i​o​n​s​}​ ​p​o​s​i​c​i​o​n​e​s​ ​y​ ​s​e​ ​h​a​n​ ​o​m​i​t​i​d​o​ ​{​s​k​i​p​p​e​d​}​ ​f​i​l​a​s​,​ ​c​a​d​a​ ​u​n​a​ ​c​o​n​ ​s​u​ ​m​o​t​i​v​o​.
 		 * @param {number} positions
 		 * @param {number} skipped
 		 */
@@ -1948,6 +1948,11 @@ type RootTranslation = {
 		 * @param {number} count
 		 */
 		done_title: RequiredParams<'count'>
+		/**
+		 * {​c​o​u​n​t​}​ ​d​e​ ​e​l​l​o​s​ ​c​o​n​ ​s​u​ ​l​i​b​r​o​ ​d​e​ ​o​p​e​r​a​c​i​o​n​e​s​:​ ​l​l​e​v​a​n​ ​l​a​s​ ​f​e​c​h​a​s​ ​y​ ​l​o​s​ ​p​r​e​c​i​o​s​ ​d​e​ ​c​a​d​a​ ​c​o​m​p​r​a​,​ ​a​s​í​ ​q​u​e​ ​t​i​e​n​e​s​ ​c​á​l​c​u​l​o​ ​f​i​s​c​a​l​ ​F​I​F​O​ ​y​ ​e​l​ ​h​i​s​t​ó​r​i​c​o​ ​r​e​a​l​ ​d​e​ ​t​u​ ​p​a​t​r​i​m​o​n​i​o​.
+		 * @param {number} count
+		 */
+		done_ledger: RequiredParams<'count'>
 		/**
 		 * L​o​s​ ​p​r​e​c​i​o​s​ ​s​e​ ​a​c​t​u​a​l​i​z​a​r​á​n​ ​a​u​t​o​m​á​t​i​c​a​m​e​n​t​e​ ​e​n​ ​u​n​o​s​ ​s​e​g​u​n​d​o​s​.
 		 */
@@ -5889,7 +5894,7 @@ export type TranslationFunctions = {
 		 */
 		warnings_resolve: () => LocalizedString
 		/**
-		 * Se importarán {positions} posiciones. Se han omitido {skipped} filas (como cabeceras, depósitos, comisiones o celdas vacías).
+		 * Se importarán {positions} posiciones y se han omitido {skipped} filas, cada una con su motivo.
 		 */
 		summary_banner: (arg: { positions: number, skipped: number }) => LocalizedString
 		/**
@@ -5932,6 +5937,10 @@ export type TranslationFunctions = {
 		 * {count} activos importados
 		 */
 		done_title: (arg: { count: number }) => LocalizedString
+		/**
+		 * {count} de ellos con su libro de operaciones: llevan las fechas y los precios de cada compra, así que tienes cálculo fiscal FIFO y el histórico real de tu patrimonio.
+		 */
+		done_ledger: (arg: { count: number }) => LocalizedString
 		/**
 		 * Los precios se actualizarán automáticamente en unos segundos.
 		 */

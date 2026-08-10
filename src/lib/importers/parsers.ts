@@ -26,6 +26,8 @@ interface BrokerDetector {
 		skipped: number; 
 		skippedDetails: SkippedDetail[];
 		totalTransactions?: number;
+		/** Las operaciones con su fecha, para poder alimentar el libro. Ver `ImportResult`. */
+		transactions?: Transaction[];
 	};
 }
 
@@ -293,7 +295,7 @@ const degiroAccountStatementDetector: BrokerDetector = {
 			warnings.push('No se encontraron operaciones de compra/venta en el extracto de cuenta. Asegúrate de que el CSV contiene transacciones con formato "Compra/Venta X Nombre@Precio DIVISA (ISIN)".');
 		}
 
-		return { positions, warnings, skipped: skippedDetails.length, skippedDetails, totalTransactions: transactions.length };
+		return { positions, warnings, skipped: skippedDetails.length, skippedDetails, totalTransactions: transactions.length, transactions };
 	}
 };
 
@@ -583,7 +585,7 @@ const degiroDetector: BrokerDetector = {
 			 * genérico, que mapea «Valor local» como precio unitario e importa 15 títulos a
 			 * 1.536,67 € cada uno. La guarda existía; solo faltaba en dos de las cinco copias.
 			 */
-			return { positions: consolidated, warnings, skipped: skippedDetails.length, skippedDetails, totalTransactions: transactions.length };
+			return { positions: consolidated, warnings, skipped: skippedDetails.length, skippedDetails, totalTransactions: transactions.length, transactions };
 		}
 	}
 };
@@ -676,7 +678,7 @@ const trading212Detector: BrokerDetector = {
 
 		const { positions: consolidated, warnings: avisosAgregador } = reduceTransactionsToPositions(transactions);
 		warnings.push(...avisosAgregador);
-		return { positions: consolidated, warnings, skipped: skippedDetails.length, skippedDetails, totalTransactions: transactions.length };
+		return { positions: consolidated, warnings, skipped: skippedDetails.length, skippedDetails, totalTransactions: transactions.length, transactions };
 	}
 };
 
@@ -710,6 +712,9 @@ const ibDetector: BrokerDetector = {
 		const warnings: string[] = [];
 		const { skipRow, skippedDetails } = createSkipRow();
 		let totalTransactions = 0;
+		// Fuera del bloque de trades, porque el `return` está al final de la función y las
+		// operaciones tienen que salir de aquí con sus fechas para poder llenar el libro.
+		let operaciones: Transaction[] = [];
 
 		// 1. Extraer mapeo de Símbolo a ISIN de todas partes del documento (ej: bloque Dividendos)
 		const symbolToIsinMap = new Map<string, string>();
@@ -825,6 +830,7 @@ const ibDetector: BrokerDetector = {
 
 			// Consolidar posiciones con coste medio ponderado
 			totalTransactions = transactions.length;
+			operaciones = transactions;
 			const { positions: consolidated, warnings: avisosAgregador } = reduceTransactionsToPositions(transactions);
 		warnings.push(...avisosAgregador);
 			positions.push(...consolidated);
@@ -886,7 +892,7 @@ const ibDetector: BrokerDetector = {
 
 		// Ver la nota de `totalTransactions` en el detector de DEGIRO: sin este campo, un
 		// fichero de trades cuyas filas se descartan todas cae al importador genérico.
-		return { positions, warnings, skipped: skippedDetails.length, skippedDetails, totalTransactions };
+		return { positions, warnings, skipped: skippedDetails.length, skippedDetails, totalTransactions, transactions: operaciones };
 	}
 };
 
@@ -1021,7 +1027,7 @@ const myinvestorDetector: BrokerDetector = {
 		
 		const { positions: consolidated, warnings: avisosAgregador } = reduceTransactionsToPositions(transactions);
 		warnings.push(...avisosAgregador);
-		return { positions: consolidated, warnings, skipped: skippedDetails.length, skippedDetails, totalTransactions: transactions.length };
+		return { positions: consolidated, warnings, skipped: skippedDetails.length, skippedDetails, totalTransactions: transactions.length, transactions };
 	}
 };
 
@@ -1065,7 +1071,14 @@ export function parseGenericCSVWithMapping(
 	headers: string[],
 	rows: string[][],
 	mapping: MappingConfig
-): { positions: ParsedPosition[]; warnings: string[]; skipped: number; skippedDetails: SkippedDetail[] } {
+): {
+	positions: ParsedPosition[];
+	warnings: string[];
+	skipped: number;
+	skippedDetails: SkippedDetail[];
+	/** Sólo en el flujo transaccional: las operaciones con su fecha. Ver `ImportResult`. */
+	transactions?: Transaction[];
+} {
 	const { skipRow, skippedDetails } = createSkipRow();
 	const warnings: string[] = [];
 
@@ -1233,7 +1246,7 @@ export function parseGenericCSVWithMapping(
 
 		const { positions, warnings: avisosAgregador } = reduceTransactionsToPositions(transactions);
 		warnings.push(...avisosAgregador);
-		return { positions, warnings, skipped: skippedDetails.length, skippedDetails };
+		return { positions, warnings, skipped: skippedDetails.length, skippedDetails, transactions };
 	} else {
 		// 2. Flujo instantánea de posiciones (Static positions list)
 		let positions: ParsedPosition[] = [];
@@ -1365,7 +1378,7 @@ export function importWithMapping(fileContent: string, mapping: MappingConfig): 
 		};
 	}
 
-	const { positions, warnings, skipped, skippedDetails } =
+	const { positions, warnings, skipped, skippedDetails, transactions } =
 		parseGenericCSVWithMapping(bestBlock.headers, bestBlock.rows, mapping);
 
 	return {
@@ -1374,6 +1387,7 @@ export function importWithMapping(fileContent: string, mapping: MappingConfig): 
 		warnings,
 		skippedRows: skipped,
 		skippedDetails,
+		transactions,
 		rawHeaders: bestBlock.headers,
 		rawRows: bestBlock.rows.slice(0, 10),
 		delimiter,
@@ -1442,6 +1456,8 @@ export function importFromCSV(fileContent: string): ImportResult {
 				 */
 				skippedRows: genericResult.skipped,
 				skippedDetails: genericResult.skippedDetails,
+				// Del intento que se usa, igual que las omitidas.
+				transactions: genericResult.transactions,
 				rawHeaders: bestBlock.headers,
 				rawRows: bestBlock.rows.slice(0, 10),
 				delimiter,
@@ -1465,6 +1481,7 @@ export function importFromCSV(fileContent: string): ImportResult {
 		warnings: result.warnings,
 		skippedRows: result.skipped,
 		skippedDetails: result.skippedDetails,
+		transactions: result.transactions,
 		rawHeaders: bestBlock.headers,
 		rawRows: bestBlock.rows.slice(0, 10),
 		delimiter,
