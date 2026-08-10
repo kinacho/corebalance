@@ -316,6 +316,10 @@
     font-size: 0.9rem;
     font-weight: 600;
     transition: color 0.2s ease;
+    /* 18 px de alto medidos: un enlace en una landing que se lee con el pulgar
+       necesita sitio para el dedo, no solo para las letras. */
+    display: inline-block;
+    padding: 0.6rem 0;
   }
   .btn-text:hover { color: #fff; }
 

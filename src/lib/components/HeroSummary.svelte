@@ -200,7 +200,7 @@
 	}
 
 	.metric-label {
-		font-size: 0.6rem;
+		font-size: var(--text-micro);
 		font-weight: 700;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;

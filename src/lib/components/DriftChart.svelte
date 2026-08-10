@@ -353,7 +353,7 @@
 
 	.axis-caption {
 		margin: 0;
-		font-size: 0.62rem;
+		font-size: var(--text-micro);
 		font-weight: 700;
 		letter-spacing: 0.06em;
 		text-transform: uppercase;

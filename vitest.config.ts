@@ -75,10 +75,22 @@ export default defineConfig({
 				// (13,33 % contra un 2,00 % real) y como los rangos `YTD` y `Todo` dejaron de
 				// avisar de que enseñan un mes.
 				'src/lib/history/performance.ts',
-				'src/lib/history/range.ts'
+				'src/lib/history/range.ts',
+				// Añadidos el 10-ago-2026. Los dos deciden algo y los dos nacieron de un
+				// defecto: `asset-label.ts` decide qué se lee en cada celda del mapa —y su
+				// trabajo es justo que dos fondos de la misma gestora no acaben con el mismo
+				// rótulo—, y `modal-lock.ts` decide si la página se queda usable al cerrar un
+				// modal, que era el defecto de escribirlo cinco veces a mano.
+				'src/lib/asset-label.ts',
+				'src/lib/modal-lock.ts'
 			],
 			reporter: ['text', 'json-summary'],
 			thresholds: {
+				// Medidos al nacer, 10-ago-2026. Las dos ramas que le faltan a `modal-lock`
+				// son los `typeof document !== 'undefined'` en su lado falso: no hay forma de
+				// no tener `document` en jsdom, y la guarda existe por el SSR.
+				'src/lib/asset-label.ts': { statements: 93, branches: 92, functions: 100 },
+				'src/lib/modal-lock.ts': { statements: 100, branches: 75, functions: 100 },
 				// Subido el 6-ago-2026 al matar mutantes del motor fiscal: 96,29/95,12 → 98,75/97,56.
 				'src/lib/fiscal.ts': { statements: 98, branches: 97, functions: 100 },
 				// Extraído del store el 6-ago-2026; medido al nacer.

@@ -762,6 +762,20 @@
 		min-width: 32px;
 	}
 
+	/**
+	 * ⚠️ El icono del modo apilado **no tenía tamaño**, y un `<svg>` sin `width`
+	 * ocupa todo el hueco que le dan. Se veía bien por accidente, porque el botón
+	 * medía 32 px; al ensanchar los botones en móvil el icono se estiró a 88 px y
+	 * las dos franjas pasaron a parecer dos barras grises sueltas. El tamaño de un
+	 * icono no puede depender de lo ancho que sea su botón.
+	 */
+	.toggle-btn svg {
+		width: 14px;
+		height: 14px;
+		display: block;
+		margin: 0 auto;
+	}
+
 	.range-btn {
 		padding: 0.4rem 0.7rem;
 	}
@@ -877,9 +891,47 @@
 			align-items: flex-start;
 		}
 
+		/**
+		 * ⚠️ **Los dos grupos de controles no caben en una fila de 390 px, y lo que
+		 * pasaba no era que se apretaran: se salían.** Medido con
+		 * `scripts/auditar-movil.mjs`: el documento medía 431 px de ancho en una
+		 * ventana de 390, el selector de rangos llegaba hasta el píxel 431 y **«Todo»
+		 * quedaba fuera de la pantalla** — que además es el rango por defecto, así
+		 * que el botón del rango que estás viendo era el único inalcanzable. Y el
+		 * scroll horizontal se lo comía la página entera, no solo el gráfico.
+		 *
+		 * Una fila cada grupo, y los botones repartiéndose el ancho a partes
+		 * iguales: cabe, no hay desbordamiento, y de paso los objetivos de toque
+		 * pasan de 32 px de ancho a unos 70.
+		 */
 		.controls-group {
 			width: 100%;
-			justify-content: space-between;
+			flex-direction: column;
+			align-items: stretch;
+			gap: 0.5rem;
+		}
+
+		.view-toggle,
+		.range-selector {
+			width: 100%;
+		}
+
+		/**
+		 * ⚠️ **`flex: 1` + `min-width: 0` es la línea que de verdad arregla el
+		 * desbordamiento, y lo sé porque el control negativo lo dijo.** Al revertir
+		 * solo la columna de arriba, el guardián de `e2e/movil-sin-desbordamiento`
+		 * seguía en verde: con los botones capaces de encogerse, los cinco rangos
+		 * caben incluso en una sola fila. Lo que se salía era un `min-width: 32px`
+		 * más el relleno horizontal, multiplicado por nueve botones, en una fila que
+		 * no podía ceder. La columna es lo que da los objetivos de toque grandes; el
+		 * `flex` es lo que impide que se salgan.
+		 */
+		.toggle-btn,
+		.range-btn {
+			flex: 1;
+			min-width: 0;
+			min-height: 40px;
+			padding: 0.4rem 0.25rem;
 		}
 
 		.canvas-wrapper {

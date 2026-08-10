@@ -11,6 +11,22 @@
 		--border-subtle: rgba(255, 255, 255, 0.08);
 
 		/*
+		 * ⚠️ El cuerpo más pequeño que se permite, y existe porque no había ninguno.
+		 *
+		 * Medido con `scripts/auditar-movil.mjs` a 390 px: nueve componentes
+		 * escribían rótulos entre `0,55rem` y `0,62rem`, o sea **entre 8,8 y 9,9 px
+		 * reales** — «Capital Global» dentro del donut a 8,8 px, el ISIN y el TER de
+		 * cada tarjeta a 9,8, los pies de eje a 9,9. No era un descuido de un
+		 * componente: era una convención sin suelo, repetida nueve veces.
+		 *
+		 * El token sube **solo en móvil** (abajo, en su media query). En escritorio
+		 * esos tamaños son deliberados y funcionan: lo que no funciona es la misma
+		 * cifra en una pantalla que se mira a 30 cm. Quien añada un rótulo diminuto
+		 * usa esta variable en lugar de un `rem` suelto, y hereda el suelo.
+		 */
+		--text-micro: 0.6rem;
+
+		/*
 		 * Los acentos son ahora los mismos tonos que `CATEGORY_COLORS` en
 		 * `src/lib/constants.ts`, que están validados contra la superficie de
 		 * tarjeta `#0d0d12`. Antes eran `#3b82f6`, `#10b981` y `#f59e0b`: los tres
@@ -236,10 +252,33 @@
 		pointer-events: auto;
 	}
 
-	/* Scroll Lock para Modales */
+	/*
+	 * Scroll Lock para Modales.
+	 *
+	 * Quién lo pone y quién lo quita lo decide `$lib/modal-lock.ts`, **contando**:
+	 * se escribía a mano en cinco componentes y estaba mal en dos, uno en cada
+	 * sentido (`LedgerModal` no lo soltaba nunca, `ImportModal` lo soltaba con
+	 * `ManageAssets` todavía abierto detrás).
+	 *
+	 * `dvh` y no `vh`: en móvil `100vh` cuenta la barra del navegador como si no
+	 * estuviera, así que el `body` de un modal abierto quedaba más alto que la
+	 * ventana. Con el bloqueo puesto no se nota, pero era la mitad de lo que se veía
+	 * como «la página se queda rota» cuando el bloqueo sobrevivía al cierre.
+	 */
 	body.modal-open {
 		overflow: hidden;
-		height: 100vh;
+		height: 100dvh;
+	}
+
+	/*
+	 * El suelo de legibilidad en móvil. Ver `--text-micro` arriba: los rótulos que
+	 * usan el token pasan de 9,6 px a 11,2 px por debajo de 640 px de ancho, y en
+	 * escritorio se quedan como estaban.
+	 */
+	@media (max-width: 640px) {
+		:root {
+			--text-micro: 0.7rem;
+		}
 	}
 
 	/* Tabular nums para cifras financieras */

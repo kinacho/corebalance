@@ -1,17 +1,13 @@
 <script lang="ts">
 	import { ui } from '$lib/stores/ui.svelte';
 	import { onMount, onDestroy } from 'svelte';
+	import { bloquearScroll, desbloquearScroll } from '$lib/modal-lock';
 	import { LL } from '$lib/i18n/i18n-svelte';
 
 	let { onClose }: { onClose: () => void } = $props();
 
-	onMount(() => {
-		document.body.classList.add('modal-open');
-	});
-
-	onDestroy(() => {
-		document.body.classList.remove('modal-open');
-	});
+	onMount(() => bloquearScroll());
+	onDestroy(() => desbloquearScroll());
 
 	/**
 	 * Las entradas del changelog están escritas en markdown ligero (`**negrita**`

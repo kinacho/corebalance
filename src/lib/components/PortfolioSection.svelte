@@ -201,7 +201,7 @@
 	}
 
 	.badge-label {
-		font-size: 0.6rem;
+		font-size: var(--text-micro);
 		text-transform: uppercase;
 		opacity: 0.5;
 		margin-right: 0.2rem;
@@ -233,11 +233,13 @@
 	}
 
 	.daily-arrow {
-		font-size: 0.6rem;
+		font-size: var(--text-micro);
 	}
 
 	.daily-value {
-		font-size: clamp(0.55rem, 2.5vw, 0.65rem);
+		/* El suelo del `clamp` era `0.55rem` y a 390 px caía en 9,75 px, que es donde
+		   cae siempre en un móvil. Ver `--text-micro`. */
+		font-size: clamp(var(--text-micro), 2.5vw, 0.65rem);
 		opacity: 0.7;
 		font-weight: 500;
 	}
