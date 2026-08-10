@@ -215,7 +215,8 @@ export class PortfolioStore {
 	 * endpoint, no la fuente.
 	 */
 	static readonly HISTORY_DAYS = 30;
-	static readonly HISTORY_DAYS_MAX = 400;
+	/** 550 ≈ 18 meses, el mismo techo que sirve el endpoint (`SPARKLINE_DIAS_MAX`). */
+	static readonly HISTORY_DAYS_MAX = 550;
 
 	/**
 	 * Hasta dónde tiene sentido reconstruir, decidido por **el dato y no por una constante**.

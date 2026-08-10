@@ -11,21 +11,6 @@ const CACHE_TTL_SECONDS = 60 * 60 * 4; // 4 horas
 const CACHE_TTL_MS = CACHE_TTL_SECONDS * 1000;
 
 /**
- * Días de cierres que se sirven por defecto, y el techo de lo que se puede pedir.
- *
- * ⚠️ **Lo que limitaba el histórico del patrimonio no era Yahoo: era este recorte.** La
- * petición a Yahoo ya arranca el 20 de diciembre del año anterior —lo necesita
- * `calculateHistoricalMetrics` para el YTD—, así que llegan entre 160 y 250 cierres y se
- * tiraban todos menos los últimos 30. La constante `HISTORY_DAYS` del store decía «limitado
- * por lo que da el sparkline de Yahoo» y era falso: lo limitaba esta línea.
- *
- * Sigue habiendo un motivo para no servirlos siempre: este array viaja en la respuesta de
- * precios, que el cliente pide **cada 30 segundos**. Pasar de 30 a 250 puntos por activo son
- * unos 20 KB extra por respuesta con una cartera de nueve, es decir megabytes por hora de un
- * dato que no cambia durante la sesión. De ahí que el histórico largo se sirva **sólo cuando
- * se pide** con `?historyDays=N`, y que el sondeo periódico no lo pida.
- */
-/**
  * ⚠️ La clave sube a `v2` porque **lo que se guarda ha cambiado de forma**: antes se cacheaba
  * la serie ya recortada a 30 puntos, ahora se cachea completa y el recorte se hace al
  * responder. Sin cambiar la clave, durante cuatro horas —el TTL— una petición de 250 días
@@ -203,6 +188,31 @@ for (const t of cashTickers) {
 	const startOfCurrentYear = new Date(Date.UTC(currentYear, 0, 1));
 	const dec20PrevYear = new Date(Date.UTC(currentYear - 1, 11, 20));
 
+	/**
+	 * Desde cuándo se le piden cierres a Yahoo.
+	 *
+	 * ⚠️ **Era `dec20PrevYear` fijo, y eso tenía dos consecuencias de tamaño muy distinto.**
+	 *
+	 * La que se vio primero: servir `?historyDays=400` devolvía **149 puntos** —medido en
+	 * producción—, porque el recorte de salida no puede inventar días que nunca se pidieron.
+	 * La ventana del patrimonio quedaba en unos siete meses por mucho que el libro de
+	 * operaciones llegase más atrás, y el arreglo anterior parecía funcionar porque 149 sigue
+	 * siendo mucho más que 30.
+	 *
+	 * ⚠️ Y la grave, que llevaba ahí desde el principio y sólo se nota en enero: con la fecha
+	 * anclada al 20 de diciembre del año anterior, **cada 1 de enero el histórico de todo el
+	 * mundo se encoge a dos semanas**. No es un caso raro, es una fecha; y es el mismo tipo de
+	 * fallo por el que `calculateHistoricalMetrics()` recibe `now` como parámetro en lugar de
+	 * leer el reloj.
+	 *
+	 * Se pide el más antiguo de los dos: el 20 de diciembre —que hace falta para tener el
+	 * último cierre del año anterior y poder calcular el YTD— o el principio de la ventana
+	 * pedida. Pedir más días no estorba a ningún cálculo: `calculateHistoricalMetrics` busca
+	 * sus tres cortes dentro de la serie, y `slice(-diasHistorial)` recorta al final.
+	 */
+	const inicioVentanaPedida = new Date(now - diasHistorial * 24 * 60 * 60 * 1000);
+	const desdeCuando = inicioVentanaPedida < dec20PrevYear ? inicioVentanaPedida : dec20PrevYear;
+
 	// Pre-verificar caché en paralelo para todos los tickers
 	const cacheCheckResults = await Promise.all(
 		tickersParaYahoo.map(async (ticker) => {
@@ -272,7 +282,7 @@ for (const t of cashTickers) {
 					// Pedir desde el 20 de Dic del año anterior para asegurar que cogemos el último cierre
 					// Usamos period2: new Date() para forzar que la URL sea única y evitar que Vercel devuelva
 					// una respuesta cacheada antigua (ej. cuando antes pedíamos solo 7 días)
-					const queryOptions = { period1: dec20PrevYear, period2: new Date(), interval: '1d' as const };
+					const queryOptions = { period1: desdeCuando, period2: new Date(), interval: '1d' as const };
 					const chart = await yahooFinance.chart(ticker, queryOptions);
 					
 					const validQuotes = chart.quotes.filter(q => q.close !== null);
@@ -294,7 +304,7 @@ for (const t of cashTickers) {
 					if (ytd === undefined && isCryptoETP) {
 						try {
 							const baseSymbol = (ticker.includes('ETH')) ? 'ETH-EUR' : 'BTC-EUR';
-							const cryptoChart = await yahooFinance.chart(baseSymbol, { period1: dec20PrevYear, period2: new Date(), interval: '1d' });
+							const cryptoChart = await yahooFinance.chart(baseSymbol, { period1: desdeCuando, period2: new Date(), interval: '1d' });
 							const cryptoQuotes = cryptoChart.quotes.filter(q => q.close !== null);
 							const cryptoPrevYearQuotes = cryptoQuotes.filter(q => new Date(q.date) < startOfCurrentYear);
 							

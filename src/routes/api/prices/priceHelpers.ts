@@ -19,7 +19,14 @@
  * pide** con `?historyDays=N`, y que el sondeo periódico no lo pida.
  */
 export const SPARKLINE_DIAS_DEFECTO = 30;
-export const SPARKLINE_DIAS_MAX = 400;
+/**
+ * 550 días ≈ 18 meses. Sube de 400 porque 400 eran trece meses y **el techo no debe ser lo
+ * que corta la historia de alguien que aporta desde hace año y medio**: quien limita ahí es
+ * el activo, y eso ya se ve —Yahoo tiene 229 cierres de un fondo indexado corriente—. Un
+ * techo sigue haciendo falta: la serie viaja en la respuesta de precios y pedir diez años
+ * sería pedir un array que nadie va a dibujar.
+ */
+export const SPARKLINE_DIAS_MAX = 550;
 
 /**
  * Cuántos cierres pide el cliente, acotado para que un parámetro absurdo no dispare nada.

@@ -41,8 +41,8 @@ const historicoSano = { quotes: [{ date: '2026-08-01T00:00:00Z', close: 99 }] };
 
 let n = 0;
 /** IP distinta por test: el limitador son 30 por minuto y aquí se hacen muchas llamadas. */
-const pedir = (tickers?: string) => {
-	const url = new URL(`http://localhost/api/prices${tickers ? `?tickers=${tickers}` : ''}`);
+const pedir = (tickers?: string, extra = '') => {
+	const url = new URL(`http://localhost/api/prices${tickers ? `?tickers=${tickers}` : ''}${extra}`);
 	const ip = `10.9.0.${++n}`;
 	return GET({ url, getClientAddress: () => ip } as any);
 };
@@ -69,6 +69,54 @@ describe('GET /api/prices', () => {
 
 		expect(prices['CASH-DEP']).toMatchObject({ price: 1.0, currency: 'EUR', change: 0 });
 		expect(quote.mock.calls[0][0]).not.toContain('CASH-DEP');
+	});
+
+	/**
+	 * Desde cuándo se le piden cierres a Yahoo, que es **lo que de verdad limita el histórico
+	 * del patrimonio**.
+	 *
+	 * ⚠️ Estaba anclado al 20 de diciembre del año anterior, y eso tenía dos efectos. El que
+	 * se vio: pedir `historyDays=400` devolvía **149 puntos** en producción, porque el recorte
+	 * de salida no puede inventar días que nunca se pidieron. Y el grave, que sólo se nota en
+	 * una fecha concreta: **cada 1 de enero el histórico de todo el mundo se encogía a dos
+	 * semanas**, porque el ancla se movía al 20 de diciembre recién pasado.
+	 */
+	describe('rango que se le pide a Yahoo', () => {
+		const period1De = (llamada = 0) => chart.mock.calls[llamada][1].period1 as Date;
+		const diasAtras = (fecha: Date) => Math.round((Date.now() - fecha.getTime()) / 86400000);
+
+		it('sin historyDays llega al menos al 20 de diciembre del año anterior', async () => {
+			await pedir('RANGOA.DE');
+
+			const dic20 = new Date(Date.UTC(new Date().getUTCFullYear() - 1, 11, 20));
+			expect(period1De().getTime()).toBeLessThanOrEqual(dic20.getTime());
+		});
+
+		it('con historyDays pide tantos días hacia atrás como se le piden', async () => {
+			await pedir('RANGOB.DE', '&historyDays=500');
+
+			// Con margen de un día por el redondeo de husos.
+			expect(diasAtras(period1De())).toBeGreaterThanOrEqual(499);
+		});
+
+		/**
+		 * El caso de enero, escrito como una relación entre las dos fechas para que no dependa
+		 * de cuándo se ejecute la suite: pedir año y medio tiene que ir **más atrás** que el
+		 * ancla del YTD, y no quedarse en ella.
+		 */
+		it('un año y medio de libro no se queda en el ancla del YTD', async () => {
+			await pedir('RANGOC.DE', '&historyDays=550');
+
+			const dic20 = new Date(Date.UTC(new Date().getUTCFullYear() - 1, 11, 20));
+			expect(period1De().getTime()).toBeLessThan(dic20.getTime());
+		});
+
+		it('el techo se respeta también en el rango, no sólo en el recorte', async () => {
+			await pedir('RANGOD.DE', '&historyDays=99999');
+
+			// 550 días es el máximo que sirve `diasDeHistorialPedidos`.
+			expect(diasAtras(period1De())).toBeLessThanOrEqual(551);
+		});
 	});
 
 	it('rechaza una petición con más tickers de los permitidos', async () => {

@@ -5,7 +5,8 @@ import {
 	correctSubunitCurrencies,
 	calculateHistoricalMetrics,
 	RELIABLE_FT_MAPPINGS,
-	diasDeHistorialPedidos
+	diasDeHistorialPedidos,
+	SPARKLINE_DIAS_MAX
 } from './priceHelpers';
 
 /**
@@ -277,8 +278,10 @@ describe('diasDeHistorialPedidos', () => {
 		expect(diasDeHistorialPedidos('1')).toBe(30);
 	});
 
+	/** El techo son 550 días ≈ 18 meses. Ver `SPARKLINE_DIAS_MAX` para por qué ese número. */
 	it('acota por arriba para que un parámetro absurdo no dispare nada', () => {
-		expect(diasDeHistorialPedidos('99999')).toBe(400);
+		expect(diasDeHistorialPedidos('99999')).toBe(SPARKLINE_DIAS_MAX);
+		expect(SPARKLINE_DIAS_MAX).toBe(550);
 	});
 
 	/**
