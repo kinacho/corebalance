@@ -210,7 +210,7 @@ const es = {
   // SEO
   seo: {
     title: 'CoreBalance — Gestiona y rebalancea tu cartera indexada',
-    description: 'Gratis, privada y sin registro. Calcula tu rebalanceo en segundos, sigue tus transacciones, dividendos y TER, y mantén tu estrategia bajo control sin que tus datos salgan del navegador.',
+    description: 'Gratis, privada y sin registro. Calcula tu rebalanceo en segundos y mantén tu estrategia bajo control sin que tus datos salgan del navegador.',
     og_title: 'CoreBalance — Gestiona y rebalancea tu cartera indexada',
     og_description: 'Gestiona tu cartera de fondos indexados y ETFs: rebalanceo inteligente, libro de transacciones y seguimiento en tiempo real. Gratis y sin registro.',
   },

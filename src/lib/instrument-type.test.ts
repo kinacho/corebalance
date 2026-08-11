@@ -3,9 +3,10 @@ import {
 	resolveInstrumentType,
 	instrumentTypeOf,
 	canBeTransferred,
-	isTaxableOnSale
+	isTaxableOnSale,
+	tipoCorregidoPorMigracion
 } from './instrument-type';
-import type { Asset } from './types';
+import type { Asset, InstrumentType } from './types';
 
 function asset(partial: Partial<Asset>): Asset {
 	return {
@@ -207,5 +208,49 @@ describe('reglas fiscales derivadas', () => {
 		expect(isTaxableOnSale(asset({ instrumentType: 'cash' }))).toBe(false);
 		// `other` no se toca porque no sabemos qué es.
 		expect(isTaxableOnSale(asset({ instrumentType: 'other' }))).toBe(false);
+	});
+});
+
+/**
+ * La migración del tipo mal guardado.
+ *
+ * ⚠️ Lo que se prueba aquí sobre todo es **lo que NO toca**. Un barrido que volviera a
+ * deducir el tipo de todos los activos borraría las correcciones manuales de Gestionar
+ * Activos, que `normalizeAssets` respeta a propósito. La estrechez es la garantía, así
+ * que la mayoría de los casos comprueban que devuelve `null`.
+ */
+describe('tipoCorregidoPorMigracion', () => {
+	const activo = (ticker: string, instrumentType?: InstrumentType): Asset =>
+		({ ticker, name: 'x', isin: '', targetWeight: 0, color: '#fff', ter: 0, category: 'core', instrumentType }) as Asset;
+
+	it('repara el fondo con ticker 0P y sufijo que quedó como other o equity', () => {
+		// El caso real: importado antes del arreglo, con el tipo equivocado en disco.
+		expect(tipoCorregidoPorMigracion(activo('0P0001XF40.F', 'other'))).toBe('fund');
+		expect(tipoCorregidoPorMigracion(activo('0P0001XF40.F', 'equity'))).toBe('fund');
+		expect(tipoCorregidoPorMigracion(activo('0P0001XF40.F', 'etf'))).toBe('fund');
+	});
+
+	it('no toca el que ya está bien', () => {
+		expect(tipoCorregidoPorMigracion(activo('0P0001XF40.F', 'fund'))).toBeNull();
+	});
+
+	it('⚠️ no toca los tickers 0P **sin** sufijo, que el regex viejo ya reconocía', () => {
+		// Si estos llegaran con otro tipo, es porque alguien lo puso a mano: el defecto
+		// nunca los alcanzó, así que la migración no tiene nada que reparar ahí.
+		expect(tipoCorregidoPorMigracion(activo('0P0001AJ8T', 'etf'))).toBeNull();
+		expect(tipoCorregidoPorMigracion(activo('0P0000ZZZZ', 'equity'))).toBeNull();
+	});
+
+	it('⚠️ no toca nada que no sea un ticker 0P', () => {
+		// El control que impide que esto se convierta en un barrido: una corrección manual
+		// sobre cualquier otro activo tiene que sobrevivir.
+		for (const t of ['IWDA.AS', 'AAPL', 'IE00B4L5Y983', 'CASH-EUR', 'BRK.B', '', '0P']) {
+			expect(tipoCorregidoPorMigracion(activo(t, 'etf')), `«${t}» no debe migrarse`).toBeNull();
+		}
+	});
+
+	it('es idempotente: aplicarla dos veces no cambia nada', () => {
+		const migrado = activo('0P0001XF40.F', tipoCorregidoPorMigracion(activo('0P0001XF40.F', 'other'))!);
+		expect(tipoCorregidoPorMigracion(migrado)).toBeNull();
 	});
 });

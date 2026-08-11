@@ -25,7 +25,7 @@ import { formatDate, resolveAssetIcon } from '$lib/utils';
 import { ui } from '$lib/stores/ui.svelte';
 import { goto } from '$app/navigation';
 import { detectSparklineChange, applyTerUpdates } from '$lib/stores/priceUtils';
-import { resolveInstrumentType } from '$lib/instrument-type';
+import { resolveInstrumentType, tipoCorregidoPorMigracion } from '$lib/instrument-type';
 import { calculateLookThrough } from '$lib/lookthrough';
 import { resolveIndexKey, priceProxyOf } from '$lib/lookthrough';
 import { calculateTaxAwareRebalance } from '$lib/traspaso';
@@ -40,12 +40,24 @@ import { calculateTaxAwareRebalance } from '$lib/traspaso';
  *
  * Sin destruir lo que el usuario haya corregido a mano: solo escribe donde hay
  * hueco.
+ *
+ * ⚠️ **Con una excepción, y es una reparación, no un relleno.**
+ * `tipoCorregidoPorMigracion()` va delante del valor guardado porque el valor guardado es
+ * precisamente lo que está mal: los activos importados antes del arreglo del regex `0P`
+ * tienen `other` o `equity` **fijados en disco**, y como `instrumentTypeOf()` prefiere lo
+ * guardado, arreglar la deducción no los alcanzaba. Se queda un fondo con el panel fiscal
+ * apagado y sin nada que lo avise.
+ *
+ * Solo actúa sobre tickers `0P…` con sufijo de mercado —la forma exacta que el regex
+ * viejo no casaba— así que no puede tocar ningún activo al que no le afectara el defecto.
+ * El razonamiento completo, y el coste asumido, están en su docblock.
  */
 function normalizeAssets(assets: Asset[]): Asset[] {
 	return assets.map((a) => ({
 		...a,
 		icon: a.icon || resolveAssetIcon(a.ticker, a.name),
 		instrumentType:
+			tipoCorregidoPorMigracion(a) ??
 			a.instrumentType ??
 			(a.manualInterestRate !== undefined
 				? 'cash'

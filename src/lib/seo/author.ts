@@ -27,6 +27,19 @@ export const AUTHOR = {
 		es: 'Quién escribe en CoreBalance',
 		en: 'Who writes on CoreBalance'
 	},
+	/**
+	 * La descripción para el `<meta>`, aparte de la biografía.
+	 *
+	 * ⚠️ La página del autor usaba `bio[0]` como meta description, y eso son **246
+	 * caracteres**: Google corta sobre 160, así que el fragmento que se veía en resultados
+	 * terminaba a media frase. Acortar la biografía habría sido peor —es texto visible que
+	 * funciona como texto— así que son dos cosas distintas con dos textos distintos. Un
+	 * párrafo escrito para leerse no sirve como resumen de 160 caracteres.
+	 */
+	metaDescription: {
+		es: 'Desarrollador e inversor en fondos indexados. Escribo sobre rebalanceo por bandas, traspasos entre fondos y coste fiscal, desde mi propia cartera.',
+		en: 'Software developer and index-fund investor. I write about band rebalancing, fund-to-fund transfers and tax cost, from running my own portfolio.'
+	},
 	bio: {
 		es: [
 			'Soy desarrollador de software e inversor particular en fondos indexados y ETFs. CoreBalance nació de un problema propio: rebalancear una cartera a mano en una hoja de cálculo, cada trimestre, sin equivocarme con los pesos ni con las aportaciones.',
