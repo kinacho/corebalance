@@ -44,6 +44,8 @@ Donde vayas a encontrarla. Un documento, una nota, un archivo de texto. La forma
 
 Lo que sí conviene es que **la parte comprobable viva donde se comprueba**: tus pesos objetivo y tus bandas, dentro de la herramienta. Así no tienes que acordarte de nada — al abrirla te dice si estás dentro, y desde cuándo no lo estás.
 
+<div class="bloque aviso">
+
 ## Lo que no te van a contar
 
 **Casi nadie la escribe, y de los que la escriben muchos no la releen.** Un recordatorio anual en el calendario, el mismo día que revisas la cartera, hace más que el documento perfecto.
@@ -51,6 +53,8 @@ Lo que sí conviene es que **la parte comprobable viva donde se comprueba**: tus
 **Y una política demasiado detallada se incumple igual.** Si tiene quince reglas, vas a saltarte alguna y eso te dará permiso para saltarte el resto. Seis líneas que cumples valen más que dos páginas que no.
 
 **Nada de esto te hace inmune.** La gente con política escrita también vende en el peor momento, solo que menos veces. No es una vacuna, es una fricción — y una fricción a tiempo es la diferencia entre una mala decisión y ninguna.
+
+</div>
 
 ## Ya está
 
@@ -62,9 +66,14 @@ Si has hecho los ejercicios, ahora tienes:
 
 Y con eso, la pregunta interesante deja de ser «¿qué compro?» y pasa a ser «¿cuánto llevo desviado y qué me cuesta arreglarlo?». Que es exactamente lo que la herramienta contesta, y donde el curso de fiscalidad continúa.
 
+<div class="bloque retener">
+
 ## Lo que hay que retener
 
 - La política la escribe tu yo tranquilo para tu yo asustado.
 - Seis puntos: reparto, bandas, revisión, qué no harás, qué lo cambiaría, fecha.
 - «Qué no vas a hacer» es la parte que más sirve.
 - Seis líneas que cumples valen más que dos páginas que no.
+
+</div>
+

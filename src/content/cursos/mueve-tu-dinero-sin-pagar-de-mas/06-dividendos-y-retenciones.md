@@ -15,6 +15,10 @@ lecturas:
     href: "/blog/msci-world-acc-vs-dist"
 ---
 
+<script>
+  import CalculadoraAccDist from '$lib/components/cursos/CalculadoraAccDist.svelte';
+</script>
+
 Un dividendo recorre tres peajes antes de llegar a tu bolsillo. Solo el tercero es tuyo de gestionar.
 
 ## Capa 1: dentro de la empresa, fuera de tu vista
@@ -31,6 +35,10 @@ Si tu fondo es de **distribución**, ese dividendo te llega y entra en la base d
 
 Si es de **acumulación**, no te llega: se reinvierte dentro. No hay hecho imponible para ti, y ese es todo el argumento del curso anterior.
 
+<CalculadoraAccDist compacta />
+
+<p class="pie-calc">Lo que cuesta cobrarlos frente a diferirlos, con la escala progresiva aplicada año a año.</p>
+
 ## Capa 3: la doble imposición, cuando el dividendo es extranjero
 
 Si cobras dividendos directamente de acciones extranjeras —no a través de un fondo— pueden estar retenidos allí **y** tributar aquí. Los convenios de doble imposición permiten deducir parte de lo retenido en origen, pero:
@@ -41,6 +49,8 @@ Si cobras dividendos directamente de acciones extranjeras —no a través de un 
 
 Es una de las razones prácticas por las que un fondo global te ahorra trabajo: gestiona todo eso dentro.
 
+<div class="bloque aviso">
+
 ## Lo que no te van a contar
 
 **La retención a cuenta no es el impuesto.** Es un anticipo. Si te retienen más de lo que te corresponde por escala, se devuelve al declarar; si menos, pagas la diferencia. Que te retengan no significa que ya esté todo hecho.
@@ -49,9 +59,16 @@ Es una de las razones prácticas por las que un fondo global te ahorra trabajo: 
 
 **Y «vivir de los dividendos» es fiscalmente peor que vender.** Al cobrar un dividendo tributa el **importe entero**; al vender participaciones solo tributa la **ganancia** de lo vendido. Para una misma cantidad de dinero en la mano, vender suele pagar menos. Cuesta de creer y es una de las cosas más útiles de este curso.
 
+</div>
+
+<div class="bloque retener">
+
 ## Lo que hay que retener
 
 - Tres capas: retención en origen (invisible), tu tributación al cobrarlo, y la doble imposición si es directo.
 - El domicilio del fondo decide la primera capa; Acc/Dist decide la segunda.
 - La retención es un anticipo, no el impuesto final.
 - Vender una parte suele tributar menos que cobrar el mismo importe en dividendos.
+
+</div>
+

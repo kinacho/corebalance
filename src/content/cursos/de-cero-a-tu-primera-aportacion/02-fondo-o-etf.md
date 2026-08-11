@@ -46,6 +46,8 @@ El fondo indexado normalmente se suscribe y se reembolsa **sin comisión de comp
 
 El ETF paga **comisión de compra en cada operación** —fija o mínima, según el bróker— y, si cotiza en otra divisa, **cambio de moneda**. Con aportaciones pequeñas y frecuentes eso pesa: 1 € de comisión sobre una aportación de 100 € es un 1 % que se come una ventaja de TER de 0,05 % veinte veces seguidas.
 
+<div class="bloque aviso">
+
 ## Lo que no te van a contar
 
 **El ETF no siempre pierde.** Si aportas cantidades grandes y poco frecuentes, no piensas cambiar de producto en décadas y tu bróker cobra poco, la ventaja de TER del ETF puede compensar. El traspaso solo vale si lo vas a usar.
@@ -54,9 +56,16 @@ El ETF paga **comisión de compra en cada operación** —fija o mínima, según
 
 **Y hay un caso en el que la elección casi no importa**: si tu horizonte es corto o vas a necesitar el dinero pronto, la discusión fondo-vs-ETF es irrelevante comparada con la de cuánto llevas en renta variable.
 
+</div>
+
+<div class="bloque retener">
+
 ## Lo que hay que retener
 
 - **Un fondo se traspasa sin tributar; un ETF no.** Esa es la diferencia grande en España.
 - El fondo tiene un precio al día; el ETF cotiza. Para aportar cada mes, da igual.
 - El ETF paga comisión por operación y a veces cambio de divisa; el fondo, normalmente no.
 - La comparación que leas en inglés no incluye el traspaso, porque allí no existe.
+
+</div>
+

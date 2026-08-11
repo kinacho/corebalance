@@ -45,6 +45,8 @@ Tu libro de operaciones. Sin las fechas y los importes de cada aportación y cad
 
 Por eso importar el CSV del bróker es lo que convierte esta lección en un número tuyo en vez de un concepto.
 
+<div class="bloque aviso">
+
 ## Lo que no te van a contar
 
 **Casi todas las apps te enseñan solo una, y no dicen cuál.** Si tu bróker te da «rentabilidad» a secas, probablemente sea una MWR simplificada — o peor, una diferencia entre valor actual y dinero aportado, que no es ninguna de las dos y no es comparable con nada.
@@ -53,9 +55,16 @@ Por eso importar el CSV del bróker es lo que convierte esta lección en un núm
 
 **Los tramos estimados no entran.** Los días que la reconstrucción no puede ver de verdad se excluyen de las dos cifras. Meterlos las contamina: en un caso medido, incluir dos días estimados subía la rentabilidad del periodo del 2,00 % al 13,33 %.
 
+</div>
+
+<div class="bloque retener">
+
 ## Lo que hay que retener
 
 - TWR mide tus activos y sirve para comparar. MWR mide tu dinero.
 - La diferencia es el efecto de cuándo moviste dinero.
 - Una MWR peor no significa que lo hicieras mal.
 - Sin libro de operaciones, la MWR no existe.
+
+</div>
+

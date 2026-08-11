@@ -44,6 +44,8 @@ Lo que no hayas podido compensar se arrastra a los **cuatro ejercicios siguiente
 2. **No declararla.** Una pérdida que no consta en la declaración del ejercicio en que se generó no se puede arrastrar después. Hay que declararla aunque ese año no tengas nada que compensar.
 3. **Olvidar el arrastre.** Los saldos pendientes de años anteriores se aplican solos si están declarados, pero hay que llevarlos. Cuatro años dan para olvidarse.
 
+<div class="bloque aviso">
+
 ## Lo que no te van a contar
 
 **Realizar pérdidas a propósito para compensar tiene un coste que no es fiscal.** Vendes, esperas la ventana —hasta un año en fondos— y durante ese tiempo estás fuera del mercado o en algo no homogéneo. El ahorro fiscal es cierto; el coste de oportunidad también, y es más difícil de calcular.
@@ -52,9 +54,16 @@ Lo que no hayas podido compensar se arrastra a los **cuatro ejercicios siguiente
 
 **Y para el inversor indexado que aporta y no vende, todo esto casi nunca se activa.** Aparece en dos situaciones: un rebalanceo en un mercado malo, o una cartera desordenada que se está consolidando. Si no estás en ninguna de las dos, esta lección es cultura general — pero el día que lo estés, vale bastante dinero.
 
+</div>
+
+<div class="bloque retener">
+
 ## Lo que hay que retener
 
 - Orden: primero contra ganancias sin límite, luego contra rendimientos hasta el 25 %.
 - Lo que sobre se arrastra **cuatro años**, y puede caducar.
 - Declárala aunque no tengas nada que compensar ese año, o no podrás arrastrarla.
 - La recompra prematura es lo que más veces anula la compensación.
+
+</div>
+

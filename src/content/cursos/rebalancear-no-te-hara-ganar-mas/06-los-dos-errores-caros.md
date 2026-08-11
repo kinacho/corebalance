@@ -45,6 +45,8 @@ Eso es todo. Impide derivar años porque revisas, impide operar de más porque h
 
 Ponla por escrito y déjala donde la vayas a ver. La parte comprobable —los pesos y las bandas— cabe en la herramienta, y ahí se comprueba sola.
 
+<div class="bloque aviso">
+
 ## Lo que no te van a contar
 
 **El error de no hacerlo nunca es cómodo y a veces rentable.** Por eso persiste: durante mercados alcistas largos, quien no rebalancea gana más, y cada año que pasa refuerza la impresión de que rebalancear es una tontería. La factura llega toda junta y con retraso.
@@ -53,11 +55,15 @@ Ponla por escrito y déjala donde la vayas a ver. La parte comprobable —los pe
 
 **Lo que sí se corrige con información** es lo que este curso ha intentado: que rebalancear no es para ganar más. Quien lo entiende deja de esperar un premio que no llega, y por tanto deja de abandonarlo cuando no llega.
 
+</div>
+
 ## Ya está
 
 Con el curso hecho tienes una regla escrita, tu próximo movimiento calculado con aportaciones y un plan para el día que caiga un 30 %.
 
 Y una idea que no vas a leer en muchos sitios: **lo mejor que puede hacer una herramienta de rebalanceo es que la uses cuatro veces al año durante veinte años.** No todos los días.
+
+<div class="bloque retener">
 
 ## Lo que hay que retener
 
@@ -65,3 +71,6 @@ Y una idea que no vas a leer en muchos sitios: **lo mejor que puede hacer una he
 - Hacerlo demasiado: comisiones e impuestos ciertos a cambio de nada.
 - La regla mínima: revisión trimestral, banda de ±5 pp, y aportaciones primero.
 - Rebalancear bien se parece mucho a no hacer casi nada.
+
+</div>
+

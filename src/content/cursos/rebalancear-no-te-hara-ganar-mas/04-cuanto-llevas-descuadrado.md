@@ -37,6 +37,8 @@ Para cada activo con objetivo, la distancia en puntos porcentuales a ese objetiv
 - **Meseta larga fuera de banda**: revisa la frecuencia con la que miras, o ensancha la banda a un número que sí vayas a cumplir. Una banda incumplida es peor que una banda ancha.
 - **Sierra —dentro, fuera, dentro, fuera—**: tu banda es demasiado estrecha para la volatilidad de esa posición.
 
+<div class="bloque aviso">
+
 ## Lo que no te van a contar
 
 **Esto necesita histórico, y el histórico necesita tu libro de operaciones.** Sin las fechas de tus compras no se puede reconstruir cuántas participaciones tenías cada día, y el gráfico dibuja una estimación en vez de un dato. Por eso importar el CSV del bróker no es cosmética.
@@ -45,9 +47,16 @@ Para cada activo con objetivo, la distancia en puntos porcentuales a ese objetiv
 
 **Y una cartera perfectamente ajustada da un gráfico aburridísimo**, pegado al cero. Eso es lo que quieres ver. Si tu gráfico es emocionante, algo va mal.
 
+</div>
+
+<div class="bloque retener">
+
 ## Lo que hay que retener
 
 - La desviación de hoy dice si actuar; el histórico dice si tu sistema funciona.
 - Picos cortos: no hacer nada. Mesetas largas: revisar más o ensanchar la banda.
 - La deriva se mide dentro del bloque, no sobre el patrimonio total.
 - Sin libro de operaciones, el histórico es una estimación.
+
+</div>
+

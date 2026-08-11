@@ -47,6 +47,8 @@ La escala se aplica al **total del año**, no a cada operación. Si en marzo rea
 
 Consecuencia práctica, y es la que se usa: **partir una venta grande entre dos ejercicios** puede dejar cada mitad en un tramo más bajo. No siempre compensa —depende de cuánto y de qué esperas ganar el año siguiente— pero es una palanca real y gratuita.
 
+<div class="bloque aviso">
+
 ## Lo que no te van a contar
 
 **Los dividendos comparten base con las ganancias.** Los cobras y suman a la misma escala, así que un año con muchos dividendos deja tus ventas en un tramo más alto. Es una de las razones de la lección 6.
@@ -55,9 +57,16 @@ Consecuencia práctica, y es la que se usa: **partir una venta grande entre dos 
 
 **Lo que no está en esta base**: el patrimonio en sí. Pagar por tener no es lo mismo que pagar por vender, y son impuestos distintos con normativa autonómica. Este curso va del segundo.
 
+</div>
+
+<div class="bloque retener">
+
 ## Lo que hay que retener
 
 - Tu cartera tributa en la base del ahorro, separada de tu nómina.
 - La escala es progresiva por tramos: 19 / 21 / 23 / 27 / 30 % en 2026.
 - Se acumula por año, no por operación. Partir una venta entre ejercicios es una palanca real.
 - Dividendos e intereses ocupan sitio en esa misma escala.
+
+</div>
+

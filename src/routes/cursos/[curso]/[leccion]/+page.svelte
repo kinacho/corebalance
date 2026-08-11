@@ -223,6 +223,130 @@
 		background: var(--accent-blue);
 	}
 
+	/*
+	 * Los dos bloques que se repiten en las 34 lecciones.
+	 *
+	 * ⚠️ Sin ellos, una lección es un muro de texto con dos títulos indistinguibles del
+	 * resto: el lector no ve dónde está la advertencia ni dónde el resumen, que son
+	 * justamente las dos partes que más se releen. El envoltorio se pone en el markdown
+	 * (`<div class="bloque aviso">`) porque el CSS no puede seleccionar por el texto de un
+	 * encabezado, y `:global` porque el contenido lo inyecta mdsvex.
+	 */
+	.leccion :global(.bloque) {
+		margin: 2.5rem 0;
+		padding: 1.4rem 1.5rem;
+		border-radius: 16px;
+		border: 1px solid rgba(255, 255, 255, 0.1);
+	}
+	.leccion :global(.bloque h2) {
+		margin: 0 0 0.9rem;
+		font-size: 0.78rem;
+		font-weight: 800;
+		letter-spacing: 0.09em;
+		text-transform: uppercase;
+	}
+	.leccion :global(.bloque > :last-child) {
+		margin-bottom: 0;
+	}
+	/*
+	 * ⚠️ El espaciado se declara aquí y no se hereda del cuerpo del artículo: el `div`
+	 * envolvente rompe la cadena de selectores del markdown, y sin esto los párrafos del
+	 * aviso salen pegados unos a otros y la lista del resumen pierde las viñetas. Se vio
+	 * mirando la captura, no leyendo el CSS.
+	 */
+	.leccion :global(.bloque p) {
+		margin: 0 0 1rem;
+		line-height: 1.7;
+	}
+	.leccion :global(.bloque ul) {
+		margin: 0;
+		padding-left: 1.2rem;
+		list-style: disc;
+	}
+	.leccion :global(.bloque li) {
+		margin-bottom: 0.45rem;
+		line-height: 1.65;
+	}
+	.leccion :global(.bloque li::marker) {
+		color: rgba(255, 255, 255, 0.35);
+	}
+
+	/* La advertencia: ámbar, que es el color de «ojo con esto» en el resto de la app. */
+	.leccion :global(.bloque.aviso) {
+		background: rgba(245, 158, 11, 0.05);
+		border-color: rgba(245, 158, 11, 0.22);
+	}
+	.leccion :global(.bloque.aviso h2) {
+		color: var(--accent-orange);
+	}
+
+	/* El resumen: cierra la lección, así que se lee como una ficha y no como más texto. */
+	.leccion :global(.bloque.retener) {
+		background: rgba(255, 255, 255, 0.03);
+	}
+	.leccion :global(.bloque.retener h2) {
+		color: var(--accent-green);
+	}
+	.leccion :global(.bloque.retener ul) {
+		margin: 0;
+		padding-left: 1.15rem;
+		line-height: 1.85;
+	}
+
+	/* Pie de las calculadoras embebidas. */
+	.leccion :global(.pie-calc) {
+		margin: -1rem 0 2rem;
+		font-size: 0.78rem;
+		text-align: center;
+		color: var(--text-muted);
+	}
+
+	/*
+	 * Ritmo de lectura. Una lección de 900 palabras a una sola columna necesita que los
+	 * encabezados respiren y que la medida no pase de unos 70 caracteres, o se lee como
+	 * un documento y no como una lección.
+	 */
+	.leccion :global(.markdown-body) {
+		font-size: 1.02rem;
+		line-height: 1.75;
+	}
+	.leccion :global(.markdown-body h2) {
+		margin: 2.75rem 0 1rem;
+		font-size: 1.3rem;
+		line-height: 1.3;
+		letter-spacing: -0.01em;
+	}
+	.leccion :global(.markdown-body p),
+	.leccion :global(.markdown-body li) {
+		max-width: 68ch;
+	}
+	.leccion :global(.markdown-body table) {
+		width: 100%;
+		border-collapse: collapse;
+		margin: 1.75rem 0;
+		font-size: 0.9rem;
+	}
+	.leccion :global(.markdown-body th),
+	.leccion :global(.markdown-body td) {
+		padding: 0.6rem 0.7rem;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+		text-align: left;
+	}
+	.leccion :global(.markdown-body thead th) {
+		font-size: 0.72rem;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		color: var(--text-muted);
+	}
+	.leccion :global(.markdown-body blockquote) {
+		margin: 1.75rem 0;
+		padding: 0.2rem 0 0.2rem 1.2rem;
+		border-left: 3px solid var(--accent-blue);
+		font-size: 1.08rem;
+		line-height: 1.6;
+		color: var(--text-primary);
+	}
+
 	.accion {
 		margin: 3rem 0 2rem;
 		padding: 1.5rem;

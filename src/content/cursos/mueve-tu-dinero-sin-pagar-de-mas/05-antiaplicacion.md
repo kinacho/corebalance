@@ -18,6 +18,10 @@ fuentes:
     url: "https://www.boe.es/buscar/act.php?id=BOE-A-2006-20764"
 ---
 
+<script>
+  import CalculadoraRecompra from '$lib/components/cursos/CalculadoraRecompra.svelte';
+</script>
+
 Una pérdida realizada tiene un uso: compensa ganancias y te baja el impuesto del año. Es lo más parecido a una buena noticia que hay en una caída.
 
 Salvo que recompres demasiado pronto.
@@ -41,6 +45,10 @@ El razonamiento correcto es el del propio texto: los dos meses son para valores 
 
 Si te has fiado de una guía que decía dos meses y has recomprado, tienes una pérdida bloqueada y probablemente no lo sabes.
 
+<CalculadoraRecompra compacta />
+
+<p class="pie-calc">Compruébalo con tus fechas antes de dar la orden.</p>
+
 ## Y mira hacia los dos lados
 
 La ventana no empieza en la venta: **la rodea**. Comprar dentro de los dos —o doce— meses **anteriores** bloquea exactamente igual que comprar después.
@@ -53,6 +61,8 @@ Se **difiere**. Se declara igual en el ejercicio en que se generó, no se integr
 
 Decirte «no la puedes deducir» sería asustarte de más. Lo que has perdido es el *momento*, no el derecho.
 
+<div class="bloque aviso">
+
 ## Lo que no te van a contar
 
 **«Homogéneos» no es «idénticos», y tampoco es «el mismo índice».** El criterio mira al emisor y a las características del valor. Dos fondos distintos sobre el MSCI World, de gestoras distintas, no son homogéneos entre sí — que es precisamente la salida cuando quieres mantener la exposición sin bloquear la pérdida. Es una zona donde conviene ir con cuidado y no con un artículo de internet.
@@ -61,9 +71,16 @@ Decirte «no la puedes deducir» sería asustarte de más. Lo que has perdido es
 
 **Y esto casi nunca se aplica al inversor indexado tranquilo**, porque para que aparezca hace falta vender con pérdidas — algo que la estrategia intenta no hacer. Aparece cuando rebalanceas en un mercado malo, que es exactamente cuando menos ganas de leer normativa tienes.
 
+</div>
+
+<div class="bloque retener">
+
 ## Lo que hay que retener
 
 - 2 meses para ETFs y acciones. **12 para participaciones de fondos.**
 - La ventana rodea la venta: comprar antes bloquea igual que comprar después.
 - La pérdida no se pierde, se difiere al momento en que vendas lo recomprado.
 - Un traspaso cuenta como adquisición a estos efectos.
+
+</div>
+

@@ -38,6 +38,8 @@ Pero no se paga una vez: se paga **cada año, sobre todo el dinero acumulado**, 
 
 Es la razón de que el coste sea la primera cosa que se mira en esta forma de invertir, y no la última. Es lo único del futuro que conoces con certeza: no sabes qué hará la bolsa, pero sabes exactamente lo que te van a cobrar.
 
+<div class="bloque aviso">
+
 ## Lo que no te van a contar
 
 Casi todo el contenido sobre indexación se detiene en «bate a la gestión activa» y ahí se queda. Tres cosas que también son verdad:
@@ -48,9 +50,16 @@ Casi todo el contenido sobre indexación se detiene en «bate a la gestión acti
 
 **El comportamiento pesa más que el producto.** El inversor medio en fondos indexados obtiene menos que sus propios fondos, porque compra después de subir y vende después de caer. Elegir bien el fondo es el 20 % del trabajo. El otro 80 % es aguantar.
 
+</div>
+
+<div class="bloque retener">
+
 ## Lo que hay que retener
 
 - Un índice es una lista con una regla; un fondo indexado la copia sin opinar.
 - Para batir al índice hay que ganarle **por más de lo que cobras**, todos los años.
 - El coste es lo único del futuro que conoces con certeza.
 - Indexarse no evita las caídas: elimina el riesgo de elegir mal al gestor, no el riesgo de mercado.
+
+</div>
+

@@ -42,6 +42,8 @@ Es una situación normal y no requiere pánico. Tres cosas que sí conviene hace
 2. **Aporta lo nuevo donde quieras estar.** Las aportaciones futuras no tienen coste fiscal: puedes ir construyendo la parte en fondos sin tocar lo que ya tienes.
 3. **Rebalancea con aportaciones, no vendiendo.** Es la vía sin impuesto para una cartera de ETFs, y la que calcula esta app por defecto.
 
+<div class="bloque aviso">
+
 ## Lo que no te van a contar
 
 **El ETF sigue ganando en otras cosas.** TER algo menor, más oferta, y acceso a índices que no tienen fondo equivalente. Si tu cartera no va a cambiar en veinte años y aportas cantidades grandes, la ventaja del traspaso no se usa nunca — y entonces no vale nada.
@@ -50,9 +52,16 @@ Es una situación normal y no requiere pánico. Tres cosas que sí conviene hace
 
 **Y hay una zona gris que conviene no habitar**: productos que parecen fondos y no lo son a efectos del artículo 94. Si un plan de inversión promete traspasos y no eres capaz de identificar la figura legal, pregunta antes de contar con el diferimiento.
 
+</div>
+
+<div class="bloque retener">
+
 ## Lo que hay que retener
 
 - El ETF cotiza, así que no hay reembolso: no hay diferimiento.
 - Solo fondo → fondo evita el impuesto. Fondo → ETF también tributa.
 - Si ya estás en ETFs: no migres por migrar, aporta donde quieras estar y rebalancea comprando.
 - El ISIN no distingue un fondo de un ETF. Su forma de contratación, sí.
+
+</div>
+

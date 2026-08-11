@@ -18,6 +18,10 @@ fuentes:
     url: "https://sede.agenciatributaria.gob.es/"
 ---
 
+<script>
+  import CalculadoraAccDist from '$lib/components/cursos/CalculadoraAccDist.svelte';
+</script>
+
 Las empresas que hay dentro de tu fondo reparten dividendos. Lo que el fondo hace con ese dinero es la única diferencia entre las dos versiones:
 
 - **Acumulación (Acc)**: los reinvierte dentro del fondo. No ves nada; el valor liquidativo sube.
@@ -33,11 +37,17 @@ Y el problema no es el porcentaje: es **cuándo**. Cada euro que pagas hoy es un
 
 Ojo con la palabra: no es que la acumulación **evite** el impuesto. Lo **aplaza**. Y aplazar, con interés compuesto de por medio, vale dinero.
 
+<CalculadoraAccDist compacta />
+
+<p class="pie-calc">Pruébalo con tus cifras: cambia el capital, los años y la rentabilidad por dividendo.</p>
+
 ## Cuándo la distribución tiene sentido
 
 **Cuando quieres el ingreso.** Si vives de la cartera o complementas ingresos, cobrar el dividendo es más simple que vender participaciones cada trimestre — aunque fiscalmente vender una parte suele salir mejor, porque solo tributa la *ganancia* de lo vendido y no el importe entero.
 
 **Cuando el producto que quieres solo existe en distribución.** Pasa con algunos índices y algunos mercados. Es una razón perfectamente válida.
+
+<div class="bloque aviso">
 
 ## Lo que no te van a contar
 
@@ -47,6 +57,10 @@ Ojo con la palabra: no es que la acumulación **evite** el impuesto. Lo **aplaza
 
 **Y si ya tienes la versión que no querías, no corras.** Si es un **fondo**, puedes traspasar a la otra versión sin tributar. Si es un **ETF**, cambiar significa vender, y el impuesto de esa venta puede superar años de ventaja. La decisión no es «cuál es mejor» sino «cuánto cuesta cambiarme desde donde estoy».
 
+</div>
+
+<div class="bloque retener">
+
 ## Lo que hay que retener
 
 - La única diferencia es qué hace el fondo con el dividendo.
@@ -54,3 +68,6 @@ Ojo con la palabra: no es que la acumulación **evite** el impuesto. Lo **aplaza
 - Aplazar vale dinero porque lo no pagado sigue componiendo.
 - Distribución tiene sentido si quieres el ingreso, o si es lo único que hay.
 - Cambiar es gratis entre fondos y caro entre ETFs.
+
+</div>
+

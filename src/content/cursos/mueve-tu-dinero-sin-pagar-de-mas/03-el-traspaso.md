@@ -47,6 +47,8 @@ Porque cambia la respuesta a casi todas las preguntas de este curso:
 
 Ninguna de esas cuatro cosas es cierta con ETFs, y ninguna aparece en la literatura internacional, porque esta figura no existe en casi ningún sitio.
 
+<div class="bloque aviso">
+
 ## Lo que no te van a contar
 
 **La ventana fuera de mercado es un riesgo real, no un trámite.** Si el mercado sube un 3 % durante los diez días de tu traspaso, has pagado más de lo que te habrías ahorrado en muchos casos. Con importes grandes conviene traspasar por tramos.
@@ -55,9 +57,16 @@ Ninguna de esas cuatro cosas es cierta con ETFs, y ninguna aparece en la literat
 
 **Y el traspaso no borra la plusvalía: la esconde a la vista.** Tu nuevo fondo lleva dentro la ganancia del anterior, con su fecha original. Es fácil olvidarlo y llevarse una sorpresa el día que vendas de verdad — otra razón para tener el libro de operaciones completo.
 
+</div>
+
+<div class="bloque retener">
+
 ## Lo que hay que retener
 
 - El artículo 94 permite cambiar de fondo sin tributar: la ganancia se arrastra.
 - Solo fondos, y el dinero no puede pasar por tu cuenta.
 - El coste real no es fiscal: son los días fuera de mercado.
 - Con esto, rebalancear y corregir errores dejan de ser caros.
+
+</div>
+

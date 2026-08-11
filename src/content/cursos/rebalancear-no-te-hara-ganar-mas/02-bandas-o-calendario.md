@@ -47,6 +47,8 @@ Trimestral o semestral es suficiente para una cartera indexada. Mensual invita a
 
 Y una advertencia que suena rara en una herramienta que te enseña tu desviación en tiempo real: **mirar más a menudo no mejora nada, y probablemente empeora.** Ver la cifra todos los días entrena a reaccionar. Por eso el mapa de esta app colorea la distancia a tu objetivo y no la variación del día — es una decisión de producto, no un descuido.
 
+<div class="bloque aviso">
+
 ## Lo que no te van a contar
 
 **No hay una frecuencia óptima demostrada.** Hay estudios para casi cualquier respuesta, y las diferencias entre trimestral, semestral y anual son pequeñas comparadas con la diferencia entre hacerlo y no hacerlo.
@@ -55,9 +57,16 @@ Y una advertencia que suena rara en una herramienta que te enseña tu desviació
 
 **Y una hoja de cálculo funciona perfectamente para esto** — hasta que tienes seis posiciones, dos divisas y un libro de operaciones que mantener a mano. Ahí es donde se rompe, y no antes.
 
+</div>
+
+<div class="bloque retener">
+
 ## Lo que hay que retener
 
 - Calendario: no exige atención, pero te hace operar de más.
 - Bandas: solo actúas cuando importa, pero exige mirar.
 - La combinación —revisión por calendario, acción por bandas— resuelve las dos.
 - Trimestral o semestral basta. Mirar a diario entrena a reaccionar.
+
+</div>
+

@@ -41,6 +41,8 @@ La regla práctica: **cuanto mayor es tu cartera respecto a lo que aportas, meno
 
 Por eso el panel de esta app te dice también **cuántos meses tardarías** en volver a banda solo aportando. Es la comparación honesta contra «arreglarlo hoy vendiendo»: a veces esperar cuatro meses es mejor negocio que pagar el impuesto hoy.
 
+<div class="bloque aviso">
+
 ## Lo que no te van a contar
 
 **Aportar a lo que ha caído da miedo.** Es literalmente comprar lo que va peor, y todos los meses parece mala idea. Automatizar el criterio —no la cantidad, el criterio— es lo que lo hace sostenible.
@@ -49,9 +51,16 @@ Por eso el panel de esta app te dice también **cuántos meses tardarías** en v
 
 **Y con aportaciones pequeñas, las comisiones mandan.** Repartir 200 € entre cuatro posiciones en un bróker que cobra por operación puede costar un 2 %. Ahí es mejor concentrar la aportación del mes en una sola posición e ir rotando.
 
+</div>
+
+<div class="bloque retener">
+
 ## Lo que hay que retener
 
 - Comprar lo que falta con dinero nuevo: sin impuestos, sin comisiones de venta, sin salir del mercado.
 - Es la vía por defecto mientras aportes.
 - Deja de bastar cuando la cartera es grande respecto a la aportación.
 - «Cuántos meses tardaría solo aportando» es la comparación que hay que hacer antes de vender.
+
+</div>
+

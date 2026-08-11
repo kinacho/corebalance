@@ -49,6 +49,8 @@ Si tu cartera contiene algún índice del tercer tipo, la herramienta te lo dice
 
 Un reparto que suma 100 % siempre es sospechoso. El tuyo probablemente no suma 100 %, y eso es más honesto.
 
+<div class="bloque aviso">
+
 ## Lo que no te van a contar
 
 **«Sector» es más resbaladizo de lo que parece.** ¿Amazon es consumo discrecional o tecnología? ¿Tesla es automoción? Los proveedores de índices no coinciden entre sí, así que dos herramientas pueden darte repartos sectoriales distintos y las dos tener razón.
@@ -57,9 +59,16 @@ Un reparto que suma 100 % siempre es sospechoso. El tuyo probablemente no suma 1
 
 **Y lo que casi nunca se mira es la concentración por empresa.** En un índice ponderado por capitalización, las diez primeras pueden ser una fracción muy grande del total. Eso es riesgo real y no aparece en ningún reparto por región.
 
+</div>
+
+<div class="bloque retener">
+
 ## Lo que hay que retener
 
 - Tu geografía y tus sectores son consecuencia de la capitalización, no decisiones tuyas.
 - Un World está en torno al 72,5 % en EE. UU.; un All-World, al 64,5 %.
 - No pasa nada por tenerlo. Pasa por no saberlo.
 - Fíjate en la confianza declarada y en el porcentaje no cubierto.
+
+</div>
+

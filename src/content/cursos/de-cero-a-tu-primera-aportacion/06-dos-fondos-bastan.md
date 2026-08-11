@@ -42,6 +42,8 @@ Un fondo sobre el MSCI World tiene, según su última ficha oficial, **un 72,5 %
 
 Si además añades un fondo del S&P 500 «para tener América», no estás diversificando: estás **duplicando** lo que ya tenías. Las mismas empresas, con más peso.
 
+<div class="bloque aviso">
+
 ## Lo que no te van a contar
 
 **Añadir fondos casi nunca añade diversificación.** Un World, un S&P 500 y un Nasdaq 100 son, en gran medida, las mismas veinte empresas tres veces. Lo que cambia no es tu riesgo: es tu concentración, hacia arriba.
@@ -50,9 +52,16 @@ Si además añades un fondo del S&P 500 «para tener América», no estás diver
 
 **Y el 80/20 no está grabado en piedra.** El peso real de emergentes en la capitalización mundial se mueve, y hay quien argumenta pesos mayores por PIB en vez de por capitalización. Elige uno, escríbelo y **cúmplelo**: la coherencia rinde más que la optimización.
 
+</div>
+
+<div class="bloque retener">
+
 ## Lo que hay que retener
 
 - Dos fondos (World + emergentes) o uno global. Las dos son respuestas correctas.
 - El 80/20 es «como está el mundo», no una apuesta.
 - Un fondo mundial ya está muy concentrado en EE. UU. Añadir S&P 500 lo concentra más.
 - Antes de añadir un fondo, comprueba el solapamiento con lo que ya tienes.
+
+</div>
+

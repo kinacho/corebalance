@@ -6,8 +6,24 @@
   import LanguageSwitcher from '$lib/components/LanguageSwitcher.svelte';
   import { LL } from '$lib/i18n/i18n-svelte';
   import { link } from '$lib/i18n/link';
+  import { page } from '$app/stores';
 
   let { onStart = () => {} } = $props();
+
+  /**
+   * El enlace a los cursos solo se pinta en español, y el `href` va a pelo.
+   *
+   * ⚠️ Los dos detalles son necesarios. `$link()` localiza la ruta, así que en inglés
+   * compondría `/en/cursos` — que no existe, porque los cursos son solo en español a
+   * propósito (la normativa fiscal que usan es española y el inglés del sitio da
+   * impresiones y cero clics). Sería exactamente el 404 que el selector de idioma ya
+   * estuvo a punto de servir en estas mismas páginas.
+   *
+   * Y el rótulo va escrito aquí en lugar de en `i18n`: una clave de traducción para un
+   * texto que solo se muestra en un idioma es una clave que alguien traducirá algún día,
+   * y entonces el enlace aparecerá en inglés apuntando a una página que no existe.
+   */
+  const isEs = $derived((($page.data.locale as string) ?? 'es') === 'es');
   let isScrolled = $state(false);
   let isMobileMenuOpen = $state(false);
 
@@ -40,7 +56,8 @@
       <a href={$link('/#how-it-works')} aria-label={$LL.nav.aria_how_it_works()}>{$LL.nav.how_it_works()}</a>
       <a href={$link('/#why-us')} aria-label={$LL.nav.aria_why_us()}>{$LL.nav.why_us()}</a>
       <a href={$link('/#educational')} aria-label={$LL.nav.aria_faq()}>{$LL.nav.faq()}</a>
-      <a href={$link('/herramientas')} aria-label={$LL.nav.aria_tools()}>{$LL.nav.tools()}</a>
+      {#if isEs}<a href="/cursos" aria-label="Cursos gratuitos de inversión indexada">Cursos</a>{/if}
+          <a href={$link('/herramientas')} aria-label={$LL.nav.aria_tools()}>{$LL.nav.tools()}</a>
       <a href={$link('/blog')} aria-label={$LL.nav.aria_blog()}>{$LL.nav.blog()}</a>
     </div>
 
@@ -83,7 +100,8 @@
       <a href={$link('/#how-it-works')} onclick={() => isMobileMenuOpen = false} aria-label={$LL.nav.aria_how_it_works()}>{$LL.nav.how_it_works()}</a>
       <a href={$link('/#why-us')} onclick={() => isMobileMenuOpen = false} aria-label={$LL.nav.aria_why_us()}>{$LL.nav.why_us()}</a>
       <a href={$link('/#educational')} onclick={() => isMobileMenuOpen = false} aria-label={$LL.nav.aria_faq()}>{$LL.nav.faq()}</a>
-      <a href={$link('/herramientas')} onclick={() => isMobileMenuOpen = false} aria-label={$LL.nav.aria_tools()}>{$LL.nav.tools()}</a>
+      {#if isEs}<a href="/cursos" onclick={() => isMobileMenuOpen = false} aria-label="Cursos gratuitos de inversión indexada">Cursos</a>{/if}
+          <a href={$link('/herramientas')} onclick={() => isMobileMenuOpen = false} aria-label={$LL.nav.aria_tools()}>{$LL.nav.tools()}</a>
       <a href={$link('/blog')} onclick={() => isMobileMenuOpen = false} aria-label={$LL.nav.aria_blog()}>{$LL.nav.blog()}</a>
     </div>
     <div class="mobile-menu-actions">

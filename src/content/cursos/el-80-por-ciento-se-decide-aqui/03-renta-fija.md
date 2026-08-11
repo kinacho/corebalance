@@ -45,6 +45,8 @@ Olvida las reglas de la edad. Tres preguntas:
 
 Y una nota práctica: si tu horizonte es largo y ya tienes colchón, un 0-20 % es defendible. Lo que casi nunca lo es, para un inversor con nómina y treinta años por delante, es un 40 %.
 
+<div class="bloque aviso">
+
 ## Lo que no te van a contar
 
 **«Renta fija» no es una cosa.** Deuda pública a corto, corporativa, mercados emergentes en divisa local y bonos ligados a inflación se comportan de formas radicalmente distintas. Un fondo agregado global mete todo eso junto y su duración media decide más que su nombre.
@@ -53,9 +55,16 @@ Y una nota práctica: si tu horizonte es largo y ya tienes colchón, un 0-20 % e
 
 **Y el consejo más habitual está sesgado por el pasado reciente.** Buena parte de lo que se ha escrito sobre el 60/40 se escribió durante cuarenta años de tipos a la baja, que es el mejor entorno posible para los bonos. No estamos ahí.
 
+</div>
+
+<div class="bloque retener">
+
 ## Lo que hay que retener
 
 - La renta fija reduce caídas y da con qué comprar. No está para rendir.
 - 2022 demostró que la descorrelación no está garantizada.
 - Decide por horizonte y por lo que aguantas, no por tu edad.
 - Sin fondo de emergencia, tu renta fija real es cero.
+
+</div>
+

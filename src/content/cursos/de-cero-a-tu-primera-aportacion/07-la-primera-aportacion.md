@@ -45,6 +45,8 @@ Lo que hay que tener decidido **antes**:
 2. **Sigues aportando.** La aportación de un mes malo es la que más rinde a largo plazo, y es la que más cuesta hacer.
 3. **Miras si te has salido de banda**, y si sí, rebalanceas. Una caída desigual entre tus fondos es exactamente el momento para el que existen las bandas.
 
+<div class="bloque aviso">
+
 ## Lo que no te van a contar
 
 **Nadie sabe si es un buen momento para entrar.** Ni quien te dice que sí ni quien te dice que esperes. Si alguien lo supiera, no estaría escribiéndolo.
@@ -52,6 +54,8 @@ Lo que hay que tener decidido **antes**:
 **El fondo de emergencia va antes que la primera aportación.** Si un imprevisto de 2.000 € te obliga a vender en el peor mes, ninguna optimización de TER te salva. Esto se dice poco porque no vende cursos.
 
 **Y tu horizonte manda sobre todo lo demás.** Si vas a necesitar ese dinero en tres años, la discusión de este curso entero es secundaria: el problema es cuánto llevas en renta variable, no qué fondo.
+
+</div>
 
 ## Ya está
 
@@ -63,9 +67,14 @@ Si has hecho los ejercicios, ahora tienes:
 
 Lo que viene después no es más teoría: es mantenerlo. Y ahí es donde la herramienta empieza a servir de verdad, porque la pregunta pasa a ser «¿cuánto llevo desviado y qué me cuesta arreglarlo?».
 
+<div class="bloque retener">
+
 ## Lo que hay que retener
 
 - De golpe gana más veces; repartido se aguanta mejor. Elige sabiendo qué compras.
 - Automatiza. Una orden automática no negocia contigo.
 - No hay día bueno del mes.
 - Decide hoy qué harás cuando caiga un 30 %, porque el día que caiga no vas a decidir bien.
+
+</div>
+

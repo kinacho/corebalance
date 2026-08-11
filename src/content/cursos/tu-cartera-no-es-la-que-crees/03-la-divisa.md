@@ -41,6 +41,8 @@ Existen clases *hedged*: cubren el riesgo de divisa con derivados. Tres cosas qu
 2. **No son gratis en rentabilidad esperada.** Estás renunciando al lado bueno del movimiento igual que al malo.
 3. **Para renta variable a largo plazo, la opinión mayoritaria es que no compensan.** Para renta fija a corto, la respuesta cambia: ahí la divisa puede dominar por completo el rendimiento, y cubrir tiene mucho más sentido.
 
+<div class="bloque aviso">
+
 ## Lo que no te van a contar
 
 **Tu exposición a divisa cambia sola.** No es un parámetro que fijes: sube y baja con la composición del índice. Nadie te avisa cuando pasas del 55 % al 62 % en dólares.
@@ -49,9 +51,16 @@ Existen clases *hedged*: cubren el riesgo de divisa con derivados. Tres cosas qu
 
 **Ninguna herramienta de cartera española te enseña esta exposición**, ni siquiera esta: lo que se enseña aquí es el reparto por región, del que la divisa se deduce bastante bien. Decirlo es más honesto que dibujar una tarta de monedas basada en la misma estimación.
 
+</div>
+
+<div class="bloque retener">
+
 ## Lo que hay que retener
 
 - La moneda de cotización es una etiqueta. Lo que cuenta es dónde están los activos.
 - Un 60 % en EE. UU. es aproximadamente un 60 % de exposición al dólar.
 - Cubrir tiene coste y renuncia al lado bueno. Para bolsa a largo, rara vez compensa.
 - Tus gastos futuros tampoco son 100 % euros.
+
+</div>
+

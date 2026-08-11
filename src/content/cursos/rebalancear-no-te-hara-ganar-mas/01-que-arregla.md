@@ -45,6 +45,8 @@ Hay condiciones en las que rebalancear también rinde más, y conviene nombrarla
 
 Lo que no puedes es saber en cuál de esos estás mientras estás dentro.
 
+<div class="bloque aviso">
+
 ## Lo que no te van a contar
 
 **El coste de rebalancear casi nunca sale en los backtests.** Comisiones, horquilla, impuestos y días fuera de mercado. En España, con fondos, los impuestos desaparecen por el traspaso — pero eso es una ventaja local que ningún estudio internacional incluye.
@@ -53,9 +55,16 @@ Lo que no puedes es saber en cuál de esos estás mientras estás dentro.
 
 **Y hay una versión del rebalanceo que no tiene ninguno de estos costes**: hacerlo con aportaciones. Va en la lección 3, y para quien está en fase de acumulación es casi siempre la respuesta.
 
+</div>
+
+<div class="bloque retener">
+
 ## Lo que hay que retener
 
 - Rebalancear no mejora la rentabilidad esperada. Los datos lo dicen.
 - Lo que hace es mantener el riesgo que elegiste.
 - Sin rebalancear, la cartera deriva hacia lo que más ha subido — y hacia más riesgo.
 - Ajustar pesos es rebalancear. Cambiar el objetivo es otra cosa.
+
+</div>
+

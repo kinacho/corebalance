@@ -51,11 +51,15 @@ Casi siempre, menos de lo que parece:
 2. **Corregir con lo nuevo, no con lo viejo.** Redirigir aportaciones no cuesta impuestos; deshacer posiciones sí.
 3. **Y solo si es grande y no la elegiste**, plantear un cambio estructural — que ya no es rebalancear, es cambiar el reparto, y eso se decide con la cabeza fría y por escrito.
 
+<div class="bloque aviso">
+
 ## Lo que no te van a contar
 
 **Diversificar tiene un límite útil.** Pasado cierto punto, añadir no reduce riesgo: solo añade productos que seguir. La diferencia entre 1.400 empresas y 3.000 es mucho menor que la diferencia entre 20 y 200.
 
 **Y hay un riesgo que no se diversifica de ninguna manera**: el de mercado. Cuando cae todo, cae todo. La diversificación protege del riesgo específico —que una empresa o un sector lo hagan mal— y de eso protege muy bien. De lo otro no protege nadie, y quien te diga lo contrario está vendiendo.
+
+</div>
 
 ## Ya está
 
@@ -63,9 +67,14 @@ Con el curso hecho tienes el mapa de lo que hay dentro de tus fondos, tu exposic
 
 Y una idea que cierra los cinco cursos: **casi todo lo que importa en una cartera indexada no se ve mirando la lista de fondos.** Se ve mirando dentro, y midiendo el tiempo.
 
+<div class="bloque retener">
+
 ## Lo que hay que retener
 
 - Contar empresas no es diversificar: mira el peso de las diez primeras.
 - Sector y región son consecuencias de la capitalización, no decisiones.
 - Tu empleo, tu vivienda y tu país son parte de tu concentración real.
 - Corrige con las aportaciones nuevas antes que deshaciendo lo viejo.
+
+</div>
+

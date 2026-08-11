@@ -46,6 +46,8 @@ Es un porcentaje pequeño, pero se paga **sobre el saldo**, igual que el TER, as
 
 ⚠️ Aquí está el error más caro de la lista, y es el que da título a esta lección: elegir el fondo con 0,05 % menos de TER y pagar un 0,30 % de divisa doce veces al año.
 
+<div class="bloque aviso">
+
 ## Lo que no te van a contar
 
 **Un TER más bajo no es siempre un fondo mejor.** Si su tracking difference es peor, te está costando más de lo que dice. Compara resultado contra índice, no folletos.
@@ -54,9 +56,16 @@ Es un porcentaje pequeño, pero se paga **sobre el saldo**, igual que el TER, as
 
 **Y hay un coste que no está en ninguna tabla**: el fiscal. Vender un ETF para cambiar a otro te cuesta el impuesto sobre la ganancia. Ese coste no se paga cada año, se paga de golpe, y puede superar diez años de diferencia de TER. Va en la lección anterior y en el curso de fiscalidad.
 
+</div>
+
+<div class="bloque retener">
+
 ## Lo que hay que retener
 
 - El TER es lo que el fondo cobra; la **tracking difference** es lo que de verdad te costó.
 - Custodia y TER componen sobre el saldo. Compraventa y divisa se pagan por operación.
 - El coste de operar depende de **cómo aportas tú**, no de la tarifa.
 - Antes de optimizar céntimos de TER, mira si estás pagando divisa.
+
+</div>
+

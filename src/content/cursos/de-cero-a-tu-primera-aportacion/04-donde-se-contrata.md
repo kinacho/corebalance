@@ -51,6 +51,8 @@ El fondo de garantía de inversiones existe para cuando algo falla en esa cadena
 
 Y una comprobación de treinta segundos que casi nadie hace: **busca la entidad en el registro de la CNMV** antes de mandar dinero. Si no está registrada para prestar ese servicio, ahí termina la conversación.
 
+<div class="bloque aviso">
+
 ## Lo que no te van a contar
 
 **La mayoría de comparativas de brókeres cobran por posicionar.** No todas, pero las suficientes como para que el orden de una lista no sea información. Si una comparativa no dice cómo se financia, asume que se financia con lo que compara.
@@ -59,9 +61,16 @@ Y una comprobación de treinta segundos que casi nadie hace: **busca la entidad 
 
 **Y el número de operaciones importa más que la tarifa.** Antes de comparar precios, decide cada cuánto vas a aportar. Es lo que convierte una tarifa en barata o cara.
 
+</div>
+
+<div class="bloque retener">
+
 ## Lo que hay que retener
 
 - Comercializador para fondos y traspasos; bróker para ETFs y acciones. Tener los dos es normal.
 - Los títulos son tuyos y están segregados: la quiebra del intermediario no se los lleva.
 - El fondo de garantía cubre fallos de la cadena, **no** las caídas del mercado.
 - Comprueba el registro de la CNMV. Es gratis y tarda medio minuto.
+
+</div>
+

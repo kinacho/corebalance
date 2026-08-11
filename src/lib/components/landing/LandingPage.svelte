@@ -7,6 +7,7 @@
   import HowToRebalance from './HowToRebalance.svelte';
   import HowItWorks from './HowItWorks.svelte';
   import EducationalFAQ from './EducationalFAQ.svelte';
+  import Cursos from './Cursos.svelte';
   import Cta from './Cta.svelte';
   import LandingFooter from './LandingFooter.svelte';
   import { LL } from '$lib/i18n/i18n-svelte';
@@ -90,6 +91,13 @@
     <HowItWorks />
     <WhyUs />
     <HowToRebalance />
+    <!--
+      Los cursos solo existen en español, así que la sección solo se ofrece ahí.
+      Enseñarla en `/en` llevaría a páginas en español, que es peor que no ofrecerla.
+    -->
+    {#if lang === 'es'}
+      <Cursos />
+    {/if}
     <EducationalFAQ />
     <Cta {onStart} />
   </main>

@@ -44,6 +44,8 @@ Automatizar la aportación y no tocarla. Es aburrido y es lo que funciona.
 
 Y si te sobra dinero en un momento dado, la evidencia dice que meterlo de golpe gana más veces que repartirlo — aunque repartirlo sea más fácil de sostener. Es la misma discusión del primer curso, y sigue sin tener una respuesta única.
 
+<div class="bloque aviso">
+
 ## Lo que no te van a contar
 
 **Este panel se apaga si no has movido dinero**, y eso es correcto: sin aportaciones ni ventas en el periodo, no hay timing que medir y las dos cifras coinciden. Una herramienta que te enseñara un «coste de timing» de 0,3 % en esa situación estaría enseñando ruido numérico con cara de dato.
@@ -52,9 +54,16 @@ Y si te sobra dinero en un momento dado, la evidencia dice que meterlo de golpe 
 
 **Y el mayor coste de timing no aparece aquí**: es el del dinero que nunca llegó a entrar. Los meses que decidiste esperar «a que se aclare» no dejan rastro en ninguna métrica, porque no hay operación que medir.
 
+</div>
+
+<div class="bloque retener">
+
 ## Lo que hay que retener
 
 - Es la distancia entre lo que rindieron tus activos y lo que rendiste tú.
 - No es una nota de comportamiento salvo que sea grande y persistente.
 - La única acción que se sigue es automatizar y dejar de decidir.
 - El coste del dinero que nunca entró no lo mide nadie, y suele ser el mayor.
+
+</div>
+

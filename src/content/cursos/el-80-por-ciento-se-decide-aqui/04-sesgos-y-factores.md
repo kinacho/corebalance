@@ -51,6 +51,8 @@ Si añades un fondo con un 5 % de peso y su contenido ya está en un 80 % dentro
 
 Eso se mira, no se estima. Y es lo que hace el mapa de la herramienta.
 
+<div class="bloque aviso">
+
 ## Lo que no te van a contar
 
 **Cada añadido tiene un coste que nadie apunta: la probabilidad de que abandones.** Una cartera de dos fondos se mantiene sola quince años. Una de seis pide decisiones, y cada decisión es una oportunidad de equivocarse.
@@ -59,9 +61,16 @@ Eso se mira, no se estima. Y es lo que hace el mapa de la herramienta.
 
 **Y el sesgo local ya lo tienes sin querer**: cobras en euros, tu vivienda está aquí y tu empleo depende de esta economía. Tu exposición real a España es mucho mayor que el porcentaje de tu cartera.
 
+</div>
+
+<div class="bloque retener">
+
 ## Lo que hay que retener
 
 - Los tres tienen argumento; el problema es sostenerlo décadas.
 - Algo de Europa es defendible. El IBEX como posición propia, mucho menos.
 - Antes de añadir, mide cuánto mueve tu exposición real. Si es un punto, no lo añadas.
 - Cada producto extra sube la probabilidad de que abandones la estrategia.
+
+</div>
+

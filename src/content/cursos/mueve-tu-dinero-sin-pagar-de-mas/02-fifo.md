@@ -48,6 +48,8 @@ Fechas. Sin el libro de operaciones —cada compra con su día, su número de pa
 
 Por eso importar el CSV del bróker no es una comodidad: es lo que convierte «creo que gano unos 4.000 €» en un número con el que se puede decidir.
 
+<div class="bloque aviso">
+
 ## Lo que no te van a contar
 
 **FIFO también tiene su lado bueno.** Las participaciones más antiguas son las que llevan más tiempo compuesto; venderlas primero es malo fiscalmente pero significa que estás realizando la parte que más ha trabajado. No es un consuelo enorme, pero la norma no está diseñada contra ti.
@@ -56,9 +58,16 @@ Por eso importar el CSV del bróker no es una comodidad: es lo que convierte «c
 
 **Y ojo con «vender solo las últimas».** Es un plan que no existe: da la orden que quieras, FIFO se aplica igual.
 
+</div>
+
+<div class="bloque retener">
+
 ## Lo que hay que retener
 
 - FIFO es obligatorio: se venden primero las participaciones más antiguas.
 - Las más antiguas son las que más han subido, así que la ganancia fiscal suele superar lo que sugiere el coste medio.
 - Coste medio y FIFO son dos cifras correctas para dos preguntas distintas.
 - Sin fechas de compra no hay FIFO, y sin FIFO no hay cálculo fiscal.
+
+</div>
+

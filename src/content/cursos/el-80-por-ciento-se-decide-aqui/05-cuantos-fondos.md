@@ -44,6 +44,8 @@ Para la inmensa mayoría de carteras indexadas: **entre uno y tres fondos**.
 
 Pasar de cuatro debería exigir una respuesta buena a «¿qué empresas me da esto que no tengo ya?».
 
+<div class="bloque aviso">
+
 ## Lo que no te van a contar
 
 **Muchas carteras crecen sin decisión.** No es que alguien eligiera seis fondos: es que fue añadiendo uno cada vez que leía algo, y nunca quitó ninguno. Revisar la lista completa de golpe, una vez al año, corrige más que cualquier optimización.
@@ -52,9 +54,16 @@ Pasar de cuatro debería exigir una respuesta buena a «¿qué empresas me da es
 
 **Y hay un caso legítimo para tener el mismo índice dos veces**: tenerlo en dos entidades distintas, por si una falla o para no depender de un solo comercializador. Duplicar exposición a propósito, sabiendo que es eso, no es un error.
 
+</div>
+
+<div class="bloque retener">
+
 ## Lo que hay que retener
 
 - Más productos no es más diversificación: puede ser más concentración.
 - World + S&P 500 es una apuesta a Estados Unidos, no un reparto.
 - Mídelo: valor duplicado y cuánto se mueve tu exposición.
 - Uno a tres fondos. Del cuarto en adelante, justifícalo.
+
+</div>
+

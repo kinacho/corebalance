@@ -61,6 +61,8 @@ Rebalancear no es una técnica para ganar más. **Es lo que mantiene la cartera 
 
 **Las dos juntas** es lo que hace casi todo el mundo que lleva años: revisión trimestral o semestral, y solo se toca lo que se ha salido de banda. Es lo que la herramienta enseña de un vistazo, y también el histórico de cuánto tiempo llevas fuera — que es la pregunta de esta lección aplicada al pasado.
 
+<div class="bloque aviso">
+
 ## Lo que no te van a contar
 
 **El backtest de arriba no incluye comisiones ni impuestos.** Está escrito en sus supuestos. Con costes reales, rebalancear sale algo peor todavía en rentabilidad — y en España, si son fondos, el traspaso elimina la parte fiscal, que es la más cara. Ese es el argumento de verdad a favor de rebalancear aquí, y es local.
@@ -69,6 +71,10 @@ Rebalancear no es una técnica para ganar más. **Es lo que mantiene la cartera 
 
 **Y rebalancear con aportaciones no tiene ninguno de estos costes.** Si en vez de vender lo que sobra compras lo que falta con dinero nuevo, no hay comisión de venta ni impuesto. Es la vía por defecto mientras estés aportando, y es lo que calcula la app.
 
+</div>
+
+<div class="bloque retener">
+
 ## Lo que hay que retener
 
 - La banda es absoluta: 5 pp sobre un 10 % es de 5 a 15.
@@ -76,3 +82,6 @@ Rebalancear no es una técnica para ganar más. **Es lo que mantiene la cartera 
 - Pero acabó con un 93,6 % en acciones sobre un objetivo del 80: otra cartera.
 - Rebalancear mantiene el riesgo que elegiste. No es una técnica de rentabilidad.
 - Mientras aportes, rebalancea comprando lo que falta.
+
+</div>
+

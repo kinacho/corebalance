@@ -47,6 +47,8 @@ Casi todo el mundo lo hace al revés:
 
 El orden útil es el inverso: **cuánto de cada cosa, con qué bandas, y solo al final con qué producto concreto lo implemento.** Los dos primeros pasos son tuyos y duran años. El tercero es intercambiable: si mañana aparece un fondo mejor sobre el mismo índice, se traspasa y no cambia nada de tu estrategia.
 
+<div class="bloque aviso">
+
 ## Lo que no te van a contar
 
 **El «80 %» se cita como si fuera una ley de la naturaleza y no lo es.** Es el resultado de estudios sobre carteras institucionales, con metodologías discutidas durante treinta años. La conclusión cualitativa aguanta bien; el número exacto, no. Usarlo como titular es cómodo — este curso lo hace — pero conviene saber de dónde sale.
@@ -55,9 +57,16 @@ El orden útil es el inverso: **cuánto de cada cosa, con qué bandas, y solo al
 
 **Y una tercera, incómoda para un curso sobre asignación**: si tu horizonte es de treinta años y aportas cada mes, la diferencia entre un 80/20 y un 90/10 se pierde en el ruido. La decisión importa mucho más en los extremos —¿50 % o 100 % en bolsa?— que en los ajustes finos.
 
+</div>
+
+<div class="bloque retener">
+
 ## Lo que hay que retener
 
 - El reparto explica la mayor parte de los vaivenes de tu cartera; el producto concreto, casi nada.
 - Al elegir un reparto eliges cuánto puedes caer, cuánto puedes subir y cuánto vas a aguantar.
 - El orden útil es reparto → bandas → producto. Casi todo el mundo lo hace al contrario.
 - Lo que ahorras pesa más que cómo lo reparte.
+
+</div>
+

@@ -46,6 +46,8 @@ Hay una cuarta opción que se olvida: **no hacer nada todavía**.
 
 Si estás fuera de banda por 6 puntos y aportando cada mes, quizá en cuatro meses estás dentro sin haber vendido nada. Comparar «arreglarlo hoy pagando X» con «arreglarlo en N meses pagando 0» es la comparación honesta, y es la que el panel te da junto a las otras.
 
+<div class="bloque aviso">
+
 ## Lo que no te van a contar
 
 **El impuesto no es el único coste de vender.** Comisiones, horquilla, cambio de divisa y días fuera de mercado suman. En carteras pequeñas, esos costes pueden superar al fiscal.
@@ -53,6 +55,8 @@ Si estás fuera de banda por 6 puntos y aportando cada mes, quizá en cuatro mes
 **Y el impuesto que pagas hoy no está «perdido»**: lo habrías pagado igual el día que vendieras de verdad. Lo que pierdes es el rendimiento de ese dinero durante los años intermedios. Es real, pero es menos de lo que la intuición dice — y es la razón de que, con plusvalías pequeñas, vender no sea el drama que parece.
 
 **Ninguna de estas cifras es asesoramiento fiscal.** Son estimaciones sobre la normativa vigente, con los artículos citados para que puedas comprobarlas. Si el importe es grande, esto te sirve para llegar informado a una asesoría, no para sustituirla.
+
+</div>
 
 ## Ya está
 
@@ -64,9 +68,14 @@ Con el curso hecho tienes:
 
 Y sobre todo: sabes que en España existe una figura —el traspaso— que hace que casi ningún error de cartera sea irreversible. Eso es lo que ninguna herramienta internacional te va a decir.
 
+<div class="bloque retener">
+
 ## Lo que hay que retener
 
 - Orden de coste: aportaciones, traspasos, y solo al final vender.
 - La respuesta depende de tu FIFO, de lo ya realizado este año y de si las dos patas son fondos.
 - «Esperar N meses» es una opción real y hay que compararla.
 - El impuesto no desaparece por diferirlo; lo que ganas es el rendimiento del intervalo.
+
+</div>
+

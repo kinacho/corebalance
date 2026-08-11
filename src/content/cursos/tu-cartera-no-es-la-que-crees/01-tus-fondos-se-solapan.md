@@ -44,6 +44,8 @@ Ver un solapamiento alto no es automáticamente malo. Lo que hay que preguntarse
 
 La herramienta no te dice qué está bien. Te dice qué tienes.
 
+<div class="bloque aviso">
+
 ## Lo que no te van a contar
 
 **El solapamiento no es «malo» por sí solo.** Un World y un emergentes no se solapan nada, y eso no los hace mejores que dos fondos que sí lo hagan: depende de si el resultado es la exposición que querías.
@@ -52,9 +54,16 @@ La herramienta no te dice qué está bien. Te dice qué tienes.
 
 **Ninguna otra herramienta de cartera española enseña esto**, y no por dificultad técnica: es que las demás están hechas para responder «cuánto tengo» y «cuánto ha subido», no «qué tengo realmente».
 
+</div>
+
+<div class="bloque retener">
+
 ## Lo que hay que retener
 
 - Un fondo es una lista de empresas; dos listas pueden compartir casi todo.
 - World + S&P 500 no diversifica: concentra en lo que ya tenías.
 - El solapamiento se calcula a nivel de índice, con fecha y confianza declaradas.
 - No es malo por sí mismo. Es malo si no lo elegiste.
+
+</div>
+
