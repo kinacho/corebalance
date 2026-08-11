@@ -102,6 +102,21 @@ export const CURSOS: Curso[] = [
 			'Los costes reales de lo que vas a contratar, calculados con tus cifras.',
 			'La primera orden clara: qué, dónde y cuánto.'
 		]
+	},
+	{
+		slug: 'el-80-por-ciento-se-decide-aqui',
+		titulo: 'El 80 % de tu resultado se decide aquí',
+		gancho:
+			'Siete lecciones sobre el reparto de tu cartera, que pesa más que cualquier fondo que elijas. Con datos reales de dieciséis años, incluido el que incomoda.',
+		descripcion:
+			'Curso gratuito de asset allocation: el 80/20, la renta fija, cuántos fondos sobran y qué banda usar. Con un backtest real de 2010 a 2026.',
+		nivel: 'Ya sabes qué es un indexado',
+		paraQuien: 'Para quien ya tiene claro qué comprar y no sabe en qué proporción.',
+		teLlevas: [
+			'Tus pesos objetivo y tus bandas puestos en la herramienta.',
+			'Una respuesta razonada a «¿cuántos fondos necesito?».',
+			'Tu política de inversión escrita, que es lo que se lee el día que caiga un 30 %.'
+		]
 	}
 ];
 
