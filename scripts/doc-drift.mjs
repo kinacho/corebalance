@@ -237,6 +237,26 @@ export function auditarGlobs(reglas = reglasDelRepo()) {
 	const problemas = [];
 	for (const doc of reglas) {
 		const texto = fs.readFileSync(doc, 'utf8');
+		/**
+		 * ⚠️ CRLF **no** se tolera aquí, y es deliberado: es un fallo de verdad, no una
+		 * diferencia cosmética de plataforma. Claude Code no parsea el frontmatter `paths:`
+		 * si el fichero viene con CRLF, así que la regla deja de cargarse y su prosa
+		 * desaparece del contexto sin que nada falle. Medido el 11-ago-2026 en sesión
+		 * limpia: la misma regla carga con LF y no carga con CRLF.
+		 *
+		 * `.gitattributes` lo evita en el checkout; esto lo caza si alguien la guarda con un
+		 * editor que escribe CRLF. Y el orden importa: si esta comprobación tolerase el CRLF
+		 * —que fue mi primer impulso al ver el rojo— el comprobador daría verde sobre reglas
+		 * que no se cargan, que es exactamente el guardián-que-no-puede-dispararse de siempre.
+		 */
+		if (texto.includes('\r\n')) {
+			problemas.push({
+				doc,
+				glob: null,
+				motivo: 'tiene finales de línea CRLF, y así Claude Code no parsea su frontmatter'
+			});
+			continue;
+		}
 		const frontmatter = texto.match(/^---\n([\s\S]*?)\n---/);
 		if (!frontmatter) {
 			problemas.push({ doc, glob: null, motivo: 'no tiene frontmatter con `paths:`' });
