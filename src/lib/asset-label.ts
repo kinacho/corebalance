@@ -269,3 +269,43 @@ export function shortestAssetLabel(asset: { name?: string; ticker: string }): st
 	const candidatos = assetLabelCandidates(asset);
 	return candidatos[candidatos.length - 1];
 }
+
+/**
+ * Un ticker que **no identifica nada** para quien lo lee: un ISIN de doce caracteres
+ * o el código `0P…` con el que Yahoo nombra los fondos no cotizados.
+ *
+ * La misma pareja de señales que usa `resolveInstrumentType()`, aquí con otra
+ * pregunta: allí deciden *qué es* el instrumento, y aquí si su ticker **se puede
+ * enseñar**. Se repite el patrón en vez de importarlo porque son dos decisiones
+ * distintas que coinciden hoy en las señales; unirlas ataría el rótulo a la
+ * clasificación fiscal, y esa sí que cambia.
+ */
+function tickerMudo(ticker: string): boolean {
+	const t = (ticker || '').toUpperCase().trim();
+	// ⚠️ El sufijo de mercado es obligatorio contemplarlo: el ticker real de un fondo es
+	// `0P0001XF40.F`, no `0P0001XF40`. Escribir el regex sin él —que es lo que hay hoy en
+	// `resolveInstrumentType`— deja la señal sin dispararse nunca en producción, y sus
+	// tests no lo ven porque todos usan la forma corta, que Yahoo no devuelve.
+	return /^0P[A-Z0-9]{6,}(\.[A-Z]{1,4})?$/.test(t) || /^[A-Z]{2}[A-Z0-9]{9}\d$/.test(t);
+}
+
+/**
+ * El rótulo corto de un activo **donde el sitio es estrecho pero no se trunca**: una
+ * leyenda, un chip, una fila.
+ *
+ * ⚠️ No es `shortestAssetLabel()`, y confundirlos empeora las cosas en vez de
+ * arreglarlas. Aquel devuelve el candidato **más corto** porque está pensado para que
+ * quepa en una celda de treemap: para `IWDA.AS` da «World», que es *menos* preciso que
+ * el ticker para quien indexa, y dos fondos World distintos darían los dos «World».
+ *
+ * Un ticker de verdad es el mejor rótulo corto que hay: es corto, es exacto y es como
+ * el usuario llama a su posición. El problema es solo el ticker que no dice nada —para
+ * un fondo, el ticker *es* su ISIN o su código `0P…`—, y ahí sí vale más un trozo de
+ * nombre que `IE00B4L5Y983`. Así que se prefiere el ticker y solo se cae al nombre
+ * cuando el ticker no informa.
+ */
+export function tickerLabel(asset: { name?: string; ticker: string }): string {
+	if (!tickerMudo(asset.ticker)) return asset.ticker;
+	const porNombre = shortestAssetLabel(asset);
+	return porNombre === asset.ticker ? asset.ticker : porNombre;
+}

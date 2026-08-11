@@ -8,6 +8,7 @@
 	import { planificarImportacion } from '$lib/importers/ledger-import';
 	import { ASSET_ICONS } from '$lib/constants';
 	import { nextAssetColor } from '$lib/asset-colors';
+	import { resolveInstrumentType } from '$lib/instrument-type';
 	import type { Asset, AssetCategory } from '$lib/types';
 	import { resolveAssetIcon } from '$lib/utils';
 	import { onMount, onDestroy } from 'svelte';
@@ -209,16 +210,6 @@
 		]);
 	}
 
-	function mapType(type: string | null): string {
-		if (!type) return 'Otro';
-		const u = type.toUpperCase();
-		if (u.includes('ETF')) return 'ETF';
-		if (u.includes('EQUITY') || u.includes('STOCK')) return 'Acción';
-		if (u.includes('FUND') || u.includes('MUTUAL')) return 'Fondo';
-		if (u.includes('CRYPT')) return 'Crypto';
-		return 'Otro';
-	}
-
 	async function confirmImport() {
 		if (!importResult) return;
 
@@ -324,7 +315,6 @@
 			}
 
 			const resolved = resolvedMap[pos.isin] || resolvedMap[pos.ticker || ''];
-			const assetType = mapType(resolved?.type || null);
 
 			const asset: Asset = {
 				ticker,
@@ -334,7 +324,29 @@
 				color: getNextColor(),
 				icon: resolveAssetIcon(ticker, getResolvedName(pos), resolved?.type || ''),
 				ter: 0,
-				category: targetCategory
+				category: targetCategory,
+				/**
+				 * ⚠️ El tipo de Yahoo llega en `resolved.type` y se estaba tirando aquí.
+				 *
+				 * `MUTUALFUND` es la señal más limpia que existe para «fondo», y esta línea
+				 * es el **único** sitio de la ruta de importación por la que puede pasar: el
+				 * activo se guardaba sin `instrumentType`, así que lo rellenaba
+				 * `normalizeAssets()` con `resolveInstrumentType(..., '', ...)` —sin tipo de
+				 * Yahoo— y además lo **persistía**, dejando el valor equivocado fijado para
+				 * siempre. Un fondo entraba como `other` y ningún plan de traspaso lo
+				 * proponía nunca, sin error en ninguna parte.
+				 *
+				 * El valor ya se calculaba dos líneas más arriba, con un `mapType()` que
+				 * traducía el tipo de Yahoo a una etiqueta en castellano… y cuyo resultado no
+				 * leía nadie. Código muerto que era justo el dato que faltaba, así que la
+				 * función se ha borrado en lugar de dejarla ahí.
+				 */
+				instrumentType: resolveInstrumentType(
+					ticker,
+					getResolvedName(pos),
+					resolved?.type || '',
+					pos.isin || ''
+				)
 			};
 
 			portfolio.addAsset(asset);

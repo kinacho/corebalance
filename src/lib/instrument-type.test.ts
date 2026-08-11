@@ -33,6 +33,34 @@ describe('resolveInstrumentType', () => {
 		expect(resolveInstrumentType('0P0001AJ8T', 'Vanguard Global Stock Index Fund')).toBe('fund');
 	});
 
+	/**
+	 * ⚠️ Con el sufijo de mercado, que es la forma que Yahoo devuelve de verdad.
+	 *
+	 * Los tests de esta señal usaban todos `0P0001AJ8T` a secas, y el regex terminaba en
+	 * `$`, así que la señal estaba verde en la suite y **no se disparaba nunca en
+	 * producción**: el ticker real medido contra Yahoo y anotado en la prosa de este repo
+	 * es `0P0001XF40.F`. Un test que fija una forma que no ocurre no cubre la señal, la
+	 * disfraza.
+	 *
+	 * Lo que costaba está en las dos aserciones de abajo: con ISIN caía a `other`, que
+	 * `traspaso.ts` excluye de cualquier plan, y sin ISIN a `equity`, que le habría
+	 * aplicado la ventana de antiaplicación de 2 meses en lugar de la de 12.
+	 */
+	it('reconoce el ticker 0P con el sufijo de mercado, que es como llega de verdad', () => {
+		expect(resolveInstrumentType('0P0001XF40.F', 'Seilern World Growth EUR U R')).toBe('fund');
+		expect(
+			resolveInstrumentType('0P0001XF40.F', 'Seilern World Growth EUR U R', '', 'IE00B2NXKW18')
+		).toBe('fund');
+		expect(resolveInstrumentType('0P0000ZZZZ.L', 'Vanguard Global Stock Index Fund')).toBe('fund');
+	});
+
+	it('no llama fondo a cualquier cosa que empiece por 0P', () => {
+		// Control negativo del sufijo: no puede tragarse un nombre de mercado entero ni
+		// un ticker que sólo comparte el prefijo.
+		expect(resolveInstrumentType('0PX', 'Lo que sea')).not.toBe('fund');
+		expect(resolveInstrumentType('0P0001XF40.DEMASIADO', 'Lo que sea')).not.toBe('fund');
+	});
+
 	it('no confunde un ETF con un fondo aunque replique el mismo índice', () => {
 		// El caso que importa: los dos son IE00 y los dos dicen «World».
 		expect(resolveInstrumentType('IWDA.AS', 'iShares Core MSCI World UCITS ETF', '', 'IE00B4L5Y983')).toBe('etf');

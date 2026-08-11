@@ -15,6 +15,7 @@
 
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { buildDriftSeries, driftAxisMax, type DriftAsset } from '$lib/drift';
+	import { tickerLabel } from '$lib/asset-label';
 	import { TOLERANCE_BAND_PP } from '$lib/composition';
 	import {
 		applyChartDefaults,
@@ -119,7 +120,7 @@
 		 */
 		chart.data.datasets = [
 			{
-				label: $LL.db.drift_band_legend({ pp: bandPp }),
+				label: $LL.db.band_legend({ pp: bandPp }),
 				data: drift.dates.map(() => bandPp),
 				// El relleno da la zona y el borde punteado da el límite. Solo con
 				// relleno el canto de la banda no se lee, y el canto es justo lo que
@@ -193,8 +194,8 @@
 						// Los dos primeros datasets son los cantos de la banda, no datos.
 						// ⚠️ Este índice y el orden de `chart.data.datasets` en `sync()`
 						// tienen que moverse juntos: si se añade otro dataset de adorno
-						// delante, el tooltip empieza a listar «Banda ±5 pp» como si
-						// fuera una posición de la cartera.
+						// delante, el tooltip empieza a listar «Banda de tolerancia ±5 pp»
+						// como si fuera una posición de la cartera.
 						filter: (item: { datasetIndex: number }) => item.datasetIndex > 1,
 						callbacks: {
 							label: (ctx: { dataset: { label?: string }; parsed: { y: number | null } }) => {
@@ -259,11 +260,14 @@
 			</span>
 			<div class="legend">
 				<span class="legend-item">
-					<i class="sw band"></i>{$LL.db.drift_band_legend({ pp: bandPp })}
+					<i class="sw band"></i>{$LL.db.band_legend({ pp: bandPp })}
 				</span>
 				{#each drift.series as s (s.ticker)}
-					<span class="legend-item">
-						<i class="sw" style="background: {s.color}"></i>{s.ticker}
+					<!-- El nombre completo en el `title`: el rótulo es corto a propósito, y el
+					     tooltip del gráfico ya usa `s.name`, así que la leyenda no debe ser el
+					     único sitio donde no haya forma de saber qué posición es. -->
+					<span class="legend-item" title={s.name}>
+						<i class="sw" style="background: {s.color}"></i>{tickerLabel(s)}
 					</span>
 				{/each}
 			</div>

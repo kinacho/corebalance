@@ -130,7 +130,7 @@
 
 		{#if hasTargets}
 			<div class="legend">
-				<span><i class="sw band-sw"></i>{$LL.db.composition_legend_band({ pp: bandPp })}</span>
+				<span><i class="sw band-sw"></i>{$LL.db.band_legend({ pp: bandPp })}</span>
 				<span><i class="sw tick-sw"></i>{$LL.db.composition_legend_target()}</span>
 			</div>
 		{/if}
