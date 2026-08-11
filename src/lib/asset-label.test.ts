@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { assetLabelCandidates, shortestAssetLabel } from './asset-label';
+import { assetLabelCandidates, shortestAssetLabel, tickerLabel } from './asset-label';
 
 const activo = (name: string, ticker = 'X') => ({ name, ticker });
 
@@ -99,5 +99,45 @@ describe('assetLabelCandidates', () => {
 
 	it('el nombre de un depósito no se toca', () => {
 		expect(shortestAssetLabel(activo('Depósito remunerado'))).toBe('Depósito remunerado');
+	});
+});
+
+/**
+ * El rótulo de una leyenda no es el de una celda de treemap.
+ *
+ * ⚠️ El primer arreglo que se propuso para la leyenda del gráfico de deriva fue usar
+ * `shortestAssetLabel()`, y era peor que el defecto: convertía `IWDA.AS` en «World».
+ * Se descubrió ejecutándolo antes de escribirlo en el componente, no razonándolo.
+ */
+describe('tickerLabel', () => {
+	it('deja el ticker cuando el ticker dice algo', () => {
+		expect(tickerLabel({ ticker: 'IWDA.AS', name: 'iShares Core MSCI World UCITS ETF' })).toBe(
+			'IWDA.AS'
+		);
+		expect(tickerLabel({ ticker: 'AAPL', name: 'Apple Inc' })).toBe('AAPL');
+	});
+
+	it('cae al nombre cuando el ticker es un ISIN', () => {
+		// Es el caso normal de un fondo, y el que hace ilegible una leyenda entera.
+		expect(tickerLabel({ ticker: 'IE00B4L5Y983', name: 'iShares Core MSCI World UCITS ETF' })).toBe(
+			'World'
+		);
+	});
+
+	it('cae al nombre cuando el ticker es un código 0P de Yahoo', () => {
+		expect(tickerLabel({ ticker: '0P0001XF40.F', name: 'Seilern World Growth EUR U R' })).toBe(
+			'World Growth'
+		);
+	});
+
+	it('se queda con el ISIN si no hay nombre del que tirar', () => {
+		// Un ISIN feo informa más que una cadena vacía.
+		expect(tickerLabel({ ticker: 'IE00B4L5Y983' })).toBe('IE00B4L5Y983');
+	});
+
+	it('no confunde un ticker corto con un ISIN', () => {
+		// Control negativo del regex: doce caracteres exactos y acabado en dígito.
+		expect(tickerLabel({ ticker: 'BRK.B', name: 'Berkshire Hathaway Inc' })).toBe('BRK.B');
+		expect(tickerLabel({ ticker: 'CASH-EUR', name: 'Cuenta Remunerada' })).toBe('CASH-EUR');
 	});
 });

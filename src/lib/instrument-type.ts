@@ -45,7 +45,17 @@ export function resolveInstrumentType(
 	if (ty.includes('EQUITY') || ty.includes('STOCK')) return 'equity';
 
 	// 2. Los fondos no cotizados llegan de Yahoo con ticker `0P0000XXXX`.
-	if (/^0P[A-Z0-9]{6,}$/.test(t)) return 'fund';
+	//
+	// ⚠️ Con **sufijo de mercado**, y eso no es un detalle: el ticker real es
+	// `0P0001XF40.F`, no `0P0001XF40`. Sin contemplarlo, esta señal —la única que
+	// reconoce un fondo cuando Yahoo no manda su tipo— no se disparaba nunca en
+	// producción, y los ocho tests que la cubrían usaban todos la forma corta, que
+	// Yahoo no devuelve. Un test que fija una forma que no ocurre.
+	//
+	// Lo que costaba: un fondo real caía a `other` con ISIN (y `other` queda fuera de
+	// todo plan de traspaso) o a `equity` sin él, que además le aplica la ventana de
+	// antiaplicación de 2 meses en vez de la de 12 que le toca por no cotizar.
+	if (/^0P[A-Z0-9]{6,}(\.[A-Z]{1,4})?$/.test(t)) return 'fund';
 
 	// 3. El nombre. «ETF» en el nombre es concluyente; «FONDO» o el sufijo de
 	// clase de participación (`FR`, `ACC`) apuntan a fondo pero son más débiles,

@@ -2370,11 +2370,11 @@ type RootTranslation = {
 		 */
 		chart_twr_hint: string
 		/**
-		 * D​e​r​i​v​a​ ​c​o​n​t​r​a​ ​t​u​ ​o​b​j​e​t​i​v​o
+		 * T​u​ ​d​e​s​v​i​a​c​i​ó​n​,​ ​d​í​a​ ​a​ ​d​í​a
 		 */
 		drift_title: string
 		/**
-		 * A​ ​q​u​é​ ​d​i​s​t​a​n​c​i​a​ ​d​e​ ​s​u​ ​o​b​j​e​t​i​v​o​ ​h​a​ ​e​s​t​a​d​o​ ​c​a​d​a​ ​a​c​t​i​v​o​,​ ​d​í​a​ ​a​ ​d​í​a
+		 * C​u​á​n​t​o​ ​t​i​e​m​p​o​ ​l​l​e​v​a​s​ ​f​u​e​r​a​ ​d​e​ ​b​a​n​d​a​,​ ​n​o​ ​s​o​l​o​ ​d​ó​n​d​e​ ​e​s​t​á​s​ ​h​o​y
 		 */
 		drift_subtitle: string
 		/**
@@ -2399,11 +2399,6 @@ type RootTranslation = {
 		 */
 		drift_out_today: string
 		/**
-		 * B​a​n​d​a​ ​±​{​p​p​}​ ​p​p
-		 * @param {number} pp
-		 */
-		drift_band_legend: RequiredParams<'pp'>
-		/**
 		 * P​u​n​t​o​s​ ​p​o​r​c​e​n​t​u​a​l​e​s​ ​r​e​s​p​e​c​t​o​ ​a​ ​t​u​ ​o​b​j​e​t​i​v​o
 		 */
 		drift_axis: string
@@ -2427,7 +2422,7 @@ type RootTranslation = {
 		 * B​a​n​d​a​ ​d​e​ ​t​o​l​e​r​a​n​c​i​a​ ​±​{​p​p​}​ ​p​p
 		 * @param {number} pp
 		 */
-		composition_legend_band: RequiredParams<'pp'>
+		band_legend: RequiredParams<'pp'>
 		/**
 		 * T​u​ ​o​b​j​e​t​i​v​o
 		 */
@@ -6466,11 +6461,11 @@ export type TranslationFunctions = {
 		 */
 		chart_twr_hint: () => LocalizedString
 		/**
-		 * Deriva contra tu objetivo
+		 * Tu desviación, día a día
 		 */
 		drift_title: () => LocalizedString
 		/**
-		 * A qué distancia de su objetivo ha estado cada activo, día a día
+		 * Cuánto tiempo llevas fuera de banda, no solo dónde estás hoy
 		 */
 		drift_subtitle: () => LocalizedString
 		/**
@@ -6494,10 +6489,6 @@ export type TranslationFunctions = {
 		 */
 		drift_out_today: () => LocalizedString
 		/**
-		 * Banda ±{pp} pp
-		 */
-		drift_band_legend: (arg: { pp: number }) => LocalizedString
-		/**
 		 * Puntos porcentuales respecto a tu objetivo
 		 */
 		drift_axis: () => LocalizedString
@@ -6520,7 +6511,7 @@ export type TranslationFunctions = {
 		/**
 		 * Banda de tolerancia ±{pp} pp
 		 */
-		composition_legend_band: (arg: { pp: number }) => LocalizedString
+		band_legend: (arg: { pp: number }) => LocalizedString
 		/**
 		 * Tu objetivo
 		 */
