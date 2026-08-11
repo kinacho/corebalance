@@ -1,17 +1,32 @@
 /**
- * Comprobador de deriva de `CLAUDE.md`.
+ * Comprobador de deriva de la prosa del repo.
  *
- * `CLAUDE.md` es la única fuente de verdad en prosa de este repo, y eso lo
- * convierte en el sitio donde una afirmación falsa hace más daño: se lee como
- * verificada. Ya pasó — documentaba `NO_TARGET_HUES` y `DARK_SURFACE`, dos
+ * La prosa de este repo es la única fuente de verdad sobre por qué el código es como
+ * es, y eso la convierte en el sitio donde una afirmación falsa hace más daño: se lee
+ * como verificada. Ya pasó — documentaba `NO_TARGET_HUES` y `DARK_SURFACE`, dos
  * constantes que **nunca existieron**, y la frase sobrevivió a una revisión de
  * código a esfuerzo máximo porque nadie comprueba los nombres a mano.
  *
- * Esto comprueba la parte de esa afirmación que es mecánica: que todo
- * identificador y toda ruta que el documento cita entre acentos graves exista de
- * verdad en el repositorio. No comprueba que la prosa *describa bien* lo que hace
- * el código —eso sigue necesitando leerlo— pero sí caza el caso más común de
- * deriva, que es citar algo que se renombró o que se borró.
+ * ⚠️ Esa prosa ya no es un solo fichero. Vive en `CLAUDE.md` —lo que gobierna siempre—
+ * y en `.claude/rules/*.md`, que se cargan **solo** al leer ficheros que casan con su
+ * `paths:`. El reparto se hizo para que el conocimiento de cada zona llegue cuando hace
+ * falta en vez de en cada turno, y este comprobador es lo único que impide que repita la
+ * historia del árbol `.ai/`: 61 ficheros que derivaron del código hasta que hubo que
+ * borrarlos. Auditar solo `CLAUDE.md` dejaría sin vigilar las tres cuartas partes.
+ *
+ * Comprueba dos cosas mecánicas:
+ *
+ *  1. Que todo identificador y toda ruta citados entre acentos graves —en cualquiera de
+ *     los documentos— existan de verdad en el repositorio.
+ *  2. Que el `paths:` de cada regla case con al menos un fichero real. ⚠️ Un glob que no
+ *     casa con nada es una regla que **no se carga nunca**: su contenido desaparece del
+ *     contexto sin que nada falle ni se ponga rojo, que es exactamente la forma de fallo
+ *     —un guardián que no puede dispararse— que esta capa entera existe para perseguir.
+ *     Se comprueba con `fs.globSync`, que no es el mismo emparejador que usa Claude Code;
+ *     vale para «esto casa con algo real», no para «casa exactamente con lo mismo».
+ *
+ * No comprueba que la prosa *describa bien* lo que hace el código —eso sigue necesitando
+ * leerlo— pero sí caza el caso más común de deriva, que es citar algo que se renombró.
  *
  * Uso: `npm run docs:check`. Devuelve código de salida 1 si encuentra huérfanos.
  */
@@ -188,17 +203,90 @@ export function extraerReferencias(markdown) {
 	return { identificadores: [...new Set(identificadores)], rutas: [...new Set(rutas)] };
 }
 
+/** El directorio de reglas con `paths:`, que se cargan bajo demanda. */
+const DIR_REGLAS = '.claude/rules';
+
+/**
+ * Todos los documentos en prosa que hay que auditar: la raíz y las reglas.
+ *
+ * Se descubre en vez de listarse a mano porque una regla nueva sin auditar es
+ * indistinguible de una auditada y limpia.
+ */
+export function reglasDelRepo(dir = DIR_REGLAS) {
+	if (!fs.existsSync(dir)) return [];
+	return fs
+		.readdirSync(dir)
+		.filter((f) => f.endsWith('.md'))
+		.map((f) => `${dir}/${f}`)
+		.sort();
+}
+
+export function documentosDelRepo() {
+	return ['CLAUDE.md', ...reglasDelRepo()].filter((f) => fs.existsSync(f));
+}
+
+/**
+ * Los globs de `paths:` de cada regla, y si casan con algo.
+ *
+ * ⚠️ Una regla **sin** `paths:` se carga en todas las sesiones, igual que `CLAUDE.md`.
+ * Eso no es un error, pero aquí sí lo es: el reparto entero existe para que estos
+ * ficheros NO se carguen siempre, así que una regla sin `paths` deshace en silencio lo
+ * que se vino a hacer y el documento seguiría pareciendo repartido.
+ */
+export function auditarGlobs(reglas = reglasDelRepo()) {
+	const problemas = [];
+	for (const doc of reglas) {
+		const texto = fs.readFileSync(doc, 'utf8');
+		const frontmatter = texto.match(/^---\n([\s\S]*?)\n---/);
+		if (!frontmatter) {
+			problemas.push({ doc, glob: null, motivo: 'no tiene frontmatter con `paths:`' });
+			continue;
+		}
+		const globs = [...frontmatter[1].matchAll(/^\s*-\s*["']?(.+?)["']?\s*$/gm)].map((m) => m[1]);
+		if (globs.length === 0) {
+			problemas.push({ doc, glob: null, motivo: 'su frontmatter no declara ningún `paths:`' });
+			continue;
+		}
+		for (const glob of globs) {
+			let casa = [];
+			try {
+				casa = [...fs.globSync(glob)];
+			} catch {
+				problemas.push({ doc, glob, motivo: 'no es un glob válido' });
+				continue;
+			}
+			if (casa.length === 0) problemas.push({ doc, glob, motivo: 'no casa con ningún fichero' });
+		}
+	}
+	return problemas;
+}
+
 /**
  * @param {{ docPath?: string, raices?: string[], sueltos?: string[], allowlist?: Map<string,string> }} opciones
+ *
+ * Sin `docPath` audita **todos** los documentos a la vez y devuelve el agregado; con él,
+ * solo ese (que es como lo usa el test contra el fixture roto).
  */
 export function auditarDeriva(opciones = {}) {
-	const {
-		docPath = 'CLAUDE.md',
-		raices = RAICES,
-		sueltos = FICHEROS_SUELTOS,
-		allowlist = MENCIONES_HISTORICAS
-	} = opciones;
+	const { raices = RAICES, sueltos = FICHEROS_SUELTOS, allowlist = MENCIONES_HISTORICAS } = opciones;
 
+	if (!opciones.docPath) {
+		const porDocumento = documentosDelRepo().map((doc) => ({
+			doc,
+			...auditarDeriva({ ...opciones, docPath: doc })
+		}));
+		const sumar = (campo) => porDocumento.reduce((n, d) => n + d[campo], 0);
+		return {
+			total: sumar('total'),
+			citadas: sumar('citadas'),
+			identificadoresHuerfanos: porDocumento.flatMap((d) => d.identificadoresHuerfanos),
+			rutasHuerfanas: porDocumento.flatMap((d) => d.rutasHuerfanas),
+			ficherosLeidos: porDocumento[0]?.ficherosLeidos ?? 0,
+			porDocumento
+		};
+	}
+
+	const docPath = opciones.docPath;
 	const markdown = fs.readFileSync(docPath, 'utf8');
 	const { identificadores, rutas } = extraerReferencias(markdown);
 
@@ -251,30 +339,46 @@ export function auditarDeriva(opciones = {}) {
 
 function principal() {
 	const informe = auditarDeriva();
-	const huerfanos = [...informe.identificadoresHuerfanos, ...informe.rutasHuerfanas];
+	const globsRotos = auditarGlobs();
 
 	console.log(
-		`[doc-drift] ${informe.total} referencias comprobables de ${informe.citadas} citadas contra ${informe.ficherosLeidos} ficheros.`
+		`[doc-drift] ${informe.total} referencias comprobables de ${informe.citadas} citadas ` +
+			`en ${informe.porDocumento.length} documentos, contra ${informe.ficherosLeidos} ficheros.`
 	);
 
-	if (huerfanos.length === 0) {
-		console.log('[doc-drift] 0 huérfanas.');
-		return 0;
+	let salida = 0;
+
+	for (const doc of informe.porDocumento) {
+		const suyas = [...doc.identificadoresHuerfanos, ...doc.rutasHuerfanas];
+		if (suyas.length === 0) continue;
+		salida = 1;
+		console.error(`\n[doc-drift] ${doc.doc} cita ${suyas.length} cosas que no existen:\n`);
+		for (const nombre of doc.identificadoresHuerfanos) console.error(`  · identificador  ${nombre}`);
+		for (const nombre of doc.rutasHuerfanas) console.error(`  · ruta           ${nombre}`);
 	}
 
-	console.error(`\n[doc-drift] ${huerfanos.length} referencias que no existen en el repo:\n`);
-	for (const nombre of informe.identificadoresHuerfanos) {
-		console.error(`  · identificador  ${nombre}`);
+	if (salida === 1) {
+		console.error(
+			'\nO se renombró y hay que actualizar la prosa, o nunca existió —pasó con\n' +
+				'NO_TARGET_HUES y DARK_SURFACE—. Si es una mención histórica a propósito,\n' +
+				'añádela a MENCIONES_HISTORICAS en scripts/doc-drift.mjs **con su motivo**.'
+		);
 	}
-	for (const nombre of informe.rutasHuerfanas) {
-		console.error(`  · ruta          ${nombre}`);
+
+	if (globsRotos.length > 0) {
+		salida = 1;
+		console.error(`\n[doc-drift] ${globsRotos.length} reglas que no se cargarían nunca:\n`);
+		for (const { doc, glob, motivo } of globsRotos) {
+			console.error(`  · ${doc}${glob ? `  «${glob}»` : ''} — ${motivo}`);
+		}
+		console.error(
+			'\nUna regla cuyo `paths:` no casa con nada no se carga jamás: su contenido\n' +
+				'desaparece del contexto sin que nada falle. Corrige el glob o borra la regla.'
+		);
 	}
-	console.error(
-		'\nO se renombró y hay que actualizar CLAUDE.md, o nunca existió —pasó con\n' +
-			'NO_TARGET_HUES y DARK_SURFACE—. Si es una mención histórica a propósito,\n' +
-			'añádela a MENCIONES_HISTORICAS en scripts/doc-drift.mjs **con su motivo**.'
-	);
-	return 1;
+
+	if (salida === 0) console.log('[doc-drift] 0 huérfanas, todos los `paths:` casan.');
+	return salida;
 }
 
 /**
