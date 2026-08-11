@@ -12,6 +12,7 @@
 	import { dev, browser } from '$app/environment';
 	import { injectAnalytics } from '@vercel/analytics/sveltekit';
 	import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
+	import { resolverExclusion, NO_TRACK_KEY } from '$lib/analytics-opt-out';
 
 	let { children } = $props();
 	let SupportModal = $state<any>(null);
@@ -59,8 +60,31 @@
 	});
 
 	onMount(() => {
-		injectAnalytics({ mode: dev ? 'development' : 'production' });
-		injectSpeedInsights();
+		/**
+		 * Las visitas propias no cuentan, si este navegador lo ha pedido con `?notrack=1`.
+		 *
+		 * La decisión vive en `$lib/analytics-opt-out` porque decide algo —y algo cuyo
+		 * fallo es invisible—, así que se prueba sin navegador. Aquí solo queda leer, y
+		 * escribir la marca cuando venga en la URL.
+		 *
+		 * ⚠️ El `console.info` no es depuración olvidada: es la **única señal** de que la
+		 * exclusión está activa. Sin él, un navegador con la marca puesta por error se
+		 * comporta igual que uno normal y las métricas se pierden en silencio.
+		 */
+		const { excluido, guardar } = resolverExclusion(
+			location.search,
+			localStorage.getItem(NO_TRACK_KEY)
+		);
+		if (guardar !== null) localStorage.setItem(NO_TRACK_KEY, guardar);
+		if (excluido) console.info('[corebalance] visita excluida de las métricas (?notrack=0 para revertir)');
+
+		// `beforeSend` devolviendo `null` cancela el evento: es el mecanismo que la propia
+		// librería documenta, y deja la inyección igual para todos, con o sin exclusión.
+		injectAnalytics({
+			mode: dev ? 'development' : 'production',
+			beforeSend: (event) => (excluido ? null : event)
+		});
+		injectSpeedInsights({ beforeSend: (event) => (excluido ? null : event) });
 
 		/**
 		 * Registro del service worker, **a mano y a propósito**.
