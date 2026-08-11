@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 // @ts-expect-error — script en JS sin tipos, importado a propósito desde el test.
-import { auditarDeriva, extraerReferencias } from './doc-drift.mjs';
+import { auditarDeriva, auditarGlobs, documentosDelRepo, extraerReferencias } from './doc-drift.mjs';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -103,5 +103,50 @@ describe('doc-drift · el comprobador detecta lo que dice detectar', () => {
 		);
 		expect(identificadores).toEqual(['CHART_NEUTRAL', 'algo']);
 		expect(rutas).toEqual(['src/lib/x.ts', '/dashboard']);
+	});
+});
+
+/**
+ * Las reglas de `.claude/rules/` se cargan **solo** al leer un fichero que case con su
+ * `paths:`, y ahí vive la tercera parte de la prosa del repo desde el reparto.
+ *
+ * ⚠️ Una regla cuyo glob no casa con nada no da error en ninguna parte: simplemente no
+ * se carga, y su contenido deja de existir para quien trabaje en esa zona. Es la misma
+ * forma de fallo que `training_csv.test.ts` apuntando a un directorio borrado —verde,
+ * silencioso e inútil— aplicada al documento en vez de a la suite.
+ */
+const DIR_REGLAS_ROTAS = path.join(process.cwd(), 'scripts', '__fixtures__', 'doc-drift', 'reglas');
+
+describe('doc-drift · las reglas se cargarían de verdad', () => {
+	it('todas las reglas del repo declaran `paths:` y todos casan con algo', () => {
+		expect(
+			auditarGlobs(),
+			'una regla que no se carga nunca es prosa que desapareció sin que nada fallara'
+		).toEqual([]);
+	});
+
+	it('audita la raíz **y** las reglas, no solo la raíz', () => {
+		// Sin esto, repartir el documento habría dejado tres cuartas partes de la prosa
+		// fuera del comprobador, que es como empezó el árbol `.ai/`.
+		const documentos = documentosDelRepo();
+		expect(documentos).toContain('CLAUDE.md');
+		expect(documentos.filter((d: string) => d.startsWith('.claude/rules/')).length).toBeGreaterThan(4);
+		expect(auditarDeriva().porDocumento.length).toBe(documentos.length);
+	});
+
+	it('caza un glob que no casa con nada, aunque otro del mismo fichero sí case', () => {
+		const problemas = auditarGlobs([path.join(DIR_REGLAS_ROTAS, 'glob-muerto.md')]);
+		expect(problemas).toHaveLength(1);
+		expect(problemas[0].glob).toBe('src/lib/fichero-que-no-existe.ts');
+	});
+
+	it('caza una regla sin frontmatter, que se cargaría siempre', () => {
+		const problemas = auditarGlobs([path.join(DIR_REGLAS_ROTAS, 'sin-frontmatter.md')]);
+		expect(problemas).toHaveLength(1);
+		expect(problemas[0].motivo).toMatch(/frontmatter/);
+	});
+
+	it('no se queja de una regla correcta', () => {
+		expect(auditarGlobs([path.join(DIR_REGLAS_ROTAS, 'buena.md')])).toEqual([]);
 	});
 });
