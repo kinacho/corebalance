@@ -89,6 +89,43 @@ export function instrumentTypeOf(asset: Asset): InstrumentType {
 	return resolveInstrumentType(asset.ticker, asset.name, '', asset.isin);
 }
 
+/**
+ * Ticker `0P…` **con sufijo de mercado**: exactamente la forma que el regex viejo no
+ * casaba. `0P0001XF40.F` sí, `0P0001AJ8T` no — esa segunda ya se reconocía bien.
+ */
+const TICKER_0P_CON_SUFIJO = /^0P[A-Z0-9]{6,}\.[A-Z]{1,4}$/;
+
+/**
+ * Repara el `instrumentType` que quedó mal guardado por el defecto del regex `0P`.
+ *
+ * ⚠️ **Hace falta porque el valor equivocado se persistió.** `normalizeAssets()` rellena
+ * el campo cuando falta y lo escribe, así que los activos importados antes del arreglo
+ * tienen `other` (con ISIN) o `equity` (sin él) **fijados en disco**. Y como
+ * `instrumentTypeOf()` devuelve el valor guardado si existe, arreglar el regex no los
+ * toca: el panel fiscal sigue apagado para esas carteras y nada avisa.
+ *
+ * Lo que costaba: `traspaso.ts` excluye `other` de cualquier plan, y `equity` aplica la
+ * ventana de antiaplicación de 2 meses en vez de la de 12 que le toca a un fondo.
+ *
+ * ⚠️ **Es deliberadamente quirúrgico, y esa estrechez es la garantía.** Solo actúa sobre
+ * tickers `0P…` **con sufijo** —la única forma que el regex viejo no veía— así que no
+ * puede tocar un activo al que no le afectara el defecto. Volver a deducir el tipo de
+ * todos sería más simple y estaría mal: `normalizeAssets` respeta a propósito las
+ * correcciones manuales de Gestionar Activos, y un barrido las borraría.
+ *
+ * Coste asumido y consciente: si alguien puso a mano «ETF» en un activo con ticker
+ * `0P…`, esto lo devuelve a `fund`. Se acepta porque un `0P…` **es** por definición un
+ * fondo no cotizado —así lo identifica Yahoo— y porque el daño de equivocarse en la otra
+ * dirección (panel fiscal silenciosamente apagado) es peor y no se ve.
+ *
+ * @returns El tipo corregido, o `null` si este activo no hay que tocarlo.
+ */
+export function tipoCorregidoPorMigracion(asset: Asset): InstrumentType | null {
+	if (!TICKER_0P_CON_SUFIJO.test((asset.ticker || '').toUpperCase().trim())) return null;
+	if (asset.instrumentType === 'fund') return null;
+	return 'fund';
+}
+
 /** Si el activo puede traspasarse sin tributar. Solo los fondos. */
 export function canBeTransferred(asset: Asset): boolean {
 	return instrumentTypeOf(asset) === 'fund';

@@ -7,8 +7,80 @@
   import SeoHead from '$lib/components/seo/SeoHead.svelte';
   import { AUTHOR } from '$lib/seo/author';
   import { SITE_URL, absoluteUrl, localizePath } from '$lib/i18n/routing';
+  import { familiaDeCta, type CtaFamilia } from '$lib/blog-cta';
 
   let { post, related = [] }: { post: Post; related?: RelatedPost[] } = $props();
+
+  /**
+   * La llamada a la acción, según de qué hable el post.
+   *
+   * Había una sola para los 42, y le pedía rebalancear su cartera a quien llegaba
+   * buscando **qué fondo comprar** — que es de dónde viene la mayor parte del tráfico
+   * (~1.020 impresiones de 3.700, medido el 11-ago-2026). Alguien así no tiene cartera
+   * todavía: la oferta correcta es la cartera de ejemplo, no un cálculo sobre nada.
+   *
+   * ⚠️ El botón sigue apuntando a la **landing**, no a `/dashboard`, y eso no es un
+   * descuido: el guardián del dashboard rebota a quien no tiene sesión ni posiciones, así
+   * que un enlace directo devolvería al lector a la landing dando un salto de más. Además
+   * el botón de la cartera de ejemplo vive allí.
+   *
+   * Qué familia toca lo decide `$lib/blog-cta` a partir de las etiquetas que el post ya
+   * trae; aquí solo vive el texto, que es lo propio del componente.
+   */
+  const CTA_COPY: Record<'es' | 'en', Record<CtaFamilia, { ctaTitle: string; ctaDesc: string; ctaBtn: string }>> = {
+    es: {
+      importar: {
+        ctaTitle: '¿Y si dejas de pelearte con la hoja de cálculo?',
+        ctaDesc:
+          'Sube el CSV de tu bróker y CoreBalance reconstruye tus posiciones, su coste medio y lo que llevas ganado. Gratis, sin registro y sin que tus datos salgan del navegador.',
+        ctaBtn: 'Importar mi cartera'
+      },
+      fiscalidad: {
+        ctaTitle: '¿Cuánto te costaría rebalancear vendiendo?',
+        ctaDesc:
+          'CoreBalance compara las dos vías con tus números: traspasar entre fondos con diferimiento fiscal, o vender y tributar. Con FIFO, los tramos del ahorro y la regla de los dos meses.',
+        ctaBtn: 'Calcular mi traspaso'
+      },
+      comparar: {
+        ctaTitle: '¿Sabes cuánto se solapan los fondos que estás comparando?',
+        ctaDesc:
+          'Dos fondos distintos pueden apuntar a las mismas empresas. CoreBalance te enseña qué hay dentro de cada uno y cuánto se pisan — pruébalo con la cartera de ejemplo, sin meter nada tuyo.',
+        ctaBtn: 'Ver la cartera de ejemplo'
+      },
+      rebalancear: {
+        ctaTitle: '¿Listo para rebalancear tu cartera?',
+        ctaDesc:
+          'Introduce tus fondos o ETFs, define tus porcentajes objetivo y obtén los cálculos exactos al instante. Gratis, sin registro y 100% privado en tu navegador.',
+        ctaBtn: 'Probar calculadora gratis'
+      }
+    },
+    en: {
+      importar: {
+        ctaTitle: 'Done fighting with the spreadsheet?',
+        ctaDesc:
+          "Upload your broker's CSV and CoreBalance rebuilds your positions, their average cost and what you have actually gained. Free, no signup, and your data never leaves the browser.",
+        ctaBtn: 'Import my portfolio'
+      },
+      fiscalidad: {
+        ctaTitle: 'What would rebalancing by selling actually cost you?',
+        ctaDesc:
+          'CoreBalance compares both routes with your own numbers: transferring between funds with tax deferral, or selling and paying. With FIFO, the savings brackets and the wash-sale window.',
+        ctaBtn: 'Calculate my transfer'
+      },
+      comparar: {
+        ctaTitle: 'Do you know how much the funds you are comparing overlap?',
+        ctaDesc:
+          'Two different funds can point at the same companies. CoreBalance shows what is inside each one and how much they overlap — try it on the example portfolio, without entering anything of yours.',
+        ctaBtn: 'See the example portfolio'
+      },
+      rebalancear: {
+        ctaTitle: 'Ready to rebalance your portfolio?',
+        ctaDesc:
+          'Enter your funds or ETFs, set your target percentages, and get the exact calculation instantly. Free, no signup required, and 100% private in your browser.',
+        ctaBtn: 'Try free calculator'
+      }
+    }
+  };
 
   // El idioma lo manda el propio post, no el store global: un post en inglés se
   // prerenderiza en build (sin cookie → locale 'es') y antes eso hacía que el
@@ -20,11 +92,7 @@
     back: isEs ? 'Volver al blog' : 'Back to blog',
     breadcrumbHome: isEs ? 'Inicio' : 'Home',
     breadcrumbBlog: 'Blog',
-    ctaTitle: isEs ? '¿Listo para rebalancear tu cartera?' : 'Ready to rebalance your portfolio?',
-    ctaDesc: isEs
-        ? 'Introduce tus fondos o ETFs, define tus porcentajes objetivo y obtén los cálculos exactos al instante. Gratis, sin registro y 100% privado en tu navegador.'
-        : 'Enter your funds or ETFs, set your target percentages, and get the exact calculation instantly. Free, no signup required, and 100% private in your browser.',
-    ctaBtn: isEs ? 'Probar calculadora gratis' : 'Try free calculator',
+    ...CTA_COPY[isEs ? 'es' : 'en'][familiaDeCta(post.tags)],
     readTime: (min: number) => (isEs ? `${min} min de lectura` : `${min} min read`),
     authorPrefix: isEs ? 'Por' : 'By',
     updatedOn: isEs ? 'Actualizado el' : 'Updated on',

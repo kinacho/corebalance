@@ -208,7 +208,7 @@ const en: Translation = {
   // SEO
   seo: {
     title: 'CoreBalance — Track and Rebalance Your Index Fund & ETF Portfolio',
-    description: 'Free, private, no sign-up. Calculate your rebalance in seconds, track your transactions, dividends and TER, and keep your strategy under control without your data ever leaving the browser.',
+    description: 'Free, private, no sign-up. Calculate your rebalance in seconds and keep your strategy under control without your data ever leaving the browser.',
     og_title: 'CoreBalance — Track and rebalance your index portfolio',
     og_description: 'Manage your index fund & ETF portfolio: smart rebalancing, transaction ledger and real-time tracking. Free, no sign-up.',
   },

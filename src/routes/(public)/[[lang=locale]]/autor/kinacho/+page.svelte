@@ -55,7 +55,7 @@
 			? `${AUTHOR.displayName} — autor en CoreBalance`
 			: `${AUTHOR.displayName} — author at CoreBalance`
 	);
-	const metaDesc = $derived(AUTHOR.bio[lang][0]);
+	const metaDesc = $derived(AUTHOR.metaDescription[lang]);
 
 	const bio = $derived(AUTHOR.bio[lang]);
 

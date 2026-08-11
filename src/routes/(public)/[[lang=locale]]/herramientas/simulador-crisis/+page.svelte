@@ -20,7 +20,7 @@
     : 'Simulador de Crisis Bursátil | CoreBalance'
   );
   const metaDesc = $derived(lang === 'en'
-    ? 'Free tool to simulate how a crash like 2000, 2008 or 2020 would hit your portfolio and estimate how many months it would take to recover, with and without monthly contributions.'
+    ? 'Simulate how a crash like 2000, 2008 or 2020 would hit your portfolio, and how many months it would take to recover — with and without contributions.'
     : 'Simula gratis cuánto caería tu cartera en una crisis como la de 2000, 2008 o 2020 y estima cuántos meses tardarías en recuperarte, con y sin aportaciones mensuales.'
   );
 

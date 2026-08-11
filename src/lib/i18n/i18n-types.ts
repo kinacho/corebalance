@@ -749,7 +749,7 @@ type RootTranslation = {
 		 */
 		title: string
 		/**
-		 * G​r​a​t​i​s​,​ ​p​r​i​v​a​d​a​ ​y​ ​s​i​n​ ​r​e​g​i​s​t​r​o​.​ ​C​a​l​c​u​l​a​ ​t​u​ ​r​e​b​a​l​a​n​c​e​o​ ​e​n​ ​s​e​g​u​n​d​o​s​,​ ​s​i​g​u​e​ ​t​u​s​ ​t​r​a​n​s​a​c​c​i​o​n​e​s​,​ ​d​i​v​i​d​e​n​d​o​s​ ​y​ ​T​E​R​,​ ​y​ ​m​a​n​t​é​n​ ​t​u​ ​e​s​t​r​a​t​e​g​i​a​ ​b​a​j​o​ ​c​o​n​t​r​o​l​ ​s​i​n​ ​q​u​e​ ​t​u​s​ ​d​a​t​o​s​ ​s​a​l​g​a​n​ ​d​e​l​ ​n​a​v​e​g​a​d​o​r​.
+		 * G​r​a​t​i​s​,​ ​p​r​i​v​a​d​a​ ​y​ ​s​i​n​ ​r​e​g​i​s​t​r​o​.​ ​C​a​l​c​u​l​a​ ​t​u​ ​r​e​b​a​l​a​n​c​e​o​ ​e​n​ ​s​e​g​u​n​d​o​s​ ​y​ ​m​a​n​t​é​n​ ​t​u​ ​e​s​t​r​a​t​e​g​i​a​ ​b​a​j​o​ ​c​o​n​t​r​o​l​ ​s​i​n​ ​q​u​e​ ​t​u​s​ ​d​a​t​o​s​ ​s​a​l​g​a​n​ ​d​e​l​ ​n​a​v​e​g​a​d​o​r​.
 		 */
 		description: string
 		/**
@@ -4891,7 +4891,7 @@ export type TranslationFunctions = {
 		 */
 		title: () => LocalizedString
 		/**
-		 * Gratis, privada y sin registro. Calcula tu rebalanceo en segundos, sigue tus transacciones, dividendos y TER, y mantén tu estrategia bajo control sin que tus datos salgan del navegador.
+		 * Gratis, privada y sin registro. Calcula tu rebalanceo en segundos y mantén tu estrategia bajo control sin que tus datos salgan del navegador.
 		 */
 		description: () => LocalizedString
 		/**
