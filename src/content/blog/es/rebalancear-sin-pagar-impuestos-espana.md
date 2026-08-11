@@ -1,5 +1,5 @@
 ---
-title: "Cómo rebalancear sin pagar impuestos: la ventaja de los fondos en España"
+title: "Rebalancear sin pagar impuestos en España con fondos"
 description: "Aprende a rebalancear tu cartera de fondos de inversión de forma fiscalmente óptima. Maximiza el diferimiento fiscal y evita el peaje de Hacienda."
 summary:
   - "En España la ley del IRPF concede a los fondos de inversión un régimen de diferimiento fiscal: puedes traspasar de un fondo a otro sin tributar por la ganancia acumulada."

@@ -1,6 +1,6 @@
 ---
-title: "El mejor ETF MSCI World: Acumulación (Acc) vs Distribución (Dist)"
-description: "¿Acumulación o distribución? Comparamos los mejores ETFs del MSCI World y analizamos cuál te conviene fiscal y operativamente para tu cartera."
+title: "MSCI World Acc vs Dist: qué cambia y cuál te conviene"
+description: "La diferencia entre acumulación y distribución en el MSCI World, con lo que cambia en tu declaración y en tu interés compuesto. Cuál elegir según en qué fase estés."
 summary:
   - "La única diferencia entre Acc y Dist es qué hace el fondo con los dividendos: acumulación los reinvierte dentro del fondo, distribución te los ingresa."
   - "En fase de acumulación la versión Acc evita el peaje fiscal de cobrar el dividendo y aprovecha mejor el interés compuesto."
