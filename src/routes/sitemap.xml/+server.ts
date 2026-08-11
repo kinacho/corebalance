@@ -1,4 +1,5 @@
 import { getPosts } from '$lib/blog';
+import { getCursos, getLecciones } from '$lib/cursos';
 import { BILINGUAL_ROUTES, absoluteUrl, isNoindexRoute, localizePath } from '$lib/i18n/routing';
 import type { RequestHandler } from './$types';
 
@@ -78,6 +79,16 @@ const POST_DRIVEN_PAGES: Record<string, { priority: string; changefreq: string }
 	'/blog': { priority: '0.8', changefreq: 'weekly' },
 	'/autor/kinacho': { priority: '0.5', changefreq: 'monthly' }
 };
+
+/**
+ * Fecha de los cursos y de la calculadora, **a mano**.
+ *
+ * ⚠️ Mismo criterio que `STATIC_PAGES`: nada de `new Date()`. Con la fecha del build,
+ * cada deploy marcaría todas estas URLs como modificadas aunque no se hubiera tocado una
+ * coma, y un sitemap que miente sobre las fechas deja de servir para lo único que sirve.
+ * Súbela cuando cambie el contenido visible de una lección.
+ */
+const CURSOS_LASTMOD = '2026-08-11';
 
 interface UrlEntry {
 	loc: string;
@@ -182,6 +193,50 @@ export const GET: RequestHandler = async () => {
 			alternates
 		});
 	}
+
+	// ── Cursos ────────────────────────────────────────────────────────────────
+	//
+	// ⚠️ Sin `alternates`: los cursos existen **solo en español** a propósito (la escala
+	// fiscal que usan es española, y el inglés del sitio da impresiones y cero clics).
+	// Declarar un `hreflang` hacia una URL que no existe es peor que no declarar ninguno.
+	//
+	// Prioridad alta en el índice y en la portada de cada curso, más baja en las
+	// lecciones: son muchas URLs y lo que queremos que se posicione es la entrada.
+	entries.push({
+		loc: absoluteUrl('/cursos'),
+		lastmod: CURSOS_LASTMOD,
+		changefreq: 'monthly',
+		priority: '0.8',
+		alternates: []
+	});
+	for (const curso of getCursos()) {
+		entries.push({
+			loc: absoluteUrl(`/cursos/${curso.slug}`),
+			lastmod: CURSOS_LASTMOD,
+			changefreq: 'monthly',
+			priority: '0.8',
+			alternates: []
+		});
+		for (const leccion of getLecciones(curso.slug)) {
+			entries.push({
+				loc: absoluteUrl(`/cursos/${curso.slug}/${leccion.slug}`),
+				lastmod: CURSOS_LASTMOD,
+				changefreq: 'monthly',
+				priority: '0.6',
+				alternates: []
+			});
+		}
+	}
+
+	// La calculadora de acumulación vs distribución vive fuera del árbol bilingüe por el
+	// mismo motivo que los cursos, así que se declara aquí y no en `STATIC_PAGES`.
+	entries.push({
+		loc: absoluteUrl('/herramientas/acumulacion-vs-distribucion'),
+		lastmod: CURSOS_LASTMOD,
+		changefreq: 'monthly',
+		priority: '0.7',
+		alternates: []
+	});
 
 	const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
