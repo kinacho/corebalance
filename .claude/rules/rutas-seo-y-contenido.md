@@ -1,0 +1,43 @@
+---
+paths:
+  - "src/lib/i18n/**"
+  - "src/hooks.server.ts"
+  - "src/content/**"
+  - "src/routes/sitemap.xml/**"
+  - "src/lib/seo/**"
+  - "src/lib/blog.ts"
+  - "src/lib/blog-locales.ts"
+  - "svelte.config.js"
+  - "static/offline.html"
+  - "vercel.json"
+  - "vite.config.ts"
+---
+
+# i18n, rutas, contenido y SEO
+
+<!-- Extraído de CLAUDE.md sin reescribir una palabra. El porqué del reparto, en la raíz. -->
+
+### i18n & routing (most convention-heavy area — read before touching)
+
+- **typesafe-i18n**, base locale `es`. Hand-edit only `src/lib/i18n/es/index.ts` and `en/index.ts`; `i18n-types.ts`, `i18n-util*.ts`, `i18n-svelte.ts` are **generated**.
+- ⚠️ **Only the base locale carries parameter type annotations.** `es` writes `{amount:string}` / `{months:number}`; `en` must write plain `{amount}` / `{months}`. Annotating the English file makes `npm run check` fail with one error per key (`Type '"…{shares:string}…"' is not assignable to type '`${string}{shares}${string}`'`). Adding keys outside `npm run dev` also means the watcher is not running, so regenerate by hand with `npx typesafe-i18n --no-watch`.
+- **Single source of truth for bilingual routes:** `src/lib/i18n/bilingual-routes.js` (plain JS so `svelte.config.js` can import it). `BILINGUAL_ROUTES` feeds the prerender entries, the sitemap, hreflang alternates and the `$link()` store. `src/lib/i18n/routing.ts` is the typed wrapper (`alternates()`, `absoluteUrl`, `isLocaleCookieRoute`).
+- **Blog posts are NOT bilingual routes.** Each post has its own translated slug at `/blog/<slug>` (no `/en/` prefix); the twin is resolved via frontmatter `slugs`. `src/lib/blog-locales.ts` maps slug→language with a deliberately **lazy** glob.
+- **Locale resolution** (`src/hooks.server.ts`): URL prefix → post slug → `lang` cookie (only on `/dashboard` and `/api`) → `Accept-Language`. Language switching on public routes is a real `<a>` navigation with full document load — do not reintroduce store-based switching there. Two places call `setLocale`: the server hook, and the root `src/routes/+layout.ts` — which is a **universal** load, so it runs on the server too, not only in the browser.
+- **`setLocale` writes a module-global store shared by every request in the process.** The hook therefore runs everything that renders components through a **single-lane queue** (`inRenderQueue`), so no other request can change the locale between `setLocale` and the response. Serializing is affordable only because that set is tiny: the 76 public pages are static files that never reach the hook, and `/dashboard` is `ssr = false`. `/api/*` is deliberately outside the queue **and never calls `setLocale`** — an endpoint that needs translations must use `i18nObject(locale)`, never the store, or it will clobber a page mid-render. `src/hooks.server.test.ts` guards this; the concurrency tests fail if the queue is removed.
+- **Checklist for adding a bilingual page:** add to `BILINGUAL_ROUTES` → add `lastmod` entry to `STATIC_PAGES` in `src/routes/sitemap.xml/+server.ts` → add a `PAGES` entry in `scripts/generate-og.mjs` and `OgPageKey` in `src/lib/seo/og.ts` if it needs an OG card. A test in `src/lib/i18n/routing.test.ts` fails if `BILINGUAL_ROUTES` desyncs from the route tree.
+- **In blog markdown, always write internal links with the canonical Spanish path** — the `remarkLocalizeLinks` plugin rewrites them per post language at build time.
+
+### Content / blog
+
+Markdown in `src/content/blog/{es,en}/*.md`, compiled by mdsvex. Three custom remark plugins defined inline in `svelte.config.js` inject `readingMinutes`, `faq` (h2/h3 ending in `?` → FAQPage JSON-LD) and localized links into frontmatter. SEO head for all public pages goes through `src/lib/components/seo/SeoHead.svelte`. `src/lib/blog.ts` uses an **eager** `import.meta.glob` — never import it from a universal load, only from server loads (see `related-reading.server.ts` for the pattern).
+
+#### The three soft 404s Search Console was reporting (10-ago-2026)
+
+Reported for `/dashboard` and `/en/herramientas`. Three unrelated causes, all measured against production before touching anything.
+
+- ⚠️ **The service worker only registered at the root and on first-level routes, and that is a PWA bug that has nothing to do with SEO.** Read off the compiled bundle: the virtual module emits `new Workbox('./sw.js', { scope: './' })` — **relative**, so it resolves against the page's directory. `/en/herramientas` requests `/en/sw.js` and `/blog/importar-csv-degiro` requests `/blog/sw.js`; both 404 (verified: `/sw.js` is 200, `/en/sw.js` is 404). Only `/` and one-level routes ever worked, because their directory *is* the root. Measured by rendering production in Chromium: two console errors on all 35 English URLs, the 24 blog posts, the four tools and the individual comparisons; **zero on `/`**. So precache, offline mode and `beforeinstallprompt` only existed for someone who entered through the home page — not for someone arriving at a post from Google, which is the normal case. Fixed with `base: '/'` + `scope: '/'` in the `SvelteKitPWA` options (note the `scope: '/'` at line ~237 is the *manifest's*, a different thing). Third time this file records a silent PWA failure that left the impression of being solved.
+- ⚠️ **`/dashboard` redirects to the landing page in JavaScript, which is the textbook soft 404.** Not just "an empty shell": with `ssr = false` a crawler gets the `app.html` skeleton, and then the gatekeeper's `goto('/')` fires because there is no session — measured in `vite preview`, where requesting `/dashboard` ends up rendering the landing (6.542 chars of `<main>`, headings like "Por qué creé CoreBalance"). Google's own guidance names redirecting-to-home instead of returning 404 as a soft 404. ⚠️ **And `robots.txt` no longer blocks it, which is the counter-intuitive half of the fix**: a `Disallow`ed URL is never crawled, so the crawler never sees any `noindex` and its status in the report **can never change**. Blocking saves crawl budget; it does not deindex. The `noindex` therefore travels as an HTTP header from `hooks.server.ts` — not as the `<meta>` in `dashboard/+page.svelte`, which on an `ssr = false` page only exists after hydration. `hooks.server.test.ts` pins the header, its absence on the five public routes, **and that `robots.txt` does not re-block `/dashboard`** — because if someone puts that `Disallow` back, the header silently stops being readable and no other test would notice.
+- **`/en/herramientas` was the thinnest page on the site**: 2.026 characters of `<main>`, much of it the nav and footer repeated across all 70 URLs. Technically flawless — English title and h1, self-referencing canonical, `lang="en"`, reciprocal hreflang — so thin content was the only structural explanation left. ⚠️ **The JS error above cannot be the cause on its own**, and saying so matters: the same error was on `/blog/importar-csv-degiro`, which has 1.512 words and indexes fine. Fixed with real content rather than filler — a four-step "what order to use them in" and four FAQs that deliberately do not repeat the cards or the "why free" note — taking it to **4.700 characters (862 words)**, plus a `FAQPage` hung off the `@graph` that already existed (one JSON-LD block per URL; two would compete). The FAQ is marked up only because it is visible in the HTML.
+- **`static/offline.html` now declares `noindex`**, because it is served with 200 at both `/offline` and `/offline.html` and its content says something went wrong — the definition of a soft 404. It is deliberately **not** added to `robots.txt`, for the same reason as `/dashboard`.
+- ⚠️ **Known and untouched**: with four tools in a three-column grid, the fourth card sits alone on a second row.
