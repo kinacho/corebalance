@@ -1,0 +1,18 @@
+# ⚠️ Las reglas de `.claude/rules/` tienen que quedarse en LF.
+#
+# Claude Code **no parsea el frontmatter `paths:` si el fichero viene con CRLF**, y
+# entonces la regla deja de cargarse: su prosa desaparece del contexto sin que nada
+# falle. Con `core.autocrlf=true` —lo normal en Windows— `git checkout` las convertía,
+# así que el reparto de CLAUDE.md funcionaba recién escrito y quedaba muerto en cuanto
+# alguien clonaba o cambiaba de rama. Medido el 11-ago-2026: la misma regla se carga con
+# LF y no se carga con CRLF, sin ningún otro cambio.
+#
+# CI corre en Ubuntu y ahí no hay conversión, así que este fallo es **verde en CI y rojo
+# solo en la máquina de quien trabaja** — la misma forma de fallo que el shebang de
+# `scripts/*.mjs` que documenta CLAUDE.md.
+.claude/rules/*.md text eol=lf
+
+# Los fixtures son reglas de mentira y tienen que comportarse como las de verdad: si el
+# checkout los convierte, tropiezan con la comprobación de CRLF antes de llegar a lo que
+# cada uno prueba, y dos tests pasan a fallar por un motivo que no es el suyo.
+scripts/__fixtures__/doc-drift/reglas/*.md text eol=lf

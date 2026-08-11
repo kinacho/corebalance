@@ -1,7 +1,14 @@
 import { describe, it, expect } from 'vitest';
 // @ts-expect-error — script en JS sin tipos, importado a propósito desde el test.
-import { auditarDeriva, auditarGlobs, documentosDelRepo, extraerReferencias } from './doc-drift.mjs';
+import {
+	auditarDeriva,
+	auditarGlobs,
+	documentosDelRepo,
+	extraerReferencias,
+	reglasDelRepo
+} from './doc-drift.mjs';
 import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
 
 /**
@@ -148,5 +155,37 @@ describe('doc-drift · las reglas se cargarían de verdad', () => {
 
 	it('no se queja de una regla correcta', () => {
 		expect(auditarGlobs([path.join(DIR_REGLAS_ROTAS, 'buena.md')])).toEqual([]);
+	});
+
+	/**
+	 * ⚠️ El fallo que de verdad se llevó por delante el reparto, y que CI no puede ver.
+	 *
+	 * Con `core.autocrlf=true` —lo normal en Windows— `git checkout` convierte las reglas a
+	 * CRLF, y entonces Claude Code no parsea su frontmatter: la regla no se carga y su prosa
+	 * desaparece del contexto sin que nada falle. Medido en sesión limpia el 11-ago-2026, la
+	 * misma regla con LF sí carga. CI corre en Ubuntu, donde no hay conversión, así que esto
+	 * es verde en CI y roto solo en la máquina de quien trabaja.
+	 *
+	 * El fixture se escribe aquí en vez de versionarse porque un fichero CRLF dentro del repo
+	 * es justo lo que `.gitattributes` está para impedir: se normalizaría y el test pasaría a
+	 * comprobar el caso contrario del que dice comprobar.
+	 */
+	it('caza una regla con CRLF, que no se cargaría aunque su glob sea perfecto', () => {
+		const temporal = path.join(os.tmpdir(), 'doc-drift-crlf.md');
+		fs.writeFileSync(temporal, '---\r\npaths:\r\n  - "scripts/**/*.mjs"\r\n---\r\n\r\n# crlf\r\n');
+		const problemas = auditarGlobs([temporal]);
+		expect(problemas).toHaveLength(1);
+		expect(problemas[0].motivo).toMatch(/CRLF/);
+		fs.rmSync(temporal, { force: true });
+	});
+
+	it('las reglas del repo están en LF, no solo bien escritas', () => {
+		// Control positivo del de arriba: sin esto, `.gitattributes` podría dejar de aplicarse
+		// y solo se notaría al abrir una sesión y echar de menos la prosa.
+		for (const regla of reglasDelRepo()) {
+			expect(fs.readFileSync(regla, 'utf8'), `${regla} está en CRLF y no se cargará`).not.toContain(
+				'\r\n'
+			);
+		}
 	});
 });
