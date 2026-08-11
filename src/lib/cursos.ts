@@ -132,6 +132,36 @@ export const CURSOS: Curso[] = [
 			'La fecha a partir de la cual puedes recomprar sin bloquear una pérdida.',
 			'Un criterio para decidir entre traspasar y vender, sin adivinar.'
 		]
+	},
+	{
+		slug: 'rebalancear-no-te-hara-ganar-mas',
+		titulo: 'Rebalancear no te hará ganar más',
+		gancho:
+			'Seis lecciones, y el gancho es que no te vendo lo que no es. Deberías rebalancear igualmente, y aquí está el porqué con los datos delante.',
+		descripcion:
+			'Curso gratuito de rebalanceo: qué arregla de verdad, bandas o calendario, cómo hacerlo con aportaciones sin tributar y qué hacer cuando el mercado cae un 30 %.',
+		nivel: 'Con la cartera montada',
+		paraQuien: 'Para quien ya tiene cartera y no sabe cuándo ni cómo tocarla.',
+		teLlevas: [
+			'Un criterio escrito de cuándo actuar, y cuándo no hacer nada.',
+			'Tu próximo movimiento calculado con aportaciones, sin vender.',
+			'Un plan para el día que caiga un 30 %, decidido hoy.'
+		]
+	},
+	{
+		slug: 'tu-cartera-no-es-la-que-crees',
+		titulo: 'Tu cartera no es la que crees',
+		gancho:
+			'Seis lecciones para mirar dentro de lo que ya tienes. El curso que menos se busca y el que más se comparte.',
+		descripcion:
+			'Curso gratuito avanzado: solapamiento entre fondos, exposición real por región y sector, riesgo de divisa, y la diferencia entre lo que rindió tu cartera y lo que rendiste tú.',
+		nivel: 'Avanzado',
+		paraQuien: 'Para quien lleva años invirtiendo y nunca ha mirado qué hay dentro.',
+		teLlevas: [
+			'El mapa de lo que hay realmente dentro de tus fondos.',
+			'Tu exposición por región, sector y divisa, medida y no estimada.',
+			'La diferencia entre lo que rindió tu cartera y lo que rendiste tú.'
+		]
 	}
 ];
 
