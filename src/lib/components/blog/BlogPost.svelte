@@ -124,8 +124,23 @@
   const Content = $derived(post.content);
 </script>
 
+<!--
+  ⚠️ El título va **sin** sufijo « | CoreBalance», y es un cambio medido, no estético.
+
+  Ese sufijo costaba 14 caracteres en cada uno de los 42 posts, sobre un presupuesto de
+  ~60 que Google trunca: 20 de los 27 títulos que `npm run seo:audit` marcaba como
+  truncados lo estaban **solo** por él. Y no aportaba marca, porque Google ya pinta el
+  dominio encima del título en el resultado — era la misma información dos veces, pagada
+  con la parte del título que sí responde a la consulta.
+
+  Medido el 11-ago-2026 en Search Console (3 meses): la consulta «corebalance» son 21
+  impresiones de 3.700. No hay marca que proteger todavía; sí hay títulos que truncar.
+
+  Las páginas que NO son del blog conservan su sufijo: ahí el título es de producto y la
+  marca sí es lo que se busca.
+-->
 <SeoHead
-  title={`${post.title} | CoreBalance`}
+  title={post.title}
   description={post.description}
   path={`/blog/${post.slug}`}
   lang={currentLang}

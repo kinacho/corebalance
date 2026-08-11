@@ -745,7 +745,7 @@ type RootTranslation = {
 	}
 	seo: {
 		/**
-		 * C​o​r​e​B​a​l​a​n​c​e​ ​—​ ​G​e​s​t​i​o​n​a​ ​y​ ​r​e​b​a​l​a​n​c​e​a​ ​t​u​ ​c​a​r​t​e​r​a​ ​d​e​ ​f​o​n​d​o​s​ ​i​n​d​e​x​a​d​o​s​ ​y​ ​E​T​F​s
+		 * C​o​r​e​B​a​l​a​n​c​e​ ​—​ ​G​e​s​t​i​o​n​a​ ​y​ ​r​e​b​a​l​a​n​c​e​a​ ​t​u​ ​c​a​r​t​e​r​a​ ​i​n​d​e​x​a​d​a
 		 */
 		title: string
 		/**
@@ -4887,7 +4887,7 @@ export type TranslationFunctions = {
 	}
 	seo: {
 		/**
-		 * CoreBalance — Gestiona y rebalancea tu cartera de fondos indexados y ETFs
+		 * CoreBalance — Gestiona y rebalancea tu cartera indexada
 		 */
 		title: () => LocalizedString
 		/**

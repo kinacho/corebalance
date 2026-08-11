@@ -1,5 +1,5 @@
 ---
-title: "Fondos indexados vs ETFs: diferencias prácticas para el inversor español"
+title: "Fondos indexados vs ETFs para el inversor español"
 description: "Descubre las diferencias clave entre fondos indexados y ETFs. Analizamos la fiscalidad, costes, comisiones y cuál te conviene más para invertir en España."
 summary:
   - "La diferencia decisiva en España es fiscal: los fondos de inversión se pueden traspasar sin tributar por la ganancia, los ETFs no."
