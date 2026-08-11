@@ -117,6 +117,21 @@ export const CURSOS: Curso[] = [
 			'Una respuesta razonada a «¿cuántos fondos necesito?».',
 			'Tu política de inversión escrita, que es lo que se lee el día que caiga un 30 %.'
 		]
+	},
+	{
+		slug: 'mueve-tu-dinero-sin-pagar-de-mas',
+		titulo: 'Mueve tu dinero sin pagar de más',
+		gancho:
+			'Ocho lecciones sobre la fiscalidad que decide cuánto te queda. La que ninguna herramienta internacional modela, porque es española.',
+		descripcion:
+			'Curso gratuito de fiscalidad para el inversor indexado español: base del ahorro, FIFO, traspasos, la regla de antiaplicación y qué cuesta vender para rebalancear.',
+		nivel: 'Ya tienes cartera',
+		paraQuien: 'Para quien ya invierte y quiere dejar de pagar impuestos que se podían diferir.',
+		teLlevas: [
+			'La factura exacta de tu próximo movimiento, calculada con tus operaciones.',
+			'La fecha a partir de la cual puedes recomprar sin bloquear una pérdida.',
+			'Un criterio para decidir entre traspasar y vender, sin adivinar.'
+		]
 	}
 ];
 

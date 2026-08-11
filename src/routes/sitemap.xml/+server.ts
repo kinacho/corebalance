@@ -228,15 +228,21 @@ export const GET: RequestHandler = async () => {
 		}
 	}
 
-	// La calculadora de acumulación vs distribución vive fuera del árbol bilingüe por el
-	// mismo motivo que los cursos, así que se declara aquí y no en `STATIC_PAGES`.
-	entries.push({
-		loc: absoluteUrl('/herramientas/acumulacion-vs-distribucion'),
-		lastmod: CURSOS_LASTMOD,
-		changefreq: 'monthly',
-		priority: '0.7',
-		alternates: []
-	});
+	// Las calculadoras que nacen con los cursos viven fuera del árbol bilingüe por el mismo
+	// motivo que ellos —la normativa que aplican es española—, así que se declaran aquí y
+	// no en `STATIC_PAGES`.
+	for (const ruta of [
+		'/herramientas/acumulacion-vs-distribucion',
+		'/herramientas/cuando-puedo-recomprar'
+	]) {
+		entries.push({
+			loc: absoluteUrl(ruta),
+			lastmod: CURSOS_LASTMOD,
+			changefreq: 'monthly',
+			priority: '0.7',
+			alternates: []
+		});
+	}
 
 	const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
