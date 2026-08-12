@@ -12,7 +12,6 @@
   const lang = $derived(($page.data.locale ?? 'es') as Locales);
   let isEs = $derived(lang === 'es');
   const canonical = $derived(alternates($page.url.pathname, lang).canonical);
-  const homeUrl = $derived(absoluteUrl(localizePath('/', lang)));
 
   const metaTitle = $derived(
     isEs
@@ -163,13 +162,11 @@
           acceptedAnswer: { '@type': 'Answer', text: faq.a }
         }))
       },
-      {
-        '@type': 'BreadcrumbList',
-        itemListElement: [
-          { '@type': 'ListItem', position: 1, name: isEs ? 'Inicio' : 'Home', item: homeUrl },
-          { '@type': 'ListItem', position: 2, name: isEs ? 'Herramientas' : 'Tools', item: canonical }
-        ]
-      },
+      // ⚠️ Aquí había un `BreadcrumbList`, y se fue con la miga de pan que lo respaldaba:
+      // marcar un rastro de navegación que no está en la página es describir contenido
+      // invisible, que es justo lo que retira un resultado enriquecido. En una página de
+      // primer nivel el rastro era además «Inicio / Herramientas», que no dice nada que el
+      // `h1` no diga ya.
       {
         '@type': 'CollectionPage',
         name: metaTitle,
@@ -208,12 +205,6 @@
   <LandingNavBar onStart={() => goto($link('/'))} />
 
   <main class="hub-container">
-    <nav class="breadcrumb" aria-label="Breadcrumb">
-      <a href={$link('/')}>{isEs ? 'Inicio' : 'Home'}</a>
-      <span class="separator">/</span>
-      <span class="current" aria-current="page">{isEs ? 'Herramientas' : 'Tools'}</span>
-    </nav>
-
     <header class="hub-header">
       <span class="category-badge">{isEs ? 'Herramientas interactivas' : 'Interactive tools'}</span>
       <h1 class="gradient-text">
@@ -282,9 +273,21 @@
           ? 'Porque una calculadora que te pide el correo antes de darte un número no es una calculadora, es un formulario. Ninguna de estas herramientas guarda lo que escribes ni lo envía a un servidor, y no hay versión de pago detrás. Si quieres llevar el seguimiento completo de tu cartera —con tu libro de operaciones, precios en vivo y el reparto exacto de cada aportación— eso es la app, y también es gratis.'
           : 'Because a calculator that asks for your email before giving you a number is not a calculator, it is a form. None of these tools store what you type or send it to a server, and there is no paid tier behind them. If you want full portfolio tracking — your transaction ledger, live prices and the exact split of every contribution — that is the app, and it is free too.'}
       </p>
-      <button class="btn-primary" onclick={() => goto($link('/'))}>
+      <!--
+        ⚠️ Dos defectos en tres líneas, y los dos invisibles para el compilador.
+
+        Era un `<button class="btn-primary">` y **`.btn-primary` no es una clase global**:
+        está definida por separado dentro de diez componentes, y esta página la usaba sin
+        declararla. Svelte aísla los estilos por componente, así que el botón se servía como
+        texto plano sin ningún aviso en ninguna parte.
+
+        Y llevaba a `/` teniendo escrito «ver la calculadora de rebalanceo». La calculadora
+        es `/dashboard`; la portada es otra cosa. Ahora es un enlace de verdad y no un
+        `goto()`, que además se puede abrir en otra pestaña y lo ve un rastreador.
+      -->
+      <a class="cta-app" href="/dashboard">
         {isEs ? 'Ver la calculadora de rebalanceo' : 'See the rebalancing calculator'}
-      </button>
+      </a>
     </section>
   </main>
 
@@ -305,34 +308,36 @@
     z-index: 1;
     max-width: 1100px;
     margin: 0 auto;
-    padding: 2rem 1.5rem 5rem;
+    /*
+     * ⚠️ Eran 2rem —32 px— contra una barra de navegación **fija de 76 px de alto**, así
+     * que lo primero de la página quedaba debajo de ella: la miga de pan se comía la marca
+     * «CoreBalance» por arriba y el rótulo «Herramientas interactivas» por abajo. Quitar la
+     * miga sin tocar esto solo habría movido el problema al rótulo, que pasaba a ser el
+     * primer elemento. `/comparativas` tenía exactamente el mismo defecto; las páginas de
+     * detalle no, porque ya empezaban a 130 px.
+     */
+    padding: 7.5rem 1.5rem 5rem;
   }
 
-  .breadcrumb {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    margin-bottom: 2.5rem;
-  }
-
-  .breadcrumb a {
-    color: var(--text-muted);
+  /* Mismo aspecto que el botón principal de la landing, declarado aquí porque los
+     estilos de Svelte no cruzan de un componente a otro. */
+  .cta-app {
+    display: inline-block;
+    margin-top: 1.5rem;
+    padding: 0.9rem 1.6rem;
+    border-radius: 16px;
+    background: var(--accent-blue);
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 700;
     text-decoration: none;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
   }
-
-  .breadcrumb a:hover {
-    color: var(--accent-blue);
-  }
-
-  .breadcrumb .separator {
-    opacity: 0.4;
-  }
-
-  .breadcrumb .current {
-    color: var(--text-primary);
+  .cta-app:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(37, 99, 235, 0.4);
   }
 
   .hub-header {

@@ -12,7 +12,6 @@
   const lang = $derived(($page.data.locale ?? 'es') as Locales);
   let isEs = $derived(lang === 'es');
   const canonical = $derived(alternates($page.url.pathname, lang).canonical);
-  const homeUrl = $derived(absoluteUrl(localizePath('/', lang)));
 
   const metaTitle = $derived(
     isEs
@@ -76,13 +75,8 @@
   const schemaData = $derived({
     '@context': 'https://schema.org',
     '@graph': [
-      {
-        '@type': 'BreadcrumbList',
-        itemListElement: [
-          { '@type': 'ListItem', position: 1, name: isEs ? 'Inicio' : 'Home', item: homeUrl },
-          { '@type': 'ListItem', position: 2, name: isEs ? 'Comparativas' : 'Comparisons', item: canonical }
-        ]
-      },
+      // Igual que en `/herramientas`: la miga se fue, y su marcado con ella. Describir un
+      // rastro de navegación que no está en la página es marcar contenido invisible.
       {
         '@type': 'CollectionPage',
         name: metaTitle,
@@ -121,12 +115,6 @@
   <LandingNavBar onStart={() => goto($link('/'))} />
 
   <main class="hub-container">
-    <nav class="breadcrumb" aria-label="Breadcrumb">
-      <a href={$link('/')}>{isEs ? 'Inicio' : 'Home'}</a>
-      <span class="separator">/</span>
-      <span class="current" aria-current="page">{isEs ? 'Comparativas' : 'Comparisons'}</span>
-    </nav>
-
     <header class="hub-header">
       <span class="category-badge">{isEs ? 'Comparativas' : 'Comparisons'}</span>
       <h1 class="gradient-text">
@@ -188,34 +176,34 @@
     z-index: 1;
     max-width: 1100px;
     margin: 0 auto;
-    padding: 2rem 1.5rem 5rem;
+    /* Ver `/herramientas`: 2rem contra una barra fija de 76 px dejaba lo primero de la
+       página por debajo de ella. */
+    padding: 7.5rem 1.5rem 5rem;
   }
 
-  .breadcrumb {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    margin-bottom: 2.5rem;
+  /*
+   * ⚠️ **`.btn-primary` no es una clase global**: cada componente que la usa la declara por
+   * su cuenta —hay diez copias— y esta página la usaba sin declararla, así que su botón se
+   * servía como texto plano. Exactamente el mismo defecto que tenía `/herramientas`, y
+   * exactamente igual de silencioso: Svelte aísla los estilos por componente y nada avisa
+   * de que una clase no existe. Copiada de `herramientas/simulador-crisis`, que sí la
+   * declara, para no inventar un botón distinto.
+   */
+  .btn-primary {
+    background: var(--accent-blue);
+    color: #fff;
+    border: none;
+    padding: 0.85rem 2rem;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);
+    transition: all 0.2s ease;
   }
-
-  .breadcrumb a {
-    color: var(--text-muted);
-    text-decoration: none;
-  }
-
-  .breadcrumb a:hover {
-    color: var(--accent-blue);
-  }
-
-  .breadcrumb .separator {
-    opacity: 0.4;
-  }
-
-  .breadcrumb .current {
-    color: var(--text-primary);
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(37, 99, 235, 0.4);
   }
 
   .hub-header {
