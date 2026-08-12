@@ -53,6 +53,7 @@ The repo is really two apps:
 | `.claude/rules/rutas-seo-y-contenido.md` | `src/lib/i18n/**`, `src/hooks.server.ts`, `src/content/**`, `vite.config.ts` | Locale resolution, bilingual routes, the blog, the three soft 404s |
 | `.claude/rules/almacenamiento.md` | `src/lib/db/**`, `firestore.rules` | Dexie, Firestore, the three-layer merge |
 | `.claude/rules/sincronizacion-qr.md` | `src/routes/sync/**`, `src/lib/sync-payload.ts` | The device-to-device transfer |
+| `.claude/rules/cursos.md` | `src/content/cursos/**`, `src/routes/cursos/**`, `src/lib/cursos.ts`, `src/lib/cursos-datos.ts`, `src/lib/components/cursos/**` | The lesson format contract, the five didactic components, the cited-data module and the courses' SEO/GEO |
 | `.claude/rules/e2e.md` | `e2e/**`, `playwright.config.ts` | What only a real browser catches |
 | `.claude/rules/scripts-y-produccion.md` | `scripts/**` | The production smoke check and its DNS diagnosis |
 

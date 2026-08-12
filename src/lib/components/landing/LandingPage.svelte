@@ -7,6 +7,7 @@
   import HowToRebalance from './HowToRebalance.svelte';
   import HowItWorks from './HowItWorks.svelte';
   import EducationalFAQ from './EducationalFAQ.svelte';
+  import Cursos from './Cursos.svelte';
   import Cta from './Cta.svelte';
   import LandingFooter from './LandingFooter.svelte';
   import { LL } from '$lib/i18n/i18n-svelte';
@@ -86,6 +87,19 @@
   <main>
     <Hero {onStart} />
     <Features />
+    <!--
+      Los cursos solo existen en español, así que la sección solo se ofrece ahí.
+      Enseñarla en `/en` llevaría a páginas en español, que es peor que no ofrecerla.
+
+      ⚠️ Va en tercer lugar y no la séptima, que es donde estaba. Antes quedaba por
+      debajo de cuatro bloques de producto: quien entra desde una búsqueda informativa
+      —que es de dónde viene la mayor parte del tráfico— se iba sin llegar a verla nunca.
+      Después de `Features` porque primero hay que saber qué es esto; antes del resto
+      porque los cursos son lo nuevo y lo que se puede consumir sin registrarse.
+    -->
+    {#if lang === 'es'}
+      <Cursos />
+    {/if}
     <Comparison />
     <HowItWorks />
     <WhyUs />
