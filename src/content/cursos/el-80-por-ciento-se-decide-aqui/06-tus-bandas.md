@@ -4,6 +4,9 @@ descripcion: "Qué banda de tolerancia usar, por qué la banda absoluta no es la
 orden: 6
 gancho: "Con datos reales de 2010 a 2026, rebalancear salió 3.474 € peor. Y aun así deberías hacerlo. Aquí está el porqué, con las cifras delante."
 minutos: 10
+arquetipo: calcular
+datos:
+  - backtest.diferencia
 accion:
   texto: "Responde las cuatro preguntas del checklist y contrástalo con la banda que acabas de elegir. Si no coinciden, una de las dos cosas está mal pensada."
   cta: "Contrastar con el checklist"
@@ -18,58 +21,88 @@ lecturas:
 ---
 
 <script>
-  import BacktestTable from '$lib/components/blog/BacktestTable.svelte';
+  import Comprueba from '$lib/components/cursos/Comprueba.svelte';
+  import Cifras from '$lib/components/cursos/Cifras.svelte';
+  import Cifra from '$lib/components/cursos/Cifra.svelte';
+  import Mando from '$lib/components/cursos/Mando.svelte';
+  import { BACKTEST, eur, pct } from '$lib/cursos-datos';
 </script>
 
-Ya tienes el reparto. Falta la otra mitad de la decisión, que casi nadie escribe: **cuánto se puede desviar antes de que hagas algo.**
+Ya tienes el reparto. ¿Cuánto se puede desviar antes de que hagas algo?
 
-Sin ese número, «tengo una 80/20» no significa nada. Significa que empezaste con un 80/20.
+Sin ese número, «tengo una 80/20» solo significa que empezaste con un 80/20. Y antes de elegirlo, el dato que incomoda: esto es lo que pasó de verdad entre 2010 y 2026 con 10.000 € y sin aportaciones.
 
-## Banda absoluta, no relativa
+<Cifras fuente={BACKTEST.procedencia.fuente} fecha={BACKTEST.procedencia.fecha}>
+	<Cifra
+		valor={eur(BACKTEST.sinRebalancear.valorFinal)}
+		unidad=" €"
+		etiqueta="Sin rebalancear nunca"
+		matiz={`Acabó con el ${pct(BACKTEST.sinRebalancear.pesoRVFinal)} % en bolsa.`}
+	/>
+	<Cifra
+		valor={eur(BACKTEST.rebalanceado.valorFinal)}
+		unidad=" €"
+		etiqueta="Rebalanceando una vez al año"
+		matiz={`Acabó con el ${pct(BACKTEST.rebalanceado.pesoRVFinal)} %, que es lo que había elegido.`}
+	/>
+</Cifras>
 
-Una banda de 5 puntos porcentuales sobre un objetivo del 10 % tolera entre el **5 % y el 15 %**. No entre el 9,5 % y el 10,5 %.
+Lo primero que hay que decir es lo que va contra el discurso habitual: **no rebalancear terminó con más dinero**. No es casualidad ni error — son dieciséis años excepcionalmente buenos para la bolsa, y dejar correr la parte de acciones paga cuando las acciones casi no dejan de subir. Si alguien te dice que rebalancear mejora la rentabilidad, pídele los datos.
 
-Parece un detalle y no lo es: con bandas relativas, una posición pequeña se sale constantemente y te obliga a operar por movimientos que no cambian nada. La banda absoluta trata igual una desviación de 5 puntos venga de donde venga, que es lo que quieres, porque lo que te preocupa es el riesgo de la cartera, no el porcentaje de una línea.
+<Comprueba
+	pregunta="Quien no rebalanceó acabó con más dinero. ¿Qué acabó teniendo, además del dinero?"
+	opciones={[
+		{
+			texto: 'La misma cartera, solo que más grande',
+			correcta: false,
+			porque: 'Es lo que parece si solo se mira la última fila. Pero el objetivo era un 80 % en bolsa y terminó muy por encima: la proporción se movió sola durante dieciséis años.'
+		},
+		{
+			texto: 'Otra cartera, con un riesgo que nunca decidió',
+			correcta: true,
+			porque: 'Ahí está todo. La ventaja se construyó asumiendo un riesgo que nadie eligió: si el año siguiente hubiera sido 2008, esa cartera habría caído como lo que era, no como lo que su dueño creía tener.'
+		},
+		{
+			texto: 'Menos comisiones, al no haber operado',
+			correcta: false,
+			porque: 'Cierto y menor: el backtest no incluye comisiones ni impuestos, así que con costes reales rebalancear sale algo peor todavía en rentabilidad. Sigue sin ser el motivo por el que se rebalancea.'
+		}
+	]}
+/>
 
-Cinco puntos es un punto de partida razonable. Más estrecho te hace operar mucho; más ancho deja que la cartera se convierta en otra.
+## Rebalancear no es una técnica de rentabilidad
 
-## Y ahora los datos, incluido el que incomoda
+**Es lo que mantiene la cartera siendo la que elegiste.** Por eso la pregunta correcta no es «¿cuánto me hace ganar?» sino «¿cuánto llevo siendo otra cosa?». Y la respuesta a esa pregunta es tu banda.
 
-Esto no es una simulación con supuestos: son series reales de mercado, cierres mensuales con dividendos reinvertidos, de enero de 2010 a julio de 2026. Una cartera 80/20 con 10.000 € iniciales, sin aportaciones, comparando no rebalancear nunca contra rebalancear una vez al año.
+## La banda es absoluta, no relativa
 
-<BacktestTable lang="es" />
+Una banda de 5 puntos porcentuales sobre un objetivo del 10 % tolera entre el 5 % y el 15 %, no entre el 9,5 % y el 10,5 %. No es un detalle: con bandas relativas una posición pequeña se sale constantemente y te obliga a operar por movimientos que no cambian nada.
 
-Lo primero que hay que decir es lo que va contra el discurso habitual: **no rebalancear terminó con 3.474 € más.** Y no es casualidad ni error: son dieciséis años excepcionalmente buenos para la bolsa, y dejar correr la parte de acciones paga cuando las acciones casi no dejan de subir.
+<Mando
+	etiqueta="Tu banda, en puntos porcentuales"
+	min={1}
+	max={10}
+	paso={1}
+	inicial={5}
+	unidad=" pp"
+	etiquetaResultado="Sobre un objetivo del 10 %, toleras"
+	calcular={(pp) => `del ${(10 - pp).toLocaleString('es-ES')} % al ${(10 + pp).toLocaleString('es-ES')} %`}
+	nota="Más estrecho te hace operar mucho; más ancho deja que la cartera se convierta en otra. Cinco puntos es un punto de partida razonable."
+/>
 
-Si alguien te dice que rebalancear mejora la rentabilidad, pídele los datos.
+## ¿Bandas o calendario?
 
-## Entonces por qué rebalancear
-
-Mira la última columna, que es la que nadie enseña.
-
-Quien no rebalanceó **acabó con un 93,6 % en acciones** sobre un objetivo del 80. No terminó con más dinero en su cartera: terminó con más dinero en **otra** cartera. Una que él no eligió, con un perfil de riesgo que fue derivando solo durante dieciséis años.
-
-Y ahí está el punto: si el siguiente año hubiera sido 2008, ese 93,6 % habría caído como un 93,6 %, no como un 80. La ventaja de 3.474 € se construyó asumiendo un riesgo que no había decidido.
-
-Rebalancear no es una técnica para ganar más. **Es lo que mantiene la cartera siendo la que elegiste.** Por eso la pregunta correcta no es «¿cuánto me hace ganar?» sino «¿cuánto llevo siendo otra cosa?».
-
-## Bandas o calendario
-
-**Por calendario**: revisas cada X meses y ajustas. Simple, automatizable, y a veces operas sin necesidad.
-
-**Por bandas**: revisas cuando algo se sale. Operas menos y solo cuando importa, pero exige mirar.
-
-**Las dos juntas** es lo que hace casi todo el mundo que lleva años: revisión trimestral o semestral, y solo se toca lo que se ha salido de banda. Es lo que la herramienta enseña de un vistazo, y también el histórico de cuánto tiempo llevas fuera — que es la pregunta de esta lección aplicada al pasado.
+**Por calendario** revisas cada X meses: simple y automatizable, aunque a veces operas sin necesidad. **Por bandas** revisas cuando algo se sale: operas menos, pero exige mirar. Casi todo el mundo que lleva años hace las dos juntas.
 
 <div class="bloque aviso">
 
 ## Lo que no te van a contar
 
-**El backtest de arriba no incluye comisiones ni impuestos.** Está escrito en sus supuestos. Con costes reales, rebalancear sale algo peor todavía en rentabilidad — y en España, si son fondos, el traspaso elimina la parte fiscal, que es la más cara. Ese es el argumento de verdad a favor de rebalancear aquí, y es local.
+**El backtest de arriba no incluye comisiones ni impuestos**, y está escrito en sus supuestos. En España, si son fondos, el traspaso elimina la parte fiscal, que es la más cara: ese es el argumento de verdad a favor de rebalancear aquí, y es local.
 
-**Dieciséis años es una ventana, no la verdad.** En un periodo con una caída fuerte al final, el resultado se invierte: rebalancear habría reducido el golpe. Cualquiera que te presente un backtest como prueba definitiva está eligiendo las fechas.
+**Dieciséis años es una ventana, no la verdad.** En un periodo con una caída fuerte al final el resultado se invierte. Cualquiera que te presente un backtest como prueba definitiva está eligiendo las fechas.
 
-**Y rebalancear con aportaciones no tiene ninguno de estos costes.** Si en vez de vender lo que sobra compras lo que falta con dinero nuevo, no hay comisión de venta ni impuesto. Es la vía por defecto mientras estés aportando, y es lo que calcula la app.
+**Y rebalancear con aportaciones no tiene ninguno de estos costes.** Si compras lo que falta con dinero nuevo, no hay comisión de venta ni impuesto. Es la vía por defecto mientras estés aportando.
 
 </div>
 
@@ -78,10 +111,9 @@ Rebalancear no es una técnica para ganar más. **Es lo que mantiene la cartera 
 ## Lo que hay que retener
 
 - La banda es absoluta: 5 pp sobre un 10 % es de 5 a 15.
-- Con datos reales 2010-2026, no rebalancear rindió más — 3.474 € más.
-- Pero acabó con un 93,6 % en acciones sobre un objetivo del 80: otra cartera.
+- Con datos reales 2010-2026, no rebalancear rindió más.
+- Pero acabó con otra cartera: mucho más en bolsa de lo que había elegido.
 - Rebalancear mantiene el riesgo que elegiste. No es una técnica de rentabilidad.
 - Mientras aportes, rebalancea comprando lo que falta.
 
 </div>
-

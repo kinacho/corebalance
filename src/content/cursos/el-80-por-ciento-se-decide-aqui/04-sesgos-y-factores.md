@@ -4,6 +4,7 @@ descripcion: "Los tres añadidos más frecuentes a una cartera indexada global, 
 orden: 4
 gancho: "Todos estos añadidos tienen un buen argumento académico. El problema es el plazo en el que hay que sostenerlo."
 minutos: 8
+arquetipo: decidir
 accion:
   texto: "Añade el fondo que estás considerando a la cartera de ejemplo y mira el solapamiento y el reparto por sector. Si tu exposición apenas se mueve, el añadido es coste sin efecto."
   cta: "Comprobar si añade algo"
@@ -15,51 +16,72 @@ lecturas:
     href: "/blog/cartera-msci-world-emerging-markets"
 ---
 
-Un fondo global es una cartera terminada. Todo lo que se le añada tiene que justificar su sitio, y los tres candidatos habituales son estos.
+<script>
+  import Comprueba from '$lib/components/cursos/Comprueba.svelte';
+  import Mando from '$lib/components/cursos/Mando.svelte';
+</script>
 
-## Sesgo local
+Un fondo global ya es una cartera terminada. ¿Qué tiene que demostrar cualquier cosa que le añadas encima?
 
-Darle a Europa —o a España— más peso del que le corresponde por capitalización.
+Esto, antes que ningún argumento: **cuánto mueve tu exposición real**. Mueve el peso que le darías al añadido y míralo.
 
-**El argumento bueno**: tus gastos futuros son en euros y en España. Una cartera con el 65 % en dólares tiene un riesgo de divisa que no aparece en ninguna ficha, y acercar la moneda de tus activos a la de tus gastos lo reduce.
+<Mando
+	etiqueta="Peso del fondo que añades"
+	min={1}
+	max={20}
+	paso={1}
+	inicial={5}
+	unidad=" %"
+	etiquetaResultado="Lo que se mueve tu exposición real"
+	calcular={(peso) => `${(peso * 0.2).toLocaleString('es-ES', { maximumFractionDigits: 1 })} puntos`}
+	nota="Supone que el 80 % de lo que lleva ese fondo ya está dentro de tu global, que es lo habitual en un añadido sectorial o factorial. Con menos solapamiento mueve más — pero eso se mide, no se estima."
+/>
 
-**El argumento malo**: «conozco estas empresas». No las conoces; conoces sus anuncios.
+Un producto más que seguir, una orden más que dar y un TER más que pagar, para mover un punto. Con eso en la cabeza, los tres candidatos habituales.
 
-En la práctica, algo de sobreponderación de Europa es defendible. El IBEX como posición propia es otra cosa: 35 valores, muy concentrado en banca y utilities, con un histórico que no acompaña.
+<Comprueba
+	pregunta="De los tres añadidos clásicos —sesgo local, small caps y value—, ¿cuál es el problema que comparten?"
+	pista="No es que el argumento sea malo. Los tres tienen uno bueno."
+	opciones={[
+		{
+			texto: 'Que no están respaldados por la evidencia',
+			correcta: false,
+			porque: 'Lo están, y value es probablemente el más sólido académicamente de los tres. Si el problema fuera ese, la decisión sería fácil.'
+		},
+		{
+			texto: 'Que hay que sostenerlos durante décadas, incluidos quince años en contra',
+			correcta: true,
+			porque: 'Las primas por factores se miden en plazos larguísimos y tienen periodos larguísimos en contra. Si te vas a cansar antes —y casi todo el mundo se cansa—, has pagado el coste sin cobrar el premio.'
+		},
+		{
+			texto: 'Que en España no hay productos para implementarlos',
+			correcta: false,
+			porque: 'Haberlos hay, aunque son más caros y menos puros de lo que suenan. Es un problema real, pero de segundo orden frente al del plazo.'
+		}
+	]}
+/>
 
-## Small caps
+## ¿Cuánto sesgo local es defendible?
 
-Empresas pequeñas. Históricamente han rendido algo más que las grandes, con más volatilidad.
+Darle a Europa —o a España— más peso del que le toca por capitalización. A favor: tus gastos futuros son en euros, y una cartera con dos tercios en dólares arrastra un riesgo de divisa que no aparece en ninguna ficha; acercar la moneda de tus activos a la de tus gastos lo reduce de verdad. En contra, el argumento que se oye más: «conozco estas empresas». No las conoces, conoces sus anuncios.
 
-**El argumento bueno**: un índice como el MSCI World solo cubre grandes y medianas, así que te falta un trozo real del mercado. Añadir un fondo de small caps completa la cobertura.
+Algo de sobreponderación europea es defendible. El IBEX como posición propia es otra cosa: 35 valores, muy concentrados en banca y utilities, con un histórico que no acompaña.
 
-**El argumento malo**: esperar que la prima aparezca en tu ventana concreta. Las primas por factores se miden en décadas y tienen periodos de quince años en contra. Si te vas a cansar antes, es coste sin premio.
+## Small caps y value
 
-## Value
+**Small caps** completa una cobertura que de verdad te falta, porque un MSCI World solo lleva grandes y medianas: añadirlas es tapar un agujero real del índice. El argumento malo es esperar que la prima aparezca justo en tu ventana de veinte años.
 
-Empresas baratas respecto a sus fundamentales.
-
-**El argumento bueno** es probablemente el más sólido académicamente de los tres, y también el que ha sufrido más recientemente: value quedó muy por detrás durante buena parte de la última década antes de recuperar.
-
-**El argumento malo**: entrar después de leer que «value vuelve». Eso es cambiar de estrategia con el periódico, que es exactamente lo que la indexación intenta evitar.
-
-## La pregunta que zanja las tres
-
-Antes de añadir cualquier cosa, hazte esta: **¿cuánto se mueve mi exposición real al añadirlo?**
-
-Si añades un fondo con un 5 % de peso y su contenido ya está en un 80 % dentro de lo que tienes, tu exposición cambia en algo así como un punto. Has añadido un producto que seguir, una orden que dar y un TER que pagar, para mover un punto.
-
-Eso se mira, no se estima. Y es lo que hace el mapa de la herramienta.
+**Value** es el más sólido sobre el papel y el que más ha sufrido en la última década antes de recuperar. Su argumento malo es el peor de los tres: entrar después de leer que «value vuelve» es cambiar de estrategia con el periódico delante, que es exactamente lo que la indexación existe para evitar.
 
 <div class="bloque aviso">
 
 ## Lo que no te van a contar
 
-**Cada añadido tiene un coste que nadie apunta: la probabilidad de que abandones.** Una cartera de dos fondos se mantiene sola quince años. Una de seis pide decisiones, y cada decisión es una oportunidad de equivocarse.
+**Cada añadido tiene un coste que nadie apunta: la probabilidad de que abandones.** Una cartera de dos fondos se mantiene sola quince años; una de seis pide decisiones, y cada decisión es una oportunidad de equivocarse.
 
-**Los fondos «factoriales» disponibles en España son más caros y menos puros de lo que suenan.** El TER sube, la replicación es peor y la definición de «value» varía entre proveedores. Parte de la prima teórica se queda en el camino antes de llegarte.
+**Los fondos factoriales disponibles aquí son más caros y menos puros de lo que suenan.** El TER sube, la replicación es peor y la definición de «value» varía entre proveedores: parte de la prima teórica se queda en el camino.
 
-**Y el sesgo local ya lo tienes sin querer**: cobras en euros, tu vivienda está aquí y tu empleo depende de esta economía. Tu exposición real a España es mucho mayor que el porcentaje de tu cartera.
+**Y el sesgo local ya lo tienes sin quererlo**: cobras en euros, tu vivienda está aquí y tu empleo depende de esta economía.
 
 </div>
 
@@ -69,8 +91,7 @@ Eso se mira, no se estima. Y es lo que hace el mapa de la herramienta.
 
 - Los tres tienen argumento; el problema es sostenerlo décadas.
 - Algo de Europa es defendible. El IBEX como posición propia, mucho menos.
-- Antes de añadir, mide cuánto mueve tu exposición real. Si es un punto, no lo añadas.
+- Antes de añadir, mide cuánto mueve tu exposición. Si es un punto, no lo añadas.
 - Cada producto extra sube la probabilidad de que abandones la estrategia.
 
 </div>
-

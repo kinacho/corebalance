@@ -4,6 +4,7 @@ descripcion: "Qué hace realmente la parte de bonos en una cartera indexada, por
 orden: 3
 gancho: "La renta fija no está ahí para dar rentabilidad. Está para que aguantes la renta variable. Y en 2022 hizo justo lo contrario."
 minutos: 9
+arquetipo: desmontar
 accion:
   texto: "Mira cuánto caería tu reparto actual en una crisis como 2000, 2008 o 2020, y cuántos meses tardaría en recuperarse. Luego cambia el porcentaje de bolsa y vuelve a mirar. Ese es el único criterio honesto para elegirlo."
   cta: "Simular una crisis con mi reparto"
@@ -15,45 +16,76 @@ lecturas:
     href: "/blog/que-pasa-si-no-rebalanceo-cartera"
 ---
 
-Aquí es donde la mayoría de las guías se pone perezosa: «pon tu edad en bonos», «100 menos tu edad», reglas que nadie ha comprobado nunca.
+<script>
+  import Comprueba from '$lib/components/cursos/Comprueba.svelte';
+  import Pasos from '$lib/components/cursos/Pasos.svelte';
+</script>
 
-Vamos a lo que hace de verdad.
+«Pon tu edad en bonos», «100 menos tu edad». ¿De dónde salen esas reglas y qué se supone que arreglan?
 
-## Para qué sirve la renta fija
+Aquí es donde casi todas las guías se ponen perezosas. Vamos a lo que la renta fija hace de verdad, que son dos cosas y ninguna es rendir.
 
-**Para reducir la amplitud de las caídas.** Eso es prácticamente todo. Una cartera 60/40 cae menos que una 100 % bolsa en un mercado malo, y esa diferencia es lo que decide si sigues invertido o vendes en el peor mes.
+<Comprueba
+	pregunta="Llevas un 20 % en un fondo de renta fija global. La bolsa cae un 35 %. ¿Para qué te sirve exactamente ese 20 %?"
+	opciones={[
+		{
+			texto: 'Para que la caída de la cartera sea menor',
+			correcta: true,
+			porque: 'Es su función principal y prácticamente la única: reducir la amplitud. Y esa diferencia es la que decide si sigues invertido o vendes en el peor mes, que es lo que de verdad determina tu resultado.'
+		},
+		{
+			texto: 'Para compensar la caída: los bonos suben cuando la bolsa baja',
+			correcta: false,
+			porque: 'Eso pasó durante décadas y por eso se explica así, pero no está garantizado. En 2022 cayeron las dos cosas a la vez y la cartera 60/40 tuvo uno de sus peores años en un siglo.'
+		},
+		{
+			texto: 'Para mejorar la rentabilidad a largo plazo',
+			correcta: false,
+			porque: 'Al revés: a largo plazo la renta variable rinde más, así que cada punto en renta fija es un punto de rentabilidad esperada que cambias por tranquilidad. Es un intercambio, no una mejora.'
+		}
+	]}
+/>
 
-No está ahí para dar rentabilidad: a largo plazo la renta variable rinde más. Cada punto que le pones a la renta fija es un punto de rentabilidad esperada que cambias por tranquilidad. **Es un intercambio, no una mejora.**
+## ¿Cuál es el segundo uso, el que casi nadie menciona?
 
-Y hay un segundo uso, menos comentado: **da con qué comprar.** Si la bolsa cae un 35 % y tienes un 20 % en bonos, rebalancear significa vender algo que ha aguantado para comprar algo que está barato. Sin esa parte, rebalancear solo se puede hacer con dinero nuevo.
+**Da con qué comprar.** Si la bolsa cae un 35 % y tienes un 20 % en bonos, rebalancear significa vender algo que ha aguantado para comprar algo que está barato. Sin esa parte, rebalancear solo se puede hacer con dinero nuevo — y el dinero nuevo llega al ritmo de tu nómina, no al ritmo de las oportunidades.
 
 ## Lo que 2022 rompió
 
-La explicación de arriba tiene un supuesto escondido: que cuando la bolsa cae, los bonos aguantan o suben. Fue así durante décadas.
+La explicación de arriba tiene un supuesto escondido: que cuando la bolsa cae, los bonos aguantan o suben. La subida rápida de tipos hizo caer las dos cosas a la vez, y los bonos de vencimiento largo cayeron tanto como muchas bolsas.
 
-En 2022 no. La subida rápida de tipos hizo caer **las dos cosas a la vez**, y los bonos de vencimiento largo cayeron tanto como muchas bolsas. La cartera 60/40, que existe precisamente para que eso no pase, tuvo uno de sus peores años en un siglo.
+La lección no es «los bonos no sirven», que es la que sacó medio internet ese año. Es más incómoda: **la correlación entre activos no es una constante**. Una cartera que solo funciona si dos cosas se mueven en direcciones opuestas depende de algo que nadie te garantiza, y conviene saber que tu 60/40 tiene esa dependencia dentro. La reducción de amplitud sigue estando; la compensación automática no estaba prometida por nadie, solo por la costumbre de los últimos cuarenta años.
 
-La lección no es «los bonos no sirven». Es más incómoda: **la correlación entre activos no es una constante**, y una cartera que solo funciona si dos cosas se mueven en direcciones opuestas depende de algo que nadie te garantiza.
+<Pasos
+	titulo="Cómo decidir tu porcentaje, sin reglas de la edad"
+	pasos={[
+		{
+			titulo: '¿Cuándo necesitas el dinero?',
+			detalle: 'Si es en menos de cinco años, esa parte no debería estar en bolsa. Esto no es opinable ni depende de tu tolerancia.'
+		},
+		{
+			titulo: '¿Cuánto puedes ver caer sin vender?',
+			detalle: 'No lo que crees: lo que ya has vivido.',
+			aviso: 'Si nunca has pasado una caída del 30 %, asume que te afectará más de lo que imaginas. Casi todo el mundo descubre su tolerancia real a la baja.'
+		},
+		{
+			titulo: '¿Tienes fondo de emergencia?',
+			detalle: 'Si no lo tienes, tu renta fija de facto es cero: un imprevisto te obligará a vender bolsa en el peor momento, que es exactamente lo que la renta fija venía a evitar.'
+		}
+	]}
+/>
 
-## Cómo decidir tu porcentaje, entonces
-
-Olvida las reglas de la edad. Tres preguntas:
-
-1. **¿Cuándo necesitas el dinero?** Si es en menos de cinco años, la parte que necesitas no debería estar en bolsa, y esto no es opinable.
-2. **¿Cuánto puedes ver caer sin vender?** No lo que crees: lo que ya has vivido. Si nunca has pasado una caída del 30 %, asume que te afectará más de lo que imaginas.
-3. **¿Tienes fondo de emergencia?** Si no, tu renta fija de facto es cero, porque un imprevisto te obligará a vender bolsa en el peor momento.
-
-Y una nota práctica: si tu horizonte es largo y ya tienes colchón, un 0-20 % es defendible. Lo que casi nunca lo es, para un inversor con nómina y treinta años por delante, es un 40 %.
+Con horizonte largo y colchón hecho, un 0-20 % es defendible. Lo que casi nunca lo es, para alguien con nómina y treinta años por delante, es un 40 %.
 
 <div class="bloque aviso">
 
 ## Lo que no te van a contar
 
-**«Renta fija» no es una cosa.** Deuda pública a corto, corporativa, mercados emergentes en divisa local y bonos ligados a inflación se comportan de formas radicalmente distintas. Un fondo agregado global mete todo eso junto y su duración media decide más que su nombre.
+**«Renta fija» no es una cosa.** Deuda pública a corto, corporativa, emergentes en divisa local y bonos ligados a inflación se comportan de formas radicalmente distintas. Un fondo agregado global mete todo eso junto, y su duración media decide más que su nombre.
 
-**En España tienes competencia directa**: depósitos y letras del Tesoro dan un tipo conocido sin riesgo de precio. Para la parte «que no quiero que caiga», a menudo son mejores que un fondo de bonos — que sí puede caer, como demostró 2022.
+**En España tienes competencia directa**: depósitos y letras del Tesoro dan un tipo conocido sin riesgo de precio. Para la parte «que no quiero que caiga» suelen ser mejores que un fondo de bonos, que sí puede caer.
 
-**Y el consejo más habitual está sesgado por el pasado reciente.** Buena parte de lo que se ha escrito sobre el 60/40 se escribió durante cuarenta años de tipos a la baja, que es el mejor entorno posible para los bonos. No estamos ahí.
+**Y el consejo habitual está sesgado por el pasado reciente.** Casi todo lo escrito sobre el 60/40 se escribió durante cuarenta años de tipos a la baja, el mejor entorno posible para los bonos.
 
 </div>
 
@@ -67,4 +99,3 @@ Y una nota práctica: si tu horizonte es largo y ya tienes colchón, un 0-20 % e
 - Sin fondo de emergencia, tu renta fija real es cero.
 
 </div>
-

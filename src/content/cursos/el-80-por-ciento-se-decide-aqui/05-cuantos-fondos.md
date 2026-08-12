@@ -4,6 +4,7 @@ descripcion: "Por qué añadir productos casi nunca añade diversificación, có
 orden: 5
 gancho: "Casi todas las carteras de seis fondos son una cartera de dos fondos con cuatro copias."
 minutos: 7
+arquetipo: dato
 accion:
   texto: "Abre el mapa de solapamiento con tu cartera puesta. Te dice qué pares de posiciones apuntan a las mismas empresas y cuánto valor tienes duplicado. Es la única forma de contestar esta lección con tus datos."
   cta: "Ver mi solapamiento"
@@ -15,42 +16,90 @@ lecturas:
     href: "/blog/cartera-bogle-principiantes-espana"
 ---
 
-La intuición dice que más fondos es más diversificación. Con índices, la intuición está equivocada.
+<script>
+  import Comprueba from '$lib/components/cursos/Comprueba.svelte';
+  import Barras from '$lib/components/cursos/Barras.svelte';
+  import Pasos from '$lib/components/cursos/Pasos.svelte';
+  import { solapamiento, INDICES } from '$lib/cursos-datos';
 
-## Por qué
+  const sp = solapamiento('msci-world', 'sp500');
+  const nq = solapamiento('msci-world', 'nasdaq-100');
+
+  const series = [
+    { etiqueta: 'Del S&P 500 que añades, lo que ya estaba en tu World', valor: sp.deB, tono: 'a' },
+    { etiqueta: 'Del Nasdaq 100 que añades, lo que ya estaba', valor: nq.deB, tono: 'b' }
+  ];
+</script>
+
+La intuición dice que más fondos es más diversificación. ¿Y si con índices la intuición estuviera justo al revés?
+
+<Barras
+	series={series}
+	unidad=" %"
+	max={100}
+	titulo="Lo que de verdad entra nuevo al añadir un fondo encima de un global"
+	fuente={INDICES.procedencia.fuente}
+	fecha={INDICES.procedencia.fecha}
+	nota="Casi nada entra nuevo: lo que sube es el peso de lo que ya tenías."
+/>
 
 Un fondo indexado ya contiene cientos o miles de empresas. La diversificación no la da el número de **productos**, la da el número de **empresas distintas** y cuánto pesa cada una.
 
-Si tienes un MSCI World y le añades un S&P 500, no has añadido empresas: has subido el peso de las que ya tenías. El World lleva un 72,5 % en Estados Unidos; añadir un S&P 500 encima lo empuja hacia arriba. Es una **apuesta a Estados Unidos**, perfectamente legítima si es lo que quieres, pero es lo contrario de diversificar.
+<Comprueba
+	pregunta="Un amigo te enseña su cartera: World, S&P 500 y Nasdaq 100, a partes iguales. ¿Qué tiene realmente?"
+	opciones={[
+		{
+			texto: 'Tres fondos, y por tanto tres apuestas repartidas',
+			correcta: false,
+			porque: 'Es lo que parece al leer la lista de nombres, y es exactamente por lo que este error es tan común: los tres se llaman distinto y los tres son índices reconocibles.'
+		},
+		{
+			texto: 'Una apuesta concentrada en unas veinte empresas, repartida en tres productos',
+			correcta: true,
+			porque: 'Las mayores tecnológicas estadounidenses están en los tres, y en el Nasdaq pesan muchísimo. No es una cartera de tres cosas: es una cosa comprada tres veces, con la sensación de haber diversificado.'
+		},
+		{
+			texto: 'Una cartera mal construida que hay que deshacer cuanto antes',
+			correcta: false,
+			porque: 'La primera parte es discutible —puede ser lo que quiere— y la segunda casi nunca es cierta: si son ETFs con plusvalía, deshacerla cuesta impuestos y a menudo sale mejor dejar de aportar al duplicado.'
+		}
+	]}
+/>
 
-Y con un Nasdaq 100 encima de eso, lo que tienes es una apuesta concentrada en unas veinte empresas tecnológicas, repartida en tres productos que dan la sensación de ser tres cosas.
+## ¿Cómo se mide el solapamiento de verdad?
 
-## Cómo se mide de verdad
+Dos preguntas, y las dos tienen respuesta numérica. **¿Qué valor tienes duplicado?** Si dos posiciones comparten empresas, parte de tu dinero está comprando lo mismo dos veces, y eso se calcula con la composición de los índices. **¿Cuánto se mueve tu exposición al añadir el producto?** Si tu reparto por región o por sector cambia en menos de un par de puntos, el producto no está haciendo nada.
 
-Dos preguntas, y las dos tienen respuesta numérica:
+Ninguna de las dos se responde leyendo la lista de fondos, que es como se responde casi siempre. Son exactamente lo que calcula el mapa de la herramienta, y la razón de que exista.
 
-1. **¿Qué valor tienes duplicado?** Si dos posiciones comparten empresas, parte de tu dinero está comprando lo mismo dos veces. Eso se puede calcular con la composición de los índices.
-2. **¿Cuánto se mueve tu exposición al añadir el producto?** Si añadirlo cambia tu reparto por región o por sector en menos de un par de puntos, no está haciendo nada.
-
-Ninguna de las dos se responde mirando nombres de fondos. Y son exactamente lo que hace el mapa de la herramienta, que es la razón de que exista.
-
-## El número razonable
-
-Para la inmensa mayoría de carteras indexadas: **entre uno y tres fondos**.
-
-- **Uno**: un global (All-World o ACWI). Cartera terminada.
-- **Dos**: World + emergentes. Control sobre el peso de emergentes.
-- **Tres**: los dos anteriores más renta fija, o más small caps si has decidido sostener ese factor.
-
-Pasar de cuatro debería exigir una respuesta buena a «¿qué empresas me da esto que no tengo ya?».
+<Pasos
+	titulo="El número razonable"
+	pasos={[
+		{
+			titulo: 'Uno',
+			detalle: 'Un global (All-World o ACWI). Cartera terminada: lleva desarrollados y emergentes en su peso de mercado.'
+		},
+		{
+			titulo: 'Dos',
+			detalle: 'World + emergentes. Lo mismo, pero decidiendo tú el peso de emergentes y rebalanceando entre ellos.'
+		},
+		{
+			titulo: 'Tres',
+			detalle: 'Los anteriores más renta fija, o más small caps si has decidido sostener ese factor durante décadas.'
+		},
+		{
+			titulo: 'Cuatro o más',
+			detalle: 'Exige una respuesta buena a «¿qué empresas me da esto que no tenga ya?».',
+			aviso: 'Aquí es donde casi nadie se para. Las carteras no llegan a seis fondos por decisión: llegan añadiendo uno cada vez que se lee algo, y sin quitar ninguno.'
+		}
+	]}
+/>
 
 <div class="bloque aviso">
 
 ## Lo que no te van a contar
 
-**Muchas carteras crecen sin decisión.** No es que alguien eligiera seis fondos: es que fue añadiendo uno cada vez que leía algo, y nunca quitó ninguno. Revisar la lista completa de golpe, una vez al año, corrige más que cualquier optimización.
-
-**Quitar sobra menos de lo que parece.** Si son fondos, se traspasan sin tributar y consolidar es gratis. Si son ETFs, vender realiza plusvalías, y entonces la cartera desordenada puede ser más barata que la ordenada. Es una de las poquísimas veces en que «déjalo como está» es la respuesta correcta.
+**Quitar sobra menos de lo que parece.** Si son fondos, se traspasan sin tributar y consolidar es gratis. Si son ETFs, vender realiza plusvalías, y entonces la cartera desordenada puede salir más barata que la ordenada.
 
 **Y hay un caso legítimo para tener el mismo índice dos veces**: tenerlo en dos entidades distintas, por si una falla o para no depender de un solo comercializador. Duplicar exposición a propósito, sabiendo que es eso, no es un error.
 
@@ -66,4 +115,3 @@ Pasar de cuatro debería exigir una respuesta buena a «¿qué empresas me da es
 - Uno a tres fondos. Del cuarto en adelante, justifícalo.
 
 </div>
-

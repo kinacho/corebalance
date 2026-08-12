@@ -18,15 +18,31 @@ import type { Page } from '@playwright/test';
 
 const CURSO = '/cursos/de-cero-a-tu-primera-aportacion';
 
+/**
+ * ⚠️ El `try` no es defensivo por si acaso: sin él este helper falla de forma
+ * intermitente y por un motivo que no tiene nada que ver con lo que el test comprueba.
+ * Si el sondeo cae justo mientras el navegador confirma una navegación de documento
+ * completo, `page.evaluate` revienta con «Execution context was destroyed» — y el
+ * informe señala la línea del bucle, no la aserción, así que parece un fallo de la app.
+ * Visto una vez en veinticuatro ejecuciones. Un contexto destruido durante el sondeo
+ * significa exactamente que se está navegando, que es lo que estábamos esperando: se
+ * ignora y se vuelve a mirar.
+ */
+async function rutaActual(page: Page): Promise<string | null> {
+	try {
+		return await page.evaluate(() => location.pathname);
+	} catch {
+		return null;
+	}
+}
+
 async function esperarRuta(page: Page, esperada: string | RegExp) {
 	for (let i = 0; i < 60; i++) {
-		const ruta = await page.evaluate(() => location.pathname);
-		if (typeof esperada === 'string' ? ruta === esperada : esperada.test(ruta)) return ruta;
+		const ruta = await rutaActual(page);
+		if (ruta && (typeof esperada === 'string' ? ruta === esperada : esperada.test(ruta))) return ruta;
 		await page.waitForTimeout(150);
 	}
-	throw new Error(
-		`La ruta nunca llegó a ${esperada}. Está en ${await page.evaluate(() => location.pathname)}`
-	);
+	throw new Error(`La ruta nunca llegó a ${esperada}. Está en ${await rutaActual(page)}`);
 }
 
 test.describe('Cursos · se puede llegar y recorrerlos', () => {

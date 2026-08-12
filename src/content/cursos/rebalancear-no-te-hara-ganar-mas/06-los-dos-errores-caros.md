@@ -4,6 +4,7 @@ descripcion: "Los dos extremos que cuestan dinero de verdad, cómo reconocer en 
 orden: 6
 gancho: "Hay dos formas de equivocarse con esto, y son opuestas. La mayoría de la gente está claramente en una de las dos."
 minutos: 7
+arquetipo: decidir
 accion:
   texto: "Deja escritos tu banda y tu frecuencia de revisión en la herramienta. Es lo único de todo este curso que se comprueba solo: cada vez que abras el panel te dirá si toca actuar, sin que tengas que acordarte de nada."
   cta: "Guardar mi regla"
@@ -15,43 +16,64 @@ lecturas:
     href: "/blog/rebalanceo-degiro-etfs"
 ---
 
-Última lección, y va de los dos extremos. Casi nadie está en el medio.
+<script>
+  import Comprueba from '$lib/components/cursos/Comprueba.svelte';
+  import Pasos from '$lib/components/cursos/Pasos.svelte';
+</script>
 
-## Error 1: no hacerlo nunca
+Última lección, y va de los dos extremos. ¿En cuál de los dos estás tú?
 
-Es el más común con diferencia. La cartera deriva, y como derivar es lento nunca hay un día en que se note.
+<Comprueba
+	pregunta="No sabes a cuánto estás de tu objetivo y hace ocho meses que no miras. ¿En qué error estás y cuánto te está costando?"
+	opciones={[
+		{
+			texto: 'En el caro: cada mes sin rebalancear tiene un coste que se acumula',
+			correcta: false,
+			porque: 'No hay ningún coste que se acumule mes a mes — de hecho durante un mercado alcista largo salir a la deriva suele dar más dinero. Si el error se notara en la cuenta, no sería el más común.'
+		},
+		{
+			texto: 'En el más común, y lo que te cuesta no es dinero: es tener otra cartera',
+			correcta: true,
+			porque: 'La cartera deriva, y como derivar es lento nunca hay un día en que se note. No pagas nada por el camino: pagas de golpe el día que llega un ciclo malo y esa cartera cae como lo que de verdad es, no como lo que crees tener.'
+		},
+		{
+			texto: 'En ninguno: si no has tocado nada, no has cometido ningún error',
+			correcta: false,
+			porque: 'No tocar nada es la mitad correcta de la regla. La otra mitad es mirar: sin revisión, «no he tocado nada» y «no me he enterado de nada» son indistinguibles desde dentro.'
+		}
+	]}
+/>
 
-**Lo que cuesta**: el backtest del curso anterior lo enseña — dieciséis años sin rebalancear acabaron con un **93,6 % en renta variable** sobre un objetivo del 80. En ese periodo salió a favor. En el siguiente ciclo malo, esa cartera cae como lo que es, no como lo que su dueño cree que tiene.
+## ¿Por qué los dos son difíciles de ver desde dentro?
 
-**Cómo reconocerlo**: si no sabes de memoria a cuánto estás de tu objetivo, y no lo has mirado en seis meses, estás aquí.
+El de **no hacerlo nunca** es cómodo y a veces rentable, y por eso persiste: durante mercados alcistas largos quien no rebalancea gana más, y cada año que pasa refuerza la impresión de que rebalancear es una tontería que solo recomiendan los libros. No hay ninguna señal de alarma hasta que llega el ciclo malo, y entonces la cartera cae como lo que de verdad es. Es un error que se cobra una sola vez, tarde y entero.
 
-## Error 2: hacerlo demasiado
+El de **hacerlo demasiado** tiene el problema contrario: se siente como diligencia. Cada ajuste parece cuidar la cartera, y el coste está repartido en comisiones pequeñas que nunca se suman en ningún sitio donde puedas verlas juntas. Quien opera de más suele saber perfectamente que no debería, así que no se corrige leyendo más — se corrige poniendo fricción: una regla escrita, una frecuencia fija y no abrir la cartera entre revisiones.
 
-Menos común, pero más caro por operación. Se reconoce fácil: cada vez que el mercado se mueve un poco, hay un ajuste.
-
-**Lo que cuesta**: comisiones, horquillas, cambio de divisa y —si hay ETFs— impuestos sobre cada plusvalía realizada. Todo eso es cierto, se paga siempre y no depende de que aciertes.
-
-**Cómo reconocerlo**: si has tocado la cartera más de tres o cuatro veces este año sin que haya habido una caída fuerte, estás aquí.
-
-Y hay una variante peor: **rebalancear como excusa para operar**. Ajustar pesos es la coartada perfecta para hacer algo cuando estás nervioso, y se siente productivo.
-
-## La regla mínima que evita los dos
-
-Una línea:
-
-> Reviso cada tres meses. Ajusto solo lo que esté fuera de ±5 puntos. Uso la aportación siempre que llegue.
-
-Eso es todo. Impide derivar años porque revisas, impide operar de más porque hay banda, y elimina el coste porque la primera herramienta es el dinero nuevo.
-
-Ponla por escrito y déjala donde la vayas a ver. La parte comprobable —los pesos y las bandas— cabe en la herramienta, y ahí se comprueba sola.
+<Pasos
+	titulo="La regla mínima que evita los dos"
+	pasos={[
+		{
+			titulo: 'Reviso cada tres meses',
+			detalle: 'Impide derivar durante años, que es el primer error. En el calendario, no en la memoria.'
+		},
+		{
+			titulo: 'Ajusto solo lo que esté fuera de ±5 puntos',
+			detalle: 'Impide operar por nada, que es el segundo. Si nada se ha salido, cierro y no toco.'
+		},
+		{
+			titulo: 'Uso la aportación siempre que llegue',
+			detalle: 'Elimina el coste, porque la primera herramienta es el dinero nuevo y no la venta.',
+			aviso: 'Escríbela y déjala donde la vayas a ver. La parte comprobable —pesos y bandas— cabe en la herramienta, y ahí se comprueba sola.'
+		}
+	]}
+/>
 
 <div class="bloque aviso">
 
 ## Lo que no te van a contar
 
-**El error de no hacerlo nunca es cómodo y a veces rentable.** Por eso persiste: durante mercados alcistas largos, quien no rebalancea gana más, y cada año que pasa refuerza la impresión de que rebalancear es una tontería. La factura llega toda junta y con retraso.
-
-**Y el de hacerlo demasiado no se corrige con información.** Quien opera de más suele saber perfectamente que no debería. Lo que funciona no es leer más, es poner fricción: una regla escrita, una frecuencia fija y no mirar la cartera entre revisiones.
+**El error de no hacerlo nunca no se corrige con voluntad**, porque no hay un día en que duela. Se corrige con un recordatorio en el calendario, que es aburrido y funciona.
 
 **Lo que sí se corrige con información** es lo que este curso ha intentado: que rebalancear no es para ganar más. Quien lo entiende deja de esperar un premio que no llega, y por tanto deja de abandonarlo cuando no llega.
 
@@ -73,4 +95,3 @@ Y una idea que no vas a leer en muchos sitios: **lo mejor que puede hacer una he
 - Rebalancear bien se parece mucho a no hacer casi nada.
 
 </div>
-

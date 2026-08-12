@@ -25,6 +25,25 @@ export interface AccionLeccion {
 	href: string;
 }
 
+/**
+ * Qué clase de lección es. Decide el orden de los tiempos, no el tema.
+ *
+ * ⚠️ **Se declara para poder comprobar la variedad, que es un problema real y no una
+ * coquetería.** Las 34 lecciones compartían un único esqueleto —entrada, tres o cinco
+ * encabezados de prosa, aviso, resumen— y a la segunda el lector ya sabía qué venía y en
+ * qué orden; la predictibilidad estructural apaga la atención antes que la prosa. Con un
+ * kit de cinco componentes el riesgo vuelve por otra vía: que las 34 abran igual. El test
+ * exige que dos lecciones consecutivas de un curso no compartan arquetipo.
+ *
+ * - `desmontar` — una intuición falsa. La comprobación va **antes** de la explicación.
+ * - `procedimiento` — una secuencia. La comprobación va **después**, sobre el paso que se
+ *   salta todo el mundo.
+ * - `dato` — leer una cifra. El objeto visual manda y va a ancho completo.
+ * - `decidir` — A o B. Termina en una regla de decisión de una frase, nunca en «depende».
+ * - `calcular` — el lector saca su número y lo apunta.
+ */
+export type Arquetipo = 'desmontar' | 'procedimiento' | 'dato' | 'decidir' | 'calcular';
+
 export interface LeccionMetadata {
 	titulo: string;
 	descripcion: string;
@@ -33,6 +52,15 @@ export interface LeccionMetadata {
 	/** La promesa de la lección, en una línea. Se pinta bajo el título. */
 	gancho: string;
 	minutos: number;
+	arquetipo: Arquetipo;
+	/**
+	 * Las cifras de `cursos-datos.ts` que el texto de esta lección cita literalmente.
+	 *
+	 * ⚠️ No es documentación: `lecciones.test.ts` comprueba que el fichero contiene el
+	 * valor **vigente** de cada clave declarada. Regenerar el backtest o subir el `asOf`
+	 * de los índices dejaba antes la prosa mintiendo sin que nada se pusiera rojo.
+	 */
+	datos?: string[];
 	/** El ejercicio. Es lo que distingue esto de un artículo. */
 	accion: AccionLeccion;
 	/**
@@ -46,6 +74,17 @@ export interface LeccionMetadata {
 	lecturas?: { texto: string; href: string }[];
 	/** Fuentes primarias, cuando la lección afirma algo comprobable. */
 	fuentes?: { texto: string; url: string }[];
+	/**
+	 * Preguntas y respuestas extraídas del propio cuerpo por `remarkFaq`.
+	 *
+	 * ⚠️ No se escribe a mano: el plugin recoge **todo encabezado que acabe en `?`** junto
+	 * con el texto que le sigue. Ya se aplicaba a estos markdown desde el principio —es un
+	 * plugin global de mdsvex— pero salía siempre vacío porque ningún encabezado preguntaba
+	 * nada. Con el formato nuevo la lección abre con una pregunta y varias secciones son
+	 * preguntas, así que alimenta un `FAQPage` sin duplicar contenido: lo que se marca es
+	 * exactamente lo que el lector ve.
+	 */
+	faq?: { question: string; answer: string }[];
 }
 
 export interface Leccion extends LeccionMetadata {

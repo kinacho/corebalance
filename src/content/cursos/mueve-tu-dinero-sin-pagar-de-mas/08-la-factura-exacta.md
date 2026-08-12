@@ -4,6 +4,7 @@ descripcion: "Cómo se compara la vía del traspaso con la de vender, por qué l
 orden: 8
 gancho: "«¿Traspaso o vendo?» no tiene una respuesta buena en abstracto. Con tus fechas y tus importes, tiene una y es un número."
 minutos: 9
+arquetipo: calcular
 accion:
   texto: "El panel fiscal empareja lo que sobra con lo que falta dentro de cada bloque, hace primero todos los pares fondo→fondo para maximizar la parte sin tributar, y te dice qué te costaría el resto. Además simula cuántos meses tardarías en corregirlo solo con aportaciones."
   cta: "Ver mi plan con las dos vías"
@@ -17,42 +18,83 @@ lecturas:
     href: "/blog/como-rebalancear-cartera-indexada"
 ---
 
-Última lección. Aquí se junta todo lo anterior en la única pregunta que importa un martes cualquiera: **tengo la cartera desviada, ¿qué hago?**
+<script>
+  import Comprueba from '$lib/components/cursos/Comprueba.svelte';
+  import Pasos from '$lib/components/cursos/Pasos.svelte';
+  import Mando from '$lib/components/cursos/Mando.svelte';
+</script>
 
-## Las tres vías, por orden de coste
+Tienes la cartera desviada. ¿Cuál de las cuatro salidas te sale más barata?
 
-**1. Con aportaciones.** Compras lo que falta con dinero nuevo y no vendes nada. Coste fiscal: **cero**. Coste real: tarda, porque depende de cuánto aportes. Es la vía por defecto mientras estés en fase de acumulación, y es lo que esta app calcula primero.
+<Pasos
+	titulo="Las cuatro vías, por orden de coste"
+	pasos={[
+		{
+			titulo: 'No hacer nada todavía',
+			detalle: 'Si estás fuera de banda por poco y sigues aportando, quizá vuelvas dentro solo. Coste cero, y es la que nadie calcula.'
+		},
+		{
+			titulo: 'Con aportaciones',
+			detalle: 'Compras lo que falta con dinero nuevo y no vendes nada. Coste fiscal cero; el coste es que tarda lo que tarde tu nómina. Es lo que esta app calcula primero.'
+		},
+		{
+			titulo: 'Con traspasos',
+			detalle: 'Mueves de lo que sobra a lo que falta, fondo a fondo, por el artículo 94. Coste fiscal cero; el coste son los días fuera de mercado.',
+			aviso: 'Solo funciona si las dos patas son fondos. Un solo ETF en el par y esta vía desaparece, aunque el otro lado sea traspasable.'
+		},
+		{
+			titulo: 'Vendiendo',
+			detalle: 'Realizas la ganancia y pagas lo que salga de aplicar FIFO y la escala. Es la única vía cuando hay ETFs o acciones de por medio.'
+		}
+	]}
+/>
 
-**2. Con traspasos.** Mueves de lo que sobra a lo que falta, fondo a fondo. Coste fiscal: **cero**, por el artículo 94. Coste real: los días fuera de mercado, y que solo funciona si las dos patas son fondos.
+<Comprueba
+	pregunta="¿Por qué «¿traspaso o vendo?» no tiene una respuesta general que sirva para todos?"
+	opciones={[
+		{
+			texto: 'Porque depende de cuánto haya subido el mercado ese año',
+			correcta: false,
+			porque: 'Influye poco: lo que importa no es lo que ha subido el mercado, sino lo que ha subido tu posición desde tus compras concretas, que es otra cosa.'
+		},
+		{
+			texto: 'Porque depende de cuatro cosas que solo están en tus operaciones',
+			correcta: true,
+			porque: 'Qué plusvalía llevas por FIFO sobre tus fechas, cuánto has realizado ya este año —la escala se acumula—, si las dos patas son traspasables y cuánto aportas al mes. Cambia una y cambia la decisión.'
+		},
+		{
+			texto: 'Porque la normativa cambia todos los años',
+			correcta: false,
+			porque: 'Los tipos han cambiado tres veces en una década, cierto, pero el mecanismo es estable. La variabilidad que impide una respuesta general está en tus datos, no en el BOE.'
+		}
+	]}
+/>
 
-**3. Vendiendo.** Realizas la ganancia y pagas. Coste fiscal: el que salga de aplicar FIFO y la escala. Es la única vía cuando hay ETFs o acciones de por medio.
+## ¿Cuánto tardarías en corregirlo sin vender nada?
 
-La mayoría de los planes reales son una mezcla: casi todo por las dos primeras, y un resto pequeño por la tercera.
+Es la comparación honesta, y casi nadie la hace: no es «arreglarlo hoy» contra «no arreglarlo», sino **arreglarlo hoy pagando X contra arreglarlo en N meses pagando cero**.
 
-## Por qué la respuesta es tuya y no general
+<Mando
+	etiqueta="Lo que aportas cada mes"
+	min={100}
+	max={2000}
+	paso={50}
+	inicial={400}
+	unidad=" €"
+	etiquetaResultado="Meses para cubrir una desviación de 3.000 €"
+	calcular={(m) => `${Math.ceil(3000 / m)} meses`}
+	nota="Suponiendo que dirijas toda la aportación a lo que falta y que los pesos no se muevan más por el camino. El panel de la app hace esta misma cuenta con tu desviación real."
+/>
 
-Porque el número depende de cuatro cosas que solo están en tus datos:
-
-- **Qué plusvalía llevas** en cada posición, y eso es FIFO sobre tus fechas.
-- **Cuánto has realizado ya este año**, porque la escala se acumula.
-- **Si las dos patas del movimiento son traspasables.**
-- **Cuánto aportas al mes**, que decide si esperar es una alternativa o una excusa.
-
-Cambiando cualquiera de las cuatro, cambia la decisión. Por eso «¿traspaso o vendo?» no tiene respuesta en un artículo, y sí en una herramienta con tu libro de operaciones dentro.
-
-## El cálculo que casi nadie hace: esperar
-
-Hay una cuarta opción que se olvida: **no hacer nada todavía**.
-
-Si estás fuera de banda por 6 puntos y aportando cada mes, quizá en cuatro meses estás dentro sin haber vendido nada. Comparar «arreglarlo hoy pagando X» con «arreglarlo en N meses pagando 0» es la comparación honesta, y es la que el panel te da junto a las otras.
+Si la respuesta son tres meses, esperar suele ganar a cualquier cálculo fiscal. Si son cuatro años, esperar es una excusa y toca decidir de verdad.
 
 <div class="bloque aviso">
 
 ## Lo que no te van a contar
 
-**El impuesto no es el único coste de vender.** Comisiones, horquilla, cambio de divisa y días fuera de mercado suman. En carteras pequeñas, esos costes pueden superar al fiscal.
+**El impuesto no es el único coste de vender.** Comisiones, horquilla, cambio de divisa y días fuera de mercado suman; en carteras pequeñas pueden superar al fiscal.
 
-**Y el impuesto que pagas hoy no está «perdido»**: lo habrías pagado igual el día que vendieras de verdad. Lo que pierdes es el rendimiento de ese dinero durante los años intermedios. Es real, pero es menos de lo que la intuición dice — y es la razón de que, con plusvalías pequeñas, vender no sea el drama que parece.
+**Y el impuesto que pagas hoy no está «perdido»**: lo habrías pagado igual el día que vendieras de verdad. Lo que pierdes es el rendimiento de ese dinero durante los años intermedios — real, pero menos de lo que dice la intuición, y la razón de que con plusvalías pequeñas vender no sea ningún drama.
 
 **Ninguna de estas cifras es asesoramiento fiscal.** Son estimaciones sobre la normativa vigente, con los artículos citados para que puedas comprobarlas. Si el importe es grande, esto te sirve para llegar informado a una asesoría, no para sustituirla.
 
@@ -60,22 +102,17 @@ Si estás fuera de banda por 6 puntos y aportando cada mes, quizá en cuatro mes
 
 ## Ya está
 
-Con el curso hecho tienes:
+Con el curso hecho tienes la factura exacta de tu próximo movimiento calculada sobre tus operaciones, la fecha desde la que puedes recomprar sin bloquear una pérdida, y un criterio para elegir vía en vez de adivinar.
 
-- La factura exacta de tu próximo movimiento, calculada con tus operaciones.
-- La fecha desde la que puedes recomprar sin bloquear una pérdida.
-- Un criterio para elegir vía, en vez de adivinar.
-
-Y sobre todo: sabes que en España existe una figura —el traspaso— que hace que casi ningún error de cartera sea irreversible. Eso es lo que ninguna herramienta internacional te va a decir.
+Y sobre todo sabes que en España existe una figura —el traspaso— que hace que casi ningún error de cartera sea irreversible. Eso es lo que ninguna herramienta internacional te va a decir.
 
 <div class="bloque retener">
 
 ## Lo que hay que retener
 
-- Orden de coste: aportaciones, traspasos, y solo al final vender.
+- Orden de coste: esperar, aportaciones, traspasos, y solo al final vender.
 - La respuesta depende de tu FIFO, de lo ya realizado este año y de si las dos patas son fondos.
 - «Esperar N meses» es una opción real y hay que compararla.
 - El impuesto no desaparece por diferirlo; lo que ganas es el rendimiento del intervalo.
 
 </div>
-

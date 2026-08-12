@@ -22,6 +22,8 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const CONTENT_DIR = join(ROOT, 'src', 'content', 'blog');
+const CURSOS_DIR = join(ROOT, 'src', 'content', 'cursos');
+const CURSOS_TS = join(ROOT, 'src', 'lib', 'cursos.ts');
 const TEMPLATE_DIR = join(ROOT, 'src', 'content', 'llms');
 const STATIC_DIR = join(ROOT, 'static');
 
@@ -53,6 +55,7 @@ const COPY = {
 		comparisons: '### Páginas de Comparativa',
 		author: '### Autor',
 		feeds: '### Feeds',
+		courses: '### Cursos gratuitos (solo en español)',
 		blog: (lang) => (lang === 'es' ? '### Blog — Español (ES)' : '### Blog — Inglés (EN)'),
 		appLines: (l) => [
 			`- [CoreBalance](${url('/', l)}) — Calculadora de rebalanceo (aplicación principal)`,
@@ -62,7 +65,11 @@ const COPY = {
 			`- [Calculadora de TER](${url('/herramientas/calculadora-ter', l)}) — TER medio ponderado de la cartera y simulación de comisiones a largo plazo`,
 			`- [Checklist de rebalanceo](${url('/herramientas/checklist-rebalanceo', l)}) — Cuestionario interactivo: ¿toca rebalancear ahora?`,
 			`- [Simulador de crisis](${url('/herramientas/simulador-crisis', l)}) — ¿Qué pasaría con tu cartera si el mercado cae? Escenarios históricos (2000, 2008, 2020) y tiempo de recuperación`,
-			`- [Calculadora de precio medio](${url('/herramientas/calculadora-precio-medio', l)}) — Precio medio ponderado de compra con ventas, dividendos y comisiones`
+			`- [Calculadora de precio medio](${url('/herramientas/calculadora-precio-medio', l)}) — Precio medio ponderado de compra con ventas, dividendos y comisiones`,
+			// Sin `url()`: estas dos no son bilingües —aplican normativa española— así que
+			// componer `/en/...` daría un enlace roto en el documento inglés.
+			`- [Acumulación vs distribución](${SITE}/herramientas/acumulacion-vs-distribucion) — Cuánto cuesta cobrar los dividendos frente a diferirlos, con la escala del ahorro aplicada año a año`,
+			`- [Cuándo puedo recomprar](${SITE}/herramientas/cuando-puedo-recomprar) — Regla de antiaplicación del IRPF: 2 meses para valores cotizados, 12 para participaciones de fondos`
 		],
 		comparisonLines: (l) => [
 			`- [CoreBalance vs Portfolio Performance](${url('/comparativas/corebalance-vs-portfolio-performance', l)})`,
@@ -87,6 +94,7 @@ const COPY = {
 		comparisons: '### Comparison Pages',
 		author: '### Author',
 		feeds: '### Feeds',
+		courses: '### Free Courses (Spanish only)',
 		blog: (lang) => (lang === 'es' ? '### Blog — Spanish (ES)' : '### Blog — English (EN)'),
 		appLines: (l) => [
 			`- [CoreBalance](${url('/', l)}) — Rebalancing calculator (main application)`,
@@ -159,6 +167,76 @@ async function collectPosts(lang) {
 	return posts.sort((a, b) => (a.publishDate < b.publishDate ? 1 : -1));
 }
 
+/**
+ * Los cursos y sus lecciones.
+ *
+ * ⚠️ **Faltaban enteros.** Este fichero es lo que un modelo lee para saber qué hay en el
+ * sitio, y la sección con más contenido propio —cinco cursos, 34 lecciones, todas con
+ * fuentes primarias citadas— no aparecía en él. El blog sí. Era el hueco más grande que
+ * tenía el sitio de cara a los buscadores generativos.
+ *
+ * Los títulos de los cursos viven en `CURSOS` dentro de `src/lib/cursos.ts`, que es
+ * TypeScript y no se puede importar desde un script `.mjs`. Se leen con una expresión
+ * regular **y se comprueba que salen tantos como directorios hay**: si alguien cambia la
+ * forma de ese array, esto falla en el `prebuild` en vez de emitir un índice incompleto,
+ * que es la clase de error que nadie ve.
+ */
+async function collectCursos() {
+	if (!existsSync(CURSOS_DIR)) return [];
+
+	const fuente = await readFile(CURSOS_TS, 'utf8');
+	const declarados = [...fuente.matchAll(/slug:\s*'([^']+)',\s*\n\s*titulo:\s*'([^']+)'/g)].map(
+		(m) => ({ slug: m[1], titulo: m[2] })
+	);
+
+	const dirs = (await readdir(CURSOS_DIR, { withFileTypes: true }))
+		.filter((d) => d.isDirectory())
+		.map((d) => d.name);
+
+	if (declarados.length !== dirs.length) {
+		throw new Error(
+			`[llms] Leí ${declarados.length} cursos de cursos.ts y hay ${dirs.length} directorios. ` +
+				'Si ha cambiado la forma de CURSOS, actualiza la expresión regular de collectCursos().'
+		);
+	}
+
+	const cursos = [];
+	for (const curso of declarados) {
+		const dir = join(CURSOS_DIR, curso.slug);
+		if (!existsSync(dir)) throw new Error(`[llms] El curso ${curso.slug} no tiene directorio`);
+
+		const lecciones = [];
+		for (const file of await readdir(dir)) {
+			if (!file.endsWith('.md')) continue;
+			const fm = readFrontmatter(await readFile(join(dir, file), 'utf8'));
+			if (!fm.titulo) continue;
+			lecciones.push({
+				slug: file.replace(/\.md$/, '').replace(/^\d+-/, ''),
+				titulo: fm.titulo,
+				descripcion: fm.descripcion ?? '',
+				orden: Number(fm.orden ?? 0)
+			});
+		}
+		lecciones.sort((a, b) => a.orden - b.orden);
+		cursos.push({ ...curso, lecciones });
+	}
+	return cursos;
+}
+
+function cursoLines(cursos) {
+	const lineas = [];
+	for (const c of cursos) {
+		// Las rutas de cursos no son bilingües: se escriben tal cual en los dos documentos.
+		lineas.push(`- [${c.titulo}](${SITE}/cursos/${c.slug}) — ${c.lecciones.length} lecciones`);
+		for (const l of c.lecciones) {
+			lineas.push(
+				`  - [${l.titulo}](${SITE}/cursos/${c.slug}/${l.slug})${l.descripcion ? ` — ${l.descripcion}` : ''}`
+			);
+		}
+	}
+	return lineas;
+}
+
 function blogLines(posts) {
 	return posts.map((post) => {
 		// Los posts conservan su slug propio por idioma en la raíz /blog/.
@@ -188,7 +266,11 @@ async function build(docLang) {
 	// El documento en español enlaza las URLs españolas; el inglés, las /en/.
 	const pageLang = docLang;
 
-	const [esPosts, enPosts] = await Promise.all([collectPosts('es'), collectPosts('en')]);
+	const [esPosts, enPosts, cursos] = await Promise.all([
+		collectPosts('es'),
+		collectPosts('en'),
+		collectCursos()
+	]);
 
 	const section = [
 		copy.heading,
@@ -208,6 +290,9 @@ async function build(docLang) {
 		copy.feeds,
 		...copy.feedLines(),
 		'',
+		copy.courses,
+		...cursoLines(cursos),
+		'',
 		copy.blog('es'),
 		...blogLines(esPosts),
 		'',
@@ -218,8 +303,9 @@ async function build(docLang) {
 	].join('\n');
 
 	await writeFile(outPath, template.replace(TOKEN, section), 'utf8');
+	const lecciones = cursos.reduce((n, c) => n + c.lecciones.length, 0);
 	console.log(
-		`[llms] ${outPath.replace(ROOT, '.')} — ${esPosts.length} posts ES + ${enPosts.length} posts EN`
+		`[llms] ${outPath.replace(ROOT, '.')} — ${esPosts.length} posts ES + ${enPosts.length} posts EN + ${cursos.length} cursos (${lecciones} lecciones)`
 	);
 }
 

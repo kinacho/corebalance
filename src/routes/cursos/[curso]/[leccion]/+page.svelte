@@ -14,14 +14,45 @@
 	const Contenido = $derived(l.content);
 
 	/**
-	 * `Course` + `LearningResource` sobre el `@graph` de la lección.
+	 * `Course` + `LearningResource` + migas + preguntas, sobre el `@graph` de la lección.
 	 *
 	 * ⚠️ Un bloque JSON-LD por URL, nunca dos: dos compiten y Search Console acaba
-	 * eligiendo. Es la misma regla que ya siguen las páginas de herramientas.
+	 * eligiendo. Es la misma regla que ya siguen las páginas de herramientas — y por eso
+	 * lo que se añade cuelga de este `@graph` en vez de abrir un `<script>` nuevo.
+	 *
+	 * ⚠️ El `FAQPage` solo se emite si hay preguntas de verdad. `remarkFaq` las saca de los
+	 * encabezados que acaban en `?` y del texto que les sigue, así que **lo marcado es
+	 * literalmente lo que el lector ve**: nada de marcar contenido que no esté en la
+	 * página, que es lo que Google penaliza y lo que hace que un rich result se retire.
 	 */
 	const jsonLd = $derived({
 		'@context': 'https://schema.org',
 		'@graph': [
+			{
+				'@type': 'BreadcrumbList',
+				itemListElement: [
+					{ '@type': 'ListItem', position: 1, name: 'Cursos', item: absoluteUrl('/cursos') },
+					{
+						'@type': 'ListItem',
+						position: 2,
+						name: c.titulo,
+						item: absoluteUrl(`/cursos/${c.slug}`)
+					},
+					{ '@type': 'ListItem', position: 3, name: l.titulo, item: absoluteUrl(ruta) }
+				]
+			},
+			...(l.faq?.length
+				? [
+						{
+							'@type': 'FAQPage',
+							mainEntity: l.faq.map((f) => ({
+								'@type': 'Question',
+								name: f.question,
+								acceptedAnswer: { '@type': 'Answer', text: f.answer }
+							}))
+						}
+					]
+				: []),
 			{
 				'@type': 'Course',
 				name: c.titulo,
@@ -179,7 +210,16 @@
 		color: var(--text-muted);
 		margin-bottom: 2rem;
 	}
+	/*
+	 * ⚠️ El relleno vertical es el objetivo de toque, no aire decorativo. Medido a 390 px
+	 * sobre el build: estos enlaces salían a **17 px de alto**, muy por debajo del suelo de
+	 * 40 que vigila `auditar-movil.mjs`. Es el tipo de defecto que una captura no enseña,
+	 * porque se ve perfectamente y solo falla cuando lo intentas pulsar con el pulgar.
+	 */
 	.miga a {
+		display: inline-block;
+		/* 0,75rem y no 0,7: con 0,7 el enlace mide 39 px y el suelo son 40. Medido. */
+		padding: 0.75rem 0;
 		color: inherit;
 		text-decoration: none;
 	}
@@ -320,6 +360,35 @@
 	.leccion :global(.markdown-body li) {
 		max-width: 68ch;
 	}
+	/*
+	 * ⚠️ **Sin esto los párrafos del cuerpo van pegados al siguiente**, y era la causa más
+	 * literal de que una lección se leyera como un muro: el reset de Tailwind pone
+	 * `margin: 0` en `p`, y aquí nunca se restauraba. Lo delator es que el bloque de aviso
+	 * sí lo declara —con un comentario que dice exactamente «sin esto los párrafos salen
+	 * pegados unos a otros»—, así que el defecto se arregló *dentro* del bloque y nadie
+	 * miró fuera. Medido en el navegador sobre el build: `margin-top` y `margin-bottom` a
+	 * 0 px en los seis párrafos del cuerpo, contra 16 px en los del aviso.
+	 *
+	 * ⚠️ Y van con `>`: los bloques de aviso y resumen viven dentro de `.markdown-body` y ya
+	 * declaran su propio espaciado, así que sin el hijo directo estas reglas los pisarían
+	 * por orden de aparición y habría que perseguir la diferencia en dos sitios.
+	 */
+	.leccion :global(.markdown-body > p) {
+		margin: 0 0 1.15rem;
+	}
+	.leccion :global(.markdown-body > ul),
+	.leccion :global(.markdown-body > ol) {
+		margin: 0 0 1.15rem;
+		padding-left: 1.2rem;
+		list-style: disc;
+	}
+	.leccion :global(.markdown-body > ul li),
+	.leccion :global(.markdown-body > ol li) {
+		margin-bottom: 0.4rem;
+	}
+	.leccion :global(.markdown-body > ul li::marker) {
+		color: rgba(255, 255, 255, 0.35);
+	}
 	.leccion :global(.markdown-body table) {
 		width: 100%;
 		border-collapse: collapse;
@@ -392,6 +461,11 @@
 		margin: 0;
 		padding-left: 1.1rem;
 		line-height: 1.9;
+	}
+	/* Mismo motivo que la miga: 21 px medidos, y son enlaces que se pulsan con el dedo. */
+	.extras li a {
+		display: inline-block;
+		padding: 0.6rem 0;
 	}
 	.fuentes {
 		font-size: 0.85rem;

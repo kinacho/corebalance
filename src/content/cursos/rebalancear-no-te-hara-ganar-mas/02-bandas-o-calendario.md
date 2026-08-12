@@ -4,6 +4,7 @@ descripcion: "Las dos formas de decidir cuándo actuar, qué gana cada una, y po
 orden: 2
 gancho: "El calendario te hace operar cuando no hace falta. Las bandas te hacen mirar. Cada una falla por un lado distinto."
 minutos: 7
+arquetipo: decidir
 accion:
   texto: "Responde las cuatro preguntas del checklist con tu situación real. Te dice si toca actuar hoy y por qué — que es distinto de si te apetece actuar hoy."
   cta: "Pasar el checklist"
@@ -15,37 +16,64 @@ lecturas:
     href: "/blog/calculadora-rebalanceo-cartera-excel"
 ---
 
-Ya tienes el reparto y las bandas del curso anterior. Falta el disparador: **qué te hace mirar**.
+<script>
+  import Comprueba from '$lib/components/cursos/Comprueba.svelte';
+  import Pasos from '$lib/components/cursos/Pasos.svelte';
+</script>
 
-## Por calendario
+Ya tienes el reparto y las bandas. ¿Qué te hace mirar la cartera un día concreto?
 
-Revisas cada X meses y ajustas lo que se haya movido. Trimestral, semestral o anual.
+<Comprueba
+	pregunta="Revisión semestral: en junio estás a 1,5 puntos de tu objetivo. ¿Ajustas?"
+	opciones={[
+		{
+			texto: 'Sí: he abierto la cartera para revisarla, eso es lo que toca',
+			correcta: false,
+			porque: 'Es el defecto propio del calendario y por eso conviene verlo: te hace operar cuando no hace falta. Corregir 1,5 puntos cuesta comisiones y tiempo para arreglar algo que no era un problema.'
+		},
+		{
+			texto: 'No: revisar y actuar son dos decisiones distintas',
+			correcta: true,
+			porque: 'El calendario decide cuándo miras; la banda decide si tocas. Separarlas es lo que resuelve los defectos de las dos, y es la regla más común entre quienes llevan una década en esto.'
+		},
+		{
+			texto: 'Depende de si creo que va a seguir desviándose',
+			correcta: false,
+			porque: 'Eso es previsión, y en cuanto entra en la decisión ya no estás rebalanceando: estás operando con una opinión sobre el mercado, que es justo lo que la regla venía a impedir.'
+		}
+	]}
+/>
 
-**A favor**: no exige atención. Lo pones en el calendario y se acabó. Es imposible olvidarse, y es imposible que la cartera derive años sin que nadie mire.
+## Cada una falla por un lado
 
-**En contra**: te hace operar cuando no hace falta. Si en tu revisión de junio estás a 1,5 puntos del objetivo, ajustar cuesta comisiones y tiempo para corregir algo que no era un problema.
+**Por calendario** revisas cada X meses y ajustas lo que se haya movido. A favor: no exige atención, lo pones en el calendario y es imposible que la cartera derive años sin que nadie mire. En contra: te hace operar cuando no hace falta, como acabas de ver.
 
-## Por bandas
+**Por bandas** actúas cuando una posición se sale de su margen. A favor: solo operas cuando importa — en años tranquilos no tocas nada y en años movidos actúas justo cuando el riesgo se ha desviado de verdad. En contra: exige mirar, y una banda que nadie comprueba no existe. Ahí es donde falla en la práctica: la gente pone bandas y luego pasa ocho meses sin abrir la cartera.
 
-Actúas cuando una posición se sale de su margen. Cinco puntos porcentuales absolutos, por ejemplo.
+<Pasos
+	titulo="La regla que usa casi todo el mundo con años encima"
+	pasos={[
+		{
+			titulo: 'Fija una revisión en el calendario',
+			detalle: 'Trimestral o semestral. Con eso garantizas que miras, que es lo que las bandas no garantizan.'
+		},
+		{
+			titulo: 'Ese día, mira solo si algo está fuera de banda',
+			detalle: 'No cuánto ha subido, no cómo va el año. Solo si alguna posición se ha salido de sus puntos.'
+		},
+		{
+			titulo: 'Si no lo está, cierra la cartera y no hagas nada',
+			detalle: 'Es el paso que da valor a los otros dos y el que más cuesta.',
+			aviso: 'Haber dedicado media hora a revisar crea la sensación de que hay que hacer algo. Es la misma trampa que hace operar de más a quien solo usa calendario.'
+		}
+	]}
+/>
 
-**A favor**: solo operas cuando importa. En años tranquilos no tocas nada, y en años movidos actúas justo cuando el riesgo se ha desviado de verdad.
+## ¿Cada cuánto conviene revisar?
 
-**En contra**: exige mirar. Una banda que nadie comprueba no existe, y ahí es donde falla — la gente pone bandas y luego pasa ocho meses sin abrir la cartera.
+Trimestral o semestral basta para una cartera indexada: mensual invita a tocar y anual deja demasiado margen para derivar. Y una advertencia que suena rara en una herramienta que te enseña tu desviación en tiempo real: **mirar más a menudo no mejora nada y probablemente empeora**, porque ver la cifra todos los días entrena a reaccionar.
 
-## Lo que hace casi todo el mundo con experiencia
-
-**Las dos.** Revisión por calendario, acción por bandas:
-
-> Miro la cartera cada tres meses. Ajusto solo lo que esté fuera de ±5 puntos.
-
-Eso resuelve los dos defectos a la vez: el calendario garantiza que miras, y la banda garantiza que no operas por nada. Es la regla más común entre quienes llevan una década haciendo esto, y no es casualidad.
-
-## Con qué frecuencia revisar
-
-Trimestral o semestral es suficiente para una cartera indexada. Mensual invita a tocar; anual deja demasiado margen para derivar.
-
-Y una advertencia que suena rara en una herramienta que te enseña tu desviación en tiempo real: **mirar más a menudo no mejora nada, y probablemente empeora.** Ver la cifra todos los días entrena a reaccionar. Por eso el mapa de esta app colorea la distancia a tu objetivo y no la variación del día — es una decisión de producto, no un descuido.
+Por eso el mapa de esta app colorea la distancia a tu objetivo y no la variación del día. Es una decisión de producto y no un descuido: el color del día te enseñaría a mirar el día, que es justo el hábito que una cartera indexada no necesita.
 
 <div class="bloque aviso">
 
@@ -55,7 +83,7 @@ Y una advertencia que suena rara en una herramienta que te enseña tu desviació
 
 **La banda importa más que la frecuencia.** Una banda estrecha con revisión anual opera más que una ancha con revisión mensual. Si vas a afinar algo, afina la banda.
 
-**Y una hoja de cálculo funciona perfectamente para esto** — hasta que tienes seis posiciones, dos divisas y un libro de operaciones que mantener a mano. Ahí es donde se rompe, y no antes.
+**Y una hoja de cálculo funciona perfectamente para esto** hasta que tienes seis posiciones, dos divisas y un libro de operaciones que mantener a mano. Ahí se rompe, y no antes.
 
 </div>
 
@@ -69,4 +97,3 @@ Y una advertencia que suena rara en una herramienta que te enseña tu desviació
 - Trimestral o semestral basta. Mirar a diario entrena a reaccionar.
 
 </div>
-

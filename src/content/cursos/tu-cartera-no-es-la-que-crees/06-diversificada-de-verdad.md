@@ -4,6 +4,7 @@ descripcion: "Las cuatro concentraciones que no aparecen en ningún reparto por 
 orden: 6
 gancho: "Puedes tener mil cuatrocientas empresas y seguir apostando por veinte. Diversificar no es contar líneas."
 minutos: 8
+arquetipo: decidir
 accion:
   texto: "Última vez: mira el mapa completo. Solapamiento, región y sector en la misma pantalla. Si al terminar el curso hay algo que te sorprende, ese es el valor de todo esto."
   cta: "Ver el mapa completo"
@@ -17,47 +18,80 @@ lecturas:
     href: "/blog/alternativas-portfolio-performance"
 ---
 
-Cierre del curso. Cuatro formas de estar concentrado sin que se note.
+<script>
+  import Comprueba from '$lib/components/cursos/Comprueba.svelte';
+  import Pasos from '$lib/components/cursos/Pasos.svelte';
+</script>
 
-## 1. Concentración por empresa
+Cierre del curso. ¿De cuántas formas se puede estar concentrado sin que se note?
 
-Un índice ponderado por capitalización pone arriba a las que más valen. En los índices globales actuales, las diez primeras posiciones son una fracción del total mucho mayor de lo que sugiere «1.400 empresas».
+<Pasos
+	titulo="Las cuatro concentraciones"
+	pasos={[
+		{
+			titulo: 'Por empresa',
+			detalle: 'Un índice ponderado por capitalización pone arriba a las que más valen, y las diez primeras son una fracción del total mucho mayor de lo que sugiere «1.400 empresas». Tener mil cuatrocientas no es estar repartido entre mil cuatrocientas.'
+		},
+		{
+			titulo: 'Por sector',
+			detalle: 'Consecuencia de la anterior: si las mayores empresas del mundo pertenecen al mismo sector, tu índice global es en buena parte una apuesta sectorial que no elegiste.'
+		},
+		{
+			titulo: 'Por producto duplicado',
+			detalle: 'La de la primera lección. Tres fondos que son las mismas empresas con distinto peso, y se detecta con el solapamiento, no con los nombres.'
+		},
+		{
+			titulo: 'Fuera de la cartera',
+			detalle: 'Tu empleo, tu vivienda y tu país. Si trabajas en tecnología y tu cartera está muy expuesta a tecnología, una crisis del sector te toca el sueldo y el patrimonio a la vez.',
+			aviso: 'Esta no sale en ninguna herramienta, incluida esta. Sumarla a mano, una sola vez, cambia bastante la foto — y suele ser la más grande de las cuatro.'
+		}
+	]}
+/>
 
-Tener mil cuatrocientas no es lo mismo que estar repartido entre mil cuatrocientas. **Es la concentración que menos se mira y la que más ha crecido** en la última década.
+<Comprueba
+	pregunta="Encuentras que tu cartera tiene un 30 % en tecnología. ¿Qué haces?"
+	opciones={[
+		{
+			texto: 'Vender parte y repartirlo entre otros sectores',
+			correcta: false,
+			porque: 'Deshacer posiciones cuesta impuestos y comisiones, y además estarías apostando activamente contra la capitalización de mercado — que es una decisión legítima, pero es una apuesta y hay que saber que la estás haciendo.'
+		},
+		{
+			texto: 'Comprobar primero si esa exposición la elegiste, y corregir con lo nuevo si no',
+			correcta: true,
+			porque: 'Ese es el orden. Si la elegiste, no hay nada que arreglar. Si no, redirigir aportaciones no cuesta impuestos y deshacer sí — y solo si es grande y no la elegiste tiene sentido plantear un cambio estructural, que ya no es rebalancear sino cambiar el reparto.'
+		},
+		{
+			texto: 'Nada: en un índice global lo que hay es lo que hay',
+			correcta: false,
+			porque: 'Es casi la respuesta correcta y le falta la primera mitad. «Lo que hay es lo que hay» vale cuando lo has mirado y lo aceptas; dicho sin mirar es la frase que ha tapado todas las concentraciones de este curso.'
+		}
+	]}
+/>
 
-## 2. Concentración por sector
+## Cómo se mide la primera, que es la que menos se mira
 
-Consecuencia de la anterior: si las mayores empresas del mundo pertenecen al mismo sector, tu índice global es en buena parte una apuesta sectorial. No la elegiste; la eligió la capitalización.
+La concentración por empresa no aparece en ningún reparto por región ni por sector, así que hay que buscarla a propósito. La ficha oficial de cualquier índice publica el peso de sus diez mayores posiciones, y ese único número dice más sobre tu riesgo real que la cifra de empresas totales: si las diez primeras son una quinta parte del fondo, tienes mil cuatrocientas empresas y una apuesta; si son una vigésima, tienes mil cuatrocientas empresas.
 
-## 3. Concentración por producto duplicado
+## ¿Y por qué ha crecido tanto sin que nadie lo decidiera?
 
-La de la primera lección. Tres fondos que son las mismas empresas con distinto peso. Se detecta con el solapamiento, no con los nombres.
+Por el mecanismo de siempre: las empresas que más suben pesan más, y al pesar más arrastran al índice. Es exactamente lo que un índice ponderado por capitalización debe hacer, así que no es un fallo del producto ni algo que su gestora pueda corregir — y tampoco algo de lo que vayas a enterarte, porque el fondo se sigue llamando igual y su ficha sigue diciendo mil cuatrocientas empresas.
 
-## 4. Concentración fuera de la cartera
+Lo útil es mirar ese número una vez al año, el mismo día que revisas la cartera, y compararlo con el del año anterior. Si sube mucho y sostenidamente, tu fondo global se parece cada vez más a una apuesta sectorial concentrada. Eso puede seguir estando perfectamente bien, siempre que sea una frase que puedas decir en voz alta sobre tu propia cartera sin que te suene rara.
 
-La que no sale en ninguna herramienta, incluida esta:
+## Por qué esto cierra los cinco cursos
 
-- **Tu empleo.** Si trabajas en tecnología y tu cartera está muy expuesta a tecnología, tu riesgo real está doblado: una crisis del sector te toca el sueldo y el patrimonio a la vez.
-- **Tu vivienda.** Suele ser el activo más grande de un patrimonio español y no aparece en ningún mapa de cartera.
-- **Tu país.** Cobras en euros, vives aquí y tu empleo depende de esta economía.
+Porque las cuatro concentraciones tienen algo en común: ninguna se ve en la lista de fondos, que es lo único que casi todo el mundo mira. Se ven mirando dentro y midiendo el tiempo, que es lo que estos cinco cursos han intentado enseñar a hacer.
 
-Sumar eso a mano, una vez, cambia bastante la foto.
-
-## Qué hacer cuando encuentras una
-
-Casi siempre, menos de lo que parece:
-
-1. **Comprobar si la elegiste.** Si la respuesta es sí, no hay nada que arreglar.
-2. **Corregir con lo nuevo, no con lo viejo.** Redirigir aportaciones no cuesta impuestos; deshacer posiciones sí.
-3. **Y solo si es grande y no la elegiste**, plantear un cambio estructural — que ya no es rebalancear, es cambiar el reparto, y eso se decide con la cabeza fría y por escrito.
+Y conviene terminar con el límite de todo esto, porque es real: diversificar tiene un punto a partir del cual añadir no reduce riesgo, solo añade productos que seguir. La diferencia entre 1.400 empresas y 3.000 es mucho menor que la diferencia entre 20 y 200.
 
 <div class="bloque aviso">
 
 ## Lo que no te van a contar
 
-**Diversificar tiene un límite útil.** Pasado cierto punto, añadir no reduce riesgo: solo añade productos que seguir. La diferencia entre 1.400 empresas y 3.000 es mucho menor que la diferencia entre 20 y 200.
+**Hay un riesgo que no se diversifica de ninguna manera**: el de mercado. Cuando cae todo, cae todo. La diversificación protege del riesgo específico —que una empresa o un sector lo hagan mal— y de eso protege muy bien, hasta el punto de que es casi el único almuerzo gratis que existe aquí. De lo otro no protege nadie, y quien te diga lo contrario está vendiendo algo.
 
-**Y hay un riesgo que no se diversifica de ninguna manera**: el de mercado. Cuando cae todo, cae todo. La diversificación protege del riesgo específico —que una empresa o un sector lo hagan mal— y de eso protege muy bien. De lo otro no protege nadie, y quien te diga lo contrario está vendiendo.
+**Y la concentración por empresa ha crecido mucho en la última década** sin que nadie tomara ninguna decisión. Es el mismo mecanismo de siempre: la capitalización decide, y tú te enteras si miras.
 
 </div>
 
@@ -77,4 +111,3 @@ Y una idea que cierra los cinco cursos: **casi todo lo que importa en una carter
 - Corrige con las aportaciones nuevas antes que deshaciendo lo viejo.
 
 </div>
-

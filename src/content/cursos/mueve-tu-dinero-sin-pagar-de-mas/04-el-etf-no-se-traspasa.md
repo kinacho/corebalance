@@ -4,6 +4,7 @@ descripcion: "La diferencia legal entre un fondo y un ETF a efectos de traspaso,
 orden: 4
 gancho: "Mismo índice, mismas empresas, mismo riesgo. Y uno se traspasa y el otro no. La diferencia no está en lo que compras: está en dónde cotiza."
 minutos: 7
+arquetipo: desmontar
 accion:
   texto: "Comprueba qué tipo de instrumento tiene detectado cada una de tus posiciones. Es lo que decide si un traspaso es posible, y la app no propondrá traspasar nada que no lo sea."
   cta: "Revisar mis instrumentos"
@@ -15,42 +16,82 @@ lecturas:
     href: "/blog/rebalanceo-degiro-etfs"
 ---
 
-Un ETF sobre el MSCI World y un fondo indexado sobre el MSCI World contienen prácticamente lo mismo. Fiscalmente, en España, no son lo mismo en absoluto.
+<script>
+  import Comprueba from '$lib/components/cursos/Comprueba.svelte';
+  import Pasos from '$lib/components/cursos/Pasos.svelte';
+</script>
 
-## Dónde está la frontera
+Dos productos con las mismas empresas dentro y el mismo riesgo. ¿Por qué solo uno se traspasa sin tributar?
 
-El régimen de diferimiento del artículo 94 aplica al reembolso y suscripción de participaciones de instituciones de inversión colectiva **no cotizadas**. Un ETF cotiza: se compra y se vende en un mercado secundario, como una acción.
+<Comprueba
+	pregunta="Tienes un ETF del MSCI World con plusvalía y quieres pasarte a un fondo indexado del MSCI World. ¿Tributas?"
+	pista="Piensa en qué operación estás haciendo realmente al deshacerte del ETF."
+	opciones={[
+		{
+			texto: 'No, porque el destino es un fondo traspasable',
+			correcta: false,
+			porque: 'Es la respuesta que da casi todo el mundo, y es la que más dinero cuesta. El destino no salva la operación: lo que importa es que las dos patas sean traspasables.'
+		},
+		{
+			texto: 'Sí: vender el ETF es una venta en mercado, con o sin destino',
+			correcta: true,
+			porque: 'El ETF cotiza, así que no hay reembolso con la gestora: hay una venta a otro inversor en el mercado secundario. Y una venta realiza la ganancia, vaya el dinero a donde vaya después.'
+		},
+		{
+			texto: 'Solo si el ETF y el fondo son de gestoras distintas',
+			correcta: false,
+			porque: 'La gestora no pinta nada aquí. Lo único que decide es si el producto cotiza o no, que es lo que define si hay reembolso o venta.'
+		}
+	]}
+/>
 
-Así que no hay reembolso ni suscripción con la gestora. Hay una venta a otro inversor. Y una venta realiza la ganancia.
+## Dónde está exactamente la frontera
 
-Ese es todo el mecanismo. No es una decisión política contra los ETFs: es una consecuencia de cómo se compran.
+El régimen de diferimiento del artículo 94 aplica al reembolso y suscripción de participaciones de instituciones de inversión colectiva **no cotizadas**. Un ETF cotiza: se compra y se vende en un mercado secundario, como una acción. Así que no hay reembolso ni suscripción con la gestora, hay una venta a otro inversor.
 
-## Qué significa en la práctica
+Ese es todo el mecanismo. No es una decisión política contra los ETFs ni un privilegio de los fondos: es una consecuencia de cómo se compran. Y de ahí salen las cuatro combinaciones, que conviene tener claras porque la tercera sorprende a mucha gente:
 
-- **Cambiar de ETF a otro ETF**: venta, ganancia realizada, impuesto.
-- **Cambiar de ETF a un fondo**: venta, ganancia realizada, impuesto. Aunque el destino sí sea traspasable.
-- **Cambiar de fondo a un ETF**: reembolso, ganancia realizada, impuesto. El origen no salva la operación.
-- **Fondo a fondo**: la única combinación que no tributa.
+| Movimiento | Qué es | Tributa |
+|---|---|---|
+| Fondo → fondo | Reembolso y suscripción | **No** |
+| ETF → ETF | Venta y compra | Sí |
+| ETF → fondo | Venta y suscripción | Sí |
+| Fondo → ETF | Reembolso y compra | Sí |
 
-La tercera sorprende a mucha gente: tener el dinero en un fondo no te da un pase; lo que importa es que **las dos patas** sean traspasables.
+Tener el dinero en un fondo no te da un pase: lo que importa es que **las dos patas** lo sean.
 
-## Y si ya estoy en ETFs
+## ¿Y si ya estoy en ETFs?
 
-Es una situación normal y no requiere pánico. Tres cosas que sí conviene hacer:
+Es una situación normal y no requiere ningún pánico. Lo que no conviene es hacer el movimiento reflejo, que es migrarlo todo de golpe: si tienes una plusvalía grande, pasarte a fondos hoy significa pagarla hoy, y el impuesto que evitarías en el futuro rara vez supera al que adelantas.
 
-1. **No cambies por cambiar.** Si tienes una plusvalía grande, migrar a fondos hoy significa pagarla hoy. El impuesto que evitarías en el futuro tiene que superar el que pagas ahora, y eso rara vez cuadra con plusvalías grandes.
-2. **Aporta lo nuevo donde quieras estar.** Las aportaciones futuras no tienen coste fiscal: puedes ir construyendo la parte en fondos sin tocar lo que ya tienes.
-3. **Rebalancea con aportaciones, no vendiendo.** Es la vía sin impuesto para una cartera de ETFs, y la que calcula esta app por defecto.
+<Pasos
+	titulo="Qué hacer en vez de migrar"
+	pasos={[
+		{
+			titulo: 'Deja quieto lo que ya tienes',
+			detalle: 'Sobre todo lo que más plusvalía acumula. Vender para «ordenarse» es pagar hoy por una comodidad futura.'
+		},
+		{
+			titulo: 'Aporta lo nuevo donde quieras estar',
+			detalle: 'Las aportaciones futuras no tienen coste fiscal: puedes ir construyendo la parte en fondos sin tocar nada de lo anterior.'
+		},
+		{
+			titulo: 'Rebalancea comprando, no vendiendo',
+			detalle: 'Es la vía sin impuesto para una cartera de ETFs, y la que esta app calcula por defecto.',
+			aviso: 'Con una cartera grande y aportaciones pequeñas puede no llegar. Ahí toca decidir entre pagar o quedarse desviado, y esa cuenta es la lección 8.'
+		}
+	]}
+/>
 
 <div class="bloque aviso">
 
 ## Lo que no te van a contar
 
-**El ETF sigue ganando en otras cosas.** TER algo menor, más oferta, y acceso a índices que no tienen fondo equivalente. Si tu cartera no va a cambiar en veinte años y aportas cantidades grandes, la ventaja del traspaso no se usa nunca — y entonces no vale nada.
+**El ETF sigue ganando en otras cosas**: TER algo menor, más oferta y acceso a índices sin fondo equivalente. Si tu cartera no va a cambiar en veinte años, la ventaja del traspaso no se usa nunca — y entonces no vale nada.
 
-**«Fondo» y «ETF» no siempre se distinguen bien en tu bróker.** Un mismo índice puede aparecer con nombres casi idénticos. El ISIN no lo aclara: `IE00…` es igual de válido para las dos cosas. Lo que sí lo aclara es cómo se contrata — y es lo que esta app deduce para no proponerte un traspaso imposible.
+**«Fondo» y «ETF» no siempre se distinguen bien en tu bróker**, y el ISIN no lo aclara: `IE00…` es igual de válido para las dos cosas. Lo que sí lo aclara es cómo se contrata, y es lo que esta app deduce para no proponerte un traspaso imposible.
 
-**Y hay una zona gris que conviene no habitar**: productos que parecen fondos y no lo son a efectos del artículo 94. Si un plan de inversión promete traspasos y no eres capaz de identificar la figura legal, pregunta antes de contar con el diferimiento.
+**Y hay una zona gris que conviene no habitar**: productos que parecen fondos y no lo son a efectos del artículo 94. Si no eres capaz de identificar la figura legal, pregunta antes de contar con el diferimiento.
 
 </div>
 
@@ -64,4 +105,3 @@ Es una situación normal y no requiere pánico. Tres cosas que sí conviene hace
 - El ISIN no distingue un fondo de un ETF. Su forma de contratación, sí.
 
 </div>
-

@@ -4,6 +4,7 @@ descripcion: "Por qué la moneda en que cotiza tu fondo no importa, por qué la 
 orden: 3
 gancho: "Que tu fondo cotice en euros no significa que tu dinero esté en euros. Es la confusión más extendida de todas."
 minutos: 8
+arquetipo: dato
 accion:
   texto: "Mira tu reparto por región. La divisa a la que estás expuesto sigue de cerca ese mapa: si tienes un 60 % en Estados Unidos, tienes en torno a un 60 % de exposición al dólar, cotice tu fondo en lo que cotice."
   cta: "Ver mi reparto por región"
@@ -15,39 +16,70 @@ lecturas:
     href: "/blog/iwda-vs-vwce-comparativa"
 ---
 
-Compras un fondo indexado global en euros, desde España, con una cuenta en euros. ¿Tienes riesgo de divisa?
+<script>
+  import Comprueba from '$lib/components/cursos/Comprueba.svelte';
+  import Pasos from '$lib/components/cursos/Pasos.svelte';
+</script>
 
-Sí. Casi todo el que tenías antes de comprarlo.
+Compras un fondo global en euros, desde España, con una cuenta en euros. ¿Tienes riesgo de divisa?
 
-## La confusión
+<Comprueba
+	pregunta="Dos clases del mismo fondo global: una cotiza en euros y otra en dólares. Para ti, que inviertes desde España, ¿en qué se diferencian?"
+	opciones={[
+		{
+			texto: 'La de euros me quita el riesgo de tipo de cambio',
+			correcta: false,
+			porque: 'Es la confusión más extendida de toda la inversión indexada. La moneda de cotización es una etiqueta contable: alguien hace la conversión antes de enseñarte el número, y el riesgo sigue ahí entero.'
+		},
+		{
+			texto: 'En casi nada: rinden prácticamente lo mismo',
+			correcta: true,
+			porque: 'Lo que determina tu exposición es la moneda en que están denominados los activos de dentro. Si el fondo tiene un 60 % en empresas estadounidenses, ese 60 % está en dólares, se exprese la clase como se exprese.'
+		},
+		{
+			texto: 'La de dólares tiene más riesgo porque yo cobro en euros',
+			correcta: false,
+			porque: 'Suena lógico y no lo es, por el mismo motivo: el riesgo no lo trae la etiqueta de la clase, lo traen las empresas. Las dos clases lo tienen idéntico.'
+		}
+	]}
+/>
 
-La moneda en que **cotiza** un fondo es una etiqueta contable. Lo que determina tu exposición real es la moneda en la que están denominados **los activos que hay dentro**.
+## Qué significa esto en la práctica
 
-Si el fondo tiene un 60 % en empresas estadounidenses, ese 60 % está en dólares. Que la clase se exprese en euros solo significa que alguien hace la conversión antes de enseñarte el número. El riesgo sigue ahí, entero.
+Si el euro se aprecia un 10 % frente al dólar y tus empresas estadounidenses no se mueven, tu cartera pierde en torno a un 6 % medida en euros. No ha pasado nada en las empresas: ha pasado en el par de divisas, y tú lo ves como si hubiera pasado en la bolsa.
 
-Por eso dos clases del mismo fondo, una en euros y otra en dólares, rinden **prácticamente lo mismo** para un inversor europeo: la etiqueta no cambia el contenido.
+Va en las dos direcciones, claro, y a lo largo de décadas tiende a compensarse. Pero «décadas» es bastante más tiempo del que la mayoría tiene en la cabeza cuando abre la cartera un martes y la ve un 6 % abajo sin ninguna noticia que lo explique. Saber que ese movimiento existe y de dónde viene es la mitad de no reaccionar a él.
 
-## Qué significa en la práctica
+## ¿Y los fondos con cobertura?
 
-Si el euro se aprecia un 10 % frente al dólar y tus empresas estadounidenses no se mueven, tu cartera pierde en torno a un 6 % medida en euros. No ha pasado nada en las empresas: ha pasado en el par de divisas.
+Existen clases *hedged*, que cubren el riesgo de divisa con derivados. Antes de usarlas conviene saber tres cosas:
 
-Va en las dos direcciones, claro. Y a lo largo de décadas tiende a compensarse — pero «décadas» es más tiempo del que la mayoría tiene en la cabeza cuando mira su cartera.
-
-## Los fondos con cobertura
-
-Existen clases *hedged*: cubren el riesgo de divisa con derivados. Tres cosas que hay que saber antes de usarlas:
-
-1. **Cuestan.** El coste de la cobertura depende del diferencial de tipos entre las dos monedas, y en algunos periodos ha sido significativo. No aparece en el TER.
-2. **No son gratis en rentabilidad esperada.** Estás renunciando al lado bueno del movimiento igual que al malo.
-3. **Para renta variable a largo plazo, la opinión mayoritaria es que no compensan.** Para renta fija a corto, la respuesta cambia: ahí la divisa puede dominar por completo el rendimiento, y cubrir tiene mucho más sentido.
+<Pasos
+	titulo="Lo que hay que saber antes de cubrir"
+	pasos={[
+		{
+			titulo: 'Cuesta, y no aparece en el TER',
+			detalle: 'El coste depende del diferencial de tipos entre las dos monedas, y en algunos periodos ha sido significativo.'
+		},
+		{
+			titulo: 'Renuncias también al lado bueno',
+			detalle: 'No estás quitando un riesgo: estás cambiando dos colas por ninguna. Si el dólar se aprecia, tú no lo cobras.'
+		},
+		{
+			titulo: 'Para bolsa a largo plazo rara vez compensa; para renta fija a corto, sí',
+			detalle: 'En renta fija la divisa puede dominar por completo el rendimiento del activo, así que cubrir tiene mucho más sentido ahí.',
+			aviso: 'Este es el matiz que se pierde en los foros, donde «hedged sí o no» se discute como si fuera una sola pregunta para toda la cartera.'
+		}
+	]}
+/>
 
 <div class="bloque aviso">
 
 ## Lo que no te van a contar
 
-**Tu exposición a divisa cambia sola.** No es un parámetro que fijes: sube y baja con la composición del índice. Nadie te avisa cuando pasas del 55 % al 62 % en dólares.
+**Tu exposición a divisa cambia sola.** No es un parámetro que fijes: sube y baja con la composición del índice, y nadie te avisa cuando pasas del 55 % al 62 % en dólares.
 
-**Y tienes menos riesgo del que parece**, porque tus gastos futuros no son solo en euros. Si compras tecnología, energía o viajes, parte de tu coste de vida ya está indexado al dólar. La cobertura perfecta no es «todo en euros»: es que la moneda de tus activos se parezca a la de tus gastos, y eso no es 100 % euro.
+**Y tienes menos riesgo del que parece**, porque tus gastos futuros no son solo en euros. Si compras tecnología, energía o viajes, parte de tu coste de vida ya está indexado al dólar. La cobertura perfecta no es «todo en euros»: es que la moneda de tus activos se parezca a la de tus gastos.
 
 **Ninguna herramienta de cartera española te enseña esta exposición**, ni siquiera esta: lo que se enseña aquí es el reparto por región, del que la divisa se deduce bastante bien. Decirlo es más honesto que dibujar una tarta de monedas basada en la misma estimación.
 
@@ -63,4 +95,3 @@ Existen clases *hedged*: cubren el riesgo de divisa con derivados. Tres cosas qu
 - Tus gastos futuros tampoco son 100 % euros.
 
 </div>
-

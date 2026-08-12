@@ -56,7 +56,7 @@
       <a href={$link('/#how-it-works')} aria-label={$LL.nav.aria_how_it_works()}>{$LL.nav.how_it_works()}</a>
       <a href={$link('/#why-us')} aria-label={$LL.nav.aria_why_us()}>{$LL.nav.why_us()}</a>
       <a href={$link('/#educational')} aria-label={$LL.nav.aria_faq()}>{$LL.nav.faq()}</a>
-      {#if isEs}<a href="/cursos" aria-label="Cursos gratuitos de inversión indexada">Cursos</a>{/if}
+      {#if isEs}<a class="destacado" href="/cursos" aria-label="Cursos gratuitos de inversión indexada (novedad)">Cursos</a>{/if}
           <a href={$link('/herramientas')} aria-label={$LL.nav.aria_tools()}>{$LL.nav.tools()}</a>
       <a href={$link('/blog')} aria-label={$LL.nav.aria_blog()}>{$LL.nav.blog()}</a>
     </div>
@@ -100,7 +100,7 @@
       <a href={$link('/#how-it-works')} onclick={() => isMobileMenuOpen = false} aria-label={$LL.nav.aria_how_it_works()}>{$LL.nav.how_it_works()}</a>
       <a href={$link('/#why-us')} onclick={() => isMobileMenuOpen = false} aria-label={$LL.nav.aria_why_us()}>{$LL.nav.why_us()}</a>
       <a href={$link('/#educational')} onclick={() => isMobileMenuOpen = false} aria-label={$LL.nav.aria_faq()}>{$LL.nav.faq()}</a>
-      {#if isEs}<a href="/cursos" onclick={() => isMobileMenuOpen = false} aria-label="Cursos gratuitos de inversión indexada">Cursos</a>{/if}
+      {#if isEs}<a class="destacado" href="/cursos" onclick={() => isMobileMenuOpen = false} aria-label="Cursos gratuitos de inversión indexada (novedad)">Cursos</a>{/if}
           <a href={$link('/herramientas')} onclick={() => isMobileMenuOpen = false} aria-label={$LL.nav.aria_tools()}>{$LL.nav.tools()}</a>
       <a href={$link('/blog')} onclick={() => isMobileMenuOpen = false} aria-label={$LL.nav.aria_blog()}>{$LL.nav.blog()}</a>
     </div>
@@ -225,6 +225,37 @@
 
   .nav-links a:hover {
     color: #fff;
+  }
+
+  /*
+   * «Cursos» es lo único nuevo del menú y se leía exactamente igual que los otros seis.
+   *
+   * ⚠️ El distintivo **no puede añadir ancho**, y eso decide toda la solución. Este menú
+   * solo aparece a partir de 1140 px, y ese punto de corte se subió desde 1024 px
+   * precisamente porque los textos se partían en dos líneas: una píldora «Nuevo» al lado
+   * del enlace serían unos 50 px más y volveríamos a estar al borde de aquello. Así que el
+   * punto va en `::after` posicionado en absoluto —fuera del flujo, cero ancho ocupado— y
+   * el peso y el color hacen el resto. El `aria-label` dice «novedad» porque un punto de
+   * color no existe para quien no lo ve.
+   */
+  .nav-links a.destacado,
+  .mobile-menu-links a.destacado {
+    position: relative;
+    color: #fff;
+    font-weight: 700;
+  }
+  .nav-links a.destacado::after,
+  .mobile-menu-links a.destacado::after {
+    content: '';
+    position: absolute;
+    top: -0.28rem;
+    right: -0.5rem;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent-blue);
+    /* Un punto decorativo no debe robar el clic del enlace que marca. */
+    pointer-events: none;
   }
 
   .nav-actions {
