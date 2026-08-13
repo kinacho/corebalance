@@ -8,6 +8,15 @@
 
 <svelte:head>
 	<title>{$page.status === 404 ? (isEs ? 'Página no encontrada' : 'Page not found') : (isEs ? 'Error' : 'Error')} — CoreBalance</title>
+	<!--
+		El status ya es autoritativo para un 404, así que esto es cinturón y tirantes:
+		cubre los errores que se sirven con otro código y sigue la doctrina que el
+		proyecto ya aplicó a `/dashboard` (cabecera en `hooks.server.ts`) y a
+		`static/offline.html` — declarar `noindex` y **dejar rastrear**, porque una URL
+		bloqueada en `robots.txt` nunca se rastrea y por tanto su estado no cambia nunca.
+		El canonical autorreferencial que esta página emitía lo quita `+layout.svelte`.
+	-->
+	<meta name="robots" content="noindex, follow" />
 </svelte:head>
 
 <div class="error-page">
