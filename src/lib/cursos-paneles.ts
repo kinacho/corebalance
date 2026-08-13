@@ -21,12 +21,15 @@
  * atrás, se encuentra un dashboard vacío. Y como es una SPA, al volver se remonta todo el
  * estado local (pestaña activa, mapas plegados o ampliados, rango del histórico).
  *
- * **Es un piloto de tres paneles.** Hay pareja clara para cinco más y se decidirán viéndolos
- * en pantalla: `HistoryChart` → `twr-vs-mwr`, `DeviationTreemap` → `tus-bandas`,
- * `RebalancePanel` → `rebalancear-aportando`, `TaxAwareRebalance` → `la-factura-exacta`,
- * `CrisisSimulator` → `cuando-cae-un-30`. Se dejan fuera del mapa a propósito y no
- * comentadas dentro: una entrada que nadie usa es la clase de huérfano que nadie caza.
- * Sin pareja: `CompositionBars`, `DonutChart`, `Projections`.
+ * **Siete de los once paneles.** Los cuatro que quedan fuera, con su motivo:
+ *
+ * - `CompositionBars`, `DonutChart` y `Projections` no tienen lección que los explique.
+ * - ⚠️ **`HistoryChart` la tiene y se queda fuera igual.** Su pareja sería `twr-vs-mwr`, que
+ *   es la lección *anterior* a `el-coste-del-timing` en el mismo curso y sobre el mismo
+ *   asunto —la diferencia entre lo que rindió tu cartera y lo que rendiste tú—, y
+ *   `HistoryChart` comparte tarjeta con `TimingCost`. Serían dos enlaces a dos lecciones
+ *   consecutivas del mismo curso a doscientos píxeles uno de otro: el enlace dejaría de leerse
+ *   como «esto lo explica una lección» y pasaría a leerse como ruido.
  */
 
 export interface LeccionDePanel {
@@ -36,8 +39,15 @@ export interface LeccionDePanel {
 	titulo: string;
 }
 
-/** Los paneles que hoy enlazan a su lección. */
-export type PanelConLeccion = 'timing' | 'drift' | 'lookthrough';
+/** Los paneles que enlazan a su lección. */
+export type PanelConLeccion =
+	| 'timing'
+	| 'drift'
+	| 'lookthrough'
+	| 'deviation'
+	| 'rebalance'
+	| 'tax'
+	| 'crisis';
 
 const LECCIONES: Record<PanelConLeccion, LeccionDePanel> = {
 	timing: {
@@ -51,6 +61,22 @@ const LECCIONES: Record<PanelConLeccion, LeccionDePanel> = {
 	lookthrough: {
 		ruta: '/cursos/tu-cartera-no-es-la-que-crees/exposicion-real',
 		titulo: 'Tu exposición real por región y por sector'
+	},
+	deviation: {
+		ruta: '/cursos/el-80-por-ciento-se-decide-aqui/tus-bandas',
+		titulo: 'Tus bandas: el número que decide cuándo actuar'
+	},
+	rebalance: {
+		ruta: '/cursos/rebalancear-no-te-hara-ganar-mas/rebalancear-aportando',
+		titulo: 'Rebalancear aportando, sin vender ni tributar'
+	},
+	tax: {
+		ruta: '/cursos/mueve-tu-dinero-sin-pagar-de-mas/la-factura-exacta',
+		titulo: 'Vender para rebalancear: la factura exacta'
+	},
+	crisis: {
+		ruta: '/cursos/rebalancear-no-te-hara-ganar-mas/cuando-cae-un-30',
+		titulo: 'Cuando el mercado cae un 30 %'
 	}
 };
 
