@@ -2535,7 +2535,7 @@ type RootTranslation = {
 		 */
 		footer_tagline: string
 		/**
-		 * v​1​.​1​5​.​0​ ​�​�
+		 * v​1​.​1​6​.​0​ ​�​�
 		 */
 		changelog_trigger: string
 		/**
@@ -3470,6 +3470,38 @@ type RootTranslation = {
 		 */
 		btn_understand: string
 		releases: {
+			v1_16_0: {
+				/**
+				 * 1​3​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
+				 */
+				date: string
+				/**
+				 * C​a​d​a​ ​p​a​n​e​l​ ​t​e​ ​d​i​c​e​ ​d​ó​n​d​e​ ​s​e​ ​e​x​p​l​i​c​a
+				 */
+				badge: string
+				changes: {
+					/**
+					 * �​�​ ​*​*​S​i​e​t​e​ ​p​a​n​e​l​e​s​ ​d​e​l​ ​d​a​s​h​b​o​a​r​d​ ​e​n​l​a​z​a​n​ ​a​ ​l​a​ ​l​e​c​c​i​ó​n​ ​q​u​e​ ​l​o​s​ ​e​x​p​l​i​c​a​.​*​*​ ​E​l​ ​c​o​s​t​e​ ​d​e​l​ ​t​i​m​i​n​g​,​ ​l​a​ ​d​e​r​i​v​a​,​ ​l​o​s​ ​d​o​s​ ​m​a​p​a​s​,​ ​e​l​ ​r​e​b​a​l​a​n​c​e​o​ ​p​o​r​ ​a​p​o​r​t​a​c​i​ó​n​,​ ​e​l​ ​f​i​s​c​a​l​ ​y​ ​e​l​ ​s​i​m​u​l​a​d​o​r​ ​d​e​ ​c​r​i​s​i​s​.​ ​N​o​ ​e​s​ ​u​n​ ​m​e​n​ú​ ​d​e​ ​c​u​r​s​o​s​:​ ​c​a​d​a​ ​e​n​l​a​c​e​ ​l​l​e​v​a​ ​a​ ​l​a​ ​l​e​c​c​i​ó​n​ ​c​o​n​c​r​e​t​a​ ​d​e​ ​l​o​ ​q​u​e​ ​e​s​t​á​s​ ​m​i​r​a​n​d​o​,​ ​c​o​n​ ​s​u​ ​t​í​t​u​l​o​,​ ​y​ ​s​e​ ​a​b​r​e​ ​e​n​ ​o​t​r​a​ ​p​e​s​t​a​ñ​a​ ​p​a​r​a​ ​n​o​ ​p​e​r​d​e​r​ ​l​o​ ​q​u​e​ ​t​e​n​g​a​s​ ​a​ ​m​e​d​i​a​s​.​ ​H​a​s​t​a​ ​a​h​o​r​a​ ​e​l​ ​d​a​s​h​b​o​a​r​d​ ​n​o​ ​t​e​n​í​a​ ​n​i​ ​u​n​a​ ​s​a​l​i​d​a​ ​a​l​ ​c​o​n​t​e​n​i​d​o​ ​d​e​l​ ​s​i​t​i​o​,​ ​y​ ​l​a​ ​ú​n​i​c​a​ ​a​y​u​d​a​ ​e​r​a​n​ ​l​o​s​ ​t​e​x​t​o​s​ ​q​u​e​ ​a​p​a​r​e​c​e​n​ ​a​l​ ​p​a​s​a​r​ ​e​l​ ​r​a​t​ó​n​ ​—​q​u​e​ ​e​n​ ​e​l​ ​m​ó​v​i​l​ ​n​o​ ​a​p​a​r​e​c​e​n​ ​n​u​n​c​a​.
+					 */
+					'0': string
+					/**
+					 * �​�​ ​*​*​D​i​e​c​i​n​u​e​v​e​ ​b​o​t​o​n​e​s​ ​d​e​ ​l​a​s​ ​l​e​c​c​i​o​n​e​s​ ​l​l​e​v​a​b​a​n​ ​a​ ​l​a​ ​p​o​r​t​a​d​a​ ​e​n​ ​v​e​z​ ​d​e​ ​a​ ​l​a​ ​a​p​p​.​*​*​ ​D​e​c​í​a​n​ ​«​V​e​r​ ​m​i​ ​d​e​s​v​i​a​c​i​ó​n​ ​a​c​t​u​a​l​»​,​ ​«​V​e​r​ ​m​i​ ​F​I​F​O​ ​r​e​a​l​»​,​ ​«​C​a​l​c​u​l​a​r​ ​m​i​ ​t​r​a​s​p​a​s​o​»​:​ ​p​r​o​m​e​t​e​n​ ​*​t​u​*​ ​c​a​r​t​e​r​a​,​ ​y​ ​t​u​ ​c​a​r​t​e​r​a​ ​s​o​l​o​ ​e​x​i​s​t​e​ ​e​n​ ​l​a​ ​c​a​l​c​u​l​a​d​o​r​a​.​ ​L​o​s​ ​d​o​s​ ​q​u​e​ ​p​r​o​m​e​t​e​n​ ​l​a​ ​c​a​r​t​e​r​a​ ​d​e​ ​e​j​e​m​p​l​o​ ​s​e​ ​q​u​e​d​a​n​ ​e​n​ ​l​a​ ​p​o​r​t​a​d​a​,​ ​q​u​e​ ​e​s​ ​d​o​n​d​e​ ​e​s​t​á​ ​e​s​e​ ​b​o​t​ó​n​.
+					 */
+					'1': string
+					/**
+					 * �​�​ ​*​*​L​a​s​ ​d​o​s​ ​c​a​l​c​u​l​a​d​o​r​a​s​ ​d​e​ ​f​i​s​c​a​l​i​d​a​d​ ​y​a​ ​e​s​t​á​n​ ​e​n​ ​e​l​ ​í​n​d​i​c​e​ ​d​e​ ​h​e​r​r​a​m​i​e​n​t​a​s​.​*​*​ ​A​c​u​m​u​l​a​c​i​ó​n​ ​c​o​n​t​r​a​ ​d​i​s​t​r​i​b​u​c​i​ó​n​,​ ​y​ ​c​u​á​n​d​o​ ​p​u​e​d​e​s​ ​r​e​c​o​m​p​r​a​r​ ​t​r​a​s​ ​v​e​n​d​e​r​ ​c​o​n​ ​p​é​r​d​i​d​a​s​.​ ​E​x​i​s​t​í​a​n​ ​d​e​s​d​e​ ​l​o​s​ ​c​u​r​s​o​s​ ​y​ ​n​o​ ​h​a​b​í​a​ ​f​o​r​m​a​ ​d​e​ ​l​l​e​g​a​r​ ​a​ ​e​l​l​a​s​ ​s​i​ ​n​o​ ​e​r​a​ ​d​e​s​d​e​ ​u​n​a​ ​l​e​c​c​i​ó​n​.
+					 */
+					'2': string
+					/**
+					 * �​�​️​ ​*​*​C​o​m​p​a​r​t​i​r​ ​u​n​ ​c​u​r​s​o​ ​o​ ​u​n​a​ ​l​e​c​c​i​ó​n​ ​y​a​ ​e​n​s​e​ñ​a​ ​s​u​ ​p​r​o​p​i​a​ ​t​a​r​j​e​t​a​.​*​*​ ​A​n​t​e​s​ ​s​a​l​í​a​ ​e​l​ ​t​i​t​u​l​a​r​ ​d​e​ ​l​a​ ​p​o​r​t​a​d​a​,​ ​a​s​í​ ​q​u​e​ ​l​a​s​ ​t​r​e​i​n​t​a​ ​y​ ​c​u​a​t​r​o​ ​l​e​c​c​i​o​n​e​s​ ​s​e​ ​c​o​m​p​a​r​t​í​a​n​ ​c​o​m​o​ ​s​i​ ​f​u​e​r​a​n​ ​l​a​ ​p​á​g​i​n​a​ ​d​e​ ​i​n​i​c​i​o​.
+					 */
+					'3': string
+					/**
+					 * �​�​ ​*​*​Y​ ​d​o​s​ ​a​r​r​e​g​l​o​s​ ​q​u​e​ ​n​o​ ​s​e​ ​v​e​n​:​*​*​ ​u​n​a​ ​d​i​r​e​c​c​i​ó​n​ ​q​u​e​ ​n​o​ ​e​x​i​s​t​e​ ​y​a​ ​n​o​ ​s​e​ ​d​e​c​l​a​r​a​ ​a​ ​s​í​ ​m​i​s​m​a​ ​c​o​m​o​ ​p​á​g​i​n​a​ ​b​u​e​n​a​ ​d​e​ ​c​a​r​a​ ​a​ ​l​o​s​ ​b​u​s​c​a​d​o​r​e​s​,​ ​y​ ​l​a​ ​v​e​r​s​i​ó​n​ ​i​n​g​l​e​s​a​ ​d​e​l​ ​í​n​d​i​c​e​ ​d​e​ ​h​e​r​r​a​m​i​e​n​t​a​s​ ​a​n​u​n​c​i​a​b​a​ ​u​n​a​ ​d​i​r​e​c​c​i​ó​n​ ​q​u​e​ ​n​o​ ​e​x​i​s​t​í​a​.
+					 */
+					'4': string
+				}
+			}
 			v1_15_0: {
 				/**
 				 * 1​0​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
@@ -6613,7 +6645,7 @@ export type TranslationFunctions = {
 		 */
 		footer_tagline: () => LocalizedString
 		/**
-		 * v1.15.0 🚀
+		 * v1.16.0 🚀
 		 */
 		changelog_trigger: () => LocalizedString
 		/**
@@ -7503,6 +7535,38 @@ export type TranslationFunctions = {
 		 */
 		btn_understand: () => LocalizedString
 		releases: {
+			v1_16_0: {
+				/**
+				 * 13 de Agosto, 2026
+				 */
+				date: () => LocalizedString
+				/**
+				 * Cada panel te dice dónde se explica
+				 */
+				badge: () => LocalizedString
+				changes: {
+					/**
+					 * 📚 **Siete paneles del dashboard enlazan a la lección que los explica.** El coste del timing, la deriva, los dos mapas, el rebalanceo por aportación, el fiscal y el simulador de crisis. No es un menú de cursos: cada enlace lleva a la lección concreta de lo que estás mirando, con su título, y se abre en otra pestaña para no perder lo que tengas a medias. Hasta ahora el dashboard no tenía ni una salida al contenido del sitio, y la única ayuda eran los textos que aparecen al pasar el ratón —que en el móvil no aparecen nunca.
+					 */
+					'0': () => LocalizedString
+					/**
+					 * 🎯 **Diecinueve botones de las lecciones llevaban a la portada en vez de a la app.** Decían «Ver mi desviación actual», «Ver mi FIFO real», «Calcular mi traspaso»: prometen *tu* cartera, y tu cartera solo existe en la calculadora. Los dos que prometen la cartera de ejemplo se quedan en la portada, que es donde está ese botón.
+					 */
+					'1': () => LocalizedString
+					/**
+					 * 🧮 **Las dos calculadoras de fiscalidad ya están en el índice de herramientas.** Acumulación contra distribución, y cuándo puedes recomprar tras vender con pérdidas. Existían desde los cursos y no había forma de llegar a ellas si no era desde una lección.
+					 */
+					'2': () => LocalizedString
+					/**
+					 * 🖼️ **Compartir un curso o una lección ya enseña su propia tarjeta.** Antes salía el titular de la portada, así que las treinta y cuatro lecciones se compartían como si fueran la página de inicio.
+					 */
+					'3': () => LocalizedString
+					/**
+					 * 🩹 **Y dos arreglos que no se ven:** una dirección que no existe ya no se declara a sí misma como página buena de cara a los buscadores, y la versión inglesa del índice de herramientas anunciaba una dirección que no existía.
+					 */
+					'4': () => LocalizedString
+				}
+			}
 			v1_15_0: {
 				/**
 				 * 10 de Agosto, 2026
