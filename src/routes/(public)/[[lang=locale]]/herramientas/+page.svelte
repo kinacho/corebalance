@@ -6,7 +6,7 @@
   import SeoHead from '$lib/components/seo/SeoHead.svelte';
   import { pageOgImage } from '$lib/seo/og';
   import { link } from '$lib/i18n/link';
-  import { alternates, SITE_URL, localizePath, absoluteUrl } from '$lib/i18n/routing';
+  import { alternates, SITE_URL, localeLink, absoluteUrl } from '$lib/i18n/routing';
   import type { Locales } from '$lib/i18n/i18n-types';
 
   const lang = $derived(($page.data.locale ?? 'es') as Locales);
@@ -20,11 +20,25 @@
   );
   const metaDesc = $derived(
     isEs
-      ? 'Cuatro calculadoras gratis y sin registro para inversión indexada: TER de tu cartera, si toca rebalancear, cuánto caerías en una crisis y tu precio medio.'
-      : 'Four free, no-sign-up calculators for index investing: your portfolio TER, whether it is time to rebalance, crash recovery and your average price.'
+      ? 'Calculadoras gratis y sin registro para inversión indexada: TER de tu cartera, si toca rebalancear, cuánto caerías en una crisis, tu precio medio y dos de fiscalidad española.'
+      : 'Free, no-sign-up calculators for index investing: your portfolio TER, whether it is time to rebalance, crash recovery and your average price.'
   );
 
-  /** Las cuatro herramientas, en el orden en que le sirven a alguien que empieza. */
+  /**
+   * Las herramientas, en el orden en que le sirven a alguien que empieza.
+   *
+   * ⚠️ **Sin numerales en la prosa de esta página, y es deliberado.** Decía «cuatro
+   * calculadoras» en seis sitios —esta descripción, la entradilla, el lead de los pasos y
+   * dos respuestas del FAQ, más el título de la card social en `og-pages.mjs`—, y con dos
+   * herramientas solo en español el recuento ya no es el mismo en los dos idiomas. Un
+   * número escrito a mano en seis sitios es la misma trampa que el número de versión en
+   * cinco: al añadir la séptima nada se pondría rojo al olvidar una.
+   *
+   * `soloEs` marca las que no tienen variante inglesa. Su porqué está en el propio
+   * componente de cada una: la escala del ahorro que aplican es española, y un `/en/` de
+   * eso sería una página fina sobre una ley que no aplica a quien la lee — el mismo tipo
+   * de página que Search Console reportó como *soft 404* en agosto.
+   */
   const tools = $derived([
     {
       path: '/herramientas/calculadora-ter',
@@ -65,16 +79,49 @@
         ? 'Precio medio ponderado de compra a partir de tus operaciones, contando ventas, dividendos y comisiones. Para quien lleva años aportando a plazos y ya perdió la cuenta de su coste real.'
         : 'Weighted average purchase price from your own transactions, counting sells, dividends and fees. For anyone who has been contributing for years and lost track of their real cost basis.',
       accent: 'var(--accent-blue)'
+    },
+    {
+      path: '/herramientas/acumulacion-vs-distribucion',
+      soloEs: true,
+      // Las insignias nombran un tema y son distintas entre sí, como las otras cuatro
+      // (Costes, Decisión, Riesgo, Contabilidad). Las dos decían «Fiscalidad» y quedaban
+      // una al lado de otra con dos acentos distintos: misma etiqueta, dos colores.
+      badge: 'Dividendos',
+      name: 'Acumulación vs distribución',
+      question: '¿Cuánto me cuesta cobrar los dividendos?',
+      body:
+        'Compara un fondo de acumulación con uno de distribución sobre tu horizonte, aplicando la escala del ahorro española a cada dividendo cobrado. Sirve para ver en euros lo que cuesta esa comodidad.',
+      accent: 'var(--accent-green)'
+    },
+    {
+      path: '/herramientas/cuando-puedo-recomprar',
+      soloEs: true,
+      badge: 'Pérdidas',
+      name: '¿Cuándo puedo recomprar?',
+      question: 'Vendí con pérdidas. ¿Cuánto tengo que esperar?',
+      body:
+        'La regla de antiaplicación del IRPF con la fecha exacta a partir de la cual puedes recomprar: dos meses para ETFs y acciones, doce para participaciones de fondos. Recomprar antes no pierde la pérdida, la aplaza.',
+      accent: 'var(--accent-orange)'
     }
   ]);
 
   /**
-   * El recorrido que encadena las cuatro, y la razón de que exista esta sección no es
+   * Las que se muestran en el idioma que se está sirviendo.
+   *
+   * En inglés se caen las dos españolas: la alternativa era una tarjeta en español dentro
+   * de una página `/en/` —que además puede disparar `checkSpanishLeak` de `seo:audit`— o
+   * traducir el texto de una calculadora que lleva a una página en español. Ninguna de las
+   * dos es mejor que no mostrarla.
+   */
+  const visibles = $derived(tools.filter((tool) => isEs || !tool.soloEs));
+
+  /**
+   * El recorrido que las encadena, y la razón de que exista esta sección no es
    * decorativa: **este índice era la página con menos contenido propio del sitio** —2.026
    * caracteres en `<main>`, de los cuales buena parte son el menú y el pie que se repiten en
    * las 70 URLs— y Search Console reportaba `/en/herramientas` como «soft 404», es decir un
-   * 200 sin contenido suficiente que se niega a indexar. Un índice de cuatro tarjetas no le
-   * dice a un buscador nada que no diga cualquier otro índice.
+   * 200 sin contenido suficiente que se niega a indexar. Un índice de tarjetas no le dice a
+   * un buscador nada que no diga cualquier otro índice.
    *
    * El orden no es el del menú: es el que le sirve a alguien que empieza, de lo que se puede
    * decidir con datos ciertos (el coste) a lo que sólo se sabe mirando hacia atrás (el coste
@@ -112,7 +159,7 @@
   ]);
 
   /**
-   * Preguntas reales, no relleno: las cuatro que decide alguien antes de abrir una
+   * Preguntas reales, no relleno: las que decide alguien antes de abrir una
    * calculadora ajena. Deliberadamente **no repiten** lo que ya dicen las tarjetas ni la
    * nota de «por qué gratis», porque duplicar texto dentro de la misma página no añade
    * contenido, sólo longitud.
@@ -139,8 +186,8 @@
     {
       q: isEs ? '¿Esto sustituye a un asesor?' : 'Does this replace an adviser?',
       a: isEs
-        ? 'No, y ninguna de las cuatro te dice qué comprar. Calculan consecuencias de decisiones que ya has tomado —lo que cuesta una comisión, lo que costaría un rebalanceo, lo que aguantarías en una caída— para que decidas con el número delante en vez de con una intuición.'
-        : 'No, and none of the four tells you what to buy. They compute the consequences of decisions you have already made — what a fee costs, what a rebalance would cost, what you could sit through in a crash — so you decide with the number in front of you instead of on a hunch.'
+        ? 'No, y ninguna de ellas te dice qué comprar. Calculan consecuencias de decisiones que ya has tomado —lo que cuesta una comisión, lo que costaría un rebalanceo, lo que aguantarías en una caída— para que decidas con el número delante en vez de con una intuición.'
+        : 'No, and none of them tells you what to buy. They compute the consequences of decisions you have already made — what a fee costs, what a rebalance would cost, what you could sit through in a crash — so you decide with the number in front of you instead of on a hunch.'
     }
   ]);
 
@@ -174,15 +221,30 @@
         url: canonical,
         inLanguage: lang,
         isPartOf: { '@type': 'WebSite', name: 'CoreBalance', url: SITE_URL },
+        /**
+         * ⚠️ **`localeLink`, no `localizePath`, y la diferencia es un 404 silencioso.**
+         * `localizePath` prefija `/en` sin comprobar nada, así que en la versión inglesa
+         * este `ItemList` emitía `…/en/herramientas/cuando-puedo-recomprar`, una URL que no
+         * existe. `localeLink` sí comprueba `isBilingualRoute` y devuelve el path intacto
+         * cuando la ruta no tiene variante de idioma — que es exactamente lo que ya hacía
+         * bien el `href` de las tarjetas, y por eso el defecto era asimétrico.
+         *
+         * Y no lo cazaba ningún guarda: `checkLinks` de `seo-audit.mjs` solo mira los
+         * `href` del HTML, no las URL dentro de un bloque JSON-LD, y `checkJsonLd` valida
+         * que parsee y que estén los campos obligatorios, no que las `url` resuelvan.
+         *
+         * Se listan las `visibles`, no las `tools`: marcar en inglés dos elementos que la
+         * página inglesa no muestra es describir contenido invisible.
+         */
         mainEntity: {
           '@type': 'ItemList',
-          numberOfItems: tools.length,
-          itemListElement: tools.map((tool, i) => ({
+          numberOfItems: visibles.length,
+          itemListElement: visibles.map((tool, i) => ({
             '@type': 'ListItem',
             position: i + 1,
             name: tool.name,
             description: tool.question,
-            url: absoluteUrl(localizePath(tool.path, lang))
+            url: absoluteUrl(localeLink(tool.path, lang))
           }))
         }
       }
@@ -217,13 +279,13 @@
       </p>
       <p class="hub-lead">
         {isEs
-          ? 'Estas cuatro herramientas atacan cada una de esas decisiones y responden a una sola pregunta. Son gratuitas, no piden registro y calculan en tu navegador: ningún dato que escribas sale de tu dispositivo.'
-          : 'These four tools take on one of those decisions each, and answer a single question. They are free, ask for no sign-up, and run in your browser: nothing you type leaves your device.'}
+          ? 'Estas herramientas atacan cada una de esas decisiones y responden a una sola pregunta. Son gratuitas, no piden registro y calculan en tu navegador: ningún dato que escribas sale de tu dispositivo.'
+          : 'These tools take on one of those decisions each, and answer a single question. They are free, ask for no sign-up, and run in your browser: nothing you type leaves your device.'}
       </p>
     </header>
 
     <div class="tools-grid">
-      {#each tools as tool}
+      {#each visibles as tool}
         <a class="tool-card" href={$link(tool.path)} style="--card-accent: {tool.accent}">
           <span class="tool-badge">{tool.badge}</span>
           <h2 class="tool-name">{tool.name}</h2>
@@ -238,8 +300,8 @@
       <h2>{isEs ? 'En qué orden usarlas' : 'What order to use them in'}</h2>
       <p class="steps-lead">
         {isEs
-          ? 'No hace falta usar las cuatro, ni en este orden. Pero si estás montando la cartera ahora, éste es el recorrido que evita el error más caro de cada etapa.'
-          : 'You do not need all four, nor in this order. But if you are building the portfolio now, this is the path that avoids the most expensive mistake at each stage.'}
+          ? 'No hace falta usarlas todas, ni en este orden. Pero si estás montando la cartera ahora, éste es el recorrido que evita el error más caro de cada etapa.'
+          : 'You do not need them all, nor in this order. But if you are building the portfolio now, this is the path that avoids the most expensive mistake at each stage.'}
       </p>
       <ol class="steps-list">
         {#each steps as step (step.n)}
