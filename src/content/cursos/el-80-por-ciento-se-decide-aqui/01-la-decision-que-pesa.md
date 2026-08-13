@@ -8,7 +8,7 @@ arquetipo: desmontar
 accion:
   texto: "Antes de seguir, escribe tus porcentajes objetivo en la herramienta. No hace falta que sean los definitivos: hace falta que estén escritos, porque el resto del curso los va a mover."
   cta: "Fijar mis pesos objetivo"
-  href: "/"
+  href: "/dashboard"
 lecturas:
   - texto: "Qué es el asset allocation y por qué decide casi todo"
     href: "/blog/que-es-asset-allocation"

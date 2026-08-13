@@ -4,6 +4,7 @@
 	import { LL } from '$lib/i18n/i18n-svelte';
 	import { SAVINGS_TAX_YEAR } from '$lib/fiscal';
 	import type { MoveKind, TransferMove } from '$lib/traspaso';
+	import LeccionDelPanel from './LeccionDelPanel.svelte';
 
 	let isOpen = $state(false);
 
@@ -63,6 +64,8 @@
 	<div class="collapsible" class:collapsed={!isOpen}>
 		<div class="wrapper">
 			<div class="content">
+				<!-- Dentro del contenido: la cabecera es un `<button>`. -->
+				<LeccionDelPanel panel="tax" />
 				{#if !hasPrices}
 					<p class="empty">{$LL.traspaso.no_prices()}</p>
 				{:else if !plan.hasAnythingToDo}

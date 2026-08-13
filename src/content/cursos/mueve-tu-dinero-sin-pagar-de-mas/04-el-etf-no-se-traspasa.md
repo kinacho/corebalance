@@ -8,7 +8,7 @@ arquetipo: desmontar
 accion:
   texto: "Comprueba qué tipo de instrumento tiene detectado cada una de tus posiciones. Es lo que decide si un traspaso es posible, y la app no propondrá traspasar nada que no lo sea."
   cta: "Revisar mis instrumentos"
-  href: "/"
+  href: "/dashboard"
 lecturas:
   - texto: "Fondos indexados vs ETFs en España"
     href: "/blog/fondos-indexados-vs-etfs-espana"

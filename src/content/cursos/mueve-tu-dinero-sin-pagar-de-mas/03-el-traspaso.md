@@ -8,7 +8,7 @@ arquetipo: procedimiento
 accion:
   texto: "Si tienes posiciones desviadas de su objetivo, el panel fiscal empareja las que sobran con las que faltan y calcula cuánto se puede mover por traspaso —sin tributar— y cuánto no. Con tus operaciones."
   cta: "Calcular mi traspaso"
-  href: "/"
+  href: "/dashboard"
 lecturas:
   - texto: "Traspasos de fondos indexados y Hacienda"
     href: "/blog/traspasos-fondos-indexados-hacienda"

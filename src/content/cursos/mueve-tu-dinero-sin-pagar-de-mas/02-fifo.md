@@ -8,7 +8,7 @@ arquetipo: desmontar
 accion:
   texto: "Con tus operaciones importadas, el panel fiscal aplica FIFO sobre ellas y te dice qué ganancia realizarías al vender. Compáralo con el coste medio que muestra la ficha del activo: la diferencia es exactamente lo que explica esta lección."
   cta: "Ver mi FIFO real"
-  href: "/"
+  href: "/dashboard"
 lecturas:
   - texto: "Importar movimientos de MyInvestor (el libro de operaciones que hace falta)"
     href: "/blog/importar-movimientos-myinvestor"

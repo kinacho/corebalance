@@ -23,7 +23,9 @@ const STATIC_PAGES: Record<string, { lastmod: string; priority: string; changefr
 	// recorrido de cuatro pasos y las preguntas frecuentes), que es el arreglo del «soft 404»
 	// que Search Console reportaba en `/en/herramientas`. La fecha se toca porque cambió el
 	// contenido visible: es la única señal del sitemap que invita a revisitar la página.
-	'/herramientas': { lastmod: '2026-08-10', priority: '0.8', changefreq: 'monthly' },
+	// 13-ago-2026: entran las dos calculadoras de fiscalidad española, así que la versión
+	// española pasa a listar seis tarjetas y la inglesa sigue con cuatro.
+	'/herramientas': { lastmod: '2026-08-13', priority: '0.8', changefreq: 'monthly' },
 	'/comparativas': { lastmod: '2026-08-02', priority: '0.8', changefreq: 'monthly' },
 	'/comparativas/corebalance-vs-portfolio-performance': {
 		lastmod: '2026-08-01',
@@ -88,7 +90,7 @@ const POST_DRIVEN_PAGES: Record<string, { priority: string; changefreq: string }
  * coma, y un sitemap que miente sobre las fechas deja de servir para lo único que sirve.
  * Súbela cuando cambie el contenido visible de una lección.
  */
-const CURSOS_LASTMOD = '2026-08-12';
+const CURSOS_LASTMOD = '2026-08-13';
 
 interface UrlEntry {
 	loc: string;

@@ -26,6 +26,10 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import satori from 'satori';
 import { Resvg } from '@resvg/resvg-js';
+import { readFrontmatter } from './lib/frontmatter.mjs';
+import { collectCursos } from './lib/cursos.mjs';
+import { LOCALES } from './lib/locales.mjs';
+import { PAGES, LEGACY_IMAGES, cursoPages, contarCards } from './lib/og-pages.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const CONTENT_DIR = join(ROOT, 'src', 'content', 'blog');
@@ -37,148 +41,13 @@ const FONT_DIR = join(ROOT, 'node_modules', '@fontsource', 'plus-jakarta-sans', 
 const WIDTH = 1200;
 const HEIGHT = 630;
 
-const LOCALES = ['es', 'en'];
-
 const LABEL = {
 	es: 'Rebalanceo de carteras · corebalance.app',
 	en: 'Portfolio rebalancing · corebalance.app'
 };
 
-/**
- * Páginas fijas. Los títulos son los mismos que sirve cada página; se repiten
- * aquí porque este script corre en Node, fuera de la app, y no puede leer
- * typesafe-i18n. Si cambias el H1 de una página, cambia también el texto de aquí.
- */
-const PAGES = [
-	{
-		key: 'landing',
-		kicker: { es: 'Gratis, privada y sin registro', en: 'Free, private, no sign-up' },
-		title: {
-			es: 'Gestiona y rebalancea tu cartera de ETFs y fondos indexados',
-			en: 'Track and rebalance your index fund & ETF portfolio'
-		}
-	},
-	{
-		key: 'blog',
-		kicker: { es: 'Blog', en: 'Blog' },
-		title: {
-			es: 'Inversión indexada y rebalanceo de carteras',
-			en: 'Index investing and portfolio rebalancing'
-		}
-	},
-	{
-		key: 'herramientas',
-		kicker: { es: 'Herramientas interactivas', en: 'Interactive tools' },
-		title: {
-			es: 'Herramientas gratis para el inversor indexado',
-			en: 'Free tools for index investors'
-		}
-	},
-	{
-		key: 'comparativas',
-		kicker: { es: 'Comparativas', en: 'Comparisons' },
-		title: {
-			es: 'CoreBalance frente a las alternativas',
-			en: 'CoreBalance versus the alternatives'
-		}
-	},
-	{
-		key: 'ter',
-		kicker: { es: 'Herramienta interactiva', en: 'Interactive tool' },
-		title: {
-			es: 'Calculadora de TER total de tu cartera',
-			en: 'Total expense ratio calculator'
-		}
-	},
-	{
-		key: 'checklist',
-		kicker: { es: 'Recurso interactivo', en: 'Interactive resource' },
-		title: { es: '¿Es hora de rebalancear?', en: 'Is it time to rebalance?' }
-	},
-	{
-		key: 'crisis',
-		kicker: { es: 'Herramienta interactiva', en: 'Interactive tool' },
-		title: {
-			es: '¿Qué pasaría con tu cartera si la bolsa cae?',
-			en: 'What would a market crash do to your portfolio?'
-		}
-	},
-	{
-		key: 'precio-medio',
-		kicker: { es: 'Herramienta interactiva', en: 'Interactive tool' },
-		title: {
-			es: 'Calculadora de precio medio de compra',
-			en: 'Average purchase cost calculator'
-		}
-	},
-	{
-		key: 'autor',
-		kicker: { es: 'Autor', en: 'Author' },
-		title: { es: 'Quién escribe en CoreBalance', en: 'Who writes on CoreBalance' }
-	},
-	{
-		key: 'vs-excel',
-		kicker: { es: 'Comparativa', en: 'Comparison' },
-		title: { es: 'CoreBalance vs Excel y Google Sheets', en: 'CoreBalance vs Excel & Google Sheets' }
-	},
-	{
-		key: 'vs-indexa-capital',
-		kicker: { es: 'Comparativa', en: 'Comparison' },
-		title: { es: 'CoreBalance vs Indexa Capital', en: 'CoreBalance vs Indexa Capital' }
-	},
-	{
-		key: 'vs-portfolio-performance',
-		kicker: { es: 'Comparativa', en: 'Comparison' },
-		title: {
-			es: 'CoreBalance vs Portfolio Performance',
-			en: 'CoreBalance vs Portfolio Performance'
-		}
-	},
-	{
-		key: 'vs-justetf',
-		kicker: { es: 'Comparativa', en: 'Comparison' },
-		title: { es: 'CoreBalance vs JustETF', en: 'CoreBalance vs JustETF' }
-	},
-	{
-		key: 'vs-ghostfolio',
-		kicker: { es: 'Comparativa', en: 'Comparison' },
-		title: { es: 'CoreBalance vs Ghostfolio', en: 'CoreBalance vs Ghostfolio' }
-	}
-];
 
-/**
- * Imágenes en la raíz de `static/` que ya estaban referenciadas (y posiblemente
- * compartidas por ahí fuera): se regeneran en su sitio para no romper enlaces
- * antiguos, ahora sí como PNG de 1200×630 de verdad.
- */
-const LEGACY_IMAGES = [
-	{ out: 'og-image.png', page: 'landing', lang: 'es' },
-	{ out: 'og-image-landing.png', page: 'landing', lang: 'es' },
-	{ out: 'og-image-blog.png', page: 'blog', lang: 'es' },
-	{ out: 'og-image-ter.png', page: 'ter', lang: 'es' },
-	{ out: 'og-image-checklist.png', page: 'checklist', lang: 'es' }
-];
 
-/** Extrae el frontmatter mínimo que necesitamos sin añadir un parser de YAML. */
-function readFrontmatter(raw) {
-	const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---/);
-	if (!match) return {};
-
-	const fields = {};
-	for (const line of match[1].split(/\r?\n/)) {
-		const kv = line.match(/^(\w+):\s*(.*)$/);
-		if (!kv) continue;
-		let value = kv[2].trim();
-		if (
-			(value.startsWith('"') && value.endsWith('"')) ||
-			(value.startsWith("'") && value.endsWith("'"))
-		) {
-			value = value.slice(1, -1);
-		}
-		fields[kv[1]] = value;
-	}
-	return fields;
-}
 
 /** Tamaño de fuente adaptado al largo del título, para que quepa siempre. */
 function titleFontSize(title) {
@@ -380,6 +249,7 @@ async function render(outPath, content, fonts) {
 
 async function main() {
 	const posts = await collectPosts();
+	const cursos = await collectCursos('og');
 	const fonts = await loadFonts();
 
 	await mkdir(OUT_DIR, { recursive: true });
@@ -403,9 +273,10 @@ async function main() {
 
 	// ── Páginas fijas, una por idioma ─────────────────────────────────────────
 	// Estas dependen del propio script, no de un markdown, así que se regeneran
-	// cuando el script cambia.
-	for (const page of PAGES) {
-		for (const lang of LOCALES) {
+	// cuando el script cambia. Las de cursos salen de `cursos.ts`, pero su texto lo
+	// compone este script igual que el resto, así que se regeneran con el mismo criterio.
+	for (const page of [...PAGES, ...cursoPages(cursos)]) {
+		for (const lang of page.langs ?? LOCALES) {
 			const outPath = join(PAGE_OUT_DIR, `${page.key}-${lang}.png`);
 
 			if (!(await needsRebuild(outPath, fileURLToPath(import.meta.url)))) {
@@ -440,9 +311,12 @@ async function main() {
 		generated++;
 	}
 
+	const cards = contarCards([...PAGES, ...cursoPages(cursos)]);
+
 	console.log(
 		`[og] ${generated} imágenes generadas, ${skipped} al día ` +
-			`(${posts.length} posts + ${PAGES.length * LOCALES.length} páginas + ${LEGACY_IMAGES.length} nombres antiguos).`
+			`(${posts.length} posts + ${cards} páginas, ${cursos.length} de ellas cursos, ` +
+			`+ ${LEGACY_IMAGES.length} nombres antiguos).`
 	);
 }
 

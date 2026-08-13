@@ -16,6 +16,7 @@
 	} from '$lib/constants';
 	import type { PortfolioPosition } from '$lib/types';
 	import MapFrame from './MapFrame.svelte';
+	// El enlace a su lección lo dibuja `MapFrame`, para que caiga debajo del subtítulo.
 
 	/**
 	 * Mapa de cartera al estilo de los mapas de mercado, con tres diferencias
@@ -483,6 +484,7 @@
 	subtitle={hasScale ? $LL.treemap.subtitle() : $LL.treemap.subtitle_no_targets()}
 	{showTitle}
 	canExpand={cells.length > 0}
+	leccion="deviation"
 	bind:expanded
 	bind:contentWidth={containerWidth}
 >

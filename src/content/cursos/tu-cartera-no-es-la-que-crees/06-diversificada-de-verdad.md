@@ -8,7 +8,7 @@ arquetipo: decidir
 accion:
   texto: "Última vez: mira el mapa completo. Solapamiento, región y sector en la misma pantalla. Si al terminar el curso hay algo que te sorprende, ese es el valor de todo esto."
   cta: "Ver el mapa completo"
-  href: "/"
+  href: "/dashboard"
 lecturas:
   - texto: "La cartera Bogle para principiantes en España"
     href: "/blog/cartera-bogle-principiantes-espana"

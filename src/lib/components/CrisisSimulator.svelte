@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { formatEUR } from '$lib/utils';
+	import LeccionDelPanel from './LeccionDelPanel.svelte';
 	/**
 	 * ⚠️ Registro selectivo, no `chart.js/auto`. `auto` arrastra **todos** los
 	 * controladores, escalas y plugins de la librería —incluidos radar, polar,
@@ -275,7 +276,9 @@
 	<div class="collapsible" class:collapsed={!isOpen}>
 		<div class="wrapper">
 			<div class="content">
-				
+				<!-- Dentro del contenido: la cabecera es un `<button>`. -->
+				<LeccionDelPanel panel="crisis" />
+
 				<div class="crisis-edu-card">
 					<div class="edu-header">
 						<span class="edu-icon" aria-hidden="true">

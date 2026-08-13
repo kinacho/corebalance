@@ -8,7 +8,7 @@ arquetipo: dato
 accion:
   texto: "Abre el mapa de lo que hay dentro de tus fondos. Te dice qué pares de posiciones apuntan a las mismas empresas y cuánto valor tienes duplicado. Si no tienes cartera todavía, la de ejemplo ya lo enseña."
   cta: "Ver mi solapamiento"
-  href: "/"
+  href: "/dashboard"
 lecturas:
   - texto: "IWDA vs VWCE: un fondo global o dos"
     href: "/blog/iwda-vs-vwce-comparativa"

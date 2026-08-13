@@ -34,6 +34,19 @@
 	let canonicalUrl = $derived(`https://corebalance.app${$page.url.pathname}`);
 	let ogLocale = $derived($page.data.locale === 'en' ? 'en_US' : 'es_ES');
 
+	/**
+	 * ⚠️ Este layout envuelve también a `+error.svelte`, así que sin esta condición
+	 * cualquier URL muerta emitía `<link rel="canonical">` apuntándose a sí misma:
+	 * una canónica autorreferencial hacia una URL que no existe. El canonical se
+	 * compone del pathname pedido, que no sabe nada de si la ruta es real.
+	 *
+	 * No lo caza ningún guarda: `seo:audit` exige exactamente un canonical
+	 * autorreferencial por página, pero solo lee el HTML prerenderizado y en el build
+	 * no hay ningún artefacto 404 — lo genera en runtime la función del adaptador.
+	 * Lo cubre `e2e/error-404.spec.ts`, que sí pide una URL muerta por HTTP.
+	 */
+	let esError = $derived($page.status >= 400);
+
 	// Determinar de manera síncrona si hay datos locales o flag de bypass para evitar flashes en la redirección.
 	const hasLocalHoldings = browser ? hasLocalHoldingsData() : false;
 
@@ -145,7 +158,9 @@
 </script>
 
 <svelte:head>
-	<link rel="canonical" href={canonicalUrl} />
+	{#if !esError}
+		<link rel="canonical" href={canonicalUrl} />
+	{/if}
 	<!-- og:site_name y og:locale globales para todas las páginas -->
 	<meta property="og:site_name" content="CoreBalance" />
 	<meta property="og:locale" content={ogLocale} />

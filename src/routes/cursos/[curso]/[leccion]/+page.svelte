@@ -3,7 +3,8 @@
 	import LandingFooter from '$lib/components/landing/LandingFooter.svelte';
 	import SeoHead from '$lib/components/seo/SeoHead.svelte';
 	import { AUTHOR } from '$lib/seo/author';
-	import { absoluteUrl } from '$lib/i18n/routing';
+	import { absoluteUrl, SITE_URL } from '$lib/i18n/routing';
+	import { cursoOgImage } from '$lib/seo/og';
 	import { PROMESA_GRATIS } from '$lib/cursos';
 
 	let { data } = $props();
@@ -12,6 +13,9 @@
 	const c = $derived(data.curso);
 	const ruta = $derived(`/cursos/${c.slug}/${l.slug}`);
 	const Contenido = $derived(l.content);
+
+	// La card es la del curso, compartida por sus lecciones: ver `cursoOgImage`.
+	const cardSocial = $derived(cursoOgImage(c.slug));
 
 	/**
 	 * `Course` + `LearningResource` + migas + preguntas, sobre el `@graph` de la lección.
@@ -80,6 +84,8 @@
 				learningResourceType: 'Lesson',
 				position: l.orden,
 				timeRequired: `PT${l.minutos}M`,
+				// Absoluta, como en las comparativas: el JSON-LD no resuelve rutas relativas.
+				image: `${SITE_URL}${cardSocial}`,
 				author: { '@type': 'Person', name: AUTHOR.name, url: absoluteUrl('/autor/kinacho') }
 			}
 		]
@@ -93,6 +99,7 @@
 	lang="es"
 	ogType="article"
 	bilingual={false}
+	image={cardSocial}
 	{jsonLd}
 />
 

@@ -3,6 +3,7 @@
 	import { formatEUR, formatPercent, formatShares } from '$lib/utils';
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { LL } from '$lib/i18n/i18n-svelte';
+	import LeccionDelPanel from './LeccionDelPanel.svelte';
 
 	interface Props {
 		contribution: number;
@@ -69,6 +70,9 @@
 	<div class="collapsible" class:collapsed={!isOpen}>
 		<div class="wrapper">
 			<div class="content">
+				<!-- Dentro del contenido y no en la cabecera: la cabecera es un `<button>`, y un
+				     enlace dentro de un botón es HTML inválido y además le roba el clic. -->
+				<LeccionDelPanel panel="rebalance" />
 				<div class="input-section">
 					<label class="input-label" for="contribution-input">
 						{$LL.rebalance_panel.input_label()}

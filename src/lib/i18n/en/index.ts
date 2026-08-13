@@ -672,7 +672,7 @@ const en: Translation = {
     timing_period_note: 'Measured over the {days} days with real data, not annualised.',
     legal_disclaimer: '<strong>Legal Disclaimer:</strong> CoreBalance is a purely informative and educational tool. It does not constitute financial, investment, or tax advice. The data displayed may be subject to delays or inaccuracies. The developer is not responsible for any financial losses resulting from the use of this application. Always invest at your own risk.',
     footer_tagline: 'Your control center for smart and balanced asset management.',
-    changelog_trigger: 'v1.15.0 🚀',
+    changelog_trigger: 'v1.16.0 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Made with ❤️ for the investing community',
     reclassify_stocks: 'Individual Stocks',
@@ -946,6 +946,17 @@ const en: Translation = {
     close_aria: 'Close modal',
     btn_understand: 'Got it',
     releases: {
+      v1_16_0: {
+        date: 'August 13, 2026',
+        badge: 'Every panel tells you where it is explained',
+        changes: [
+          '📚 **Seven dashboard panels now link to the lesson that explains them.** Timing cost, drift, both maps, contribution rebalancing, the tax panel and the crash simulator. It is not a course menu: each link goes to the specific lesson about what you are looking at, by its title, and opens in another tab so you do not lose anything half-finished. Until now the dashboard had no way out to the site\'s content at all, and the only help were the hover texts — which never show up on a phone. The lessons themselves are Spanish only.',
+          '🎯 **Nineteen buttons in the lessons led to the home page instead of the app.** They said "see my current drift", "see my real FIFO", "work out my transfer": they promise *your* portfolio, and your portfolio only exists in the calculator. The two that promise the example portfolio stay on the home page, which is where that button lives.',
+          '🧮 **The two Spanish tax calculators are now in the tools index.** Accumulating versus distributing, and when you can buy back after selling at a loss. They shipped with the courses and there was no way to reach them except from a lesson.',
+          '🖼️ **Sharing a course or a lesson now shows its own card.** It used to show the home page headline, so all thirty-four lessons were shared as if they were the front page.',
+          '🩹 **And two fixes you cannot see:** an address that does not exist no longer declares itself a good page to search engines, and the English tools index was announcing an address that did not exist.'
+        ]
+      },
       v1_15_0: {
         date: 'August 10, 2026',
         badge: 'Make it visible, and make it work on a phone',

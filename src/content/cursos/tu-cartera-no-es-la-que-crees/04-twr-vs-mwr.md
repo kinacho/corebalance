@@ -8,7 +8,7 @@ arquetipo: desmontar
 accion:
   texto: "El panel te da las dos cifras sobre tu histórico real. Si nunca has aportado ni vendido en el periodo, coincidirán: la diferencia solo aparece cuando has movido dinero."
   cta: "Ver mis dos rentabilidades"
-  href: "/"
+  href: "/dashboard"
 lecturas:
   - texto: "Importar el CSV de Interactive Brokers"
     href: "/blog/importar-csv-interactive-brokers"

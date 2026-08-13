@@ -687,7 +687,7 @@ const es = {
     timing_period_note: 'Medido sobre los {days:number} días con datos reales, sin anualizar.',
     legal_disclaimer: '<strong>Aviso Legal:</strong> CoreBalance es una herramienta puramente informativa y educativa. No constituye asesoramiento financiero, de inversión ni fiscal. Los datos mostrados pueden sufrir retrasos o ser inexactos. El desarrollador no se hace responsable de posibles pérdidas financieras derivadas del uso de esta aplicación. Invierte siempre bajo tu propia responsabilidad.',
     footer_tagline: 'Tu centro de mandos para una gestión de activos inteligente y equilibrada.',
-    changelog_trigger: 'v1.15.0 🚀',
+    changelog_trigger: 'v1.16.0 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Hecho con ❤️ para la comunidad inversora',
     reclassify_stocks: 'Acciones Individuales',
@@ -967,6 +967,17 @@ const es = {
     close_aria: 'Cerrar modal',
     btn_understand: 'Entendido',
     releases: {
+      v1_16_0: {
+        date: '13 de Agosto, 2026',
+        badge: 'Cada panel te dice dónde se explica',
+        changes: [
+          '📚 **Siete paneles del dashboard enlazan a la lección que los explica.** El coste del timing, la deriva, los dos mapas, el rebalanceo por aportación, el fiscal y el simulador de crisis. No es un menú de cursos: cada enlace lleva a la lección concreta de lo que estás mirando, con su título, y se abre en otra pestaña para no perder lo que tengas a medias. Hasta ahora el dashboard no tenía ni una salida al contenido del sitio, y la única ayuda eran los textos que aparecen al pasar el ratón —que en el móvil no aparecen nunca.',
+          '🎯 **Diecinueve botones de las lecciones llevaban a la portada en vez de a la app.** Decían «Ver mi desviación actual», «Ver mi FIFO real», «Calcular mi traspaso»: prometen *tu* cartera, y tu cartera solo existe en la calculadora. Los dos que prometen la cartera de ejemplo se quedan en la portada, que es donde está ese botón.',
+          '🧮 **Las dos calculadoras de fiscalidad ya están en el índice de herramientas.** Acumulación contra distribución, y cuándo puedes recomprar tras vender con pérdidas. Existían desde los cursos y no había forma de llegar a ellas si no era desde una lección.',
+          '🖼️ **Compartir un curso o una lección ya enseña su propia tarjeta.** Antes salía el titular de la portada, así que las treinta y cuatro lecciones se compartían como si fueran la página de inicio.',
+          '🩹 **Y dos arreglos que no se ven:** una dirección que no existe ya no se declara a sí misma como página buena de cara a los buscadores, y la versión inglesa del índice de herramientas anunciaba una dirección que no existía.'
+        ]
+      },
       v1_15_0: {
         date: '10 de Agosto, 2026',
         badge: 'Que se vea, y que funcione en el móvil',

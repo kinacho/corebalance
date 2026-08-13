@@ -8,7 +8,7 @@ arquetipo: desmontar
 accion:
   texto: "En el mapa, cambia entre la vista por región y la vista por sector. Fíjate en el porcentaje que queda fuera del cálculo: es la parte de tu cartera cuyo índice no está catalogado, y decirlo es más honesto que repartirlo a ojo."
   cta: "Ver mi reparto real"
-  href: "/"
+  href: "/dashboard"
 lecturas:
   - texto: "La cartera MSCI World + Emerging Markets"
     href: "/blog/cartera-msci-world-emerging-markets"

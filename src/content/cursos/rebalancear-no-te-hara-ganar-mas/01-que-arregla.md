@@ -8,7 +8,7 @@ arquetipo: desmontar
 accion:
   texto: "Mira tu cartera y responde a una pregunta: ¿en qué se parece hoy al reparto que decidiste? Si no lo sabes de memoria, ese es exactamente el problema que resuelve rebalancear."
   cta: "Ver mi desviación actual"
-  href: "/"
+  href: "/dashboard"
 lecturas:
   - texto: "Qué pasa si no rebalanceo nunca mi cartera (con el backtest real)"
     href: "/blog/que-pasa-si-no-rebalanceo-cartera"

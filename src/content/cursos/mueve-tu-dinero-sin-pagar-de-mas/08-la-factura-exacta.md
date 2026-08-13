@@ -8,7 +8,7 @@ arquetipo: calcular
 accion:
   texto: "El panel fiscal empareja lo que sobra con lo que falta dentro de cada bloque, hace primero todos los pares fondo→fondo para maximizar la parte sin tributar, y te dice qué te costaría el resto. Además simula cuántos meses tardarías en corregirlo solo con aportaciones."
   cta: "Ver mi plan con las dos vías"
-  href: "/"
+  href: "/dashboard"
 lecturas:
   - texto: "Rebalanceo en MyInvestor sin impuestos"
     href: "/blog/rebalanceo-myinvestor-sin-impuestos"
