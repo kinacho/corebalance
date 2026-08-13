@@ -276,6 +276,31 @@ describe('formato de las lecciones', () => {
 			expect(x.leccion.arquetipo, 'sin arquetipo en el frontmatter').toBeTruthy();
 		});
 
+		/**
+		 * ⚠️ **R11 existía como defecto, no como regla: 19 de las 34 lecciones prometían la
+		 * cartera del lector y llevaban a la portada.** «Ver mi desviación actual», «Ver mi
+		 * FIFO real», «Calcular mi traspaso»… todas con `href: "/"`, y la portada no puede
+		 * enseñar «mi» nada. Es el mismo defecto que el botón del índice de herramientas que
+		 * decía «ver la calculadora de rebalanceo» y llevaba a la raíz.
+		 *
+		 * No lo miraba nada: `accion` no aparecía en este fichero. Y no da ningún error —el
+		 * enlace funciona, solo lleva a otro sitio del que promete—, que es exactamente la
+		 * clase de defecto por la que existe esta suite.
+		 *
+		 * La regla es la posesión, no una lista de rutas: si el botón dice «mi» o «mis»,
+		 * habla de la cartera de quien lee, y eso solo existe en el dashboard. Las dos
+		 * lecciones que prometen la **cartera de ejemplo** se quedan en la portada a
+		 * propósito, porque el botón que la arranca vive ahí.
+		 */
+		it('R11 · si el botón promete «mi cartera», no lleva a la portada', () => {
+			const { cta, href } = x.leccion.accion;
+			const posesivo = /\bmis?\b/i.test(cta);
+
+			if (posesivo) {
+				expect(href, `«${cta}» promete la cartera del lector y lleva a ${href}`).not.toBe('/');
+			}
+		});
+
 		it('R10 · sigue midiendo entre 650 y 1.050 palabras', () => {
 			// Trocear no es alargar: el tiempo declarado en `minutos` tiene que seguir siendo
 			// honesto.

@@ -343,7 +343,16 @@
       <div class="cta-inner">
         <h2>{t.ctaTitle}</h2>
         <p>{t.ctaDesc}</p>
-        <button class="btn-primary" onclick={() => goto($link('/'))}>{t.ctaBtn}</button>
+        <!--
+          ⚠️ El botón decía «Ir a la calculadora» y llevaba a la portada. Es el mismo
+          defecto que se arregló en el índice de herramientas: el destino tiene que cumplir
+          lo que promete el botón, y la calculadora es el dashboard.
+
+          Y es un enlace de verdad, no un `goto()`, por lo mismo que allí: así lo ve un
+          rastreador. `/dashboard` no es ruta bilingüe, así que no pasa por `$link` —
+          `localizeInternalLink` devolvería el href intacto de todos modos.
+        -->
+        <a class="btn-primary" href="/dashboard">{t.ctaBtn}</a>
       </div>
     </section>
   </main>
@@ -739,7 +748,10 @@
 
   .crisis-cta p { color: rgba(255, 255, 255, 0.75); line-height: 1.6; margin-bottom: 2rem; font-size: 1.05rem; }
 
+  /* Es un `<a>`, no un `<button>`: de ahí `inline-block` y quitar el subrayado. */
   .btn-primary {
+    display: inline-block;
+    text-decoration: none;
     background: var(--accent-blue, #3b82f6);
     color: white;
     border: none;

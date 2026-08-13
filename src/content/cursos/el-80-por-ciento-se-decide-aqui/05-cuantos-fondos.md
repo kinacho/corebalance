@@ -8,7 +8,7 @@ arquetipo: dato
 accion:
   texto: "Abre el mapa de solapamiento con tu cartera puesta. Te dice qué pares de posiciones apuntan a las mismas empresas y cuánto valor tienes duplicado. Es la única forma de contestar esta lección con tus datos."
   cta: "Ver mi solapamiento"
-  href: "/"
+  href: "/dashboard"
 lecturas:
   - texto: "IWDA vs VWCE: un fondo global o dos"
     href: "/blog/iwda-vs-vwce-comparativa"

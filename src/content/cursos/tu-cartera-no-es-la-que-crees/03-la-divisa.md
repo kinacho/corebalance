@@ -8,7 +8,7 @@ arquetipo: dato
 accion:
   texto: "Mira tu reparto por región. La divisa a la que estás expuesto sigue de cerca ese mapa: si tienes un 60 % en Estados Unidos, tienes en torno a un 60 % de exposición al dólar, cotice tu fondo en lo que cotice."
   cta: "Ver mi reparto por región"
-  href: "/"
+  href: "/dashboard"
 lecturas:
   - texto: "Fondos indexados vs ETFs en España"
     href: "/blog/fondos-indexados-vs-etfs-espana"

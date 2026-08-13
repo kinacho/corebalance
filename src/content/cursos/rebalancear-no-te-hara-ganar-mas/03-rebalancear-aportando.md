@@ -8,7 +8,7 @@ arquetipo: procedimiento
 accion:
   texto: "Pon cuánto vas a aportar este mes y la app reparte esa cantidad entre tus posiciones en proporción a lo que le falta a cada una. Nunca propone vender: es rebalanceo por flujo de caja."
   cta: "Repartir mi próxima aportación"
-  href: "/"
+  href: "/dashboard"
 lecturas:
   - texto: "Rebalanceo en MyInvestor sin impuestos"
     href: "/blog/rebalanceo-myinvestor-sin-impuestos"

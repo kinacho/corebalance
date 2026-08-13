@@ -8,7 +8,7 @@ arquetipo: calcular
 accion:
   texto: "Mira tu coste de timing sobre el periodo medido. Si tu cartera no tiene aportaciones ni ventas en ese tramo, el panel te lo dirá en vez de inventarse una comparación."
   cta: "Ver mi coste de timing"
-  href: "/"
+  href: "/dashboard"
 lecturas:
   - texto: "Cuándo rebalancear la cartera"
     href: "/blog/cuando-rebalancear-cartera"

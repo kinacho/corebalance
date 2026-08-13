@@ -8,7 +8,7 @@ arquetipo: procedimiento
 accion:
   texto: "Deja tus pesos objetivo y tus bandas guardados en la herramienta. Es la parte de tu política que se puede comprobar sola: cada vez que abras el panel te dirá si sigues dentro."
   cta: "Guardar mi política en la app"
-  href: "/"
+  href: "/dashboard"
 lecturas:
   - texto: "Cuándo rebalancear la cartera"
     href: "/blog/cuando-rebalancear-cartera"

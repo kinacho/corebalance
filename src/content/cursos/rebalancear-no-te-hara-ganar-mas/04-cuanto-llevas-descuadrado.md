@@ -8,7 +8,7 @@ arquetipo: desmontar
 accion:
   texto: "Abre el gráfico de deriva: dibuja, día a día, a qué distancia de su objetivo ha estado cada activo. Si has rebalanceado alguna vez, se ve exactamente si funcionó o si volviste a salirte a las dos semanas."
   cta: "Ver mi histórico de deriva"
-  href: "/"
+  href: "/dashboard"
 lecturas:
   - texto: "Qué pasa si no rebalanceo nunca mi cartera"
     href: "/blog/que-pasa-si-no-rebalanceo-cartera"

@@ -90,7 +90,7 @@ const POST_DRIVEN_PAGES: Record<string, { priority: string; changefreq: string }
  * coma, y un sitemap que miente sobre las fechas deja de servir para lo único que sirve.
  * Súbela cuando cambie el contenido visible de una lección.
  */
-const CURSOS_LASTMOD = '2026-08-12';
+const CURSOS_LASTMOD = '2026-08-13';
 
 interface UrlEntry {
 	loc: string;

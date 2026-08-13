@@ -8,7 +8,7 @@ arquetipo: decidir
 accion:
   texto: "Añade el fondo que estás considerando a la cartera de ejemplo y mira el solapamiento y el reparto por sector. Si tu exposición apenas se mueve, el añadido es coste sin efecto."
   cta: "Comprobar si añade algo"
-  href: "/"
+  href: "/dashboard"
 lecturas:
   - texto: "Fondos indexados vs ETFs en España"
     href: "/blog/fondos-indexados-vs-etfs-espana"

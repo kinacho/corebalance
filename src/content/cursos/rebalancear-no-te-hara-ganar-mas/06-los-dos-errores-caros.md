@@ -8,7 +8,7 @@ arquetipo: decidir
 accion:
   texto: "Deja escritos tu banda y tu frecuencia de revisión en la herramienta. Es lo único de todo este curso que se comprueba solo: cada vez que abras el panel te dirá si toca actuar, sin que tengas que acordarte de nada."
   cta: "Guardar mi regla"
-  href: "/"
+  href: "/dashboard"
 lecturas:
   - texto: "Cómo rebalancear una cartera indexada"
     href: "/blog/como-rebalancear-cartera-indexada"
