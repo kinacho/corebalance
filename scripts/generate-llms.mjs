@@ -19,11 +19,11 @@ import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { readFrontmatter } from './lib/frontmatter.mjs';
+import { collectCursos as leerCursos } from './lib/cursos.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const CONTENT_DIR = join(ROOT, 'src', 'content', 'blog');
-const CURSOS_DIR = join(ROOT, 'src', 'content', 'cursos');
-const CURSOS_TS = join(ROOT, 'src', 'lib', 'cursos.ts');
 const TEMPLATE_DIR = join(ROOT, 'src', 'content', 'llms');
 const STATIC_DIR = join(ROOT, 'static');
 
@@ -125,26 +125,6 @@ const COPY = {
 };
 
 /** Frontmatter mínimo, sin añadir un parser de YAML. */
-function readFrontmatter(raw) {
-	const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---/);
-	if (!match) return {};
-
-	const fields = {};
-	for (const line of match[1].split(/\r?\n/)) {
-		const kv = line.match(/^(\w+):\s*(.*)$/);
-		if (!kv) continue;
-		let value = kv[2].trim();
-		if (
-			(value.startsWith('"') && value.endsWith('"')) ||
-			(value.startsWith("'") && value.endsWith("'"))
-		) {
-			value = value.slice(1, -1);
-		}
-		fields[kv[1]] = value;
-	}
-	return fields;
-}
-
 async function collectPosts(lang) {
 	const dir = join(CONTENT_DIR, lang);
 	if (!existsSync(dir)) return [];
@@ -175,53 +155,11 @@ async function collectPosts(lang) {
  * fuentes primarias citadas— no aparecía en él. El blog sí. Era el hueco más grande que
  * tenía el sitio de cara a los buscadores generativos.
  *
- * Los títulos de los cursos viven en `CURSOS` dentro de `src/lib/cursos.ts`, que es
- * TypeScript y no se puede importar desde un script `.mjs`. Se leen con una expresión
- * regular **y se comprueba que salen tantos como directorios hay**: si alguien cambia la
- * forma de ese array, esto falla en el `prebuild` en vez de emitir un índice incompleto,
- * que es la clase de error que nadie ve.
+ * La lectura vive en `scripts/lib/cursos.mjs` desde que `generate-og.mjs` necesita los
+ * mismos datos para las cards sociales; el porqué de leerlos por expresión regular está
+ * documentado allí.
  */
-async function collectCursos() {
-	if (!existsSync(CURSOS_DIR)) return [];
-
-	const fuente = await readFile(CURSOS_TS, 'utf8');
-	const declarados = [...fuente.matchAll(/slug:\s*'([^']+)',\s*\n\s*titulo:\s*'([^']+)'/g)].map(
-		(m) => ({ slug: m[1], titulo: m[2] })
-	);
-
-	const dirs = (await readdir(CURSOS_DIR, { withFileTypes: true }))
-		.filter((d) => d.isDirectory())
-		.map((d) => d.name);
-
-	if (declarados.length !== dirs.length) {
-		throw new Error(
-			`[llms] Leí ${declarados.length} cursos de cursos.ts y hay ${dirs.length} directorios. ` +
-				'Si ha cambiado la forma de CURSOS, actualiza la expresión regular de collectCursos().'
-		);
-	}
-
-	const cursos = [];
-	for (const curso of declarados) {
-		const dir = join(CURSOS_DIR, curso.slug);
-		if (!existsSync(dir)) throw new Error(`[llms] El curso ${curso.slug} no tiene directorio`);
-
-		const lecciones = [];
-		for (const file of await readdir(dir)) {
-			if (!file.endsWith('.md')) continue;
-			const fm = readFrontmatter(await readFile(join(dir, file), 'utf8'));
-			if (!fm.titulo) continue;
-			lecciones.push({
-				slug: file.replace(/\.md$/, '').replace(/^\d+-/, ''),
-				titulo: fm.titulo,
-				descripcion: fm.descripcion ?? '',
-				orden: Number(fm.orden ?? 0)
-			});
-		}
-		lecciones.sort((a, b) => a.orden - b.orden);
-		cursos.push({ ...curso, lecciones });
-	}
-	return cursos;
-}
+const collectCursos = () => leerCursos('llms');
 
 function cursoLines(cursos) {
 	const lineas = [];

@@ -3,6 +3,7 @@
 	import LandingFooter from '$lib/components/landing/LandingFooter.svelte';
 	import SeoHead from '$lib/components/seo/SeoHead.svelte';
 	import { absoluteUrl } from '$lib/i18n/routing';
+	import { cursoOgImage } from '$lib/seo/og';
 	import { PROMESA_GRATIS } from '$lib/cursos';
 
 	let { data } = $props();
@@ -38,6 +39,7 @@
 	path={`/cursos/${c.slug}`}
 	lang="es"
 	bilingual={false}
+	image={cursoOgImage(c.slug)}
 	{jsonLd}
 />
 
