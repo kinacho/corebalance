@@ -1,6 +1,8 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import { LL } from '$lib/i18n/i18n-svelte';
+	import LeccionDelPanel from './LeccionDelPanel.svelte';
+	import type { PanelConLeccion } from '$lib/cursos-paneles';
 
 	/**
 	 * Marco común de los dos mapas: cabecera, subtítulo y botón de ampliar.
@@ -35,6 +37,14 @@
 		 * sus lienzos arrancan a la misma altura cuando están uno al lado del otro.
 		 */
 		actions?: Snippet;
+		/**
+		 * Panel del que enlazar su lección, si tiene una.
+		 *
+		 * Va aquí y no en el dashboard porque el orden importa: el enlace tiene que ir
+		 * **debajo del subtítulo**, y el subtítulo lo dibuja este componente. Puesto fuera,
+		 * el enlace salía entre el título del carril y el subtítulo del mapa.
+		 */
+		leccion?: PanelConLeccion;
 		children: Snippet;
 	}
 
@@ -46,6 +56,7 @@
 		expanded = $bindable(false),
 		contentWidth = $bindable(0),
 		actions,
+		leccion,
 		children
 	}: Props = $props();
 </script>
@@ -57,6 +68,9 @@
 				<h4 class="title">{title}</h4>
 			{/if}
 			<p class="subtitle">{subtitle}</p>
+			{#if leccion}
+				<LeccionDelPanel panel={leccion} />
+			{/if}
 		</div>
 
 		<div class="head-actions">

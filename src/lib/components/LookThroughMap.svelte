@@ -206,6 +206,7 @@
 	subtitle={$LL.lookthrough.subtitle()}
 	{showTitle}
 	canExpand={data.coveredValue > 0}
+	leccion="lookthrough"
 	bind:expanded
 	bind:contentWidth={containerWidth}
 >

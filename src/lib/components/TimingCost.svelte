@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { LL, locale } from '$lib/i18n/i18n-svelte';
+	import LeccionDelPanel from './LeccionDelPanel.svelte';
 
 	/**
 	 * La métrica diferencial: la distancia entre lo que rindieron tus activos
@@ -49,6 +50,11 @@
 	<div class="card-head">
 		<h4 class="title">{$LL.db.timing_title()}</h4>
 	</div>
+
+	<!-- Este panel es el que más se explica con una lección: la diferencia entre las dos
+	     rentabilidades es justo lo que a la gente no le cuadra, y era además uno de los
+	     cuatro paneles que no tenían ni un `title` de ayuda. -->
+	<LeccionDelPanel panel="timing" />
 
 	{#if !isComparable}
 		<p class="explainer muted">{$LL.db.timing_unavailable()}</p>

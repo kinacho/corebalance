@@ -12,6 +12,7 @@
   import DeviationTreemap from "$lib/components/DeviationTreemap.svelte";
 import CompositionBars from "$lib/components/CompositionBars.svelte";
 import DriftChart from "$lib/components/DriftChart.svelte";
+  import LeccionDelPanel from "$lib/components/LeccionDelPanel.svelte";
   import LookThroughMap from "$lib/components/LookThroughMap.svelte";
   import Projections from "$lib/components/Projections.svelte";
   import CrisisSimulator from "$lib/components/CrisisSimulator.svelte";
@@ -419,6 +420,7 @@ import { formatCompactCurrency } from "$lib/chart-format";
             <div class="chart-box is-drift">
               <h4 class="chart-label">{$LL.db.drift_title()}</h4>
               <p class="chart-sub">{$LL.db.drift_subtitle()}</p>
+              <LeccionDelPanel panel="drift" />
               <DriftChart />
             </div>
             <!--
@@ -462,6 +464,8 @@ import { formatCompactCurrency } from "$lib/chart-format";
                   class:is-wide={lookThroughExpanded}
                 >
                   <h4 class="chart-label">{$LL.lookthrough.title()}</h4>
+                  <!-- El enlace a su lección lo pone `MapFrame`, para que quede debajo del
+                       subtítulo del mapa y no entre este título y aquél. -->
                   <LookThroughMap showTitle={false} bind:expanded={lookThroughExpanded} />
                 </div>
               </div>
