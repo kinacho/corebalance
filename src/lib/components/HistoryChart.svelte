@@ -27,7 +27,9 @@
 		categoryAxis,
 		valueAxis,
 		motionAllowed,
-		CHART_SURFACE,
+		seguirTema,
+		chartSurface,
+		textPrimary,
 		CONTRIBUTED_FILL,
 		MARKET_FILL,
 		TREND_UP,
@@ -405,7 +407,7 @@
 						segment: { borderDash: dashEstimated, borderColor: colorDeTramo },
 						pointRadius: (c: any) => (flowAt(c) ? 4 : 0),
 						pointHoverRadius: (c: any) => (flowAt(c) ? 6 : 4),
-						pointBackgroundColor: (c: any) => (flowAt(c) > 0 ? '#ffffff' : CHART_SURFACE),
+						pointBackgroundColor: (c: any) => (flowAt(c) > 0 ? textPrimary() : chartSurface()),
 						pointBorderColor: '#ffffff',
 						pointBorderWidth: 2
 					},
@@ -527,6 +529,8 @@
 
 		// Primer pintado sin esperar al siguiente tick de precios.
 		syncChart();
+
+		return seguirTema(() => chart);
 	});
 
 	onDestroy(() => {
@@ -737,10 +741,10 @@
 	.view-toggle,
 	.range-selector {
 		display: flex;
-		background: rgba(255, 255, 255, 0.04);
+		background: var(--bg-card);
 		padding: 3px;
 		border-radius: 10px;
-		border: 1px solid rgba(255, 255, 255, 0.05);
+		border: 1px solid var(--border-subtle);
 	}
 
 	.toggle-btn,
@@ -748,7 +752,7 @@
 		border-radius: 8px;
 		font-size: 0.72rem;
 		font-weight: 700;
-		color: rgba(255, 255, 255, 0.45);
+		color: var(--text-faint);
 		transition:
 			background 0.18s ease,
 			color 0.18s ease;
@@ -782,7 +786,7 @@
 
 	.toggle-btn:hover,
 	.range-btn:hover {
-		color: #ffffff;
+		color: var(--text-primary);
 	}
 
 	.toggle-btn.active {
@@ -792,7 +796,7 @@
 
 	.range-btn.active {
 		background: rgba(255, 255, 255, 0.1);
-		color: #ffffff;
+		color: var(--text-primary);
 	}
 
 	.legend {
@@ -814,7 +818,7 @@
 	}
 
 	.legend-item:hover:not(:disabled) {
-		background: rgba(255, 255, 255, 0.05);
+		background: var(--bg-card-hover);
 	}
 
 	.legend-item:disabled {
@@ -852,13 +856,13 @@
 	.label {
 		font-size: 0.7rem;
 		font-weight: 600;
-		color: rgba(255, 255, 255, 0.55);
+		color: var(--text-muted);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 	}
 
 	.legend-item.is-off .label {
-		color: rgba(255, 255, 255, 0.32);
+		color: var(--text-faint);
 	}
 
 	.canvas-wrapper {
@@ -882,7 +886,7 @@
 	}
 
 	.note.accent {
-		color: rgba(255, 255, 255, 0.65);
+		color: var(--text-muted);
 	}
 
 	@media (max-width: 640px) {

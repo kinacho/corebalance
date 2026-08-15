@@ -18,8 +18,13 @@
 
 <style>
   .demo-ribbon {
-    background: linear-gradient(90deg, #8b5cf6 0%, #6366f1 100%);
-    color: white;
+    /*
+		 * El extremo claro del degradado (#8b5cf6) deja el blanco en 4,23:1, por
+		 * debajo de AA. Un paso más oscuro en los dos topes lo sube sin cambiar el
+		 * tono, que es lo que identifica a la cinta de demo.
+		 */
+		background: linear-gradient(90deg, #7c3aed 0%, #4f46e5 100%);
+    color: var(--text-on-accent);
     padding: 0.5rem 1rem;
     position: sticky;
     top: 0;
@@ -53,7 +58,7 @@
 
   .exit-demo-btn {
     background: white;
-    color: #6366f1;
+    color: var(--accent-blue-ink);
     border: none;
     padding: 0.35rem 0.75rem;
     border-radius: 8px;

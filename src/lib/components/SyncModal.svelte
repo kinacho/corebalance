@@ -286,7 +286,7 @@
 		left: 0;
 		width: 100%;
 		height: 100%;
-		background: rgba(10, 10, 20, 0.85);
+		background: var(--bg-overlay);
 		backdrop-filter: blur(8px);
 		z-index: 1000;
 		display: flex;
@@ -298,8 +298,8 @@
 	}
 
 	.modal-content {
-		background: #13131f;
-		border: 1px solid rgba(255, 255, 255, 0.1);
+		background: var(--bg-overlay);
+		border: 1px solid var(--border-subtle);
 		border-radius: 24px;
 		width: 100%;
 		max-width: 500px;
@@ -336,9 +336,9 @@
 		position: absolute;
 		top: 1.5rem;
 		right: 1.5rem;
-		background: rgba(255, 255, 255, 0.05);
+		background: var(--bg-card-hover);
 		border: none;
-		color: rgba(255, 255, 255, 0.6);
+		color: var(--text-muted);
 		width: 32px;
 		height: 32px;
 		border-radius: 50%;
@@ -359,25 +359,25 @@
 
 	.close-btn:hover {
 		background: rgba(255, 255, 255, 0.1);
-		color: white;
+		color: var(--text-primary);
 	}
 
 	.modal-title {
 		font-size: 1.5rem;
 		font-weight: 700;
 		margin: 0 0 0.5rem 0;
-		color: white;
+		color: var(--text-primary);
 	}
 
 	.modal-subtitle {
 		font-size: 0.9rem;
-		color: rgba(160, 160, 200, 0.7);
+		color: var(--text-secondary);
 		margin: 0 0 2rem 0;
 	}
 
 	.tabs {
 		display: flex;
-		background: rgba(0, 0, 0, 0.2);
+		background: var(--bg-card-hover);
 		padding: 0.35rem;
 		border-radius: 12px;
 		margin-bottom: 1.5rem;
@@ -388,7 +388,7 @@
 		background: transparent;
 		border: none;
 		padding: 0.6rem;
-		color: rgba(160, 160, 200, 0.8);
+		color: var(--text-secondary);
 		font-weight: 600;
 		font-size: 0.9rem;
 		border-radius: 8px;
@@ -397,8 +397,8 @@
 	}
 
 	.tab-btn.active {
-		background: #3b82f6;
-		color: white;
+		background: var(--accent-blue);
+		color: var(--text-on-accent);
 		box-shadow: 0 2px 10px rgba(59, 130, 246, 0.3);
 	}
 
@@ -408,7 +408,7 @@
 
 	.section-desc {
 		font-size: 0.9rem;
-		color: rgba(255, 255, 255, 0.7);
+		color: var(--text-secondary);
 		line-height: 1.5;
 		margin-bottom: 1.5rem;
 	}
@@ -435,7 +435,7 @@
 
 	.export-btn {
 		background: rgba(16, 185, 129, 0.1);
-		color: #10b981;
+		color: var(--accent-green-ink);
 		border-color: rgba(16, 185, 129, 0.2);
 	}
 
@@ -445,7 +445,7 @@
 
 	.import-btn {
 		background: rgba(59, 130, 246, 0.1);
-		color: #3b82f6;
+		color: var(--accent-blue-ink);
 		border-color: rgba(59, 130, 246, 0.2);
 	}
 
@@ -456,11 +456,11 @@
 	.status-msg {
 		margin-top: 1.5rem;
 		padding: 1rem;
-		background: rgba(255, 255, 255, 0.05);
+		background: var(--bg-card-hover);
 		border-radius: 8px;
 		font-size: 0.85rem;
 		text-align: center;
-		color: #a0a0c8;
+		color: var(--text-muted);
 	}
 
 	.qr-container {
@@ -507,7 +507,7 @@
 		justify-content: center;
 		gap: 0.5rem;
 		font-size: 0.85rem;
-		color: #3b82f6;
+		color: var(--accent-blue-ink);
 		background: rgba(59, 130, 246, 0.1);
 		padding: 0.75rem;
 		border-radius: 8px;
@@ -515,12 +515,12 @@
 	}
 
 	.p2p-status.success {
-		color: #10b981;
+		color: var(--accent-green-ink);
 		background: rgba(16, 185, 129, 0.1);
 	}
 
 	.p2p-status.error {
-		color: #ef4444;
+		color: var(--state-negative);
 		background: rgba(239, 68, 68, 0.1);
 	}
 
@@ -549,7 +549,7 @@
 		margin: 0 0 1.25rem;
 		font-size: 0.72rem;
 		line-height: 1.5;
-		color: rgba(160, 160, 200, 0.55);
+		color: var(--text-muted);
 		text-align: left;
 	}
 
@@ -559,9 +559,9 @@
 		gap: 0.75rem;
 		margin-bottom: 1.5rem;
 		padding: 1rem;
-		background: rgba(0, 0, 0, 0.2);
+		background: var(--bg-card-hover);
 		border-radius: 16px;
-		border: 1px solid rgba(255, 255, 255, 0.05);
+		border: 1px solid var(--border-subtle);
 	}
 
 	.qr-step {
@@ -569,7 +569,7 @@
 		align-items: center;
 		gap: 0.75rem;
 		font-size: 0.85rem;
-		color: rgba(255, 255, 255, 0.7);
+		color: var(--text-secondary);
 		text-align: left;
 	}
 
@@ -579,26 +579,26 @@
 		justify-content: center;
 		min-width: 20px;
 		height: 20px;
-		background: #3b82f6;
-		color: white;
+		background: var(--accent-blue);
+		color: var(--text-on-accent);
 		border-radius: 50%;
 		font-size: 0.7rem;
 		font-weight: 800;
 	}
 
 	.p2p-status.success {
-		color: #10b981;
+		color: var(--accent-green-ink);
 		background: rgba(16, 185, 129, 0.1);
 	}
 
 	.p2p-status.error {
-		color: #ef4444;
+		color: var(--state-negative);
 		background: rgba(239, 68, 68, 0.1);
 	}
 
 	.retry-btn {
 		background: rgba(239, 68, 68, 0.1);
-		color: #ef4444;
+		color: var(--state-negative);
 		border: 1px solid rgba(239, 68, 68, 0.2);
 		margin-bottom: 1rem;
 	}

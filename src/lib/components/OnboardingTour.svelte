@@ -182,13 +182,13 @@
 <style>
   /* Personalización Premium para Driver.js */
   :global(.corebalance-tour-theme) {
-    background: rgba(15, 23, 42, 0.95) !important;
+    background: var(--bg-overlay) !important;
     backdrop-filter: blur(20px) !important;
     -webkit-backdrop-filter: blur(20px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid var(--border-subtle) !important;
     border-radius: 16px !important;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255,255,255,0.05) inset !important;
-    color: #f1f5f9 !important;
+    color: var(--text-primary) !important;
     font-family: inherit !important;
     padding: 20px !important;
     max-width: 320px !important;
@@ -197,13 +197,13 @@
   :global(.corebalance-tour-theme .driver-popover-title) {
     font-size: 1.15rem !important;
     font-weight: 800 !important;
-    color: #fff !important;
+    color: var(--text-primary) !important;
     margin-bottom: 8px !important;
   }
 
   :global(.corebalance-tour-theme .driver-popover-description) {
     font-size: 0.9rem !important;
-    color: #94a3b8 !important;
+    color: var(--text-muted) !important;
     line-height: 1.5 !important;
   }
 
@@ -212,7 +212,7 @@
   }
 
   :global(.corebalance-tour-theme .driver-popover-progress-text) {
-    color: #64748b !important;
+    color: var(--text-faint) !important;
     font-size: 0.8rem !important;
     font-weight: 600 !important;
   }
@@ -221,7 +221,7 @@
   :global(.corebalance-tour-theme .driver-popover-next-btn) {
     background: rgba(255, 255, 255, 0.1) !important;
     border: none !important;
-    color: #fff !important;
+    color: var(--text-primary) !important;
     border-radius: 8px !important;
     padding: 8px 12px !important;
     font-size: 0.85rem !important;
@@ -231,12 +231,23 @@
     transition: all 0.2s !important;
   }
 
+  /*
+   * ⚠️ **`--text-on-accent`, no `--text-primary`, y este botón es el ejemplo de por
+   * qué la distinción existe.**
+   *
+   * El color lo pone la regla de arriba (compartida con «Anterior») y el fondo lo
+   * pone ésta, así que las dos declaraciones viven en **bloques distintos** — que
+   * es justo lo que hizo que el barrido automático no lo viera: mira el fondo de la
+   * misma regla. En tema claro `--text-primary` es `#111118`, así que salía **texto
+   * negro sobre azul**.
+   */
   :global(.corebalance-tour-theme .driver-popover-next-btn) {
-    background: #3b82f6 !important;
+    background: var(--accent-blue) !important;
+    color: var(--text-on-accent) !important;
   }
 
   :global(.corebalance-tour-theme .driver-popover-next-btn:hover) {
-    background: #2563eb !important;
+    background: var(--accent-blue) !important;
     transform: translateY(-1px) !important;
   }
 
@@ -244,8 +255,9 @@
     background: rgba(255, 255, 255, 0.15) !important;
   }
   
+  /* La flecha es la esquina del propio panel, así que lleva su mismo fondo. */
   :global(.corebalance-tour-theme .driver-popover-arrow) {
-    border-color: rgba(15, 23, 42, 0.95) !important;
+    border-color: var(--bg-overlay) !important;
   }
 
   /* Responsive Mobile Tweak */

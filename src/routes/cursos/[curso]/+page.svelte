@@ -121,7 +121,7 @@
 		font-weight: 700;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
-		color: var(--accent-green);
+		color: var(--accent-green-ink);
 	}
 	h1 {
 		margin: 0 0 1rem;
@@ -144,7 +144,7 @@
 		padding: 0.85rem 1.4rem;
 		border-radius: 12px;
 		background: var(--accent-blue);
-		color: #fff;
+		color: var(--text-on-accent);
 		font-weight: 700;
 		text-decoration: none;
 	}
@@ -176,7 +176,7 @@
 		display: flex;
 		gap: 1rem;
 		padding: 1rem 1.15rem;
-		border: 1px solid rgba(255, 255, 255, 0.1);
+		border: 1px solid var(--border-subtle);
 		border-radius: 14px;
 		text-decoration: none;
 		color: var(--text-primary);

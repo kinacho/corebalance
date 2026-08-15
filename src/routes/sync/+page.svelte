@@ -221,7 +221,7 @@
 		border-radius: 14px;
 		font-size: 0.8rem;
 		line-height: 1.5;
-		color: #fca5a5;
+		color: var(--state-negative);
 	}
 
 	.acciones {
@@ -239,7 +239,12 @@
 		border-radius: 14px;
 		border: 1px solid transparent;
 		background: var(--accent-blue);
-		color: #05050a;
+		/*
+		 * Blanco y no `#05050a`: sobre el azul del acento el texto oscuro da 3,93:1
+		 * y el blanco 5,17, y en tema claro 6,70 sobre `#1d4ed8`. Un botón de acción
+		 * principal no puede ser lo peor contrastado de la pantalla.
+		 */
+		color: #ffffff;
 		font: inherit;
 		font-weight: 700;
 		font-size: 0.85rem;

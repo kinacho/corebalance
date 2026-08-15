@@ -191,7 +191,7 @@
    */
   .btn-primary {
     background: var(--accent-blue);
-    color: #fff;
+    color: var(--text-on-accent);
     border: none;
     padding: 0.85rem 2rem;
     border-radius: 12px;
@@ -217,7 +217,7 @@
     border-radius: 999px;
     background: rgba(139, 92, 246, 0.1);
     border: 1px solid rgba(139, 92, 246, 0.25);
-    color: #a855f7;
+    color: var(--accent-violet-ink);
     font-size: 0.75rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -251,7 +251,7 @@
     padding: 1.75rem;
     border-radius: 18px;
     background: var(--bg-card);
-    border: 1px solid rgba(255, 255, 255, 0.07);
+    border: 1px solid var(--border-subtle);
     text-decoration: none;
     color: inherit;
     transition:
@@ -283,14 +283,14 @@
   }
 
   .compare-title .vs {
-    color: #a855f7;
+    color: var(--accent-violet-ink);
     font-weight: 800;
   }
 
   .compare-kind {
     padding: 0.25rem 0.6rem;
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--bg-card-hover);
     color: var(--text-muted);
     font-size: 0.7rem;
     font-weight: 700;
@@ -318,7 +318,7 @@
   .compare-cta {
     font-size: 0.85rem;
     font-weight: 700;
-    color: #a855f7;
+    color: var(--accent-violet-ink);
   }
 
   .hub-note {
@@ -326,7 +326,7 @@
     padding: 2rem;
     border-radius: 18px;
     background: var(--bg-card);
-    border: 1px solid rgba(255, 255, 255, 0.07);
+    border: 1px solid var(--border-subtle);
   }
 
   .hub-note h2 {

@@ -48,7 +48,7 @@
 	.donation-label {
 		font-size: 0.75rem;
 		font-weight: 600;
-		color: #64748b;
+		color: var(--text-faint);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 	}
@@ -68,7 +68,7 @@
 		background: rgba(16, 185, 129, 0.08);
 		border: 1px solid rgba(16, 185, 129, 0.2);
 		border-radius: 12px;
-		color: #059669;
+		color: var(--accent-green-ink);
 		font-size: 0.85rem;
 		font-weight: 700;
 		text-decoration: none;
@@ -77,7 +77,7 @@
 
 	.amount-chip:hover {
 		background: rgba(16, 185, 129, 0.15);
-		border-color: #10b981;
+		border-color: var(--accent-green);
 		transform: translateY(-2px);
 		box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);
 	}
@@ -90,7 +90,15 @@
 		background: rgba(0, 112, 186, 0.08);
 		border: 1px solid rgba(0, 112, 186, 0.2);
 		border-radius: 12px;
-		color: #0070ba;
+		/*
+		 * ⚠️ El azul de PayPal es de marca, así que no puede cambiar de tono — pero
+		 * `#0070ba` da 3,19:1 sobre oscuro y su versión clara `#4aa8e0` da 2,4:1
+		 * sobre claro: cada uno falla en el tema del otro. Mezclándolo con la tinta
+		 * del tema se aclara en oscuro y se oscurece en claro, conservando el tono.
+		 * Mismo recurso que `--card-ink` en la portada de herramientas, y por la
+		 * misma razón: aquí tampoco puede haber un token por marca.
+		 */
+		color: color-mix(in srgb, #0070ba 72%, var(--text-primary));
 		font-size: 0.85rem;
 		font-weight: 700;
 		text-decoration: none;

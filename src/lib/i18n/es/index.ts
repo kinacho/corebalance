@@ -687,7 +687,7 @@ const es = {
     timing_period_note: 'Medido sobre los {days:number} días con datos reales, sin anualizar.',
     legal_disclaimer: '<strong>Aviso Legal:</strong> CoreBalance es una herramienta puramente informativa y educativa. No constituye asesoramiento financiero, de inversión ni fiscal. Los datos mostrados pueden sufrir retrasos o ser inexactos. El desarrollador no se hace responsable de posibles pérdidas financieras derivadas del uso de esta aplicación. Invierte siempre bajo tu propia responsabilidad.',
     footer_tagline: 'Tu centro de mandos para una gestión de activos inteligente y equilibrada.',
-    changelog_trigger: 'v1.16.0 🚀',
+    changelog_trigger: 'v1.17.0 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Hecho con ❤️ para la comunidad inversora',
     reclassify_stocks: 'Acciones Individuales',
@@ -967,6 +967,18 @@ const es = {
     close_aria: 'Cerrar modal',
     btn_understand: 'Entendido',
     releases: {
+      v1_17_0: {
+        date: '15 de Agosto, 2026',
+        badge: 'Modo claro, y el contraste que faltaba',
+        changes: [
+          '☀️ **Ya hay modo claro.** El botón está en la barra, junto al idioma. La aplicación sigue siendo oscura de salida —es como está pensada—, pero si prefieres el claro se queda elegido para siempre, también al volver otro día. El tema se decide antes de que la página se pinte, así que no hay ese destello blanco o negro del primer instante.',
+          '🔍 **Y el motivo de fondo: el texto no tenía contraste suficiente.** Había 212 sitios por debajo del mínimo que recomienda la norma de accesibilidad, 105 de ellos muy por debajo. La escala de grises tenía dos peldaños y ningún intermedio, así que cada pantalla se inventaba el suyo hacia abajo. Ahora son cuatro, y hasta el más tenue supera el mínimo.',
+          '🎨 **El logo se ha redibujado como vector.** El anterior era una imagen con un contorno oscuro y una sombra pegados a los píxeles: sobre fondo negro no se veían, sobre blanco eran un borrón. Ahora es nítido a cualquier tamaño, cambia de tono con el tema, y los iconos de la aplicación pesan un tercio.',
+          '📱 **En el móvil había tres cosas rotas que en el ordenador no existen.** El botón de menú era blanco sobre un fondo blanco —y es la única forma de abrir la navegación en una pantalla pequeña—, la barra de pestañas del panel llevaba un fondo negro fijo, y dos tarjetas arrastraban una sombra que sobre fondo claro era una mancha.',
+          '📚 **Las lecciones de los cursos también.** Los avisos y los resúmenes se veían como cajas en modo oscuro y desaparecían en claro, los deslizadores para cambiar valores se quedaban sin su carril, y las barras de los gráficos didácticos podían llegar a no distinguirse del fondo.',
+          '🧪 **Y una red para que esto no se deshaga.** Dos comprobaciones nuevas revisan el contraste de toda la aplicación en los dos temas —una lee el código y otra abre un navegador de verdad y recorre las 103 páginas— y una tercera entra en la comprobación automática de cada cambio.'
+        ]
+      },
       v1_16_0: {
         date: '13 de Agosto, 2026',
         badge: 'Cada panel te dice dónde se explica',
@@ -1210,6 +1222,8 @@ const es = {
     show_values: 'Mostrar valores',
     hide_values: 'Ocultar valores',
     update_prices: 'Actualizar precios',
+    theme_to_light: 'Cambiar a tema claro',
+    theme_to_dark: 'Cambiar a tema oscuro',
   },
 } satisfies BaseTranslation;
 

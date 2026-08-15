@@ -44,10 +44,10 @@
 		gap: 0.75rem;
 		padding: 0.75rem 1rem;
 		border-radius: 12px;
-		background: rgba(18, 18, 35, 0.95);
+		background: var(--bg-overlay);
 		backdrop-filter: blur(12px);
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		color: white;
+		border: 1px solid var(--border-subtle);
+		color: var(--text-primary);
 		font-size: 0.85rem;
 		font-weight: 600;
 		box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
@@ -76,7 +76,7 @@
 	.close-btn {
 		background: none;
 		border: none;
-		color: rgba(255, 255, 255, 0.4);
+		color: var(--text-faint);
 		cursor: pointer;
 		font-size: 0.75rem;
 		padding: 0.2rem;
@@ -85,6 +85,6 @@
 
 	.close-btn:hover {
 		background: rgba(255, 255, 255, 0.1);
-		color: white;
+		color: var(--text-primary);
 	}
 </style>

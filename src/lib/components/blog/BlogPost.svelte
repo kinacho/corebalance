@@ -335,8 +335,8 @@
 
 <style>
   .blog-post-page {
-    background: var(--bg-primary, #05050a);
-    color: var(--text-primary, #ffffff);
+    background: var(--bg-primary);
+    color: var(--text-primary);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -359,26 +359,26 @@
     align-items: center;
     gap: 0.5rem;
     font-size: 0.85rem;
-    color: var(--text-muted, rgba(160, 160, 200, 0.6));
+    color: var(--text-muted);
     margin-bottom: 2.5rem;
   }
 
   .breadcrumb a {
-    color: var(--text-muted, rgba(160, 160, 200, 0.6));
+    color: var(--text-muted);
     text-decoration: none;
     transition: color 0.2s ease;
   }
 
   .breadcrumb a:hover {
-    color: #fff;
+    color: var(--text-primary);
   }
 
   .breadcrumb .separator {
-    color: rgba(255, 255, 255, 0.2);
+    color: var(--text-faint);
   }
 
   .breadcrumb .current {
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--text-primary);
     font-weight: 500;
     max-width: 300px;
     white-space: nowrap;
@@ -393,8 +393,8 @@
   }
 
   .post-article {
-    background: var(--bg-card, rgba(255, 255, 255, 0.02));
-    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.05));
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
     border-radius: 24px;
     padding: 3rem;
     backdrop-filter: blur(16px);
@@ -411,13 +411,13 @@
 
   .post-header {
     margin-bottom: 3rem;
-    border-bottom: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
+    border-bottom: 1px solid var(--border-subtle);
     padding-bottom: 2rem;
   }
 
   .post-meta {
     font-size: 0.9rem;
-    color: var(--text-muted, rgba(160, 160, 200, 0.6));
+    color: var(--text-muted);
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -426,7 +426,7 @@
   }
 
   .separator-dot {
-    color: rgba(255, 255, 255, 0.2);
+    color: var(--text-faint);
   }
 
   .post-title {
@@ -435,7 +435,7 @@
     line-height: 1.25;
     margin: 0 0 1.5rem;
     letter-spacing: -0.02em;
-    color: #fff;
+    color: var(--text-primary);
   }
 
   @media (max-width: 768px) {
@@ -452,13 +452,13 @@
   }
 
   .post-meta .author a:hover {
-    color: #fff;
-    text-decoration-color: #3b82f6;
+    color: var(--text-primary);
+    text-decoration-color: var(--accent-blue);
   }
 
   .post-updated {
     font-size: 0.85rem;
-    color: rgba(16, 185, 129, 0.85);
+    color: var(--accent-green-ink);
     margin: -0.75rem 0 1.5rem;
     font-weight: 600;
   }
@@ -477,13 +477,13 @@
   .related h2 {
     font-size: 1.5rem;
     font-weight: 800;
-    color: #fff;
+    color: var(--text-primary);
     margin: 0 0 0.35rem;
     letter-spacing: -0.02em;
   }
 
   .related-subtitle {
-    color: var(--text-muted, rgba(160, 160, 200, 0.6));
+    color: var(--text-muted);
     font-size: 0.9rem;
     margin: 0 0 1.5rem;
   }
@@ -504,8 +504,8 @@
     gap: 0.5rem;
     padding: 1.25rem;
     border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-card);
     text-decoration: none;
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
@@ -513,13 +513,13 @@
   .related-card:hover {
     transform: translateY(-3px);
     border-color: rgba(139, 92, 246, 0.25);
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--bg-card);
   }
 
   .related-card h3 {
     font-size: 1rem;
     font-weight: 700;
-    color: #fff;
+    color: var(--text-primary);
     margin: 0;
     line-height: 1.4;
   }
@@ -527,7 +527,7 @@
   .related-card p {
     font-size: 0.85rem;
     line-height: 1.55;
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--text-muted);
     margin: 0;
     flex-grow: 1;
   }
@@ -535,13 +535,13 @@
   .related-meta {
     font-size: 0.75rem;
     font-weight: 600;
-    color: #a78bfa;
+    color: var(--accent-violet-ink);
   }
 
   .tag-badge {
     font-size: 0.8rem;
     font-weight: 600;
-    color: #60a5fa;
+    color: var(--accent-blue-ink);
     background: rgba(59, 130, 246, 0.1);
     padding: 0.3rem 0.75rem;
     border-radius: 9999px;
@@ -561,7 +561,7 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: #34d399;
+    color: var(--state-positive);
     margin: 0 0 1rem;
   }
 
@@ -574,13 +574,13 @@
   }
 
   .post-summary li {
-    color: rgba(255, 255, 255, 0.88);
+    color: var(--text-primary);
     line-height: 1.65;
     font-size: 1rem;
   }
 
   .post-summary li::marker {
-    color: rgba(52, 211, 153, 0.7);
+    color: var(--state-positive);
   }
 
   @media (max-width: 768px) {
@@ -596,14 +596,14 @@
   .markdown-body {
     line-height: 1.8;
     font-size: 1.1rem;
-    color: rgba(255, 255, 255, 0.85);
+    color: var(--text-secondary);
   }
 
   .markdown-body :global(p) { margin-bottom: 1.5rem; }
-  .markdown-body :global(h2) { font-size: 1.6rem; font-weight: 700; margin: 2.5rem 0 1rem; color: #fff; }
-  .markdown-body :global(h3) { font-size: 1.3rem; font-weight: 700; margin: 2rem 0 1rem; color: #fff; }
+  .markdown-body :global(h2) { font-size: 1.6rem; font-weight: 700; margin: 2.5rem 0 1rem; color: var(--text-primary); }
+  .markdown-body :global(h3) { font-size: 1.3rem; font-weight: 700; margin: 2rem 0 1rem; color: var(--text-primary); }
   .markdown-body :global(ul) { padding-left: 1.5rem; margin-bottom: 1.5rem; }
-  .markdown-body :global(a) { color: var(--accent-blue, #3b82f6); text-decoration: underline; font-weight: 600; }
+  .markdown-body :global(a) { color: var(--accent-blue-ink); text-decoration: underline; font-weight: 600; }
 
   .post-cta {
     margin-top: 4rem;
@@ -619,8 +619,8 @@
   }
 
   .btn-cta {
-    background: var(--accent-blue, #3b82f6);
-    color: white;
+    background: var(--accent-blue);
+    color: var(--text-on-accent);
     border: none;
     padding: 0.75rem 1.75rem;
     border-radius: 12px;
@@ -634,6 +634,6 @@
   }
 
   .post-back-nav { display: flex; justify-content: flex-start; margin-top: 2rem;}
-  .btn-back { color: var(--text-muted, rgba(160, 160, 200, 0.6)); text-decoration: none; font-size: 0.95rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: color 0.2s ease; }
-  .btn-back:hover { color: #fff; }
+  .btn-back { color: var(--text-muted); text-decoration: none; font-size: 0.95rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: color 0.2s ease; }
+  .btn-back:hover { color: var(--text-primary); }
 </style>

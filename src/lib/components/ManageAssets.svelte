@@ -607,7 +607,7 @@
 	.manage-backdrop {
 		position: fixed;
 		inset: 0;
-		background: rgba(0, 0, 0, 0.7);
+		background: var(--bg-scrim);
 		backdrop-filter: blur(8px);
 		-webkit-backdrop-filter: blur(8px);
 		border: none;
@@ -619,10 +619,10 @@
 		width: 92%;
 		max-width: 640px;
 		max-height: 85vh;
-		background: rgba(18, 18, 35, 0.98);
+		background: var(--bg-overlay);
 		backdrop-filter: blur(40px) saturate(200%);
 		-webkit-backdrop-filter: blur(40px) saturate(200%);
-		border: 1px solid rgba(255, 255, 255, 0.12);
+		border: 1px solid var(--border-subtle);
 		border-radius: 24px;
 		overflow: hidden;
 		display: flex;
@@ -641,19 +641,19 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 1.25rem 1.5rem;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+		border-bottom: 1px solid var(--border-subtle);
 	}
 
 	.manage-title {
 		font-size: 1.15rem;
 		font-weight: 700;
-		color: #fff;
+		color: var(--text-primary);
 		margin: 0;
 	}
 
 	.manage-subtitle {
 		font-size: 0.72rem;
-		color: rgba(160, 160, 200, 0.5);
+		color: var(--text-muted);
 		margin: 0;
 	}
 
@@ -661,9 +661,9 @@
 		width: 36px;
 		height: 36px;
 		border-radius: 10px;
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		background: rgba(255, 255, 255, 0.04);
-		color: rgba(160, 160, 200, 0.6);
+		border: 1px solid var(--border-subtle);
+		background: var(--bg-card);
+		color: var(--text-muted);
 		cursor: pointer;
 		display: flex;
 		align-items: center;
@@ -672,8 +672,8 @@
 	}
 
 	.close-btn:hover {
-		background: rgba(255, 255, 255, 0.08);
-		color: #fff;
+		background: var(--bg-card-hover);
+		color: var(--text-primary);
 	}
 
 	.manage-body {
@@ -686,8 +686,8 @@
 	}
 
 	.section-block {
-		background: rgba(20, 20, 35, 0.4);
-		border: 1px solid rgba(255, 255, 255, 0.05);
+		background: var(--bg-card-hover);
+		border: 1px solid var(--border-subtle);
 		border-radius: 16px;
 		padding: 1rem;
 		display: flex;
@@ -712,13 +712,13 @@
 	.section-label {
 		font-size: 0.85rem;
 		font-weight: 700;
-		color: #fff;
+		color: var(--text-primary);
 		margin: 0;
 	}
 
 	.section-desc {
 		font-size: 0.65rem;
-		color: rgba(160, 160, 200, 0.4);
+		color: var(--text-faint);
 		margin: 0;
 	}
 
@@ -734,10 +734,10 @@
 		align-items: center;
 		gap: 0.3rem;
 		padding: 0.25rem 0.55rem;
-		background: rgba(255, 255, 255, 0.04);
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		background: var(--bg-card);
+		border: 1px solid var(--border-subtle);
 		border-radius: 6px;
-		color: rgba(160, 160, 200, 0.6);
+		color: var(--text-muted);
 		font-size: 0.62rem;
 		font-weight: 600;
 		cursor: pointer;
@@ -747,7 +747,7 @@
 
 	.equalize-btn:hover {
 		background: rgba(59, 130, 246, 0.1);
-		color: #60a5fa;
+		color: var(--accent-blue-ink);
 		border-color: rgba(59, 130, 246, 0.2);
 	}
 
@@ -763,12 +763,12 @@
 
 	.weight-indicator.valid {
 		background: rgba(16, 185, 129, 0.1);
-		color: #10b981;
+		color: var(--accent-green-ink);
 	}
 
 	.weight-indicator.invalid {
 		background: rgba(245, 158, 11, 0.1);
-		color: #f59e0b;
+		color: var(--accent-orange-ink);
 	}
 
 	.weight-check, .weight-warn {
@@ -785,7 +785,7 @@
 		height: 10px;
 		border-radius: 6px;
 		overflow: hidden;
-		background: rgba(255, 255, 255, 0.05);
+		background: var(--bg-card-hover);
 		gap: 2px;
 	}
 
@@ -802,7 +802,7 @@
 	.bar-label {
 		font-size: 0.5rem;
 		font-weight: 800;
-		color: rgba(255, 255, 255, 0.9);
+		color: var(--text-primary);
 		text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 		line-height: 1;
 	}
@@ -817,8 +817,8 @@
 	.asset-item {
 		display: flex;
 		flex-direction: column;
-		background: rgba(0, 0, 0, 0.2);
-		border: 1px solid rgba(255, 255, 255, 0.04);
+		background: var(--bg-card-hover);
+		border: 1px solid var(--border-subtle);
 		border-left: 3px solid var(--accent);
 		border-radius: 12px;
 		padding: 0.75rem;
@@ -829,8 +829,8 @@
 	}
 
 	.asset-item:hover {
-		background: rgba(0, 0, 0, 0.3);
-		border-color: rgba(255, 255, 255, 0.08);
+		background: var(--bg-card-hover);
+		border-color: var(--border-subtle);
 		border-left-color: var(--accent);
 	}
 
@@ -846,15 +846,15 @@
 		justify-content: center;
 		padding: 0.2rem;
 		margin-right: -0.2rem;
-		color: rgba(160, 160, 200, 0.3);
+		color: var(--text-faint);
 		cursor: inherit;
 		border-radius: 4px;
 		transition: all 0.15s;
 	}
 
 	.drag-handle:hover {
-		color: rgba(160, 160, 200, 0.8);
-		background: rgba(255, 255, 255, 0.05);
+		color: var(--text-secondary);
+		background: var(--bg-card-hover);
 	}
 
 	.asset-view {
@@ -880,7 +880,7 @@
 	}
 
 	.asset-left:hover {
-		background: rgba(255, 255, 255, 0.04);
+		background: var(--bg-card);
 	}
 
 	.asset-left:active {
@@ -900,7 +900,7 @@
 		display: block;
 		font-size: 0.8rem;
 		font-weight: 600;
-		color: #fff;
+		color: var(--text-primary);
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -911,16 +911,16 @@
 		align-items: center;
 		gap: 0.4rem;
 		font-size: 0.6rem;
-		color: rgba(160, 160, 200, 0.4);
+		color: var(--text-faint);
 		font-family: 'Monaco', 'Menlo', monospace;
 		margin-top: 0.1rem;
 	}
 
 	.asset-ter-badge {
 		padding: 0.05rem 0.3rem;
-		background: rgba(255, 255, 255, 0.05);
+		background: var(--bg-card-hover);
 		border-radius: 4px;
-		color: rgba(160, 160, 200, 0.6);
+		color: var(--text-muted);
 		font-weight: 600;
 	}
 
@@ -934,9 +934,9 @@
 	.action-move {
 		padding: 0.2rem 0.1rem 0.2rem 0.35rem;
 		border-radius: 6px;
-		border: 1px solid rgba(255, 255, 255, 0.06);
-		background: rgba(255, 255, 255, 0.03);
-		color: rgba(160, 160, 200, 0.5);
+		border: 1px solid var(--border-subtle);
+		background: var(--bg-card);
+		color: var(--text-muted);
 		font-size: 0.58rem;
 		font-weight: 700;
 		cursor: pointer;
@@ -950,22 +950,22 @@
 
 	.action-move:hover {
 		background: rgba(59, 130, 246, 0.1);
-		color: #60a5fa;
+		color: var(--accent-blue-ink);
 		border-color: rgba(59, 130, 246, 0.2);
 	}
 
 	.action-move option {
-		background: #121223;
-		color: #fff;
+		background: var(--bg-overlay);
+		color: var(--text-primary);
 		font-weight: normal;
 	}
 
 	.action-ter {
 		padding: 0.2rem 0.45rem;
 		border-radius: 6px;
-		border: 1px solid rgba(255, 255, 255, 0.06);
-		background: rgba(255, 255, 255, 0.03);
-		color: rgba(160, 160, 200, 0.5);
+		border: 1px solid var(--border-subtle);
+		background: var(--bg-card);
+		color: var(--text-muted);
 		font-size: 0.58rem;
 		font-weight: 700;
 		cursor: pointer;
@@ -976,16 +976,16 @@
 
 	.action-ter:hover {
 		background: rgba(59, 130, 246, 0.1);
-		color: #60a5fa;
+		color: var(--accent-blue-ink);
 		border-color: rgba(59, 130, 246, 0.2);
 	}
 
 	.action-ledger {
 		padding: 0.2rem 0.45rem;
 		border-radius: 6px;
-		border: 1px solid rgba(255, 255, 255, 0.06);
-		background: rgba(255, 255, 255, 0.03);
-		color: rgba(160, 160, 200, 0.5);
+		border: 1px solid var(--border-subtle);
+		background: var(--bg-card);
+		color: var(--text-muted);
 		font-size: 0.58rem;
 		font-weight: 700;
 		cursor: pointer;
@@ -994,13 +994,13 @@
 
 	.action-ledger:hover {
 		background: rgba(59, 130, 246, 0.1);
-		color: #60a5fa;
+		color: var(--accent-blue-ink);
 		border-color: rgba(59, 130, 246, 0.2);
 	}
 
 	.action-ledger.active {
 		background: rgba(139, 92, 246, 0.1);
-		color: #a78bfa;
+		color: var(--accent-violet-ink);
 		border-color: rgba(139, 92, 246, 0.3);
 	}
 
@@ -1008,9 +1008,9 @@
 		width: 28px;
 		height: 28px;
 		border-radius: 7px;
-		border: 1px solid rgba(255, 255, 255, 0.06);
-		background: rgba(255, 255, 255, 0.03);
-		color: rgba(160, 160, 200, 0.4);
+		border: 1px solid var(--border-subtle);
+		background: var(--bg-card);
+		color: var(--text-faint);
 		cursor: pointer;
 		display: flex;
 		align-items: center;
@@ -1020,7 +1020,7 @@
 
 	.action-delete:hover {
 		background: rgba(239, 68, 68, 0.1);
-		color: #fca5a5;
+		color: var(--state-negative);
 		border-color: rgba(239, 68, 68, 0.2);
 	}
 
@@ -1033,7 +1033,7 @@
 
 	.ter-label {
 		font-size: 0.58rem;
-		color: rgba(160, 160, 200, 0.5);
+		color: var(--text-muted);
 		font-weight: 600;
 		text-transform: uppercase;
 	}
@@ -1041,10 +1041,10 @@
 	.ter-input {
 		width: 55px;
 		padding: 0.2rem 0.35rem;
-		background: rgba(0, 0, 0, 0.4);
+		background: var(--bg-card-hover);
 		border: 1px solid rgba(59, 130, 246, 0.3);
 		border-radius: 6px;
-		color: #fff;
+		color: var(--text-primary);
 		font-size: 0.75rem;
 		font-weight: 600;
 		outline: none;
@@ -1098,12 +1098,12 @@
 
 	.ter-save {
 		background: rgba(16, 185, 129, 0.15);
-		color: #10b981;
+		color: var(--accent-green-ink);
 	}
 
 	.ter-cancel {
 		background: rgba(239, 68, 68, 0.1);
-		color: #fca5a5;
+		color: var(--state-negative);
 	}
 
 	/* ====== Weight Slider Row ====== */
@@ -1125,7 +1125,7 @@
 	.lock-btn {
 		background: transparent;
 		border: none;
-		color: rgba(255, 255, 255, 0.3);
+		color: var(--text-faint);
 		cursor: pointer;
 		display: flex;
 		align-items: center;
@@ -1137,12 +1137,12 @@
 	}
 	
 	.lock-btn:hover {
-		color: rgba(255, 255, 255, 0.7);
-		background: rgba(255, 255, 255, 0.05);
+		color: var(--text-secondary);
+		background: var(--bg-card-hover);
 	}
 	
 	.lock-btn.is-locked {
-		color: #f59e0b;
+		color: var(--accent-orange-ink);
 		background: rgba(245, 158, 11, 0.1);
 	}
 
@@ -1156,7 +1156,7 @@
 		height: 6px;
 		-webkit-appearance: none;
 		appearance: none;
-		background: rgba(255, 255, 255, 0.08);
+		background: var(--bg-card-hover);
 		border-radius: 3px;
 		outline: none;
 		cursor: pointer;
@@ -1169,7 +1169,7 @@
 		width: 18px;
 		height: 18px;
 		border-radius: 50%;
-		background: var(--slider-color, #3b82f6);
+		background: var(--slider-color);
 		border: 2px solid rgba(255, 255, 255, 0.3);
 		cursor: grab;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
@@ -1189,7 +1189,7 @@
 		width: 18px;
 		height: 18px;
 		border-radius: 50%;
-		background: var(--slider-color, #3b82f6);
+		background: var(--slider-color);
 		border: 2px solid rgba(255, 255, 255, 0.3);
 		cursor: grab;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
@@ -1199,8 +1199,8 @@
 		display: flex;
 		align-items: center;
 		gap: 0.1rem;
-		background: rgba(0, 0, 0, 0.35);
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		background: var(--bg-card-hover);
+		border: 1px solid var(--border-subtle);
 		border-radius: 8px;
 		padding: 0.25rem 0.15rem 0.25rem 0.35rem;
 		min-width: 62px;
@@ -1210,7 +1210,7 @@
 		width: 38px;
 		background: transparent;
 		border: none;
-		color: #fff;
+		color: var(--text-primary);
 		font-size: 0.82rem;
 		font-weight: 700;
 		outline: none;
@@ -1221,7 +1221,7 @@
 
 	.weight-number-input:disabled {
 		opacity: 0.4;
-		color: rgba(255, 255, 255, 0.3);
+		color: var(--text-faint);
 		cursor: not-allowed;
 	}
 
@@ -1235,7 +1235,7 @@
 	.weight-percent-sign {
 		font-size: 0.72rem;
 		font-weight: 700;
-		color: rgba(160, 160, 200, 0.5);
+		color: var(--text-muted);
 	}
 
 	/* Add button */
@@ -1248,7 +1248,7 @@
 		background: rgba(59, 130, 246, 0.05);
 		border: 1.5px dashed rgba(59, 130, 246, 0.2);
 		border-radius: 12px;
-		color: rgba(59, 130, 246, 0.7);
+		color: var(--accent-blue-ink);
 		font-size: 0.78rem;
 		font-weight: 700;
 		cursor: pointer;
@@ -1258,13 +1258,13 @@
 	.add-asset-btn:hover {
 		background: rgba(59, 130, 246, 0.1);
 		border-color: rgba(59, 130, 246, 0.4);
-		color: #60a5fa;
+		color: var(--accent-blue-ink);
 	}
 
 	.manage-footer {
 		padding: 1.25rem 1.5rem;
-		border-top: 1px solid rgba(255, 255, 255, 0.06);
-		background: rgba(18, 18, 35, 0.95);
+		border-top: 1px solid var(--border-subtle);
+		background: var(--bg-overlay);
 		display: flex;
 		justify-content: center;
 	}
@@ -1276,10 +1276,10 @@
 		justify-content: center;
 		gap: 0.6rem;
 		padding: 0.9rem;
-		background: linear-gradient(135deg, #10b981, #059669);
+		background: linear-gradient(135deg, var(--surface-green), var(--surface-green));
 		border: none;
 		border-radius: 14px;
-		color: white;
+		color: var(--text-on-accent);
 		font-size: 1rem;
 		font-weight: 700;
 		cursor: pointer;
@@ -1290,7 +1290,15 @@
 	.btn-save:hover {
 		transform: translateY(-2px);
 		box-shadow: 0 12px 25px rgba(16, 185, 129, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-		background: linear-gradient(135deg, #059669, #10b981);
+		/*
+		 * ⚠️ El reposo usa `--surface-green` y el hover se había quedado en
+		 * `--accent-green`: al pasar por encima, el blanco de encima caía de 5,48 a
+		 * **3,77:1**. Es exactamente la forma que no se ve leyendo una regla — el
+		 * color está en el bloque de reposo y el fondo que lo rompe, en el de hover.
+		 * Lo cazó el barrido en vivo con la pasada de `:hover`, no el estático.
+		 */
+		background: linear-gradient(135deg, var(--surface-green), var(--surface-green));
+		filter: brightness(1.1);
 	}
 
 	.btn-save:active {
@@ -1314,7 +1322,7 @@
 	.import-section {
 		margin-top: 0.5rem;
 		padding-top: 1.25rem;
-		border-top: 1px solid rgba(255, 255, 255, 0.04);
+		border-top: 1px solid var(--border-subtle);
 		text-align: center;
 	}
 
@@ -1328,7 +1336,7 @@
 		background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(59, 130, 246, 0.08));
 		border: 1.5px dashed rgba(139, 92, 246, 0.25);
 		border-radius: 12px;
-		color: rgba(167, 139, 250, 0.8);
+		color: var(--accent-violet-ink);
 		font-size: 0.78rem;
 		font-weight: 700;
 		cursor: pointer;
@@ -1338,12 +1346,12 @@
 	.import-csv-btn:hover {
 		background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(59, 130, 246, 0.12));
 		border-color: rgba(139, 92, 246, 0.45);
-		color: #a78bfa;
+		color: var(--accent-violet-ink);
 	}
 
 	.import-hint {
 		font-size: 0.6rem;
-		color: rgba(160, 160, 200, 0.3);
+		color: var(--text-faint);
 		margin: 0.4rem 0 0;
 	}
 
@@ -1361,7 +1369,7 @@
 
 		.asset-actions-mini {
 			justify-content: flex-end;
-			border-top: 1px solid rgba(255, 255, 255, 0.05);
+			border-top: 1px solid var(--border-subtle);
 			padding-top: 0.5rem;
 			gap: 0.4rem;
 			width: 100%;

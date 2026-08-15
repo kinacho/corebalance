@@ -163,7 +163,7 @@
 	.modal-backdrop {
 		position: fixed;
 		inset: 0;
-		background: rgba(0, 0, 0, 0.8);
+		background: var(--bg-scrim);
 		backdrop-filter: blur(8px);
 		z-index: 2000;
 		display: flex;
@@ -175,8 +175,8 @@
 	.modal-container {
 		width: 100%;
 		max-width: 500px;
-		background: #0f0f1a;
-		border: 1px solid rgba(255, 255, 255, 0.1);
+		background: var(--bg-overlay);
+		border: 1px solid var(--border-subtle);
 		border-radius: 28px;
 		position: relative;
 		padding: 2.5rem;
@@ -187,9 +187,9 @@
 		position: absolute;
 		top: 1.5rem;
 		right: 1.5rem;
-		background: rgba(255, 255, 255, 0.05);
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		color: rgba(255, 255, 255, 0.5);
+		background: var(--bg-card-hover);
+		border: 1px solid var(--border-subtle);
+		color: var(--text-muted);
 		width: 36px;
 		height: 36px;
 		border-radius: 12px;
@@ -202,7 +202,7 @@
 
 	.btn-close:hover {
 		background: rgba(239, 68, 68, 0.1);
-		color: #ef4444;
+		color: var(--state-negative);
 		border-color: rgba(239, 68, 68, 0.2);
 	}
 
@@ -215,14 +215,14 @@
 
 	.header-icon {
 		font-size: 2.5rem;
-		background: rgba(255, 255, 255, 0.03);
+		background: var(--bg-card);
 		width: 64px;
 		height: 64px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		border-radius: 18px;
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		border: 1px solid var(--border-subtle);
 	}
 
 	.header-text h2 {
@@ -235,7 +235,7 @@
 	.header-text p {
 		margin: 0.25rem 0 0;
 		font-size: 0.9rem;
-		color: rgba(160, 160, 200, 0.6);
+		color: var(--text-muted);
 		line-height: 1.4;
 	}
 
@@ -254,18 +254,18 @@
 	.form-group label {
 		font-size: 0.85rem;
 		font-weight: 700;
-		color: rgba(255, 255, 255, 0.4);
+		color: var(--text-faint);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 		margin-left: 0.25rem;
 	}
 
 	input, textarea {
-		background: rgba(255, 255, 255, 0.03);
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		background: var(--bg-card);
+		border: 1px solid var(--border-subtle);
 		border-radius: 14px;
 		padding: 0.85rem 1rem;
-		color: #fff;
+		color: var(--text-primary);
 		font-family: inherit;
 		font-size: 1rem;
 		transition: all 0.2s;
@@ -273,15 +273,15 @@
 
 	input:focus, textarea:focus {
 		outline: none;
-		border-color: #3b82f6;
+		border-color: var(--accent-blue);
 		background: rgba(59, 130, 246, 0.05);
 		box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
 	}
 
 	.btn-submit {
 		margin-top: 0.5rem;
-		background: #3b82f6;
-		color: white;
+		background: var(--accent-blue);
+		color: var(--text-on-accent);
 		border: none;
 		border-radius: 16px;
 		padding: 1rem;
@@ -296,7 +296,7 @@
 	}
 
 	.btn-submit:hover:not(:disabled) {
-		background: #2563eb;
+		background: var(--accent-blue);
 		transform: translateY(-2px);
 		box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
 	}
@@ -323,7 +323,7 @@
 	}
 
 	.success-view p {
-		color: rgba(160, 160, 200, 0.7);
+		color: var(--text-secondary);
 		line-height: 1.6;
 	}
 

@@ -363,7 +363,7 @@
 		background: rgba(255, 255, 255, 0.025);
 		backdrop-filter: blur(20px) saturate(160%);
 		-webkit-backdrop-filter: blur(20px) saturate(160%);
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		border: 1px solid var(--border-subtle);
 		border-radius: 24px;
 		padding: 1.25rem;
 		display: flex;
@@ -388,7 +388,7 @@
 	.asset-card:hover {
 		border-color: rgba(255, 255, 255, 0.15);
 		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-		background: rgba(255, 255, 255, 0.04);
+		background: var(--bg-card);
 	}
 
 	.asset-card:active {
@@ -404,7 +404,7 @@
 	}
 
 	.asset-card:hover {
-		background: rgba(255, 255, 255, 0.06);
+		background: var(--bg-card-hover);
 		border-color: rgba(255, 255, 255, 0.2);
 		transform: translateY(-4px);
 		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
@@ -441,8 +441,8 @@
 	.asset-icon-wrapper {
 		width: 44px;
 		height: 44px;
-		background: rgba(0, 0, 0, 0.3);
-		border: 1px solid rgba(255, 255, 255, 0.05);
+		background: var(--bg-card-hover);
+		border: 1px solid var(--border-subtle);
 		border-radius: 12px;
 		display: flex;
 		align-items: center;
@@ -473,7 +473,7 @@
 	.asset-name {
 		font-size: 1rem;
 		font-weight: 700;
-		color: #fff;
+		color: var(--text-primary);
 		margin: 0;
 		letter-spacing: -0.01em;
 		white-space: nowrap;
@@ -485,12 +485,18 @@
 		/* ⚠️ El `clamp()` tenía el suelo justo donde no hay que tenerlo: a 390 px de
 		   ancho, `2.5vw` son 9,75 px y ahí es donde caía siempre. Ver `--text-micro`. */
 		font-size: clamp(var(--text-micro), 2.5vw, 0.65rem);
-		color: rgba(160, 160, 200, 0.5);
+		color: var(--text-muted);
 		font-family: 'Monaco', 'Menlo', monospace;
 	}
 
 	.asset-time {
-		color: color-mix(in srgb, var(--accent) 40%, rgba(160, 160, 200, 0.5));
+		/*
+		 * ⚠️ Mezclaba el acento del activo con `rgba(160,160,200,0.5)` — el literal
+		 * que este proyecto tiene fichado a 2,70:1, o sea el peor de todos. En claro
+		 * la mezcla daba **2,06:1**. Se tiñe sobre la tinta de apoyo del tema, que
+		 * sigue dando el matiz por activo sin arrastrar el valor malo.
+		 */
+		color: color-mix(in srgb, var(--accent) 40%, var(--text-muted));
 	}
 
 	.asset-meta {
@@ -500,7 +506,7 @@
 	}
 
 	.asset-divider {
-		color: rgba(160, 160, 200, 0.2);
+		color: var(--text-faint);
 		font-size: 0.7rem;
 	}
 
@@ -528,7 +534,7 @@
 	.live-dot {
 		width: 6px;
 		height: 6px;
-		background: #f59e0b;
+		background: var(--accent-orange);
 		border-radius: 50%;
 		animation: pulse-orange 2s infinite;
 	}
@@ -541,20 +547,32 @@
 	.btc-label {
 		font-size: 0.6rem;
 		font-weight: 700;
-		color: rgba(245, 158, 11, 0.8);
+		color: var(--accent-orange-ink);
 		text-transform: uppercase;
 	}
 
 	.btc-value {
 		font-size: 0.75rem;
 		font-weight: 800;
-		color: #f59e0b;
+		color: var(--accent-orange-ink);
 		font-family: 'Monaco', monospace;
 	}
 
 	.target-badge {
+		/*
+		 * ⚠️ **`--accent` es el color del activo —de `ASSET_COLORS`— y eso es una
+		 * MARCA, no tinta.** Esos tonos están validados para pintar un arco o una
+		 * barra sobre `#0d0d12`, donde les basta con 3:1; como texto necesitan 4,5 y
+		 * medido daban **3,35:1**. Se deriva la tinta mezclando con el color de
+		 * texto del tema, igual que `--card-ink` en la portada de herramientas: en
+		 * oscuro aclara y en claro oscurece, conservando el tono que identifica al
+		 * activo.
+		 *
+		 * Solo lo cazó el e2e con cartera sembrada: sin objetivos esta insignia no
+		 * se pinta.
+		 */
 		background: color-mix(in srgb, var(--accent) 15%, transparent);
-		color: var(--accent);
+		color: color-mix(in srgb, var(--accent) 62%, var(--text-primary));
 		padding: 0.15rem 0.5rem;
 		border-radius: 6px;
 		font-size: 0.68rem;
@@ -571,7 +589,7 @@
 
 	.ledger-badge {
 		background: rgba(167, 139, 250, 0.1);
-		color: #a78bfa;
+		color: var(--accent-violet-ink);
 		border: 1px solid rgba(167, 139, 250, 0.2);
 		padding: 0.15rem 0.35rem;
 		border-radius: 6px;
@@ -613,7 +631,7 @@
 	.field-label {
 		font-size: 0.65rem;
 		font-weight: 600;
-		color: rgba(160, 160, 200, 0.6);
+		color: var(--text-muted);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 	}
@@ -626,11 +644,11 @@
 
 	.modern-input {
 		width: 100%;
-		background: rgba(0, 0, 0, 0.4);
+		background: var(--bg-card-hover);
 		border: 1.5px solid rgba(255, 255, 255, 0.08);
 		border-radius: 12px;
 		padding: 0.65rem 0.85rem;
-		color: #fff;
+		color: var(--text-primary);
 		font-size: 0.95rem;
 		font-weight: 600;
 		transition: all 0.2s;
@@ -642,11 +660,11 @@
 		cursor: default;
 		background: rgba(167, 139, 250, 0.05) !important;
 		border-color: rgba(167, 139, 250, 0.1) !important;
-		color: #a78bfa !important;
+		color: var(--accent-violet-ink) !important;
 	}
 
 	.modern-input:focus {
-		background: rgba(0, 0, 0, 0.5);
+		background: var(--bg-scrim);
 		border-color: var(--accent);
 		box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 15%, transparent);
 	}
@@ -655,7 +673,7 @@
 		position: absolute;
 		right: 0.85rem;
 		font-size: 0.85rem;
-		color: rgba(255, 255, 255, 0.2);
+		color: var(--text-faint);
 		font-weight: 700;
 		pointer-events: none;
 	}
@@ -665,7 +683,7 @@
 		grid-template-columns: repeat(2, 1fr);
 		gap: 0.4rem;
 		padding: 0.6rem;
-		background: rgba(0, 0, 0, 0.2);
+		background: var(--bg-card-hover);
 		border-radius: 12px;
 	}
 
@@ -693,7 +711,7 @@
 		font-weight: 700;
 		text-transform: uppercase;
 		letter-spacing: 0.02em;
-		color: rgba(255, 255, 255, 0.4);
+		color: var(--text-faint);
 		margin-bottom: 0.25rem;
 	}
 
@@ -716,7 +734,7 @@
 
 	.clickable-metric:hover .perf-icon {
 		transform: rotate(180deg);
-		color: #fff;
+		color: var(--text-primary);
 	}
 
 	.perf-icon {
@@ -729,14 +747,14 @@
 	.metric-value {
 		font-size: 0.8rem;
 		font-weight: 700;
-		color: rgba(255, 255, 255, 0.9);
+		color: var(--text-primary);
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
 
 	.metric-value.highlight {
-		color: #fff;
+		color: var(--text-primary);
 	}
 
 	.pnl-metric.positive .metric-value { color: var(--state-positive); }
@@ -747,7 +765,7 @@
 		font-weight: 800;
 		padding: 0.15rem 0.4rem;
 		border-radius: 6px;
-		background: rgba(255, 255, 255, 0.05);
+		background: var(--bg-card-hover);
 		margin-left: 0.4rem;
 	}
 
@@ -762,12 +780,12 @@
 	}
 
 	.cost-metric .metric-value {
-		color: rgba(160, 160, 200, 0.8);
+		color: var(--text-secondary);
 	}
 
 	.cost-period {
 		font-size: var(--text-micro);
-		color: rgba(160, 160, 200, 0.4);
+		color: var(--text-faint);
 		margin-left: 0.2rem;
 		font-weight: 600;
 		text-transform: uppercase;
@@ -806,13 +824,13 @@
 		font-weight: 800;
 		padding: 0.15rem 0.5rem;
 		border-radius: 6px;
-		background: rgba(0, 0, 0, 0.25);
+		background: var(--bg-card-hover);
 		display: flex;
 		align-items: center;
 		gap: 0.2rem;
 	}
 
-	[data-level='ok'] { color: rgba(160, 160, 200, 0.6); }
+	[data-level='ok'] { color: var(--text-muted); }
 	[data-level='above'] { color: var(--state-positive); }
 	[data-level='below'] { color: var(--state-negative); }
 
@@ -824,7 +842,7 @@
 	.progress-bg {
 		width: 100%;
 		height: 100%;
-		background: rgba(255, 255, 255, 0.05);
+		background: var(--bg-card-hover);
 		border-radius: 4px;
 		position: relative;
 		overflow: visible;

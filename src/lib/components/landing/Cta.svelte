@@ -63,21 +63,21 @@
     font-size: clamp(2rem, 5vw, 3rem);
     font-weight: 800;
     margin-bottom: 1.5rem;
-    color: #fff;
+    color: var(--text-primary);
     position: relative;
     z-index: 1;
     letter-spacing: -0.02em;
   }
 
   .text-gradient {
-    background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+    background: linear-gradient(135deg, var(--accent-blue) 0%, #1d4ed8 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 
   p {
-    color: rgba(160, 160, 200, 0.7);
+    color: var(--text-secondary);
     font-size: 1.2rem;
     margin-bottom: 3rem;
     position: relative;
@@ -99,8 +99,8 @@
   }
 
   .btn-primary {
-    background: var(--accent-blue, #3b82f6);
-    color: white;
+    background: var(--accent-blue);
+    color: var(--text-on-accent);
     border: none;
     border-radius: 16px;
     font-weight: 700;
@@ -115,7 +115,7 @@
 
   .btn-demo-cta {
     background: rgba(139, 92, 246, 0.1);
-    color: #a78bfa;
+    color: var(--accent-violet-ink);
     border: 1px solid rgba(139, 92, 246, 0.3);
     padding: 0.8rem 2rem;
     border-radius: 14px;
@@ -127,7 +127,7 @@
 
   .btn-demo-cta:hover {
     background: rgba(139, 92, 246, 0.2);
-    color: #c4b5fd;
+    color: var(--accent-violet-ink);
     border-color: rgba(139, 92, 246, 0.5);
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(139, 92, 246, 0.2);
@@ -135,6 +135,6 @@
 
   .no-credit {
     font-size: 0.85rem;
-    color: rgba(160, 160, 200, 0.4);
+    color: var(--text-faint);
   }
 </style>

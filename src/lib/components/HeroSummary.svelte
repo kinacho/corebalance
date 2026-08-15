@@ -129,7 +129,7 @@
 		background: linear-gradient(165deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
 		backdrop-filter: blur(32px) saturate(200%);
 		-webkit-backdrop-filter: blur(32px) saturate(200%);
-		border: 1px solid rgba(255, 255, 255, 0.1);
+		border: 1px solid var(--border-subtle);
 		box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
 		overflow: hidden;
 		position: relative;
@@ -162,13 +162,13 @@
 		font-weight: 800;
 		text-transform: uppercase;
 		letter-spacing: 0.15em;
-		color: rgba(255, 255, 255, 0.35);
+		color: var(--text-faint);
 	}
 
 	.summary-value {
 		font-size: clamp(2rem, 9vw, 2.75rem);
 		font-weight: 900;
-		color: #ffffff;
+		color: var(--text-primary);
 		line-height: 1.1;
 		letter-spacing: -0.03em;
 		text-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
@@ -183,8 +183,8 @@
 	}
 
 	.metric-card {
-		background: rgba(255, 255, 255, 0.03);
-		border: 1px solid rgba(255, 255, 255, 0.06);
+		background: var(--bg-card);
+		border: 1px solid var(--border-subtle);
 		border-radius: 18px;
 		padding: 0.85rem;
 		display: flex;
@@ -195,8 +195,8 @@
 	}
 
 	.metric-card:hover {
-		background: rgba(255, 255, 255, 0.05);
-		border-color: rgba(255, 255, 255, 0.1);
+		background: var(--bg-card-hover);
+		border-color: var(--border-subtle);
 	}
 
 	.metric-label {
@@ -204,7 +204,7 @@
 		font-weight: 700;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
-		color: rgba(255, 255, 255, 0.4);
+		color: var(--text-faint);
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -226,7 +226,7 @@
 	.metric-value {
 		font-size: 1rem;
 		font-weight: 700;
-		color: #ffffff;
+		color: var(--text-primary);
 		white-space: nowrap;
 	}
 
@@ -235,7 +235,7 @@
 		font-weight: 800;
 		padding: 0.1rem 0.35rem;
 		border-radius: 6px;
-		background: rgba(255, 255, 255, 0.05);
+		background: var(--bg-card-hover);
 		white-space: nowrap;
 	}
 
@@ -246,8 +246,8 @@
 	.metric-card.negative .metric-badge { color: var(--state-negative); background: var(--state-negative-soft); }
 
 	.metric-card.efficiency .metric-badge.neutral {
-		color: rgba(255, 255, 255, 0.6);
-		background: rgba(255, 255, 255, 0.08);
+		color: var(--text-muted);
+		background: var(--bg-card-hover);
 		font-weight: 600;
 	}
 
@@ -256,7 +256,7 @@
 		align-items: center;
 		justify-content: center;
 		padding-top: 1rem;
-		border-top: 1px solid rgba(255, 255, 255, 0.06);
+		border-top: 1px solid var(--border-subtle);
 	}
 
 	.asset-pills {
@@ -271,8 +271,8 @@
 		align-items: center;
 		gap: 0.35rem;
 		padding: 0.3rem 0.6rem;
-		background: rgba(0, 0, 0, 0.25);
-		border: 1px solid rgba(255, 255, 255, 0.06);
+		background: var(--bg-card-hover);
+		border: 1px solid var(--border-subtle);
 		border-radius: 10px;
 	}
 
@@ -288,7 +288,7 @@
 	.pill-text {
 		font-size: 0.65rem;
 		font-weight: 700;
-		color: rgba(255, 255, 255, 0.8);
+		color: var(--text-secondary);
 	}
 
 	.capital-breakdown {
@@ -299,13 +299,13 @@
 		gap: 0.5rem 0.8rem;
 		margin-top: 0.5rem;
 		font-size: 0.7rem;
-		color: rgba(255, 255, 255, 0.4);
+		color: var(--text-faint);
 		padding: 0.35rem 0.6rem;
-		background: rgba(255, 255, 255, 0.03);
+		background: var(--bg-card);
 		border-radius: 12px;
 		width: auto;
 		max-width: 100%;
-		border: 1px solid rgba(255, 255, 255, 0.05);
+		border: 1px solid var(--border-subtle);
 	}
 
 	.breakdown-item {
@@ -316,7 +316,7 @@
 	}
 
 	.breakdown-divider {
-		color: rgba(255, 255, 255, 0.1);
+		color: var(--text-faint);
 		font-weight: 300;
 	}
 
@@ -369,7 +369,7 @@
 			flex-direction: column;
 			gap: 1.25rem;
 			border-top: none;
-			border-left: 1px solid rgba(255, 255, 255, 0.1);
+			border-left: 1px solid var(--border-subtle);
 			padding-top: 0;
 			padding-left: 3rem;
 			justify-content: center;

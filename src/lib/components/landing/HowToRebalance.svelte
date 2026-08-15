@@ -96,8 +96,8 @@
 <style>
   .howto-section {
     padding: 80px 1rem;
-    background: rgba(10, 10, 20, 0.2);
-    border-top: 1px solid rgba(255, 255, 255, 0.03);
+    background: var(--bg-card-hover);
+    border-top: 1px solid var(--border-subtle);
     position: relative;
     overflow: hidden;
   }
@@ -141,7 +141,7 @@
   }
 
   .eyebrow {
-    color: #3b82f6;
+    color: var(--accent-blue-ink);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
@@ -154,20 +154,20 @@
     font-size: clamp(1.75rem, 5vw, 2.75rem);
     font-weight: 800;
     margin-bottom: 1.25rem;
-    color: #fff;
+    color: var(--text-primary);
     letter-spacing: -0.02em;
     line-height: 1.2;
   }
 
   .text-gradient {
-    background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+    background: linear-gradient(135deg, var(--accent-blue) 0%, #1d4ed8 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 
   .section-desc {
-    color: rgba(160, 160, 200, 0.6);
+    color: var(--text-muted);
     font-size: 1rem;
     max-width: 700px;
     margin: 0 auto;
@@ -200,7 +200,7 @@
     flex-direction: column;
     gap: 1.25rem;
     background: rgba(255, 255, 255, 0.01);
-    border: 1px solid rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-subtle);
     padding: 1.5rem;
     border-radius: 20px;
     transition: all 0.3s ease;
@@ -216,7 +216,7 @@
 
   .howto-step:hover {
     transform: translateY(-4px);
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--bg-card);
     border-color: rgba(59, 130, 246, 0.2);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   }
@@ -224,7 +224,7 @@
   .step-badge {
     background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.2) 100%);
     border: 1px solid rgba(59, 130, 246, 0.3);
-    color: #3b82f6;
+    color: var(--accent-blue-ink);
     width: 40px;
     height: 40px;
     display: flex;
@@ -246,7 +246,7 @@
   }
 
   .step-body h3 {
-    color: #fff;
+    color: var(--text-primary);
     font-size: 1.1rem;
     font-weight: 700;
     margin: 0 0 0.5rem 0;
@@ -260,7 +260,7 @@
   }
 
   .step-body p {
-    color: rgba(160, 160, 200, 0.6);
+    color: var(--text-muted);
     font-size: 0.9rem;
     line-height: 1.6;
     margin: 0;
@@ -299,14 +299,14 @@
   }
 
   .note-content h4 {
-    color: #fff;
+    color: var(--text-primary);
     font-size: 1.1rem;
     font-weight: 700;
     margin: 0 0 0.5rem 0;
   }
 
   .note-content p {
-    color: rgba(160, 160, 200, 0.6);
+    color: var(--text-muted);
     font-size: 0.9rem;
     line-height: 1.6;
     margin: 0;

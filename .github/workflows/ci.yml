@@ -59,6 +59,18 @@ jobs:
       - name: Comprobación de tipos
         run: npm run check
 
+      # La quinta guarda mecánica. Va antes que los tests porque es la más rápida
+      # —analiza CSS, no ejecuta nada— y porque su fallo es el más fácil de leer:
+      # dice el fichero, el color y el ratio.
+      #
+      # Existe porque 212 declaraciones de texto estaban por debajo de AA y nada en
+      # este pipeline se ponía rojo: el proyecto se enteró por tres comentarios en
+      # un foro. Un barrido sin guarda se deshace solo — de eso hay prueba en el
+      # propio repo, con los 128 literales de `#3b82f6` que sobrevivieron a la
+      # migración de `--accent-blue`.
+      - name: Contraste de texto (WCAG AA)
+        run: npm run a11y:contrast
+
       # `test:coverage` en vez de `test`: los mismos tests más los umbrales de
       # cobertura por fichero de los seis módulos donde equivocarse cuesta dinero al
       # usuario. Los umbrales son la medida del día que se pusieron, así que solo

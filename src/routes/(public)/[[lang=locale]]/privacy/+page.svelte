@@ -104,8 +104,8 @@
 
 <style>
   .legal-page {
-    background: var(--bg-primary, #05050a);
-    color: #fff;
+    background: var(--bg-primary);
+    color: var(--text-primary);
     min-height: 100vh;
   }
 
@@ -127,7 +127,7 @@
   }
 
   .update-date {
-    color: rgba(160, 160, 200, 0.5);
+    color: var(--text-muted);
     font-size: 0.9rem;
     margin-bottom: 3rem;
   }
@@ -140,18 +140,18 @@
     font-size: 1.5rem;
     font-weight: 700;
     margin-bottom: 1rem;
-    color: var(--accent-blue, #3b82f6);
+    color: var(--accent-blue-ink);
   }
 
   p {
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--text-secondary);
     margin-bottom: 1rem;
   }
 
   ul {
     padding-left: 1.5rem;
     margin-bottom: 1rem;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--text-secondary);
   }
 
   li {
@@ -159,13 +159,13 @@
   }
 
   :global(strong) {
-    color: #fff;
+    color: var(--text-primary);
   }
 
   :global(.contact-link) {
     background: none;
     border: none;
-    color: var(--accent-blue, #3b82f6);
+    color: var(--accent-blue-ink);
     text-decoration: underline;
     font: inherit;
     cursor: pointer;
@@ -174,6 +174,6 @@
   }
 
   :global(.contact-link:hover) {
-    color: #60a5fa;
+    color: var(--accent-blue-ink);
   }
 </style>

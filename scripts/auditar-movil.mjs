@@ -13,7 +13,13 @@ import { chromium } from '@playwright/test';
 import fs from 'node:fs';
 
 const ORIGIN = process.env.ORIGIN || 'http://localhost:4173';
-const OUT = process.env.OUT || 'C:/Users/Kino/AppData/Local/Temp/claude/C--Users-Kino-Github-Rebalanceador-90-5-5/f44bd977-464d-44fe-8f19-bc4b714176d6/scratchpad/movil';
+/**
+ * ⚠️ Era una ruta absoluta con el UUID de **otra sesión**: funcionaba por
+ * casualidad en la máquina donde se escribió y en ninguna otra. Ahora va a un
+ * directorio del propio repo, que `.gitignore` ya excluye.
+ */
+const OUT = process.env.OUT || 'test-results/movil';
+const TEMA = process.env.TEMA || null;
 const W = Number(process.env.W || 390);
 const H = Number(process.env.H || 844);
 
@@ -22,7 +28,10 @@ fs.mkdirSync(OUT, { recursive: true });
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1280, height: 900 }, locale: 'es-ES' });
 
-await page.addInitScript(() => localStorage.setItem('corebalance_tour_seen', 'true'));
+await page.addInitScript((tema) => {
+	localStorage.setItem('corebalance_tour_seen', 'true');
+	if (tema) localStorage.setItem('corebalance_theme', tema);
+}, TEMA);
 
 const AUDIT = `(() => {
 	const vw = document.documentElement.clientWidth;
@@ -77,8 +86,13 @@ const AUDIT = `(() => {
 	};
 })()`;
 
+/** Total acumulado, para poder salir con código distinto de cero. */
+let hallazgos = 0;
+
 async function auditar(etiqueta) {
 	const r = await page.evaluate(AUDIT);
+	hallazgos +=
+		r.desborda.length + r.toques.length + r.microtexto.length + (r.scrollW > r.vw + 1 ? 1 : 0);
 	console.log(`\n=== ${etiqueta} (vw ${r.vw}, scrollW ${r.scrollW}) ===`);
 	if (r.scrollW > r.vw + 1) console.log(`  ⚠️ SCROLL HORIZONTAL: ${r.scrollW} > ${r.vw}`);
 	if (r.desborda.length) {
@@ -273,3 +287,16 @@ await shot('52-crisis', '#tour-crisis');
 
 await browser.close();
 console.log('\ncapturas en', OUT);
+
+/**
+ * ⚠️ **Sale con 1 si encontró algo, y sin esto no podía ser guarda ni queriendo.**
+ * Imprimía sus hallazgos y devolvía éxito, así que cualquier automatismo que lo
+ * llamara daba verde con la pantalla rota — la forma exacta que este repo
+ * persigue: una comprobación que no puede fallar.
+ */
+const sufijo = `${W}×${H}${TEMA ? ` (tema ${TEMA})` : ''}`;
+if (hallazgos > 0) {
+	console.error(`\n✖ ${hallazgos} problemas de maquetación a ${sufijo}`);
+	process.exit(1);
+}
+console.log(`\n✔ Sin problemas de maquetación a ${sufijo}`);

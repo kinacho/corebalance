@@ -240,7 +240,7 @@
 		font-weight: 700;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
-		color: var(--accent-blue);
+		color: var(--accent-blue-ink);
 	}
 
 	h1 {
@@ -260,7 +260,7 @@
 	.barra {
 		height: 3px;
 		border-radius: 3px;
-		background: rgba(255, 255, 255, 0.08);
+		background: var(--bg-card-hover);
 		margin: 2rem 0 2.5rem;
 		overflow: hidden;
 	}
@@ -283,7 +283,7 @@
 		margin: 2.5rem 0;
 		padding: 1.4rem 1.5rem;
 		border-radius: 16px;
-		border: 1px solid rgba(255, 255, 255, 0.1);
+		border: 1px solid var(--border-subtle);
 	}
 	.leccion :global(.bloque h2) {
 		margin: 0 0 0.9rem;
@@ -315,24 +315,27 @@
 		line-height: 1.65;
 	}
 	.leccion :global(.bloque li::marker) {
-		color: rgba(255, 255, 255, 0.35);
+		color: var(--text-faint);
 	}
 
 	/* La advertencia: ámbar, que es el color de «ojo con esto» en el resto de la app. */
 	.leccion :global(.bloque.aviso) {
-		background: rgba(245, 158, 11, 0.05);
-		border-color: rgba(245, 158, 11, 0.22);
+		background: var(--tint-warn);
+		border-color: var(--tint-warn-line);
 	}
 	.leccion :global(.bloque.aviso h2) {
-		color: var(--accent-orange);
+		color: var(--accent-orange-ink);
 	}
 
 	/* El resumen: cierra la lección, así que se lee como una ficha y no como más texto. */
 	.leccion :global(.bloque.retener) {
-		background: rgba(255, 255, 255, 0.03);
+		/* Tinte verde, a juego con su encabezado: en claro `--bg-card` es blanco puro
+		   sobre una página casi blanca y la ficha de resumen dejaba de leerse como ficha. */
+		background: var(--tint-ok);
+		border-color: var(--tint-ok-line);
 	}
 	.leccion :global(.bloque.retener h2) {
-		color: var(--accent-green);
+		color: var(--accent-green-ink);
 	}
 	.leccion :global(.bloque.retener ul) {
 		margin: 0;
@@ -394,7 +397,7 @@
 		margin-bottom: 0.4rem;
 	}
 	.leccion :global(.markdown-body > ul li::marker) {
-		color: rgba(255, 255, 255, 0.35);
+		color: var(--text-faint);
 	}
 	.leccion :global(.markdown-body table) {
 		width: 100%;
@@ -405,7 +408,7 @@
 	.leccion :global(.markdown-body th),
 	.leccion :global(.markdown-body td) {
 		padding: 0.6rem 0.7rem;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+		border-bottom: 1px solid var(--border-subtle);
 		text-align: left;
 	}
 	.leccion :global(.markdown-body thead th) {
@@ -426,7 +429,7 @@
 	.accion {
 		margin: 3rem 0 2rem;
 		padding: 1.5rem;
-		border: 1px solid rgba(255, 255, 255, 0.1);
+		border: 1px solid var(--border-subtle);
 		border-radius: 16px;
 		background: var(--bg-card);
 	}
@@ -436,7 +439,7 @@
 		font-weight: 800;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
-		color: var(--accent-green);
+		color: var(--accent-green-ink);
 	}
 	.accion-texto {
 		margin: 0 0 1.1rem;
@@ -448,7 +451,7 @@
 		padding: 0.7rem 1.15rem;
 		border-radius: 12px;
 		background: var(--accent-blue);
-		color: #fff;
+		color: var(--text-on-accent);
 		font-weight: 700;
 		font-size: 0.9rem;
 		text-decoration: none;
@@ -489,7 +492,7 @@
 		flex-direction: column;
 		gap: 0.3rem;
 		padding: 1rem 1.15rem;
-		border: 1px solid rgba(255, 255, 255, 0.1);
+		border: 1px solid var(--border-subtle);
 		border-radius: 14px;
 		text-decoration: none;
 		color: var(--text-primary);

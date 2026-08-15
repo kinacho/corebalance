@@ -126,19 +126,19 @@
     font-size: clamp(1.75rem, 5vw, 2.5rem);
     font-weight: 800;
     margin-bottom: 1.25rem;
-    color: #fff;
+    color: var(--text-primary);
     line-height: 1.2;
   }
 
   .text-gradient {
-    background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+    background: linear-gradient(135deg, var(--accent-blue) 0%, #1d4ed8 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 
   .section-header p {
-    color: rgba(160, 160, 200, 0.6);
+    color: var(--text-muted);
     font-size: 1rem;
     max-width: 600px;
     margin: 0 auto;
@@ -151,8 +151,8 @@
   }
 
   .table-container {
-    background: var(--bg-secondary, #0f0f14);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
     border-radius: 20px;
     overflow-x: auto;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
@@ -174,7 +174,7 @@
   th, td {
     padding: 1rem;
     text-align: left;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid var(--border-subtle);
     font-size: 0.85rem;
   }
 
@@ -186,7 +186,7 @@
   }
 
   th {
-    color: rgba(255, 255, 255, 0.4);
+    color: var(--text-faint);
     font-weight: 600;
     text-transform: uppercase;
     font-size: 0.65rem;
@@ -200,33 +200,33 @@
   }
 
   .feature-name {
-    color: #fff;
+    color: var(--text-primary);
     font-weight: 600;
     position: sticky;
     left: 0;
-    background: #0f0f14;
+    background: var(--bg-elevated);
     z-index: 1;
   }
 
   td {
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--text-muted);
   }
 
   .active-col {
     background: rgba(59, 130, 246, 0.05);
-    color: #60a5fa;
+    color: var(--accent-blue-ink);
     font-weight: 700;
     text-align: center;
   }
 
   th.active-col {
-    color: #3b82f6;
+    color: var(--accent-blue-ink);
   }
 
   .comparison-links {
     margin-top: 2rem;
     text-align: center;
-    color: rgba(160, 160, 200, 0.6);
+    color: var(--text-muted);
     font-size: 0.9rem;
     line-height: 1.8;
   }
@@ -236,14 +236,14 @@
   }
 
   .comparison-links a {
-    color: #60a5fa;
+    color: var(--accent-blue-ink);
     text-decoration: none;
     white-space: nowrap;
     transition: color 0.2s ease;
   }
 
   .comparison-links a:hover {
-    color: #93c5fd;
+    color: var(--accent-blue-ink);
     text-decoration: underline;
   }
 

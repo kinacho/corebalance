@@ -106,13 +106,13 @@
 		font-weight: 800;
 		letter-spacing: 0.1em;
 		text-transform: uppercase;
-		color: var(--accent-green);
+		color: var(--accent-green-ink);
 	}
 	.badge {
 		padding: 0.2rem 0.55rem;
 		border-radius: 9999px;
 		background: var(--accent-blue);
-		color: #fff;
+		color: var(--text-on-accent);
 		font-size: 0.62rem;
 		letter-spacing: 0.09em;
 	}
@@ -121,7 +121,7 @@
 		font-size: clamp(1.9rem, 4.5vw, 2.9rem);
 		line-height: 1.12;
 		letter-spacing: -0.02em;
-		color: #fff;
+		color: var(--text-primary);
 		max-width: 20ch;
 	}
 	.intro {
@@ -129,7 +129,7 @@
 		max-width: 58ch;
 		font-size: 1.05rem;
 		line-height: 1.65;
-		color: rgba(255, 255, 255, 0.62);
+		color: var(--text-muted);
 	}
 	.grid {
 		list-style: none;
@@ -143,9 +143,9 @@
 		display: block;
 		height: 100%;
 		padding: 1.5rem;
-		border: 1px solid rgba(255, 255, 255, 0.09);
+		border: 1px solid var(--border-subtle);
 		border-radius: 18px;
-		background: rgba(255, 255, 255, 0.02);
+		background: var(--bg-card);
 		text-decoration: none;
 		transition:
 			border-color 0.2s ease,
@@ -170,7 +170,7 @@
 		margin-top: 0.9rem;
 		font-size: 0.85rem;
 		font-weight: 700;
-		color: var(--accent-blue);
+		color: var(--accent-blue-ink);
 	}
 	.cabeza {
 		display: flex;
@@ -182,7 +182,7 @@
 		font-size: 0.72rem;
 		font-weight: 800;
 		letter-spacing: 0.08em;
-		color: rgba(255, 255, 255, 0.28);
+		color: var(--text-faint);
 		font-variant-numeric: tabular-nums;
 	}
 	.lecciones {
@@ -190,7 +190,7 @@
 		font-weight: 700;
 		letter-spacing: 0.06em;
 		text-transform: uppercase;
-		color: rgba(255, 255, 255, 0.35);
+		color: var(--text-faint);
 		font-variant-numeric: tabular-nums;
 	}
 	.nivel {
@@ -200,19 +200,19 @@
 		font-weight: 700;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
-		color: var(--accent-blue, #3b82f6);
+		color: var(--accent-blue-ink);
 	}
 	.grid h3 {
 		margin: 0.55rem 0 0.6rem;
 		font-size: 1.12rem;
 		line-height: 1.3;
-		color: #fff;
+		color: var(--text-primary);
 	}
 	.grid p {
 		margin: 0;
 		font-size: 0.88rem;
 		line-height: 1.6;
-		color: rgba(255, 255, 255, 0.55);
+		color: var(--text-muted);
 	}
 	.pie {
 		display: flex;
@@ -221,22 +221,22 @@
 		justify-content: space-between;
 		gap: 1rem;
 		padding-top: 1.5rem;
-		border-top: 1px solid rgba(255, 255, 255, 0.07);
+		border-top: 1px solid var(--border-subtle);
 	}
 	.gratis {
 		margin: 0;
 		max-width: 62ch;
 		font-size: 0.82rem;
 		line-height: 1.65;
-		color: rgba(255, 255, 255, 0.5);
+		color: var(--text-muted);
 	}
 	.gratis strong {
-		color: rgba(255, 255, 255, 0.8);
+		color: var(--text-secondary);
 	}
 	.todos {
 		font-size: 0.9rem;
 		font-weight: 700;
-		color: var(--accent-blue, #3b82f6);
+		color: var(--accent-blue-ink);
 		text-decoration: none;
 		white-space: nowrap;
 	}

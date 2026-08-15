@@ -3,7 +3,60 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<!-- ⚠️ **Una sola meta y sin `media`.** Eran dos, cada una con su
+		     `prefers-color-scheme`, y desde que el tema no lo decide el sistema eso
+		     pintaba la barra del navegador clara sobre una aplicación oscura a
+		     cualquiera con el sistema en claro — que es el caso normal. Aquí va el
+		     predeterminado y el script de abajo la reescribe si hay elección
+		     guardada; sin JS se queda el oscuro, que es lo que sirve `:root`. -->
 		<meta name="theme-color" content="#0a0a16" />
+
+		<!--
+			⚠️ El tema se resuelve AQUÍ, lo primero de todo y antes de que exista
+			ninguna hoja de estilos, porque cualquier sitio más tarde es un destello
+			de negro en un tema claro (o al revés).
+
+			⚠️ **El predeterminado es OSCURO, no el del sistema.** Antes seguía a
+			`prefers-color-scheme`, y eso significaba que la mitad de la gente veía
+			una app distinta de la que enseñan las capturas y las tarjetas sociales
+			sin haber pedido nada. El oscuro es la identidad del producto; el claro
+			es una opción. Quien la elige, la conserva: se guarda y a partir de ahí
+			manda su elección y no el sistema.
+
+			⚠️ **No puede venir de una cookie**, y no es preferencia: `hooks.server.ts`
+			pone `Vary: Cookie` solo en `/dashboard` y `/api` para que las páginas
+			públicas sigan siendo cacheables en CDN. Un tema por cookie obligaría a
+			`Vary: Cookie` en todo el sitio y tiraría esa caché — la mayor parte del
+			sitio y todo el SEO. De ahí que se resuelva en cliente.
+
+			⚠️ La clave de `localStorage` está escrita a mano y duplica
+			`STORAGE_KEY_THEME` de `src/lib/constants.ts`, igual que ya pasa con
+			`corebalance_holdings_v2` abajo: este script corre antes que cualquier
+			módulo, así que no puede importar nada. Renombrar la clave obliga a tocar
+			los dos sitios, y `constants.test.ts` es lo que lo comprueba.
+
+			Sin JS no se pone el atributo y `:root` sirve el tema oscuro, que es el
+			que la app tenía siempre: nadie pierde nada por este camino.
+		-->
+		<script>
+			(function () {
+				try {
+					var guardado = localStorage.getItem('corebalance_theme');
+					// Oscuro por defecto; solo una elección explícita lo cambia, y esa
+					// elección manda siempre a partir de entonces.
+					var tema = guardado === 'light' || guardado === 'dark' ? guardado : 'dark';
+					document.documentElement.setAttribute('data-theme', tema);
+					// La barra del navegador, que no la pinta el CSS. La meta de arriba
+					// trae el oscuro; solo hay que tocarla al elegir claro.
+					if (tema === 'light') {
+						var m = document.querySelector('meta[name="theme-color"]');
+						if (m) m.setAttribute('content', '#f4f4f9');
+					}
+				} catch (e) {
+					document.documentElement.setAttribute('data-theme', 'dark');
+				}
+			})();
+		</script>
 		<meta name="mobile-web-app-capable" content="yes" />
 		<meta name="apple-mobile-web-app-capable" content="yes" />
 		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -61,11 +114,34 @@
 
 		<style>
 			.no-splash-needed #initial-splash { display: none !important; }
+
+			/*
+			 * ⚠️ El splash se pinta con estilo en línea porque corre antes de que
+			 * exista ninguna hoja de estilos, así que no puede leer un token. Los
+			 * colores que dependen del tema se corrigen aquí, y con `!important`
+			 * porque un estilo en línea gana a todo lo demás — la misma razón por la
+			 * que `.no-splash-needed` lo lleva desde siempre.
+			 *
+			 * De paso se arregla un fallo de contraste que venía de antes y valía
+			 * para los dos temas: el rótulo «Portfolio Dashboard» estaba en
+			 * `rgba(255,255,255,0.4)`, que sobre `#05050a` da **3,72:1** y no llega a
+			 * AA. Es lo primero que se ve de la app.
+			 */
+			#initial-splash .splash-tagline { color: #a8a8c0 !important; }
+
+			[data-theme='light'] #initial-splash { background: #f4f4f9 !important; }
+			[data-theme='light'] #initial-splash .splash-brand { color: #111118 !important; }
+			[data-theme='light'] #initial-splash .splash-tagline { color: #5c5c73 !important; }
+			[data-theme='light'] #initial-splash .splash-mesh { opacity: 0.35 !important; }
+			[data-theme='light'] #initial-splash .splash-track {
+				background: rgba(17, 17, 24, 0.08) !important;
+				border-color: rgba(17, 17, 24, 0.06) !important;
+			}
 		</style>
 
 		<!-- Initial Splash Screen (Static) -->
 		<div id="initial-splash" style="position: fixed; inset: 0; background: #05050a; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10000; transition: opacity 0.5s ease; font-family: 'Plus Jakarta Sans', sans-serif;">
-			<div style="position: absolute; inset: 0; background: radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.25) 0, transparent 50%), radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.15) 0, transparent 50%), radial-gradient(at 50% 50%, rgba(139, 92, 246, 0.1) 0, transparent 70%); filter: blur(60px); opacity: 0.8;"></div>
+			<div class="splash-mesh" style="position: absolute; inset: 0; background: radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.25) 0, transparent 50%), radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.15) 0, transparent 50%), radial-gradient(at 50% 50%, rgba(139, 92, 246, 0.1) 0, transparent 70%); filter: blur(60px); opacity: 0.8;"></div>
 			<div style="position: relative; z-index: 10; display: flex; flex-direction: column; align-items: center; gap: 2.5rem; width: 100%; max-width: 320px; padding: 2rem;">
 				<div style="position: relative; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center;">
 					<img src="/logo.png" alt="Logo" style="width: 80px; height: 80px; object-fit: contain; filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.3));" />
@@ -74,10 +150,10 @@
 					<!-- Marca del splash: `div`, no `h1`. Este bloque está en `app.html`, así que
 					     se sirve en TODAS las páginas; siendo `h1` daba dos encabezados de nivel
 					     uno en las 72 páginas prerenderizadas y Bing lo marcaba en todas. -->
-					<div style="font-size: 2.25rem; font-weight: 900; color: #fff; margin: 0; letter-spacing: -0.04em;">CoreBalance</div>
-					<p style="font-size: 0.85rem; font-weight: 500; color: rgba(255, 255, 255, 0.4); margin: 0.5rem 0 0 0; text-transform: uppercase; letter-spacing: 0.15em;">Portfolio Dashboard</p>
+					<div class="splash-brand" style="font-size: 2.25rem; font-weight: 900; color: #fff; margin: 0; letter-spacing: -0.04em;">CoreBalance</div>
+					<p class="splash-tagline" style="font-size: 0.85rem; font-weight: 500; margin: 0.5rem 0 0 0; text-transform: uppercase; letter-spacing: 0.15em;">Portfolio Dashboard</p>
 				</div>
-				<div style="width: 100%; height: 4px; background: rgba(255, 255, 255, 0.05); border-radius: 10px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.03);">
+				<div class="splash-track" style="width: 100%; height: 4px; background: rgba(255, 255, 255, 0.05); border-radius: 10px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.03);">
 					<style>
 						@keyframes splashProgress {
 							0% { width: 0%; }

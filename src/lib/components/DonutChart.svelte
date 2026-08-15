@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { Chart, DoughnutController, ArcElement, Tooltip, Legend } from 'chart.js';
 	import { CHART_NEUTRAL, MAX_CHART_SLICES } from '$lib/constants';
-	import { applyChartDefaults, tooltipStyle, motionAllowed } from '$lib/chart-theme';
+	import { applyChartDefaults, tooltipStyle, motionAllowed, seguirTema, chartSurface } from '$lib/chart-theme';
 	import { LL } from '$lib/i18n/i18n-svelte';
 
 	Chart.register(DoughnutController, ArcElement, Tooltip, Legend);
@@ -81,7 +81,10 @@
 					{
 						data: view.map((slice) => slice.value),
 						backgroundColor: view.map((slice) => slice.color),
-						borderColor: 'rgba(5, 5, 10, 0.9)',
+						// El borde de cada arco es el hueco entre porciones, así que va del
+						// color del lienzo: fijo a oscuro dibujaba un anillo negro alrededor
+						// de cada porción en tema claro.
+						borderColor: chartSurface(),
 						borderWidth: 2,
 						hoverBorderWidth: 2,
 						hoverOffset: 10,
@@ -120,7 +123,11 @@
 	onMount(() => {
 		applyChartDefaults();
 		chart = new Chart(canvas, createChartConfig());
-		return () => chart?.destroy();
+		const dejarDeSeguirTema = seguirTema(() => chart);
+		return () => {
+			dejarDeSeguirTema();
+			chart?.destroy();
+		};
 	});
 
 	$effect(() => {
@@ -236,13 +243,13 @@
 		font-weight: 700;
 		letter-spacing: 0.12em;
 		text-transform: uppercase;
-		color: rgba(255, 255, 255, 0.38);
+		color: var(--text-faint);
 	}
 
 	.center-value {
 		font-size: 0.92rem;
 		font-weight: 800;
-		color: #ffffff;
+		color: var(--text-primary);
 		letter-spacing: -0.01em;
 		line-height: 1.15;
 	}
@@ -275,8 +282,8 @@
 	}
 
 	.legend-item.is-hovered {
-		background: rgba(255, 255, 255, 0.05);
-		border-color: rgba(255, 255, 255, 0.1);
+		background: var(--bg-card-hover);
+		border-color: var(--border-subtle);
 	}
 
 	.legend-dot {
@@ -291,7 +298,7 @@
 		font-size: 0.72rem;
 		/* El texto lleva tinta de texto, no el color de la serie: el color lo
 		   carga el punto de al lado. */
-		color: rgba(160, 160, 200, 0.75);
+		color: var(--text-secondary);
 		font-weight: 600;
 		flex: 1;
 		overflow: hidden;
@@ -301,7 +308,7 @@
 
 	.legend-value {
 		font-size: 0.72rem;
-		color: #fff;
+		color: var(--text-primary);
 		font-weight: 700;
 		/* Sin `font-family` propia a propósito: `layout.css` ya le aplica
 		   `tabular-nums` sobre la fuente del proyecto. Antes forzaba

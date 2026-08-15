@@ -1,7 +1,7 @@
 {
 	"name": "corebalance",
 	"private": true,
-	"version": "1.16.0",
+	"version": "1.17.0",
 	"type": "module",
 	"scripts": {
 		"dev": "npm-run-all --parallel vite:dev typesafe-i18n",
@@ -27,6 +27,8 @@
 		"typesafe-i18n": "typesafe-i18n",
 		"test:coverage": "vitest run --coverage.enabled",
 		"docs:check": "node scripts/doc-drift.mjs",
+		"a11y:contrast": "node scripts/contraste.mjs",
+		"a11y:vivo": "node scripts/contraste-vivo.mjs",
 		"test:quality": "node scripts/test-quality.mjs",
 		"test:mutation": "npx --yes -p @stryker-mutator/core -p @stryker-mutator/vitest-runner stryker run"
 	},

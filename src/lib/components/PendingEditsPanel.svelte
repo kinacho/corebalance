@@ -82,7 +82,7 @@
 		font-size: 0.72rem;
 		font-weight: 700;
 		cursor: pointer;
-		background: rgba(255, 255, 255, 0.08);
+		background: var(--bg-card-hover);
 		border: 1px solid rgba(255, 255, 255, 0.14);
 		color: var(--text-primary);
 		transition: all 0.15s ease;

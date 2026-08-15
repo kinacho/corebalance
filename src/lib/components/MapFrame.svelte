@@ -145,7 +145,7 @@
 
 	.subtitle {
 		font-size: 0.72rem;
-		color: rgba(160, 160, 200, 0.6);
+		color: var(--text-muted);
 		margin: 0.15rem 0 0 0;
 		line-height: 1.4;
 		/* Alto de dos líneas reservado siempre. Los subtítulos de los dos mapas no
@@ -163,17 +163,17 @@
 		align-items: center;
 		justify-content: center;
 		padding: 7px;
-		background: rgba(255, 255, 255, 0.05);
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		background: var(--bg-card-hover);
+		border: 1px solid var(--border-subtle);
 		border-radius: 9px;
-		color: rgba(255, 255, 255, 0.55);
+		color: var(--text-muted);
 		cursor: pointer;
 		transition: all 0.18s ease;
 	}
 
 	.toggle:hover {
 		background: rgba(255, 255, 255, 0.1);
-		color: #fff;
+		color: var(--text-primary);
 	}
 
 	.toggle svg {

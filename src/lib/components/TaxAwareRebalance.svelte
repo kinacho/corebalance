@@ -277,7 +277,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(255, 255, 255, 0.05);
+		background: var(--bg-card-hover);
 		border-radius: 12px;
 		font-size: 1.25rem;
 		flex-shrink: 0;
@@ -293,7 +293,7 @@
 
 	.panel-subtitle {
 		font-size: 0.75rem;
-		color: rgba(160, 160, 200, 0.6);
+		color: var(--text-muted);
 		margin: 0.1rem 0 0 0;
 	}
 
@@ -303,18 +303,18 @@
 		padding: 0.25rem 0.6rem;
 		border-radius: 999px;
 		background: rgba(245, 158, 11, 0.15);
-		color: var(--accent-orange);
+		color: var(--accent-orange-ink);
 		white-space: nowrap;
 		font-variant-numeric: tabular-nums;
 	}
 
 	.badge.free {
 		background: rgba(16, 185, 129, 0.15);
-		color: var(--accent-green);
+		color: var(--accent-green-ink);
 	}
 
 	.chevron {
-		color: rgba(255, 255, 255, 0.3);
+		color: var(--text-faint);
 		transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 		width: 20px;
 		height: 20px;
@@ -356,7 +356,7 @@
 		color: var(--text-muted);
 		margin: 0;
 		padding: 1rem;
-		background: rgba(0, 0, 0, 0.2);
+		background: var(--bg-card-hover);
 		border-radius: 12px;
 	}
 
@@ -368,7 +368,7 @@
 		font-weight: 700;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
-		color: rgba(255, 255, 255, 0.4);
+		color: var(--text-faint);
 		margin: 0 0 0.75rem 0;
 	}
 
@@ -402,7 +402,7 @@
 
 	.move {
 		padding: 0.85rem;
-		background: rgba(0, 0, 0, 0.2);
+		background: var(--bg-card-hover);
 		border: 1px solid rgba(16, 185, 129, 0.2);
 		border-radius: 14px;
 		margin-bottom: 0.5rem;
@@ -452,7 +452,7 @@
 	}
 
 	.move-arrow {
-		color: rgba(255, 255, 255, 0.3);
+		color: var(--text-faint);
 		font-size: 1rem;
 		flex-shrink: 0;
 	}
@@ -463,7 +463,7 @@
 		justify-content: space-between;
 		margin-top: 0.6rem;
 		padding-top: 0.6rem;
-		border-top: 1px solid rgba(255, 255, 255, 0.05);
+		border-top: 1px solid var(--border-subtle);
 	}
 
 	.move-amount {
@@ -502,7 +502,7 @@
 	}
 
 	.tax-item strong.negative {
-		color: var(--accent-green);
+		color: var(--accent-green-ink);
 	}
 
 	.warning {
@@ -514,7 +514,7 @@
 
 	.warning strong {
 		font-size: 0.8rem;
-		color: #fda4af;
+		color: var(--state-negative);
 		display: block;
 		margin-bottom: 0.35rem;
 	}
@@ -529,12 +529,12 @@
 	.warning-note {
 		margin-top: 0.4rem !important;
 		font-size: 0.68rem !important;
-		color: rgba(160, 160, 200, 0.5) !important;
+		color: var(--text-muted) !important;
 	}
 
 	.summary {
 		padding: 0.85rem;
-		background: rgba(255, 255, 255, 0.03);
+		background: var(--bg-card);
 		border-radius: 14px;
 		display: flex;
 		flex-direction: column;
@@ -550,7 +550,7 @@
 
 	.summary-row.muted .summary-label {
 		font-size: 0.7rem;
-		color: rgba(160, 160, 200, 0.6);
+		color: var(--text-muted);
 	}
 
 	.summary-label {
@@ -561,11 +561,11 @@
 	.summary-figure {
 		font-size: 1.1rem;
 		font-weight: 700;
-		color: var(--accent-orange);
+		color: var(--accent-orange-ink);
 	}
 
 	.summary-figure.zero {
-		color: var(--accent-green);
+		color: var(--accent-green-ink);
 	}
 
 	.comparison-text {
@@ -578,18 +578,18 @@
 	.verdict {
 		font-size: 0.8rem;
 		font-weight: 600;
-		color: var(--accent-orange);
+		color: var(--accent-orange-ink);
 		margin: 0.5rem 0 0 0;
 		line-height: 1.55;
 	}
 
 	.verdict.free {
-		color: var(--accent-green);
+		color: var(--accent-green-ink);
 	}
 
 	.footnote {
 		font-size: 0.7rem;
-		color: rgba(160, 160, 200, 0.55);
+		color: var(--text-muted);
 		margin: 0;
 		line-height: 1.5;
 	}
@@ -604,11 +604,11 @@
 
 	.disclaimer {
 		font-size: 0.7rem;
-		color: rgba(160, 160, 200, 0.6);
+		color: var(--text-muted);
 		margin: 0;
 		line-height: 1.55;
 		padding-top: 0.75rem;
-		border-top: 1px solid rgba(255, 255, 255, 0.05);
+		border-top: 1px solid var(--border-subtle);
 	}
 
 	@media (max-width: 480px) {

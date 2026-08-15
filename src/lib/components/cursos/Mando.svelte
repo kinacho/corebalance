@@ -125,12 +125,12 @@
 	input[type='range']::-webkit-slider-runnable-track {
 		height: 6px;
 		border-radius: 3px;
-		background: rgba(255, 255, 255, 0.1);
+		background: var(--track);
 	}
 	input[type='range']::-moz-range-track {
 		height: 6px;
 		border-radius: 3px;
-		background: rgba(255, 255, 255, 0.1);
+		background: var(--track);
 	}
 	/* 22 px de pulgar: por debajo no se agarra con el dedo. */
 	input[type='range']::-webkit-slider-thumb {
@@ -158,7 +158,7 @@
 	.salida {
 		margin-top: 1.1rem;
 		padding-top: 1rem;
-		border-top: 1px solid rgba(255, 255, 255, 0.08);
+		border-top: 1px solid var(--border-subtle);
 		text-align: center;
 	}
 	.etiqueta-resultado {

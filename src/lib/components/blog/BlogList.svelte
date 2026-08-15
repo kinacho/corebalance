@@ -154,13 +154,13 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: #a78bfa;
+    color: var(--accent-violet-ink);
     white-space: nowrap;
   }
 
   .tools-subtitle {
     text-align: center;
-    color: var(--text-muted, rgba(160, 160, 200, 0.6));
+    color: var(--text-muted);
     font-size: 0.95rem;
     margin-bottom: 2rem;
   }
@@ -243,7 +243,7 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: #a78bfa;
+    color: var(--accent-violet-ink);
     background: rgba(139, 92, 246, 0.12);
     padding: 0.2rem 0.6rem;
     border-radius: 9999px;
@@ -253,14 +253,14 @@
   .tool-title {
     font-size: 1.1rem;
     font-weight: 700;
-    color: #fff;
+    color: var(--text-primary);
     margin: 0 0 0.4rem;
     line-height: 1.3;
   }
 
   .tool-description {
     font-size: 0.875rem;
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--text-muted);
     line-height: 1.5;
     margin: 0;
   }
@@ -268,7 +268,7 @@
   .tool-cta {
     font-size: 0.8rem;
     font-weight: 700;
-    color: #a78bfa;
+    color: var(--accent-violet-ink);
     white-space: nowrap;
     align-self: center;
     flex-shrink: 0;
@@ -280,8 +280,8 @@
   }
 
   .blog-page {
-    background: var(--bg-primary, #05050a);
-    color: var(--text-primary, #ffffff);
+    background: var(--bg-primary);
+    color: var(--text-primary);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -308,7 +308,7 @@
     font-weight: 800;
     margin-bottom: 1rem;
     letter-spacing: -0.03em;
-    background: linear-gradient(135deg, #ffffff 30%, #a78bfa 100%);
+    background: linear-gradient(135deg, var(--text-primary) 30%, var(--accent-violet-ink) 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -321,7 +321,7 @@
   }
 
   .subtitle {
-    color: var(--text-muted, rgba(160, 160, 200, 0.8));
+    color: var(--text-muted);
     font-size: 1.15rem;
     max-width: 600px;
     margin: 0 auto;
@@ -329,8 +329,8 @@
   }
 
   .no-posts-card {
-    background: var(--bg-card, rgba(255, 255, 255, 0.03));
-    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
     border-radius: 24px;
     padding: 4rem 2rem;
     text-align: center;
@@ -339,7 +339,7 @@
   }
 
   .no-posts-card p {
-    color: var(--text-muted, rgba(160, 160, 200, 0.8));
+    color: var(--text-muted);
     margin-bottom: 1.5rem;
   }
 
@@ -350,8 +350,8 @@
   }
 
   .post-card {
-    background: var(--bg-card, rgba(255, 255, 255, 0.02));
-    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
     border-radius: 20px;
     cursor: pointer;
     overflow: hidden;
@@ -384,7 +384,7 @@
 
   .post-card:hover {
     transform: translateY(-4px);
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--bg-card);
     border-color: rgba(139, 92, 246, 0.2);
     box-shadow: 0 12px 30px rgba(139, 92, 246, 0.08);
   }
@@ -404,7 +404,7 @@
 
   .post-meta {
     font-size: 0.85rem;
-    color: var(--text-muted, rgba(160, 160, 200, 0.6));
+    color: var(--text-muted);
     margin-bottom: 1rem;
     display: flex;
     flex-wrap: wrap;
@@ -416,18 +416,18 @@
     font-weight: 700;
     line-height: 1.4;
     margin: 0 0 1rem;
-    color: #fff;
+    color: var(--text-primary);
     transition: color 0.2s ease;
   }
 
   .post-card:hover .post-title {
-    color: #a78bfa;
+    color: var(--accent-violet-ink);
   }
 
   .post-description {
     font-size: 0.95rem;
     line-height: 1.6;
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--text-secondary);
     margin: 0 0 1.5rem;
     flex-grow: 1;
   }
@@ -442,14 +442,14 @@
   .tag-badge {
     font-size: 0.75rem;
     font-weight: 600;
-    color: #60a5fa;
+    color: var(--accent-blue-ink);
     background: rgba(59, 130, 246, 0.1);
     padding: 0.25rem 0.6rem;
     border-radius: 9999px;
   }
 
   .card-footer {
-    border-top: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.05));
+    border-top: 1px solid var(--border-subtle);
     padding-top: 1.25rem;
     margin-top: auto;
   }
@@ -457,7 +457,7 @@
   .read-link {
     font-size: 0.9rem;
     font-weight: 700;
-    color: var(--accent-blue, #3b82f6);
+    color: var(--accent-blue-ink);
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
@@ -465,7 +465,7 @@
   }
 
   .post-card:hover .read-link {
-    color: #60a5fa;
+    color: var(--accent-blue-ink);
   }
 
   .arrow-icon {
@@ -477,9 +477,9 @@
   }
 
   .btn-secondary {
-    background: rgba(255, 255, 255, 0.05);
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--bg-card-hover);
+    color: var(--text-primary);
+    border: 1px solid var(--border-subtle);
     padding: 0.75rem 1.5rem;
     border-radius: 12px;
     font-weight: 600;

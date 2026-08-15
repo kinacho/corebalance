@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Logo from '$lib/components/Logo.svelte';
   import { portfolio } from '$lib/stores/portfolio.svelte';
   import { ui } from '$lib/stores/ui.svelte';
   import { LL, locale } from '$lib/i18n/i18n-svelte';
@@ -12,7 +13,7 @@
     <div class="footer-grid">
       <div class="brand-col">
         <div class="logo-group">
-          <img src="/logo.png?v=2" alt="CoreBalance" class="logo" width="36" height="36" loading="lazy" />
+          <Logo size={36} clase="logo" />
           <span class="brand-name">CoreBalance</span>
         </div>
         <p>{$LL.footer.tagline()}</p>
@@ -105,8 +106,8 @@
 <style>
   .landing-footer {
     padding: 80px 1.5rem 40px;
-    background: #05050a;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    background: var(--bg-primary);
+    border-top: 1px solid var(--border-subtle);
   }
 
   .container {
@@ -134,13 +135,13 @@
     margin-bottom: 1.5rem;
   }
 
-  .logo {
+  .logo-group :global(.logo) {
     width: 32px;
     height: 32px;
   }
 
   @media (min-width: 768px) {
-    .logo {
+    .logo-group :global(.logo) {
       width: 36px;
       height: 36px;
     }
@@ -149,18 +150,18 @@
   .brand-name {
     font-size: 1.25rem;
     font-weight: 800;
-    color: #fff;
+    color: var(--text-primary);
   }
 
   .brand-col p {
-    color: rgba(160, 160, 200, 0.5);
+    color: var(--text-muted);
     line-height: 1.6;
     max-width: 300px;
     margin-bottom: 2rem;
   }
 
   h3 {
-    color: #fff;
+    color: var(--text-primary);
     font-weight: 700;
     margin-bottom: 1.5rem;
     font-size: 1rem;
@@ -177,7 +178,7 @@
   }
 
   li a, .footer-btn {
-    color: rgba(160, 160, 200, 0.5);
+    color: var(--text-muted);
     text-decoration: none;
     font-size: 0.9rem;
     transition: color 0.2s ease;
@@ -193,12 +194,12 @@
   }
 
   li a:hover, .footer-btn:hover {
-    color: #3b82f6;
+    color: var(--accent-blue-ink);
   }
 
   .footer-bottom {
     padding-top: 2rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.03);
+    border-top: 1px solid var(--border-subtle);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -215,13 +216,13 @@
   }
 
   .footer-bottom p {
-    color: rgba(160, 160, 200, 0.3);
+    color: var(--text-faint);
     font-size: 0.85rem;
     margin: 0;
   }
 
   .legal-notice {
-    color: rgba(160, 160, 200, 0.2);
+    color: var(--text-faint);
     font-size: 0.75rem;
   }
 </style>

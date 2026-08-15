@@ -3,12 +3,189 @@
 /* ===== Custom Base Styles for CoreBalance ===== */
 
 @layer base {
+	/*
+	 * ⚠️ Los dos temas se definen aquí y en ningún otro sitio. `:root` es el oscuro
+	 * y también el respaldo sin JS —que es el estado que la app tenía siempre, así
+	 * que nadie pierde nada—; `:root[data-theme='light']` es el claro. Quien decide
+	 * cuál se aplica es el script en línea de `app.html`, que lee `localStorage`
+	 * **antes de pintar**. Sin nada guardado sirve el oscuro: el predeterminado es
+	 * de la aplicación y **no** se consulta `prefers-color-scheme`, así que `:root`
+	 * no es solo el respaldo sin JS, es lo que ve quien nunca ha tocado el botón.
+	 *
+	 * ⚠️ **No puede venir de una cookie**, y no es preferencia: `hooks.server.ts`
+	 * pone `Vary: Cookie` solo en `/dashboard` y `/api` para que las páginas
+	 * públicas sigan siendo cacheables en CDN. Un tema por cookie obligaría a
+	 * `Vary: Cookie` en todo el sitio y tiraría esa caché, que es la mayor parte
+	 * del sitio y todo el SEO.
+	 */
 	:root {
+		color-scheme: dark;
+
 		--bg-primary: #05050a;
+
+		/*
+		 * ⚠️ **Este valor no se toca, y la razón no se ve mirándolo.**
+		 * `rgba(255,255,255,0.03)` sobre `#05050a` compone **exactamente `#0d0d12`**,
+		 * que es la superficie contra la que están validadas `ASSET_COLORS`,
+		 * `CATEGORY_COLORS`, `BLOCK_HUES`, la rampa de desviación y el par
+		 * verde/rojo del histórico — cada cifra de ΔE escrita en `constants.ts` y
+		 * `chart-theme.ts` la da por supuesta.
+		 *
+		 * Subirlo para que la tarjeta se distinga del fondo (medido: 1,05, o sea
+		 * nada) invalidaría todas esas mediciones de una vez. La legibilidad de la
+		 * tarjeta como contenedor se resuelve por el **borde**, que además es lo que
+		 * WCAG 1.4.11 pide: 3:1 en el límite, no en el relleno. Ver `--border-strong`.
+		 */
 		--bg-card: rgba(255, 255, 255, 0.03);
+
+		/*
+		 * ⚠️ **Los tres fondos que faltaban, y sin ellos el tema claro no existía por
+		 * mucho que los textos conmutaran.**
+		 *
+		 * Medido en el navegador con el tema claro puesto: `--bg-primary` valía
+		 * `#f4f4f9`, `--text-primary` valía `#111118`, `color-scheme` decía `light`
+		 * — todo correcto— y la página salía **negra**, con 234 nodos de texto por
+		 * debajo de su umbral. La causa era una sola regla: `.landing-page` pintaba
+		 * `background: #05050a` opaco por encima del fondo bueno. Un literal tapando
+		 * el tema entero.
+		 *
+		 * ⚠️ **Esto no lo veía ni el analizador estático ni la revisión del CSS**, que
+		 * miran declaraciones sueltas y no quién queda encima de quién. Lo cazó abrir
+		 * la página. Es literalmente la lección que este repo ya tiene escrita sobre
+		 * la leyenda que contradecía al gráfico: se encontró mirando la captura.
+		 *
+		 * - `--bg-card-hover`: el escalón de superficie de «encima» y «activo».
+		 * - `--bg-elevated`: las secciones que alternan de tono en la landing.
+		 * - `--bg-scrim`: la barra de navegación translúcida sobre el contenido.
+		 * - `--bg-overlay`: los paneles casi opacos que van por encima de todo.
+		 *
+		 * ⚠️ **Y con ellos vinieron 165 fondos y 159 bordes que estaban escritos como
+		 * blanco translúcido a mano** (`rgba(255,255,255,0.03…0.08)`). Sobre negro eso
+		 * aclara y hace una tarjeta; sobre blanco no es nada, así que en tema claro
+		 * las cuatro tarjetas de métricas del dashboard **desaparecían** — cuatro
+		 * cifras flotando sin caja. Visto en la captura, no en el código.
+		 */
+		--bg-card-hover: rgba(255, 255, 255, 0.06);
+
+		/*
+		 * La sombra de la maqueta del hero. En oscuro es negro al 60 %, que sobre
+		 * fondo oscuro apenas se ve y da profundidad; sobre fondo claro sería una
+		 * mancha sucia, así que en claro es mucho más suave y con menos alcance.
+		 */
+		--mockup-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04), 0 24px 48px rgba(0, 0, 0, 0.6),
+			0 8px 16px rgba(0, 0, 0, 0.3);
+
+		--bg-elevated: #0f0f14;
+		--bg-scrim: rgba(5, 5, 10, 0.75);
+		--bg-overlay: rgba(15, 15, 20, 0.95);
+
+		/*
+		 * ⚠️ **La escala de texto tiene cuatro peldaños porque tenía dos, y el hueco
+		 * entre ellos es lo que cada componente rellenó a mano hacia abajo.**
+		 *
+		 * Medido antes de esto: **212 declaraciones `color:` por debajo de AA
+		 * (4,5:1), 105 de ellas por debajo incluso de 3:1** —el mínimo para texto
+		 * grande— sobre 719 en total. Después del barrido quedan **9**, todas
+		 * acentos translúcidos sueltos. El valor más repetido era
+		 * `rgba(160,160,200,0.6)`, 40 usos a **3,45:1**.
+		 *
+		 * ⚠️ La primera medición dio 286/189 y **era mentira por un regex**: `\bcolor:`
+		 * también casa `border-color:` y `background-color:`, así que contaba bordes
+		 * como si fueran texto. La cifra buena exige que `color` no vaya precedido de
+		 * guion. Merece la pena saberlo porque el mismo error, en el codemod, llegó a
+		 * convertir 23 bordes en tokens de texto antes de que un control lo cazara —
+		 * y es el fallo que la guarda de `scripts/contraste.mjs` tiene que no repetir.
+		 *
+		 * Y los tokens estaban bien:
+		 * `--text-muted` daba 5,42 y `--text-primary` 20,3. El sistema no fallaba;
+		 * el código lo rodeaba, escribiendo versiones más apagadas del mismo color
+		 * porque no había peldaño intermedio que usar.
+		 *
+		 * Ratios sobre fondo / tarjeta / la zona más clara de la malla:
+		 *   primary    20,34 / 19,38 / 16,63
+		 *   secondary  14,29 / 13,62 / 11,68
+		 *   muted       8,74 /  8,33 /  7,15
+		 *   faint       6,05 /  5,76 /  4,94   ← el peldaño más tenue sigue sobre AA
+		 *
+		 * ⚠️ **Hex sólidos, no `rgba` con alfa, y esa es la corrección de fondo.**
+		 * El alfa se compone con lo que haya detrás —tarjeta, malla, modal,
+		 * tooltip— así que el mismo token da un ratio distinto en cada sitio y
+		 * ninguno es el que se midió. Y se **acumula** con `opacity` en un padre:
+		 * el viejo `--text-muted` bajo `opacity: 0.5` caía a 2,11 sin que nadie
+		 * escribiera un color nuevo.
+		 */
+
+		/*
+		 * ⚠️ **Las sombras de las tarjetas móviles, y existen porque solo se pintan
+		 * en móvil — que es justo por lo que nadie las había visto.**
+		 *
+		 * `.history-section`, `.charts-row-card` y la píldora de pestañas declaran
+		 * su sombra en la regla **base**, y `@media (min-width: 1024px)` la pone a
+		 * `none`. O sea que a 1440 px, donde se midió todo, no existen. Y eran negro
+		 * al 40-50 %: profundidad sobre fondo oscuro, mancha sucia sobre claro.
+		 */
+		--card-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+		--pill-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+
 		--text-primary: #ffffff;
-		--text-muted: rgba(160, 160, 200, 0.8);
+		--text-secondary: #d7d7e6;
+		--text-muted: #a8a8c0;
+		--text-faint: #8a8aa3;
+
 		--border-subtle: rgba(255, 255, 255, 0.08);
+
+		/*
+		 * El borde que WCAG 1.4.11 exige a 3:1: límites de controles interactivos,
+		 * estados activos y —sobre todo— el anillo de foco. Medido 3,39 sobre el
+		 * fondo y 3,23 sobre la tarjeta. `--border-subtle` se queda donde estaba
+		 * (1,16) porque es decorativo y la norma no se lo pide.
+		 */
+		--border-strong: #61617a;
+
+		/*
+		 * ⚠️ **El carril de un deslizador, y existe porque estaba escrito como blanco
+		 * al 10 % en cuatro sitios.**
+		 *
+		 * Sobre fondo oscuro eso es un surco tenue; sobre claro **no es nada**, así que
+		 * en tema claro los controles de las lecciones y de las calculadoras se
+		 * quedaban en un pomo azul flotando sin carril. Un control cuyo recorrido no se
+		 * ve no comunica que se pueda arrastrar.
+		 */
+		--track: rgba(255, 255, 255, 0.14);
+
+		/*
+		 * ⚠️ **Los tintes de los bloques didácticos de los cursos, por tema.**
+		 *
+		 * El aviso iba a `rgba(245,158,11,0.05)` fijo. Sobre negro, un 5 % de ámbar es
+		 * un panel claramente encendido; sobre blanco es casi nada — y son las 34
+		 * lecciones, o sea el recurso didáctico principal del sitio.
+		 *
+		 * ⚠️ Ojo al medirlo: un tinte de color se ve por el **tono**, no por la
+		 * luminancia, así que un detector de contraste lo marca aunque la caja se
+		 * distinga perfectamente. Lo que de verdad la delimita sobre claro es el
+		 * **borde**, y por eso sube más que el relleno.
+		 */
+
+		/*
+		 * ⚠️ **Los dos extremos de la rampa de , y son tokens porque la
+		 * dirección de la mezcla se invierte con el tema.**
+		 *
+		 * La rampa mezclaba el acento contra la superficie, y eso **siempre** resta
+		 * contraste: en oscuro tira hacia negro y en claro hacia blanco, así que el
+		 * peldaño más flojo caía por debajo de 3:1 —el mínimo de WCAG 1.4.11 para un
+		 * objeto gráfico— hiciera lo que hiciera con el suelo. Medido subiéndolo a 62,
+		 * 72 y 80 %: 2,90 · 2,76 · 2,86. No es cuestión de afinar el número.
+		 *
+		 * Ahora se mezcla **entre dos extremos que pasan los dos**, y cada tema tiene
+		 * los suyos. Oscuro: 3,93 → 11,28. Claro: 10,36 → 3,68.
+		 */
+		--ramp-from: #2563eb;
+		--ramp-to: #93c5fd;
+
+		--tint-warn: rgba(245, 158, 11, 0.05);
+		--tint-warn-line: rgba(245, 158, 11, 0.22);
+		--tint-ok: rgba(5, 150, 105, 0.05);
+		--tint-ok-line: rgba(5, 150, 105, 0.2);
 
 		/*
 		 * ⚠️ El cuerpo más pequeño que se permite, y existe porque no había ninguno.
@@ -35,9 +212,84 @@
 		 * los donuts los validados, así que «Acciones» salía ámbar en un panel y
 		 * verde en el de al lado. Un tono por entidad, en un sitio.
 		 */
+		/*
+		 * ⚠️ **El texto que va ENCIMA de un acento, y es blanco en los dos temas.**
+		 *
+		 * El patrón `background: var(--accent-blue); color: var(--text-on-accent)` estaba
+		 * escrito en una docena de sitios y funcionaba **solo en oscuro**, por
+		 * coincidencia: allí `--text-primary` es blanco. En claro pasa a ser `#111118`,
+		 * o sea tinta casi negra sobre azul oscuro — medido en el navegador, **2,8:1**
+		 * en el botón principal y en el distintivo «Nuevo».
+		 *
+		 * No es `--text-primary` con otro nombre: es el color de un texto cuyo fondo no
+		 * es la página sino una marca, así que no sigue al tema, sigue al acento.
+		 * Blanco sobre `#2563eb` da 5,17 y sobre `#1d4ed8` 6,70.
+		 */
+		--text-on-accent: #ffffff;
+
 		--accent-blue: #2563eb;
 		--accent-green: #059669;
 		--accent-orange: #d97706;
+
+		/*
+		 * ⚠️ **El acento como MARCA y el acento como TEXTO no pueden ser el mismo
+		 * valor, y descubrirlo costó introducir el fallo primero.**
+		 *
+		 * Los tres de arriba están elegidos para pintar un arco o una barra sobre
+		 * `#0d0d12`, y para eso les basta con 3:1. Como texto necesitan 4,5, y
+		 * medidos contra el peor de los tres fondos —la zona clara de la malla—
+		 * `--accent-blue` da **3,22** y `--accent-green` **4,41**: los dos fallan.
+		 *
+		 * El barrido que trajo esto lo empeoró antes de arreglarlo: sustituyó
+		 * `#3b82f6` (4,52) por `var(--accent-blue)` (3,22) en 33 declaraciones de
+		 * texto, o sea que «migrar al token» bajó el contraste. Y la primera versión
+		 * de `scripts/contraste.mjs` no lo vio porque **daba los tokens por buenos
+		 * sin medirlos** — la guarda validaba su propia suposición. Ahora resuelve
+		 * el valor de cada token y lo mide como cualquier otro.
+		 *
+		 * Estos son un paso más claros de la misma familia, medidos contra el peor
+		 * fondo: azul 6,54 · verde 6,55 · naranja 7,74. **Ninguno es un color de
+		 * estado**: `#34d399` habría servido para el verde y es exactamente
+		 * `STATE_POSITIVE`, que este proyecto reserva para «sube» y no presta a
+		 * nada más.
+		 */
+
+		/*
+		 * ⚠️ **Un tercer valor por tono, y hace falta: marca, tinta y superficie son
+		 * tres papeles con tres umbrales distintos.**
+		 *
+		 * `--accent-green` pinta un arco (le basta 3:1 contra el lienzo), `-ink` es
+		 * texto sobre la página (4,5:1 contra el fondo) y esto es un **relleno con
+		 * texto encima**, que se mide al revés: contra el blanco que lleva dentro.
+		 * Medido, blanco sobre `--accent-green` (#059669) da **3,77** y sobre
+		 * `--accent-orange` (#d97706) **3,19** — los dos fallan, y lo cazó el test de
+		 * la guarda, no la vista. El azul no necesita variante: blanco sobre #2563eb
+		 * da 5,17.
+		 *
+		 * Son pasos más oscuros de la misma familia, fuera de `ASSET_COLORS`, para no
+		 * devolverle al panel el defecto de «el verde significa seis cosas».
+		 */
+		/*
+		 * Superficie destructiva: un relleno rojo con texto blanco encima. `#ef4444`
+		 * daba **3,76:1** con el blanco, así que hace falta un paso más profundo — el
+		 * mismo razonamiento que `--surface-green`. Vale igual en los dos temas porque
+		 * lo que lleva encima es blanco, no la tinta del tema.
+		 */
+		--surface-danger: #b91c1c;
+		--surface-green: #047857;
+		--surface-orange: #b45309;
+
+		--accent-blue-ink: #60a5fa;
+		--accent-green-ink: #10b981;
+		--accent-orange-ink: #f59e0b;
+
+		/*
+		 * El violeta no es un acento del sistema —no hay `--accent-violet`— pero sí
+		 * aparece 23 veces como texto, siempre en literales pensados para fondo
+		 * oscuro (`#a78bfa`, `#c4b5fd`). Existe como tinta para que esos 23 sitios
+		 * tengan a dónde ir y conmuten con el tema. 6,11 en oscuro, 5,91 en claro.
+		 */
+		--accent-violet-ink: #a78bfa;
 
 		/*
 		 * Estado (sube/baja), espejo de `STATE_POSITIVE` / `STATE_NEGATIVE`. La
@@ -47,17 +299,157 @@
 		 */
 		--state-positive: #34d399;
 		--state-negative: #f43f5e;
+
+		/*
+		 * ⚠️ **El logo tiene sus propios tonos porque los de la marca son neón.**
+		 *
+		 * Medido: `#5eead4` da **1,35:1 sobre `#f4f4f9`**. Sobre el fondo oscuro es
+		 * una marca luminosa; sobre claro, prácticamente nada — y lo único que se
+		 * leía era el contorno azul oscuro que el PNG llevaba horneado, que es lo que
+		 * hacía que el logo se viera sucio en tema claro.
+		 *
+		 * En claro es el mismo par un par de pasos más oscuro (3,4:1 y 3,4:1), que es
+		 * lo que WCAG 1.4.11 le pide a un objeto gráfico. Los consume
+		 * `Logo.svelte`, que va en línea justamente para poder leerlos.
+		 */
+		--logo-from: #5eead4;
+		--logo-to: #22c55e;
 		--state-positive-soft: rgba(52, 211, 153, 0.12);
 		--state-negative-soft: rgba(244, 63, 94, 0.12);
 
 		/*
-		 * Cromo de los gráficos. Rejilla y ejes van recesivos a propósito: lo que
-		 * tiene que verse es el dato, no el andamio.
+		 * Cromo de los gráficos. La rejilla sigue recesiva a propósito —lo que tiene
+		 * que verse es el dato, no el andamio— y puede: es una línea decorativa, y
+		 * WCAG no le pide contraste a eso.
+		 *
+		 * ⚠️ **`--chart-axis` sí ha subido, de `0.45` a `0.6` (4,46 → 7,33), porque
+		 * no es andamio: son los rótulos de los ejes, y un rótulo es texto.** Estaba
+		 * por debajo de AA. Es la única parte del cromo que cambia, y cambia por eso.
 		 */
 		--chart-grid: rgba(255, 255, 255, 0.05);
-		--chart-axis: rgba(255, 255, 255, 0.45);
+		--chart-axis: rgba(255, 255, 255, 0.6);
 		--chart-ink: rgba(255, 255, 255, 0.75);
 		--chart-surface: #0d0d12;
+	}
+
+	/*
+	 * ===== Tema claro =====
+	 *
+	 * ⚠️ **Los acentos no se heredan del oscuro, se han vuelto a elegir, porque
+	 * medidos sobre claro fallaban como texto**: el naranja `#d97706` daba 2,98, el
+	 * verde `#059669` 3,53, `STATE_POSITIVE` `#34d399` un 1,80, y hasta el azul
+	 * `#2563eb` pasaba raspando con 4,84. Un tema claro que reutilice la paleta
+	 * oscura es un tema claro ilegible.
+	 *
+	 * Ratios contra el **peor** de los tres fondos claros (`#f4f4f9`, `#ffffff` y
+	 * `#e8eaf2`, que es la zona más oscura que puede dejar la malla):
+	 *   text-primary   15,65      accent-blue     5,58     state-positive  5,03
+	 *   text-secondary  9,24      accent-green    5,36     state-negative  5,23
+	 *   text-muted      5,41      accent-orange   4,80
+	 *   text-faint      4,65
+	 *
+	 * ⚠️ `--text-faint` empezó en `#6b6b82` y **lo tumbó su propio test**: daba 4,85
+	 * contra el fondo de página y **4,32 contra la malla**, o sea que el tema claro
+	 * habría salido con su peldaño más tenue por debajo de AA en cuanto la cartera
+	 * subiera o bajara ese día. Medir contra un solo fondo era el error.
+	 *
+	 * ⚠️ **`ASSET_COLORS`, `CATEGORY_COLORS` y `BLOCK_HUES` son harina de otro
+	 * costal y NO están aquí.** Son paletas de datos validadas con las seis
+	 * comprobaciones del *skill* `dataviz` contra `#0d0d12` y solo contra ella; sus
+	 * restricciones de adyacencia no se heredan de un fondo al otro. Viven en
+	 * `constants.ts`, que es donde se resuelven por tema.
+	 */
+	:root[data-theme='light'] {
+		color-scheme: light;
+
+		--bg-primary: #f4f4f9;
+
+		/*
+		 * Sólido, no translúcido como en oscuro. En oscuro la tarjeta deja pasar la
+		 * malla a propósito; en claro eso deja la superficie a merced del P&L del
+		 * día (ver `.background-mesh`) y con ella el contraste de todo lo que lleva
+		 * encima. `#ffffff` es además la superficie contra la que se validan las
+		 * paletas de datos en claro, y para eso tiene que ser un valor y no un rango.
+		 */
+		--bg-card: #ffffff;
+
+		/*
+		 * En claro la jerarquía se invierte: la superficie elevada es la **blanca** y
+		 * el fondo de página el gris. Por eso `--bg-elevated` no es «un paso más
+		 * claro» sino blanco puro, igual que la tarjeta.
+		 */
+		--bg-card-hover: rgba(17, 17, 24, 0.05);
+		--mockup-shadow: 0 0 0 1px rgba(17, 17, 24, 0.05), 0 20px 40px rgba(17, 17, 24, 0.12),
+			0 6px 12px rgba(17, 17, 24, 0.06);
+		--bg-elevated: #ffffff;
+		--bg-scrim: rgba(244, 244, 249, 0.8);
+		--bg-overlay: rgba(255, 255, 255, 0.96);
+
+		--card-shadow: 0 6px 20px rgba(17, 17, 24, 0.08);
+		--pill-shadow: 0 8px 20px rgba(17, 17, 24, 0.1), 0 0 0 1px rgba(17, 17, 24, 0.04) inset;
+
+		--text-primary: #111118;
+		--text-secondary: #3a3a4d;
+		--text-muted: #5c5c73;
+		--text-faint: #66667c;
+
+		/*
+		 * ⚠️ **Más marcado que su gemelo oscuro (0,16 contra 0,08), y hace falta.**
+		 *
+		 * En oscuro una tarjeta se distingue porque su relleno *aclara* el fondo; en
+		 * claro el relleno es blanco sobre gris claro y eso es 1,07 de contraste, o
+		 * sea nada. Visto en pantalla: las cuatro tarjetas de métricas del dashboard
+		 * simplemente **desaparecían**, quedaban cuatro cifras flotando. El borde es
+		 * lo único que queda para decir dónde acaba una tarjeta y empieza otra — que
+		 * es exactamente la mitad estructural de «la web necesita contraste», la que
+		 * no va de texto.
+		 */
+		--border-subtle: rgba(17, 17, 24, 0.16);
+		--border-strong: #8a8aa0;
+		--track: rgba(17, 17, 24, 0.18);
+
+		--ramp-from: #1e3a8a;
+		--ramp-to: #3b82f6;
+
+		--tint-warn: rgba(245, 158, 11, 0.16);
+		--tint-warn-line: rgba(180, 83, 9, 0.45);
+		--tint-ok: rgba(5, 150, 105, 0.12);
+		--tint-ok-line: rgba(4, 108, 78, 0.4);
+
+		--text-on-accent: #ffffff;
+
+		--accent-blue: #1d4ed8;
+		--accent-green: #046c4e;
+		--accent-orange: #9a5408;
+
+		/*
+		 * En claro la tinta y la marca **sí** coinciden, y no por casualidad: sobre
+		 * blanco el problema se invierte —lo que falla es lo demasiado claro— y
+		 * estos tres ya se eligieron oscuros para pasar como texto (6,1 / 5,9 / 5,3).
+		 * Existen igualmente como tokens propios para que un componente pueda pedir
+		 * «tinta de acento» sin saber en qué tema está.
+		 */
+		--surface-danger: #b91c1c;
+		--surface-green: #046c4e;
+		--surface-orange: #9a5408;
+
+		--accent-blue-ink: #1d4ed8;
+		--accent-green-ink: #046c4e;
+		--accent-orange-ink: #9a5408;
+		--accent-violet-ink: #6d28d9;
+
+		--state-positive: #03714f;
+		--state-negative: #be123c;
+
+		--logo-from: #0d9488;
+		--logo-to: #059669;
+		--state-positive-soft: rgba(3, 113, 79, 0.1);
+		--state-negative-soft: rgba(190, 18, 60, 0.1);
+
+		--chart-grid: rgba(17, 17, 24, 0.08);
+		--chart-axis: rgba(17, 17, 24, 0.62);
+		--chart-ink: rgba(17, 17, 24, 0.8);
+		--chart-surface: #ffffff;
 	}
 
 	* {
@@ -113,6 +505,48 @@
 		transform: scale(0.97);
 	}
 
+	/*
+	 * ⚠️ **El anillo de foco, global, porque ocho componentes lo mataban y solo dos
+	 * ponían algo en su lugar.**
+	 *
+	 * `AssetCard`, `Header`, `CompactAssetRow`, `AssetSearch`, `ColumnMapper` y
+	 * `CrisisSimulator` declaraban `outline: none` **en la regla base** —no en
+	 * `:focus`— sin reemplazo. Eso no es quitarle el anillo a un estado: es que el
+	 * elemento no puede dibujarlo nunca. Fallo de WCAG 2.4.7 y, en la práctica, la
+	 * app no se podía recorrer con teclado: se navegaba a ciegas.
+	 *
+	 * `:focus-visible` y no `:focus`, que es lo que evita que el anillo salte al
+	 * hacer clic con el ratón —la razón por la que se escribe `outline: none` en
+	 * primer lugar—. `--border-strong` está medido para los 3:1 que pide WCAG
+	 * 1.4.11, y el `outline-offset` lo separa del borde propio del control para que
+	 * se lea como anillo y no como un borde más grueso.
+	 *
+	 * ⚠️ **`!important`, y aquí sí está justificado.** Ocho de esos veinte
+	 * `outline: none` están dentro de una regla `:focus` (`.modern-input:focus`,
+	 * especificidad 0-2-0) y esta regla global es 0-1-0, así que **sin
+	 * `!important` los componentes ganan y el anillo sigue sin existir** — el
+	 * arreglo parecería aplicado y no lo estaría, que es la forma de fallo que este
+	 * repo persigue. La alternativa era editar quince ficheros y confiar en que
+	 * nadie escriba el número dieciséis. Un `!important` en una garantía de
+	 * accesibilidad dice lo que se quiere decir: esto no se anula desde un
+	 * componente. Mismo criterio que el `display: none !important` del splash.
+	 */
+	:focus-visible {
+		outline: 2px solid var(--border-strong) !important;
+		outline-offset: 2px !important;
+		border-radius: 4px;
+	}
+
+	/* Los controles que ya tienen su propio radio no deben perderlo al enfocarse. */
+	button:focus-visible,
+	a:focus-visible,
+	input:focus-visible,
+	select:focus-visible,
+	textarea:focus-visible,
+	[role="button"]:focus-visible {
+		border-radius: inherit;
+	}
+
 	.background-mesh {
 		position: fixed;
 		top: 0;
@@ -140,6 +574,24 @@
 			opacity: 0.8;
 			animation-duration: 40s; /* Más lenta en móvil */
 		}
+	}
+
+	/*
+	 * ⚠️ **La malla y el ruido están calibrados para pintar sobre negro, y en claro
+	 * los mismos valores hacen otra cosa.** Los seis gradientes se mezclan sobre
+	 * `#05050a` a alfas de 0,15–0,22, que sobre blanco salen como tintes saturados
+	 * en vez de como una luz de fondo; y el grano del `feTurbulence`, que en oscuro
+	 * aclara, en claro oscurece y se come el contraste que acabamos de ganar.
+	 *
+	 * Se bajan los dos en lugar de reelegir seis colores: la malla es decoración y
+	 * el trabajo de esta tanda es el contraste, no el rediseño.
+	 */
+	:root[data-theme='light'] .background-mesh {
+		opacity: 0.4;
+	}
+
+	:root[data-theme='light'] .noise-overlay {
+		opacity: 0.02;
 	}
 
 	@media (prefers-reduced-motion: reduce) {
@@ -196,7 +648,7 @@
 	}
 
 	.market-dot.open {
-		background: #10b981;
+		background: var(--accent-green);
 		box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
 	}
 
@@ -208,7 +660,7 @@
 		width: 100%;
 		height: 100%;
 		border-radius: 50%;
-		background: #10b981;
+		background: var(--accent-green);
 		animation: pulse-dot 2.5s infinite;
 	}
 

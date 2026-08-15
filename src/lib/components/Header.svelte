@@ -1,10 +1,12 @@
 <script lang="ts">
+	import Logo from './Logo.svelte';
 	import { fade, fly, scale } from 'svelte/transition';
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { ui } from '$lib/stores/ui.svelte';
 	import { onMount } from 'svelte';
 	import { formatDateTime } from '$lib/utils';
 	import SyncModal from './SyncModal.svelte';
+	import ThemeToggle from './ThemeToggle.svelte';
 	import { switchLocale } from '$lib/i18n/i18n-custom';
 	import { locale, LL } from '$lib/i18n/i18n-svelte';
 	import type { Locales } from '$lib/i18n/i18n-types';
@@ -118,7 +120,7 @@
 		}}
 		aria-label="Ir a inicio"
 	>
-		<img src="/logo.png?v=2" alt="CoreBalance Logo" class="logo-img" width="48" height="48" fetchpriority="high" loading="eager" />
+		<Logo size={48} clase="logo-img" />
 		<div class="logo-group">
 			<h1 class="logo-title">CoreBalance</h1>
 			<p class="logo-subtitle">{portfolio.targetLabel}</p>
@@ -174,6 +176,8 @@
 					</svg>
 				{/if}
 			</button>
+
+			<ThemeToggle clase="action-btn" />
 
 			<button
 				class="action-btn refresh-btn"
@@ -403,10 +407,10 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 1rem 1.25rem;
-		background: rgba(10, 10, 20, 0.15);
+		background: var(--bg-card-hover);
 		backdrop-filter: blur(24px) saturate(200%);
 		-webkit-backdrop-filter: blur(24px) saturate(200%);
-		border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+		border-bottom: 1px solid var(--border-subtle);
 		position: sticky;
 		top: 0;
 		z-index: 100;
@@ -414,7 +418,7 @@
 	}
 
 	.dashboard-header.scrolled {
-		background: rgba(10, 10, 20, 0.98);
+		background: var(--bg-overlay);
 		padding-top: 0.75rem;
 		padding-bottom: 0.75rem;
 		border-bottom-color: rgba(255, 255, 255, 0.15);
@@ -445,14 +449,14 @@
 		min-width: 0;
 	}
 
-	.logo-img {
+	.header-left :global(.logo-img) {
 		width: 36px;
 		height: 36px;
 		flex-shrink: 0;
 	}
 
 	@media (min-width: 768px) {
-		.logo-img {
+		.header-left :global(.logo-img) {
 			width: 48px;
 			height: 48px;
 		}
@@ -461,7 +465,7 @@
 	.logo-title {
 		font-size: 1.15rem;
 		font-weight: 800;
-		color: #fff;
+		color: var(--text-primary);
 		margin: 0;
 		letter-spacing: -0.02em;
 		white-space: nowrap;
@@ -472,7 +476,7 @@
 
 	.logo-subtitle {
 		font-size: 0.65rem;
-		color: rgba(160, 160, 200, 0.6);
+		color: var(--text-muted);
 		font-weight: 500;
 		letter-spacing: 0.05em;
 		margin: 0;
@@ -500,7 +504,7 @@
 		width: 6px;
 		height: 6px;
 		border-radius: 50%;
-		background: #10b981;
+		background: var(--accent-green);
 		flex-shrink: 0;
 	}
 
@@ -517,9 +521,9 @@
 		width: 34px; /* Un poco más pequeños en móvil */
 		height: 34px;
 		border-radius: 10px;
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		background: rgba(255, 255, 255, 0.04);
-		color: rgba(160, 160, 200, 0.8);
+		border: 1px solid var(--border-subtle);
+		background: var(--bg-card);
+		color: var(--text-secondary);
 		cursor: pointer;
 		display: flex;
 		align-items: center;
@@ -530,8 +534,8 @@
 	}
 
 	.action-btn:hover {
-		background: rgba(255, 255, 255, 0.08);
-		color: #fff;
+		background: var(--bg-card-hover);
+		color: var(--text-primary);
 		border-color: rgba(255, 255, 255, 0.15);
 	}
 
@@ -552,7 +556,7 @@
 
 	.refresh-icon.spinning {
 		animation: spin 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-		color: #3b82f6;
+		color: var(--accent-blue-ink);
 		filter: drop-shadow(0 0 5px rgba(59, 130, 246, 0.5));
 	}
 
@@ -567,7 +571,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: white;
+		color: var(--text-primary);
 		font-weight: 800;
 		font-size: 1rem;
 		text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
@@ -586,7 +590,7 @@
 		width: 40px;
 		height: 40px;
 		border-radius: 12px;
-		background: rgba(255, 255, 255, 0.05);
+		background: var(--bg-card-hover);
 		animation: pulse-skeleton 2s ease-in-out infinite;
 	}
 
@@ -619,11 +623,11 @@
 		top: calc(100% + 12px);
 		right: 0;
 		width: 220px;
-		background: rgba(15, 15, 30, 0.85);
+		background: var(--bg-overlay);
 		backdrop-filter: blur(24px) saturate(200%);
 		-webkit-backdrop-filter: blur(24px) saturate(200%);
 		border-radius: 16px;
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		border: 1px solid var(--border-subtle);
 		box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 		z-index: 1000;
 		padding: 0.5rem;
@@ -644,7 +648,7 @@
 
 	.dropdown-divider {
 		height: 1px;
-		background: rgba(255, 255, 255, 0.08);
+		background: var(--bg-card-hover);
 		margin: 0.5rem 0;
 	}
 
@@ -656,7 +660,7 @@
 		padding: 0.75rem;
 		border: none;
 		background: transparent;
-		color: rgba(255, 255, 255, 0.85);
+		color: var(--text-secondary);
 		font-size: 0.9rem;
 		font-weight: 600;
 		border-radius: 10px;
@@ -666,27 +670,27 @@
 	}
 
 	.dropdown-item:hover {
-		background: rgba(255, 255, 255, 0.06);
-		color: #ffffff;
+		background: var(--bg-card-hover);
+		color: var(--text-primary);
 	}
 
 	.dropdown-item.logout {
-		color: #ef4444;
+		color: var(--state-negative);
 	}
 
 	.dropdown-item.logout:hover {
 		background: rgba(239, 68, 68, 0.1);
-		color: #fca5a5;
+		color: var(--state-negative);
 	}
 
 	.dropdown-item.delete-account {
-		color: rgba(239, 68, 68, 0.6);
+		color: var(--state-negative);
 		font-size: 0.75rem;
 	}
 
 	.dropdown-item.delete-account:hover {
-		background: #ef4444;
-		color: white;
+		background: var(--surface-danger);
+		color: var(--text-on-accent);
 	}
 
 	.dropdown-setting {
@@ -699,24 +703,24 @@
 	.setting-label {
 		font-size: 0.8rem;
 		font-weight: 600;
-		color: rgba(255, 255, 255, 0.5);
+		color: var(--text-muted);
 	}
 
 	.currency-select {
-		background: #1a1a2e;
+		background: var(--bg-overlay);
 		border: 1px solid rgba(255, 255, 255, 0.15);
 		border-radius: 8px;
 		padding: 0.3rem 0.5rem;
 		font-size: 0.8rem;
 		font-weight: 700;
-		color: #ffffff;
+		color: var(--text-primary);
 		cursor: pointer;
 		outline: none;
 	}
 
 	.currency-select option {
-		background: #1a1a2e;
-		color: #ffffff;
+		background: var(--bg-overlay);
+		color: var(--text-primary);
 	}
 
 	/* Auth Notifications */
@@ -734,20 +738,20 @@
 		align-items: center;
 		gap: 0.6rem;
 		padding: 0.6rem 1rem;
-		background: rgba(30, 41, 59, 0.95);
+		background: var(--bg-overlay);
 		backdrop-filter: blur(10px);
 		border-radius: 100px;
-		color: #fff;
+		color: var(--text-primary);
 		font-size: 0.8rem;
 		font-weight: 700;
 		box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-		border: 1px solid rgba(255, 255, 255, 0.1);
+		border: 1px solid var(--border-subtle);
 		white-space: nowrap;
 	}
 
 	.notif-content.success {
 		border-color: rgba(16, 185, 129, 0.3);
-		color: #10b981;
+		color: var(--accent-green-ink);
 	}
 
 	/* Spinners */
@@ -765,7 +769,7 @@
 	.user-loading-overlay {
 		position: absolute;
 		inset: 0;
-		background: rgba(10, 10, 20, 0.6);
+		background: var(--bg-scrim);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -777,14 +781,14 @@
 	.user-name {
 		font-size: 0.95rem;
 		font-weight: 800;
-		color: #ffffff;
+		color: var(--text-primary);
 		margin-bottom: 0.1rem;
 		display: block;
 	}
 
 	.user-email {
 		font-size: 0.75rem;
-		color: rgba(255, 255, 255, 0.4);
+		color: var(--text-faint);
 		word-break: break-all;
 		font-weight: 500;
 	}
@@ -795,7 +799,7 @@
 		bottom: -1px;
 		left: 0;
 		height: 2px;
-		background: linear-gradient(90deg, #3b82f6, #10b981, #f59e0b);
+		background: linear-gradient(90deg, var(--accent-blue), var(--accent-green), var(--accent-orange));
 		width: 100%;
 		animation: loading-slide 2s ease-in-out infinite;
 		z-index: 100;
@@ -813,7 +817,7 @@
 			padding: 1.25rem 2rem;
 		}
 
-		.logo-img { width: 40px; height: 40px; }
+		.header-left :global(.logo-img) { width: 40px; height: 40px; }
 		.logo-title { font-size: 1.5rem; }
 
 		.header-right { gap: 0.75rem; }
@@ -830,7 +834,7 @@
 			align-items: center;
 			gap: 0.5rem;
 			font-size: 0.78rem;
-			color: rgba(160, 160, 200, 0.6);
+			color: var(--text-muted);
 		}
 	}
 

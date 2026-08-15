@@ -1,13 +1,21 @@
 <script lang="ts">
-	import { STATE_POSITIVE, STATE_NEGATIVE } from '$lib/constants';
-
 	/**
-	 * ⚠️ **El color entra por atributo de presentación, así que aquí no vale
-	 * `var(--state-positive)`.** `stroke="var(…)"` no resuelve de forma fiable en
-	 * un atributo SVG —sí dentro de `style`—, así que el tono se importa de
-	 * `constants.ts`, que es el mismo valor que el token de CSS. Es el único
-	 * sitio del repo donde el color de estado hace falta como cadena de JS fuera
-	 * de un lienzo de Chart.js.
+	 * ⚠️ **El color viene del token de CSS, y eso es un arreglo del tema claro, no
+	 * una limpieza.**
+	 *
+	 * Antes importaba `STATE_POSITIVE` de `constants.ts` con esta razón escrita:
+	 * `stroke="var(…)"` no resuelve como atributo de presentación SVG. Cierto —
+	 * pero sí resuelve **dentro de `style`**, que es la salida que la propia nota
+	 * mencionaba y no se tomaba. Importar la constante congelaba el tono: medido
+	 * con el validador de `dataviz`, `STATE_POSITIVE` (`#34d399`) sobre blanco da
+	 * **1,92:1** y falla la banda de luminosidad, o sea que en tema claro la línea
+	 * verde de cada sparkline era prácticamente invisible.
+	 *
+	 * Pasando por el token, el valor lo resuelve el tema: `#34d399` en oscuro,
+	 * `#03714f` en claro (5,7:1). El color se inyecta como variable en el `<svg>` y
+	 * el CSS de abajo la aplica a `stroke` y a `stop-color`, que en CSS sí son
+	 * propiedades. `color` sigue aceptando una cadena para quien pase un tono
+	 * concreto.
 	 */
 
 	interface Props {
@@ -44,26 +52,37 @@
 
 	const isPositive = $derived(data && data.length > 1 ? data[data.length - 1] >= data[0] : true);
 	const sparkColor = $derived(
-		color === 'auto' ? (isPositive ? STATE_POSITIVE : STATE_NEGATIVE) : color
+		color === 'auto'
+			? isPositive
+				? 'var(--state-positive)'
+				: 'var(--state-negative)'
+			: color
 	);
 	/** Id propio por instancia: dos degradados con el mismo id colisionan en el documento. */
 	const gradientId = `spark-${Math.random().toString(36).slice(2, 9)}`;
 </script>
 
 {#if geometry}
-	<svg {width} {height} class="sparkline" viewBox="0 0 {width} {height}" fill="none">
+	<svg
+		{width}
+		{height}
+		class="sparkline"
+		viewBox="0 0 {width} {height}"
+		fill="none"
+		style="--spark: {sparkColor}"
+	>
 		{#if filled}
 			<defs>
 				<linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-					<stop offset="0%" stop-color={sparkColor} stop-opacity="0.28" />
-					<stop offset="100%" stop-color={sparkColor} stop-opacity="0" />
+					<stop offset="0%" stop-opacity="0.28" />
+					<stop offset="100%" stop-opacity="0" />
 				</linearGradient>
 			</defs>
-			<path d={geometry.area} fill="url(#{gradientId})" />
+			<path class="area" d={geometry.area} fill="url(#{gradientId})" />
 		{/if}
 		<path
+			class="linea"
 			d={geometry.line}
-			stroke={sparkColor}
 			stroke-width="1.5"
 			stroke-linecap="round"
 			stroke-linejoin="round"
@@ -75,5 +94,18 @@
 	.sparkline {
 		display: block;
 		overflow: visible;
+	}
+
+	/*
+	 * `stroke` y `stop-color` como propiedades de CSS, no como atributos de
+	 * presentación: es lo que permite que el valor sea un `var()` y por tanto que
+	 * lo resuelva el tema. Ver la nota de arriba.
+	 */
+	.sparkline .linea {
+		stroke: var(--spark);
+	}
+
+	.sparkline stop {
+		stop-color: var(--spark);
 	}
 </style>

@@ -174,7 +174,7 @@
 		font-weight: 700;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
-		color: var(--accent-green);
+		color: var(--accent-green-ink);
 	}
 	h1 {
 		margin: 0 0 1rem;
@@ -217,7 +217,7 @@
 	.destacada {
 		padding: 1.5rem;
 		border-radius: 16px;
-		border: 1px solid rgba(255, 255, 255, 0.12);
+		border: 1px solid var(--border-subtle);
 		background: var(--bg-card);
 		margin-bottom: 1.5rem;
 	}
@@ -232,7 +232,7 @@
 		margin: 0 0 0.4rem;
 		font-size: clamp(2rem, 6vw, 2.8rem);
 		font-weight: 800;
-		color: var(--accent-green);
+		color: var(--accent-green-ink);
 		font-variant-numeric: tabular-nums;
 	}
 	.pie {
@@ -249,7 +249,7 @@
 	td {
 		padding: 0.7rem 0.5rem;
 		text-align: right;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+		border-bottom: 1px solid var(--border-subtle);
 		font-size: 0.9rem;
 	}
 	thead th,
@@ -287,6 +287,6 @@
 		padding-left: 1.1rem;
 	}
 	a {
-		color: var(--accent-blue);
+		color: var(--accent-blue-ink);
 	}
 </style>

@@ -56,7 +56,7 @@
   }
 
   .eyebrow {
-    color: #3b82f6;
+    color: var(--accent-blue-ink);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
@@ -69,18 +69,18 @@
     font-size: clamp(2rem, 4vw, 3rem);
     font-weight: 800;
     margin-bottom: 1.5rem;
-    color: #fff;
+    color: var(--text-primary);
   }
 
   .text-gradient {
-    background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+    background: linear-gradient(135deg, var(--accent-blue) 0%, #1d4ed8 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 
   .section-header p {
-    color: rgba(160, 160, 200, 0.6);
+    color: var(--text-muted);
     font-size: 1.1rem;
     max-width: 600px;
     margin: 0 auto;
@@ -116,7 +116,7 @@
   .step-number {
     width: 80px;
     height: 80px;
-    background: #0f0f14;
+    background: var(--bg-elevated);
     border: 2px solid rgba(59, 130, 246, 0.3);
     border-radius: 50%;
     display: flex;
@@ -124,7 +124,7 @@
     justify-content: center;
     font-size: 1.5rem;
     font-weight: 800;
-    color: #3b82f6;
+    color: var(--accent-blue-ink);
     margin: 0 auto 2rem;
     box-shadow: 0 0 30px rgba(59, 130, 246, 0.1);
   }
@@ -133,11 +133,11 @@
     font-size: 1.5rem;
     font-weight: 700;
     margin-bottom: 1.25rem;
-    color: #fff;
+    color: var(--text-primary);
   }
 
   .step-card p {
-    color: rgba(160, 160, 200, 0.6);
+    color: var(--text-muted);
     line-height: 1.6;
     font-size: 1.05rem;
   }
