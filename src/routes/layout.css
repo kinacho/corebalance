@@ -64,6 +64,15 @@
 		 * cifras flotando sin caja. Visto en la captura, no en el código.
 		 */
 		--bg-card-hover: rgba(255, 255, 255, 0.06);
+
+		/*
+		 * La sombra de la maqueta del hero. En oscuro es negro al 60 %, que sobre
+		 * fondo oscuro apenas se ve y da profundidad; sobre fondo claro sería una
+		 * mancha sucia, así que en claro es mucho más suave y con menos alcance.
+		 */
+		--mockup-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04), 0 24px 48px rgba(0, 0, 0, 0.6),
+			0 8px 16px rgba(0, 0, 0, 0.3);
+
 		--bg-elevated: #0f0f14;
 		--bg-scrim: rgba(5, 5, 10, 0.75);
 		--bg-overlay: rgba(15, 15, 20, 0.95);
@@ -288,6 +297,8 @@
 		 * claro» sino blanco puro, igual que la tarjeta.
 		 */
 		--bg-card-hover: rgba(17, 17, 24, 0.05);
+		--mockup-shadow: 0 0 0 1px rgba(17, 17, 24, 0.05), 0 20px 40px rgba(17, 17, 24, 0.12),
+			0 6px 12px rgba(17, 17, 24, 0.06);
 		--bg-elevated: #ffffff;
 		--bg-scrim: rgba(244, 244, 249, 0.8);
 		--bg-overlay: rgba(255, 255, 255, 0.96);

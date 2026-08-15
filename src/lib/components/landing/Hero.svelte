@@ -343,43 +343,28 @@
 
   /* ── Browser chrome ── */
   /*
-   * ⚠️ **La maqueta es un DIBUJO de la app en oscuro, no interfaz, y por eso se
-   * ancla al tema oscuro en lugar de seguir al del usuario.**
+   * ⚠️ **La maqueta sigue al tema, y esto corrige una decisión mía equivocada.**
    *
-   * Es una captura falsa dentro de una ventana de navegador falsa: su fondo
-   * oscuro es parte de la ilustración, igual que el marco. Cuando el texto de
-   * dentro empezó a usar los tokens de la escala, en tema claro salía tinta casi
-   * negra sobre ese fondo casi negro — medido en el navegador, 1,05:1 en la cifra
-   * grande. Y «arreglarlo» aclarando el fondo sería peor: convertiría el dibujo
-   * de la app en un dibujo de otra cosa.
+   * Primero la anclé a oscuro redeclarando los tokens dentro, con el argumento de
+   * que es «un dibujo de la app» y no interfaz. El argumento es cierto y la
+   * conclusión era falsa: es la imagen principal de la portada y ocupa media
+   * pantalla, así que en tema claro quedaba como un rectángulo negro en medio de
+   * una página clara — que es justo lo que un tema claro no puede tener. El dibujo
+   * de la app en tema claro es el dibujo de la app en tema claro.
    *
-   * Redeclarar los tokens aquí dentro los fija para todo el subárbol, así que la
-   * maqueta se pinta siempre en oscuro sin que ningún hijo tenga que saberlo.
-   * Los valores son literalmente los de `:root`.
+   * El texto de dentro ya iba por la escala; lo único que había que soltar era el
+   * ancla, y llevar a tokens las superficies (`--bg-overlay` para el marco,
+   * `--bg-card-hover` para las bandas interiores) y la sombra, que en claro no
+   * puede ser el mismo negro al 60 %.
    */
   .hero-mockup {
-    --text-primary: #ffffff;
-    --text-secondary: #d7d7e6;
-    --text-muted: #a8a8c0;
-    --text-faint: #8a8aa3;
-    --border-subtle: rgba(255, 255, 255, 0.08);
-    --border-strong: #61617a;
-    --accent-blue-ink: #60a5fa;
-    --accent-green-ink: #10b981;
-    --accent-orange-ink: #f59e0b;
-    --state-positive: #34d399;
-    --state-negative: #f43f5e;
-
     position: relative;
     z-index: 1;
-    background: rgba(10, 10, 18, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--bg-overlay);
+    border: 1px solid var(--border-subtle);
     border-radius: 16px;
     overflow: hidden;
-    box-shadow:
-      0 0 0 1px rgba(255, 255, 255, 0.04),
-      0 24px 48px rgba(0, 0, 0, 0.6),
-      0 8px 16px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--mockup-shadow);
     aspect-ratio: 16 / 10;
     display: flex;
     flex-direction: column;
@@ -387,7 +372,7 @@
 
   .mockup-header {
     height: 38px;
-    background: rgba(255, 255, 255, 0.025);
+    background: var(--bg-card-hover);
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     display: flex;
     align-items: center;
@@ -407,8 +392,8 @@
   .dot.green  { background: #28c840; }
 
   .address-bar {
-    background: rgba(0, 0, 0, 0.25);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: var(--bg-card-hover);
+    border: 1px solid var(--border-subtle);
     border-radius: 6px;
     padding: 3px 10px;
     font-size: 0.62rem;
@@ -452,7 +437,7 @@
     flex-direction: column;
     align-items: center;
     gap: 10px;
-    background: rgba(0, 0, 0, 0.1);
+    background: var(--bg-card-hover);
   }
 
   .sidebar-logo {
@@ -564,7 +549,7 @@
     text-transform: uppercase;
     letter-spacing: 0.08em;
     padding-bottom: 4px;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
+    border-bottom: 1px solid var(--border-subtle);
   }
 
   /* Asset rows */
@@ -576,7 +561,7 @@
     border-radius: 9px;
     transition: background 0.2s;
   }
-  .asset-row:hover { background: rgba(255,255,255,0.02); }
+  .asset-row:hover { background: var(--bg-card-hover); }
   .asset-row.highlighted { background: rgba(59, 130, 246, 0.04); }
 
   .asset-left { display: flex; align-items: center; gap: 9px; }
@@ -629,22 +614,12 @@
    * quedaban como tres pastillas negras flotando sobre una página clara.
    */
   .floating-card {
-    --text-primary: #ffffff;
-    --text-secondary: #d7d7e6;
-    --text-muted: #a8a8c0;
-    --text-faint: #8a8aa3;
-    --accent-blue-ink: #60a5fa;
-    --accent-green-ink: #10b981;
-    --accent-orange-ink: #f59e0b;
-    --state-positive: #34d399;
-    --state-negative: #f43f5e;
-
     position: absolute;
     z-index: 2;
-    background: rgba(14, 14, 22, 0.85);
+    background: var(--bg-overlay);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.09);
+    border: 1px solid var(--border-subtle);
     padding: 10px 14px;
     border-radius: 14px;
     display: flex;
