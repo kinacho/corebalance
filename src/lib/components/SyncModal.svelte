@@ -460,7 +460,7 @@
 		border-radius: 8px;
 		font-size: 0.85rem;
 		text-align: center;
-		color: #a0a0c8;
+		color: var(--text-muted);
 	}
 
 	.qr-container {

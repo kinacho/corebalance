@@ -624,7 +624,7 @@
 	.guide-note { font-size: 0.7rem; color: var(--accent-blue-ink); margin: 0; font-weight: 600; }
 
 	/* Skipped Rows Panel */
-	.skipped-toggle { background: none; border: none; color: rgba(251, 191, 36, 0.7); font-size: 0.65rem; font-weight: 700; cursor: pointer; padding: 0; margin-top: 0.35rem; display: block; }
+	.skipped-toggle { background: none; border: none; color: var(--accent-orange-ink); font-size: 0.65rem; font-weight: 700; cursor: pointer; padding: 0; margin-top: 0.35rem; display: block; }
 	.skipped-toggle:hover { color: var(--accent-orange-ink); }
 	.skipped-panel { background: var(--bg-card-hover); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 0.5rem; margin-top: 0.4rem; display: flex; flex-direction: column; gap: 0.2rem; max-height: 180px; overflow-y: auto; }
 	.skipped-panel::-webkit-scrollbar { width: 4px; }

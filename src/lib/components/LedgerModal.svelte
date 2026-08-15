@@ -675,7 +675,7 @@
 	}
 
 	.form-group input, .form-group select {
-		background: #000;
+		background: var(--bg-card-hover);
 		border: 1px solid var(--border-subtle);
 		border-radius: 8px;
 		padding: 0.5rem;

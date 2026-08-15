@@ -1123,7 +1123,7 @@ import { formatCompactCurrency } from "$lib/chart-format";
     font-size: 1.25rem;
     font-weight: 800;
     letter-spacing: -0.02em;
-    background: linear-gradient(to bottom, #fff, rgba(255, 255, 255, 0.4));
+    background: linear-gradient(to bottom, var(--text-primary), var(--text-muted));
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;

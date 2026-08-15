@@ -458,7 +458,7 @@
 
   .post-updated {
     font-size: 0.85rem;
-    color: rgba(16, 185, 129, 0.85);
+    color: var(--accent-green-ink);
     margin: -0.75rem 0 1.5rem;
     font-weight: 600;
   }
@@ -580,7 +580,7 @@
   }
 
   .post-summary li::marker {
-    color: rgba(52, 211, 153, 0.7);
+    color: var(--state-positive);
   }
 
   @media (max-width: 768px) {

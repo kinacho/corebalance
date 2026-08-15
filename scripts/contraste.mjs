@@ -213,7 +213,11 @@ const FONDOS_TOKEN = {
 		'--accent-green': '#059669',
 		'--accent-orange': '#d97706',
 		'--surface-green': '#047857',
-		'--surface-orange': '#b45309'
+		'--surface-orange': '#b45309',
+		'--surface-danger': '#b91c1c',
+		// `--bg-overlay` es casi opaco (alfa .95/.96); se resuelve a su tono.
+		'--bg-overlay': '#0f0f14',
+		'--bg-scrim': '#05050a'
 	},
 	light: {
 		'--bg-primary': '#f4f4f9',
@@ -224,7 +228,10 @@ const FONDOS_TOKEN = {
 		'--accent-green': '#046c4e',
 		'--accent-orange': '#9a5408',
 		'--surface-green': '#046c4e',
-		'--surface-orange': '#9a5408'
+		'--surface-orange': '#9a5408',
+		'--surface-danger': '#b91c1c',
+		'--bg-overlay': '#ffffff',
+		'--bg-scrim': '#f4f4f9'
 	}
 };
 
@@ -255,7 +262,7 @@ function fondoDeLaRegla(cuerpo, tema) {
 	 * que oscurecerlo.
 	 */
 	if (valor.startsWith('linear-gradient') || valor.startsWith('radial-gradient')) {
-		const acento = valor.match(/var\(\s*(--accent-[a-z-]+)/);
+		const acento = valor.match(/var\(\s*(--(?:accent|surface|bg)-[a-z-]+)/);
 		if (acento) {
 			const hex = FONDOS_TOKEN[tema][acento[1]];
 			return hex ? aRgb(hex) : null;
@@ -371,21 +378,40 @@ export function auditar(raiz = path.join(RAIZ, 'src')) {
 		const css = cssDe(archivo, fs.readFileSync(archivo, 'utf8'));
 		if (!css.trim()) continue;
 
-		for (const h of analizarCss(css, 'dark')) {
-			// Una excepción sin `valor` silencia el fichero entero; con `valor`, solo
-			// esa declaración. Lo segundo es lo normal: eximir un fichero completo
-			// apaga también los fallos que todavía no se han escrito en él.
-			const exenta = EXCEPCIONES.some(
-				(e) => e.fichero === rel && (e.valor === undefined || e.valor === h.valor)
-			);
-			if (exenta) continue;
+		/**
+		 * ⚠️ **Los dos temas, y esto era un agujero de la primera versión.**
+		 *
+		 * `auditar()` llamaba solo con `'dark'`. La tabla de tokens claros estaba
+		 * escrita, medida y sin usar: el tema recién añadido —el que nadie ha mirado
+		 * durante años, al revés que el oscuro— era exactamente el que ninguna guarda
+		 * vigilaba. Es la figura que este repo persigue en sus tests, aplicada a la
+		 * guarda que se escribió para perseguirla.
+		 *
+		 * Un fallo se reporta con su tema delante, porque el mismo color puede pasar
+		 * en uno y fallar en el otro — que es el caso normal, no la excepción.
+		 */
+		for (const tema of ['dark', 'light']) {
+			for (const h of analizarCss(css, tema)) {
+				// Una excepción sin `valor` silencia el fichero entero; con `valor`, solo
+				// esa declaración. Lo segundo es lo normal: eximir un fichero completo
+				// apaga también los fallos que todavía no se han escrito en él.
+				const exenta = EXCEPCIONES.some(
+					(e) =>
+						e.fichero === rel &&
+						(e.valor === undefined || e.valor === h.valor) &&
+						(e.tema === undefined || e.tema === tema)
+				);
+				if (exenta) continue;
 
-			const linea = `${rel}  ${h.valor}`;
-			if (h.tipo === 'bajo-contraste')
-				errores.push(`${linea}  →  ${h.ratio.toFixed(2)}:1 (mínimo ${UMBRAL_AA})`);
-			else if (h.tipo === 'alfa')
-				avisos.push(`${linea}  →  alfa en texto: el ratio depende de lo que haya detrás`);
-			else avisos.push(`${linea}  →  token no medido; añádelo a TOKENS_MEDIDOS o usa uno de la escala`);
+				const linea = `[${tema}] ${rel}  ${h.valor}`;
+				if (h.tipo === 'bajo-contraste')
+					errores.push(`${linea}  →  ${h.ratio.toFixed(2)}:1 (mínimo ${UMBRAL_AA})`);
+				else if (h.tipo === 'alfa')
+					avisos.push(`${linea}  →  alfa en texto: el ratio depende de lo que haya detrás`);
+				else if (tema === 'dark')
+					// Un token desconocido lo es en los dos temas: se avisa una vez.
+					avisos.push(`${linea}  →  token no medido; añádelo a TOKENS o usa uno de la escala`);
+			}
 		}
 	}
 

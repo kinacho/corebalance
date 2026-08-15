@@ -514,7 +514,7 @@
 
 	.warning strong {
 		font-size: 0.8rem;
-		color: #fda4af;
+		color: var(--state-negative);
 		display: block;
 		margin-bottom: 0.35rem;
 	}

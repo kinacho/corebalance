@@ -401,7 +401,7 @@
     line-height: 1.15;
     margin-bottom: 1.5rem;
     letter-spacing: -0.03em;
-    background: linear-gradient(135deg, #ffffff 40%, #a78bfa 100%);
+    background: linear-gradient(135deg, var(--text-primary) 40%, var(--accent-violet-ink) 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -628,7 +628,7 @@
     margin: 0;
     letter-spacing: -0.04em;
     font-variant-numeric: tabular-nums;
-    background: linear-gradient(135deg, #f87171 30%, #a78bfa 100%);
+    background: linear-gradient(135deg, var(--state-negative) 30%, var(--accent-violet-ink) 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;

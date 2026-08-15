@@ -541,7 +541,7 @@
 	.btc-label {
 		font-size: 0.6rem;
 		font-weight: 700;
-		color: rgba(245, 158, 11, 0.8);
+		color: var(--accent-orange-ink);
 		text-transform: uppercase;
 	}
 

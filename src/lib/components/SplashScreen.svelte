@@ -164,7 +164,7 @@
 		color: var(--text-primary);
 		margin: 0;
 		letter-spacing: -0.04em;
-		background: linear-gradient(135deg, #fff 30%, rgba(255,255,255,0.4) 100%);
+		background: linear-gradient(135deg, var(--text-primary) 30%, rgba(255,255,255,0.4) 100%);
 		-webkit-background-clip: text;
 		background-clip: text;
 		-webkit-text-fill-color: transparent;

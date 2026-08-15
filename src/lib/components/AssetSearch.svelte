@@ -464,7 +464,7 @@
 		padding: 0.1rem 0.35rem;
 		background: rgba(99, 102, 241, 0.15);
 		border-radius: 4px;
-		color: #818cf8;
+		color: var(--accent-violet-ink);
 		font-weight: 600;
 	}
 
