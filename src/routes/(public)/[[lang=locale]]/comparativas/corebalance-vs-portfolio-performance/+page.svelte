@@ -323,7 +323,7 @@
 
 <style>
   .compare-page {
-    background: var(--bg-primary, #05050a);
+    background: var(--bg-primary);
     color: var(--text-primary);
     min-height: 100vh;
     position: relative;
@@ -404,7 +404,7 @@
   }
 
   .subtitle {
-    color: var(--text-muted, rgba(160, 160, 200, 0.8));
+    color: var(--text-muted);
     font-size: 1.2rem;
     max-width: 700px;
     margin: 0 auto;
@@ -427,7 +427,7 @@
 
   .intro-card {
     background: var(--bg-card);
-    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
+    border: 1px solid var(--border-subtle);
     border-radius: 24px;
     padding: 2.5rem;
     backdrop-filter: blur(12px);
@@ -478,7 +478,7 @@
 
   .table-wrapper {
     overflow-x: auto;
-    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
+    border: 1px solid var(--border-subtle);
     border-radius: 20px;
     background: rgba(255, 255, 255, 0.01);
   }
@@ -492,7 +492,7 @@
 
   th, td {
     padding: 1.25rem 1.5rem;
-    border-bottom: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.05));
+    border-bottom: 1px solid var(--border-subtle);
     font-size: 1rem;
   }
 
@@ -530,7 +530,7 @@
   }
 
   .section-desc {
-    color: var(--text-muted, rgba(160, 160, 200, 0.8));
+    color: var(--text-muted);
     text-align: center;
     margin-bottom: 2.5rem;
     font-size: 1.1rem;
@@ -551,7 +551,7 @@
 
   .study-card {
     background: rgba(255, 255, 255, 0.01);
-    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.05));
+    border: 1px solid var(--border-subtle);
     border-radius: 20px;
     padding: 2rem;
   }
@@ -618,7 +618,7 @@
 
   .details-card {
     background: var(--bg-card);
-    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
+    border: 1px solid var(--border-subtle);
     border-radius: 20px;
     padding: 2.5rem;
   }

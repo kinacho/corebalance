@@ -669,7 +669,14 @@ import { formatCompactCurrency } from "$lib/chart-format";
     position: sticky;
     top: 4rem; /* Debajo del header */
     z-index: 90;
-    background: linear-gradient(to bottom, #05050a 60%, transparent);
+    /*
+     * ⚠️ **Era `#05050a` a fuego, que es el valor de `--bg-primary` del tema
+     * oscuro.** Esta barra es `sticky` y va por encima del contenido, así que en
+     * tema claro dejaba una banda casi negra pegada bajo la cabecera. Y solo
+     * existe por debajo de 1024 px, de modo que ningún barrido a 1440 la había
+     * pintado — el mismo defecto que `.landing-page`, escondido tras el corte.
+     */
+    background: linear-gradient(to bottom, var(--bg-primary) 60%, transparent);
     margin: -0.5rem -0.75rem 1.5rem -0.75rem;
     padding: 0.75rem 0.75rem 1.5rem 0.75rem;
     pointer-events: none; /* Dejar pasar clics fuera de los botones */
@@ -691,9 +698,12 @@ import { formatCompactCurrency } from "$lib/chart-format";
     padding: 0.5rem;
     border: 1px solid var(--border-subtle);
     border-radius: 24px;
-    box-shadow:
-      0 12px 32px rgba(0, 0, 0, 0.5),
-      0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+    /*
+     * La sombra va por token: negro al 50 % da profundidad sobre fondo oscuro y
+     * una mancha sucia sobre claro, y el filete `inset` blanco al 5 % sobre una
+     * superficie clara no es nada. Misma razón que `--mockup-shadow`.
+     */
+    box-shadow: var(--pill-shadow);
   }
 
   .tab-btn {
@@ -760,7 +770,7 @@ import { formatCompactCurrency } from "$lib/chart-format";
     border: 1px solid var(--border-subtle);
     border-radius: 28px;
     margin-bottom: 2rem;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+    box-shadow: var(--card-shadow);
   }
 
   /*
@@ -787,7 +797,7 @@ import { formatCompactCurrency } from "$lib/chart-format";
     -webkit-backdrop-filter: blur(24px) saturate(200%);
     border: 1px solid var(--border-subtle);
     border-radius: 28px;
-    box-shadow: 0 12px 48px 0 rgba(0, 0, 0, 0.5);
+    box-shadow: var(--card-shadow);
     margin-bottom: 1.5rem;
     overflow: visible;
   }

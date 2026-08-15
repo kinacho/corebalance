@@ -324,6 +324,32 @@ function analizarBloque(css, tema, fondoPropio) {
 		// la nota de `TOKENS`: saltárselos es lo que escondió un fallo real.
 		const varM = valor.match(RE_VAR);
 		if (varM) {
+			/**
+			 * ⚠️ **Un `var(--x, literal)` es un literal disfrazado, y hay que mirarlo.**
+			 *
+			 * `BlogPost.svelte` tiene seis, y el respaldo de uno es exactamente
+			 * `rgba(160,160,200,0.6)` — el valor que este proyecto tiene fichado con
+			 * 40 usos a 3,45:1. Hoy no se pinta nunca porque el token existe; el día
+			 * que alguien renombre un token, seis declaraciones caen **en silencio**
+			 * al valor malo y nada se pone rojo. Se avisa, no se falla: mientras el
+			 * token exista no hay defecto visible.
+			 */
+			const respaldo = valor.match(/^var\(\s*--[a-z-]+\s*,\s*([^)]+(?:\)[^)]*)?)\)\s*$/);
+			if (respaldo) {
+				const r = respaldo[1].trim();
+				const m = r.match(RE_RGBA);
+				const rgbR = RE_HEX.test(r) ? aRgb(r) : m ? [+m[1], +m[2], +m[3]] : null;
+				if (rgbR) {
+					const aR = m && m[4] !== undefined ? parseFloat(m[4]) : 1;
+					let peorR = Infinity;
+					for (const f of FONDOS[tema]) {
+						const fr = aRgb(f);
+						peorR = Math.min(peorR, ratio(componer(rgbR, aR, fr), fr));
+					}
+					if (peorR < UMBRAL_AA) hallazgos.push({ valor, tipo: 'respaldo-malo', ratio: peorR });
+				}
+			}
+
 			const hex = TOKENS[tema][varM[1]];
 			if (!hex) {
 				hallazgos.push({ valor, tipo: 'token-desconocido', ratio: null });
@@ -408,6 +434,8 @@ export function auditar(raiz = path.join(RAIZ, 'src')) {
 					errores.push(`${linea}  →  ${h.ratio.toFixed(2)}:1 (mínimo ${UMBRAL_AA})`);
 				else if (h.tipo === 'alfa')
 					avisos.push(`${linea}  →  alfa en texto: el ratio depende de lo que haya detrás`);
+				else if (h.tipo === 'respaldo-malo')
+					avisos.push(`${linea}  →  el respaldo del var() da ${h.ratio.toFixed(2)}:1; si el token desaparece, cae ahí`);
 				else if (tema === 'dark')
 					// Un token desconocido lo es en los dos temas: se avisa una vez.
 					avisos.push(`${linea}  →  token no medido; añádelo a TOKENS o usa uno de la escala`);

@@ -335,8 +335,8 @@
 
 <style>
   .blog-post-page {
-    background: var(--bg-primary, #05050a);
-    color: var(--text-primary, #ffffff);
+    background: var(--bg-primary);
+    color: var(--text-primary);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -359,12 +359,12 @@
     align-items: center;
     gap: 0.5rem;
     font-size: 0.85rem;
-    color: var(--text-muted, rgba(160, 160, 200, 0.6));
+    color: var(--text-muted);
     margin-bottom: 2.5rem;
   }
 
   .breadcrumb a {
-    color: var(--text-muted, rgba(160, 160, 200, 0.6));
+    color: var(--text-muted);
     text-decoration: none;
     transition: color 0.2s ease;
   }
@@ -393,8 +393,8 @@
   }
 
   .post-article {
-    background: var(--bg-card, rgba(255, 255, 255, 0.02));
-    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.05));
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
     border-radius: 24px;
     padding: 3rem;
     backdrop-filter: blur(16px);
@@ -411,13 +411,13 @@
 
   .post-header {
     margin-bottom: 3rem;
-    border-bottom: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
+    border-bottom: 1px solid var(--border-subtle);
     padding-bottom: 2rem;
   }
 
   .post-meta {
     font-size: 0.9rem;
-    color: var(--text-muted, rgba(160, 160, 200, 0.6));
+    color: var(--text-muted);
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -483,7 +483,7 @@
   }
 
   .related-subtitle {
-    color: var(--text-muted, rgba(160, 160, 200, 0.6));
+    color: var(--text-muted);
     font-size: 0.9rem;
     margin: 0 0 1.5rem;
   }
@@ -634,6 +634,6 @@
   }
 
   .post-back-nav { display: flex; justify-content: flex-start; margin-top: 2rem;}
-  .btn-back { color: var(--text-muted, rgba(160, 160, 200, 0.6)); text-decoration: none; font-size: 0.95rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: color 0.2s ease; }
+  .btn-back { color: var(--text-muted); text-decoration: none; font-size: 0.95rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: color 0.2s ease; }
   .btn-back:hover { color: var(--text-primary); }
 </style>

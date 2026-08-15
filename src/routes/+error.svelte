@@ -44,7 +44,7 @@
 
 <style>
 	.error-page {
-		background: var(--bg-primary, #05050a);
+		background: var(--bg-primary);
 		color: var(--text-primary);
 		min-height: 100vh;
 		display: flex;

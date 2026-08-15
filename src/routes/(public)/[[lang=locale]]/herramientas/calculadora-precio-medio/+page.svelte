@@ -444,7 +444,7 @@
 
 <style>
   .avg-page {
-    background: var(--bg-primary, #05050a);
+    background: var(--bg-primary);
     color: var(--text-primary);
     min-height: 100vh;
     position: relative;
@@ -494,7 +494,7 @@
   }
 
   .subtitle {
-    color: var(--text-muted, rgba(160, 160, 200, 0.8));
+    color: var(--text-muted);
     font-size: 1.2rem;
     max-width: 700px;
     margin: 0 auto;
@@ -516,8 +516,8 @@
   }
 
   .card-glass {
-    background: var(--bg-card, rgba(255, 255, 255, 0.03));
-    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
     border-radius: 24px;
     padding: 2.5rem;
     backdrop-filter: blur(16px);
@@ -580,13 +580,13 @@
   .input-group label {
     font-size: 0.8rem;
     font-weight: 600;
-    color: var(--text-muted, rgba(160, 160, 200, 0.6));
+    color: var(--text-muted);
   }
 
   .input-group input,
   .input-group select {
     background: var(--bg-card);
-    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+    border: 1px solid var(--border-subtle);
     border-radius: 12px;
     padding: 0.75rem 1rem;
     color: var(--text-primary);
@@ -643,7 +643,7 @@
   .warning-icon { width: 18px; height: 18px; flex-shrink: 0; }
 
   .panel-hint {
-    color: var(--text-muted, rgba(160, 160, 200, 0.6));
+    color: var(--text-muted);
     font-size: 0.85rem;
     line-height: 1.5;
     margin: 0 0 0.5rem;
@@ -676,7 +676,7 @@
     -webkit-text-fill-color: transparent;
   }
 
-  .card-desc { color: var(--text-muted, rgba(160, 160, 200, 0.6)); font-size: 0.9rem; margin: 0.5rem 0 0; }
+  .card-desc { color: var(--text-muted); font-size: 0.9rem; margin: 0.5rem 0 0; }
 
   .position-card h2,
   .pnl-card h2 { font-size: 1.3rem; font-weight: 800; margin-top: 0; margin-bottom: 1.5rem; }
@@ -685,7 +685,7 @@
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    border-top: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
+    border-top: 1px solid var(--border-subtle);
     padding-top: 1.25rem;
   }
 
@@ -693,7 +693,7 @@
 
   .pnl-rows { margin-top: 1.5rem; }
 
-  .breakdown-row { display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--text-muted, rgba(160, 160, 200, 0.8)); }
+  .breakdown-row { display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--text-muted); }
 
   .value-highlight { color: var(--text-primary); font-weight: 600; }
   .pnl-positive { color: var(--accent-green-ink); font-weight: 600; }
@@ -734,8 +734,8 @@
 
   /* Otras herramientas */
   .other-tools {
-    background: var(--bg-card, rgba(255, 255, 255, 0.03));
-    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
     border-radius: 16px;
     padding: 1.5rem 2rem;
     margin: 0 auto 3rem;

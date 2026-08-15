@@ -490,7 +490,13 @@
 	}
 
 	.asset-time {
-		color: color-mix(in srgb, var(--accent) 40%, rgba(160, 160, 200, 0.5));
+		/*
+		 * ⚠️ Mezclaba el acento del activo con `rgba(160,160,200,0.5)` — el literal
+		 * que este proyecto tiene fichado a 2,70:1, o sea el peor de todos. En claro
+		 * la mezcla daba **2,06:1**. Se tiñe sobre la tinta de apoyo del tema, que
+		 * sigue dando el matiz por activo sin arrastrar el valor malo.
+		 */
+		color: color-mix(in srgb, var(--accent) 40%, var(--text-muted));
 	}
 
 	.asset-meta {
@@ -553,8 +559,20 @@
 	}
 
 	.target-badge {
+		/*
+		 * ⚠️ **`--accent` es el color del activo —de `ASSET_COLORS`— y eso es una
+		 * MARCA, no tinta.** Esos tonos están validados para pintar un arco o una
+		 * barra sobre `#0d0d12`, donde les basta con 3:1; como texto necesitan 4,5 y
+		 * medido daban **3,35:1**. Se deriva la tinta mezclando con el color de
+		 * texto del tema, igual que `--card-ink` en la portada de herramientas: en
+		 * oscuro aclara y en claro oscurece, conservando el tono que identifica al
+		 * activo.
+		 *
+		 * Solo lo cazó el e2e con cartera sembrada: sin objetivos esta insignia no
+		 * se pinta.
+		 */
 		background: color-mix(in srgb, var(--accent) 15%, transparent);
-		color: var(--accent);
+		color: color-mix(in srgb, var(--accent) 62%, var(--text-primary));
 		padding: 0.15rem 0.5rem;
 		border-radius: 6px;
 		font-size: 0.68rem;

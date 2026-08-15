@@ -60,8 +60,27 @@
 		v.toLocaleString('es-ES', { minimumFractionDigits: d, maximumFractionDigits: d });
 
 	/** Color de la cifra de desviación: estado, no identidad. */
+	/**
+	 * ⚠️ **Tinta, no la paleta del mapa.** Antes devolvía `DEVIATION_UNDER` /
+	 * `DEVIATION_OVER` / `DEVIATION_ON_TARGET`, que son los tonos con los que el
+	 * treemap **rellena celdas**: están validados para eso y les basta con 3:1
+	 * contra el lienzo. Aquí son **texto**, que necesita 4,5 — y medido salían a
+	 * 2,91:1. Es la misma distinción marca/tinta que `layout.css` documenta para
+	 * `--accent-blue` frente a `--accent-blue-ink`, esta vez colándose por JS.
+	 *
+	 * Devuelve referencias a tokens, no valores: un `style="color: var(--x)"` sí
+	 * resuelve, y así sigue al tema. El caso «en banda» va en gris de apoyo porque
+	 * es el estado tranquilo — el color de estado se reserva para sube/baja.
+	 *
+	 * ⚠️ Solo lo cazó el e2e con cartera sembrada: la demo está exactamente en
+	 * objetivo, así que estas insignias no se pintan nunca con datos de ejemplo.
+	 */
 	const stateColor = (row: { deviationPp: number | null; inBand: boolean | null }) =>
-		row.inBand ? DEVIATION_ON_TARGET : (row.deviationPp ?? 0) > 0 ? DEVIATION_OVER : DEVIATION_UNDER;
+		row.inBand
+			? 'var(--text-muted)'
+			: (row.deviationPp ?? 0) > 0
+				? 'var(--accent-orange-ink)'
+				: 'var(--accent-blue-ink)';
 </script>
 
 <div class="composition">

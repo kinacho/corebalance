@@ -352,7 +352,7 @@
 
 <style>
   .checklist-page {
-    background: var(--bg-primary, #05050a);
+    background: var(--bg-primary);
     color: var(--text-primary);
     min-height: 100vh;
     position: relative;
@@ -400,7 +400,7 @@
   }
 
   .subtitle {
-    color: var(--text-muted, rgba(160, 160, 200, 0.8));
+    color: var(--text-muted);
     font-size: 1.2rem;
     max-width: 600px;
     margin: 0 auto;
@@ -408,8 +408,8 @@
   }
 
   .card-glass {
-    background: var(--bg-card, rgba(255, 255, 255, 0.03));
-    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
     border-radius: 28px;
     padding: 3rem;
     backdrop-filter: blur(16px);
@@ -447,13 +447,13 @@
 
   .step-content h2 { font-size: 1.8rem; font-weight: 800; margin-top: 0; margin-bottom: 0.75rem; line-height: 1.3; }
 
-  .step-desc { color: var(--text-muted, rgba(160, 160, 200, 0.8)); font-size: 1rem; margin-bottom: 2rem; line-height: 1.6; }
+  .step-desc { color: var(--text-muted); font-size: 1rem; margin-bottom: 2rem; line-height: 1.6; }
 
   .options-list { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2.5rem; }
 
   .option-btn {
     background: var(--bg-card);
-    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
+    border: 1px solid var(--border-subtle);
     border-radius: 16px;
     padding: 1.25rem 1.5rem;
     color: var(--text-primary);
@@ -472,7 +472,7 @@
   .btn-back {
     background: none;
     border: none;
-    color: var(--text-muted, rgba(160, 160, 200, 0.6));
+    color: var(--text-muted);
     font-size: 0.95rem;
     font-weight: 700;
     cursor: pointer;
@@ -543,8 +543,8 @@
 
   /* Otras herramientas */
   .other-tools {
-    background: var(--bg-card, rgba(255, 255, 255, 0.03));
-    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
     border-radius: 16px;
     padding: 1.5rem 2rem;
     margin-top: 3rem;

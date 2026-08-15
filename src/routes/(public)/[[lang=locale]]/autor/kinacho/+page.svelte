@@ -173,8 +173,8 @@
 
 <style>
 	.author-page {
-		background: var(--bg-primary, #05050a);
-		color: var(--text-primary, #ffffff);
+		background: var(--bg-primary);
+		color: var(--text-primary);
 		min-height: 100vh;
 		display: flex;
 		flex-direction: column;

@@ -21,10 +21,11 @@ The repo is really two apps:
 | `npm test` | Vitest unit tests — including the two Layer-0 guards (`scripts/doc-drift.test.ts`, `scripts/test-quality.test.ts`). |
 | `npm test -- src/lib/rebalance.test.ts` | Run a single test file. |
 | `npm run test:coverage` | Same tests plus **per-file coverage thresholds** on the seven `src/lib` modules plus the two price-layer files. What CI runs. |
-| `npm run test:e2e` | Playwright over `vite preview` — **needs `npm run build` first**. 18 specs in `e2e/`. |
+| `npm run test:e2e` | Playwright over `vite preview` — **needs `npm run build` first**. 10 spec files, 32 cases in `e2e/`. |
 | `npm run test:quality` | Finds tests that cannot fail: literal tautologies and tests with no assertion at all. |
 | `npm run docs:check` | Finds identifiers and paths cited in `CLAUDE.md` or in any `.claude/rules/*.md` that do not exist in the repo, plus rules whose `paths:` glob matches nothing and would therefore never load. |
-| `npm run a11y:contrast` | Computes the WCAG ratio of every `color:` declaration in `src/**/*.{svelte,css}` against the declared backgrounds of each theme, and **fails** below AA (4,5:1). Warns — does not fail — on `color:` with alpha and on unknown tokens (`--avisos` to list them). Runs in CI. |
+| `npm run a11y:contrast` | Computes the WCAG ratio of every `color:` declaration in `src/**/*.{svelte,css}` against the declared backgrounds of **both themes**, and **fails** below AA (4,5:1). Warns — does not fail — on `color:` with alpha, on unknown tokens, and on a `var(--x, <literal>)` whose fallback would not pass (`--avisos` to list them). Runs in CI. |
+| `npm run a11y:vivo` | The same question asked of a **real browser**: spawns its own `vite preview` on port 4188 (`--strictPort`) and measures 103 routes × 2 themes, plus the tour, the manage panel and a `:hover` pass. Catches the three things a static analyser structurally cannot — who is painted on top of whom, what only exists once you interact, and what only exists at a given width. `--movil` for 390×844, `--ruta`, `--tema`, `--json`. Deliberately **not** in CI (~1 min per theme); `e2e/tema.spec.ts` is the short version that is. |
 | `npm run test:mutation` | Mutation testing (Stryker) over the six money modules. ~20 min; weekly in CI, or on demand before/after touching that code. Run via `npx` — **not** a dependency. |
 | `npm run backtest` | Regenerates `src/lib/data/backtest-8020.json` from real Yahoo data (citable dataset). |
 | `npm run og` / `icons` / `llms` | Regenerate OG cards / icons / llms.txt manually. |

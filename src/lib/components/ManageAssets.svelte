@@ -1169,7 +1169,7 @@
 		width: 18px;
 		height: 18px;
 		border-radius: 50%;
-		background: var(--slider-color, var(--accent-blue));
+		background: var(--slider-color);
 		border: 2px solid rgba(255, 255, 255, 0.3);
 		cursor: grab;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
@@ -1189,7 +1189,7 @@
 		width: 18px;
 		height: 18px;
 		border-radius: 50%;
-		background: var(--slider-color, var(--accent-blue));
+		background: var(--slider-color);
 		border: 2px solid rgba(255, 255, 255, 0.3);
 		cursor: grab;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
@@ -1290,7 +1290,15 @@
 	.btn-save:hover {
 		transform: translateY(-2px);
 		box-shadow: 0 12px 25px rgba(16, 185, 129, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-		background: linear-gradient(135deg, var(--accent-green), var(--accent-green));
+		/*
+		 * ⚠️ El reposo usa `--surface-green` y el hover se había quedado en
+		 * `--accent-green`: al pasar por encima, el blanco de encima caía de 5,48 a
+		 * **3,77:1**. Es exactamente la forma que no se ve leyendo una regla — el
+		 * color está en el bloque de reposo y el fondo que lo rompe, en el de hover.
+		 * Lo cazó el barrido en vivo con la pasada de `:hover`, no el estático.
+		 */
+		background: linear-gradient(135deg, var(--surface-green), var(--surface-green));
+		filter: brightness(1.1);
 	}
 
 	.btn-save:active {

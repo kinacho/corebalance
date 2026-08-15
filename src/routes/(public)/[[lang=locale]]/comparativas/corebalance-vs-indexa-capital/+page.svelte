@@ -229,7 +229,7 @@
           </tbody>
         </table>
       </div>
-      <p class="note" style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-muted, rgba(160, 160, 200, 0.8)); text-align: center;">
+      <p class="note" style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-muted); text-align: center;">
         * {isEs ? 'Nota: La simulación no incluye el coste de los fondos subyacentes (TER), que ronda el 0.15% en ambos modelos. Solo se compara el coste por el servicio de gestión y rebalanceo.' : 'Note: This simulation does not include the underlying fund cost (TER) of approx. 0.15% which applies to both. It only compares the management fee charge.'}
         {isEs ? 'Puedes estimar cuánto te cuesta el TER de tus fondos con nuestra ' : 'You can estimate what your funds\' TER costs you with our '}<a href={$link('/herramientas/calculadora-ter')}>{isEs ? 'calculadora de TER' : 'TER calculator'}</a>.
       </p>
@@ -337,7 +337,7 @@
 
 <style>
   .compare-page {
-    background: var(--bg-primary, #05050a);
+    background: var(--bg-primary);
     color: var(--text-primary);
     min-height: 100vh;
     position: relative;
@@ -418,7 +418,7 @@
   }
 
   .subtitle {
-    color: var(--text-muted, rgba(160, 160, 200, 0.8));
+    color: var(--text-muted);
     font-size: 1.2rem;
     max-width: 700px;
     margin: 0 auto;
@@ -441,7 +441,7 @@
 
   .intro-card {
     background: var(--bg-card);
-    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
+    border: 1px solid var(--border-subtle);
     border-radius: 24px;
     padding: 2.5rem;
     backdrop-filter: blur(12px);
@@ -492,7 +492,7 @@
 
   .table-wrapper {
     overflow-x: auto;
-    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
+    border: 1px solid var(--border-subtle);
     border-radius: 20px;
     background: rgba(255, 255, 255, 0.01);
   }
@@ -506,7 +506,7 @@
 
   th, td {
     padding: 1.25rem 1.5rem;
-    border-bottom: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.05));
+    border-bottom: 1px solid var(--border-subtle);
     font-size: 1rem;
   }
 
@@ -544,7 +544,7 @@
   }
 
   .section-desc {
-    color: var(--text-muted, rgba(160, 160, 200, 0.8));
+    color: var(--text-muted);
     text-align: center;
     margin-bottom: 2.5rem;
     font-size: 1.1rem;
@@ -577,7 +577,7 @@
 
   .details-card {
     background: var(--bg-card);
-    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
+    border: 1px solid var(--border-subtle);
     border-radius: 20px;
     padding: 2.5rem;
   }

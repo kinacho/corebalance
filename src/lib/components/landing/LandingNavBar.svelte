@@ -346,10 +346,21 @@
     }
   }
 
+  /*
+   * ⚠️ **Las tres barras eran `#fff` y el botón que las contiene es
+   * `background: var(--bg-card)` — que en tema claro es `#ffffff`.**
+   *
+   * O sea: hamburguesa blanca sobre botón blanco. Y no es un rincón: es la
+   * **única entrada a la navegación por debajo de 1140 px**, porque `.nav-links`
+   * está oculto ahí. Ningún barrido lo había renderizado nunca, porque todos
+   * miden a 1440 y a esa anchura `.menu-toggle` es `display: none`.
+   *
+   * `--text-primary` es blanco en oscuro, así que el aspecto no cambia ahí.
+   */
   .hamburger-bar {
     width: 20px;
     height: 2px;
-    background: #fff;
+    background: var(--text-primary);
     position: relative;
     transition: all 0.3s ease;
   }
@@ -360,7 +371,7 @@
     position: absolute;
     width: 20px;
     height: 2px;
-    background: #fff;
+    background: var(--text-primary);
     left: 0;
     transition: all 0.3s ease;
   }

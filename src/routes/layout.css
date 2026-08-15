@@ -112,6 +112,19 @@
 		 * el viejo `--text-muted` bajo `opacity: 0.5` caía a 2,11 sin que nadie
 		 * escribiera un color nuevo.
 		 */
+
+		/*
+		 * ⚠️ **Las sombras de las tarjetas móviles, y existen porque solo se pintan
+		 * en móvil — que es justo por lo que nadie las había visto.**
+		 *
+		 * `.history-section`, `.charts-row-card` y la píldora de pestañas declaran
+		 * su sombra en la regla **base**, y `@media (min-width: 1024px)` la pone a
+		 * `none`. O sea que a 1440 px, donde se midió todo, no existen. Y eran negro
+		 * al 40-50 %: profundidad sobre fondo oscuro, mancha sucia sobre claro.
+		 */
+		--card-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+		--pill-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+
 		--text-primary: #ffffff;
 		--text-secondary: #d7d7e6;
 		--text-muted: #a8a8c0;
@@ -369,6 +382,9 @@
 		--bg-elevated: #ffffff;
 		--bg-scrim: rgba(244, 244, 249, 0.8);
 		--bg-overlay: rgba(255, 255, 255, 0.96);
+
+		--card-shadow: 0 6px 20px rgba(17, 17, 24, 0.08);
+		--pill-shadow: 0 8px 20px rgba(17, 17, 24, 0.1), 0 0 0 1px rgba(17, 17, 24, 0.04) inset;
 
 		--text-primary: #111118;
 		--text-secondary: #3a3a4d;

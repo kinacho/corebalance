@@ -364,7 +364,7 @@
 
 <style>
   .crisis-page {
-    background: var(--bg-primary, #05050a);
+    background: var(--bg-primary);
     color: var(--text-primary);
     min-height: 100vh;
     position: relative;
@@ -414,7 +414,7 @@
   }
 
   .subtitle {
-    color: var(--text-muted, rgba(160, 160, 200, 0.8));
+    color: var(--text-muted);
     font-size: 1.2rem;
     max-width: 700px;
     margin: 0 auto;
@@ -436,8 +436,8 @@
   }
 
   .card-glass {
-    background: var(--bg-card, rgba(255, 255, 255, 0.03));
-    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
     border-radius: 24px;
     padding: 2.5rem;
     backdrop-filter: blur(16px);
@@ -466,12 +466,12 @@
   .input-group label {
     font-size: 0.8rem;
     font-weight: 600;
-    color: var(--text-muted, rgba(160, 160, 200, 0.6));
+    color: var(--text-muted);
   }
 
   .input-group input[type="number"] {
     background: var(--bg-card);
-    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+    border: 1px solid var(--border-subtle);
     border-radius: 12px;
     padding: 0.75rem 1rem;
     color: var(--text-primary);
@@ -505,7 +505,7 @@
   .scenario-label {
     font-size: 0.8rem;
     font-weight: 600;
-    color: var(--text-muted, rgba(160, 160, 200, 0.6));
+    color: var(--text-muted);
     margin: 0 0 0.75rem;
   }
 
@@ -638,7 +638,7 @@
     .big-number { font-size: 3rem; }
   }
 
-  .card-desc { color: var(--text-muted, rgba(160, 160, 200, 0.6)); font-size: 0.9rem; margin: 0.5rem 0 0; }
+  .card-desc { color: var(--text-muted); font-size: 0.9rem; margin: 0.5rem 0 0; }
 
   .loss-desc { color: var(--state-negative); font-weight: 600; font-variant-numeric: tabular-nums; }
 
@@ -649,16 +649,16 @@
 
   .recovery-header h3 { font-size: 1.3rem; font-weight: 800; color: var(--text-primary); margin: 0 0 1.5rem; }
 
-  .recovery-breakdown { display: flex; flex-direction: column; gap: 0.75rem; border-top: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06)); padding-top: 1.25rem; }
+  .recovery-breakdown { display: flex; flex-direction: column; gap: 0.75rem; border-top: 1px solid var(--border-subtle); padding-top: 1.25rem; }
 
-  .breakdown-row { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.9rem; color: var(--text-muted, rgba(160, 160, 200, 0.8)); }
+  .breakdown-row { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.9rem; color: var(--text-muted); }
 
   .value-highlight { color: var(--text-primary); font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
   .value-recovery { color: var(--accent-green-ink); font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
 
   .recovery-note {
     font-size: 0.75rem;
-    color: var(--text-muted, rgba(160, 160, 200, 0.5));
+    color: var(--text-muted);
     line-height: 1.5;
     margin: 1.25rem 0 0;
   }
@@ -703,8 +703,8 @@
 
   /* Otras herramientas */
   .other-tools {
-    background: var(--bg-card, rgba(255, 255, 255, 0.03));
-    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
     border-radius: 16px;
     padding: 1.5rem 2rem;
     margin: 0 auto 3rem;

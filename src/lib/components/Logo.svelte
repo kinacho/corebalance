@@ -11,7 +11,7 @@
 	 * de la marca son neón — `#5eead4` da **1,35:1 sobre `#f4f4f9`** —, así que en
 	 * tema claro lo único que se leía bien era justamente la suciedad.
 	 *
-	 * Vectorizado desde `assets/icon-master.png`, contornos **y huecos**: sin los
+	 * Vectorizado del master ráster que había antes —contornos **y huecos**—: sin los
 	 * huecos cada platillo de la balanza sale macizo, una gota rellena en vez de un
 	 * cuenco dibujado, y el anillo de la C pierde su banda doble.
 	 *

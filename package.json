@@ -28,6 +28,7 @@
 		"test:coverage": "vitest run --coverage.enabled",
 		"docs:check": "node scripts/doc-drift.mjs",
 		"a11y:contrast": "node scripts/contraste.mjs",
+		"a11y:vivo": "node scripts/contraste-vivo.mjs",
 		"test:quality": "node scripts/test-quality.mjs",
 		"test:mutation": "npx --yes -p @stryker-mutator/core -p @stryker-mutator/vitest-runner stryker run"
 	},

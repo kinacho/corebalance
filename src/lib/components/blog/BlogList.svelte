@@ -160,7 +160,7 @@
 
   .tools-subtitle {
     text-align: center;
-    color: var(--text-muted, rgba(160, 160, 200, 0.6));
+    color: var(--text-muted);
     font-size: 0.95rem;
     margin-bottom: 2rem;
   }
@@ -280,8 +280,8 @@
   }
 
   .blog-page {
-    background: var(--bg-primary, #05050a);
-    color: var(--text-primary, #ffffff);
+    background: var(--bg-primary);
+    color: var(--text-primary);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -321,7 +321,7 @@
   }
 
   .subtitle {
-    color: var(--text-muted, rgba(160, 160, 200, 0.8));
+    color: var(--text-muted);
     font-size: 1.15rem;
     max-width: 600px;
     margin: 0 auto;
@@ -329,8 +329,8 @@
   }
 
   .no-posts-card {
-    background: var(--bg-card, rgba(255, 255, 255, 0.03));
-    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
     border-radius: 24px;
     padding: 4rem 2rem;
     text-align: center;
@@ -339,7 +339,7 @@
   }
 
   .no-posts-card p {
-    color: var(--text-muted, rgba(160, 160, 200, 0.8));
+    color: var(--text-muted);
     margin-bottom: 1.5rem;
   }
 
@@ -350,8 +350,8 @@
   }
 
   .post-card {
-    background: var(--bg-card, rgba(255, 255, 255, 0.02));
-    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
     border-radius: 20px;
     cursor: pointer;
     overflow: hidden;
@@ -404,7 +404,7 @@
 
   .post-meta {
     font-size: 0.85rem;
-    color: var(--text-muted, rgba(160, 160, 200, 0.6));
+    color: var(--text-muted);
     margin-bottom: 1rem;
     display: flex;
     flex-wrap: wrap;
@@ -449,7 +449,7 @@
   }
 
   .card-footer {
-    border-top: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.05));
+    border-top: 1px solid var(--border-subtle);
     padding-top: 1.25rem;
     margin-top: auto;
   }

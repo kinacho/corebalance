@@ -1,5 +1,9 @@
 <!--
-  Logo de CoreBalance, vectorizado desde `assets/icon-master.png`.
+  Logo de CoreBalance, vectorizado del master ráster que había antes.
+
+  ⚠️ Ese master (`icon-master.png` / `logo-master.png`, 1,7 MB entre los dos) se
+  borró al pasar la generación a vector: seguía ahí sin que nada lo leyera, y un
+  origen que ya no es el origen es peor que ninguno.
 
   ⚠️ Este fichero es el ORIGEN de los PNG e iconos: `npm run icons` los rinde
   desde aquí con resvg. No editar los PNG a mano.
