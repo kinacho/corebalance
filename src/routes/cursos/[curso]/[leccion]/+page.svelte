@@ -320,8 +320,8 @@
 
 	/* La advertencia: ámbar, que es el color de «ojo con esto» en el resto de la app. */
 	.leccion :global(.bloque.aviso) {
-		background: rgba(245, 158, 11, 0.05);
-		border-color: rgba(245, 158, 11, 0.22);
+		background: var(--tint-warn);
+		border-color: var(--tint-warn-line);
 	}
 	.leccion :global(.bloque.aviso h2) {
 		color: var(--accent-orange-ink);
@@ -329,7 +329,10 @@
 
 	/* El resumen: cierra la lección, así que se lee como una ficha y no como más texto. */
 	.leccion :global(.bloque.retener) {
-		background: var(--bg-card);
+		/* Tinte verde, a juego con su encabezado: en claro `--bg-card` es blanco puro
+		   sobre una página casi blanca y la ficha de resumen dejaba de leerse como ficha. */
+		background: var(--tint-ok);
+		border-color: var(--tint-ok-line);
 	}
 	.leccion :global(.bloque.retener h2) {
 		color: var(--accent-green-ink);

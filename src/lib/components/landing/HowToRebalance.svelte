@@ -97,7 +97,7 @@
   .howto-section {
     padding: 80px 1rem;
     background: var(--bg-card-hover);
-    border-top: 1px solid rgba(255, 255, 255, 0.03);
+    border-top: 1px solid var(--border-subtle);
     position: relative;
     overflow: hidden;
   }

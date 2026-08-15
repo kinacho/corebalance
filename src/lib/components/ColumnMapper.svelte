@@ -255,7 +255,7 @@
 	.preview-title { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); margin: 0 0 0.5rem; text-transform: uppercase; }
 	.preview-table { width: 100%; border-collapse: collapse; font-size: 0.7rem; color: var(--text-secondary); }
 	.preview-table th { text-align: left; padding: 0.4rem; color: var(--text-faint); border-bottom: 1px solid var(--border-subtle); }
-	.preview-table td { padding: 0.4rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; border-bottom: 1px solid rgba(255, 255, 255, 0.03); }
+	.preview-table td { padding: 0.4rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; border-bottom: 1px solid var(--border-subtle); }
 
 	.mapper-actions { display: flex; gap: 0.75rem; margin-top: 0.5rem; }
 	.btn-primary { flex: 1; padding: 0.85rem; background: var(--accent-blue); border: none; border-radius: 12px; color: var(--text-on-accent); font-weight: 700; cursor: pointer; transition: all 0.2s; }

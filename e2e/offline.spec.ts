@@ -65,18 +65,24 @@ test.describe('Sin conexión', () => {
 			expect(await page.locator('svg.treemap').count()).toBeGreaterThan(0);
 
 			/**
-			 * Y las imágenes del esqueleto también, que es lo que este spec no comprobaba.
+			 * Y el logo del esqueleto también, que es lo que este spec no comprobaba.
 			 *
 			 * ⚠️ En producción la única petición que fallaba sin red era `/logo.png?v=2`: la
-			 * cabecera lleva un rompecachés a mano y el precache tiene la entrada sin
+			 * cabecera llevaba un rompecachés a mano y el precache tiene la entrada sin
 			 * parámetro, así que Workbox no las casaba. «La app arranca» no implica «la app
 			 * está completa», y aquí se comprueba lo segundo.
+			 *
+			 * ⚠️ **Ese defecto ya no puede darse, y por eso la comprobación cambió de
+			 * forma en lugar de borrarse.** El logo es ahora un SVG **en línea**
+			 * (`Logo.svelte`, que va así para poder leer los tokens del tema), o sea que
+			 * no hace ninguna petición: no hay rompecachés que casar. Lo que se sigue
+			 * comprobando es lo mismo de siempre —que el logo se pinta sin red— con la
+			 * única prueba que aplica a un vector en línea: que tiene caja.
 			 */
-			const logoCargado = await page
-				.locator('img.logo-img')
-				.first()
-				.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0);
-			expect(logoCargado, 'el logo de la cabecera no carga sin red').toBe(true);
+			const logo = page.locator('.header-left svg.cb-logo').first();
+			await expect(logo, 'el logo de la cabecera no se pinta sin red').toBeVisible();
+			const caja = await logo.boundingBox();
+			expect(caja?.width ?? 0).toBeGreaterThan(0);
 		} finally {
 			await context.setOffline(false);
 		}

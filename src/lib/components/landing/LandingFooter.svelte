@@ -199,7 +199,7 @@
 
   .footer-bottom {
     padding-top: 2rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.03);
+    border-top: 1px solid var(--border-subtle);
     display: flex;
     flex-direction: column;
     align-items: center;

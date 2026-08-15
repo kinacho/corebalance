@@ -1192,7 +1192,7 @@ import { formatCompactCurrency } from "$lib/chart-format";
     padding: 1.5rem;
     background: var(--bg-card);
     border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-subtle);
   }
 
   .footer-legal p {

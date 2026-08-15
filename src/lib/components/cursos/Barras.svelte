@@ -74,10 +74,26 @@
 
 	function color(s: Serie, i: number): string {
 		if (escala === 'rampa') {
-			// De oscuro a claro según la posición, sobre la superficie de tarjeta.
+			/**
+			 * Rampa de un solo tono, de menos a más según la posición.
+			 *
+			 * ⚠️ **Se mezcla entre dos extremos, NO contra la superficie.** Mezclar el
+			 * acento con el fondo resta contraste por definición —en oscuro tira hacia
+			 * negro y en claro hacia blanco—, así que el peldaño más flojo caía por
+			 * debajo del 3:1 que WCAG 1.4.11 pide a un objeto gráfico hiciera lo que
+			 * hiciera con el suelo de la mezcla: medido a 62, 72 y 80 % dio
+			 * **2,90 · 2,76 · 2,86**. No era cuestión de afinar el número, era la
+			 * dirección de la mezcla. Antes iba contra `#0d0d12` escrito a fuego, que
+			 * además dejaba la rampa fija al tema oscuro.
+			 *
+			 * Una barra que no se ve es el dato que la lección existe para enseñar.
+			 *
+			 * `--ramp-from` y `--ramp-to` los define cada tema en `layout.css`, y la
+			 * dirección se invierte: en claro va de azul marino a azul medio.
+			 */
 			const paso = series.length > 1 ? i / (series.length - 1) : 1;
-			const mezcla = Math.round(45 + paso * 55);
-			return `color-mix(in oklab, var(--accent-blue) ${mezcla}%, #0d0d12)`;
+			const mezcla = Math.round(paso * 100);
+			return `color-mix(in oklab, var(--ramp-to) ${mezcla}%, var(--ramp-from))`;
 		}
 		return TONOS[s.tono ?? (['a', 'b', 'c'][i % 3] as 'a' | 'b' | 'c')];
 	}

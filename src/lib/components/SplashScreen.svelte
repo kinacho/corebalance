@@ -193,7 +193,7 @@
 		background: var(--bg-card-hover);
 		border-radius: 10px;
 		overflow: hidden;
-		border: 1px solid rgba(255, 255, 255, 0.03);
+		border: 1px solid var(--border-subtle);
 	}
 
 	.loading-bar {

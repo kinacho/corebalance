@@ -557,7 +557,7 @@
 		appearance: none;
 		width: 100%;
 		height: 4px;
-		background: rgba(255, 255, 255, 0.1);
+		background: var(--track);
 		border-radius: 10px;
 		outline: none;
 		touch-action: pan-y pinch-zoom;

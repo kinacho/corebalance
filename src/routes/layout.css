@@ -128,6 +128,51 @@
 		--border-strong: #61617a;
 
 		/*
+		 * ⚠️ **El carril de un deslizador, y existe porque estaba escrito como blanco
+		 * al 10 % en cuatro sitios.**
+		 *
+		 * Sobre fondo oscuro eso es un surco tenue; sobre claro **no es nada**, así que
+		 * en tema claro los controles de las lecciones y de las calculadoras se
+		 * quedaban en un pomo azul flotando sin carril. Un control cuyo recorrido no se
+		 * ve no comunica que se pueda arrastrar.
+		 */
+		--track: rgba(255, 255, 255, 0.14);
+
+		/*
+		 * ⚠️ **Los tintes de los bloques didácticos de los cursos, por tema.**
+		 *
+		 * El aviso iba a `rgba(245,158,11,0.05)` fijo. Sobre negro, un 5 % de ámbar es
+		 * un panel claramente encendido; sobre blanco es casi nada — y son las 34
+		 * lecciones, o sea el recurso didáctico principal del sitio.
+		 *
+		 * ⚠️ Ojo al medirlo: un tinte de color se ve por el **tono**, no por la
+		 * luminancia, así que un detector de contraste lo marca aunque la caja se
+		 * distinga perfectamente. Lo que de verdad la delimita sobre claro es el
+		 * **borde**, y por eso sube más que el relleno.
+		 */
+
+		/*
+		 * ⚠️ **Los dos extremos de la rampa de , y son tokens porque la
+		 * dirección de la mezcla se invierte con el tema.**
+		 *
+		 * La rampa mezclaba el acento contra la superficie, y eso **siempre** resta
+		 * contraste: en oscuro tira hacia negro y en claro hacia blanco, así que el
+		 * peldaño más flojo caía por debajo de 3:1 —el mínimo de WCAG 1.4.11 para un
+		 * objeto gráfico— hiciera lo que hiciera con el suelo. Medido subiéndolo a 62,
+		 * 72 y 80 %: 2,90 · 2,76 · 2,86. No es cuestión de afinar el número.
+		 *
+		 * Ahora se mezcla **entre dos extremos que pasan los dos**, y cada tema tiene
+		 * los suyos. Oscuro: 3,93 → 11,28. Claro: 10,36 → 3,68.
+		 */
+		--ramp-from: #2563eb;
+		--ramp-to: #93c5fd;
+
+		--tint-warn: rgba(245, 158, 11, 0.05);
+		--tint-warn-line: rgba(245, 158, 11, 0.22);
+		--tint-ok: rgba(5, 150, 105, 0.05);
+		--tint-ok-line: rgba(5, 150, 105, 0.2);
+
+		/*
 		 * ⚠️ El cuerpo más pequeño que se permite, y existe porque no había ninguno.
 		 *
 		 * Medido con `scripts/auditar-movil.mjs` a 390 px: nueve componentes
@@ -343,6 +388,15 @@
 		 */
 		--border-subtle: rgba(17, 17, 24, 0.16);
 		--border-strong: #8a8aa0;
+		--track: rgba(17, 17, 24, 0.18);
+
+		--ramp-from: #1e3a8a;
+		--ramp-to: #3b82f6;
+
+		--tint-warn: rgba(245, 158, 11, 0.16);
+		--tint-warn-line: rgba(180, 83, 9, 0.45);
+		--tint-ok: rgba(5, 150, 105, 0.12);
+		--tint-ok-line: rgba(4, 108, 78, 0.4);
 
 		--text-on-accent: #ffffff;
 
