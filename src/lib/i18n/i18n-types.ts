@@ -2535,7 +2535,7 @@ type RootTranslation = {
 		 */
 		footer_tagline: string
 		/**
-		 * v​1​.​1​6​.​0​ ​�​�
+		 * v​1​.​1​7​.​0​ ​�​�
 		 */
 		changelog_trigger: string
 		/**
@@ -3470,6 +3470,42 @@ type RootTranslation = {
 		 */
 		btn_understand: string
 		releases: {
+			v1_17_0: {
+				/**
+				 * 1​5​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
+				 */
+				date: string
+				/**
+				 * M​o​d​o​ ​c​l​a​r​o​,​ ​y​ ​e​l​ ​c​o​n​t​r​a​s​t​e​ ​q​u​e​ ​f​a​l​t​a​b​a
+				 */
+				badge: string
+				changes: {
+					/**
+					 * ☀​️​ ​*​*​Y​a​ ​h​a​y​ ​m​o​d​o​ ​c​l​a​r​o​.​*​*​ ​E​l​ ​b​o​t​ó​n​ ​e​s​t​á​ ​e​n​ ​l​a​ ​b​a​r​r​a​,​ ​j​u​n​t​o​ ​a​l​ ​i​d​i​o​m​a​.​ ​S​i​ ​n​o​ ​e​l​i​g​e​s​,​ ​l​a​ ​a​p​p​ ​s​i​g​u​e​ ​l​o​ ​q​u​e​ ​t​e​n​g​a​ ​c​o​n​f​i​g​u​r​a​d​o​ ​t​u​ ​s​i​s​t​e​m​a​;​ ​s​i​ ​e​l​i​g​e​s​,​ ​s​e​ ​a​c​u​e​r​d​a​.​ ​E​l​ ​t​e​m​a​ ​s​e​ ​d​e​c​i​d​e​ ​a​n​t​e​s​ ​d​e​ ​q​u​e​ ​l​a​ ​p​á​g​i​n​a​ ​s​e​ ​p​i​n​t​e​,​ ​a​s​í​ ​q​u​e​ ​n​o​ ​h​a​y​ ​e​s​e​ ​d​e​s​t​e​l​l​o​ ​b​l​a​n​c​o​ ​o​ ​n​e​g​r​o​ ​d​e​l​ ​p​r​i​m​e​r​ ​i​n​s​t​a​n​t​e​.
+					 */
+					'0': string
+					/**
+					 * �​�​ ​*​*​Y​ ​e​l​ ​m​o​t​i​v​o​ ​d​e​ ​f​o​n​d​o​:​ ​e​l​ ​t​e​x​t​o​ ​n​o​ ​t​e​n​í​a​ ​c​o​n​t​r​a​s​t​e​ ​s​u​f​i​c​i​e​n​t​e​.​*​*​ ​H​a​b​í​a​ ​2​1​2​ ​s​i​t​i​o​s​ ​p​o​r​ ​d​e​b​a​j​o​ ​d​e​l​ ​m​í​n​i​m​o​ ​q​u​e​ ​r​e​c​o​m​i​e​n​d​a​ ​l​a​ ​n​o​r​m​a​ ​d​e​ ​a​c​c​e​s​i​b​i​l​i​d​a​d​,​ ​1​0​5​ ​d​e​ ​e​l​l​o​s​ ​m​u​y​ ​p​o​r​ ​d​e​b​a​j​o​.​ ​L​a​ ​e​s​c​a​l​a​ ​d​e​ ​g​r​i​s​e​s​ ​t​e​n​í​a​ ​d​o​s​ ​p​e​l​d​a​ñ​o​s​ ​y​ ​n​i​n​g​ú​n​ ​i​n​t​e​r​m​e​d​i​o​,​ ​a​s​í​ ​q​u​e​ ​c​a​d​a​ ​p​a​n​t​a​l​l​a​ ​s​e​ ​i​n​v​e​n​t​a​b​a​ ​e​l​ ​s​u​y​o​ ​h​a​c​i​a​ ​a​b​a​j​o​.​ ​A​h​o​r​a​ ​s​o​n​ ​c​u​a​t​r​o​,​ ​y​ ​h​a​s​t​a​ ​e​l​ ​m​á​s​ ​t​e​n​u​e​ ​s​u​p​e​r​a​ ​e​l​ ​m​í​n​i​m​o​.
+					 */
+					'1': string
+					/**
+					 * �​�​ ​*​*​E​l​ ​l​o​g​o​ ​s​e​ ​h​a​ ​r​e​d​i​b​u​j​a​d​o​ ​c​o​m​o​ ​v​e​c​t​o​r​.​*​*​ ​E​l​ ​a​n​t​e​r​i​o​r​ ​e​r​a​ ​u​n​a​ ​i​m​a​g​e​n​ ​c​o​n​ ​u​n​ ​c​o​n​t​o​r​n​o​ ​o​s​c​u​r​o​ ​y​ ​u​n​a​ ​s​o​m​b​r​a​ ​p​e​g​a​d​o​s​ ​a​ ​l​o​s​ ​p​í​x​e​l​e​s​:​ ​s​o​b​r​e​ ​f​o​n​d​o​ ​n​e​g​r​o​ ​n​o​ ​s​e​ ​v​e​í​a​n​,​ ​s​o​b​r​e​ ​b​l​a​n​c​o​ ​e​r​a​n​ ​u​n​ ​b​o​r​r​ó​n​.​ ​A​h​o​r​a​ ​e​s​ ​n​í​t​i​d​o​ ​a​ ​c​u​a​l​q​u​i​e​r​ ​t​a​m​a​ñ​o​,​ ​c​a​m​b​i​a​ ​d​e​ ​t​o​n​o​ ​c​o​n​ ​e​l​ ​t​e​m​a​,​ ​y​ ​l​o​s​ ​i​c​o​n​o​s​ ​d​e​ ​l​a​ ​a​p​l​i​c​a​c​i​ó​n​ ​p​e​s​a​n​ ​u​n​ ​t​e​r​c​i​o​.
+					 */
+					'2': string
+					/**
+					 * �​�​ ​*​*​E​n​ ​e​l​ ​m​ó​v​i​l​ ​h​a​b​í​a​ ​t​r​e​s​ ​c​o​s​a​s​ ​r​o​t​a​s​ ​q​u​e​ ​e​n​ ​e​l​ ​o​r​d​e​n​a​d​o​r​ ​n​o​ ​e​x​i​s​t​e​n​.​*​*​ ​E​l​ ​b​o​t​ó​n​ ​d​e​ ​m​e​n​ú​ ​e​r​a​ ​b​l​a​n​c​o​ ​s​o​b​r​e​ ​u​n​ ​f​o​n​d​o​ ​b​l​a​n​c​o​ ​—​y​ ​e​s​ ​l​a​ ​ú​n​i​c​a​ ​f​o​r​m​a​ ​d​e​ ​a​b​r​i​r​ ​l​a​ ​n​a​v​e​g​a​c​i​ó​n​ ​e​n​ ​u​n​a​ ​p​a​n​t​a​l​l​a​ ​p​e​q​u​e​ñ​a​—​,​ ​l​a​ ​b​a​r​r​a​ ​d​e​ ​p​e​s​t​a​ñ​a​s​ ​d​e​l​ ​p​a​n​e​l​ ​l​l​e​v​a​b​a​ ​u​n​ ​f​o​n​d​o​ ​n​e​g​r​o​ ​f​i​j​o​,​ ​y​ ​d​o​s​ ​t​a​r​j​e​t​a​s​ ​a​r​r​a​s​t​r​a​b​a​n​ ​u​n​a​ ​s​o​m​b​r​a​ ​q​u​e​ ​s​o​b​r​e​ ​f​o​n​d​o​ ​c​l​a​r​o​ ​e​r​a​ ​u​n​a​ ​m​a​n​c​h​a​.
+					 */
+					'3': string
+					/**
+					 * �​�​ ​*​*​L​a​s​ ​l​e​c​c​i​o​n​e​s​ ​d​e​ ​l​o​s​ ​c​u​r​s​o​s​ ​t​a​m​b​i​é​n​.​*​*​ ​L​o​s​ ​a​v​i​s​o​s​ ​y​ ​l​o​s​ ​r​e​s​ú​m​e​n​e​s​ ​s​e​ ​v​e​í​a​n​ ​c​o​m​o​ ​c​a​j​a​s​ ​e​n​ ​m​o​d​o​ ​o​s​c​u​r​o​ ​y​ ​d​e​s​a​p​a​r​e​c​í​a​n​ ​e​n​ ​c​l​a​r​o​,​ ​l​o​s​ ​d​e​s​l​i​z​a​d​o​r​e​s​ ​p​a​r​a​ ​c​a​m​b​i​a​r​ ​v​a​l​o​r​e​s​ ​s​e​ ​q​u​e​d​a​b​a​n​ ​s​i​n​ ​s​u​ ​c​a​r​r​i​l​,​ ​y​ ​l​a​s​ ​b​a​r​r​a​s​ ​d​e​ ​l​o​s​ ​g​r​á​f​i​c​o​s​ ​d​i​d​á​c​t​i​c​o​s​ ​p​o​d​í​a​n​ ​l​l​e​g​a​r​ ​a​ ​n​o​ ​d​i​s​t​i​n​g​u​i​r​s​e​ ​d​e​l​ ​f​o​n​d​o​.
+					 */
+					'4': string
+					/**
+					 * �​�​ ​*​*​Y​ ​u​n​a​ ​r​e​d​ ​p​a​r​a​ ​q​u​e​ ​e​s​t​o​ ​n​o​ ​s​e​ ​d​e​s​h​a​g​a​.​*​*​ ​D​o​s​ ​c​o​m​p​r​o​b​a​c​i​o​n​e​s​ ​n​u​e​v​a​s​ ​r​e​v​i​s​a​n​ ​e​l​ ​c​o​n​t​r​a​s​t​e​ ​d​e​ ​t​o​d​a​ ​l​a​ ​a​p​l​i​c​a​c​i​ó​n​ ​e​n​ ​l​o​s​ ​d​o​s​ ​t​e​m​a​s​ ​—​u​n​a​ ​l​e​e​ ​e​l​ ​c​ó​d​i​g​o​ ​y​ ​o​t​r​a​ ​a​b​r​e​ ​u​n​ ​n​a​v​e​g​a​d​o​r​ ​d​e​ ​v​e​r​d​a​d​ ​y​ ​r​e​c​o​r​r​e​ ​l​a​s​ ​1​0​3​ ​p​á​g​i​n​a​s​—​ ​y​ ​u​n​a​ ​t​e​r​c​e​r​a​ ​e​n​t​r​a​ ​e​n​ ​l​a​ ​c​o​m​p​r​o​b​a​c​i​ó​n​ ​a​u​t​o​m​á​t​i​c​a​ ​d​e​ ​c​a​d​a​ ​c​a​m​b​i​o​.
+					 */
+					'5': string
+				}
+			}
 			v1_16_0: {
 				/**
 				 * 1​3​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
@@ -6653,7 +6689,7 @@ export type TranslationFunctions = {
 		 */
 		footer_tagline: () => LocalizedString
 		/**
-		 * v1.16.0 🚀
+		 * v1.17.0 🚀
 		 */
 		changelog_trigger: () => LocalizedString
 		/**
@@ -7543,6 +7579,42 @@ export type TranslationFunctions = {
 		 */
 		btn_understand: () => LocalizedString
 		releases: {
+			v1_17_0: {
+				/**
+				 * 15 de Agosto, 2026
+				 */
+				date: () => LocalizedString
+				/**
+				 * Modo claro, y el contraste que faltaba
+				 */
+				badge: () => LocalizedString
+				changes: {
+					/**
+					 * ☀️ **Ya hay modo claro.** El botón está en la barra, junto al idioma. Si no eliges, la app sigue lo que tenga configurado tu sistema; si eliges, se acuerda. El tema se decide antes de que la página se pinte, así que no hay ese destello blanco o negro del primer instante.
+					 */
+					'0': () => LocalizedString
+					/**
+					 * 🔍 **Y el motivo de fondo: el texto no tenía contraste suficiente.** Había 212 sitios por debajo del mínimo que recomienda la norma de accesibilidad, 105 de ellos muy por debajo. La escala de grises tenía dos peldaños y ningún intermedio, así que cada pantalla se inventaba el suyo hacia abajo. Ahora son cuatro, y hasta el más tenue supera el mínimo.
+					 */
+					'1': () => LocalizedString
+					/**
+					 * 🎨 **El logo se ha redibujado como vector.** El anterior era una imagen con un contorno oscuro y una sombra pegados a los píxeles: sobre fondo negro no se veían, sobre blanco eran un borrón. Ahora es nítido a cualquier tamaño, cambia de tono con el tema, y los iconos de la aplicación pesan un tercio.
+					 */
+					'2': () => LocalizedString
+					/**
+					 * 📱 **En el móvil había tres cosas rotas que en el ordenador no existen.** El botón de menú era blanco sobre un fondo blanco —y es la única forma de abrir la navegación en una pantalla pequeña—, la barra de pestañas del panel llevaba un fondo negro fijo, y dos tarjetas arrastraban una sombra que sobre fondo claro era una mancha.
+					 */
+					'3': () => LocalizedString
+					/**
+					 * 📚 **Las lecciones de los cursos también.** Los avisos y los resúmenes se veían como cajas en modo oscuro y desaparecían en claro, los deslizadores para cambiar valores se quedaban sin su carril, y las barras de los gráficos didácticos podían llegar a no distinguirse del fondo.
+					 */
+					'4': () => LocalizedString
+					/**
+					 * 🧪 **Y una red para que esto no se deshaga.** Dos comprobaciones nuevas revisan el contraste de toda la aplicación en los dos temas —una lee el código y otra abre un navegador de verdad y recorre las 103 páginas— y una tercera entra en la comprobación automática de cada cambio.
+					 */
+					'5': () => LocalizedString
+				}
+			}
 			v1_16_0: {
 				/**
 				 * 13 de Agosto, 2026

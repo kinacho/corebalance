@@ -672,7 +672,7 @@ const en: Translation = {
     timing_period_note: 'Measured over the {days} days with real data, not annualised.',
     legal_disclaimer: '<strong>Legal Disclaimer:</strong> CoreBalance is a purely informative and educational tool. It does not constitute financial, investment, or tax advice. The data displayed may be subject to delays or inaccuracies. The developer is not responsible for any financial losses resulting from the use of this application. Always invest at your own risk.',
     footer_tagline: 'Your control center for smart and balanced asset management.',
-    changelog_trigger: 'v1.16.0 🚀',
+    changelog_trigger: 'v1.17.0 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Made with ❤️ for the investing community',
     reclassify_stocks: 'Individual Stocks',
@@ -946,6 +946,18 @@ const en: Translation = {
     close_aria: 'Close modal',
     btn_understand: 'Got it',
     releases: {
+      v1_17_0: {
+        date: 'August 15, 2026',
+        badge: 'Light mode, and the contrast that was missing',
+        changes: [
+          '☀️ **Light mode is here.** The toggle sits in the bar, next to the language switch. The app still starts dark — that is how it is meant to look — but if you prefer light, that choice sticks for good, including when you come back another day. The theme is decided before the page paints, so there is no white or black flash on the first instant.',
+          '🔍 **And the underlying reason: the text did not have enough contrast.** There were 212 places below the minimum the accessibility standard recommends, 105 of them well below. The grey scale had two steps and nothing in between, so every screen invented its own, downwards. There are four now, and even the faintest clears the minimum.',
+          '🎨 **The logo has been redrawn as a vector.** The old one was an image with a dark outline and a shadow baked into the pixels: invisible on a black background, a smudge on a white one. It is now crisp at any size, shifts tone with the theme, and the app icons weigh a third of what they did.',
+          '📱 **On mobile three things were broken that do not exist on desktop.** The menu button was white on a white background — and it is the only way to open navigation on a small screen — the dashboard tab bar carried a fixed black background, and two cards dragged along a shadow that reads as a stain on a light page.',
+          '📚 **The course lessons too.** Warnings and summaries read as boxes in dark mode and vanished in light, the sliders lost their track, and the bars in the teaching charts could end up indistinguishable from the background.',
+          '🧪 **And a safety net so this does not come undone.** Two new checks audit contrast across the whole app in both themes — one reads the code, the other opens a real browser and walks all 103 pages — and a third runs on every change.'
+        ]
+      },
       v1_16_0: {
         date: 'August 13, 2026',
         badge: 'Every panel tells you where it is explained',

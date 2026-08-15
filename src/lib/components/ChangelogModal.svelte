@@ -26,6 +26,7 @@
 
 	// Mapeo dinámico desde el diccionario de traducciones
 	const releaseVersions = [
+		'v1_17_0',
 		'v1_16_0',
 		'v1_15_0',
 		'v1_14_0',
@@ -49,6 +50,8 @@
 	] as const;
 
 	const badgeColors: Record<string, string> = {
+		// Teal del logo: 3,4:1 sobre blanco y 5,4:1 sobre oscuro, así que vale en los dos temas.
+		v1_17_0: '#0d9488',
 		v1_16_0: '#f59e0b',
 		v1_15_0: '#0ea5e9',
 		v1_14_0: '#047857',
