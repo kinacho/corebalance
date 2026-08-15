@@ -5,14 +5,13 @@
 	/**
 	 * El conmutador de tema.
 	 *
-	 * ⚠️ **Dos estados y no tres, aunque el store guarde tres.** El store distingue
-	 * `'system'` de una elección explícita, porque quien no ha elegido debe seguir
-	 * al sistema cuando el sistema cambie al anochecer. Pero un botón de tres
-	 * posiciones —claro / oscuro / automático— obliga a explicar la tercera, y el
-	 * sitio donde vive esto es una barra de iconos sin sitio para explicar nada. El
-	 * botón alterna entre los dos temas visibles; quien quiera volver al automático
-	 * tiene `theme.seguirAlSistema()`, que hoy no tiene interfaz **a propósito**: el
-	 * automático es el estado de partida y solo se sale de él queriendo.
+	 * ⚠️ **Dos estados, y desde el 15-ago-2026 el store también tiene dos.** Antes
+	 * guardaba un tercero, `'system'`, y el botón no lo ofrecía para no tener que
+	 * explicar un «automático» en una barra de iconos donde no cabe explicar nada.
+	 * Ahora el predeterminado es el oscuro y no depende del sistema, así que ese
+	 * tercer estado ya no existe: el store solo distingue «no ha elegido» (que se
+	 * pinta oscuro) de una elección guardada. Queda `theme.olvidar()`, sin
+	 * interfaz por la misma razón que la tenía su antecesor.
 	 *
 	 * El icono muestra **el tema al que se va**, no en el que se está: un botón dice
 	 * lo que hace, no dónde estás. Y el rótulo accesible lo dice con palabras, que

@@ -14,6 +14,14 @@ export type Tema = 'light' | 'dark';
  * Así que el orden es: `app.html` pone el atributo → este store lo lee al
  * construirse → a partir de ahí manda el store.
  *
+ * ⚠️ **El predeterminado es oscuro y NO sigue al sistema operativo.** Lo siguió
+ * hasta el 15-ago-2026, y eso significaba que a media audiencia se le servía un
+ * tema que no había pedido — distinto del de las capturas, las tarjetas sociales
+ * y el icono. El claro es una opción que se elige; elegida, se guarda, y a partir
+ * de ahí manda ella y no lo que haga el sistema al anochecer. De ahí que ya no
+ * haya escucha de `prefers-color-scheme`: existía solo para el caso «no ha
+ * elegido», que ahora tiene una respuesta fija.
+ *
  * ⚠️ **`resuelto` es `$state`, no un `$derived` del DOM**, porque el atributo no es
  * reactivo: nada avisa a Svelte de que ha cambiado. El store es la única fuente de
  * verdad una vez arrancado, y `aplicar()` mantiene el DOM en sincronía con él —
@@ -21,34 +29,25 @@ export type Tema = 'light' | 'dark';
  */
 class ThemeStore {
 	/**
-	 * Lo que el usuario ha elegido explícitamente, o `'system'` si no ha elegido.
-	 * Se distingue de `resuelto` porque son preguntas distintas: quien está en
-	 * `'system'` debe seguir al sistema cuando el sistema cambie, y quien eligió
-	 * `'dark'` a mediodía no quiere que su tema cambie al anochecer.
+	 * Lo que el usuario eligió explícitamente, o `null` si nunca ha elegido.
+	 * Se distingue de `resuelto` porque responden a preguntas distintas: `null`
+	 * con `resuelto === 'dark'` es «se le está sirviendo el predeterminado», que
+	 * no es lo mismo que «pidió oscuro». Nada de la interfaz depende hoy de esa
+	 * diferencia, pero sí `#aplicar()`, que solo escribe en `localStorage` cuando
+	 * hay elección.
 	 */
-	preferencia = $state<Tema | 'system'>('system');
+	preferencia = $state<Tema | null>(null);
 
-	/** El tema que está pintado ahora mismo. Nunca `'system'`. */
+	/** El tema que está pintado ahora mismo. */
 	resuelto = $state<Tema>('dark');
 
 	constructor() {
 		if (typeof document === 'undefined') return;
 
 		const guardado = this.#leerGuardado();
-		this.preferencia = guardado ?? 'system';
+		this.preferencia = guardado;
 		this.resuelto =
 			guardado ?? (document.documentElement.getAttribute('data-theme') as Tema) ?? 'dark';
-
-		// Quien no ha elegido sigue al sistema, también si el sistema cambia con la
-		// pestaña abierta (es lo que pasa al anochecer con el tema automático de macOS
-		// y Windows). Quien sí eligió no se ve afectado.
-		window
-			.matchMedia('(prefers-color-scheme: light)')
-			.addEventListener('change', (e) => {
-				if (this.preferencia !== 'system') return;
-				this.resuelto = e.matches ? 'light' : 'dark';
-				this.#aplicar();
-			});
 	}
 
 	#leerGuardado(): Tema | null {
@@ -63,6 +62,11 @@ class ThemeStore {
 	#aplicar() {
 		if (typeof document === 'undefined') return;
 		document.documentElement.setAttribute('data-theme', this.resuelto);
+		// La barra del navegador y la del sistema en móvil. `app.html` deja una
+		// sola meta `theme-color` viva y sin `media`, así que aquí basta con
+		// reescribir su contenido; si no existiera, tampoco pasa nada.
+		const meta = document.querySelector('meta[name="theme-color"]');
+		if (meta) meta.setAttribute('content', this.resuelto === 'light' ? '#f4f4f9' : '#0a0a16');
 		// Lo que va por CSS ya ha cambiado con el atributo. Esto es para lo que no:
 		// los lienzos de Chart.js, que recibieron cadenas de color al construirse.
 		// Va por evento y no por import para no arrastrar Chart.js a las páginas
@@ -82,18 +86,24 @@ class ThemeStore {
 		}
 	}
 
-	/** Devuelve la decisión al sistema operativo. */
-	seguirAlSistema() {
-		this.preferencia = 'system';
+	/**
+	 * Olvida la elección y vuelve al predeterminado de la aplicación.
+	 *
+	 * ⚠️ Sustituye a `seguirAlSistema()`, que devolvía la decisión a
+	 * `prefers-color-scheme`. Ya no hay a quién devolvérsela: el predeterminado es
+	 * el oscuro, decidido aquí. Sigue sin tener interfaz, por la misma razón que
+	 * la tenía la anterior — un tercer estado en un botón de dos posiciones —
+	 * pero deja el `localStorage` limpio, que es lo que hace falta para probar el
+	 * arranque sin elección previa.
+	 */
+	olvidar() {
+		this.preferencia = null;
 		try {
 			localStorage.removeItem(STORAGE_KEY_THEME);
 		} catch {
 			// Ídem.
 		}
-		if (typeof window === 'undefined') return;
-		this.resuelto = window.matchMedia('(prefers-color-scheme: light)').matches
-			? 'light'
-			: 'dark';
+		this.resuelto = 'dark';
 		this.#aplicar();
 	}
 

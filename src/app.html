@@ -3,13 +3,25 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-		<meta name="theme-color" content="#0a0a16" media="(prefers-color-scheme: dark)" />
-		<meta name="theme-color" content="#f4f4f9" media="(prefers-color-scheme: light)" />
+		<!-- ⚠️ **Una sola meta y sin `media`.** Eran dos, cada una con su
+		     `prefers-color-scheme`, y desde que el tema no lo decide el sistema eso
+		     pintaba la barra del navegador clara sobre una aplicación oscura a
+		     cualquiera con el sistema en claro — que es el caso normal. Aquí va el
+		     predeterminado y el script de abajo la reescribe si hay elección
+		     guardada; sin JS se queda el oscuro, que es lo que sirve `:root`. -->
+		<meta name="theme-color" content="#0a0a16" />
 
 		<!--
 			⚠️ El tema se resuelve AQUÍ, lo primero de todo y antes de que exista
 			ninguna hoja de estilos, porque cualquier sitio más tarde es un destello
 			de negro en un tema claro (o al revés).
+
+			⚠️ **El predeterminado es OSCURO, no el del sistema.** Antes seguía a
+			`prefers-color-scheme`, y eso significaba que la mitad de la gente veía
+			una app distinta de la que enseñan las capturas y las tarjetas sociales
+			sin haber pedido nada. El oscuro es la identidad del producto; el claro
+			es una opción. Quien la elige, la conserva: se guarda y a partir de ahí
+			manda su elección y no el sistema.
 
 			⚠️ **No puede venir de una cookie**, y no es preferencia: `hooks.server.ts`
 			pone `Vary: Cookie` solo en `/dashboard` y `/api` para que las páginas
@@ -30,13 +42,16 @@
 			(function () {
 				try {
 					var guardado = localStorage.getItem('corebalance_theme');
-					var tema =
-						guardado === 'light' || guardado === 'dark'
-							? guardado
-							: window.matchMedia('(prefers-color-scheme: light)').matches
-								? 'light'
-								: 'dark';
+					// Oscuro por defecto; solo una elección explícita lo cambia, y esa
+					// elección manda siempre a partir de entonces.
+					var tema = guardado === 'light' || guardado === 'dark' ? guardado : 'dark';
 					document.documentElement.setAttribute('data-theme', tema);
+					// La barra del navegador, que no la pinta el CSS. La meta de arriba
+					// trae el oscuro; solo hay que tocarla al elegir claro.
+					if (tema === 'light') {
+						var m = document.querySelector('meta[name="theme-color"]');
+						if (m) m.setAttribute('content', '#f4f4f9');
+					}
 				} catch (e) {
 					document.documentElement.setAttribute('data-theme', 'dark');
 				}

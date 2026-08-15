@@ -7,8 +7,10 @@
 	 * ⚠️ Los dos temas se definen aquí y en ningún otro sitio. `:root` es el oscuro
 	 * y también el respaldo sin JS —que es el estado que la app tenía siempre, así
 	 * que nadie pierde nada—; `:root[data-theme='light']` es el claro. Quien decide
-	 * cuál se aplica es el script en línea de `app.html`, que resuelve
-	 * `localStorage` → `prefers-color-scheme` **antes de pintar**.
+	 * cuál se aplica es el script en línea de `app.html`, que lee `localStorage`
+	 * **antes de pintar**. Sin nada guardado sirve el oscuro: el predeterminado es
+	 * de la aplicación y **no** se consulta `prefers-color-scheme`, así que `:root`
+	 * no es solo el respaldo sin JS, es lo que ve quien nunca ha tocado el botón.
 	 *
 	 * ⚠️ **No puede venir de una cookie**, y no es preferencia: `hooks.server.ts`
 	 * pone `Vary: Cookie` solo en `/dashboard` y `/api` para que las páginas

@@ -54,9 +54,10 @@ test.describe('Tema claro y oscuro', () => {
 		 * Ese init se reejecuta en **cada navegación**, así que reescribiría
 		 * `localStorage` justo antes de que la página lo leyera y el test
 		 * «demostraría» que el tema no persiste cuando sí lo hace. Se parte del
-		 * sistema en oscuro y se deja que la app decida.
+		 * sistema en **claro** y se deja que la app decida: así la primera
+		 * afirmación prueba además que el predeterminado gana al sistema.
 		 */
-		await page.emulateMedia({ colorScheme: 'dark' });
+		await page.emulateMedia({ colorScheme: 'light' });
 		await page.goto('/');
 
 		await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
@@ -71,12 +72,27 @@ test.describe('Tema claro y oscuro', () => {
 		).toHaveAttribute('data-theme', 'light');
 	});
 
-	test('sin elección previa sigue al sistema operativo', async ({ page }) => {
-		// El script en línea de `app.html` resuelve `localStorage` → `prefers-color-scheme`
-		// antes del primer pintado. Sin nada guardado manda el sistema.
-		await page.emulateMedia({ colorScheme: 'light' });
-		await page.goto('/');
-		await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+	test('⚠️ sin elección previa arranca en oscuro, diga lo que diga el sistema', async ({
+		page
+	}) => {
+		/**
+		 * El predeterminado es el oscuro y **no** se consulta `prefers-color-scheme`.
+		 * Hasta el 15-ago-2026 era al revés, así que este caso afirma justo lo
+		 * contrario de lo que afirmaba: se deja escrito para que un cambio de vuelta
+		 * tenga que pasar por aquí en vez de colarse.
+		 *
+		 * Se prueban las dos posiciones del sistema, porque solo con `light` no se
+		 * distingue «ignora al sistema» de «el emulador no se aplicó»: con
+		 * `dark` el resultado sería el correcto por casualidad.
+		 */
+		for (const sistema of ['light', 'dark'] as const) {
+			await page.emulateMedia({ colorScheme: sistema });
+			await page.goto('/');
+			await expect(
+				page.locator('html'),
+				`con el sistema en ${sistema} debería servirse el tema oscuro igualmente`
+			).toHaveAttribute('data-theme', 'dark');
+		}
 	});
 
 	test('⚠️ los lienzos de Chart.js se repintan al cambiar de tema', async ({ page }) => {
@@ -101,7 +117,8 @@ test.describe('Tema claro y oscuro', () => {
 		 * es la **dirección y el tamaño**: la tinta clara sobre lienzo oscuro tiene
 		 * que volverse tinta oscura.
 		 */
-		await page.emulateMedia({ colorScheme: 'dark' });
+		// Sin sembrar tema: el oscuro es el predeterminado, que es de donde tiene
+		// que partir el conmutador.
 		await page.addInitScript(() => {
 			sessionStorage.setItem('bypassLanding', 'true');
 			localStorage.setItem('corebalance_tour_seen', 'true');
@@ -129,7 +146,16 @@ test.describe('Tema claro y oscuro', () => {
 
 	test('en tema claro no queda texto por debajo de su umbral', async ({ page }) => {
 		await sembrarCartera(page, CON_OBJETIVOS);
-		await page.emulateMedia({ colorScheme: 'light' });
+		/**
+		 * ⚠️ **El tema claro se siembra guardándolo, no emulando el sistema.**
+		 * `emulateMedia({ colorScheme: 'light' })` bastaba hasta el 15-ago-2026;
+		 * desde que el predeterminado es el oscuro y no consulta al sistema, esa
+		 * versión mediría el tema oscuro creyendo medir el claro — y saldría verde,
+		 * que es la forma de fallo que este repo tiene documentada. Aquí sí procede
+		 * `addInitScript` (a diferencia del caso de la persistencia): lo que se
+		 * quiere es precisamente que el tema esté puesto en cada navegación.
+		 */
+		await page.addInitScript(() => localStorage.setItem('corebalance_theme', 'light'));
 		await abrirDashboard(page);
 		await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
 
