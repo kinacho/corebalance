@@ -209,6 +209,13 @@
 		 * Son pasos más oscuros de la misma familia, fuera de `ASSET_COLORS`, para no
 		 * devolverle al panel el defecto de «el verde significa seis cosas».
 		 */
+		/*
+		 * Superficie destructiva: un relleno rojo con texto blanco encima. `#ef4444`
+		 * daba **3,76:1** con el blanco, así que hace falta un paso más profundo — el
+		 * mismo razonamiento que `--surface-green`. Vale igual en los dos temas porque
+		 * lo que lleva encima es blanco, no la tinta del tema.
+		 */
+		--surface-danger: #b91c1c;
 		--surface-green: #047857;
 		--surface-orange: #b45309;
 
@@ -232,6 +239,21 @@
 		 */
 		--state-positive: #34d399;
 		--state-negative: #f43f5e;
+
+		/*
+		 * ⚠️ **El logo tiene sus propios tonos porque los de la marca son neón.**
+		 *
+		 * Medido: `#5eead4` da **1,35:1 sobre `#f4f4f9`**. Sobre el fondo oscuro es
+		 * una marca luminosa; sobre claro, prácticamente nada — y lo único que se
+		 * leía era el contorno azul oscuro que el PNG llevaba horneado, que es lo que
+		 * hacía que el logo se viera sucio en tema claro.
+		 *
+		 * En claro es el mismo par un par de pasos más oscuro (3,4:1 y 3,4:1), que es
+		 * lo que WCAG 1.4.11 le pide a un objeto gráfico. Los consume
+		 * `Logo.svelte`, que va en línea justamente para poder leerlos.
+		 */
+		--logo-from: #5eead4;
+		--logo-to: #22c55e;
 		--state-positive-soft: rgba(52, 211, 153, 0.12);
 		--state-negative-soft: rgba(244, 63, 94, 0.12);
 
@@ -335,6 +357,7 @@
 		 * Existen igualmente como tokens propios para que un componente pueda pedir
 		 * «tinta de acento» sin saber en qué tema está.
 		 */
+		--surface-danger: #b91c1c;
 		--surface-green: #046c4e;
 		--surface-orange: #9a5408;
 
@@ -345,6 +368,9 @@
 
 		--state-positive: #03714f;
 		--state-negative: #be123c;
+
+		--logo-from: #0d9488;
+		--logo-to: #059669;
 		--state-positive-soft: rgba(3, 113, 79, 0.1);
 		--state-negative-soft: rgba(190, 18, 60, 0.1);
 

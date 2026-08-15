@@ -147,7 +147,7 @@
 	.changelog-backdrop {
 		position: fixed;
 		inset: 0;
-		background: rgba(10, 10, 20, 0.75);
+		background: var(--bg-scrim);
 		backdrop-filter: blur(12px);
 		-webkit-backdrop-filter: blur(12px);
 		display: flex;
@@ -162,7 +162,7 @@
 		width: 100%;
 		max-width: 600px;
 		max-height: 80vh;
-		background: rgba(18, 18, 35, 0.95);
+		background: var(--bg-overlay);
 		backdrop-filter: blur(24px) saturate(200%);
 		-webkit-backdrop-filter: blur(24px) saturate(200%);
 		border: 1px solid var(--border-subtle);
@@ -353,7 +353,7 @@
 		border-top: 1px solid var(--border-subtle);
 		display: flex;
 		justify-content: flex-end;
-		background: rgba(14, 14, 28, 0.5);
+		background: var(--bg-scrim);
 	}
 
 	.btn-primary {

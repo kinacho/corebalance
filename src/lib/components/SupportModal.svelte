@@ -163,7 +163,7 @@
 	.modal-backdrop {
 		position: fixed;
 		inset: 0;
-		background: rgba(0, 0, 0, 0.8);
+		background: var(--bg-scrim);
 		backdrop-filter: blur(8px);
 		z-index: 2000;
 		display: flex;
@@ -175,7 +175,7 @@
 	.modal-container {
 		width: 100%;
 		max-width: 500px;
-		background: #0f0f1a;
+		background: var(--bg-overlay);
 		border: 1px solid var(--border-subtle);
 		border-radius: 28px;
 		position: relative;

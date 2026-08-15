@@ -441,7 +441,7 @@
 	.asset-icon-wrapper {
 		width: 44px;
 		height: 44px;
-		background: rgba(0, 0, 0, 0.3);
+		background: var(--bg-card-hover);
 		border: 1px solid var(--border-subtle);
 		border-radius: 12px;
 		display: flex;
@@ -626,7 +626,7 @@
 
 	.modern-input {
 		width: 100%;
-		background: rgba(0, 0, 0, 0.4);
+		background: var(--bg-card-hover);
 		border: 1.5px solid rgba(255, 255, 255, 0.08);
 		border-radius: 12px;
 		padding: 0.65rem 0.85rem;
@@ -646,7 +646,7 @@
 	}
 
 	.modern-input:focus {
-		background: rgba(0, 0, 0, 0.5);
+		background: var(--bg-scrim);
 		border-color: var(--accent);
 		box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 15%, transparent);
 	}
@@ -665,7 +665,7 @@
 		grid-template-columns: repeat(2, 1fr);
 		gap: 0.4rem;
 		padding: 0.6rem;
-		background: rgba(0, 0, 0, 0.2);
+		background: var(--bg-card-hover);
 		border-radius: 12px;
 	}
 
@@ -806,7 +806,7 @@
 		font-weight: 800;
 		padding: 0.15rem 0.5rem;
 		border-radius: 6px;
-		background: rgba(0, 0, 0, 0.25);
+		background: var(--bg-card-hover);
 		display: flex;
 		align-items: center;
 		gap: 0.2rem;

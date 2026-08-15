@@ -90,7 +90,15 @@
 		background: rgba(0, 112, 186, 0.08);
 		border: 1px solid rgba(0, 112, 186, 0.2);
 		border-radius: 12px;
-		color: #4aa8e0;
+		/*
+		 * ⚠️ El azul de PayPal es de marca, así que no puede cambiar de tono — pero
+		 * `#0070ba` da 3,19:1 sobre oscuro y su versión clara `#4aa8e0` da 2,4:1
+		 * sobre claro: cada uno falla en el tema del otro. Mezclándolo con la tinta
+		 * del tema se aclara en oscuro y se oscurece en claro, conservando el tono.
+		 * Mismo recurso que `--card-ink` en la portada de herramientas, y por la
+		 * misma razón: aquí tampoco puede haber un token por marca.
+		 */
+		color: color-mix(in srgb, #0070ba 72%, var(--text-primary));
 		font-size: 0.85rem;
 		font-weight: 700;
 		text-decoration: none;

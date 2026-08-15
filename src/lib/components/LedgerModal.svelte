@@ -468,7 +468,7 @@
 	.ledger-backdrop {
 		position: absolute;
 		inset: 0;
-		background: rgba(0,0,0,0.8);
+		background: var(--bg-scrim);
 		backdrop-filter: blur(4px);
 		border: none;
 		width: 100%;
@@ -479,7 +479,7 @@
 		position: relative;
 		width: 100%;
 		max-width: 500px;
-		background: #0a0a18;
+		background: var(--bg-overlay);
 		border: 1px solid var(--border-subtle);
 		border-radius: 24px;
 		overflow: hidden;
@@ -823,7 +823,7 @@
 		top: calc(100% + 4px);
 		left: 0;
 		z-index: 11;
-		background: #0a0a18;
+		background: var(--bg-overlay);
 		border: 1px solid rgba(255,255,255,0.15);
 		border-radius: 12px;
 		padding: 0.75rem;

@@ -247,10 +247,10 @@
 	.mapping-field.required label::after { content: ' *'; color: var(--state-negative); }
 	
 	label { font-size: 0.65rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.02em; }
-	select { background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border-subtle); border-radius: 8px; color: var(--text-primary); padding: 0.45rem; font-size: 0.8rem; outline: none; cursor: pointer; }
+	select { background: var(--bg-card-hover); border: 1px solid var(--border-subtle); border-radius: 8px; color: var(--text-primary); padding: 0.45rem; font-size: 0.8rem; outline: none; cursor: pointer; }
 	select:focus { border-color: var(--accent-blue); }
 
-	.preview-table-container { background: rgba(0, 0, 0, 0.2); border-radius: 12px; border: 1px solid var(--border-subtle); padding: 0.75rem; }
+	.preview-table-container { background: var(--bg-card-hover); border-radius: 12px; border: 1px solid var(--border-subtle); padding: 0.75rem; }
 	.preview-scroll { overflow-x: auto; }
 	.preview-title { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); margin: 0 0 0.5rem; text-transform: uppercase; }
 	.preview-table { width: 100%; border-collapse: collapse; font-size: 0.7rem; color: var(--text-secondary); }

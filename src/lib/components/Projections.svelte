@@ -540,7 +540,7 @@
 		display: grid;
 		gap: 1.5rem;
 		padding: 1.25rem;
-		background: rgba(0, 0, 0, 0.2);
+		background: var(--bg-card-hover);
 		border-radius: 20px;
 		border: 1px solid var(--border-subtle);
 	}
@@ -734,7 +734,7 @@
 		flex-direction: column;
 		gap: 0.1rem;
 		padding: 0.5rem 0.7rem;
-		background: rgba(13, 13, 18, 0.96);
+		background: var(--bg-overlay);
 		border: 1px solid var(--border-subtle);
 		border-radius: 12px;
 		pointer-events: none;
@@ -793,7 +793,7 @@
 
 	.pill-btn:hover {
 		background: var(--bg-card-hover);
-		color: white;
+		color: var(--text-primary);
 	}
 
 	.pill-btn.active {
@@ -805,7 +805,7 @@
 	.custom-capital-input-wrapper {
 		display: flex;
 		align-items: center;
-		background: rgba(0, 0, 0, 0.35);
+		background: var(--bg-card-hover);
 		border: 1px solid var(--border-subtle);
 		border-radius: 10px;
 		padding: 0.25rem 0.5rem 0.25rem 0.75rem;

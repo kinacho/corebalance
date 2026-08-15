@@ -245,7 +245,7 @@
 	.search-backdrop {
 		position: fixed;
 		inset: 0;
-		background: rgba(0, 0, 0, 0.7);
+		background: var(--bg-scrim);
 		backdrop-filter: blur(8px);
 		-webkit-backdrop-filter: blur(8px);
 		border: none;
@@ -257,7 +257,7 @@
 		width: 90%;
 		max-width: 560px;
 		max-height: 75vh;
-		background: rgba(18, 18, 35, 0.98);
+		background: var(--bg-overlay);
 		backdrop-filter: blur(40px) saturate(200%);
 		-webkit-backdrop-filter: blur(40px) saturate(200%);
 		border: 1px solid var(--border-subtle);
@@ -342,7 +342,7 @@
 	.search-input {
 		width: 100%;
 		padding: 0.75rem 2.5rem 0.75rem 2.25rem;
-		background: rgba(0, 0, 0, 0.3);
+		background: var(--bg-card-hover);
 		border: 1.5px solid rgba(255, 255, 255, 0.08);
 		border-radius: 14px;
 		color: var(--text-primary);
@@ -415,7 +415,7 @@
 	.result-icon {
 		width: 40px;
 		height: 40px;
-		background: rgba(0, 0, 0, 0.3);
+		background: var(--bg-card-hover);
 		border: 1px solid var(--border-subtle);
 		border-radius: 10px;
 		display: flex;
@@ -519,7 +519,7 @@
 	.search-footer {
 		padding: 1rem 1.5rem;
 		border-top: 1px solid var(--border-subtle);
-		background: rgba(18, 18, 35, 0.95);
+		background: var(--bg-overlay);
 		display: flex;
 		justify-content: center;
 	}

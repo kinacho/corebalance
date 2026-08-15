@@ -12,18 +12,19 @@
  *
  * Uso: node scripts/generate-icons.mjs
  */
-import { mkdir, writeFile, stat } from 'node:fs/promises';
+import { mkdir, writeFile, stat, readFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
+import { Resvg } from '@resvg/resvg-js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const ASSETS = join(ROOT, 'assets');
 const STATIC = join(ROOT, 'static');
 
-const ICON_MASTER = join(ASSETS, 'icon-master.png');
-const LOGO_MASTER = join(ASSETS, 'logo-master.png');
+const ICON_MASTER = join(ASSETS, 'logo.svg');
+const LOGO_MASTER = join(ASSETS, 'logo.svg');
 
 /**
  * `logo.png` se queda en 256 px: es el tamaño mayor al que se usa (48 px a 4x) y
@@ -60,12 +61,33 @@ async function main() {
 		const outPath = join(STATIC, target.out);
 		const previous = (await kb(outPath)) ?? 0;
 
-		// `fit: 'contain'` sobre fondo transparente: nunca recorta el icono, sólo
-		// lo encaja. Con `withoutEnlargement` evitamos reescalar hacia arriba.
-		let pipeline = sharp(target.master).resize(target.size, target.size, {
+		/**
+		 * ⚠️ **El origen es el SVG, no un PNG, y eso arregla dos cosas de golpe.**
+		 *
+		 * Los masters de 1024 px llevaban **un contorno azul oscuro y una sombra
+		 * horneados en los píxeles** — medido, los cuatro colores más frecuentes del
+		 * fichero eran ese contorno, no la marca. Sobre fondo oscuro no se ve; sobre
+		 * blanco es un borrón, y `logo.png` es justo el que Google enseña sobre
+		 * blanco en los datos estructurados. Y al ser ráster, reducir a 96 px para
+		 * el favicon dejaba una marca borrosa.
+		 *
+		 * `assets/logo.svg` está vectorizado de ese master sin el contorno ni la
+		 * sombra, así que cada tamaño se **rinde**, no se reescala. `withoutEnlargement`
+		 * ya no pinta nada: un vector no tiene tamaño nativo del que pasarse.
+		 */
+		const esVector = target.master.endsWith('.svg');
+		const fuente = esVector
+			? new Resvg(await readFile(target.master, 'utf8'), {
+					fitTo: { mode: 'width', value: target.size }
+				})
+					.render()
+					.asPng()
+			: target.master;
+
+		let pipeline = sharp(fuente).resize(target.size, target.size, {
 			fit: 'contain',
 			background: { r: 0, g: 0, b: 0, alpha: 0 },
-			withoutEnlargement: true
+			withoutEnlargement: !esVector
 		});
 
 		pipeline =

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Logo from '$lib/components/Logo.svelte';
   import { portfolio } from '$lib/stores/portfolio.svelte';
   import { ui } from '$lib/stores/ui.svelte';
   import { LL, locale } from '$lib/i18n/i18n-svelte';
@@ -12,7 +13,7 @@
     <div class="footer-grid">
       <div class="brand-col">
         <div class="logo-group">
-          <img src="/logo.png?v=2" alt="CoreBalance" class="logo" width="36" height="36" loading="lazy" />
+          <Logo size={36} clase="logo" />
           <span class="brand-name">CoreBalance</span>
         </div>
         <p>{$LL.footer.tagline()}</p>
@@ -134,13 +135,13 @@
     margin-bottom: 1.5rem;
   }
 
-  .logo {
+  .logo-group :global(.logo) {
     width: 32px;
     height: 32px;
   }
 
   @media (min-width: 768px) {
-    .logo {
+    .logo-group :global(.logo) {
       width: 36px;
       height: 36px;
     }

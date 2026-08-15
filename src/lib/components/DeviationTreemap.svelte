@@ -731,7 +731,7 @@
 		color: var(--text-muted);
 		margin: 0;
 		padding: 1rem;
-		background: rgba(0, 0, 0, 0.2);
+		background: var(--bg-card-hover);
 		border-radius: 12px;
 	}
 

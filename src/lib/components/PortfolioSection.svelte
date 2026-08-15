@@ -343,7 +343,7 @@
 	}
 
 	.compact-list {
-		background: rgba(0, 0, 0, 0.2);
+		background: var(--bg-card-hover);
 		border-radius: 16px;
 		border: 1px solid var(--border-subtle);
 		overflow: hidden;

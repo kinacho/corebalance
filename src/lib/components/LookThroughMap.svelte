@@ -393,7 +393,7 @@
 	.mode-switch {
 		display: flex;
 		gap: 0.25rem;
-		background: rgba(0, 0, 0, 0.25);
+		background: var(--bg-card-hover);
 		border-radius: 999px;
 		padding: 0.2rem;
 		align-self: flex-start;
@@ -585,7 +585,7 @@
 		color: var(--text-muted);
 		margin: 0;
 		padding: 1rem;
-		background: rgba(0, 0, 0, 0.2);
+		background: var(--bg-card-hover);
 		border-radius: 12px;
 	}
 

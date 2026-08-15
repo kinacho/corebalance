@@ -286,7 +286,7 @@
 		left: 0;
 		width: 100%;
 		height: 100%;
-		background: rgba(10, 10, 20, 0.85);
+		background: var(--bg-overlay);
 		backdrop-filter: blur(8px);
 		z-index: 1000;
 		display: flex;
@@ -298,7 +298,7 @@
 	}
 
 	.modal-content {
-		background: #13131f;
+		background: var(--bg-overlay);
 		border: 1px solid var(--border-subtle);
 		border-radius: 24px;
 		width: 100%;
@@ -359,14 +359,14 @@
 
 	.close-btn:hover {
 		background: rgba(255, 255, 255, 0.1);
-		color: white;
+		color: var(--text-primary);
 	}
 
 	.modal-title {
 		font-size: 1.5rem;
 		font-weight: 700;
 		margin: 0 0 0.5rem 0;
-		color: white;
+		color: var(--text-primary);
 	}
 
 	.modal-subtitle {
@@ -377,7 +377,7 @@
 
 	.tabs {
 		display: flex;
-		background: rgba(0, 0, 0, 0.2);
+		background: var(--bg-card-hover);
 		padding: 0.35rem;
 		border-radius: 12px;
 		margin-bottom: 1.5rem;
@@ -559,7 +559,7 @@
 		gap: 0.75rem;
 		margin-bottom: 1.5rem;
 		padding: 1rem;
-		background: rgba(0, 0, 0, 0.2);
+		background: var(--bg-card-hover);
 		border-radius: 16px;
 		border: 1px solid var(--border-subtle);
 	}

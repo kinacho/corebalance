@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Logo from './Logo.svelte';
 	import { fade } from 'svelte/transition';
 	import { onMount } from 'svelte';
 
@@ -45,7 +46,7 @@
 		<div class="splash-content">
 			<div class="logo-container">
 				<div class="logo-glow"></div>
-				<img src="/logo.png?v=2" alt="CoreBalance Logo" class="logo-img" width="80" height="80" fetchpriority="high" loading="eager" />
+				<Logo size={80} clase="logo-img" />
 			</div>
 			
 			<div class="text-container">
@@ -146,7 +147,7 @@
 		50% { transform: scale(1.3); opacity: 0.6; }
 	}
 
-	.logo-img {
+	.logo-container :global(.logo-img) {
 		width: 80px;
 		height: 80px;
 		object-fit: contain;

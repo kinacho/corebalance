@@ -277,7 +277,7 @@
 
 	.input-section {
 		padding: 1rem;
-		background: rgba(0, 0, 0, 0.2);
+		background: var(--bg-card-hover);
 		border-radius: 16px;
 		border: 1px solid var(--border-subtle);
 	}
@@ -450,7 +450,7 @@
 	.weight-comparison {
 		margin-top: 1rem;
 		padding: 1rem;
-		background: rgba(0, 0, 0, 0.2);
+		background: var(--bg-card-hover);
 		border: 1px solid var(--border-subtle);
 		border-radius: 16px;
 		display: flex;

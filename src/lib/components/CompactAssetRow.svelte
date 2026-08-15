@@ -252,7 +252,7 @@
 		font-size: 1.25rem;
 		width: 36px;
 		height: 36px;
-		background: rgba(0,0,0,0.3);
+		background: var(--bg-card-hover);
 		border: 1px solid var(--border-subtle);
 		border-radius: 8px;
 		display: flex;
@@ -336,7 +336,7 @@
 
 	.input-mini input {
 		width: 100%;
-		background: rgba(0, 0, 0, 0.3);
+		background: var(--bg-card-hover);
 		border: 1px solid var(--border-subtle);
 		border-radius: 6px;
 		padding: 0.3rem 0.4rem;

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Logo from './Logo.svelte';
 	import { fade, fly, scale } from 'svelte/transition';
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { ui } from '$lib/stores/ui.svelte';
@@ -119,7 +120,7 @@
 		}}
 		aria-label="Ir a inicio"
 	>
-		<img src="/logo.png?v=2" alt="CoreBalance Logo" class="logo-img" width="48" height="48" fetchpriority="high" loading="eager" />
+		<Logo size={48} clase="logo-img" />
 		<div class="logo-group">
 			<h1 class="logo-title">CoreBalance</h1>
 			<p class="logo-subtitle">{portfolio.targetLabel}</p>
@@ -406,7 +407,7 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 1rem 1.25rem;
-		background: rgba(10, 10, 20, 0.15);
+		background: var(--bg-card-hover);
 		backdrop-filter: blur(24px) saturate(200%);
 		-webkit-backdrop-filter: blur(24px) saturate(200%);
 		border-bottom: 1px solid var(--border-subtle);
@@ -417,7 +418,7 @@
 	}
 
 	.dashboard-header.scrolled {
-		background: rgba(10, 10, 20, 0.98);
+		background: var(--bg-overlay);
 		padding-top: 0.75rem;
 		padding-bottom: 0.75rem;
 		border-bottom-color: rgba(255, 255, 255, 0.15);
@@ -448,14 +449,14 @@
 		min-width: 0;
 	}
 
-	.logo-img {
+	.header-left :global(.logo-img) {
 		width: 36px;
 		height: 36px;
 		flex-shrink: 0;
 	}
 
 	@media (min-width: 768px) {
-		.logo-img {
+		.header-left :global(.logo-img) {
 			width: 48px;
 			height: 48px;
 		}
@@ -570,7 +571,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: white;
+		color: var(--text-primary);
 		font-weight: 800;
 		font-size: 1rem;
 		text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
@@ -622,7 +623,7 @@
 		top: calc(100% + 12px);
 		right: 0;
 		width: 220px;
-		background: rgba(15, 15, 30, 0.85);
+		background: var(--bg-overlay);
 		backdrop-filter: blur(24px) saturate(200%);
 		-webkit-backdrop-filter: blur(24px) saturate(200%);
 		border-radius: 16px;
@@ -688,8 +689,8 @@
 	}
 
 	.dropdown-item.delete-account:hover {
-		background: #ef4444;
-		color: white;
+		background: var(--surface-danger);
+		color: var(--text-on-accent);
 	}
 
 	.dropdown-setting {
@@ -706,7 +707,7 @@
 	}
 
 	.currency-select {
-		background: #1a1a2e;
+		background: var(--bg-overlay);
 		border: 1px solid rgba(255, 255, 255, 0.15);
 		border-radius: 8px;
 		padding: 0.3rem 0.5rem;
@@ -718,7 +719,7 @@
 	}
 
 	.currency-select option {
-		background: #1a1a2e;
+		background: var(--bg-overlay);
 		color: var(--text-primary);
 	}
 
@@ -737,7 +738,7 @@
 		align-items: center;
 		gap: 0.6rem;
 		padding: 0.6rem 1rem;
-		background: rgba(30, 41, 59, 0.95);
+		background: var(--bg-overlay);
 		backdrop-filter: blur(10px);
 		border-radius: 100px;
 		color: var(--text-primary);
@@ -768,7 +769,7 @@
 	.user-loading-overlay {
 		position: absolute;
 		inset: 0;
-		background: rgba(10, 10, 20, 0.6);
+		background: var(--bg-scrim);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -816,7 +817,7 @@
 			padding: 1.25rem 2rem;
 		}
 
-		.logo-img { width: 40px; height: 40px; }
+		.header-left :global(.logo-img) { width: 40px; height: 40px; }
 		.logo-title { font-size: 1.5rem; }
 
 		.header-right { gap: 0.75rem; }

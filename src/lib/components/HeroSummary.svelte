@@ -271,7 +271,7 @@
 		align-items: center;
 		gap: 0.35rem;
 		padding: 0.3rem 0.6rem;
-		background: rgba(0, 0, 0, 0.25);
+		background: var(--bg-card-hover);
 		border: 1px solid var(--border-subtle);
 		border-radius: 10px;
 	}

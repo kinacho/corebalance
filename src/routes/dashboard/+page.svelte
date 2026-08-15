@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Logo from '$lib/components/Logo.svelte';
   import { onMount } from "svelte";
   import Header from "$lib/components/Header.svelte";
   import PortfolioSection from "$lib/components/PortfolioSection.svelte";
@@ -533,7 +534,7 @@ import { formatCompactCurrency } from "$lib/chart-format";
         <div class="footer-main">
           <div class="footer-brand">
             <div class="footer-logo-group">
-              <img src="/logo.png?v=2" alt="CoreBalance" class="footer-logo" width="36" height="36" loading="lazy" />
+              <Logo size={36} clase="footer-logo" />
               <span class="footer-title">CoreBalance</span>
             </div>
             <p class="footer-tagline">{$LL.db.footer_tagline()}</p>
@@ -576,7 +577,7 @@ import { formatCompactCurrency } from "$lib/chart-format";
 
 <style>
   :global(body) {
-    color: #f0f0ff;
+    color: var(--text-primary);
   }
 
   .tour-repeat-btn {
@@ -1105,14 +1106,14 @@ import { formatCompactCurrency } from "$lib/chart-format";
     }
   }
 
-  .footer-logo {
+  .footer-logo-group :global(.footer-logo) {
     width: 32px;
     height: 32px;
     filter: grayscale(0.5) opacity(0.8);
   }
 
   @media (min-width: 768px) {
-    .footer-logo {
+    .footer-logo-group :global(.footer-logo) {
       width: 36px;
       height: 36px;
     }

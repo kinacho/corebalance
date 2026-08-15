@@ -107,7 +107,7 @@
 
 	.btn-primary {
 		background: var(--accent-blue);
-		color: var(--text-primary);
+		color: var(--text-on-accent);
 		box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 	}
 

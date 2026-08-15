@@ -529,7 +529,7 @@
 
   .btn-secondary {
     background: var(--bg-card-hover);
-    color: white;
+    color: var(--text-primary);
     border: 1px solid var(--border-subtle);
     padding: 0.85rem 2rem;
     border-radius: 12px;

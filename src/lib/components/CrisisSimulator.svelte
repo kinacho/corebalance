@@ -517,7 +517,7 @@
 		display: grid;
 		gap: 1.5rem;
 		padding: 1.25rem;
-		background: rgba(0, 0, 0, 0.2);
+		background: var(--bg-card-hover);
 		border-radius: 20px;
 		border: 1px solid var(--border-subtle);
 	}
@@ -682,14 +682,14 @@
 	.edu-title {
 		font-size: 0.82rem;
 		font-weight: 700;
-		color: #e2e8f0;
+		color: var(--text-primary);
 		margin: 0;
 	}
 
 	.edu-text {
 		font-size: 0.72rem;
 		line-height: 1.4;
-		color: rgba(226, 232, 240, 0.6);
+		color: var(--text-muted);
 		margin: 0;
 	}
 
@@ -768,7 +768,7 @@
 	.stat-value {
 		font-size: 1.1rem;
 		font-weight: 800;
-		color: white;
+		color: var(--text-primary);
 	}
 
 	.stat-value small {

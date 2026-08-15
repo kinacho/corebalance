@@ -464,12 +464,26 @@
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
   }
 
+  /*
+   * ⚠️ **`--card-accent` vale de marca y NO de tinta**, que es la misma distinción
+   * que `layout.css` documenta para `--accent-blue` y `--accent-blue-ink`. Aquí el
+   * acento llega en línea desde el array de herramientas, así que no puede haber un
+   * token `-ink` por tarjeta: se deriva mezclándolo con la tinta del tema.
+   *
+   * Medido antes: 3,93:1 en oscuro sobre el fondo de página y 3,13:1 en claro sobre
+   * su propio tinte al 12 %. Al mezclar contra `--text-primary`, en oscuro aclara y
+   * en claro oscurece, que es exactamente lo que hace falta en cada uno.
+   */
+  .tool-card {
+    --card-ink: color-mix(in srgb, var(--card-accent) 62%, var(--text-primary));
+  }
+
   .tool-badge {
     align-self: flex-start;
     padding: 0.25rem 0.6rem;
     border-radius: 8px;
     background: color-mix(in srgb, var(--card-accent) 12%, transparent);
-    color: var(--card-accent);
+    color: var(--card-ink);
     font-size: 0.7rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -487,7 +501,7 @@
   .tool-question {
     font-size: 0.95rem;
     font-weight: 600;
-    color: var(--card-accent);
+    color: var(--card-ink);
     margin: 0 0 0.9rem;
   }
 
@@ -502,7 +516,7 @@
   .tool-cta {
     font-size: 0.85rem;
     font-weight: 700;
-    color: var(--card-accent);
+    color: var(--card-ink);
   }
 
   /* Las dos secciones nuevas no llevan tarjeta: son texto corrido, y encerrarlas en una

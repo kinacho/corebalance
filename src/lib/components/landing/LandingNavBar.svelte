@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Logo from '$lib/components/Logo.svelte';
   import { onMount } from 'svelte';
   import { fade } from 'svelte/transition';
   import { portfolio } from '$lib/stores/portfolio.svelte';
@@ -47,7 +48,7 @@
 <nav class="navbar" class:scrolled={isScrolled}>
   <div class="nav-container">
     <a class="nav-brand" href={$link('/')} aria-label="CoreBalance">
-      <img src="/logo.png?v=2" alt="CoreBalance" class="logo" width="48" height="48" fetchpriority="high" loading="eager" />
+      <Logo size={48} clase="logo" />
       <span class="brand-name">CoreBalance</span>
     </a>
 
@@ -183,13 +184,13 @@
     flex-shrink: 0; /* Evita que el logo se deforme o se achique */
   }
 
-  .logo {
+  .nav-brand :global(.logo) {
     width: 36px;
     height: 36px;
   }
 
   @media (min-width: 768px) {
-    .logo {
+    .nav-brand :global(.logo) {
       width: 48px;
       height: 48px;
     }

@@ -356,7 +356,7 @@
 		color: var(--text-muted);
 		margin: 0;
 		padding: 1rem;
-		background: rgba(0, 0, 0, 0.2);
+		background: var(--bg-card-hover);
 		border-radius: 12px;
 	}
 
@@ -402,7 +402,7 @@
 
 	.move {
 		padding: 0.85rem;
-		background: rgba(0, 0, 0, 0.2);
+		background: var(--bg-card-hover);
 		border: 1px solid rgba(16, 185, 129, 0.2);
 		border-radius: 14px;
 		margin-bottom: 0.5rem;

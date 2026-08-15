@@ -597,7 +597,7 @@
   }
 
   .input-group select option {
-    background: #12121c;
+    background: var(--bg-overlay);
     color: var(--text-primary);
   }
 

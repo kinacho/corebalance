@@ -231,8 +231,19 @@
     transition: all 0.2s !important;
   }
 
+  /*
+   * ⚠️ **`--text-on-accent`, no `--text-primary`, y este botón es el ejemplo de por
+   * qué la distinción existe.**
+   *
+   * El color lo pone la regla de arriba (compartida con «Anterior») y el fondo lo
+   * pone ésta, así que las dos declaraciones viven en **bloques distintos** — que
+   * es justo lo que hizo que el barrido automático no lo viera: mira el fondo de la
+   * misma regla. En tema claro `--text-primary` es `#111118`, así que salía **texto
+   * negro sobre azul**.
+   */
   :global(.corebalance-tour-theme .driver-popover-next-btn) {
     background: var(--accent-blue) !important;
+    color: var(--text-on-accent) !important;
   }
 
   :global(.corebalance-tour-theme .driver-popover-next-btn:hover) {

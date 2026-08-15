@@ -607,7 +607,7 @@
 	.manage-backdrop {
 		position: fixed;
 		inset: 0;
-		background: rgba(0, 0, 0, 0.7);
+		background: var(--bg-scrim);
 		backdrop-filter: blur(8px);
 		-webkit-backdrop-filter: blur(8px);
 		border: none;
@@ -619,7 +619,7 @@
 		width: 92%;
 		max-width: 640px;
 		max-height: 85vh;
-		background: rgba(18, 18, 35, 0.98);
+		background: var(--bg-overlay);
 		backdrop-filter: blur(40px) saturate(200%);
 		-webkit-backdrop-filter: blur(40px) saturate(200%);
 		border: 1px solid var(--border-subtle);
@@ -686,7 +686,7 @@
 	}
 
 	.section-block {
-		background: rgba(20, 20, 35, 0.4);
+		background: var(--bg-card-hover);
 		border: 1px solid var(--border-subtle);
 		border-radius: 16px;
 		padding: 1rem;
@@ -817,7 +817,7 @@
 	.asset-item {
 		display: flex;
 		flex-direction: column;
-		background: rgba(0, 0, 0, 0.2);
+		background: var(--bg-card-hover);
 		border: 1px solid var(--border-subtle);
 		border-left: 3px solid var(--accent);
 		border-radius: 12px;
@@ -829,7 +829,7 @@
 	}
 
 	.asset-item:hover {
-		background: rgba(0, 0, 0, 0.3);
+		background: var(--bg-card-hover);
 		border-color: var(--border-subtle);
 		border-left-color: var(--accent);
 	}
@@ -955,7 +955,7 @@
 	}
 
 	.action-move option {
-		background: #121223;
+		background: var(--bg-overlay);
 		color: var(--text-primary);
 		font-weight: normal;
 	}
@@ -1041,7 +1041,7 @@
 	.ter-input {
 		width: 55px;
 		padding: 0.2rem 0.35rem;
-		background: rgba(0, 0, 0, 0.4);
+		background: var(--bg-card-hover);
 		border: 1px solid rgba(59, 130, 246, 0.3);
 		border-radius: 6px;
 		color: var(--text-primary);
@@ -1199,7 +1199,7 @@
 		display: flex;
 		align-items: center;
 		gap: 0.1rem;
-		background: rgba(0, 0, 0, 0.35);
+		background: var(--bg-card-hover);
 		border: 1px solid var(--border-subtle);
 		border-radius: 8px;
 		padding: 0.25rem 0.15rem 0.25rem 0.35rem;
@@ -1264,7 +1264,7 @@
 	.manage-footer {
 		padding: 1.25rem 1.5rem;
 		border-top: 1px solid var(--border-subtle);
-		background: rgba(18, 18, 35, 0.95);
+		background: var(--bg-overlay);
 		display: flex;
 		justify-content: center;
 	}
