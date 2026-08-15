@@ -338,7 +338,7 @@
 <style>
   .compare-page {
     background: var(--bg-primary, #05050a);
-    color: #fff;
+    color: var(--text-primary);
     min-height: 100vh;
     position: relative;
     overflow-x: hidden;
@@ -355,13 +355,13 @@
     align-items: center;
     gap: 0.5rem;
     font-size: 0.85rem;
-    color: rgba(160, 160, 200, 0.6);
+    color: var(--text-muted);
     margin-bottom: 2rem;
     justify-content: center;
   }
 
   .breadcrumb a {
-    color: var(--accent-blue, #3b82f6);
+    color: var(--accent-blue-ink);
     text-decoration: none;
     font-weight: 500;
   }
@@ -371,11 +371,11 @@
   }
 
   .breadcrumb .separator {
-    color: rgba(160, 160, 200, 0.4);
+    color: var(--text-faint);
   }
 
   .breadcrumb .current {
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--text-secondary);
   }
 
   .compare-header {
@@ -387,7 +387,7 @@
     font-size: 0.8rem;
     font-weight: 700;
     text-transform: uppercase;
-    color: var(--accent-blue, #3b82f6);
+    color: var(--accent-blue-ink);
     background: rgba(59, 130, 246, 0.1);
     padding: 0.35rem 0.85rem;
     border-radius: 9999px;
@@ -440,7 +440,7 @@
   }
 
   .intro-card {
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--bg-card);
     border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
     border-radius: 24px;
     padding: 2.5rem;
@@ -461,20 +461,20 @@
   }
 
   .tagline {
-    color: var(--accent-blue, #3b82f6);
+    color: var(--accent-blue-ink);
     font-weight: 600;
     font-size: 0.95rem;
     margin-bottom: 1.5rem;
   }
 
   .corebalance-intro .tagline {
-    color: #60a5fa;
+    color: var(--accent-blue-ink);
   }
 
   .description {
     font-size: 1rem;
     line-height: 1.6;
-    color: rgba(255, 255, 255, 0.75);
+    color: var(--text-secondary);
     margin: 0;
   }
 
@@ -511,15 +511,15 @@
   }
 
   th {
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--bg-card);
     font-weight: 700;
-    color: #fff;
+    color: var(--text-primary);
   }
 
   .highlight-col {
     background: rgba(59, 130, 246, 0.04);
     font-weight: 600;
-    color: #fff;
+    color: var(--text-primary);
   }
 
   tr:last-child td {
@@ -528,7 +528,7 @@
 
   .feature-title {
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--text-primary);
   }
 
   /* Caso de estudio */
@@ -576,14 +576,14 @@
   }
 
   .details-card {
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--bg-card);
     border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
     border-radius: 20px;
     padding: 2.5rem;
   }
 
   .pros-title {
-    color: #34d399;
+    color: var(--state-positive);
     font-size: 1.3rem;
     font-weight: 700;
     margin-top: 0;
@@ -591,7 +591,7 @@
   }
 
   .cons-title {
-    color: #fca5a5;
+    color: var(--state-negative);
     font-size: 1.3rem;
     font-weight: 700;
     margin-top: 0;
@@ -610,7 +610,7 @@
     gap: 0.75rem;
     margin-bottom: 1.25rem;
     line-height: 1.6;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--text-secondary);
     font-size: 0.95rem;
   }
 
@@ -619,7 +619,7 @@
     height: 20px;
     flex-shrink: 0;
     margin-top: 2px;
-    color: var(--accent-blue, #3b82f6);
+    color: var(--accent-blue-ink);
   }
 
   /* FAQ section */
@@ -652,11 +652,11 @@
     font-weight: 700;
     margin-top: 0;
     margin-bottom: 0.75rem;
-    color: #fff;
+    color: var(--text-primary);
   }
 
   .faq-item p {
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--text-secondary);
     line-height: 1.6;
     margin: 0;
   }
@@ -688,15 +688,15 @@
   }
 
   .conclusion-cta p {
-    color: rgba(255, 255, 255, 0.75);
+    color: var(--text-secondary);
     line-height: 1.6;
     margin-bottom: 2rem;
     font-size: 1.05rem;
   }
 
   .btn-primary {
-    background: var(--accent-blue, #3b82f6);
-    color: white;
+    background: var(--accent-blue);
+    color: var(--text-on-accent);
     border: none;
     padding: 0.85rem 2rem;
     border-radius: 12px;
@@ -718,7 +718,7 @@
   }
   /* Enlace contextual de la nota de costes */
   .note a {
-    color: var(--accent-blue, #3b82f6);
+    color: var(--accent-blue-ink);
     font-weight: 600;
     text-decoration: none;
   }
@@ -752,9 +752,9 @@
     display: block;
     padding: 1rem 1.25rem;
     border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    background: rgba(255, 255, 255, 0.02);
-    color: #fff;
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-card);
+    color: var(--text-primary);
     font-weight: 600;
     font-size: 0.95rem;
     text-decoration: none;
@@ -764,6 +764,6 @@
   .other-comparisons a:hover {
     transform: translateY(-3px);
     border-color: rgba(59, 130, 246, 0.28);
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--bg-card);
   }
 </style>

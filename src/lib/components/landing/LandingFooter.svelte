@@ -105,8 +105,8 @@
 <style>
   .landing-footer {
     padding: 80px 1.5rem 40px;
-    background: #05050a;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    background: var(--bg-primary);
+    border-top: 1px solid var(--border-subtle);
   }
 
   .container {
@@ -149,18 +149,18 @@
   .brand-name {
     font-size: 1.25rem;
     font-weight: 800;
-    color: #fff;
+    color: var(--text-primary);
   }
 
   .brand-col p {
-    color: rgba(160, 160, 200, 0.5);
+    color: var(--text-muted);
     line-height: 1.6;
     max-width: 300px;
     margin-bottom: 2rem;
   }
 
   h3 {
-    color: #fff;
+    color: var(--text-primary);
     font-weight: 700;
     margin-bottom: 1.5rem;
     font-size: 1rem;
@@ -177,7 +177,7 @@
   }
 
   li a, .footer-btn {
-    color: rgba(160, 160, 200, 0.5);
+    color: var(--text-muted);
     text-decoration: none;
     font-size: 0.9rem;
     transition: color 0.2s ease;
@@ -193,7 +193,7 @@
   }
 
   li a:hover, .footer-btn:hover {
-    color: #3b82f6;
+    color: var(--accent-blue-ink);
   }
 
   .footer-bottom {
@@ -215,13 +215,13 @@
   }
 
   .footer-bottom p {
-    color: rgba(160, 160, 200, 0.3);
+    color: var(--text-faint);
     font-size: 0.85rem;
     margin: 0;
   }
 
   .legal-notice {
-    color: rgba(160, 160, 200, 0.2);
+    color: var(--text-faint);
     font-size: 0.75rem;
   }
 </style>

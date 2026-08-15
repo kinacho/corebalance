@@ -27,6 +27,7 @@
 		"typesafe-i18n": "typesafe-i18n",
 		"test:coverage": "vitest run --coverage.enabled",
 		"docs:check": "node scripts/doc-drift.mjs",
+		"a11y:contrast": "node scripts/contraste.mjs",
 		"test:quality": "node scripts/test-quality.mjs",
 		"test:mutation": "npx --yes -p @stryker-mutator/core -p @stryker-mutator/vitest-runner stryker run"
 	},

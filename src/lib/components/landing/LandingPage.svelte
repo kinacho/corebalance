@@ -117,8 +117,8 @@
   }
 
   .landing-page {
-    background: #05050a;
-    color: #fff;
+    background: var(--bg-primary);
+    color: var(--text-primary);
     min-height: 100vh;
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   }

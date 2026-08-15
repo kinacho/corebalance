@@ -1189,6 +1189,8 @@ const en: Translation = {
     show_values: 'Show values',
     hide_values: 'Hide values',
     update_prices: 'Update prices',
+    theme_to_light: 'Switch to light theme',
+    theme_to_dark: 'Switch to dark theme',
   },
 };
 

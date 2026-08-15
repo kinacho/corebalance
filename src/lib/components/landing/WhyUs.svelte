@@ -75,7 +75,7 @@
   }
 
   .eyebrow {
-    color: #3b82f6;
+    color: var(--accent-blue-ink);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
@@ -88,7 +88,7 @@
     font-size: clamp(1.75rem, 5vw, 3rem);
     font-weight: 800;
     margin-bottom: 1.5rem;
-    color: #fff;
+    color: var(--text-primary);
     letter-spacing: -0.02em;
     line-height: 1.2;
   }
@@ -100,19 +100,19 @@
   }
 
   .text-gradient {
-    background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+    background: linear-gradient(135deg, var(--accent-blue) 0%, #1d4ed8 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 
   :global(.text-highlight) {
-    color: #3b82f6;
+    color: var(--accent-blue-ink);
     font-weight: 700;
   }
 
   .story p {
-    color: rgba(160, 160, 200, 0.7);
+    color: var(--text-secondary);
     font-size: 1rem;
     line-height: 1.7;
     margin-bottom: 1.25rem;
@@ -141,13 +141,13 @@
   .avatar {
     width: 44px;
     height: 44px;
-    background: #3b82f6;
+    background: var(--accent-blue);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 800;
-    color: #fff;
+    color: var(--text-on-accent);
     font-size: 0.85rem;
   }
 
@@ -161,7 +161,7 @@
 
   .author strong {
     display: block;
-    color: #fff;
+    color: var(--text-primary);
     font-size: 0.95rem;
   }
 
@@ -172,7 +172,7 @@
   }
 
   .author span {
-    color: rgba(160, 160, 200, 0.5);
+    color: var(--text-muted);
     font-size: 0.8rem;
   }
 
@@ -195,8 +195,8 @@
   }
 
   .experience-card {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
     padding: 1.5rem;
     border-radius: 20px;
     transition: all 0.3s ease;
@@ -209,7 +209,7 @@
   }
 
   .experience-card:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--bg-card-hover);
     transform: translateX(5px);
   }
 
@@ -238,7 +238,7 @@
 
   h3 {
     margin: 0;
-    color: #fff;
+    color: var(--text-primary);
     font-weight: 700;
     font-size: 1.1rem;
   }
@@ -250,7 +250,7 @@
   }
 
   .experience-card p {
-    color: rgba(160, 160, 200, 0.5);
+    color: var(--text-muted);
     font-size: 0.9rem;
     line-height: 1.5;
     margin: 0;

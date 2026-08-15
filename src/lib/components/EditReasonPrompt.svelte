@@ -127,8 +127,8 @@
 		font-size: 0.72rem;
 		font-weight: 700;
 		cursor: pointer;
-		background: rgba(255, 255, 255, 0.07);
-		border: 1px solid rgba(255, 255, 255, 0.12);
+		background: var(--bg-card-hover);
+		border: 1px solid var(--border-subtle);
 		color: var(--text-primary);
 		transition: all 0.15s ease;
 	}
@@ -170,8 +170,8 @@
 	}
 
 	.date-field input {
-		background: rgba(255, 255, 255, 0.06);
-		border: 1px solid rgba(255, 255, 255, 0.12);
+		background: var(--bg-card-hover);
+		border: 1px solid var(--border-subtle);
 		border-radius: 8px;
 		padding: 0.25rem 0.45rem;
 		color: var(--text-primary);

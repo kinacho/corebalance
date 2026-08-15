@@ -389,7 +389,7 @@
     padding: 0.9rem 1.6rem;
     border-radius: 16px;
     background: var(--accent-blue);
-    color: #fff;
+    color: var(--text-on-accent);
     font-size: 1rem;
     font-weight: 700;
     text-decoration: none;
@@ -413,7 +413,7 @@
     border-radius: 999px;
     background: rgba(59, 130, 246, 0.1);
     border: 1px solid rgba(59, 130, 246, 0.25);
-    color: var(--accent-blue);
+    color: var(--accent-blue-ink);
     font-size: 0.75rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -449,7 +449,7 @@
     padding: 1.75rem;
     border-radius: 18px;
     background: var(--bg-card);
-    border: 1px solid rgba(255, 255, 255, 0.07);
+    border: 1px solid var(--border-subtle);
     text-decoration: none;
     color: inherit;
     transition:
@@ -550,8 +550,8 @@
     width: 1.85rem;
     height: 1.85rem;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--bg-card-hover);
+    border: 1px solid var(--border-subtle);
     font-size: 0.82rem;
     font-weight: 800;
     color: var(--text-primary);
@@ -595,7 +595,7 @@
     padding: 2rem;
     border-radius: 18px;
     background: var(--bg-card);
-    border: 1px solid rgba(255, 255, 255, 0.07);
+    border: 1px solid var(--border-subtle);
   }
 
   .hub-note h2 {

@@ -58,16 +58,24 @@
 		await switchLocale(newLocale);
 	}
 
+	/**
+	 * ⚠️ **Los colores salen de los tokens, no de utilidades de Tailwind, y eso es
+	 * lo que hace que este componente exista en tema claro.**
+	 *
+	 * Iba con `text-slate-400`, `bg-slate-900/40` y `border-white/10`: valores
+	 * fijos elegidos para fondo oscuro. En claro el conmutador se quedaba como una
+	 * pastilla oscura pegada en medio de una barra clara, y su texto gris sobre
+	 * ella. Las utilidades de espaciado y forma sí se quedan — ésas no dependen
+	 * del tema.
+	 */
 	const cls = (code: Locales) =>
-		`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all duration-300 flex items-center gap-1.5 cursor-pointer select-none no-underline ${
-			activeLocale === code
-				? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
-				: 'text-slate-400 hover:text-white hover:bg-white/5'
+		`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all duration-300 flex items-center gap-1.5 cursor-pointer select-none no-underline lang-opcion ${
+			activeLocale === code ? 'es-activa' : ''
 		}`;
 </script>
 
 <div
-	class="inline-flex items-center bg-slate-900/40 backdrop-blur-md border border-white/10 rounded-xl p-1 shadow-inner gap-1"
+	class="inline-flex items-center backdrop-blur-md rounded-xl p-1 shadow-inner gap-1 lang-caja"
 >
 	{#each LOCALES as { code, label, flag }}
 		{#if isRouted}
@@ -94,3 +102,26 @@
 		{/if}
 	{/each}
 </div>
+
+<style>
+	.lang-caja {
+		background: var(--bg-card);
+		border: 1px solid var(--border-subtle);
+	}
+
+	:global(.lang-opcion) {
+		color: var(--text-muted);
+		background: transparent;
+	}
+
+	:global(.lang-opcion:hover) {
+		color: var(--text-primary);
+	}
+
+	/* La opción activa lleva fondo de acento, así que su texto es el de encima de
+	   un acento y no el del tema. Ver `--text-on-accent` en `layout.css`. */
+	:global(.lang-opcion.es-activa) {
+		background: var(--accent-blue);
+		color: var(--text-on-accent);
+	}
+</style>

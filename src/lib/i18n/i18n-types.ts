@@ -4189,6 +4189,14 @@ type RootTranslation = {
 		 * A​c​t​u​a​l​i​z​a​r​ ​p​r​e​c​i​o​s
 		 */
 		update_prices: string
+		/**
+		 * C​a​m​b​i​a​r​ ​a​ ​t​e​m​a​ ​c​l​a​r​o
+		 */
+		theme_to_light: string
+		/**
+		 * C​a​m​b​i​a​r​ ​a​ ​t​e​m​a​ ​o​s​c​u​r​o
+		 */
+		theme_to_dark: string
 	}
 }
 
@@ -8254,6 +8262,14 @@ export type TranslationFunctions = {
 		 * Actualizar precios
 		 */
 		update_prices: () => LocalizedString
+		/**
+		 * Cambiar a tema claro
+		 */
+		theme_to_light: () => LocalizedString
+		/**
+		 * Cambiar a tema oscuro
+		 */
+		theme_to_dark: () => LocalizedString
 	}
 }
 

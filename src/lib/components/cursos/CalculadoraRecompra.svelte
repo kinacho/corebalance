@@ -73,7 +73,7 @@
 	.calc {
 		margin: 2rem 0;
 		padding: 1.35rem;
-		border: 1px solid rgba(255, 255, 255, 0.12);
+		border: 1px solid var(--border-subtle);
 		border-radius: 16px;
 		background: rgba(255, 255, 255, 0.025);
 	}
@@ -99,7 +99,7 @@
 	.tipos button.activo {
 		background: var(--accent-blue);
 		border-color: var(--accent-blue);
-		color: #fff;
+		color: var(--text-on-accent);
 	}
 	.campos {
 		display: grid;
@@ -135,7 +135,7 @@
 	.salida {
 		text-align: center;
 		padding-top: 1rem;
-		border-top: 1px solid rgba(255, 255, 255, 0.08);
+		border-top: 1px solid var(--border-subtle);
 	}
 	.etiqueta {
 		margin: 0 0 0.3rem;
@@ -148,11 +148,11 @@
 		margin: 0 0 0.3rem;
 		font-size: clamp(1.35rem, 4.5vw, 1.9rem);
 		font-weight: 800;
-		color: var(--accent-green);
+		color: var(--accent-green-ink);
 		line-height: 1.15;
 	}
 	.salida.mal .cifra {
-		color: var(--accent-orange);
+		color: var(--accent-orange-ink);
 	}
 	.pie {
 		margin: 0;
@@ -162,7 +162,7 @@
 	.veredicto {
 		margin: 0.9rem 0 0;
 		padding-top: 0.9rem;
-		border-top: 1px solid rgba(255, 255, 255, 0.08);
+		border-top: 1px solid var(--border-subtle);
 		font-size: 0.9rem;
 		color: var(--text-primary);
 	}

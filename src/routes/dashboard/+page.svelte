@@ -582,7 +582,7 @@ import { formatCompactCurrency } from "$lib/chart-format";
   .tour-repeat-btn {
     background: rgba(59, 130, 246, 0.08);
     border: 1px solid rgba(59, 130, 246, 0.15);
-    color: #60a5fa;
+    color: var(--accent-blue-ink);
     font-size: 0.7rem;
     font-weight: 700;
     padding: 0.12rem 0.45rem;
@@ -599,7 +599,7 @@ import { formatCompactCurrency } from "$lib/chart-format";
   .tour-repeat-btn:hover {
     background: rgba(59, 130, 246, 0.18);
     border-color: rgba(59, 130, 246, 0.35);
-    color: #93c5fd;
+    color: var(--accent-blue-ink);
     transform: translateY(-0.5px);
     box-shadow: 0 4px 10px rgba(59, 130, 246, 0.15);
   }
@@ -638,7 +638,7 @@ import { formatCompactCurrency } from "$lib/chart-format";
     background: rgba(239, 68, 68, 0.1);
     border: 1px solid rgba(239, 68, 68, 0.2);
     border-radius: 14px;
-    color: #fca5a5;
+    color: var(--state-negative);
   }
 
   .error-text strong {
@@ -684,11 +684,11 @@ import { formatCompactCurrency } from "$lib/chart-format";
     pointer-events: auto;
     display: flex;
     gap: 0.35rem;
-    background: rgba(15, 15, 20, 0.95);
+    background: var(--bg-overlay);
     backdrop-filter: blur(24px) saturate(200%);
     -webkit-backdrop-filter: blur(24px) saturate(200%);
     padding: 0.5rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-subtle);
     border-radius: 24px;
     box-shadow:
       0 12px 32px rgba(0, 0, 0, 0.5),
@@ -706,7 +706,7 @@ import { formatCompactCurrency } from "$lib/chart-format";
     border: none;
     border-radius: 14px;
     background: transparent;
-    color: rgba(255, 255, 255, 0.3);
+    color: var(--text-faint);
     font-size: 0.65rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -728,7 +728,7 @@ import { formatCompactCurrency } from "$lib/chart-format";
 
   .tab-btn.active {
     background: rgba(37, 99, 235, 0.16);
-    color: #bfdbfe;
+    color: var(--accent-blue-ink);
   }
 
   /* --- Layout Grid --- */
@@ -753,10 +753,10 @@ import { formatCompactCurrency } from "$lib/chart-format";
 
   .history-section {
     padding: 1.5rem;
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--bg-card);
     backdrop-filter: blur(24px) saturate(200%);
     -webkit-backdrop-filter: blur(24px) saturate(200%);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border-subtle);
     border-radius: 28px;
     margin-bottom: 2rem;
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
@@ -781,10 +781,10 @@ import { formatCompactCurrency } from "$lib/chart-format";
 
   .charts-row-card {
     padding: 1.5rem;
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--bg-card);
     backdrop-filter: blur(24px) saturate(200%);
     -webkit-backdrop-filter: blur(24px) saturate(200%);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border-subtle);
     border-radius: 28px;
     box-shadow: 0 12px 48px 0 rgba(0, 0, 0, 0.5);
     margin-bottom: 1.5rem;
@@ -829,7 +829,7 @@ import { formatCompactCurrency } from "$lib/chart-format";
 
   .chart-label {
     font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.4);
+    color: var(--text-faint);
     text-transform: uppercase;
     margin: 0;
     font-weight: 700;
@@ -891,7 +891,7 @@ import { formatCompactCurrency } from "$lib/chart-format";
       padding: 0 0 2rem;
       background: none;
       border: 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      border-bottom: 1px solid var(--border-subtle);
       border-radius: 0;
       box-shadow: none;
       backdrop-filter: none;
@@ -966,7 +966,7 @@ import { formatCompactCurrency } from "$lib/chart-format";
       gap: 1.5rem;
       grid-column: 1 / -1;
       padding-top: 1.75rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      border-top: 1px solid var(--border-subtle);
     }
     .maps-row {
       display: grid;
@@ -1013,7 +1013,7 @@ import { formatCompactCurrency } from "$lib/chart-format";
         background 0.18s ease;
     }
     .maps-fold-head:hover {
-      background: rgba(255, 255, 255, 0.02);
+      background: var(--bg-card);
       border-color: rgba(255, 255, 255, 0.2);
     }
     .maps-fold-head:focus-visible {
@@ -1023,7 +1023,7 @@ import { formatCompactCurrency } from "$lib/chart-format";
     .maps-fold-title {
       font-size: 0.78rem;
       font-weight: 700;
-      color: rgba(255, 255, 255, 0.82);
+      color: var(--text-secondary);
       flex-shrink: 0;
     }
     .maps-fold-sub {
@@ -1042,7 +1042,7 @@ import { formatCompactCurrency } from "$lib/chart-format";
       flex-shrink: 0;
       font-size: 0.72rem;
       font-weight: 700;
-      color: var(--accent-blue);
+      color: var(--accent-blue-ink);
     }
     .maps-fold-cta svg {
       width: 14px;
@@ -1130,7 +1130,7 @@ import { formatCompactCurrency } from "$lib/chart-format";
 
   .footer-tagline {
     font-size: 0.9rem;
-    color: rgba(160, 160, 200, 0.4);
+    color: var(--text-faint);
     line-height: 1.5;
     max-width: 400px;
     margin: 0 auto;
@@ -1158,7 +1158,7 @@ import { formatCompactCurrency } from "$lib/chart-format";
 
   .footer-link-btn {
     font-size: 0.8rem;
-    color: rgba(160, 160, 200, 0.4);
+    color: var(--text-faint);
     text-decoration: none;
     transition: all 0.2s ease;
     display: flex;
@@ -1171,12 +1171,12 @@ import { formatCompactCurrency } from "$lib/chart-format";
   }
 
   .footer-link-btn:hover {
-    color: #3b82f6;
+    color: var(--accent-blue-ink);
     transform: translateY(-1px);
   }
 
   .link-separator {
-    color: rgba(160, 160, 200, 0.15);
+    color: var(--text-faint);
     font-size: 0.8rem;
   }
 
@@ -1189,7 +1189,7 @@ import { formatCompactCurrency } from "$lib/chart-format";
     width: 100%;
     max-width: 800px;
     padding: 1.5rem;
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--bg-card);
     border-radius: 20px;
     border: 1px solid rgba(255, 255, 255, 0.03);
   }
@@ -1197,7 +1197,7 @@ import { formatCompactCurrency } from "$lib/chart-format";
   .footer-legal p {
     font-size: 0.7rem;
     line-height: 1.6;
-    color: rgba(160, 160, 200, 0.35);
+    color: var(--text-faint);
     margin: 0;
     text-align: center;
   }
@@ -1205,14 +1205,14 @@ import { formatCompactCurrency } from "$lib/chart-format";
   .footer-copyright p {
     font-size: 0.75rem;
     font-weight: 600;
-    color: rgba(160, 160, 200, 0.25);
+    color: var(--text-faint);
     margin: 0;
   }
 
   .changelog-badge-btn {
     background: rgba(16, 185, 129, 0.08);
     border: 1px solid rgba(16, 185, 129, 0.15);
-    color: #10b981;
+    color: var(--accent-green-ink);
     font-size: 0.7rem;
     font-weight: 700;
     padding: 0.12rem 0.45rem;
@@ -1229,7 +1229,7 @@ import { formatCompactCurrency } from "$lib/chart-format";
   .changelog-badge-btn:hover {
     background: rgba(16, 185, 129, 0.18);
     border-color: rgba(16, 185, 129, 0.35);
-    color: #34d399;
+    color: var(--state-positive);
     transform: translateY(-0.5px);
     box-shadow: 0 4px 10px rgba(16, 185, 129, 0.15);
   }

@@ -165,7 +165,7 @@
 		background: rgba(18, 18, 35, 0.95);
 		backdrop-filter: blur(24px) saturate(200%);
 		-webkit-backdrop-filter: blur(24px) saturate(200%);
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		border: 1px solid var(--border-subtle);
 		border-radius: 20px;
 		box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(59, 130, 246, 0.05);
 		display: flex;
@@ -186,7 +186,7 @@
 
 	.changelog-header {
 		padding: 1.25rem 1.5rem;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+		border-bottom: 1px solid var(--border-subtle);
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -205,14 +205,14 @@
 	.changelog-title {
 		font-size: 1.2rem;
 		font-weight: 800;
-		color: #fff;
+		color: var(--text-primary);
 		margin: 0;
 	}
 
 	.close-btn {
 		background: transparent;
 		border: none;
-		color: rgba(255, 255, 255, 0.4);
+		color: var(--text-faint);
 		font-size: 1.2rem;
 		cursor: pointer;
 		transition: all 0.2s;
@@ -225,8 +225,8 @@
 	}
 
 	.close-btn:hover {
-		color: #fff;
-		background: rgba(255, 255, 255, 0.05);
+		color: var(--text-primary);
+		background: var(--bg-card-hover);
 		transform: rotate(90deg);
 	}
 
@@ -255,7 +255,7 @@
 		top: 8px;
 		bottom: 8px;
 		width: 2px;
-		background: rgba(255, 255, 255, 0.06);
+		background: var(--bg-card-hover);
 	}
 
 	.timeline-item {
@@ -277,7 +277,7 @@
 	.version-label {
 		font-size: 1.15rem;
 		font-weight: 800;
-		color: #fff;
+		color: var(--text-primary);
 	}
 
 	.version-badge {
@@ -298,16 +298,16 @@
 	}
 
 	.timeline-content-card {
-		background: rgba(255, 255, 255, 0.02);
-		border: 1px solid rgba(255, 255, 255, 0.04);
+		background: var(--bg-card);
+		border: 1px solid var(--border-subtle);
 		border-radius: 14px;
 		padding: 1rem;
 		transition: all 0.2s;
 	}
 
 	.timeline-content-card:hover {
-		background: rgba(255, 255, 255, 0.03);
-		border-color: rgba(255, 255, 255, 0.06);
+		background: var(--bg-card);
+		border-color: var(--border-subtle);
 	}
 
 	.card-header {
@@ -317,7 +317,7 @@
 	.release-date {
 		font-size: 0.75rem;
 		font-weight: 600;
-		color: rgba(255, 255, 255, 0.4);
+		color: var(--text-faint);
 	}
 
 	.changes-list {
@@ -330,13 +330,13 @@
 
 	.changes-list li {
 		font-size: 0.8rem;
-		color: rgba(255, 255, 255, 0.7);
+		color: var(--text-secondary);
 		line-height: 1.4;
 	}
 
 	.changes-list li :global(strong) {
 		font-weight: 700;
-		color: rgba(255, 255, 255, 0.95);
+		color: var(--text-primary);
 	}
 
 	.changes-list li :global(code) {
@@ -344,13 +344,13 @@
 		font-size: 0.92em;
 		padding: 0.05rem 0.3rem;
 		border-radius: 5px;
-		background: rgba(255, 255, 255, 0.08);
-		color: rgba(255, 255, 255, 0.9);
+		background: var(--bg-card-hover);
+		color: var(--text-primary);
 	}
 
 	.changelog-footer {
 		padding: 1rem 1.5rem;
-		border-top: 1px solid rgba(255, 255, 255, 0.06);
+		border-top: 1px solid var(--border-subtle);
 		display: flex;
 		justify-content: flex-end;
 		background: rgba(14, 14, 28, 0.5);
@@ -358,8 +358,8 @@
 
 	.btn-primary {
 		padding: 0.55rem 1.25rem;
-		background: #3b82f6;
-		color: white;
+		background: var(--accent-blue);
+		color: var(--text-on-accent);
 		border: none;
 		border-radius: 10px;
 		font-weight: 700;
@@ -370,7 +370,7 @@
 	}
 
 	.btn-primary:hover {
-		background: #2563eb;
+		background: var(--accent-blue);
 		transform: translateY(-1px);
 		box-shadow: 0 6px 16px rgba(59, 130, 246, 0.35);
 	}

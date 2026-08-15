@@ -45,7 +45,7 @@
 <style>
 	.error-page {
 		background: var(--bg-primary, #05050a);
-		color: #fff;
+		color: var(--text-primary);
 		min-height: 100vh;
 		display: flex;
 		flex-direction: column;
@@ -68,7 +68,7 @@
 	.error-badge {
 		font-size: 6rem;
 		font-weight: 900;
-		background: linear-gradient(135deg, var(--accent-blue, #3b82f6), var(--accent-green, #10b981));
+		background: linear-gradient(135deg, var(--accent-blue-ink), var(--accent-green-ink));
 		-webkit-background-clip: text;
 		background-clip: text;
 		-webkit-text-fill-color: transparent;
@@ -85,7 +85,7 @@
 	}
 
 	p {
-		color: rgba(255, 255, 255, 0.7);
+		color: var(--text-secondary);
 		font-size: 1.1rem;
 		margin-bottom: 2rem;
 		line-height: 1.5;
@@ -106,8 +106,8 @@
 	}
 
 	.btn-primary {
-		background: var(--accent-blue, #3b82f6);
-		color: #fff;
+		background: var(--accent-blue);
+		color: var(--text-primary);
 		box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 	}
 

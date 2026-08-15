@@ -142,7 +142,7 @@
 		font-weight: 800;
 		letter-spacing: 0.09em;
 		text-transform: uppercase;
-		color: var(--accent-blue);
+		color: var(--accent-blue-ink);
 	}
 	.pregunta {
 		margin: 0 0 1rem;
@@ -170,9 +170,9 @@
 		/* 44 px de alto mínimo: es un objetivo de toque, no un enlace de texto. */
 		min-height: 44px;
 		padding: 0.7rem 0.9rem;
-		border: 1px solid rgba(255, 255, 255, 0.12);
+		border: 1px solid var(--border-subtle);
 		border-radius: 12px;
-		background: rgba(255, 255, 255, 0.02);
+		background: var(--bg-card);
 		color: var(--text-primary);
 		font: inherit;
 		font-size: 0.92rem;

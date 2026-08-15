@@ -480,7 +480,7 @@
 		width: 100%;
 		max-width: 500px;
 		background: #0a0a18;
-		border: 1px solid rgba(255,255,255,0.1);
+		border: 1px solid var(--border-subtle);
 		border-radius: 24px;
 		overflow: hidden;
 		box-shadow: 0 30px 60px rgba(0,0,0,0.8);
@@ -491,7 +491,7 @@
 
 	.ledger-header {
 		padding: 1.5rem;
-		border-bottom: 1px solid rgba(255,255,255,0.05);
+		border-bottom: 1px solid var(--border-subtle);
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -512,21 +512,21 @@
 	.asset-name {
 		font-size: 1.1rem;
 		font-weight: 700;
-		color: #fff;
+		color: var(--text-primary);
 		margin: 0;
 	}
 
 	.asset-ticker {
 		font-size: 0.8rem;
-		color: rgba(255,255,255,0.4);
+		color: var(--text-faint);
 		margin: 0;
 		font-family: monospace;
 	}
 
 	.close-btn {
-		background: rgba(255,255,255,0.05);
-		border: 1px solid rgba(255,255,255,0.1);
-		color: #fff;
+		background: var(--bg-card-hover);
+		border: 1px solid var(--border-subtle);
+		color: var(--text-primary);
 		width: 32px;
 		height: 32px;
 		border-radius: 8px;
@@ -542,8 +542,8 @@
 	}
 
 	.mode-selector {
-		background: rgba(255,255,255,0.03);
-		border: 1px solid rgba(255,255,255,0.06);
+		background: var(--bg-card);
+		border: 1px solid var(--border-subtle);
 		border-radius: 16px;
 		padding: 1rem;
 		display: flex;
@@ -561,19 +561,19 @@
 	.mode-title {
 		font-weight: 700;
 		font-size: 0.9rem;
-		color: #fff;
+		color: var(--text-primary);
 		display: block;
 	}
 
 	.mode-desc {
 		font-size: 0.75rem;
-		color: rgba(255,255,255,0.4);
+		color: var(--text-faint);
 		margin: 0.2rem 0 0;
 	}
 
 	.toggle-btn {
-		background: #3b82f6;
-		color: #fff;
+		background: var(--accent-blue);
+		color: var(--text-on-accent);
 		border: none;
 		padding: 0.5rem 0.8rem;
 		border-radius: 10px;
@@ -590,8 +590,8 @@
 	}
 
 	.stat-card {
-		background: rgba(255,255,255,0.03);
-		border: 1px solid rgba(255,255,255,0.05);
+		background: var(--bg-card);
+		border: 1px solid var(--border-subtle);
 		padding: 0.75rem;
 		border-radius: 12px;
 		text-align: center;
@@ -600,7 +600,7 @@
 	.stat-label {
 		display: block;
 		font-size: 0.65rem;
-		color: rgba(255,255,255,0.4);
+		color: var(--text-faint);
 		text-transform: uppercase;
 		margin-bottom: 0.2rem;
 	}
@@ -608,7 +608,7 @@
 	.stat-value {
 		font-weight: 700;
 		font-size: 0.9rem;
-		color: #fff;
+		color: var(--text-primary);
 	}
 
 	.transactions-section {
@@ -626,13 +626,13 @@
 	.section-header h3 {
 		font-size: 0.9rem;
 		margin: 0;
-		color: #fff;
+		color: var(--text-primary);
 	}
 
 	.add-tx-btn {
-		background: rgba(255,255,255,0.05);
+		background: var(--bg-card-hover);
 		border: 1px dashed rgba(255,255,255,0.2);
-		color: #fff;
+		color: var(--text-primary);
 		padding: 0.3rem 0.6rem;
 		border-radius: 6px;
 		font-size: 0.75rem;
@@ -640,8 +640,8 @@
 	}
 
 	.add-tx-form {
-		background: rgba(255,255,255,0.02);
-		border: 1px solid rgba(255,255,255,0.05);
+		background: var(--bg-card);
+		border: 1px solid var(--border-subtle);
 		border-radius: 16px;
 		padding: 1rem;
 		display: flex;
@@ -652,7 +652,7 @@
 	.form-title {
 		font-size: 0.85rem;
 		font-weight: 700;
-		color: #3b82f6;
+		color: var(--accent-blue-ink);
 		margin: 0 0 0.25rem 0;
 	}
 
@@ -670,16 +670,16 @@
 
 	.form-group label {
 		font-size: 0.7rem;
-		color: rgba(255,255,255,0.4);
+		color: var(--text-faint);
 		font-weight: 600;
 	}
 
 	.form-group input, .form-group select {
 		background: #000;
-		border: 1px solid rgba(255,255,255,0.1);
+		border: 1px solid var(--border-subtle);
 		border-radius: 8px;
 		padding: 0.5rem;
-		color: #fff;
+		color: var(--text-primary);
 		font-size: 0.85rem;
 	}
 
@@ -692,8 +692,8 @@
 	.fx-input { flex: 1; }
 
 	.submit-tx-btn {
-		background: #10b981;
-		color: #fff;
+		background: var(--surface-green);
+		color: var(--text-on-accent);
 		border: none;
 		padding: 0.75rem;
 		border-radius: 10px;
@@ -709,8 +709,8 @@
 	}
 
 	.tx-item {
-		background: rgba(255,255,255,0.02);
-		border: 1px solid rgba(255,255,255,0.05);
+		background: var(--bg-card);
+		border: 1px solid var(--border-subtle);
 		border-radius: 12px;
 		padding: 0.75rem;
 		display: flex;
@@ -721,7 +721,7 @@
 	}
 
 	.tx-item:hover {
-		background: rgba(255,255,255,0.06);
+		background: var(--bg-card-hover);
 		border-color: rgba(255,255,255,0.15);
 	}
 
@@ -745,12 +745,12 @@
 	.tx-type-label {
 		font-size: 0.8rem;
 		font-weight: 600;
-		color: #fff;
+		color: var(--text-primary);
 	}
 
 	.tx-date {
 		font-size: 0.65rem;
-		color: rgba(255,255,255,0.3);
+		color: var(--text-faint);
 	}
 
 	.tx-details {
@@ -762,28 +762,28 @@
 	.tx-shares {
 		font-size: 0.85rem;
 		font-weight: 700;
-		color: #fff;
+		color: var(--text-primary);
 	}
 
 	.tx-price {
 		font-size: 0.7rem;
-		color: rgba(255,255,255,0.4);
+		color: var(--text-faint);
 	}
 
 	.tx-delete {
 		background: transparent;
 		border: none;
-		color: rgba(239, 68, 68, 0.4);
+		color: var(--state-negative);
 		cursor: pointer;
 		padding: 0.5rem;
 	}
 
-	.tx-delete:hover { color: #ef4444; }
+	.tx-delete:hover { color: var(--state-negative); }
 
 	.empty-state {
 		text-align: center;
 		padding: 2rem;
-		color: rgba(255,255,255,0.2);
+		color: var(--text-faint);
 		font-size: 0.85rem;
 		font-style: italic;
 	}
@@ -791,7 +791,7 @@
 	.manual-notice {
 		text-align: center;
 		padding: 2rem 1rem;
-		background: rgba(255,255,255,0.02);
+		background: var(--bg-card);
 		border-radius: 20px;
 		border: 1px dashed rgba(255,255,255,0.1);
 	}
@@ -803,13 +803,13 @@
 
 	.manual-notice p {
 		font-size: 0.9rem;
-		color: rgba(255,255,255,0.7);
+		color: var(--text-secondary);
 		line-height: 1.5;
 	}
 
 	.notice-sub {
 		font-size: 0.75rem !important;
-		color: rgba(255,255,255,0.4) !important;
+		color: var(--text-faint) !important;
 		margin-top: 1rem;
 	}
 
@@ -839,20 +839,20 @@
 	.picker-header button {
 		background: none;
 		border: none;
-		color: #fff;
+		color: var(--text-primary);
 		cursor: pointer;
 		padding: 0.25rem 0.5rem;
 		border-radius: 6px;
 		font-size: 1rem;
 	}
-	.picker-header button:hover { background: rgba(255,255,255,0.08); }
+	.picker-header button:hover { background: var(--bg-card-hover); }
 	.picker-title { font-weight: 600; font-size: 0.85rem; text-transform: capitalize; flex: 1; text-align: center; }
 	.picker-weekdays {
 		display: grid;
 		grid-template-columns: repeat(7, 1fr);
 		text-align: center;
 		font-size: 0.65rem;
-		color: rgba(255,255,255,0.3);
+		color: var(--text-faint);
 		margin-bottom: 0.25rem;
 	}
 	.picker-days {
@@ -864,13 +864,13 @@
 		aspect-ratio: 1;
 		border-radius: 6px;
 		font-size: 0.75rem;
-		color: rgba(255,255,255,0.8);
+		color: var(--text-secondary);
 		background: none;
 		border: none;
 		cursor: pointer;
 	}
 	.day-btn:hover { background: rgba(255,255,255,0.1); }
-	.day-btn.selected { background: #3b82f6; color: #fff; font-weight: 700; }
+	.day-btn.selected { background: var(--accent-blue); color: var(--text-on-accent); font-weight: 700; }
 	.picker-months, .picker-years {
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);
@@ -880,12 +880,12 @@
 		padding: 0.4rem;
 		border-radius: 6px;
 		font-size: 0.8rem;
-		color: rgba(255,255,255,0.8);
+		color: var(--text-secondary);
 		background: none;
 		border: none;
 		cursor: pointer;
 		text-align: center;
 	}
 	.month-btn:hover, .year-btn:hover { background: rgba(255,255,255,0.1); }
-	.month-btn.selected, .year-btn.selected { background: #3b82f6; color: #fff; font-weight: 700; }
+	.month-btn.selected, .year-btn.selected { background: var(--accent-blue); color: var(--text-on-accent); font-weight: 700; }
 </style>

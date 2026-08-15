@@ -1210,6 +1210,8 @@ const es = {
     show_values: 'Mostrar valores',
     hide_values: 'Ocultar valores',
     update_prices: 'Actualizar precios',
+    theme_to_light: 'Cambiar a tema claro',
+    theme_to_dark: 'Cambiar a tema oscuro',
   },
 } satisfies BaseTranslation;
 

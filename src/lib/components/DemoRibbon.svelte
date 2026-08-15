@@ -53,7 +53,7 @@
 
   .exit-demo-btn {
     background: white;
-    color: #6366f1;
+    color: var(--accent-blue-ink);
     border: none;
     padding: 0.35rem 0.75rem;
     border-radius: 8px;

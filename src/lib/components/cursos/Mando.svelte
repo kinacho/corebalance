@@ -158,7 +158,7 @@
 	.salida {
 		margin-top: 1.1rem;
 		padding-top: 1rem;
-		border-top: 1px solid rgba(255, 255, 255, 0.08);
+		border-top: 1px solid var(--border-subtle);
 		text-align: center;
 	}
 	.etiqueta-resultado {

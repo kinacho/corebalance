@@ -23,7 +23,8 @@
 		categoryAxis,
 		valueAxis,
 		motionAllowed,
-		CHART_AXIS_INK
+		seguirTema,
+		chartAxisInk
 	} from '$lib/chart-theme';
 	import { LL, locale } from '$lib/i18n/i18n-svelte';
 
@@ -223,7 +224,7 @@
 						},
 						ticks: {
 							...valueAxis.ticks,
-							color: CHART_AXIS_INK,
+							color: chartAxisInk(),
 							/**
 							 * Las marcas caen en múltiplos de la banda, así que el eje dice
 							 * −5 / 0 / +5 y no −6 / −5 / 0 / +5 / +6. Los números que
@@ -243,6 +244,8 @@
 		});
 
 		sync();
+
+		return seguirTema(() => chart);
 	});
 
 	onDestroy(() => chart?.destroy());
@@ -361,7 +364,7 @@
 		font-weight: 700;
 		letter-spacing: 0.06em;
 		text-transform: uppercase;
-		color: rgba(255, 255, 255, 0.3);
+		color: var(--text-faint);
 		text-align: center;
 	}
 

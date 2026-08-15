@@ -146,7 +146,7 @@
 		font-weight: 700;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
-		color: var(--accent-green);
+		color: var(--accent-green-ink);
 	}
 	h1 {
 		margin: 0 0 1rem;
@@ -166,7 +166,7 @@
 		margin-bottom: 2rem;
 	}
 	fieldset {
-		border: 1px solid rgba(255, 255, 255, 0.12);
+		border: 1px solid var(--border-subtle);
 		border-radius: 12px;
 		padding: 1rem 1.15rem;
 		display: grid;
@@ -219,7 +219,7 @@
 	.resultado {
 		padding: 1.5rem;
 		border-radius: 16px;
-		border: 1px solid rgba(255, 255, 255, 0.12);
+		border: 1px solid var(--border-subtle);
 		background: var(--bg-card);
 	}
 	.etiqueta {
@@ -233,10 +233,10 @@
 		margin: 0 0 0.5rem;
 		font-size: clamp(1.6rem, 4.5vw, 2.2rem);
 		font-weight: 800;
-		color: var(--accent-green);
+		color: var(--accent-green-ink);
 	}
 	.resultado.mal .cifra {
-		color: var(--accent-orange);
+		color: var(--accent-orange-ink);
 	}
 	.pie {
 		margin: 0;
@@ -247,7 +247,7 @@
 	.veredicto {
 		margin: 1rem 0 0;
 		padding-top: 1rem;
-		border-top: 1px solid rgba(255, 255, 255, 0.08);
+		border-top: 1px solid var(--border-subtle);
 		color: var(--text-primary);
 		font-size: 0.95rem;
 	}
@@ -272,6 +272,6 @@
 		margin-top: 0.6rem;
 	}
 	a {
-		color: var(--accent-blue);
+		color: var(--accent-blue-ink);
 	}
 </style>

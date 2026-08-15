@@ -436,10 +436,10 @@
 <style>
 	.panel {
 		width: 100%;
-		background: rgba(255, 255, 255, 0.03);
+		background: var(--bg-card);
 		backdrop-filter: blur(24px) saturate(200%);
 		-webkit-backdrop-filter: blur(24px) saturate(200%);
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		border: 1px solid var(--border-subtle);
 		border-radius: 24px;
 		overflow: hidden;
 		transition: all 0.3s ease;
@@ -447,7 +447,7 @@
 
 	.panel:hover {
 		border-color: rgba(255, 255, 255, 0.15);
-		background: rgba(255, 255, 255, 0.05);
+		background: var(--bg-card-hover);
 	}
 
 	.panel-header {
@@ -475,9 +475,9 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(255, 255, 255, 0.05);
+		background: var(--bg-card-hover);
 		border-radius: 12px;
-		color: var(--accent-blue);
+		color: var(--accent-blue-ink);
 	}
 
 	.panel-icon svg {
@@ -488,19 +488,19 @@
 	.panel-title {
 		font-size: 1rem;
 		font-weight: 700;
-		color: #ffffff;
+		color: var(--text-primary);
 		margin: 0;
 		letter-spacing: -0.01em;
 	}
 
 	.panel-subtitle {
 		font-size: 0.75rem;
-		color: rgba(160, 160, 200, 0.6);
+		color: var(--text-muted);
 		margin: 0.1rem 0 0 0;
 	}
 
 	.chevron {
-		color: rgba(255, 255, 255, 0.3);
+		color: var(--text-faint);
 		transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 		width: 20px;
 		height: 20px;
@@ -542,7 +542,7 @@
 		padding: 1.25rem;
 		background: rgba(0, 0, 0, 0.2);
 		border-radius: 20px;
-		border: 1px solid rgba(255, 255, 255, 0.05);
+		border: 1px solid var(--border-subtle);
 	}
 
 	.control-item {
@@ -560,7 +560,7 @@
 	.control-label {
 		font-size: 0.65rem;
 		font-weight: 700;
-		color: rgba(255, 255, 255, 0.35);
+		color: var(--text-faint);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 	}
@@ -568,7 +568,7 @@
 	.control-value {
 		font-size: 0.85rem;
 		font-weight: 700;
-		color: var(--accent-blue);
+		color: var(--accent-blue-ink);
 	}
 
 	input[type='range'] {
@@ -594,21 +594,21 @@
 
 	.results-card {
 		padding: 1.25rem;
-		background: rgba(255, 255, 255, 0.03);
+		background: var(--bg-card);
 		border-radius: 20px;
-		border: 1px solid rgba(255, 255, 255, 0.05);
+		border: 1px solid var(--border-subtle);
 	}
 
 	.main-metric {
 		text-align: center;
 		padding-bottom: 1.25rem;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+		border-bottom: 1px solid var(--border-subtle);
 		margin-bottom: 1rem;
 	}
 
 	.metric-label {
 		font-size: 0.75rem;
-		color: rgba(255, 255, 255, 0.45);
+		color: var(--text-faint);
 		display: block;
 		margin-bottom: 0.5rem;
 	}
@@ -616,7 +616,7 @@
 	.metric-value {
 		font-size: 1.75rem;
 		font-weight: 800;
-		color: #ffffff;
+		color: var(--text-primary);
 		letter-spacing: -0.02em;
 	}
 
@@ -634,13 +634,13 @@
 
 	.sub-label {
 		font-size: 0.65rem;
-		color: rgba(255, 255, 255, 0.35);
+		color: var(--text-faint);
 	}
 
 	.sub-value {
 		font-size: 0.95rem;
 		font-weight: 700;
-		color: #ffffff;
+		color: var(--text-primary);
 	}
 
 	.metric-box.success .sub-value {
@@ -667,7 +667,7 @@
 		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
-		color: rgba(255, 255, 255, 0.55);
+		color: var(--text-muted);
 	}
 
 	.legend-swatch {
@@ -723,7 +723,7 @@
 		font-weight: 700;
 		letter-spacing: 0.06em;
 		text-transform: uppercase;
-		color: rgba(255, 255, 255, 0.3);
+		color: var(--text-faint);
 	}
 
 	.chart-tooltip {
@@ -735,12 +735,12 @@
 		gap: 0.1rem;
 		padding: 0.5rem 0.7rem;
 		background: rgba(13, 13, 18, 0.96);
-		border: 1px solid rgba(255, 255, 255, 0.12);
+		border: 1px solid var(--border-subtle);
 		border-radius: 12px;
 		pointer-events: none;
 		white-space: nowrap;
 		font-size: 0.7rem;
-		color: #ffffff;
+		color: var(--text-primary);
 		z-index: 2;
 	}
 
@@ -748,18 +748,18 @@
 		font-size: 0.65rem;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
-		color: rgba(255, 255, 255, 0.5);
+		color: var(--text-muted);
 		font-weight: 700;
 	}
 
 	.tooltip-part {
-		color: rgba(255, 255, 255, 0.65);
+		color: var(--text-muted);
 		font-size: 0.65rem;
 	}
 
 	.legal-footer {
 		font-size: 0.65rem;
-		color: rgba(255, 255, 255, 0.28);
+		color: var(--text-faint);
 		text-align: center;
 		font-style: italic;
 		line-height: 1.4;
@@ -767,7 +767,7 @@
 
 	.full-width-capital {
 		grid-column: 1 / -1;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+		border-bottom: 1px solid var(--border-subtle);
 		padding-bottom: 1rem;
 		margin-bottom: 0.25rem;
 	}
@@ -780,9 +780,9 @@
 	}
 
 	.pill-btn {
-		background: rgba(255, 255, 255, 0.04);
-		border: 1px solid rgba(255, 255, 255, 0.05);
-		color: rgba(255, 255, 255, 0.7);
+		background: var(--bg-card);
+		border: 1px solid var(--border-subtle);
+		color: var(--text-secondary);
 		border-radius: 99px;
 		padding: 0.4rem 0.8rem;
 		font-size: 0.72rem;
@@ -792,21 +792,21 @@
 	}
 
 	.pill-btn:hover {
-		background: rgba(255, 255, 255, 0.08);
+		background: var(--bg-card-hover);
 		color: white;
 	}
 
 	.pill-btn.active {
 		background: rgba(37, 99, 235, 0.18);
 		border-color: rgba(37, 99, 235, 0.45);
-		color: #bfdbfe;
+		color: var(--accent-blue-ink);
 	}
 
 	.custom-capital-input-wrapper {
 		display: flex;
 		align-items: center;
 		background: rgba(0, 0, 0, 0.35);
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		border: 1px solid var(--border-subtle);
 		border-radius: 10px;
 		padding: 0.25rem 0.5rem 0.25rem 0.75rem;
 		margin-left: 0.5rem;
@@ -817,7 +817,7 @@
 		width: 80px;
 		background: transparent;
 		border: none;
-		color: #fff;
+		color: var(--text-primary);
 		font-size: 0.78rem;
 		font-weight: 700;
 		outline: none;
@@ -836,7 +836,7 @@
 	.currency-symbol {
 		font-size: 0.72rem;
 		font-weight: 700;
-		color: rgba(160, 160, 200, 0.5);
+		color: var(--text-muted);
 		margin-left: 0.2rem;
 	}
 </style>

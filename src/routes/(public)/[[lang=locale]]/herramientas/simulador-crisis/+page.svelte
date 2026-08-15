@@ -365,7 +365,7 @@
 <style>
   .crisis-page {
     background: var(--bg-primary, #05050a);
-    color: #fff;
+    color: var(--text-primary);
     min-height: 100vh;
     position: relative;
     overflow-x: hidden;
@@ -386,7 +386,7 @@
     font-size: 0.8rem;
     font-weight: 700;
     text-transform: uppercase;
-    color: var(--accent-blue, #3b82f6);
+    color: var(--accent-blue-ink);
     background: rgba(59, 130, 246, 0.1);
     padding: 0.35rem 0.85rem;
     border-radius: 9999px;
@@ -470,11 +470,11 @@
   }
 
   .input-group input[type="number"] {
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--bg-card);
     border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
     border-radius: 12px;
     padding: 0.75rem 1rem;
-    color: #fff;
+    color: var(--text-primary);
     font-size: 0.95rem;
     width: 100%;
     outline: none;
@@ -482,7 +482,7 @@
   }
 
   .input-group input[type="number"]:focus {
-    border-color: var(--accent-blue, #3b82f6);
+    border-color: var(--accent-blue-ink);
   }
 
   .config-grid {
@@ -522,11 +522,11 @@
   }
 
   .preset-btn {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: var(--bg-card-hover);
+    border: 1px solid var(--border-subtle);
     border-radius: 10px;
     padding: 0.6rem 0.4rem;
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--text-muted);
     font-size: 0.75rem;
     font-weight: 700;
     cursor: pointer;
@@ -540,8 +540,8 @@
 
   .preset-btn.active {
     background: rgba(59, 130, 246, 0.2);
-    border-color: var(--accent-blue, #3b82f6);
-    color: #60a5fa;
+    border-color: var(--accent-blue-ink);
+    color: var(--accent-blue-ink);
   }
 
   .scenario-detail {
@@ -558,13 +558,13 @@
   .detail-title {
     font-size: 0.85rem;
     font-weight: 700;
-    color: #93c5fd;
+    color: var(--accent-blue-ink);
   }
 
   .detail-desc {
     font-size: 0.8rem;
     line-height: 1.5;
-    color: rgba(255, 255, 255, 0.75);
+    color: var(--text-secondary);
     margin: 0;
   }
 
@@ -579,7 +579,7 @@
   .drop-value {
     font-size: 1rem;
     font-weight: 800;
-    color: #fca5a5;
+    color: var(--state-negative);
     font-variant-numeric: tabular-nums;
   }
 
@@ -599,7 +599,7 @@
     appearance: none;
     width: 16px;
     height: 16px;
-    background: var(--accent-blue, #3b82f6);
+    background: var(--accent-blue);
     border-radius: 50%;
     cursor: pointer;
     border: 2px solid #05050a;
@@ -617,7 +617,7 @@
   .drop-result-card h3 {
     font-size: 1.1rem;
     font-weight: 700;
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--text-primary);
     margin-top: 0;
     margin-bottom: 0.5rem;
   }
@@ -640,21 +640,21 @@
 
   .card-desc { color: var(--text-muted, rgba(160, 160, 200, 0.6)); font-size: 0.9rem; margin: 0.5rem 0 0; }
 
-  .loss-desc { color: #ef4444; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .loss-desc { color: var(--state-negative); font-weight: 600; font-variant-numeric: tabular-nums; }
 
   .recovery-card {
     background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, transparent 100%);
     border-color: rgba(16, 185, 129, 0.2);
   }
 
-  .recovery-header h3 { font-size: 1.3rem; font-weight: 800; color: rgba(255, 255, 255, 0.9); margin: 0 0 1.5rem; }
+  .recovery-header h3 { font-size: 1.3rem; font-weight: 800; color: var(--text-primary); margin: 0 0 1.5rem; }
 
   .recovery-breakdown { display: flex; flex-direction: column; gap: 0.75rem; border-top: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06)); padding-top: 1.25rem; }
 
   .breakdown-row { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.9rem; color: var(--text-muted, rgba(160, 160, 200, 0.8)); }
 
-  .value-highlight { color: #fff; font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
-  .value-recovery { color: #10b981; font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
+  .value-highlight { color: var(--text-primary); font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
+  .value-recovery { color: var(--accent-green-ink); font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
 
   .recovery-note {
     font-size: 0.75rem;
@@ -679,7 +679,7 @@
   .edu-sections h2:first-child { margin-top: 0; }
 
   .edu-sections p {
-    color: rgba(255, 255, 255, 0.75);
+    color: var(--text-secondary);
     line-height: 1.7;
     font-size: 1rem;
     margin: 0 0 1rem;
@@ -694,12 +694,12 @@
   }
 
   .edu-sections li {
-    color: rgba(255, 255, 255, 0.75);
+    color: var(--text-secondary);
     line-height: 1.7;
     font-size: 1rem;
   }
 
-  .edu-sections strong { color: #fff; }
+  .edu-sections strong { color: var(--text-primary); }
 
   /* Otras herramientas */
   .other-tools {
@@ -724,13 +724,13 @@
     gap: 0.75rem 1.75rem;
   }
   .other-tools a {
-    color: #60a5fa;
+    color: var(--accent-blue-ink);
     text-decoration: none;
     font-weight: 600;
     font-size: 0.95rem;
     transition: color 0.2s ease;
   }
-  .other-tools a:hover { color: #93c5fd; text-decoration: underline; }
+  .other-tools a:hover { color: var(--accent-blue-ink); text-decoration: underline; }
 
   .crisis-cta {
     background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
@@ -746,14 +746,14 @@
 
   .crisis-cta h2 { font-size: 2rem; font-weight: 800; margin-top: 0; margin-bottom: 1rem; letter-spacing: -0.02em; }
 
-  .crisis-cta p { color: rgba(255, 255, 255, 0.75); line-height: 1.6; margin-bottom: 2rem; font-size: 1.05rem; }
+  .crisis-cta p { color: var(--text-secondary); line-height: 1.6; margin-bottom: 2rem; font-size: 1.05rem; }
 
   /* Es un `<a>`, no un `<button>`: de ahí `inline-block` y quitar el subrayado. */
   .btn-primary {
     display: inline-block;
     text-decoration: none;
-    background: var(--accent-blue, #3b82f6);
-    color: white;
+    background: var(--accent-blue);
+    color: var(--text-on-accent);
     border: none;
     padding: 0.85rem 2rem;
     border-radius: 12px;
@@ -777,11 +777,11 @@
     flex-wrap: wrap;
   }
   .breadcrumb a {
-    color: rgba(255, 255, 255, 0.55);
+    color: var(--text-muted);
     text-decoration: none;
     transition: color 0.2s;
   }
-  .breadcrumb a:hover { color: rgba(255, 255, 255, 0.9); }
-  .breadcrumb-sep { color: rgba(255, 255, 255, 0.25); }
-  .breadcrumb span[aria-current="page"] { color: rgba(255, 255, 255, 0.85); font-weight: 500; }
+  .breadcrumb a:hover { color: var(--text-primary); }
+  .breadcrumb-sep { color: var(--text-faint); }
+  .breadcrumb span[aria-current="page"] { color: var(--text-secondary); font-weight: 500; }
 </style>

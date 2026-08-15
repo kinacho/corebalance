@@ -363,7 +363,7 @@
 		background: rgba(255, 255, 255, 0.025);
 		backdrop-filter: blur(20px) saturate(160%);
 		-webkit-backdrop-filter: blur(20px) saturate(160%);
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		border: 1px solid var(--border-subtle);
 		border-radius: 24px;
 		padding: 1.25rem;
 		display: flex;
@@ -388,7 +388,7 @@
 	.asset-card:hover {
 		border-color: rgba(255, 255, 255, 0.15);
 		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-		background: rgba(255, 255, 255, 0.04);
+		background: var(--bg-card);
 	}
 
 	.asset-card:active {
@@ -404,7 +404,7 @@
 	}
 
 	.asset-card:hover {
-		background: rgba(255, 255, 255, 0.06);
+		background: var(--bg-card-hover);
 		border-color: rgba(255, 255, 255, 0.2);
 		transform: translateY(-4px);
 		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
@@ -442,7 +442,7 @@
 		width: 44px;
 		height: 44px;
 		background: rgba(0, 0, 0, 0.3);
-		border: 1px solid rgba(255, 255, 255, 0.05);
+		border: 1px solid var(--border-subtle);
 		border-radius: 12px;
 		display: flex;
 		align-items: center;
@@ -473,7 +473,7 @@
 	.asset-name {
 		font-size: 1rem;
 		font-weight: 700;
-		color: #fff;
+		color: var(--text-primary);
 		margin: 0;
 		letter-spacing: -0.01em;
 		white-space: nowrap;
@@ -485,7 +485,7 @@
 		/* ⚠️ El `clamp()` tenía el suelo justo donde no hay que tenerlo: a 390 px de
 		   ancho, `2.5vw` son 9,75 px y ahí es donde caía siempre. Ver `--text-micro`. */
 		font-size: clamp(var(--text-micro), 2.5vw, 0.65rem);
-		color: rgba(160, 160, 200, 0.5);
+		color: var(--text-muted);
 		font-family: 'Monaco', 'Menlo', monospace;
 	}
 
@@ -500,7 +500,7 @@
 	}
 
 	.asset-divider {
-		color: rgba(160, 160, 200, 0.2);
+		color: var(--text-faint);
 		font-size: 0.7rem;
 	}
 
@@ -528,7 +528,7 @@
 	.live-dot {
 		width: 6px;
 		height: 6px;
-		background: #f59e0b;
+		background: var(--accent-orange);
 		border-radius: 50%;
 		animation: pulse-orange 2s infinite;
 	}
@@ -548,7 +548,7 @@
 	.btc-value {
 		font-size: 0.75rem;
 		font-weight: 800;
-		color: #f59e0b;
+		color: var(--accent-orange-ink);
 		font-family: 'Monaco', monospace;
 	}
 
@@ -571,7 +571,7 @@
 
 	.ledger-badge {
 		background: rgba(167, 139, 250, 0.1);
-		color: #a78bfa;
+		color: var(--accent-violet-ink);
 		border: 1px solid rgba(167, 139, 250, 0.2);
 		padding: 0.15rem 0.35rem;
 		border-radius: 6px;
@@ -613,7 +613,7 @@
 	.field-label {
 		font-size: 0.65rem;
 		font-weight: 600;
-		color: rgba(160, 160, 200, 0.6);
+		color: var(--text-muted);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 	}
@@ -630,7 +630,7 @@
 		border: 1.5px solid rgba(255, 255, 255, 0.08);
 		border-radius: 12px;
 		padding: 0.65rem 0.85rem;
-		color: #fff;
+		color: var(--text-primary);
 		font-size: 0.95rem;
 		font-weight: 600;
 		transition: all 0.2s;
@@ -642,7 +642,7 @@
 		cursor: default;
 		background: rgba(167, 139, 250, 0.05) !important;
 		border-color: rgba(167, 139, 250, 0.1) !important;
-		color: #a78bfa !important;
+		color: var(--accent-violet-ink) !important;
 	}
 
 	.modern-input:focus {
@@ -655,7 +655,7 @@
 		position: absolute;
 		right: 0.85rem;
 		font-size: 0.85rem;
-		color: rgba(255, 255, 255, 0.2);
+		color: var(--text-faint);
 		font-weight: 700;
 		pointer-events: none;
 	}
@@ -693,7 +693,7 @@
 		font-weight: 700;
 		text-transform: uppercase;
 		letter-spacing: 0.02em;
-		color: rgba(255, 255, 255, 0.4);
+		color: var(--text-faint);
 		margin-bottom: 0.25rem;
 	}
 
@@ -716,7 +716,7 @@
 
 	.clickable-metric:hover .perf-icon {
 		transform: rotate(180deg);
-		color: #fff;
+		color: var(--text-primary);
 	}
 
 	.perf-icon {
@@ -729,14 +729,14 @@
 	.metric-value {
 		font-size: 0.8rem;
 		font-weight: 700;
-		color: rgba(255, 255, 255, 0.9);
+		color: var(--text-primary);
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
 
 	.metric-value.highlight {
-		color: #fff;
+		color: var(--text-primary);
 	}
 
 	.pnl-metric.positive .metric-value { color: var(--state-positive); }
@@ -747,7 +747,7 @@
 		font-weight: 800;
 		padding: 0.15rem 0.4rem;
 		border-radius: 6px;
-		background: rgba(255, 255, 255, 0.05);
+		background: var(--bg-card-hover);
 		margin-left: 0.4rem;
 	}
 
@@ -762,12 +762,12 @@
 	}
 
 	.cost-metric .metric-value {
-		color: rgba(160, 160, 200, 0.8);
+		color: var(--text-secondary);
 	}
 
 	.cost-period {
 		font-size: var(--text-micro);
-		color: rgba(160, 160, 200, 0.4);
+		color: var(--text-faint);
 		margin-left: 0.2rem;
 		font-weight: 600;
 		text-transform: uppercase;
@@ -812,7 +812,7 @@
 		gap: 0.2rem;
 	}
 
-	[data-level='ok'] { color: rgba(160, 160, 200, 0.6); }
+	[data-level='ok'] { color: var(--text-muted); }
 	[data-level='above'] { color: var(--state-positive); }
 	[data-level='below'] { color: var(--state-negative); }
 
@@ -824,7 +824,7 @@
 	.progress-bg {
 		width: 100%;
 		height: 100%;
-		background: rgba(255, 255, 255, 0.05);
+		background: var(--bg-card-hover);
 		border-radius: 4px;
 		position: relative;
 		overflow: visible;

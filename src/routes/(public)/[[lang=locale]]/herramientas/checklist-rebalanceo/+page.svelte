@@ -353,7 +353,7 @@
 <style>
   .checklist-page {
     background: var(--bg-primary, #05050a);
-    color: #fff;
+    color: var(--text-primary);
     min-height: 100vh;
     position: relative;
     overflow-x: hidden;
@@ -374,7 +374,7 @@
     font-size: 0.8rem;
     font-weight: 700;
     text-transform: uppercase;
-    color: var(--accent-blue, #3b82f6);
+    color: var(--accent-blue-ink);
     background: rgba(59, 130, 246, 0.1);
     padding: 0.35rem 0.85rem;
     border-radius: 9999px;
@@ -423,7 +423,7 @@
   .progress-bar-container {
     width: 100%;
     height: 6px;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--bg-card-hover);
     border-radius: 9999px;
     overflow: hidden;
     margin-bottom: 2.5rem;
@@ -431,7 +431,7 @@
 
   .progress-bar {
     height: 100%;
-    background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%);
+    background: linear-gradient(90deg, var(--accent-blue) 0%, #8b5cf6 100%);
     border-radius: 9999px;
     transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
@@ -439,7 +439,7 @@
   .step-indicator {
     font-size: 0.85rem;
     font-weight: 700;
-    color: var(--accent-blue, #3b82f6);
+    color: var(--accent-blue-ink);
     margin-bottom: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.03em;
@@ -452,11 +452,11 @@
   .options-list { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2.5rem; }
 
   .option-btn {
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--bg-card);
     border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
     border-radius: 16px;
     padding: 1.25rem 1.5rem;
-    color: #fff;
+    color: var(--text-primary);
     font-size: 1.05rem;
     font-weight: 600;
     text-align: left;
@@ -464,7 +464,7 @@
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .option-btn:hover { background: rgba(255, 255, 255, 0.05); border-color: rgba(59, 130, 246, 0.3); transform: translateY(-1px); }
+  .option-btn:hover { background: var(--bg-card-hover); border-color: rgba(59, 130, 246, 0.3); transform: translateY(-1px); }
   .option-btn:active { transform: scale(0.99); }
 
   .nav-buttons { display: flex; justify-content: flex-start; }
@@ -482,7 +482,7 @@
     transition: color 0.2s ease;
   }
 
-  .btn-back:hover { color: #fff; }
+  .btn-back:hover { color: var(--text-primary); }
   .back-arrow { transition: transform 0.2s ease; }
   .btn-back:hover .back-arrow { transform: translateX(-3px); }
 
@@ -491,11 +491,11 @@
   .verdict-icon-container { color: var(--verdict-color); margin-bottom: 1.5rem; display: flex; justify-content: center; }
   .verdict-icon { width: 64px; height: 64px; }
 
-  .verdict-title { font-size: 2.2rem; font-weight: 800; margin-top: 0; margin-bottom: 1rem; letter-spacing: -0.02em; color: #fff; line-height: 1.2; }
-  .verdict-desc { font-size: 1.15rem; line-height: 1.7; color: rgba(255, 255, 255, 0.85); max-width: 650px; margin: 0 auto 2.5rem; }
+  .verdict-title { font-size: 2.2rem; font-weight: 800; margin-top: 0; margin-bottom: 1rem; letter-spacing: -0.02em; color: var(--text-primary); line-height: 1.2; }
+  .verdict-desc { font-size: 1.15rem; line-height: 1.7; color: var(--text-secondary); max-width: 650px; margin: 0 auto 2.5rem; }
 
   .tip-box {
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--bg-card);
     border-left: 4px solid var(--verdict-color);
     border-radius: 0 16px 16px 0;
     padding: 1.5rem 2rem;
@@ -504,7 +504,7 @@
   }
 
   .tip-box h4 { margin-top: 0; margin-bottom: 0.5rem; font-size: 1.05rem; font-weight: 700; color: var(--verdict-color); }
-  .tip-box p { margin: 0; font-size: 0.95rem; line-height: 1.6; color: rgba(255, 255, 255, 0.75); }
+  .tip-box p { margin: 0; font-size: 0.95rem; line-height: 1.6; color: var(--text-secondary); }
 
   .action-buttons { display: flex; justify-content: center; gap: 1rem; }
 
@@ -513,8 +513,8 @@
   }
 
   .btn-primary {
-    background: var(--accent-blue, #3b82f6);
-    color: white;
+    background: var(--accent-blue);
+    color: var(--text-on-accent);
     border: none;
     padding: 0.85rem 2rem;
     border-radius: 12px;
@@ -528,9 +528,9 @@
   .btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(59, 130, 246, 0.35); }
 
   .btn-secondary {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--bg-card-hover);
     color: white;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-subtle);
     padding: 0.85rem 2rem;
     border-radius: 12px;
     font-weight: 600;
@@ -563,13 +563,13 @@
     gap: 0.75rem 1.75rem;
   }
   .other-tools a {
-    color: #60a5fa;
+    color: var(--accent-blue-ink);
     text-decoration: none;
     font-weight: 600;
     font-size: 0.95rem;
     transition: color 0.2s ease;
   }
-  .other-tools a:hover { color: #93c5fd; text-decoration: underline; }
+  .other-tools a:hover { color: var(--accent-blue-ink); text-decoration: underline; }
 
   /* Breadcrumb */
   .breadcrumb {
@@ -581,11 +581,11 @@
     flex-wrap: wrap;
   }
   .breadcrumb a {
-    color: rgba(255, 255, 255, 0.55);
+    color: var(--text-muted);
     text-decoration: none;
     transition: color 0.2s;
   }
-  .breadcrumb a:hover { color: rgba(255, 255, 255, 0.9); }
-  .breadcrumb-sep { color: rgba(255, 255, 255, 0.25); }
-  .breadcrumb span[aria-current="page"] { color: rgba(255, 255, 255, 0.85); font-weight: 500; }
+  .breadcrumb a:hover { color: var(--text-primary); }
+  .breadcrumb-sep { color: var(--text-faint); }
+  .breadcrumb span[aria-current="page"] { color: var(--text-secondary); font-weight: 500; }
 </style>

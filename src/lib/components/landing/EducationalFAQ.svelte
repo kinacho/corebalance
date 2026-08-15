@@ -164,7 +164,7 @@
   }
 
   .eyebrow {
-    color: #3b82f6;
+    color: var(--accent-blue-ink);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
@@ -174,7 +174,7 @@
   }
 
   h2, h3 {
-    color: #fff;
+    color: var(--text-primary);
     font-weight: 800;
     margin-bottom: 1.5rem;
   }
@@ -188,14 +188,14 @@
   }
 
   .text-gradient {
-    background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+    background: linear-gradient(135deg, var(--accent-blue) 0%, #1d4ed8 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 
   .edu-body p {
-    color: rgba(160, 160, 200, 0.7);
+    color: var(--text-secondary);
     font-size: 1rem;
     line-height: 1.7;
     margin-bottom: 2rem;
@@ -213,10 +213,10 @@
     flex-direction: column;
     gap: 1rem;
     margin-bottom: 1.25rem;
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--bg-card);
     padding: 1.25rem;
     border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-subtle);
     transition: transform 0.2s ease;
   }
 
@@ -229,7 +229,7 @@
 
   .edu-card:hover {
     transform: translateX(5px);
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--bg-card);
   }
 
   .edu-card-icon {
@@ -254,14 +254,14 @@
   }
 
   .edu-card-text h3 {
-    color: #fff;
+    color: var(--text-primary);
     font-weight: 700;
     margin: 0 0 0.25rem 0;
     font-size: 1rem;
   }
 
   .edu-card-text p {
-    color: rgba(160, 160, 200, 0.5);
+    color: var(--text-muted);
     font-size: 0.85rem;
     line-height: 1.5;
     margin: 0;
@@ -281,8 +281,8 @@
   }
 
   .faq-item {
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
     border-radius: 16px;
     overflow: hidden;
     transition: all 0.3s ease;
@@ -301,7 +301,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    color: #fff;
+    color: var(--text-primary);
     font-weight: 600;
     font-size: 0.95rem;
     text-align: left;
@@ -337,7 +337,7 @@
     left: 50%;
     width: 8px;
     height: 2px;
-    background: #3b82f6;
+    background: var(--accent-blue);
     transition: transform 0.3s ease;
   }
 
@@ -364,7 +364,7 @@
   }
 
   .faq-answer p {
-    color: rgba(160, 160, 200, 0.6);
+    color: var(--text-muted);
     font-size: 0.9rem;
     line-height: 1.6;
     margin: 0;

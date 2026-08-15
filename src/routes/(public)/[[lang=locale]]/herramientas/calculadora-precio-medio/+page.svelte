@@ -445,7 +445,7 @@
 <style>
   .avg-page {
     background: var(--bg-primary, #05050a);
-    color: #fff;
+    color: var(--text-primary);
     min-height: 100vh;
     position: relative;
     overflow-x: hidden;
@@ -466,7 +466,7 @@
     font-size: 0.8rem;
     font-weight: 700;
     text-transform: uppercase;
-    color: var(--accent-blue, #3b82f6);
+    color: var(--accent-blue-ink);
     background: rgba(59, 130, 246, 0.1);
     padding: 0.35rem 0.85rem;
     border-radius: 9999px;
@@ -540,7 +540,7 @@
   .btn-add {
     background: rgba(59, 130, 246, 0.1);
     border: 1px solid rgba(59, 130, 246, 0.2);
-    color: #60a5fa;
+    color: var(--accent-blue-ink);
     padding: 0.5rem 1rem;
     border-radius: 10px;
     font-weight: 700;
@@ -585,11 +585,11 @@
 
   .input-group input,
   .input-group select {
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--bg-card);
     border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
     border-radius: 12px;
     padding: 0.75rem 1rem;
-    color: #fff;
+    color: var(--text-primary);
     font-size: 0.95rem;
     width: 100%;
     outline: none;
@@ -598,12 +598,12 @@
 
   .input-group select option {
     background: #12121c;
-    color: #fff;
+    color: var(--text-primary);
   }
 
   .input-group input:focus,
   .input-group select:focus {
-    border-color: var(--accent-blue, #3b82f6);
+    border-color: var(--accent-blue-ink);
   }
 
   .type-col { width: 130px; flex-grow: 1; }
@@ -612,7 +612,7 @@
   .btn-delete {
     background: none;
     border: none;
-    color: rgba(239, 68, 68, 0.6);
+    color: var(--state-negative);
     padding: 0.75rem;
     cursor: pointer;
     border-radius: 10px;
@@ -624,7 +624,7 @@
 
   .btn-delete:hover {
     background: rgba(239, 68, 68, 0.1);
-    color: #ef4444;
+    color: var(--state-negative);
   }
 
   .validation-warning {
@@ -632,7 +632,7 @@
     border: 1px solid rgba(245, 158, 11, 0.2);
     border-radius: 14px;
     padding: 1rem 1.25rem;
-    color: #f59e0b;
+    color: var(--accent-orange-ink);
     font-size: 0.9rem;
     display: flex;
     align-items: center;
@@ -660,7 +660,7 @@
   .avg-result-card h3 {
     font-size: 1.1rem;
     font-weight: 700;
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--text-primary);
     margin-top: 0;
     margin-bottom: 0.5rem;
   }
@@ -695,9 +695,9 @@
 
   .breakdown-row { display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--text-muted, rgba(160, 160, 200, 0.8)); }
 
-  .value-highlight { color: #fff; font-weight: 600; }
-  .pnl-positive { color: #10b981; font-weight: 600; }
-  .pnl-negative { color: #ef4444; font-weight: 600; }
+  .value-highlight { color: var(--text-primary); font-weight: 600; }
+  .pnl-positive { color: var(--accent-green-ink); font-weight: 600; }
+  .pnl-negative { color: var(--state-negative); font-weight: 600; }
 
   .pnl-card {
     background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, transparent 100%);
@@ -724,7 +724,7 @@
   }
 
   .edu-section p {
-    color: rgba(255, 255, 255, 0.78);
+    color: var(--text-secondary);
     font-size: 1.05rem;
     line-height: 1.75;
     margin: 0 0 1rem;
@@ -755,13 +755,13 @@
     gap: 0.75rem 1.75rem;
   }
   .other-tools a {
-    color: #60a5fa;
+    color: var(--accent-blue-ink);
     text-decoration: none;
     font-weight: 600;
     font-size: 0.95rem;
     transition: color 0.2s ease;
   }
-  .other-tools a:hover { color: #93c5fd; text-decoration: underline; }
+  .other-tools a:hover { color: var(--accent-blue-ink); text-decoration: underline; }
 
   .avg-cta {
     background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
@@ -777,11 +777,11 @@
 
   .avg-cta h2 { font-size: 2rem; font-weight: 800; margin-top: 0; margin-bottom: 1rem; letter-spacing: -0.02em; }
 
-  .avg-cta p { color: rgba(255, 255, 255, 0.75); line-height: 1.6; margin-bottom: 2rem; font-size: 1.05rem; }
+  .avg-cta p { color: var(--text-secondary); line-height: 1.6; margin-bottom: 2rem; font-size: 1.05rem; }
 
   .btn-primary {
-    background: var(--accent-blue, #3b82f6);
-    color: white;
+    background: var(--accent-blue);
+    color: var(--text-on-accent);
     border: none;
     padding: 0.85rem 2rem;
     border-radius: 12px;
@@ -805,11 +805,11 @@
     flex-wrap: wrap;
   }
   .breadcrumb a {
-    color: rgba(255, 255, 255, 0.55);
+    color: var(--text-muted);
     text-decoration: none;
     transition: color 0.2s;
   }
-  .breadcrumb a:hover { color: rgba(255, 255, 255, 0.9); }
-  .breadcrumb-sep { color: rgba(255, 255, 255, 0.25); }
-  .breadcrumb span[aria-current="page"] { color: rgba(255, 255, 255, 0.85); font-weight: 500; }
+  .breadcrumb a:hover { color: var(--text-primary); }
+  .breadcrumb-sep { color: var(--text-faint); }
+  .breadcrumb span[aria-current="page"] { color: var(--text-secondary); font-weight: 500; }
 </style>

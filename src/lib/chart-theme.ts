@@ -18,10 +18,109 @@ import { Chart } from 'chart.js';
 /** La fuente del proyecto, autoalojada en `static/fonts/`. */
 export const CHART_FONT = "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif";
 
-/** Espejo en JS de los tokens de `layout.css`; Chart.js recibe cadenas, no variables. */
-export const CHART_GRID = 'rgba(255, 255, 255, 0.05)';
-export const CHART_AXIS_INK = 'rgba(255, 255, 255, 0.45)';
-export const CHART_SURFACE = '#0d0d12';
+/**
+ * ⚠️ **El cromo se lee de los tokens de CSS en tiempo de ejecución, y ése es todo
+ * el mecanismo del tema claro dentro de Chart.js.**
+ *
+ * Chart.js recibe cadenas, no variables, así que estos valores estaban escritos a
+ * mano como espejo de `layout.css`. Un espejo de tema fijo: con dos temas, la
+ * copia de JS seguiría pintando la rejilla blanca sobre fondo blanco.
+ *
+ * Leerlos del DOM en lugar de duplicarlos hace además que la duplicación
+ * desaparezca — eran cuatro valores mantenidos en dos sitios, que es exactamente
+ * la forma que este repo lleva documentada como fuente de defectos.
+ *
+ * `fallback` es lo que se devuelve fuera del navegador (SSR, jsdom sin estilos) y
+ * es siempre el valor del tema oscuro, que es el que `:root` sirve.
+ */
+function cssVar(nombre: string, fallback: string): string {
+	if (typeof document === 'undefined') return fallback;
+	const v = getComputedStyle(document.documentElement).getPropertyValue(nombre).trim();
+	return v || fallback;
+}
+
+export const chartGrid = () => cssVar('--chart-grid', 'rgba(255, 255, 255, 0.05)');
+export const chartAxisInk = () => cssVar('--chart-axis', 'rgba(255, 255, 255, 0.6)');
+export const chartInk = () => cssVar('--chart-ink', 'rgba(255, 255, 255, 0.75)');
+export const chartSurface = () => cssVar('--chart-surface', '#0d0d12');
+export const textPrimary = () => cssVar('--text-primary', '#ffffff');
+
+/**
+ * El evento con el que el store de tema avisa de un cambio.
+ *
+ * ⚠️ **Un evento del DOM y no un import, y la razón es el tamaño del bundle.** Lo
+ * natural sería que `stores/theme.svelte.ts` llamara aquí directamente, pero
+ * entonces el store —que lo usa el `<html>` de todas las páginas— arrastraría
+ * Chart.js a las 72 páginas públicas prerenderizadas, que no dibujan ni un
+ * gráfico. El evento deja el acoplamiento en cero: quien tiene un lienzo escucha,
+ * y quien no, ni se entera.
+ */
+export const EVENTO_TEMA = 'corebalance:tema';
+
+/**
+ * Vuelve a pintar el cromo de un gráfico ya construido con los colores del tema
+ * actual, sin destruirlo ni rehacer su configuración.
+ *
+ * Rehacer el gráfico sería más simple de escribir y peor de usar: los cuatro
+ * lienzos se crean dentro de su `onMount` con la configuración en línea, así que
+ * «rehacer» significaría extraer una función de creación en cada uno — cuatro
+ * refactores en componentes que este trabajo no toca por lo demás. Y visualmente
+ * un `update('none')` conserva el estado de la interacción; un `destroy()` lo
+ * pierde.
+ */
+/**
+ * El mínimo que esta función necesita de un gráfico. No es `Chart` a secas porque
+ * los lienzos están tipados con su genérico (`Chart<'doughnut'>`) y esos tipos no
+ * son asignables entre sí — el mismo motivo por el que dos de ellos declaran
+ * `chart: any` con su propia nota.
+ */
+type GraficoConCromo = {
+	options: unknown;
+	update: (modo?: 'none') => void;
+};
+
+export function reaplicarCromo(chart: GraficoConCromo): void {
+	const opts = chart.options as Record<string, any>;
+
+	for (const escala of Object.values(opts.scales ?? {}) as Record<string, any>[]) {
+		if (escala?.ticks) escala.ticks.color = chartAxisInk();
+		if (escala?.grid?.color) escala.grid.color = chartGrid();
+	}
+
+	const tooltip = opts.plugins?.tooltip;
+	if (tooltip) {
+		tooltip.backgroundColor = chartSurface();
+		tooltip.titleColor = textPrimary();
+		tooltip.bodyColor = chartInk();
+		tooltip.footerColor = chartAxisInk();
+		tooltip.borderColor = cssVar('--border-subtle', 'rgba(255, 255, 255, 0.12)');
+	}
+
+	const leyenda = opts.plugins?.legend?.labels;
+	if (leyenda) leyenda.color = chartAxisInk();
+
+	Chart.defaults.color = chartAxisInk();
+	chart.update('none');
+}
+
+/**
+ * Suscribe un lienzo a los cambios de tema. Devuelve la función de baja, para
+ * encadenarla al `return` del `onMount` que ya tiene cada componente.
+ *
+ * Toma un *getter* y no el gráfico: cuando se llama, dentro de `onMount`, la
+ * variable `chart` puede reasignarse después.
+ */
+export function seguirTema(
+	obtenerChart: () => GraficoConCromo | null | undefined
+): () => void {
+	if (typeof window === 'undefined') return () => {};
+	const alCambiar = () => {
+		const c = obtenerChart();
+		if (c) reaplicarCromo(c);
+	};
+	window.addEventListener(EVENTO_TEMA, alCambiar);
+	return () => window.removeEventListener(EVENTO_TEMA, alCambiar);
+}
 
 /**
  * Aplica la tipografía y la tinta por defecto a **todos** los gráficos del
@@ -31,7 +130,7 @@ export const CHART_SURFACE = '#0d0d12';
 export function applyChartDefaults(): void {
 	Chart.defaults.font.family = CHART_FONT;
 	Chart.defaults.font.weight = 600;
-	Chart.defaults.color = CHART_AXIS_INK;
+	Chart.defaults.color = chartAxisInk();
 	// Los puntos de datos se dibujan a mano donde hacen falta; por defecto, ninguno.
 	Chart.defaults.elements.point.radius = 0;
 }
@@ -41,13 +140,30 @@ export function applyChartDefaults(): void {
  *
  * `usePointStyle` y las cajas de 8 px vienen del donut, que era el único que las
  * tenía bien. El radio de 12 px es el del resto de tarjetas de la app.
+ *
+ * ⚠️ **Los colores son propiedades *getter*, no valores, y eso es deliberado:
+ * así el tema entra sin tocar un solo sitio de llamada.** Los cinco componentes
+ * que usan este objeto lo hacen con `{...tooltipStyle}`, y un *spread* invoca los
+ * getters **en el momento del spread** — que es cuando se construye el gráfico,
+ * con el tema ya resuelto. La alternativa era convertirlo en función y cambiar
+ * las cinco llamadas más los `...valueAxis.ticks` anidados.
  */
 export const tooltipStyle = {
-	backgroundColor: 'rgba(13, 13, 18, 0.96)',
-	titleColor: '#ffffff',
-	bodyColor: 'rgba(255, 255, 255, 0.8)',
-	footerColor: 'rgba(255, 255, 255, 0.55)',
-	borderColor: 'rgba(255, 255, 255, 0.12)',
+	get backgroundColor() {
+		return chartSurface();
+	},
+	get titleColor() {
+		return textPrimary();
+	},
+	get bodyColor() {
+		return chartInk();
+	},
+	get footerColor() {
+		return chartAxisInk();
+	},
+	get borderColor() {
+		return cssVar('--border-subtle', 'rgba(255, 255, 255, 0.12)');
+	},
 	borderWidth: 1,
 	cornerRadius: 12,
 	padding: 12,
@@ -60,29 +176,41 @@ export const tooltipStyle = {
 	boxPadding: 6
 };
 
-/** Eje de categorías (el temporal): sin rejilla, sin borde, pocas marcas. */
+/**
+ * Eje de categorías (el temporal): sin rejilla, sin borde, pocas marcas.
+ *
+ * `ticks` es un getter por lo mismo que el tooltip: se usa como `{...categoryAxis}`
+ * y como `{...valueAxis.ticks}`, y el getter devuelve el objeto ya resuelto al
+ * tema del momento.
+ */
 export const categoryAxis = {
 	grid: { display: false },
 	border: { display: false },
-	ticks: {
-		color: CHART_AXIS_INK,
-		font: { family: CHART_FONT, size: 11, weight: 600 as const },
-		maxRotation: 0,
-		autoSkip: true,
-		autoSkipPadding: 16,
-		maxTicksLimit: 7
+	get ticks() {
+		return {
+			color: chartAxisInk(),
+			font: { family: CHART_FONT, size: 11, weight: 600 as const },
+			maxRotation: 0,
+			autoSkip: true,
+			autoSkipPadding: 16,
+			maxTicksLimit: 7
+		};
 	}
 };
 
 /** Eje de valores: rejilla recesiva, sin borde, con aire respecto al lienzo. */
 export const valueAxis = {
-	grid: { color: CHART_GRID, drawTicks: false },
+	get grid() {
+		return { color: chartGrid(), drawTicks: false };
+	},
 	border: { display: false },
-	ticks: {
-		color: CHART_AXIS_INK,
-		font: { family: CHART_FONT, size: 11, weight: 600 as const },
-		padding: 10,
-		maxTicksLimit: 6
+	get ticks() {
+		return {
+			color: chartAxisInk(),
+			font: { family: CHART_FONT, size: 11, weight: 600 as const },
+			padding: 10,
+			maxTicksLimit: 6
+		};
 	}
 };
 

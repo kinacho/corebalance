@@ -24,7 +24,7 @@
 	Chart.register(LineController, LineElement, PointElement, LinearScale, CategoryScale, Filler, Tooltip);
 
 	import { formatCompactCurrency, stepFromTicks } from '$lib/chart-format';
-	import { applyChartDefaults, tooltipStyle, categoryAxis, valueAxis, motionAllowed } from '$lib/chart-theme';
+	import { applyChartDefaults, tooltipStyle, categoryAxis, valueAxis, motionAllowed, seguirTema } from '$lib/chart-theme';
 	import { CATEGORY_COLORS } from '$lib/constants';
 	import { ui } from '$lib/stores/ui.svelte';
 	import { LL, locale } from '$lib/i18n/i18n-svelte';
@@ -245,7 +245,9 @@
 	});
 
 	onMount(() => {
+		const dejarDeSeguirTema = seguirTema(() => chart);
 		return () => {
+			dejarDeSeguirTema();
 			if (chart) chart.destroy();
 		};
 	});
@@ -413,11 +415,11 @@
 <style>
 	.panel {
 		width: 100%;
-		background: rgba(255, 255, 255, 0.03);
+		background: var(--bg-card);
 
 		backdrop-filter: blur(24px) saturate(200%);
 		-webkit-backdrop-filter: blur(24px) saturate(200%);
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		border: 1px solid var(--border-subtle);
 		border-radius: 24px;
 		overflow: hidden;
 		transition: all 0.3s ease;
@@ -425,7 +427,7 @@
 
 	.panel:hover {
 		border-color: rgba(255, 255, 255, 0.15);
-		background: rgba(255, 255, 255, 0.05);
+		background: var(--bg-card-hover);
 	}
 
 	.panel-header {
@@ -452,9 +454,9 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(255, 255, 255, 0.05);
+		background: var(--bg-card-hover);
 		border-radius: 12px;
-		color: var(--accent-blue);
+		color: var(--accent-blue-ink);
 	}
 
 	.panel-icon svg {
@@ -465,19 +467,19 @@
 	.panel-title {
 		font-size: 1rem;
 		font-weight: 700;
-		color: #ffffff;
+		color: var(--text-primary);
 		margin: 0;
 		letter-spacing: -0.01em;
 	}
 
 	.panel-subtitle {
 		font-size: 0.75rem;
-		color: rgba(160, 160, 200, 0.6);
+		color: var(--text-muted);
 		margin: 0.1rem 0 0 0;
 	}
 
 	.chevron {
-		color: rgba(255, 255, 255, 0.3);
+		color: var(--text-faint);
 		transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 		width: 20px;
 		height: 20px;
@@ -517,7 +519,7 @@
 		padding: 1.25rem;
 		background: rgba(0, 0, 0, 0.2);
 		border-radius: 20px;
-		border: 1px solid rgba(255, 255, 255, 0.05);
+		border: 1px solid var(--border-subtle);
 	}
 
 	.control-item {
@@ -535,7 +537,7 @@
 	.control-label {
 		font-size: 0.65rem;
 		font-weight: 700;
-		color: rgba(255, 255, 255, 0.3);
+		color: var(--text-faint);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 	}
@@ -543,7 +545,7 @@
 	.control-value {
 		font-size: 0.85rem;
 		font-weight: 700;
-		color: var(--accent-blue);
+		color: var(--accent-blue-ink);
 	}
 
 	.control-value.highlight {
@@ -580,11 +582,11 @@
 	}
 
 	.preset-btn {
-		background: rgba(255, 255, 255, 0.05);
-		border: 1px solid rgba(255, 255, 255, 0.05);
+		background: var(--bg-card-hover);
+		border: 1px solid var(--border-subtle);
 		border-radius: 8px;
 		padding: 0.45rem 0.2rem;
-		color: rgba(255, 255, 255, 0.6);
+		color: var(--text-muted);
 		font-size: 0.65rem;
 		font-weight: 700;
 		cursor: pointer;
@@ -598,13 +600,13 @@
 	.preset-btn.active {
 		background: rgba(59, 130, 246, 0.2);
 		border-color: var(--accent-blue);
-		color: #bfdbfe;
+		color: var(--accent-blue-ink);
 	}
 
 	/* Educational persistent card */
 	.crisis-edu-card {
-		background: rgba(255, 255, 255, 0.02);
-		border: 1px solid rgba(255, 255, 255, 0.06);
+		background: var(--bg-card);
+		border: 1px solid var(--border-subtle);
 		border-radius: 12px;
 		padding: 0.75rem 1rem;
 		margin-bottom: 1.25rem;
@@ -619,7 +621,7 @@
 	.edu-icon {
 		margin-top: 0.15rem;
 		flex-shrink: 0;
-		color: rgba(255, 255, 255, 0.45);
+		color: var(--text-faint);
 	}
 
 	.edu-icon svg {
@@ -643,7 +645,7 @@
 		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
-		color: rgba(255, 255, 255, 0.55);
+		color: var(--text-muted);
 	}
 
 	.legend-swatch {
@@ -668,7 +670,7 @@
 		font-weight: 700;
 		letter-spacing: 0.06em;
 		text-transform: uppercase;
-		color: rgba(255, 255, 255, 0.3);
+		color: var(--text-faint);
 	}
 
 	.edu-content {
@@ -714,7 +716,7 @@
 	.detail-title {
 		font-size: 0.76rem;
 		font-weight: 700;
-		color: #bfdbfe;
+		color: var(--accent-blue-ink);
 	}
 
 	.recovery-badge {
@@ -730,7 +732,7 @@
 	.detail-desc {
 		font-size: 0.68rem;
 		line-height: 1.4;
-		color: rgba(255, 255, 255, 0.75);
+		color: var(--text-secondary);
 		margin: 0;
 	}
 
@@ -747,9 +749,9 @@
 
 	.stat-card {
 		padding: 1rem;
-		background: rgba(255, 255, 255, 0.03);
+		background: var(--bg-card);
 		border-radius: 16px;
-		border: 1px solid rgba(255, 255, 255, 0.05);
+		border: 1px solid var(--border-subtle);
 		display: flex;
 		flex-direction: column;
 		gap: 0.25rem;
@@ -758,7 +760,7 @@
 	.stat-label {
 		font-size: 0.6rem;
 		font-weight: 700;
-		color: rgba(255, 255, 255, 0.3);
+		color: var(--text-faint);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 	}
@@ -771,12 +773,12 @@
 
 	.stat-value small {
 		font-size: 0.75rem;
-		color: rgba(255, 255, 255, 0.4);
+		color: var(--text-faint);
 	}
 
 	.stat-sub {
 		font-size: 0.65rem;
-		color: rgba(160, 160, 200, 0.5);
+		color: var(--text-muted);
 	}
 
 	.highlight-red { border-left: 3px solid var(--state-negative); }
@@ -785,7 +787,7 @@
 
 	.legal-footer {
 		font-size: 0.65rem;
-		color: rgba(255, 255, 255, 0.2);
+		color: var(--text-faint);
 		text-align: center;
 	}
 </style>

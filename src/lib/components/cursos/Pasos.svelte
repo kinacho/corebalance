@@ -88,7 +88,7 @@
 		border-radius: 50%;
 		border: 1px solid rgba(37, 99, 235, 0.45);
 		background: rgba(37, 99, 235, 0.12);
-		color: var(--accent-blue);
+		color: var(--accent-blue-ink);
 		font-size: 0.78rem;
 		font-weight: 800;
 		font-variant-numeric: tabular-nums;

@@ -232,7 +232,7 @@
 		font-weight: 700;
 		text-transform: uppercase;
 		letter-spacing: 0.08em;
-		color: #34d399;
+		color: var(--state-positive);
 		margin-bottom: 1.25rem;
 	}
 
@@ -253,9 +253,9 @@
 		font-size: 0.78rem;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
-		color: rgba(160, 160, 200, 0.85);
+		color: var(--text-secondary);
 		padding: 0 0.75rem 0.6rem;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+		border-bottom: 1px solid var(--border-subtle);
 		font-weight: 700;
 	}
 
@@ -266,24 +266,24 @@
 		font-weight: 700;
 		text-transform: uppercase;
 		letter-spacing: 0.06em;
-		color: #34d399;
+		color: var(--state-positive);
 		border-bottom: none;
 	}
 
 	tbody th[scope='row'] {
 		text-align: left;
 		font-weight: 500;
-		color: rgba(255, 255, 255, 0.72);
+		color: var(--text-secondary);
 	}
 
 	tbody th,
 	tbody td {
 		padding: 0.6rem 0.75rem;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+		border-bottom: 1px solid var(--border-subtle);
 	}
 
 	tbody td {
-		color: #fff;
+		color: var(--text-primary);
 		font-weight: 600;
 	}
 
@@ -293,19 +293,19 @@
 	}
 
 	.charges {
-		color: #34d399;
+		color: var(--state-positive);
 	}
 
 	.muted {
-		color: rgba(160, 160, 200, 0.85);
+		color: var(--text-secondary);
 		font-weight: 500;
 	}
 
 	code {
 		font-size: 0.82rem;
 		letter-spacing: 0.01em;
-		color: rgba(255, 255, 255, 0.85);
-		background: rgba(255, 255, 255, 0.06);
+		color: var(--text-secondary);
+		background: var(--bg-card-hover);
 		padding: 0.1rem 0.4rem;
 		border-radius: 5px;
 	}
@@ -318,13 +318,13 @@
 	.reading {
 		margin-top: 1.5rem;
 		padding-top: 1.25rem;
-		border-top: 1px solid rgba(255, 255, 255, 0.07);
+		border-top: 1px solid var(--border-subtle);
 	}
 
 	.reading h4 {
 		font-size: 0.95rem;
 		font-weight: 700;
-		color: #fff;
+		color: var(--text-primary);
 		margin: 0 0 0.5rem;
 	}
 
@@ -332,7 +332,7 @@
 		margin: 0;
 		font-size: 0.95rem;
 		line-height: 1.7;
-		color: rgba(255, 255, 255, 0.8);
+		color: var(--text-secondary);
 	}
 
 	.method {
@@ -342,7 +342,7 @@
 
 	.method summary {
 		cursor: pointer;
-		color: #a78bfa;
+		color: var(--accent-violet-ink);
 		font-weight: 600;
 	}
 
@@ -352,7 +352,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.4rem;
-		color: rgba(160, 160, 200, 0.85);
+		color: var(--text-secondary);
 		line-height: 1.6;
 	}
 

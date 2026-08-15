@@ -150,7 +150,7 @@
 	.carril {
 		height: 10px;
 		border-radius: 5px;
-		background: rgba(255, 255, 255, 0.05);
+		background: var(--bg-card-hover);
 		overflow: hidden;
 	}
 	.barra {

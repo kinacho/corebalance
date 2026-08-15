@@ -259,6 +259,15 @@ export const STORAGE_KEY_ASSETS = 'corebalance_user_assets';
 export const STORAGE_KEY_PRICES = 'corebalance_prices_cache';
 export const STORAGE_KEY_EDITS = 'corebalance_holding_edits';
 
+/**
+ * ⚠️ Esta clave está escrita **dos veces**: aquí y a mano en el script en línea de
+ * `src/app.html`, que resuelve el tema antes de que exista ninguna hoja de estilos
+ * y por tanto no puede importar nada. Es la misma duplicación que ya arrastra
+ * `STORAGE_KEY_HOLDINGS`. Renombrarla obliga a tocar los dos sitios, y
+ * `constants.test.ts` es lo que lo comprueba.
+ */
+export const STORAGE_KEY_THEME = 'corebalance_theme';
+
 
 
 /** Tabs del dashboard */

@@ -77,7 +77,7 @@
 		height: 100vh;
 		height: 100dvh;
 		z-index: 9999;
-		background: #05050a;
+		background: var(--bg-primary);
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -160,7 +160,7 @@
 	.splash-title {
 		font-size: 2.25rem;
 		font-weight: 900;
-		color: #fff;
+		color: var(--text-primary);
 		margin: 0;
 		letter-spacing: -0.04em;
 		background: linear-gradient(135deg, #fff 30%, rgba(255,255,255,0.4) 100%);
@@ -172,7 +172,7 @@
 	.splash-subtitle {
 		font-size: 0.85rem;
 		font-weight: 500;
-		color: rgba(255, 255, 255, 0.4);
+		color: var(--text-faint);
 		margin: 0.5rem 0 0 0;
 		text-transform: uppercase;
 		letter-spacing: 0.15em;
@@ -189,7 +189,7 @@
 	.loading-track {
 		width: 100%;
 		height: 4px;
-		background: rgba(255, 255, 255, 0.05);
+		background: var(--bg-card-hover);
 		border-radius: 10px;
 		overflow: hidden;
 		border: 1px solid rgba(255, 255, 255, 0.03);
@@ -197,7 +197,7 @@
 
 	.loading-bar {
 		height: 100%;
-		background: linear-gradient(90deg, #3b82f6, #60a5fa, #10b981);
+		background: linear-gradient(90deg, var(--accent-blue), #60a5fa, var(--accent-green));
 		border-radius: 10px;
 		transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 		box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
@@ -206,7 +206,7 @@
 	.loading-text {
 		font-size: 0.7rem;
 		font-weight: 700;
-		color: rgba(255, 255, 255, 0.3);
+		color: var(--text-faint);
 		text-transform: uppercase;
 		letter-spacing: 0.1em;
 	}
@@ -221,7 +221,7 @@
 	.splash-footer p {
 		font-size: 0.7rem;
 		font-weight: 600;
-		color: #fff;
+		color: var(--text-primary);
 		letter-spacing: 0.05em;
 	}
 </style>

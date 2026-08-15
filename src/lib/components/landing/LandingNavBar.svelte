@@ -4,6 +4,7 @@
   import { portfolio } from '$lib/stores/portfolio.svelte';
   import { goto } from '$app/navigation';
   import LanguageSwitcher from '$lib/components/LanguageSwitcher.svelte';
+	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
   import { LL } from '$lib/i18n/i18n-svelte';
   import { link } from '$lib/i18n/link';
   import { page } from '$app/stores';
@@ -63,6 +64,7 @@
 
     <!-- Menú Desktop Acciones -->
     <div class="nav-actions">
+      <ThemeToggle />
       <div class="lang-container">
         <LanguageSwitcher />
       </div>
@@ -140,17 +142,17 @@
   }
 
   .navbar.scrolled {
-    background: rgba(5, 5, 10, 0.75);
+    background: var(--bg-scrim);
     backdrop-filter: blur(20px) saturate(160%);
     -webkit-backdrop-filter: blur(20px) saturate(160%);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: 1px solid var(--border-subtle);
   }
 
   @media (max-width: 768px) {
     .navbar.scrolled {
       backdrop-filter: none;
       -webkit-backdrop-filter: none;
-      background: var(--bg-secondary, #0f0f14);
+      background: var(--bg-elevated);
     }
   }
 
@@ -197,7 +199,7 @@
     font-size: 1.25rem;
     font-weight: 800;
     letter-spacing: -0.02em;
-    color: #fff;
+    color: var(--text-primary);
   }
 
   .nav-links {
@@ -214,7 +216,7 @@
   }
 
   .nav-links a {
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--text-muted);
     text-decoration: none;
     font-size: 0.9rem;
     font-weight: 500;
@@ -224,7 +226,7 @@
   }
 
   .nav-links a:hover {
-    color: #fff;
+    color: var(--text-primary);
   }
 
   /*
@@ -241,7 +243,7 @@
   .nav-links a.destacado,
   .mobile-menu-links a.destacado {
     position: relative;
-    color: #fff;
+    color: var(--text-primary);
     font-weight: 700;
   }
   .nav-links a.destacado::after,
@@ -279,8 +281,8 @@
 
   /* COLOR ORIGINAL RESTAURADO (Azul) con acabados más pulidos */
   .btn-primary {
-    background: var(--accent-blue, #3b82f6);
-    color: white;
+    background: var(--accent-blue);
+    color: var(--text-on-accent);
     border: none;
     padding: 0.6rem 1.35rem;
     border-radius: 12px;
@@ -300,7 +302,7 @@
   /* COLOR ORIGINAL RESTAURADO (Violeta semi-transparente) */
   .btn-demo {
     background: rgba(139, 92, 246, 0.1);
-    color: #a78bfa;
+    color: var(--accent-violet-ink);
     border: 1px solid rgba(139, 92, 246, 0.25);
     padding: 0.6rem 1.35rem;
     border-radius: 12px;
@@ -312,7 +314,7 @@
 
   .btn-demo:hover {
     background: rgba(139, 92, 246, 0.18);
-    color: #c4b5fd;
+    color: var(--accent-violet-ink);
     border-color: rgba(139, 92, 246, 0.45);
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
@@ -325,8 +327,8 @@
     justify-content: center;
     width: 44px;
     height: 44px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
     border-radius: 12px;
     cursor: pointer;
     z-index: 1010;
@@ -334,7 +336,7 @@
   }
 
   .menu-toggle:hover {
-    background: rgba(255, 255, 255, 0.06);
+    background: var(--bg-card-hover);
   }
 
   @media (min-width: 1140px) {
@@ -376,7 +378,7 @@
     left: 0;
     width: 100%;
     height: calc(100vh - 72px);
-    background: rgba(5, 5, 10, 0.98);
+    background: var(--bg-overlay);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     z-index: 999;
@@ -384,7 +386,7 @@
     flex-direction: column;
     padding: 2rem 1.5rem;
     gap: 2.5rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: 1px solid var(--border-subtle);
   }
 
   .mobile-menu-links {
@@ -394,7 +396,7 @@
   }
 
   .mobile-menu-links a {
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--text-secondary);
     text-decoration: none;
     font-size: 1.15rem;
     font-weight: 600;
@@ -403,7 +405,7 @@
   }
 
   .mobile-menu-links a:hover {
-    color: #3b82f6;
+    color: var(--accent-blue-ink);
   }
 
   .mobile-menu-actions {

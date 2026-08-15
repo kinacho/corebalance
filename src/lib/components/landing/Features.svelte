@@ -73,7 +73,7 @@
 <style>
   .features {
     padding: 80px 1rem;
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--bg-card);
   }
 
   @media (min-width: 768px) {
@@ -99,7 +99,7 @@
   }
 
   .eyebrow {
-    color: #3b82f6;
+    color: var(--accent-blue-ink);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
@@ -112,20 +112,20 @@
     font-size: clamp(1.75rem, 5vw, 3rem);
     font-weight: 800;
     margin-bottom: 1.25rem;
-    color: #fff;
+    color: var(--text-primary);
     letter-spacing: -0.02em;
     line-height: 1.2;
   }
 
   .text-gradient {
-    background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+    background: linear-gradient(135deg, var(--accent-blue) 0%, #1d4ed8 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 
   .section-header p {
-    color: rgba(160, 160, 200, 0.6);
+    color: var(--text-muted);
     font-size: 1rem;
     max-width: 600px;
     margin: 0 auto;
@@ -150,8 +150,8 @@
   }
 
   .feature-card {
-    background: var(--bg-secondary, #0f0f14);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
     padding: 1.5rem;
     border-radius: 20px;
     transition: all 0.3s ease;
@@ -186,7 +186,7 @@
     font-size: 1.15rem;
     font-weight: 700;
     margin-bottom: 0.75rem;
-    color: #fff;
+    color: var(--text-primary);
   }
 
   @media (min-width: 768px) {
@@ -197,7 +197,7 @@
   }
 
   .feature-card p {
-    color: rgba(160, 160, 200, 0.5);
+    color: var(--text-muted);
     line-height: 1.6;
     margin: 0;
     font-size: 0.9rem;

@@ -242,7 +242,7 @@
     background: rgba(59, 130, 246, 0.1);
     border: 1px solid rgba(59, 130, 246, 0.25);
     border-radius: 100px;
-    color: #60a5fa;
+    color: var(--accent-blue-ink);
     font-size: 0.78rem;
     font-weight: 600;
     margin-bottom: 1.5rem;
@@ -255,11 +255,11 @@
     line-height: 1.1;
     letter-spacing: -0.04em;
     margin-bottom: 1.5rem;
-    color: #fff;
+    color: var(--text-primary);
   }
 
   .text-gradient {
-    background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 50%, #10b981 100%);
+    background: linear-gradient(135deg, var(--accent-blue) 0%, #1d4ed8 50%, var(--accent-green) 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -267,7 +267,7 @@
 
   .subtitle {
     font-size: 1.1rem;
-    color: rgba(160, 160, 200, 0.7);
+    color: var(--text-secondary);
     line-height: 1.7;
     margin-bottom: 3rem;
     max-width: 480px;
@@ -279,8 +279,8 @@
   .btn-lg { padding: 1.1rem 2.5rem; font-size: 1.05rem; border-radius: 14px; font-weight: 700; }
 
   .btn-primary {
-    background: linear-gradient(135deg, #3b82f6, #2563eb);
-    color: #fff;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-blue));
+    color: var(--text-on-accent);
     border: none;
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -293,7 +293,7 @@
 
   .btn-demo {
     background: rgba(139, 92, 246, 0.1);
-    color: #a78bfa;
+    color: var(--accent-violet-ink);
     border: 1px solid rgba(139, 92, 246, 0.3);
     padding: 1.1rem 2rem;
     border-radius: 14px;
@@ -304,14 +304,14 @@
   }
   .btn-demo:hover {
     background: rgba(139, 92, 246, 0.2);
-    color: #c4b5fd;
+    color: var(--accent-violet-ink);
     border-color: rgba(139, 92, 246, 0.5);
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(139, 92, 246, 0.2);
   }
 
   .btn-text {
-    color: rgba(160, 160, 200, 0.55);
+    color: var(--text-muted);
     text-decoration: none;
     font-size: 0.9rem;
     font-weight: 600;
@@ -321,7 +321,7 @@
     display: inline-block;
     padding: 0.6rem 0;
   }
-  .btn-text:hover { color: #fff; }
+  .btn-text:hover { color: var(--text-primary); }
 
   /* ── Mockup container ── */
   .hero-mockup-container {
@@ -342,7 +342,34 @@
   }
 
   /* ── Browser chrome ── */
+  /*
+   * ⚠️ **La maqueta es un DIBUJO de la app en oscuro, no interfaz, y por eso se
+   * ancla al tema oscuro en lugar de seguir al del usuario.**
+   *
+   * Es una captura falsa dentro de una ventana de navegador falsa: su fondo
+   * oscuro es parte de la ilustración, igual que el marco. Cuando el texto de
+   * dentro empezó a usar los tokens de la escala, en tema claro salía tinta casi
+   * negra sobre ese fondo casi negro — medido en el navegador, 1,05:1 en la cifra
+   * grande. Y «arreglarlo» aclarando el fondo sería peor: convertiría el dibujo
+   * de la app en un dibujo de otra cosa.
+   *
+   * Redeclarar los tokens aquí dentro los fija para todo el subárbol, así que la
+   * maqueta se pinta siempre en oscuro sin que ningún hijo tenga que saberlo.
+   * Los valores son literalmente los de `:root`.
+   */
   .hero-mockup {
+    --text-primary: #ffffff;
+    --text-secondary: #d7d7e6;
+    --text-muted: #a8a8c0;
+    --text-faint: #8a8aa3;
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-strong: #61617a;
+    --accent-blue-ink: #60a5fa;
+    --accent-green-ink: #10b981;
+    --accent-orange-ink: #f59e0b;
+    --state-positive: #34d399;
+    --state-negative: #f43f5e;
+
     position: relative;
     z-index: 1;
     background: rgba(10, 10, 18, 0.95);
@@ -385,7 +412,7 @@
     border-radius: 6px;
     padding: 3px 10px;
     font-size: 0.62rem;
-    color: rgba(255, 255, 255, 0.35);
+    color: var(--text-faint);
     flex-grow: 1;
     max-width: 220px;
     text-align: center;
@@ -400,7 +427,7 @@
   .header-pill {
     background: rgba(16, 185, 129, 0.15);
     border: 1px solid rgba(16, 185, 129, 0.3);
-    color: #34d399;
+    color: var(--state-positive);
     font-size: 0.55rem;
     font-weight: 700;
     padding: 2px 7px;
@@ -443,7 +470,7 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: #3b82f6;
+    background: var(--accent-blue);
     box-shadow: 0 0 6px rgba(59, 130, 246, 0.8);
   }
 
@@ -457,13 +484,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: rgba(255, 255, 255, 0.2);
+    color: var(--text-faint);
     transition: background 0.2s;
   }
   .sidebar-item.active {
     background: rgba(59, 130, 246, 0.15);
     border: 1px solid rgba(59, 130, 246, 0.25);
-    color: #60a5fa;
+    color: var(--accent-blue-ink);
   }
 
   /* Main panel */
@@ -482,18 +509,18 @@
     justify-content: space-between;
   }
   .topbar-left { display: flex; flex-direction: column; gap: 1px; }
-  .topbar-label { font-size: 0.58rem; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.08em; }
+  .topbar-label { font-size: 0.58rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.08em; }
   .topbar-value {
     font-size: 1.35rem;
     font-weight: 800;
-    color: #fff;
+    color: var(--text-primary);
     letter-spacing: -0.03em;
     line-height: 1;
   }
   .topbar-cents { font-size: 0.8rem; opacity: 0.5; font-weight: 600; }
 
   .topbar-right { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
-  .topbar-sublabel { font-size: 0.55rem; color: rgba(255,255,255,0.25); text-transform: uppercase; letter-spacing: 0.06em; }
+  .topbar-sublabel { font-size: 0.55rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.06em; }
 
   .change-pill {
     display: flex;
@@ -507,7 +534,7 @@
   .change-pill.positive {
     background: rgba(16, 185, 129, 0.12);
     border: 1px solid rgba(16, 185, 129, 0.25);
-    color: #34d399;
+    color: var(--state-positive);
   }
 
   /* Sparkline */
@@ -524,7 +551,7 @@
     display: flex;
     justify-content: space-between;
     font-size: 0.52rem;
-    color: rgba(255,255,255,0.2);
+    color: var(--text-faint);
     padding: 0 2px;
   }
 
@@ -533,7 +560,7 @@
     display: flex;
     justify-content: space-between;
     font-size: 0.58rem;
-    color: rgba(255, 255, 255, 0.2);
+    color: var(--text-faint);
     text-transform: uppercase;
     letter-spacing: 0.08em;
     padding-bottom: 4px;
@@ -569,10 +596,10 @@
   .asset-icon.violet  { background: rgba(139, 92, 246, 0.12); border: 1px solid rgba(139,92,246,0.2); }
 
   .asset-info { display: flex; flex-direction: column; gap: 1px; }
-  .asset-name { font-size: 0.75rem; font-weight: 600; color: rgba(255,255,255,0.85); }
-  .asset-ticker { font-size: 0.58rem; color: rgba(255,255,255,0.28); }
+  .asset-name { font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); }
+  .asset-ticker { font-size: 0.58rem; color: var(--text-faint); }
 
-  .asset-value { font-size: 0.72rem; font-weight: 600; color: rgba(255,255,255,0.5); }
+  .asset-value { font-size: 0.72rem; font-weight: 600; color: var(--text-muted); }
 
   .status-pill {
     font-size: 0.57rem;
@@ -585,16 +612,33 @@
   .status-pill.ok {
     background: rgba(16, 185, 129, 0.1);
     border: 1px solid rgba(16, 185, 129, 0.25);
-    color: #34d399;
+    color: var(--state-positive);
   }
   .status-pill.buy {
     background: rgba(59, 130, 246, 0.15);
     border: 1px solid rgba(59, 130, 246, 0.35);
-    color: #60a5fa;
+    color: var(--accent-blue-ink);
   }
 
   /* ── Floating cards ── */
+  /*
+   * Las tarjetas flotantes son parte de la misma ilustración que `.hero-mockup`
+   * —salen de sus bordes, como si se despegaran de la pantalla— así que se anclan
+   * al tema oscuro por la misma razón y del mismo modo. Están fuera del `.hero-mockup`
+   * en el DOM, que es por lo que no heredaban aquellos tokens y en tema claro
+   * quedaban como tres pastillas negras flotando sobre una página clara.
+   */
   .floating-card {
+    --text-primary: #ffffff;
+    --text-secondary: #d7d7e6;
+    --text-muted: #a8a8c0;
+    --text-faint: #8a8aa3;
+    --accent-blue-ink: #60a5fa;
+    --accent-green-ink: #10b981;
+    --accent-orange-ink: #f59e0b;
+    --state-positive: #34d399;
+    --state-negative: #f43f5e;
+
     position: absolute;
     z-index: 2;
     background: rgba(14, 14, 22, 0.85);
@@ -623,10 +667,10 @@
   .c-icon-wrap.blue   { background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59,130,246,0.2); }
 
   .c-text { display: flex; flex-direction: column; gap: 1px; }
-  .c-text span    { font-size: 0.6rem; color: rgba(255,255,255,0.35); }
-  .c-text strong  { font-size: 0.82rem; color: #fff; font-weight: 700; }
+  .c-text span    { font-size: 0.6rem; color: var(--text-faint); }
+  .c-text strong  { font-size: 0.82rem; color: var(--text-primary); font-weight: 700; }
   .c-text.centered { align-items: center; }
-  .c-text .amber  { color: #fbbf24; }
+  .c-text .amber  { color: var(--accent-orange-ink); }
 
   .c1 { top: 0; right: 0; animation: float 6s ease-in-out infinite; }
   .c2 { bottom: 10px; left: -10px; animation: float 8s ease-in-out infinite reverse; }

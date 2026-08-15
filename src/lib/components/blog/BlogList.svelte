@@ -154,7 +154,7 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: #a78bfa;
+    color: var(--accent-violet-ink);
     white-space: nowrap;
   }
 
@@ -243,7 +243,7 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: #a78bfa;
+    color: var(--accent-violet-ink);
     background: rgba(139, 92, 246, 0.12);
     padding: 0.2rem 0.6rem;
     border-radius: 9999px;
@@ -253,14 +253,14 @@
   .tool-title {
     font-size: 1.1rem;
     font-weight: 700;
-    color: #fff;
+    color: var(--text-primary);
     margin: 0 0 0.4rem;
     line-height: 1.3;
   }
 
   .tool-description {
     font-size: 0.875rem;
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--text-muted);
     line-height: 1.5;
     margin: 0;
   }
@@ -268,7 +268,7 @@
   .tool-cta {
     font-size: 0.8rem;
     font-weight: 700;
-    color: #a78bfa;
+    color: var(--accent-violet-ink);
     white-space: nowrap;
     align-self: center;
     flex-shrink: 0;
@@ -384,7 +384,7 @@
 
   .post-card:hover {
     transform: translateY(-4px);
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--bg-card);
     border-color: rgba(139, 92, 246, 0.2);
     box-shadow: 0 12px 30px rgba(139, 92, 246, 0.08);
   }
@@ -416,18 +416,18 @@
     font-weight: 700;
     line-height: 1.4;
     margin: 0 0 1rem;
-    color: #fff;
+    color: var(--text-primary);
     transition: color 0.2s ease;
   }
 
   .post-card:hover .post-title {
-    color: #a78bfa;
+    color: var(--accent-violet-ink);
   }
 
   .post-description {
     font-size: 0.95rem;
     line-height: 1.6;
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--text-secondary);
     margin: 0 0 1.5rem;
     flex-grow: 1;
   }
@@ -442,7 +442,7 @@
   .tag-badge {
     font-size: 0.75rem;
     font-weight: 600;
-    color: #60a5fa;
+    color: var(--accent-blue-ink);
     background: rgba(59, 130, 246, 0.1);
     padding: 0.25rem 0.6rem;
     border-radius: 9999px;
@@ -457,7 +457,7 @@
   .read-link {
     font-size: 0.9rem;
     font-weight: 700;
-    color: var(--accent-blue, #3b82f6);
+    color: var(--accent-blue-ink);
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
@@ -465,7 +465,7 @@
   }
 
   .post-card:hover .read-link {
-    color: #60a5fa;
+    color: var(--accent-blue-ink);
   }
 
   .arrow-icon {
@@ -477,9 +477,9 @@
   }
 
   .btn-secondary {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--bg-card-hover);
     color: white;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-subtle);
     padding: 0.75rem 1.5rem;
     border-radius: 12px;
     font-weight: 600;

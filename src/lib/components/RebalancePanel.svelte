@@ -181,11 +181,11 @@
 <style>
 	.panel {
 		width: 100%;
-		background: rgba(255, 255, 255, 0.03);
+		background: var(--bg-card);
 
 		backdrop-filter: blur(24px) saturate(200%);
 		-webkit-backdrop-filter: blur(24px) saturate(200%);
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		border: 1px solid var(--border-subtle);
 		border-radius: 24px;
 		overflow: hidden;
 		transition: all 0.3s ease;
@@ -193,7 +193,7 @@
 
 	.panel:hover {
 		border-color: rgba(255, 255, 255, 0.15);
-		background: rgba(255, 255, 255, 0.05);
+		background: var(--bg-card-hover);
 	}
 
 	.panel-header {
@@ -221,7 +221,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(255, 255, 255, 0.05);
+		background: var(--bg-card-hover);
 		border-radius: 12px;
 		font-size: 1.25rem;
 	}
@@ -229,19 +229,19 @@
 	.panel-title {
 		font-size: 1rem;
 		font-weight: 700;
-		color: #ffffff;
+		color: var(--text-primary);
 		margin: 0;
 		letter-spacing: -0.01em;
 	}
 
 	.panel-subtitle {
 		font-size: 0.75rem;
-		color: rgba(160, 160, 200, 0.6);
+		color: var(--text-muted);
 		margin: 0.1rem 0 0 0;
 	}
 
 	.chevron {
-		color: rgba(255, 255, 255, 0.3);
+		color: var(--text-faint);
 		transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 		width: 20px;
 		height: 20px;
@@ -279,13 +279,13 @@
 		padding: 1rem;
 		background: rgba(0, 0, 0, 0.2);
 		border-radius: 16px;
-		border: 1px solid rgba(255, 255, 255, 0.05);
+		border: 1px solid var(--border-subtle);
 	}
 
 	.input-label {
 		font-size: 0.65rem;
 		font-weight: 700;
-		color: rgba(255, 255, 255, 0.3);
+		color: var(--text-faint);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 		margin-bottom: 0.75rem;
@@ -300,20 +300,20 @@
 
 	.contribution-input {
 		width: 100%;
-		background: rgba(255, 255, 255, 0.03);
-		border: 1px solid rgba(255, 255, 255, 0.1);
+		background: var(--bg-card);
+		border: 1px solid var(--border-subtle);
 		border-radius: 12px;
 		padding: 0.75rem 1rem;
 		font-size: 1.5rem;
 		font-weight: 700;
-		color: #ffffff;
+		color: var(--text-primary);
 		transition: all 0.2s ease;
 	}
 
 	.contribution-input:focus {
 		outline: none;
-		border-color: #3b82f6;
-		background: rgba(255, 255, 255, 0.06);
+		border-color: var(--accent-blue);
+		background: var(--bg-card-hover);
 	}
 
 	.currency {
@@ -321,12 +321,12 @@
 		right: 1rem;
 		font-size: 1.25rem;
 		font-weight: 700;
-		color: rgba(255, 255, 255, 0.2);
+		color: var(--text-faint);
 	}
 
 	.hint {
 		font-size: 0.7rem;
-		color: rgba(255, 255, 255, 0.3);
+		color: var(--text-faint);
 		text-align: center;
 		margin-top: 0.75rem;
 	}
@@ -340,7 +340,7 @@
 	.section-heading {
 		font-size: 0.7rem;
 		font-weight: 700;
-		color: rgba(255, 255, 255, 0.4);
+		color: var(--text-faint);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 		margin: 0;
@@ -357,7 +357,7 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 0.75rem;
-		background: rgba(255, 255, 255, 0.02);
+		background: var(--bg-card);
 		border-radius: 12px;
 		border-left: 3px solid var(--accent);
 		transition: transform 0.2s ease;
@@ -365,7 +365,7 @@
 
 	.alloc-row:hover {
 		transform: translateX(4px);
-		background: rgba(255, 255, 255, 0.04);
+		background: var(--bg-card);
 	}
 
 	.alloc-left {
@@ -386,12 +386,12 @@
 	.alloc-name {
 		font-size: 0.85rem;
 		font-weight: 600;
-		color: #ffffff;
+		color: var(--text-primary);
 	}
 
 	.alloc-shares {
 		font-size: 0.7rem;
-		color: rgba(160, 160, 200, 0.6);
+		color: var(--text-muted);
 	}
 
 	.alloc-right {
@@ -409,13 +409,13 @@
 	.alloc-percent {
 		font-size: 0.7rem;
 		font-weight: 600;
-		color: rgba(255, 255, 255, 0.3);
+		color: var(--text-faint);
 	}
 
 	.total-summary {
 		margin-top: 0.5rem;
 		padding: 1rem;
-		background: rgba(255, 255, 255, 0.03);
+		background: var(--bg-card);
 		border: 1px dashed rgba(255, 255, 255, 0.1);
 		border-radius: 12px;
 		display: flex;
@@ -426,13 +426,13 @@
 	.total-label {
 		font-size: 0.75rem;
 		font-weight: 600;
-		color: rgba(255, 255, 255, 0.4);
+		color: var(--text-faint);
 	}
 
 	.total-value {
 		font-size: 0.9rem;
 		font-weight: 700;
-		color: #ffffff;
+		color: var(--text-primary);
 	}
 
 	/* Remove arrows from number input */
@@ -451,7 +451,7 @@
 		margin-top: 1rem;
 		padding: 1rem;
 		background: rgba(0, 0, 0, 0.2);
-		border: 1px solid rgba(255, 255, 255, 0.05);
+		border: 1px solid var(--border-subtle);
 		border-radius: 16px;
 		display: flex;
 		flex-direction: column;
@@ -461,7 +461,7 @@
 	.comparison-heading {
 		font-size: 0.65rem;
 		font-weight: 700;
-		color: rgba(255, 255, 255, 0.35);
+		color: var(--text-faint);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 		margin: 0 0 0.25rem 0;
@@ -492,7 +492,7 @@
 	.comparison-name {
 		font-size: 0.7rem;
 		font-weight: 600;
-		color: rgba(255, 255, 255, 0.7);
+		color: var(--text-secondary);
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
@@ -505,7 +505,7 @@
 	.bar-track {
 		position: relative;
 		height: 14px;
-		background: rgba(255, 255, 255, 0.04);
+		background: var(--bg-card);
 		border-radius: 4px;
 		overflow: visible;
 	}
@@ -559,7 +559,7 @@
 	.convergence-label {
 		font-size: 0.62rem;
 		font-weight: 700;
-		color: rgba(255, 255, 255, 0.35);
+		color: var(--text-faint);
 		white-space: nowrap;
 	}
 
@@ -577,7 +577,7 @@
 		justify-content: center;
 		margin-top: 0.25rem;
 		padding-top: 0.5rem;
-		border-top: 1px solid rgba(255, 255, 255, 0.04);
+		border-top: 1px solid var(--border-subtle);
 	}
 
 	.legend-item {
@@ -586,7 +586,7 @@
 		gap: 0.3rem;
 		font-size: 0.58rem;
 		font-weight: 600;
-		color: rgba(255, 255, 255, 0.3);
+		color: var(--text-faint);
 	}
 
 	.legend-dot {
@@ -600,7 +600,7 @@
 	}
 
 	.legend-dot.after {
-		background: #3b82f6;
+		background: var(--accent-blue);
 		opacity: 0.7;
 	}
 

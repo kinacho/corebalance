@@ -49,13 +49,13 @@
 	h2 {
 		font-size: 1.4rem;
 		font-weight: 800;
-		color: #fff;
+		color: var(--text-primary);
 		letter-spacing: -0.02em;
 		margin: 0 0 0.35rem;
 	}
 
 	.subtitle {
-		color: rgba(160, 160, 200, 0.65);
+		color: var(--text-muted);
 		font-size: 0.92rem;
 		margin: 0 0 1.5rem;
 	}
@@ -76,8 +76,8 @@
 		height: 100%;
 		padding: 1.25rem;
 		border-radius: 16px;
-		border: 1px solid rgba(255, 255, 255, 0.06);
-		background: rgba(255, 255, 255, 0.02);
+		border: 1px solid var(--border-subtle);
+		background: var(--bg-card);
 		text-decoration: none;
 		transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 	}
@@ -85,26 +85,26 @@
 	a:hover {
 		transform: translateY(-3px);
 		border-color: rgba(59, 130, 246, 0.28);
-		background: rgba(255, 255, 255, 0.04);
+		background: var(--bg-card);
 	}
 
 	.item-title {
 		font-size: 1rem;
 		font-weight: 700;
-		color: #fff;
+		color: var(--text-primary);
 		line-height: 1.4;
 	}
 
 	.item-desc {
 		font-size: 0.85rem;
 		line-height: 1.55;
-		color: rgba(255, 255, 255, 0.6);
+		color: var(--text-muted);
 		flex-grow: 1;
 	}
 
 	.item-meta {
 		font-size: 0.75rem;
 		font-weight: 600;
-		color: #60a5fa;
+		color: var(--accent-blue-ink);
 	}
 </style>

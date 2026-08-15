@@ -157,7 +157,7 @@
 		justify-content: space-between;
 		gap: 0.75rem;
 		padding-bottom: 0.4rem;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+		border-bottom: 1px solid var(--border-subtle);
 	}
 
 	.block-name {
@@ -165,7 +165,7 @@
 		font-weight: 700;
 		letter-spacing: 0.1em;
 		text-transform: uppercase;
-		color: rgba(255, 255, 255, 0.42);
+		color: var(--text-faint);
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
@@ -174,7 +174,7 @@
 	.block-weight {
 		font-size: 0.72rem;
 		font-weight: 700;
-		color: rgba(255, 255, 255, 0.62);
+		color: var(--text-muted);
 		flex-shrink: 0;
 	}
 
@@ -211,7 +211,7 @@
 		position: relative;
 		height: 11px;
 		border-radius: 4px;
-		background: rgba(255, 255, 255, 0.05);
+		background: var(--bg-card-hover);
 	}
 
 	.band {

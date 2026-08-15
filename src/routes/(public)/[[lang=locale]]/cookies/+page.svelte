@@ -85,7 +85,7 @@
 <style>
   .legal-page {
     background: var(--bg-primary, #05050a);
-    color: #fff;
+    color: var(--text-primary);
     min-height: 100vh;
   }
 
@@ -107,7 +107,7 @@
   }
 
   .update-date {
-    color: rgba(160, 160, 200, 0.5);
+    color: var(--text-muted);
     font-size: 0.9rem;
     margin-bottom: 3rem;
   }
@@ -120,25 +120,25 @@
     font-size: 1.5rem;
     font-weight: 700;
     margin-bottom: 1rem;
-    color: var(--accent-blue, #3b82f6);
+    color: var(--accent-blue-ink);
   }
 
   h3 {
     font-size: 1.1rem;
     font-weight: 600;
     margin: 1.5rem 0 0.75rem;
-    color: #fff;
+    color: var(--text-primary);
   }
 
   p {
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--text-secondary);
     margin-bottom: 1rem;
   }
 
   ul {
     padding-left: 1.5rem;
     margin-bottom: 1rem;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--text-secondary);
   }
 
   li {
@@ -146,7 +146,7 @@
   }
 
   li a {
-    color: var(--accent-blue, #3b82f6);
+    color: var(--accent-blue-ink);
     text-decoration: none;
   }
 
@@ -155,8 +155,8 @@
   }
 
   .table-container {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
     border-radius: 12px;
     overflow: hidden;
     margin: 1.5rem 0;
@@ -169,17 +169,17 @@
   }
 
   th {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--bg-card-hover);
     text-align: left;
     padding: 0.75rem 1rem;
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--text-muted);
     font-weight: 600;
   }
 
   td {
     padding: 0.75rem 1rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-    color: rgba(255, 255, 255, 0.8);
+    border-top: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
   }
 
 </style>

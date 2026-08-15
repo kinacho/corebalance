@@ -46,7 +46,7 @@
 		border-radius: 12px;
 		background: rgba(18, 18, 35, 0.95);
 		backdrop-filter: blur(12px);
-		border: 1px solid rgba(255, 255, 255, 0.1);
+		border: 1px solid var(--border-subtle);
 		color: white;
 		font-size: 0.85rem;
 		font-weight: 600;
@@ -76,7 +76,7 @@
 	.close-btn {
 		background: none;
 		border: none;
-		color: rgba(255, 255, 255, 0.4);
+		color: var(--text-faint);
 		cursor: pointer;
 		font-size: 0.75rem;
 		padding: 0.2rem;

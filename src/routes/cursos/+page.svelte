@@ -81,7 +81,7 @@
 		font-weight: 700;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
-		color: var(--accent-green);
+		color: var(--accent-green-ink);
 	}
 	h1 {
 		margin: 0 0 1rem;
@@ -106,7 +106,7 @@
 	.lista a {
 		display: block;
 		padding: 1.5rem;
-		border: 1px solid rgba(255, 255, 255, 0.1);
+		border: 1px solid var(--border-subtle);
 		border-radius: 16px;
 		background: var(--bg-card);
 		text-decoration: none;
@@ -120,7 +120,7 @@
 		font-weight: 700;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
-		color: var(--accent-blue);
+		color: var(--accent-blue-ink);
 	}
 	.lista h2 {
 		margin: 0.5rem 0 0.6rem;
@@ -135,7 +135,7 @@
 	.ir {
 		font-size: 0.85rem;
 		font-weight: 700;
-		color: var(--accent-blue);
+		color: var(--accent-blue-ink);
 	}
 	.gratis {
 		padding: 1.25rem 1.4rem;

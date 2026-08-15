@@ -197,7 +197,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		font-size: 0.85rem;
-		color: rgba(160, 160, 200, 0.6);
+		color: var(--text-muted);
 		margin-bottom: 2.5rem;
 	}
 
@@ -207,20 +207,20 @@
 	}
 
 	.breadcrumb a:hover {
-		color: #fff;
+		color: var(--text-primary);
 	}
 
 	.breadcrumb .separator {
-		color: rgba(255, 255, 255, 0.2);
+		color: var(--text-faint);
 	}
 
 	.breadcrumb .current {
-		color: rgba(255, 255, 255, 0.9);
+		color: var(--text-primary);
 		font-weight: 500;
 	}
 
 	.eyebrow {
-		color: #3b82f6;
+		color: var(--accent-blue-ink);
 		font-weight: 700;
 		text-transform: uppercase;
 		letter-spacing: 0.1em;
@@ -235,11 +235,11 @@
 		letter-spacing: -0.02em;
 		line-height: 1.2;
 		margin: 0 0 0.5rem;
-		color: #fff;
+		color: var(--text-primary);
 	}
 
 	.job-title {
-		color: rgba(160, 160, 200, 0.8);
+		color: var(--text-secondary);
 		font-size: 1.05rem;
 		margin: 0 0 1.25rem;
 	}
@@ -254,7 +254,7 @@
 	.author-links a {
 		font-size: 0.85rem;
 		font-weight: 600;
-		color: #60a5fa;
+		color: var(--accent-blue-ink);
 		background: rgba(59, 130, 246, 0.1);
 		border: 1px solid rgba(59, 130, 246, 0.2);
 		padding: 0.45rem 0.9rem;
@@ -265,20 +265,20 @@
 
 	.author-links a:hover {
 		background: rgba(59, 130, 246, 0.18);
-		color: #93c5fd;
+		color: var(--accent-blue-ink);
 	}
 
 	.bio p {
 		font-size: 1.05rem;
 		line-height: 1.8;
-		color: rgba(255, 255, 255, 0.82);
+		color: var(--text-secondary);
 		margin: 0 0 1.25rem;
 	}
 
 	h2 {
 		font-size: 1.25rem;
 		font-weight: 800;
-		color: #fff;
+		color: var(--text-primary);
 		letter-spacing: -0.01em;
 		margin: 3rem 0 1rem;
 	}
@@ -295,7 +295,7 @@
 	.topic-list li {
 		font-size: 0.8rem;
 		font-weight: 600;
-		color: #a78bfa;
+		color: var(--accent-violet-ink);
 		background: rgba(139, 92, 246, 0.1);
 		padding: 0.3rem 0.75rem;
 		border-radius: 9999px;
@@ -305,8 +305,8 @@
 		margin-top: 3rem;
 		padding: 1.5rem;
 		border-radius: 16px;
-		border: 1px solid rgba(255, 255, 255, 0.07);
-		background: rgba(255, 255, 255, 0.02);
+		border: 1px solid var(--border-subtle);
+		background: var(--bg-card);
 	}
 
 	.disclaimer h2 {
@@ -318,11 +318,11 @@
 		margin: 0;
 		font-size: 0.9rem;
 		line-height: 1.65;
-		color: rgba(160, 160, 200, 0.8);
+		color: var(--text-secondary);
 	}
 
 	.posts-subtitle {
-		color: rgba(160, 160, 200, 0.6);
+		color: var(--text-muted);
 		font-size: 0.9rem;
 		margin: -0.5rem 0 1.25rem;
 	}
@@ -342,26 +342,26 @@
 		gap: 0.25rem;
 		padding: 1rem 1.25rem;
 		border-radius: 14px;
-		border: 1px solid rgba(255, 255, 255, 0.05);
-		background: rgba(255, 255, 255, 0.02);
+		border: 1px solid var(--border-subtle);
+		background: var(--bg-card);
 		text-decoration: none;
 		transition: all 0.2s ease;
 	}
 
 	.post-list a:hover {
 		border-color: rgba(139, 92, 246, 0.25);
-		background: rgba(255, 255, 255, 0.04);
+		background: var(--bg-card);
 	}
 
 	.post-title {
 		font-weight: 700;
-		color: #fff;
+		color: var(--text-primary);
 		font-size: 0.98rem;
 		line-height: 1.4;
 	}
 
 	.post-meta {
 		font-size: 0.8rem;
-		color: rgba(160, 160, 200, 0.6);
+		color: var(--text-muted);
 	}
 </style>

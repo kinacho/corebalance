@@ -79,7 +79,7 @@
 		flex: none;
 		padding: 0.1rem 0.35rem;
 		border-radius: 5px;
-		background: rgba(255, 255, 255, 0.06);
+		background: var(--bg-card-hover);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 		font-weight: 700;
@@ -102,7 +102,7 @@
 
 	.leccion-link:hover,
 	.leccion-link:focus-visible {
-		color: var(--accent-blue);
+		color: var(--accent-blue-ink);
 	}
 
 	.leccion-link:hover .flecha,

@@ -477,7 +477,7 @@
 
 	.rank-bar {
 		height: 6px;
-		background: rgba(255, 255, 255, 0.06);
+		background: var(--bg-card-hover);
 		border-radius: 999px;
 		overflow: hidden;
 	}
@@ -505,7 +505,7 @@
 	.overlap-heading {
 		font-size: 0.72rem;
 		font-weight: 700;
-		color: var(--accent-orange);
+		color: var(--accent-orange-ink);
 		margin: 0 0 0.5rem 0;
 	}
 
@@ -522,23 +522,23 @@
 
 	.overlap-note {
 		display: block;
-		color: rgba(160, 160, 200, 0.55);
+		color: var(--text-muted);
 	}
 
 	.overlap-indices {
 		display: block;
 		font-size: 0.65rem;
-		color: rgba(160, 160, 200, 0.4);
+		color: var(--text-faint);
 	}
 
 	.notes {
 		padding-top: 0.5rem;
-		border-top: 1px solid rgba(255, 255, 255, 0.05);
+		border-top: 1px solid var(--border-subtle);
 	}
 
 	.notes-summary {
 		font-size: 0.68rem;
-		color: rgba(160, 160, 200, 0.6);
+		color: var(--text-muted);
 		cursor: pointer;
 		list-style: none;
 		display: flex;
@@ -570,13 +570,13 @@
 
 	.note {
 		font-size: 0.65rem;
-		color: rgba(160, 160, 200, 0.55);
+		color: var(--text-muted);
 		margin: 0;
 		line-height: 1.5;
 	}
 
 	.note.estimated {
-		color: var(--accent-orange);
+		color: var(--accent-orange-ink);
 		opacity: 0.85;
 	}
 
