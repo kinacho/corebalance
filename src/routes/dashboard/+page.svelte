@@ -193,24 +193,50 @@ import { formatCompactCurrency } from "$lib/chart-format";
     import("$lib/components/OnboardingTour.svelte").then(m => OnboardingTour = m.default);
     import("$lib/components/DemoRibbon.svelte").then(m => DemoRibbon = m.default);
 
-    // Listener para el Tour (cambio automático de pestañas en móvil)
+    /**
+     * El tour pide que se prepare un destino: pestaña, panel o plegado.
+     *
+     * ⚠️ **`abrir-mapas` no es un adorno.** Los mapas del detalle nacen plegados en
+     * escritorio y plegado es `display: none`, así que el paso que los explica medía
+     * una caja de **0×0** y el globo señalaba a la esquina. Medido paso a paso antes
+     * de arreglarlo. En móvil el plegado no existe —son carriles del carrusel— y esta
+     * línea no hace nada, que es lo correcto.
+     */
     const handleTourStep = (e: Event) => {
       const customEvent = e as CustomEvent;
-      if (customEvent.detail && customEvent.detail.target) {
-        if (customEvent.detail.target === 'manage') {
-          showManageAssets = true;
-          return;
-        }
+      const target = customEvent.detail?.target;
+      if (!target) return;
 
-        if (customEvent.detail.target === 'close-all') {
-          showManageAssets = false;
-          return;
-        }
+      if (target === 'manage') {
+        showManageAssets = true;
+        return;
+      }
 
-        if (window.innerWidth < 1024) {
-          // Cambiamos la pestaña pero indicamos que es por el tour para no disparar el scroll automático
-          activeTab = customEvent.detail.target;
-        }
+      if (target === 'close-all') {
+        showManageAssets = false;
+        return;
+      }
+
+      if (target === 'abrir-mapas') {
+        mapsOpen = true;
+        return;
+      }
+
+      // Los dos paneles plegables se abren solos: escuchan `abrir-rebalance` y
+      // `abrir-tax`, que es donde vive su estado.
+
+      /**
+       * ⚠️ **Solo ids de pestaña reales.** Antes se asignaba `activeTab = target` con
+       * cualquier cosa que llegara, y basta un target que no sea una pestaña para
+       * dejar `activeTab` en un valor que no casa con ninguna: las tres secciones se
+       * comparan con `!==`, así que **se ocultan todas a la vez** y la página se queda
+       * en blanco bajo la cabecera. Lo provocó al primer intento el propio arreglo del
+       * tutorial —mandando `abrir-rebalance`, que no es una pestaña— y se vio midiendo
+       * el paso: caja 0×0 donde debía haber un panel.
+       */
+      if (window.innerWidth < 1024 && DASHBOARD_TABS.some((t) => t.id === target)) {
+        // Cambiamos la pestaña pero indicamos que es por el tour para no disparar el scroll automático
+        activeTab = target as TabId;
       }
     };
 

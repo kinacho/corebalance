@@ -33,6 +33,42 @@
     }
   }
 
+  /**
+   * ⚠️ **Preparar el destino ANTES de que driver.js lo mida, no a la vez.**
+   *
+   * El defecto que esto arregla es el que se veía como «el tutorial no viaja a donde
+   * debe». Los pasos avisaban al panel con `onHighlightStarted`, que se ejecuta
+   * **mientras** driver.js calcula el recuadro: Svelte todavía no ha aplicado el
+   * cambio de estado, así que se medía el elemento anterior —o uno con caja cero, o
+   * uno que aún no existía— y el globo acababa señalando a nada. Medido paso a paso
+   * en el navegador, fallaban cuatro paradas de las seis:
+   *
+   * - `#tour-maps` en escritorio: **0×0**, porque los mapas nacen plegados y plegado
+   *   es `display: none`.
+   * - `#tour-maps` en móvil: existía, pero en **y=1093**, fuera de la pantalla.
+   * - `#tour-import-csv`: driver.js no lo encontraba y caía a su elemento de relleno,
+   *   porque el panel de gestión se abre en el mismo tick.
+   * - `#tour-manage-btn` en demo: **no existe** —`Header.svelte` lo esconde con
+   *   `{#if !portfolio.isDemo}`—, así que el último paso del recorrido de demo
+   *   señalaba al vacío.
+   *
+   * Ahora se avisa al panel, se **espera a que el elemento tenga caja de verdad**, y
+   * solo entonces se avanza. El sondeo es por fotograma y acotado: si algo no llega,
+   * el paso sigue adelante en vez de dejar el tutorial colgado.
+   */
+  async function prepararDestino(paso: { element?: string; prepara?: string[] } | undefined) {
+    if (!paso) return;
+    for (const target of paso.prepara ?? []) emitTourStep(target);
+    if (!paso.element) return;
+
+    const limite = performance.now() + 900;
+    while (performance.now() < limite) {
+      const el = document.querySelector(paso.element);
+      if (el && el.getBoundingClientRect().height > 0) return;
+      await new Promise((r) => requestAnimationFrame(() => r(null)));
+    }
+  }
+
   /** Pasos para una cartera vacía: el trabajo es tener datos dentro. */
   function startupSteps(t: TranslationFunctions) {
     return [
@@ -56,13 +92,13 @@
       },
       {
         element: '#tour-import-csv',
+        prepara: ['manage'],
         popover: {
           title: t.tour.steps.start_import.title(),
           description: t.tour.steps.start_import.description(),
           side: "top" as const,
           align: 'center' as const
-        },
-        onHighlightStarted: () => emitTourStep('manage')
+        }
       }
     ];
   }
@@ -72,69 +108,94 @@
     return [
       {
         element: '#tour-global-summary',
+        prepara: ['assets'],
         popover: {
           title: t.tour.steps.summary.title(),
           description: t.tour.steps.summary.description(),
           side: "bottom" as const,
           align: 'center' as const
-        },
-        onHighlightStarted: () => emitTourStep('assets')
+        }
       },
       {
         element: '#tour-portfolio-categories',
+        prepara: ['assets'],
         popover: {
           title: t.tour.steps.categories.title(),
           description: t.tour.steps.categories.description(),
           side: "top" as const,
           align: 'center' as const
-        },
-        onHighlightStarted: () => emitTourStep('assets')
+        }
       },
       {
         element: '#tour-rebalance',
+        // `abrir-rebalance` despliega el panel: resaltar una cabecera plegada de 86 px
+        // mientras el globo habla de «cuánto comprar este mes» enseña justo lo que no
+        // se está explicando. Lo escucha el propio panel, que es quien tiene el estado.
+        prepara: ['rebalance', 'abrir-rebalance'],
         popover: {
           title: t.tour.steps.rebalance.title(),
           description: t.tour.steps.rebalance.description(),
           side: "top" as const,
           align: 'center' as const
-        },
-        onHighlightStarted: () => emitTourStep('rebalance')
+        }
       },
       {
         element: '#tour-tax',
+        prepara: ['rebalance', 'abrir-tax'],
         popover: {
           title: t.tour.steps.tax.title(),
           description: t.tour.steps.tax.description(),
           side: "top" as const,
           align: 'center' as const
-        },
-        onHighlightStarted: () => emitTourStep('rebalance')
+        }
       },
       {
         element: '#tour-maps',
+        // ⚠️ `abrir-mapas` es imprescindible en escritorio: los mapas nacen plegados y
+        // plegado es `display: none`, así que sin esto el paso medía una caja de 0×0.
+        prepara: ['charts', 'abrir-mapas'],
         popover: {
           title: t.tour.steps.maps.title(),
           description: t.tour.steps.maps.description(),
           side: "top" as const,
           align: 'center' as const
-        },
-        onHighlightStarted: () => emitTourStep('charts')
-      },
-      {
-        element: '#tour-manage-btn',
-        popover: {
-          title: t.tour.steps.manage.title(),
-          description: t.tour.steps.manage.description(),
-          side: "bottom" as const,
-          align: 'end' as const
         }
-      }
+      },
+      /**
+       * ⚠️ **El último paso depende de si esto es una demo, porque el botón que
+       * señalaba no existe ahí.** `Header.svelte` esconde `#tour-manage-btn` con
+       * `{#if !portfolio.isDemo}`, así que el recorrido de la cartera de ejemplo
+       * —que es el que ve cualquiera que entre por «Probar demo»— acababa señalando
+       * al vacío. Y no es cuestión de buscarle otro ancla: a quien está en la demo no
+       * le sirve «cuando quieras cambiar algo», porque no puede cambiar nada hasta
+       * salir. Se le enseña la salida, que es su siguiente paso de verdad.
+       */
+      portfolio.isDemo
+        ? {
+            element: '#tour-demo-exit',
+            popover: {
+              title: t.tour.steps.demo_exit.title(),
+              description: t.tour.steps.demo_exit.description(),
+              side: "bottom" as const,
+              align: 'center' as const
+            }
+          }
+        : {
+            element: '#tour-manage-btn',
+            popover: {
+              title: t.tour.steps.manage.title(),
+              description: t.tour.steps.manage.description(),
+              side: "bottom" as const,
+              align: 'end' as const
+            }
+          }
     ];
   }
 
-  export function startTour() {
+  export async function startTour() {
     const t = get(LL);
     const hasPortfolio = portfolio.hasAnyHoldings;
+    const pasos = hasPortfolio ? fullSteps(t) : startupSteps(t);
 
     const driverObj = driver({
       showProgress: true,
@@ -142,6 +203,19 @@
       prevBtnText: t.tour.btn_prev(),
       doneBtnText: hasPortfolio ? t.tour.btn_done() : t.tour.btn_done_startup(),
       popoverClass: 'corebalance-tour-theme',
+      /**
+       * Se intercepta el avance para preparar el destino **antes** de moverse.
+       * `onHighlightStarted` no vale para esto: corre cuando driver.js ya está
+       * midiendo. Ver el docblock de `prepararDestino`.
+       */
+      onNextClick: async () => {
+        await prepararDestino(pasos[(driverObj.getActiveIndex() ?? 0) + 1]);
+        driverObj.moveNext();
+      },
+      onPrevClick: async () => {
+        await prepararDestino(pasos[(driverObj.getActiveIndex() ?? 0) - 1]);
+        driverObj.movePrevious();
+      },
       onDestroyed: () => {
         emitTourStep('close-all');
         // El flag se quema **al cerrar**, no al abrir. Antes se escribía justo
@@ -153,9 +227,12 @@
           // Modo privado del navegador; no vale la pena romper por esto.
         }
       },
-      steps: hasPortfolio ? fullSteps(t) : startupSteps(t)
+      steps: pasos
     });
 
+    // El primer paso también necesita su preparación: en el recorrido completo abre
+    // la pestaña de activos, y sin eso en móvil la primera parada mide lo que hubiera.
+    await prepararDestino(pasos[0]);
     driverObj.drive();
   }
 

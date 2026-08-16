@@ -9,7 +9,9 @@
     <div class="demo-content">
       <span class="demo-badge">{$LL.demo_ribbon.badge()}</span>
       <p>{@html $LL.demo_ribbon.text({ bold: `<strong>${$LL.demo_ribbon.text_bold()}</strong>` })}</p>
-      <button class="exit-demo-btn" onclick={() => (portfolio as any).exitDemo()}>
+      <!-- `id` para el tutorial: en demo, el último paso señala aquí en vez de al botón
+           de gestionar cartera, que `Header.svelte` esconde precisamente en demo. -->
+      <button id="tour-demo-exit" class="exit-demo-btn" onclick={() => (portfolio as any).exitDemo()}>
         {$LL.demo_ribbon.exit_btn()}
       </button>
     </div>

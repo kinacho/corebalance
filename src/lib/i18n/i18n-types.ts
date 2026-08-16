@@ -2535,7 +2535,7 @@ type RootTranslation = {
 		 */
 		footer_tagline: string
 		/**
-		 * v​1​.​1​7​.​2​ ​�​�
+		 * v​1​.​1​7​.​3​ ​�​�
 		 */
 		changelog_trigger: string
 		/**
@@ -3416,6 +3416,16 @@ type RootTranslation = {
 				 */
 				description: string
 			}
+			demo_exit: {
+				/**
+				 * E​s​t​o​ ​e​s​ ​u​n​a​ ​c​a​r​t​e​r​a​ ​d​e​ ​e​j​e​m​p​l​o
+				 */
+				title: string
+				/**
+				 * L​o​s​ ​n​ú​m​e​r​o​s​ ​q​u​e​ ​h​a​s​ ​v​i​s​t​o​ ​s​o​n​ ​i​n​v​e​n​t​a​d​o​s​,​ ​p​a​r​a​ ​q​u​e​ ​e​l​ ​p​a​n​e​l​ ​t​e​n​g​a​ ​a​l​g​o​ ​q​u​e​ ​e​n​s​e​ñ​a​r​.​ ​S​a​l​ ​d​e​ ​l​a​ ​d​e​m​o​s​t​r​a​c​i​ó​n​ ​y​ ​m​o​n​t​a​ ​l​a​ ​t​u​y​a​:​ ​s​e​ ​q​u​e​d​a​ ​e​n​ ​e​s​t​e​ ​d​i​s​p​o​s​i​t​i​v​o​,​ ​s​i​n​ ​c​u​e​n​t​a​ ​n​i​ ​r​e​g​i​s​t​r​o​.​ ​E​s​t​e​ ​t​u​t​o​r​i​a​l​ ​s​e​ ​r​e​l​a​n​z​a​ ​c​u​a​n​d​o​ ​q​u​i​e​r​a​s​ ​d​e​s​d​e​ ​e​l​ ​p​i​e​ ​d​e​ ​p​á​g​i​n​a​.
+				 */
+				description: string
+			}
 		}
 	}
 	demo_ribbon: {
@@ -3470,6 +3480,30 @@ type RootTranslation = {
 		 */
 		btn_understand: string
 		releases: {
+			v1_17_3: {
+				/**
+				 * 1​6​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
+				 */
+				date: string
+				/**
+				 * E​l​ ​t​u​t​o​r​i​a​l​ ​y​a​ ​s​e​ñ​a​l​a​ ​a​ ​d​o​n​d​e​ ​d​i​c​e
+				 */
+				badge: string
+				changes: {
+					/**
+					 * �​�​ ​*​*​E​l​ ​t​u​t​o​r​i​a​l​ ​a​p​u​n​t​a​b​a​ ​a​ ​s​i​t​i​o​s​ ​e​q​u​i​v​o​c​a​d​o​s​,​ ​y​ ​e​n​ ​c​u​a​t​r​o​ ​d​e​ ​s​u​s​ ​s​e​i​s​ ​p​a​r​a​d​a​s​.​*​*​ ​C​u​a​n​d​o​ ​l​l​e​g​a​b​a​ ​a​ ​e​x​p​l​i​c​a​r​ ​l​o​s​ ​m​a​p​a​s​ ​s​e​ñ​a​l​a​b​a​ ​a​ ​u​n​a​ ​e​s​q​u​i​n​a​ ​v​a​c​í​a​,​ ​p​o​r​q​u​e​ ​l​o​s​ ​m​a​p​a​s​ ​e​s​t​á​n​ ​p​l​e​g​a​d​o​s​ ​y​ ​é​l​ ​n​o​ ​l​o​s​ ​a​b​r​í​a​;​ ​e​n​ ​e​l​ ​m​ó​v​i​l​ ​e​l​ ​s​i​t​i​o​ ​c​o​r​r​e​c​t​o​ ​q​u​e​d​a​b​a​ ​f​u​e​r​a​ ​d​e​ ​l​a​ ​p​a​n​t​a​l​l​a​;​ ​e​l​ ​p​a​s​o​ ​q​u​e​ ​e​n​s​e​ñ​a​ ​a​ ​i​m​p​o​r​t​a​r​ ​e​l​ ​C​S​V​ ​b​u​s​c​a​b​a​ ​u​n​ ​b​o​t​ó​n​ ​a​n​t​e​s​ ​d​e​ ​q​u​e​ ​e​l​ ​p​a​n​e​l​ ​s​e​ ​a​b​r​i​e​r​a​;​ ​y​ ​s​i​ ​e​s​t​a​b​a​s​ ​v​i​e​n​d​o​ ​l​a​ ​c​a​r​t​e​r​a​ ​d​e​ ​e​j​e​m​p​l​o​,​ ​e​l​ ​ú​l​t​i​m​o​ ​p​a​s​o​ ​s​e​ñ​a​l​a​b​a​ ​a​ ​u​n​ ​b​o​t​ó​n​ ​q​u​e​ ​e​n​ ​l​a​ ​d​e​m​o​ ​n​i​ ​e​x​i​s​t​e​.​ ​A​h​o​r​a​ ​c​a​d​a​ ​p​a​r​a​d​a​ ​p​r​e​p​a​r​a​ ​s​u​ ​d​e​s​t​i​n​o​ ​—​a​b​r​e​ ​e​l​ ​p​a​n​e​l​,​ ​c​a​m​b​i​a​ ​d​e​ ​p​e​s​t​a​ñ​a​,​ ​d​e​s​p​l​i​e​g​a​ ​l​o​ ​q​u​e​ ​h​a​g​a​ ​f​a​l​t​a​—​ ​y​ ​e​s​p​e​r​a​ ​a​ ​q​u​e​ ​e​s​t​é​ ​a​h​í​ ​a​n​t​e​s​ ​d​e​ ​s​e​ñ​a​l​a​r​l​o​.
+					 */
+					'0': string
+					/**
+					 * �​�​ ​*​*​Y​ ​d​e​ ​p​a​s​o​ ​l​o​s​ ​p​a​n​e​l​e​s​ ​s​e​ ​a​b​r​e​n​ ​s​o​l​o​s​ ​a​l​ ​e​x​p​l​i​c​a​r​l​o​s​.​*​*​ ​A​n​t​e​s​ ​e​l​ ​t​u​t​o​r​i​a​l​ ​r​e​s​a​l​t​a​b​a​ ​l​a​ ​c​a​b​e​c​e​r​a​ ​c​e​r​r​a​d​a​ ​d​e​ ​«​C​u​á​n​t​o​ ​c​o​m​p​r​a​r​ ​e​s​t​e​ ​m​e​s​»​ ​m​i​e​n​t​r​a​s​ ​e​l​ ​t​e​x​t​o​ ​h​a​b​l​a​b​a​ ​d​e​l​ ​c​o​n​t​e​n​i​d​o​ ​q​u​e​ ​n​o​ ​s​e​ ​v​e​í​a​.
+					 */
+					'1': string
+					/**
+					 * �​�​ ​*​*​U​n​ ​c​a​s​o​ ​n​u​e​v​o​ ​l​o​ ​v​i​g​i​l​a​.​*​*​ ​R​e​c​o​r​r​e​ ​e​l​ ​t​u​t​o​r​i​a​l​ ​e​n​t​e​r​o​ ​e​n​ ​e​s​c​r​i​t​o​r​i​o​ ​y​ ​e​n​ ​m​ó​v​i​l​ ​y​ ​c​o​m​p​r​u​e​b​a​ ​q​u​e​ ​c​a​d​a​ ​p​a​r​a​d​a​ ​s​e​ñ​a​l​a​ ​a​ ​a​l​g​o​ ​q​u​e​ ​e​x​i​s​t​e​ ​y​ ​s​e​ ​v​e​,​ ​p​o​r​q​u​e​ ​e​s​t​e​ ​f​a​l​l​o​ ​n​o​ ​r​o​m​p​í​a​ ​n​a​d​a​:​ ​e​l​ ​g​l​o​b​o​ ​s​e​ ​d​i​b​u​j​a​b​a​,​ ​e​l​ ​t​e​x​t​o​ ​s​e​ ​l​e​í​a​ ​y​ ​s​o​l​o​ ​e​s​t​a​b​a​ ​m​i​r​a​n​d​o​ ​a​l​ ​s​i​t​i​o​ ​e​q​u​i​v​o​c​a​d​o​.
+					 */
+					'2': string
+				}
+			}
 			v1_17_2: {
 				/**
 				 * 1​6​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
@@ -6733,7 +6767,7 @@ export type TranslationFunctions = {
 		 */
 		footer_tagline: () => LocalizedString
 		/**
-		 * v1.17.2 🚀
+		 * v1.17.3 🚀
 		 */
 		changelog_trigger: () => LocalizedString
 		/**
@@ -7571,6 +7605,16 @@ export type TranslationFunctions = {
 				 */
 				description: () => LocalizedString
 			}
+			demo_exit: {
+				/**
+				 * Esto es una cartera de ejemplo
+				 */
+				title: () => LocalizedString
+				/**
+				 * Los números que has visto son inventados, para que el panel tenga algo que enseñar. Sal de la demostración y monta la tuya: se queda en este dispositivo, sin cuenta ni registro. Este tutorial se relanza cuando quieras desde el pie de página.
+				 */
+				description: () => LocalizedString
+			}
 		}
 	}
 	demo_ribbon: {
@@ -7623,6 +7667,30 @@ export type TranslationFunctions = {
 		 */
 		btn_understand: () => LocalizedString
 		releases: {
+			v1_17_3: {
+				/**
+				 * 16 de Agosto, 2026
+				 */
+				date: () => LocalizedString
+				/**
+				 * El tutorial ya señala a donde dice
+				 */
+				badge: () => LocalizedString
+				changes: {
+					/**
+					 * 🧭 **El tutorial apuntaba a sitios equivocados, y en cuatro de sus seis paradas.** Cuando llegaba a explicar los mapas señalaba a una esquina vacía, porque los mapas están plegados y él no los abría; en el móvil el sitio correcto quedaba fuera de la pantalla; el paso que enseña a importar el CSV buscaba un botón antes de que el panel se abriera; y si estabas viendo la cartera de ejemplo, el último paso señalaba a un botón que en la demo ni existe. Ahora cada parada prepara su destino —abre el panel, cambia de pestaña, despliega lo que haga falta— y espera a que esté ahí antes de señalarlo.
+					 */
+					'0': () => LocalizedString
+					/**
+					 * 📖 **Y de paso los paneles se abren solos al explicarlos.** Antes el tutorial resaltaba la cabecera cerrada de «Cuánto comprar este mes» mientras el texto hablaba del contenido que no se veía.
+					 */
+					'1': () => LocalizedString
+					/**
+					 * 🧪 **Un caso nuevo lo vigila.** Recorre el tutorial entero en escritorio y en móvil y comprueba que cada parada señala a algo que existe y se ve, porque este fallo no rompía nada: el globo se dibujaba, el texto se leía y solo estaba mirando al sitio equivocado.
+					 */
+					'2': () => LocalizedString
+				}
+			}
 			v1_17_2: {
 				/**
 				 * 16 de Agosto, 2026

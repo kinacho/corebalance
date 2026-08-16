@@ -26,6 +26,7 @@
 
 	// Mapeo dinámico desde el diccionario de traducciones
 	const releaseVersions = [
+		'v1_17_3',
 		'v1_17_2',
 		'v1_17_1',
 		'v1_17_0',
@@ -80,6 +81,10 @@
 		 * (2,44) no llegan en tema claro.** Vienen de antes de que existiera el tema
 		 * claro y no se tocan aquí para no meter ruido en este PR.
 		 */
+		/* Medido igual que los de abajo: 3,36 en oscuro y 4,34 en claro sobre su propio
+		   tinte — el mejor peor caso de los tonos probados, y sin parecerse al rosa de
+		   la 1.17.2, que va justo debajo. */
+		v1_17_3: '#2563eb',
 		v1_17_2: '#e11d48',
 		v1_17_1: '#8b5cf6',
 		// Teal del logo: 3,4:1 sobre blanco y 5,4:1 sobre oscuro, así que vale en los dos temas.
