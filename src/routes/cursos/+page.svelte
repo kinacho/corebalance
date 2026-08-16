@@ -75,6 +75,15 @@
 		margin: 0 auto;
 		padding: 5.5rem 1.25rem 4rem;
 	}
+	/* La misma placa que la portada de la lección: es lo que hace que el índice, la
+	   ficha y la lección se sientan del mismo sitio. Ver `--surface-quiet`. */
+	header {
+		margin: 0 0 3rem;
+		padding: 2.5rem 1.75rem 2.25rem;
+		border: 1px solid var(--border-subtle);
+		border-radius: 20px;
+		background: var(--surface-quiet);
+	}
 	.eyebrow {
 		margin: 0 0 0.8rem;
 		font-size: var(--text-micro);
@@ -90,7 +99,8 @@
 		color: var(--text-primary);
 	}
 	.intro {
-		margin: 0 0 3rem;
+		/* El margen inferior lo lleva ahora la placa. */
+		margin: 0;
 		max-width: 60ch;
 		font-size: 1.05rem;
 		line-height: 1.65;
@@ -103,17 +113,23 @@
 		display: grid;
 		gap: 1rem;
 	}
+	/* Nivel objeto; ver `Cifra` y `.vecina` de la lección. */
 	.lista a {
 		display: block;
 		padding: 1.5rem;
 		border: 1px solid var(--border-subtle);
 		border-radius: 16px;
 		background: var(--bg-card);
+		box-shadow: var(--card-shadow);
 		text-decoration: none;
 		color: var(--text-primary);
+		transition:
+			border-color 0.18s ease,
+			background 0.18s ease;
 	}
 	.lista a:hover {
 		border-color: var(--border-strong);
+		background: var(--bg-card-hover);
 	}
 	.nivel {
 		font-size: var(--text-micro);

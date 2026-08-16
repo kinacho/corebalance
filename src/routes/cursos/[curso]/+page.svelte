@@ -48,15 +48,23 @@
 <main class="curso">
 	<nav class="miga" aria-label="Ruta"><a href="/cursos">Cursos</a></nav>
 
+	<!--
+		⚠️ **El CTA va FUERA de la placa, y no es estética.** Medido, `--border-strong`
+		—el color del anillo de foco global— da 2,77 sobre `--surface-quiet`, por debajo
+		del 3:1 que WCAG 1.4.11 pide a un objeto gráfico. La placa no lleva controles
+		enfocables dentro. De paso mejora la jerarquía: el botón sobre el lienzo pesa
+		más que dentro de una caja.
+	-->
 	<header class="portada">
 		<p class="nivel">{c.nivel} · {data.lecciones.length} lecciones · {minutos} min · gratis</p>
 		<h1>{c.titulo}</h1>
 		<p class="gancho">{c.gancho}</p>
 		<p class="para-quien">{c.paraQuien}</p>
-		<a class="empezar" href={`/cursos/${c.slug}/${data.lecciones[0]?.slug}`}>
-			Empezar por la lección 1
-		</a>
 	</header>
+
+	<a class="empezar" href={`/cursos/${c.slug}/${data.lecciones[0]?.slug}`}>
+		Empezar por la lección 1
+	</a>
 
 	<section class="llevas">
 		<h2>Al terminar te llevas</h2>
@@ -124,6 +132,14 @@
 		color: inherit;
 		text-decoration: none;
 	}
+	/* La misma placa que el índice y la portada de la lección. */
+	.portada {
+		margin: 0 0 1.75rem;
+		padding: 2.5rem 1.75rem 2.25rem;
+		border: 1px solid var(--border-subtle);
+		border-radius: 20px;
+		background: var(--surface-quiet);
+	}
 	.nivel {
 		margin: 0 0 0.8rem;
 		font-size: var(--text-micro);
@@ -145,11 +161,13 @@
 		color: var(--text-primary);
 	}
 	.para-quien {
-		margin: 0 0 1.75rem;
+		/* El margen inferior lo lleva ahora la placa. */
+		margin: 0;
 		color: var(--text-muted);
 	}
 	.empezar {
 		display: inline-block;
+		margin-bottom: 1rem;
 		padding: 0.85rem 1.4rem;
 		border-radius: 12px;
 		background: var(--accent-blue);
@@ -181,17 +199,25 @@
 		flex-direction: column;
 		gap: 0.6rem;
 	}
+	/* Nivel objeto. Iba con borde y **sin ningún fondo**, que era un cuarto nivel sin
+	   nombre: sobre la página clara quedaban ocho contornos flotando. */
 	.temario a {
 		display: flex;
 		gap: 1rem;
 		padding: 1rem 1.15rem;
 		border: 1px solid var(--border-subtle);
 		border-radius: 14px;
+		background: var(--bg-card);
+		box-shadow: var(--card-shadow);
 		text-decoration: none;
 		color: var(--text-primary);
+		transition:
+			border-color 0.18s ease,
+			background 0.18s ease;
 	}
 	.temario a:hover {
 		border-color: var(--border-strong);
+		background: var(--bg-card-hover);
 	}
 	.n {
 		font-weight: 800;
