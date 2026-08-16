@@ -76,4 +76,89 @@ test.describe('móvil · nada se sale de la pantalla', () => {
 			);
 		}
 	});
+
+	/**
+	 * La cabecera de los mapas, donde dos defectos distintos salían de una causa.
+	 *
+	 * ⚠️ `.head-actions` es `flex-shrink: 0`, así que el conmutador región/sector se
+	 * quedaba el ancho que pedía y dejaba a `.head-text` en **117,2 px** medidos. De
+	 * ahí las dos cosas que se ven mal: el enlace a la lección medía **305,5 px** ahí
+	 * dentro —se salía 188— y las pastillas quedaban a **73,4 px**, partiendo «Por
+	 * región» en dos líneas y creciendo a 52,1 px de alto. Se percibe como «los
+	 * botones son demasiado grandes» cuando la causa es que son demasiado estrechos.
+	 *
+	 * ⚠️ **Nada de esto desborda la ventana**, así que el primer test de este fichero
+	 * pasa sobre ello sin verlo: el enlace se sale de *su contenedor*, no de la
+	 * pantalla. Por eso son aserciones aparte y no un caso más del barrido general.
+	 *
+	 * ⚠️ **Control negativo hecho, y las dos mitades del arreglo son independientes**:
+	 * quitando el apilado de `MapFrame` fallan las pastillas (73,4 px de ancho, 52,1
+	 * de alto); quitando solo el `max-width`/`min-width` de `LeccionDelPanel` falla
+	 * únicamente el enlace. Ninguna aserción cubre a la otra.
+	 *
+	 * ⚠️ Hubo una tercera aserción —«el texto no se parte en dos líneas», contando
+	 * los rects del `Range`— y **está fuera a propósito**. La sonda funciona (con el
+	 * botón a 48 px devuelve 2, comprobado), pero con el defecto real puesto seguía
+	 * devolviendo 1 mientras el alto ya delataba las dos líneas, así que era una
+	 * aserción que no cazaba lo que decía cazar. El ancho ocupa su sitio y sí
+	 * distingue los dos casos.
+	 */
+	test('⚠️ en la cabecera de los mapas nada se sale de su contenedor', async ({ page }) => {
+		await sembrarCartera(page, CON_OBJETIVOS);
+		await abrirDashboard(page);
+		await page.locator('.tab-btn').nth(2).click();
+		await page.waitForTimeout(600);
+
+		const medido = await page.evaluate(() => {
+			const pastillas = [...document.querySelectorAll('.mode-btn')].map((el) => {
+				const c = el.getBoundingClientRect();
+				return {
+					texto: (el.textContent ?? '').trim(),
+					ancho: +c.width.toFixed(1),
+					alto: +c.height.toFixed(1)
+				};
+			});
+
+			const enlaces = [...document.querySelectorAll('.leccion-link')]
+				.map((el) => {
+					const c = el.getBoundingClientRect();
+					if (c.width < 1) return null; // los del panel lateral, sin caja en móvil
+					let p = el.parentElement;
+					while (p && p.getBoundingClientRect().width < 40) p = p.parentElement;
+					const pc = p!.getBoundingClientRect();
+					return {
+						texto: (el.textContent ?? '').replace(/\s+/g, ' ').trim().slice(0, 40),
+						desborde: +(c.right - pc.right).toFixed(1)
+					};
+				})
+				.filter((x): x is NonNullable<typeof x> => x !== null);
+
+			return { pastillas, enlaces };
+		});
+
+		expect(medido.pastillas.length, 'el conmutador región/sector no se ha dibujado').toBe(2);
+		for (const p of medido.pastillas) {
+			/**
+			 * Ancho: es la afirmación del diseño —«dos objetivos grandes se aciertan con
+			 * el pulgar»— y la que distingue el caso roto (73,4 px) del bueno (136,8).
+			 */
+			expect(
+				p.ancho,
+				`«${p.texto}» mide ${p.ancho} px de ancho; el conmutador no está ocupando el carril`
+			).toBeGreaterThanOrEqual(120);
+			/**
+			 * Alto: la consecuencia de lo anterior, y **la que cazó la regresión en el
+			 * control negativo** — 52,1 px, o sea la palabra partida en dos líneas.
+			 */
+			expect(p.alto, `«${p.texto}» mide ${p.alto} px de alto`).toBeLessThanOrEqual(46);
+		}
+
+		expect(medido.enlaces.length, 'no hay ningún enlace a lección que medir').toBeGreaterThan(0);
+		for (const e of medido.enlaces) {
+			expect(
+				e.desborde,
+				`«${e.texto}» se sale ${e.desborde} px de su contenedor`
+			).toBeLessThanOrEqual(0.5);
+		}
+	});
 });

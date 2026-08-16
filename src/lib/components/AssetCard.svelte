@@ -200,7 +200,7 @@
 						inputmode="decimal"
 						readonly={useLedger}
 					/>
-					{#if isCash}<span class="input-suffix" style="opacity: 1; color: #fff;">€</span>{/if}
+					{#if isCash}<span class="input-suffix is-cash">€</span>{/if}
 				</div>
 			</div>
 			
@@ -676,6 +676,17 @@
 		color: var(--text-faint);
 		font-weight: 700;
 		pointer-events: none;
+	}
+
+	/**
+	 * ⚠️ **Era `style="opacity: 1; color: #fff"` en el marcado**, el mismo defecto
+	 * que las tres cifras del desglose de `HeroSummary`: en tema claro daba
+	 * **1,10:1** contra el `#f4f4f9` del campo, es decir el símbolo de la moneda
+	 * desaparecía justo en la tarjeta de efectivo. El `opacity: 1` era además
+	 * defensivo contra nada — `.input-suffix` no declara opacidad en ninguna regla.
+	 */
+	.input-suffix.is-cash {
+		color: var(--text-primary);
 	}
 
 	.metrics-row {

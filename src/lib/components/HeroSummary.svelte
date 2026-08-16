@@ -42,20 +42,20 @@
 				<div class="capital-breakdown">
 					<div class="breakdown-item">
 						<span>{portfolio.targetLabel}:</span>
-						<strong style="color: #fff" class="privacy-blur">{$LL.dashboard.currency(portfolio.portfolioState.totalCapital)}</strong>
+						<strong class="breakdown-value privacy-blur">{$LL.dashboard.currency(portfolio.portfolioState.totalCapital)}</strong>
 					</div>
 					{#if portfolio.stockState.totalCapital > 0}
 						<span class="breakdown-divider">|</span>
 						<div class="breakdown-item">
 							<span>{$LL.db.cat_stocks_short()}:</span>
-							<strong style="color: #fff" class="privacy-blur">{$LL.dashboard.currency(portfolio.stockState.totalCapital)}</strong>
+							<strong class="breakdown-value privacy-blur">{$LL.dashboard.currency(portfolio.stockState.totalCapital)}</strong>
 						</div>
 					{/if}
 					{#if portfolio.satelliteState.totalCapital > 0}
 						<span class="breakdown-divider">|</span>
 						<div class="breakdown-item">
 							<span>{$LL.db.cat_satellite_short()}:</span>
-							<strong style="color: #fff" class="privacy-blur">{$LL.dashboard.currency(portfolio.satelliteState.totalCapital)}</strong>
+							<strong class="breakdown-value privacy-blur">{$LL.dashboard.currency(portfolio.satelliteState.totalCapital)}</strong>
 						</div>
 					{/if}
 				</div>
@@ -313,6 +313,28 @@
 		align-items: center;
 		gap: 0.25rem;
 		white-space: nowrap;
+	}
+
+	/**
+	 * ⚠️ **Esto era `style="color: #fff"` en el marcado, y en tema claro dejaba las
+	 * tres cifras en blanco sobre el `#ffffff` de `--bg-card`: 1,00:1 medido, es
+	 * decir invisibles.** Lo reportó un usuario, no una guarda, y hay dos razones
+	 * estructurales para eso, ninguna casual:
+	 *
+	 * 1. `scripts/contraste.mjs` solo lee los bloques `<style>`. Un color escrito en
+	 *    el atributo `style=` del marcado no lo ve **por construcción** — la misma
+	 *    forma que este repo ya tiene documentada para los colores que se escaparon
+	 *    a JS en `CompositionBars` y `AssetCard`.
+	 * 2. Las guardas en vivo (`contraste-vivo.mjs` y `e2e/tema.spec.ts`) se saltaban
+	 *    todo `.privacy-blur`, y **todas** las cifras de dinero de la app lo llevan.
+	 *
+	 * El token correcto es `--text-primary` y no `#fff`: en oscuro vale exactamente
+	 * lo mismo que había (20,34:1, la medición no se mueve) y en claro pasa a
+	 * `#111118`. No es `--text-faint`, que es lo que hereda de `.capital-breakdown`,
+	 * porque la cifra tiene que despegarse de su etiqueta.
+	 */
+	.breakdown-value {
+		color: var(--text-primary);
 	}
 
 	.breakdown-divider {

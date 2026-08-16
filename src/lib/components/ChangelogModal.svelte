@@ -26,6 +26,7 @@
 
 	// Mapeo dinámico desde el diccionario de traducciones
 	const releaseVersions = [
+		'v1_17_1',
 		'v1_17_0',
 		'v1_16_0',
 		'v1_15_0',
@@ -50,6 +51,19 @@
 	] as const;
 
 	const badgeColors: Record<string, string> = {
+		/**
+		 * ⚠️ **Un badge se mide contra su propio tinte, no contra la página**: pinta
+		 * `color: X` sobre `background: X20`, o sea el mismo tono al 12,5 % encima de la
+		 * superficie del modal. Y hay que mirarlo en los **dos temas**, porque tirar
+		 * hacia uno hunde el otro: no existe ningún color que llegue a 4,5 en ambos, así
+		 * que la vara real aquí es la del teal de abajo — su peor lado, 3,23.
+		 *
+		 * Medido: `#8b5cf6` da **4,01 en oscuro y 3,63 en claro**, que es el mejor peor
+		 * caso de los violetas probados. El primer candidato fue `#7e22ce` y se cayó por
+		 * la razón de siempre al elegir un color a ojo: sobre blanco lucía bien (5,67) y
+		 * en oscuro daba **2,57**, por debajo del peor caso de la referencia.
+		 */
+		v1_17_1: '#8b5cf6',
 		// Teal del logo: 3,4:1 sobre blanco y 5,4:1 sobre oscuro, así que vale en los dos temas.
 		v1_17_0: '#0d9488',
 		v1_16_0: '#f59e0b',
