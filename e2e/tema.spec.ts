@@ -166,6 +166,14 @@ test.describe('Tema claro y oscuro', () => {
 		 * `oklab(…)`), el texto con degradado se mide por sus topes contra el fondo
 		 * del **padre**, y el modo privacidad se excluye porque su texto es
 		 * transparente a propósito.
+		 *
+		 * ⚠️ **Ese tercero se excluía por la clase `.privacy-blur` y eso dejaba fuera
+		 * todas las cifras de dinero de la app.** La clase está siempre en el
+		 * marcado; el texto solo se vuelve transparente bajo `.privacy-mode`, caso
+		 * que ya cubre el descarte por color computado. Con la exclusión por clase,
+		 * este mismo test pasaba en verde con las tres cifras del desglose del
+		 * capital a 1,00:1 — blanco sobre blanco. Se descarta por color, no por
+		 * clase.
 		 */
 		const malos = await page.evaluate(() => {
 			const cv = document.createElement('canvas').getContext('2d', {
@@ -208,8 +216,7 @@ test.describe('Tema claro y oscuro', () => {
 				if (t.length < 2) continue;
 				const cs = getComputedStyle(el);
 				if (cs.visibility === 'hidden' || cs.display === 'none' || +cs.opacity < 0.1) continue;
-				if (el.closest('.privacy-blur')) continue;
-				if (cs.color === 'rgba(0, 0, 0, 0)') continue;
+				if (cs.color === 'rgba(0, 0, 0, 0)' || cs.color === 'transparent') continue;
 				const caja = el.getBoundingClientRect();
 				if (caja.width < 4 || caja.height < 4) continue;
 

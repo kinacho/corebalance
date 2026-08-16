@@ -3481,7 +3481,7 @@ type RootTranslation = {
 				badge: string
 				changes: {
 					/**
-					 * ☀​️​ ​*​*​Y​a​ ​h​a​y​ ​m​o​d​o​ ​c​l​a​r​o​.​*​*​ ​E​l​ ​b​o​t​ó​n​ ​e​s​t​á​ ​e​n​ ​l​a​ ​b​a​r​r​a​,​ ​j​u​n​t​o​ ​a​l​ ​i​d​i​o​m​a​.​ ​S​i​ ​n​o​ ​e​l​i​g​e​s​,​ ​l​a​ ​a​p​p​ ​s​i​g​u​e​ ​l​o​ ​q​u​e​ ​t​e​n​g​a​ ​c​o​n​f​i​g​u​r​a​d​o​ ​t​u​ ​s​i​s​t​e​m​a​;​ ​s​i​ ​e​l​i​g​e​s​,​ ​s​e​ ​a​c​u​e​r​d​a​.​ ​E​l​ ​t​e​m​a​ ​s​e​ ​d​e​c​i​d​e​ ​a​n​t​e​s​ ​d​e​ ​q​u​e​ ​l​a​ ​p​á​g​i​n​a​ ​s​e​ ​p​i​n​t​e​,​ ​a​s​í​ ​q​u​e​ ​n​o​ ​h​a​y​ ​e​s​e​ ​d​e​s​t​e​l​l​o​ ​b​l​a​n​c​o​ ​o​ ​n​e​g​r​o​ ​d​e​l​ ​p​r​i​m​e​r​ ​i​n​s​t​a​n​t​e​.
+					 * ☀​️​ ​*​*​Y​a​ ​h​a​y​ ​m​o​d​o​ ​c​l​a​r​o​.​*​*​ ​E​l​ ​b​o​t​ó​n​ ​e​s​t​á​ ​e​n​ ​l​a​ ​b​a​r​r​a​,​ ​j​u​n​t​o​ ​a​l​ ​i​d​i​o​m​a​.​ ​L​a​ ​a​p​l​i​c​a​c​i​ó​n​ ​s​i​g​u​e​ ​s​i​e​n​d​o​ ​o​s​c​u​r​a​ ​d​e​ ​s​a​l​i​d​a​ ​—​e​s​ ​c​o​m​o​ ​e​s​t​á​ ​p​e​n​s​a​d​a​—​,​ ​p​e​r​o​ ​s​i​ ​p​r​e​f​i​e​r​e​s​ ​e​l​ ​c​l​a​r​o​ ​s​e​ ​q​u​e​d​a​ ​e​l​e​g​i​d​o​ ​p​a​r​a​ ​s​i​e​m​p​r​e​,​ ​t​a​m​b​i​é​n​ ​a​l​ ​v​o​l​v​e​r​ ​o​t​r​o​ ​d​í​a​.​ ​E​l​ ​t​e​m​a​ ​s​e​ ​d​e​c​i​d​e​ ​a​n​t​e​s​ ​d​e​ ​q​u​e​ ​l​a​ ​p​á​g​i​n​a​ ​s​e​ ​p​i​n​t​e​,​ ​a​s​í​ ​q​u​e​ ​n​o​ ​h​a​y​ ​e​s​e​ ​d​e​s​t​e​l​l​o​ ​b​l​a​n​c​o​ ​o​ ​n​e​g​r​o​ ​d​e​l​ ​p​r​i​m​e​r​ ​i​n​s​t​a​n​t​e​.
 					 */
 					'0': string
 					/**
@@ -7590,7 +7590,7 @@ export type TranslationFunctions = {
 				badge: () => LocalizedString
 				changes: {
 					/**
-					 * ☀️ **Ya hay modo claro.** El botón está en la barra, junto al idioma. Si no eliges, la app sigue lo que tenga configurado tu sistema; si eliges, se acuerda. El tema se decide antes de que la página se pinte, así que no hay ese destello blanco o negro del primer instante.
+					 * ☀️ **Ya hay modo claro.** El botón está en la barra, junto al idioma. La aplicación sigue siendo oscura de salida —es como está pensada—, pero si prefieres el claro se queda elegido para siempre, también al volver otro día. El tema se decide antes de que la página se pinte, así que no hay ese destello blanco o negro del primer instante.
 					 */
 					'0': () => LocalizedString
 					/**

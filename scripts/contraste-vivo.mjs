@@ -210,8 +210,18 @@ const SONDA = () => {
 		/**
 		 * ⚠️ **El modo privacidad no es un fallo.** Pone el texto `transparent` a
 		 * propósito y lo sustituye por un borrón; medirlo da 1,03:1.
+		 *
+		 * ⚠️ **Pero saltarse `.privacy-blur` era saltarse TODAS las cifras de dinero
+		 * de la app, y así se escaparon las tres del desglose del capital global**
+		 * (`#fff` en línea sobre el `#ffffff` de `--bg-card`: 1,00:1, invisibles, y
+		 * lo reportó un usuario). La clase está puesta **siempre** en el marcado; lo
+		 * que pinta transparente es `.privacy-mode .privacy-blur`, que solo aplica
+		 * con el modo activo — y ese caso ya lo recoge la línea de abajo, porque
+		 * entonces el color computado *es* transparente. Es decir: la exclusión era
+		 * redundante en el caso para el que se escribió y destruía la cobertura en
+		 * el que no. La forma de fallo de siempre aquí — una guarda que no puede
+		 * fallar sobre justo lo que más importa.
 		 */
-		if (el.closest('.privacy-blur')) continue;
 		if (cs.color === 'rgba(0, 0, 0, 0)' || cs.color === 'transparent') continue;
 
 		const caja = el.getBoundingClientRect();

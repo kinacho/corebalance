@@ -195,6 +195,59 @@ function cssDe(archivo, texto) {
 }
 
 /**
+ * Colores escritos en el atributo `style=` del **marcado**.
+ *
+ * ⚠️ **Este era el agujero por el que se coló el defecto que motivó la función, y
+ * es estructural: `cssDe()` devuelve solo los bloques `<style>`, así que un color
+ * en el marcado no lo ve esta guarda por construcción.** `HeroSummary.svelte`
+ * tenía `style="color: #fff"` en las tres cifras del desglose del capital global;
+ * en tema claro eso es blanco sobre el `#ffffff` de `--bg-card` —1,00:1 medido en
+ * el navegador, invisibles— y la guarda salía verde. Lo reportó un usuario. Es la
+ * misma forma que este repo ya tiene fichada para los dos colores que se habían
+ * escapado a JS (`CompositionBars`, `AssetCard`): el análisis mira donde mira, y
+ * lo que vive fuera no existe para él.
+ *
+ * No se mide el ratio y es deliberado: aquí no hay regla de la que sacar un fondo,
+ * así que el analizador no sabe contra qué compone. Lo que se afirma es más
+ * simple y más fuerte — **un literal en línea es incomprobable**, y moverlo a una
+ * clase lo devuelve al alcance de la guarda. Por eso es error y no aviso pese a
+ * que el color pudiera pasar: lo que falla no es el color, es que nadie puede
+ * saberlo.
+ *
+ * Tres cosas que **no** se marcan, cada una por su razón:
+ * - `var(--token)` sigue al tema y está validado en su propia escala.
+ * - Un valor con `{…}` es una expresión de Svelte (`{release.badgeColor}`): su
+ *   valor no existe hasta que corre, así que esto no puede decir nada de él.
+ * - Una propiedad personalizada (`--slider-color: …`) no pinta texto; la alterna
+ *   `[^-\w]` de la expresión ya la excluye, igual que a `border-color`.
+ */
+export function coloresEnLinea(texto) {
+	const marcado = texto
+		.replace(/<style[^>]*>[\s\S]*?<\/style>/g, '')
+		.replace(/<script[^>]*>[\s\S]*?<\/script>/g, '');
+
+	const hallazgos = [];
+	for (const attr of marcado.matchAll(/\sstyle=(["'])([\s\S]*?)\1/g)) {
+		for (const decl of attr[2].matchAll(/(?:^|[^-\w])color:\s*([^;"']+)/g)) {
+			const valor = decl[1].replace(/!important/, '').trim();
+			if (IGNORAR.has(valor.toLowerCase())) continue;
+			if (valor.includes('{')) continue;
+
+			const respaldo = valor.match(/^var\(\s*--[a-z-]+\s*,\s*([^)]+)\)\s*$/);
+			if (respaldo) {
+				hallazgos.push({ valor, tipo: 'en-linea-respaldo' });
+				continue;
+			}
+			if (RE_VAR.test(valor)) continue;
+			if (RE_HEX.test(valor) || RE_RGBA.test(valor)) {
+				hallazgos.push({ valor, tipo: 'en-linea' });
+			}
+		}
+	}
+	return hallazgos;
+}
+
+/**
  * Los valores de los tokens de fondo, para poder resolver
  * `background: var(--bg-card)` sin leer `layout.css`.
  *
@@ -401,7 +454,28 @@ export function auditar(raiz = path.join(RAIZ, 'src')) {
 	for (const archivo of recorrer(raiz)) {
 		const rel = path.relative(RAIZ, archivo).replace(/\\/g, '/');
 
-		const css = cssDe(archivo, fs.readFileSync(archivo, 'utf8'));
+		const texto = fs.readFileSync(archivo, 'utf8');
+
+		// El marcado se audita aparte del CSS, y antes del `continue`: un fichero sin
+		// bloque `<style>` puede perfectamente traer un color en línea.
+		if (archivo.endsWith('.svelte')) {
+			for (const h of coloresEnLinea(texto)) {
+				const exenta = EXCEPCIONES.some(
+					(e) => e.fichero === rel && (e.valor === undefined || e.valor === h.valor)
+				);
+				if (exenta) continue;
+				if (h.tipo === 'en-linea')
+					errores.push(
+						`${rel}  style="…color: ${h.valor}…"  →  color literal en el marcado: esta guarda no puede medirlo, llévalo a una clase`
+					);
+				else
+					avisos.push(
+						`${rel}  style="…color: ${h.valor}…"  →  respaldo de var() en línea: incomprobable desde aquí`
+					);
+			}
+		}
+
+		const css = cssDe(archivo, texto);
 		if (!css.trim()) continue;
 
 		/**
@@ -455,7 +529,9 @@ if (esCli) {
 	const verAvisos = process.argv.includes('--avisos');
 
 	if (errores.length) {
-		console.error(`\n✖ ${errores.length} declaraciones de texto por debajo de AA (${UMBRAL_AA}:1):\n`);
+		// El encabezado no puede decir «por debajo de AA» a secas: desde que se audita
+		// también el marcado, un error puede ser un literal en línea, que no tiene ratio.
+		console.error(`\n✖ ${errores.length} declaraciones de texto sin garantía de AA (${UMBRAL_AA}:1):\n`);
 		for (const e of errores) console.error('   ' + e);
 	}
 
