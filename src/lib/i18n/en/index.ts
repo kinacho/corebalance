@@ -672,7 +672,7 @@ const en: Translation = {
     timing_period_note: 'Measured over the {days} days with real data, not annualised.',
     legal_disclaimer: '<strong>Legal Disclaimer:</strong> CoreBalance is a purely informative and educational tool. It does not constitute financial, investment, or tax advice. The data displayed may be subject to delays or inaccuracies. The developer is not responsible for any financial losses resulting from the use of this application. Always invest at your own risk.',
     footer_tagline: 'Your control center for smart and balanced asset management.',
-    changelog_trigger: 'v1.17.1 🚀',
+    changelog_trigger: 'v1.17.2 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Made with ❤️ for the investing community',
     reclassify_stocks: 'Individual Stocks',
@@ -946,6 +946,14 @@ const en: Translation = {
     close_aria: 'Close modal',
     btn_understand: 'Got it',
     releases: {
+      v1_17_2: {
+        date: 'August 16, 2026',
+        badge: 'The range buttons that did nothing',
+        changes: [
+          '📉 **In «Net Worth Evolution» some range buttons could not do anything, and never said so.** If you have not been here long, asking for «1Y» or «YTD» shows exactly what «All» shows, because there is no more history to show: you tapped and the chart did not move. With three months of data that was three buttons out of five. Only the ranges that actually change something are shown now, and they appear on their own as your history grows.',
+          '🗓️ **And when there is no range to compare yet, the selector is not shown at all**, instead of leaving a row of dead buttons. The sentence explaining which day the chart starts from stays in its place.'
+        ]
+      },
       v1_17_1: {
         date: 'August 16, 2026',
         badge: 'What light mode left behind',

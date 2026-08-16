@@ -2535,7 +2535,7 @@ type RootTranslation = {
 		 */
 		footer_tagline: string
 		/**
-		 * v​1​.​1​7​.​1​ ​�​�
+		 * v​1​.​1​7​.​2​ ​�​�
 		 */
 		changelog_trigger: string
 		/**
@@ -3470,6 +3470,26 @@ type RootTranslation = {
 		 */
 		btn_understand: string
 		releases: {
+			v1_17_2: {
+				/**
+				 * 1​6​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
+				 */
+				date: string
+				/**
+				 * L​o​s​ ​b​o​t​o​n​e​s​ ​d​e​ ​r​a​n​g​o​ ​q​u​e​ ​n​o​ ​h​a​c​í​a​n​ ​n​a​d​a
+				 */
+				badge: string
+				changes: {
+					/**
+					 * �​�​ ​*​*​E​n​ ​«​E​v​o​l​u​c​i​ó​n​ ​d​e​l​ ​P​a​t​r​i​m​o​n​i​o​»​ ​h​a​b​í​a​ ​b​o​t​o​n​e​s​ ​d​e​ ​r​a​n​g​o​ ​q​u​e​ ​n​o​ ​p​o​d​í​a​n​ ​h​a​c​e​r​ ​n​a​d​a​,​ ​y​ ​n​o​ ​l​o​ ​d​e​c​í​a​n​.​*​*​ ​S​i​ ​l​l​e​v​a​s​ ​p​o​c​o​ ​t​i​e​m​p​o​,​ ​p​e​d​i​r​ ​«​1​A​»​ ​o​ ​«​Y​T​D​»​ ​e​n​s​e​ñ​a​ ​e​x​a​c​t​a​m​e​n​t​e​ ​l​o​ ​m​i​s​m​o​ ​q​u​e​ ​«​T​o​d​o​»​,​ ​p​o​r​q​u​e​ ​n​o​ ​h​a​y​ ​m​á​s​ ​h​i​s​t​o​r​i​a​l​ ​q​u​e​ ​e​n​s​e​ñ​a​r​:​ ​p​u​l​s​a​b​a​s​ ​y​ ​e​l​ ​g​r​á​f​i​c​o​ ​n​o​ ​s​e​ ​m​o​v​í​a​.​ ​C​o​n​ ​t​r​e​s​ ​m​e​s​e​s​ ​d​e​ ​d​a​t​o​s​ ​e​r​a​n​ ​t​r​e​s​ ​d​e​ ​l​o​s​ ​c​i​n​c​o​ ​b​o​t​o​n​e​s​.​ ​A​h​o​r​a​ ​s​o​l​o​ ​a​p​a​r​e​c​e​n​ ​l​o​s​ ​r​a​n​g​o​s​ ​q​u​e​ ​d​e​ ​v​e​r​d​a​d​ ​c​a​m​b​i​a​n​ ​a​l​g​o​,​ ​y​ ​v​a​n​ ​s​a​l​i​e​n​d​o​ ​s​o​l​o​s​ ​s​e​g​ú​n​ ​c​r​e​c​e​ ​t​u​ ​h​i​s​t​o​r​i​a​l​.
+					 */
+					'0': string
+					/**
+					 * �​�​️​ ​*​*​Y​ ​c​u​a​n​d​o​ ​t​o​d​a​v​í​a​ ​n​o​ ​h​a​y​ ​n​i​n​g​ú​n​ ​r​a​n​g​o​ ​q​u​e​ ​c​o​m​p​a​r​a​r​,​ ​e​l​ ​s​e​l​e​c​t​o​r​ ​n​o​ ​s​e​ ​e​n​s​e​ñ​a​*​*​,​ ​e​n​ ​v​e​z​ ​d​e​ ​d​e​j​a​r​ ​u​n​a​ ​f​i​l​a​ ​d​e​ ​b​o​t​o​n​e​s​ ​m​u​e​r​t​o​s​.​ ​E​n​ ​s​u​ ​l​u​g​a​r​ ​q​u​e​d​a​ ​l​a​ ​f​r​a​s​e​ ​q​u​e​ ​e​x​p​l​i​c​a​ ​d​e​s​d​e​ ​q​u​é​ ​d​í​a​ ​s​e​ ​e​s​t​á​ ​d​i​b​u​j​a​n​d​o​.
+					 */
+					'1': string
+				}
+			}
 			v1_17_1: {
 				/**
 				 * 1​6​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
@@ -6713,7 +6733,7 @@ export type TranslationFunctions = {
 		 */
 		footer_tagline: () => LocalizedString
 		/**
-		 * v1.17.1 🚀
+		 * v1.17.2 🚀
 		 */
 		changelog_trigger: () => LocalizedString
 		/**
@@ -7603,6 +7623,26 @@ export type TranslationFunctions = {
 		 */
 		btn_understand: () => LocalizedString
 		releases: {
+			v1_17_2: {
+				/**
+				 * 16 de Agosto, 2026
+				 */
+				date: () => LocalizedString
+				/**
+				 * Los botones de rango que no hacían nada
+				 */
+				badge: () => LocalizedString
+				changes: {
+					/**
+					 * 📉 **En «Evolución del Patrimonio» había botones de rango que no podían hacer nada, y no lo decían.** Si llevas poco tiempo, pedir «1A» o «YTD» enseña exactamente lo mismo que «Todo», porque no hay más historial que enseñar: pulsabas y el gráfico no se movía. Con tres meses de datos eran tres de los cinco botones. Ahora solo aparecen los rangos que de verdad cambian algo, y van saliendo solos según crece tu historial.
+					 */
+					'0': () => LocalizedString
+					/**
+					 * 🗓️ **Y cuando todavía no hay ningún rango que comparar, el selector no se enseña**, en vez de dejar una fila de botones muertos. En su lugar queda la frase que explica desde qué día se está dibujando.
+					 */
+					'1': () => LocalizedString
+				}
+			}
 			v1_17_1: {
 				/**
 				 * 16 de Agosto, 2026

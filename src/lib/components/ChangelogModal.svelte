@@ -26,6 +26,7 @@
 
 	// Mapeo dinámico desde el diccionario de traducciones
 	const releaseVersions = [
+		'v1_17_2',
 		'v1_17_1',
 		'v1_17_0',
 		'v1_16_0',
@@ -63,6 +64,23 @@
 		 * la razón de siempre al elegir un color a ojo: sobre blanco lucía bien (5,67) y
 		 * en oscuro daba **2,57**, por debajo del peor caso de la referencia.
 		 */
+		/**
+		 * Medido igual que el de abajo, contra su propio tinte y en los dos temas:
+		 * **3,76 en oscuro y 3,85 en claro**, el mejor peor caso de todos los tonos
+		 * probados (el teal de referencia se queda en 3,23) y sin parecerse al violeta
+		 * de la 1.17.1, que va justo debajo.
+		 *
+		 * ⚠️ Este repo rechaza `#e11d48` en otro sitio, y **ahí no aplica**: se descartó
+		 * como color del par de tendencia de `HistoryChart`, donde tiene que convivir
+		 * con un verde y cae a ΔE 5,8 bajo deuteranopía. Eso es una restricción de
+		 * marcas de datos que compiten en un lienzo; aquí es la chapa de una entrada de
+		 * changelog, sola en su fila y sin ningún dato al lado.
+		 *
+		 * ⚠️ De paso, medido: **el ámbar de la 1.16.0 (1,95) y el cielo de la 1.15.0
+		 * (2,44) no llegan en tema claro.** Vienen de antes de que existiera el tema
+		 * claro y no se tocan aquí para no meter ruido en este PR.
+		 */
+		v1_17_2: '#e11d48',
 		v1_17_1: '#8b5cf6',
 		// Teal del logo: 3,4:1 sobre blanco y 5,4:1 sobre oscuro, así que vale en los dos temas.
 		v1_17_0: '#0d9488',

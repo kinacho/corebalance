@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { clipNoticeFor, rangeStartDate } from './range';
+import { clipNoticeFor, isRangeRedundant, rangeStartDate, type RangeId } from './range';
 
 /**
  * Fecha fija, como todo en esta suite: los rangos son aritmética de fechas y un test
@@ -117,5 +117,103 @@ describe('clipNoticeFor', () => {
 				today: HOY
 			})
 		).toBeNull();
+	});
+});
+
+/**
+ * Los rangos que no pueden enseñar nada distinto de «Todo».
+ *
+ * ⚠️ **Esta función nació de una queja de uso, no de un cálculo mal hecho**: *«le doy
+ * a 1M, 3M, YTD y a veces no hay reacción»*. Medido en el navegador con historial
+ * parcial, la cola de rangos colapsa siempre en la misma vista, y el aviso no lo
+ * tapaba porque `ALL` no avisa nunca por diseño. Los casos de abajo son las
+ * profundidades que se midieron, con los rangos que allí resultaron sinónimos.
+ */
+describe('isRangeRedundant', () => {
+	const TODOS: RangeId[] = ['1M', '3M', 'YTD', '1Y', 'ALL'];
+
+	/** Los rangos apagados con un historial que empieza en `primerDia`. */
+	const apagados = (primerDia: string, oldestKnownDate: string | null = null) =>
+		TODOS.filter((range) =>
+			isRangeRedundant({ range, firstShownDate: primerDia, oldestKnownDate, today: HOY })
+		);
+
+	// HOY es 2026-08-10. 45 días atrás ≈ 2026-06-26: sobrepasan 3M, YTD y 1A.
+	it('con ~45 días de historial sobran tres de los cinco botones', () => {
+		expect(apagados('2026-06-26')).toEqual(['3M', 'YTD', '1Y']);
+	});
+
+	/**
+	 * ⚠️ **Estar dentro del año en curso no salva a `YTD`.** Con el primer día en
+	 * enero, `YTD` arranca el 1 de enero —antes— así que enseña todo lo que hay, o
+	 * sea lo mismo que «Todo», y se apaga. La primera versión de este caso esperaba
+	 * lo contrario por confundir «hay datos de este año» con «el año cabe entero».
+	 */
+	it('con el historial empezando en enero, YTD también sobra', () => {
+		expect(apagados('2026-01-22')).toEqual(['YTD', '1Y']);
+	});
+
+	// Primer día en noviembre del año anterior: YTD (1-ene) sí queda por detrás.
+	it('cruzando el fin de año, YTD se salva y solo sobra «1A»', () => {
+		expect(apagados('2025-11-01')).toEqual(['1Y']);
+	});
+
+	it('con más de un año no sobra ninguno', () => {
+		expect(apagados('2024-03-01')).toEqual([]);
+	});
+
+	/**
+	 * ⚠️ **`ALL` no se apaga jamás, y sin esto la interfaz se queda sin salida.** Es el
+	 * rango al que caen los demás cuando son redundantes; apagarlo dejaría los cinco
+	 * botones muertos justo en la cartera más nueva, que es donde más se nota.
+	 */
+	it('«Todo» nunca es redundante, ni con un solo día de historial', () => {
+		expect(
+			isRangeRedundant({
+				range: 'ALL',
+				firstShownDate: '2026-08-10',
+				oldestKnownDate: null,
+				today: HOY
+			})
+		).toBe(false);
+		expect(apagados('2026-08-10')).not.toContain('ALL');
+	});
+
+	/**
+	 * ⚠️ **`capped` se queda encendido, y es la distinción que da sentido a todo esto.**
+	 * Ahí sí hay historial más viejo que la reconstrucción no alcanza: el botón no es
+	 * redundante, es que no llega — y apagarlo escondería un mensaje distinto. Mismo
+	 * primer día que el primer caso, y el resultado se invierte solo por existir un
+	 * snapshot anterior.
+	 */
+	it('un rango recortado por falta de reconstrucción NO se apaga', () => {
+		expect(apagados('2026-06-26', '2023-05-01')).toEqual([]);
+	});
+
+	/**
+	 * ⚠️ **El borde que separa esta función de `clipNoticeFor`, y el caso corriente.**
+	 * Sin libro de operaciones la ventana son 30 días clavados y `1M` pide 30: no
+	 * falta ningún día —así que no hay nada que advertir— pero dibuja exactamente lo
+	 * mismo que «Todo». La primera versión delegaba en `clipNoticeFor` y dejaba este
+	 * botón encendido y muerto; lo cazó el e2e comparando píxeles, no esta suite.
+	 */
+	it('un rango que cubre la serie EXACTA sobra, aunque no haya nada que advertir', () => {
+		const opciones = {
+			range: '1M' as const,
+			// HOY − 29 días: justo lo que pide «1M», ni un día más.
+			firstShownDate: '2026-07-12',
+			oldestKnownDate: null,
+			today: HOY
+		};
+		expect(clipNoticeFor(opciones), 'no falta ningún día, así que no debe avisar').toBeNull();
+		expect(isRangeRedundant(opciones), 'y aun así enseña lo mismo que «Todo»').toBe(true);
+	});
+
+	it('sin puntos no se apaga nada: no hay nada que comparar', () => {
+		expect(
+			TODOS.filter((range) =>
+				isRangeRedundant({ range, firstShownDate: null, oldestKnownDate: null, today: HOY })
+			)
+		).toEqual([]);
 	});
 });

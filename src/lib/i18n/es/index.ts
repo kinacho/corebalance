@@ -687,7 +687,7 @@ const es = {
     timing_period_note: 'Medido sobre los {days:number} días con datos reales, sin anualizar.',
     legal_disclaimer: '<strong>Aviso Legal:</strong> CoreBalance es una herramienta puramente informativa y educativa. No constituye asesoramiento financiero, de inversión ni fiscal. Los datos mostrados pueden sufrir retrasos o ser inexactos. El desarrollador no se hace responsable de posibles pérdidas financieras derivadas del uso de esta aplicación. Invierte siempre bajo tu propia responsabilidad.',
     footer_tagline: 'Tu centro de mandos para una gestión de activos inteligente y equilibrada.',
-    changelog_trigger: 'v1.17.1 🚀',
+    changelog_trigger: 'v1.17.2 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Hecho con ❤️ para la comunidad inversora',
     reclassify_stocks: 'Acciones Individuales',
@@ -967,6 +967,14 @@ const es = {
     close_aria: 'Cerrar modal',
     btn_understand: 'Entendido',
     releases: {
+      v1_17_2: {
+        date: '16 de Agosto, 2026',
+        badge: 'Los botones de rango que no hacían nada',
+        changes: [
+          '📉 **En «Evolución del Patrimonio» había botones de rango que no podían hacer nada, y no lo decían.** Si llevas poco tiempo, pedir «1A» o «YTD» enseña exactamente lo mismo que «Todo», porque no hay más historial que enseñar: pulsabas y el gráfico no se movía. Con tres meses de datos eran tres de los cinco botones. Ahora solo aparecen los rangos que de verdad cambian algo, y van saliendo solos según crece tu historial.',
+          '🗓️ **Y cuando todavía no hay ningún rango que comparar, el selector no se enseña**, en vez de dejar una fila de botones muertos. En su lugar queda la frase que explica desde qué día se está dibujando.'
+        ]
+      },
       v1_17_1: {
         date: '16 de Agosto, 2026',
         badge: 'Lo que el modo claro se dejó detrás',
