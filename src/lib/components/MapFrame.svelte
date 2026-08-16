@@ -62,7 +62,12 @@
 </script>
 
 <div class="panel">
-	<div class="head">
+	<!--
+		`con-acciones` existe para la media query de móvil de abajo, y se decide aquí
+		porque es el único sitio que sabe si el hueco `actions` trae algo: el mapa de
+		desviación no lo usa, y apilarle la cabecera le añadiría una fila vacía.
+	-->
+	<div class="head" class:con-acciones={!!actions}>
 		<div class="head-text">
 			{#if showTitle}
 				<h4 class="title">{title}</h4>
@@ -198,6 +203,40 @@
 	@media (max-width: 1023px) {
 		.toggle {
 			display: none;
+		}
+	}
+
+	/*
+	 * ⚠️ **En móvil la cabecera se apila, y eso arregla DOS defectos que tenían una
+	 * sola causa.**
+	 *
+	 * `.head-actions` es `flex-shrink: 0`, así que el conmutador región/sector se
+	 * quedaba el ancho que pedía su contenido y `.head-text` se comía el resto:
+	 * medido a 390 px, **117,2 px** en el mapa del subyacente. De ahí salían las dos
+	 * cosas que se ven mal y que parecían no tener nada que ver:
+	 *
+	 * - El enlace a la lección medía **305,5 px** dentro de esos 117,2 — se salía
+	 *   188,3 px por la derecha.
+	 * - Las dos pastillas quedaban a **73,4 px**, con lo que «Por región» partía en
+	 *   dos líneas y el botón crecía a 52,1 px de alto. Se leen como demasiado
+	 *   grandes justo por ser demasiado estrechos.
+	 *
+	 * Y el `width: 100%` que `.mode-switch` ya declaraba —con el comentario de que
+	 * son «dos objetivos grandes» para el pulgar— no podía cumplirse nunca: era el
+	 * 100 % de un hermano estrecho, no del panel. Apilando, el carril de 316 px es
+	 * suyo entero y las dos pastillas pasan a ~156 px en una sola línea.
+	 */
+	@media (max-width: 640px) {
+		.head.con-acciones {
+			flex-wrap: wrap;
+		}
+
+		.head.con-acciones .head-text {
+			flex: 1 1 100%;
+		}
+
+		.head.con-acciones .head-actions {
+			width: 100%;
 		}
 	}
 </style>

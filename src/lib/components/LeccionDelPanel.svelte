@@ -62,6 +62,16 @@
 		 * pulsable era toda la tarjeta, invisible y a lo ancho. Medido, no deducido.
 		 */
 		align-self: flex-start;
+		/*
+		 * ⚠️ **Sin esto el recorte de `.titulo` no se aplicaba nunca.** `inline-flex`
+		 * más `align-self: flex-start` dimensionan el enlace por su contenido, así que
+		 * `.titulo` jamás recibía un ancho que lo obligara a encoger y los puntos
+		 * suspensivos que declara más abajo eran código muerto: en la cabecera del
+		 * mapa del subyacente en móvil el enlace medía **305,5 px dentro de 117,2** y
+		 * simplemente se salía. El comentario describía un comportamiento que no
+		 * existía, que es la forma de fallo que este repo ya tiene fichada.
+		 */
+		max-width: 100%;
 		align-items: center;
 		gap: 0.4rem;
 		margin-bottom: 0.85rem;
@@ -90,6 +100,12 @@
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
+		/*
+		 * La otra mitad de lo mismo: un hijo flex nace con `min-width: auto`, o sea
+		 * que se niega a bajar del ancho de su texto. Sin bajarlo a 0 el `overflow`
+		 * de arriba no tiene nada que recortar.
+		 */
+		min-width: 0;
 	}
 
 	.flecha {
