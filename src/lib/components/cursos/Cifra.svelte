@@ -37,6 +37,10 @@
 		border: 1px solid var(--border-subtle);
 		border-radius: 16px;
 		background: var(--bg-card);
+		/* Nivel objeto. En claro la sombra es lo que despega la tarjeta de una página
+		   casi blanca, donde el borde cargaba solo; en oscuro `--card-shadow` es negro
+		   sobre casi negro y no se ve, que es lo correcto: ahí eleva el relleno. */
+		box-shadow: var(--card-shadow);
 	}
 	.valor {
 		margin: 0 0 0.3rem;

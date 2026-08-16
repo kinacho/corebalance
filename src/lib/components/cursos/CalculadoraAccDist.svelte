@@ -106,7 +106,9 @@
 		padding: 1.35rem;
 		border: 1px solid var(--border-subtle);
 		border-radius: 16px;
-		background: rgba(255, 255, 255, 0.025);
+		/* Blanco al 2,5 % es superficie solo sobre negro: medido en claro daba 1,00, o
+		   sea la tarjeta se quedaba sin fondo y solo con su borde. */
+		background: var(--bg-card);
 	}
 	.campos {
 		display: grid;
@@ -128,8 +130,11 @@
 	input {
 		padding: 0.55rem 0.7rem;
 		border-radius: 9px;
-		border: 1px solid rgba(255, 255, 255, 0.14);
-		background: var(--bg-card);
+		border: 1px solid var(--border-subtle);
+		/* Un peldaño por debajo de la tarjeta, no el mismo: con los dos en `--bg-card`
+		   el campo desaparece dentro de la caja en tema claro, que es blanco sobre
+		   blanco otra vez. */
+		background: var(--bg-card-hover);
 		color: var(--text-primary);
 		font-size: 0.95rem;
 		font-variant-numeric: tabular-nums;

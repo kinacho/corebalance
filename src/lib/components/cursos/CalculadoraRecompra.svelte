@@ -75,7 +75,8 @@
 		padding: 1.35rem;
 		border: 1px solid var(--border-subtle);
 		border-radius: 16px;
-		background: rgba(255, 255, 255, 0.025);
+		/* Ver `CalculadoraAccDist`: blanco al 2,5 % no es superficie en tema claro. */
+		background: var(--bg-card);
 	}
 	.tipos {
 		display: flex;
@@ -88,7 +89,7 @@
 		min-width: 140px;
 		padding: 0.6rem 0.8rem;
 		border-radius: 10px;
-		border: 1px solid rgba(255, 255, 255, 0.14);
+		border: 1px solid var(--border-subtle);
 		background: transparent;
 		color: var(--text-muted);
 		font-size: 0.85rem;
@@ -121,8 +122,9 @@
 	input {
 		padding: 0.55rem 0.7rem;
 		border-radius: 9px;
-		border: 1px solid rgba(255, 255, 255, 0.14);
-		background: var(--bg-card);
+		border: 1px solid var(--border-subtle);
+		/* Un peldaño por debajo de la tarjeta; ver `CalculadoraAccDist`. */
+		background: var(--bg-card-hover);
 		color: var(--text-primary);
 		font-size: 0.95rem;
 		width: 100%;

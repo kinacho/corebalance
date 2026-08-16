@@ -77,7 +77,10 @@
 		top: 28px;
 		bottom: 0;
 		width: 1px;
-		background: rgba(255, 255, 255, 0.12);
+		/* ⚠️ Era blanco al 12 %: sobre el fondo claro no existía, y con él se perdía
+		   justo lo que el comentario de arriba dice que hace el raíl —dar secuencia—,
+		   dejando los pasos como una lista suelta. */
+		background: var(--border-subtle);
 	}
 	.numero {
 		flex-shrink: 0;
@@ -86,8 +89,9 @@
 		width: 27px;
 		height: 27px;
 		border-radius: 50%;
-		border: 1px solid rgba(37, 99, 235, 0.45);
-		background: rgba(37, 99, 235, 0.12);
+		/* Mismo par que `Comprueba`: es el mismo azul y el mismo problema de alfa. */
+		border: 1px solid var(--tint-info-line);
+		background: var(--tint-info);
 		color: var(--accent-blue-ink);
 		font-size: 0.78rem;
 		font-weight: 800;
@@ -112,7 +116,15 @@
 	.aviso {
 		margin: 0.5rem 0 0;
 		padding-left: 0.7rem;
-		border-left: 2px solid rgba(217, 119, 6, 0.5);
+		/*
+		 * ⚠️ **Token sólido, no `--tint-warn-line`**, aunque sea el ámbar de al lado.
+		 * Esto es un objeto gráfico de 2 px marcando «el paso que la gente se salta»,
+		 * o sea lo más valioso de la pieza, y le toca el 3:1 de WCAG 1.4.11 — que es
+		 * justo lo que garantiza el token de **marca**. La línea del tinte va a 0,22 en
+		 * oscuro, bastante más floja que el 0,5 literal que había: habría sido arreglar
+		 * el tema claro estropeando el oscuro.
+		 */
+		border-left: 2px solid var(--accent-orange);
 		font-size: 0.85rem;
 		line-height: 1.55;
 		color: var(--text-muted);

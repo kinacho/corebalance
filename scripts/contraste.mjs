@@ -260,6 +260,9 @@ const FONDOS_TOKEN = {
 		'--bg-primary': '#05050a',
 		'--bg-card': '#0d0d12',
 		'--bg-elevated': '#0f0f14',
+		// La placa de las cabeceras de curso. Coincide a propósito con la zona de malla
+		// de `FONDOS`, así que no añade ninguna superficie nueva que auditar.
+		'--surface-quiet': '#131f2e',
 		'--chart-surface': '#0d0d12',
 		// Los acentos también son fondo: es sobre ellos donde va `--text-on-accent`.
 		'--accent-blue': '#2563eb',
@@ -276,6 +279,7 @@ const FONDOS_TOKEN = {
 		'--bg-primary': '#f4f4f9',
 		'--bg-card': '#ffffff',
 		'--bg-elevated': '#ffffff',
+		'--surface-quiet': '#e8eaf2',
 		'--chart-surface': '#ffffff',
 		'--accent-blue': '#1d4ed8',
 		'--accent-green': '#046c4e',

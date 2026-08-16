@@ -80,6 +80,8 @@
 		border: 1px solid var(--border-subtle);
 		border-radius: 16px;
 		background: var(--bg-card);
+		/* Nivel objeto; ver `Cifra`. */
+		box-shadow: var(--card-shadow);
 	}
 	label {
 		display: block;

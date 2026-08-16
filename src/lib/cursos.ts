@@ -44,6 +44,26 @@ export interface AccionLeccion {
  */
 export type Arquetipo = 'desmontar' | 'procedimiento' | 'dato' | 'decidir' | 'calcular';
 
+/**
+ * Cómo se llama cada arquetipo en pantalla.
+ *
+ * ⚠️ **El arquetipo era el único dato del curso que no se veía en ningún sitio**, y es
+ * justo el que hace que las 34 lecciones no se lean igual: decide el orden de los
+ * tiempos. Enseñarlo en la portada le da a cada lección un carácter propio sin gastar
+ * color — que es lo que se buscaba y no cabía, porque los cinco tonos de identidad no
+ * pasan el validador junto al ámbar, el verde y el azul que la lección ya pinta.
+ *
+ * Las etiquetas dicen **qué va a hacer el lector**, no cómo se llama la categoría por
+ * dentro: «Dato» o «Procedimiento» son jerga del autor y no informan a nadie.
+ */
+export const ARQUETIPO_ETIQUETA: Record<Arquetipo, string> = {
+	desmontar: 'Desmonta una idea',
+	procedimiento: 'Paso a paso',
+	dato: 'Léelo en los números',
+	decidir: 'Para decidir',
+	calcular: 'Saca tu número'
+};
+
 export interface LeccionMetadata {
 	titulo: string;
 	descripcion: string;

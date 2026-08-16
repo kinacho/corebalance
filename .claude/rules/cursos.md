@@ -61,6 +61,12 @@ Cinco piezas en `src/lib/components/cursos/`, y la lista es corta a propósito: 
 
 Pasado el validador de la skill `dataviz` contra la superficie `#0d0d12`: los cinco acentos juntos **fallan** como categórica. El par por defecto es `--accent-blue` + `--accent-orange`; el verde solo entra de tercero y **solo con etiqueta directa en cada barra**, que es lo que `Barras` hace siempre. Magnitud ordenada —los tramos del IRPF, los pesos por región— va en rampa de un solo azul, nunca en la categórica.
 
+⚠️ **Hay que pasarle `--pairs all`, y sin ese flag esta regla se desmiente a sí misma.** El validador toma `--pairs adjacent` por defecto, y así los cinco acentos **pasan** (peor adyacente ΔE 15,0 deutan). Solo con `--pairs all` aparece lo que la regla afirma: `#7c3aed`↔`#2563eb` a **ΔE 0,4** en deuteranopía y `#0891b2`↔`#059669` a **11,8** en visión normal. O sea que quien re-ejecutara el comando tal como estaba escrito concluiría que la restricción caducó, y la habría desmontado con la propia herramienta que la sostiene. Los mismos dos números salen contra `#ffffff`: son fallos de discriminación de tono, no de superficie.
+
+⚠️ **Y `adjacent` no es una opción defendible aquí, porque no hay orden fijo que defender**: los cinco cursos coexisten en el índice, y también en `Cursos.svelte` de la landing, donde el destacado ocupa dos columnas y **qué tarjeta cae al lado de cuál depende del ancho de la ventana**.
+
+**Consecuencia práctica, medida el 16-ago-2026 al plantear darle a cada curso un color de identidad: no cabe.** Contra lo que una lección ya pinta —ámbar de aviso, verde de resumen, azul de marca— el único tono del vocabulario del repo que sobrevive es el magenta `#a21caf` (vs azul, ΔE 9,7 deutan / 22,6 normal); violeta, cian, rosa, teal, índigo y lima fallan todos. Buscando cinco tonos nuevos a medida, el mejor conjunto encontrado junto al kit semántico se queda en **ΔE 7,9 CVD**, o sea la banda que solo es legal con codificación secundaria. Cinco identidades más la semántica del kit **agotan el presupuesto perceptual**.
+
 ### SEO y GEO
 
 - **`FAQPage` sale del propio cuerpo.** `remarkFaq` recoge todo encabezado que acabe en `?` con el texto que le sigue; ya se aplicaba a estos markdown y salía siempre vacío porque ningún encabezado preguntaba nada. Las 34 lecciones tienen ahora al menos uno, así que lo marcado es exactamente lo que el lector ve.
