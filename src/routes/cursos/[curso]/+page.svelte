@@ -111,7 +111,16 @@
 		color: var(--text-muted);
 		margin-bottom: 2rem;
 	}
+	/*
+	 * ⚠️ El relleno vertical es el objetivo de toque, no aire decorativo — la misma
+	 * nota que ya lleva la miga de la lección, que es donde se arregló. Aquí se quedó
+	 * sin arreglar: medido sobre el build, este enlace salía a **12 px de alto**, muy
+	 * por debajo del suelo de 40 que vigila `auditar-movil.mjs`. Se ve perfectamente y
+	 * solo falla al intentar pulsarlo, que es por lo que sobrevive a las capturas.
+	 */
 	.miga a {
+		display: inline-block;
+		padding: 0.75rem 0;
 		color: inherit;
 		text-decoration: none;
 	}
@@ -182,7 +191,7 @@
 		color: var(--text-primary);
 	}
 	.temario a:hover {
-		border-color: rgba(255, 255, 255, 0.24);
+		border-color: var(--border-strong);
 	}
 	.n {
 		font-weight: 800;
@@ -211,7 +220,7 @@
 	}
 	.gratis {
 		padding: 1.25rem 1.4rem;
-		border: 1px dashed rgba(255, 255, 255, 0.16);
+		border: 1px dashed var(--border-subtle);
 		border-radius: 14px;
 		color: var(--text-muted);
 		font-size: 0.85rem;

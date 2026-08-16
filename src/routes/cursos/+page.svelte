@@ -113,7 +113,7 @@
 		color: var(--text-primary);
 	}
 	.lista a:hover {
-		border-color: rgba(255, 255, 255, 0.24);
+		border-color: var(--border-strong);
 	}
 	.nivel {
 		font-size: var(--text-micro);
@@ -139,7 +139,7 @@
 	}
 	.gratis {
 		padding: 1.25rem 1.4rem;
-		border: 1px dashed rgba(255, 255, 255, 0.16);
+		border: 1px dashed var(--border-subtle);
 		border-radius: 14px;
 		color: var(--text-muted);
 		font-size: 0.85rem;

@@ -129,12 +129,22 @@
 </noscript>
 
 <style>
+	/*
+	 * ⚠️ **El tinte iba a fuego y estaba calibrado solo para fondo oscuro.**
+	 *
+	 * `rgba(37,99,235,0.05)` sobre negro es un panel encendido; sobre el `#f4f4f9` del
+	 * tema claro, medido, daba **1,07 de fondo y 1,47 de borde** — o sea la caja que
+	 * más veces se ve en todo el área (una por lección, las 34) era un rectángulo casi
+	 * blanco. Es el mismo defecto que ya se arregló para el aviso y el resumen cuando
+	 * nacieron `--tint-warn` y `--tint-ok`; este se quedó fuera por estar dentro de un
+	 * componente en vez de en la página.
+	 */
 	.comprueba {
 		margin: 2.5rem 0;
 		padding: 1.4rem 1.5rem;
-		border: 1px solid rgba(37, 99, 235, 0.28);
+		border: 1px solid var(--tint-info-line);
 		border-radius: 16px;
-		background: rgba(37, 99, 235, 0.05);
+		background: var(--tint-info);
 	}
 	.eyebrow {
 		margin: 0 0 0.6rem;
@@ -180,8 +190,9 @@
 		text-align: left;
 		cursor: pointer;
 	}
+	/* Blanco al 28 % era hover solo en oscuro: sobre fondo claro no pasaba nada. */
 	button:hover:not(:disabled) {
-		border-color: rgba(255, 255, 255, 0.28);
+		border-color: var(--border-strong);
 	}
 	button:disabled {
 		cursor: default;
@@ -211,9 +222,23 @@
 		border-color: rgba(244, 63, 94, 0.4);
 		background: var(--state-negative-soft);
 	}
-	/* Lo que no se eligió y era falso se apaga: la atención va a la razón, no al error. */
+	/*
+	 * Lo que no se eligió y era falso se apaga: la atención va a la razón, no al error.
+	 *
+	 * ⚠️ **Se apaga bajando un peldaño de la escala, NO con `opacity`.** La opacidad se
+	 * compone con lo que haya detrás, así que el mismo token acaba midiendo distinto en
+	 * cada sitio y ninguno de esos valores es el que se validó — es exactamente lo que
+	 * `layout.css` tiene escrito sobre por qué la escala es hex sólido. Aquí el texto de
+	 * la opción es `--text-primary` y bajo `opacity: 0.55` caía por debajo de AA en tema
+	 * claro. `--text-muted` es el peldaño de al lado y está medido entero.
+	 *
+	 * ⚠️ Y no lo cazaba ninguna guarda: `contraste.mjs` es estático y no modela
+	 * `opacity`, y el barrido en vivo no llega al estado «respondida» porque solo existe
+	 * después de un clic.
+	 */
 	.respondida .opcion:not(.elegida):not(.correcta) button {
-		opacity: 0.55;
+		color: var(--text-muted);
+		background: transparent;
 	}
 
 	.porque {
