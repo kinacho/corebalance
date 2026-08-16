@@ -131,12 +131,20 @@
 		border-color: var(--border-strong);
 		background: var(--bg-card-hover);
 	}
+	/* Sello y no una línea de texto más: es lo único que distingue una tarjeta de otra
+	   antes de leer el título, y el color de identidad por curso no cabía (ver
+	   `.claude/rules/cursos.md`, sección Color). */
 	.nivel {
+		display: inline-block;
+		padding: 0.25rem 0.6rem;
+		border: 1px solid var(--border-subtle);
+		border-radius: 999px;
+		background: var(--bg-card-hover);
 		font-size: var(--text-micro);
-		font-weight: 700;
+		font-weight: 800;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
-		color: var(--accent-blue-ink);
+		color: var(--text-secondary);
 	}
 	.lista h2 {
 		margin: 0.5rem 0 0.6rem;

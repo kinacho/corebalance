@@ -5,7 +5,7 @@
 	import { AUTHOR } from '$lib/seo/author';
 	import { absoluteUrl, SITE_URL } from '$lib/i18n/routing';
 	import { cursoOgImage } from '$lib/seo/og';
-	import { PROMESA_GRATIS } from '$lib/cursos';
+	import { ARQUETIPO_ETIQUETA, PROMESA_GRATIS } from '$lib/cursos';
 
 	let { data } = $props();
 
@@ -126,13 +126,36 @@
 			da 2,77 sobre esta placa, por debajo del 3:1 de WCAG 1.4.11.
 		-->
 		<header class="cabecera">
+			<!--
+				⚠️ **«Lección N de M» se queda aquí, en texto.** `cursos-navegacion.spec.ts`
+				lo usa como contador para comprobar que las lecciones encadenan y nunca
+				saltan de curso, y es además lo único que dice la posición a quien no ve el
+				numeral. Se probó a sustituirlo por «Curso 3 de 5» y el spec lo cazó: la
+				posición en el catálogo es un dato más flojo que la posición en el curso.
+			-->
 			<p class="paso">
 				<span class="paso-n">Lección {l.orden} de {data.total}</span>
 				<span class="paso-sep" aria-hidden="true">·</span>
 				<span>{l.minutos} min</span>
+				<span class="paso-sep" aria-hidden="true">·</span>
+				<!--
+					El arquetipo. Es el dato que decide el orden de los tiempos de la lección
+					—y por tanto lo que impide que las 34 se lean igual— y era el único que no
+					se veía en ninguna parte. Puesto aquí, cada lección declara qué clase de
+					rato va a ser.
+				-->
+				<span>{ARQUETIPO_ETIQUETA[l.arquetipo]}</span>
 				<span class="paso-gratis">gratis</span>
 			</p>
-			<h1>{l.titulo}</h1>
+			<div class="titular">
+				<!-- El ordinal como numeral y no como frase: da portada sin gastar color,
+				     que es lo que la medición dejó fuera. `aria-hidden` porque el texto ya
+				     lo dice en el `aria-label` de la barra de progreso. -->
+				<p class="ordinal" aria-hidden="true">
+					{String(l.orden).padStart(2, '0')}<span class="ordinal-total">/{String(data.total).padStart(2, '0')}</span>
+				</p>
+				<h1>{l.titulo}</h1>
+			</div>
 			<p class="gancho">{l.gancho}</p>
 
 			<!--
@@ -298,8 +321,31 @@
 		color: var(--accent-green-ink);
 	}
 
-	h1 {
+	/* El numeral y el título comparten fila en escritorio y se apilan en móvil, donde
+	   380 px no dan para una columna de cifra más un titular de dos líneas. */
+	.titular {
+		display: flex;
+		align-items: baseline;
+		gap: 1.1rem;
 		margin: 0 0 0.9rem;
+	}
+	.ordinal {
+		flex-shrink: 0;
+		margin: 0;
+		font-size: clamp(1.9rem, 5vw, 2.6rem);
+		font-weight: 800;
+		line-height: 1;
+		letter-spacing: -0.04em;
+		font-variant-numeric: tabular-nums;
+		color: var(--text-faint);
+	}
+	.ordinal-total {
+		font-size: 0.55em;
+		font-weight: 700;
+	}
+
+	h1 {
+		margin: 0;
 		font-size: clamp(1.95rem, 5vw, 2.75rem);
 		font-weight: 800;
 		line-height: 1.1;
@@ -681,6 +727,21 @@
 	}
 
 	@media (max-width: 640px) {
+		.cabecera {
+			padding: 1.75rem 1.25rem;
+		}
+		/* El numeral encima del título: en 390 px una columna de cifra deja el titular
+		   en un canal demasiado estrecho y parte palabras. */
+		.titular {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 0.35rem;
+		}
+		/* La píldora de «gratis» deja de irse al extremo cuando la línea envuelve. */
+		.paso-gratis {
+			margin-left: 0;
+		}
+
 		.vecinas {
 			grid-template-columns: 1fr;
 		}
