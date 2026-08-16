@@ -113,16 +113,37 @@
 	</nav>
 
 	<article>
+		<!--
+			La portada de la lección. Es una placa y no texto suelto sobre la página
+			porque una lección tenía la misma presencia que un párrafo cualquiera: tres
+			líneas y una raya de 3 px.
+
+			⚠️ **No lleva ni un elemento enfocable, y es deliberado.**
+			`e2e/cursos-navegacion.spec.ts` exige alcanzar `.accion-cta` en 60
+			tabulaciones desde el principio del documento; todo lo que se enfoque aquí
+			arriba se come ese presupuesto. Los `span` del paso no cuestan nada. Y hay una
+			segunda razón, medida: `--border-strong` —el color del anillo de foco global—
+			da 2,77 sobre esta placa, por debajo del 3:1 de WCAG 1.4.11.
+		-->
 		<header class="cabecera">
-			<p class="paso">Lección {l.orden} de {data.total} · {l.minutos} min · gratis</p>
+			<p class="paso">
+				<span class="paso-n">Lección {l.orden} de {data.total}</span>
+				<span class="paso-sep" aria-hidden="true">·</span>
+				<span>{l.minutos} min</span>
+				<span class="paso-gratis">gratis</span>
+			</p>
 			<h1>{l.titulo}</h1>
 			<p class="gancho">{l.gancho}</p>
-		</header>
 
-		<!-- El progreso del curso, dibujado sin contar nada a nadie. -->
-		<div class="barra" role="img" aria-label={`Lección ${l.orden} de ${data.total}`}>
-			<span style={`width:${(l.orden / data.total) * 100}%`}></span>
-		</div>
+			<!--
+				El progreso del curso, dibujado sin contar nada a nadie. Va como canto
+				inferior de la placa en vez de flotando entre bloques: ahí era un elemento
+				más de la pila y aquí cierra la portada.
+			-->
+			<div class="barra" role="img" aria-label={`Lección ${l.orden} de ${data.total}`}>
+				<span style={`width:${(l.orden / data.total) * 100}%`}></span>
+			</div>
+		</header>
 
 		<div class="markdown-body">
 			<Contenido />
@@ -234,40 +255,84 @@
 		color: var(--text-primary);
 	}
 
+	/* La placa. Ver el docblock de `--surface-quiet`: en oscuro sube y en claro baja,
+	   que es lo que la separa de una tarjeta más en una página casi blanca. */
+	.cabecera {
+		position: relative;
+		margin: 0 0 2.75rem;
+		padding: 2.25rem 1.75rem 2.25rem;
+		border: 1px solid var(--border-subtle);
+		border-radius: 20px;
+		background: var(--surface-quiet);
+		overflow: hidden; /* recorta la barra contra la esquina redondeada */
+	}
+
 	.paso {
-		margin: 0 0 0.75rem;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.45rem;
+		margin: 0 0 1rem;
 		font-size: var(--text-micro);
 		font-weight: 700;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
+		/* El conjunto se apaga y solo el ordinal es tinta: antes iba todo en azul,
+		   incluidos «7 min» y «gratis», y tres cosas destacadas no destacan ninguna. */
+		color: var(--text-muted);
+	}
+	.paso-n {
 		color: var(--accent-blue-ink);
+	}
+	.paso-sep {
+		color: var(--text-faint);
+	}
+	/* La promesa, como píldora: es lo que más se repite en todo el área y lo que más
+	   vale decir, así que deja de ser una palabra más de la línea. */
+	.paso-gratis {
+		margin-left: auto;
+		padding: 0.2rem 0.5rem;
+		border: 1px solid var(--tint-ok-line);
+		border-radius: 999px;
+		background: var(--tint-ok);
+		color: var(--accent-green-ink);
 	}
 
 	h1 {
-		margin: 0 0 0.85rem;
-		font-size: clamp(1.75rem, 4.5vw, 2.5rem);
-		line-height: 1.15;
+		margin: 0 0 0.9rem;
+		font-size: clamp(1.95rem, 5vw, 2.75rem);
+		font-weight: 800;
+		line-height: 1.1;
+		letter-spacing: -0.025em;
 		color: var(--text-primary);
 	}
 
 	.gancho {
 		margin: 0;
-		font-size: 1.05rem;
-		line-height: 1.6;
-		color: var(--text-muted);
+		/* Entradilla, no pie de foto: sube de tamaño y sube un peldaño de la escala
+		   (`--text-muted` daba 5,92 en claro; `--text-secondary`, 10,12). */
+		font-size: clamp(1.1rem, 2.4vw, 1.22rem);
+		line-height: 1.55;
+		color: var(--text-secondary);
+		max-width: 52ch;
 	}
 
 	.barra {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 0;
 		height: 3px;
-		border-radius: 3px;
-		background: var(--bg-card-hover);
-		margin: 2rem 0 2.5rem;
+		margin: 0;
+		background: var(--border-subtle);
 		overflow: hidden;
 	}
 	.barra span {
 		display: block;
 		height: 100%;
-		background: var(--accent-blue);
+		/* Tinta y no marca: `--accent-blue` sobre la placa oscura da 3,22, que pasa el
+		   3:1 de WCAG 1.4.11 sin ningún margen. `--accent-blue-ink` va holgado. */
+		background: var(--accent-blue-ink);
 	}
 
 	/*
@@ -356,15 +421,72 @@
 	 * encabezados respiren y que la medida no pase de unos 70 caracteres, o se lee como
 	 * un documento y no como una lección.
 	 */
+	/*
+	 * ⚠️ **La lección se leía más pequeña que un post del blog**, que va a `1.1rem/1.8`
+	 * con `h2` a `1.6rem`. Siendo el contenido más trabajado del sitio, era la pieza
+	 * con la tipografía más apretada — y buena parte de «se lee soso» era eso, no color.
+	 */
 	.leccion :global(.markdown-body) {
-		font-size: 1.02rem;
-		line-height: 1.75;
+		font-size: 1.08rem;
+		line-height: 1.78;
 	}
 	.leccion :global(.markdown-body h2) {
-		margin: 2.75rem 0 1rem;
-		font-size: 1.3rem;
-		line-height: 1.3;
-		letter-spacing: -0.01em;
+		margin: 3.25rem 0 1rem;
+		font-size: clamp(1.4rem, 3vw, 1.55rem);
+		font-weight: 750;
+		line-height: 1.25;
+		letter-spacing: -0.02em;
+	}
+	/*
+	 * Los cinco que no tenían ninguna regla. El corpus no usa hoy `h3`, enlaces en el
+	 * cuerpo, `hr` ni bloques de código, así que esto no cambia nada de lo que hay: es
+	 * la red para el día que alguien los use. Sin ella, un enlace hereda el color del
+	 * texto y sale **sin subrayar**, o sea indistinguible de la prosa; y un `hr` sale
+	 * con el borde `inset` de 2 px del navegador.
+	 *
+	 * ⚠️ El enlace va en `--accent-blue-ink` (tinta) y no `--accent-blue` (marca): el
+	 * segundo da 3,22 como texto, que es justo la migración que este repo tiene fichada
+	 * por haber *bajado* el contraste en 33 sitios.
+	 *
+	 * ⚠️ Y un enlace en el cuerpo es **una parada de tabulación**: hoy hay cero, pero
+	 * cuentan contra las 60 que `e2e/cursos-navegacion.spec.ts` da para llegar al
+	 * ejercicio.
+	 */
+	.leccion :global(.markdown-body h3) {
+		margin: 2.25rem 0 0.6rem;
+		font-size: 1.18rem;
+		font-weight: 700;
+		line-height: 1.35;
+		color: var(--text-primary);
+	}
+	.leccion :global(.markdown-body a) {
+		color: var(--accent-blue-ink);
+		text-decoration: underline;
+		text-decoration-thickness: 1px;
+		text-underline-offset: 3px;
+	}
+	.leccion :global(.markdown-body a:hover) {
+		color: var(--text-primary);
+		text-decoration-thickness: 2px;
+	}
+	.leccion :global(.markdown-body code) {
+		padding: 0.12em 0.36em;
+		border: 1px solid var(--border-subtle);
+		border-radius: 6px;
+		background: var(--bg-card-hover);
+		color: var(--text-primary);
+		font-size: 0.9em;
+	}
+	.leccion :global(.markdown-body strong) {
+		font-weight: 700;
+		color: var(--text-primary);
+	}
+	.leccion :global(.markdown-body hr) {
+		max-width: 68ch;
+		height: 1px;
+		margin: 3rem 0;
+		border: 0;
+		background: var(--border-subtle);
 	}
 	.leccion :global(.markdown-body p),
 	.leccion :global(.markdown-body li) {
@@ -426,12 +548,21 @@
 		color: var(--text-primary);
 	}
 
+	/*
+	 * ⚠️ **El ejercicio sube de nivel: pide algo, no se mira.**
+	 *
+	 * La regla del área es que una pieza sube de nivel cuando **pide algo al lector**,
+	 * no cuando es importante. Con ese criterio, azul = comprueba, ámbar = cuidado y
+	 * verde = haz / retén. `.accion` iba sobre `--bg-card`, o sea al mismo nivel que
+	 * una `Cifra`, cuando es —dice su propio comentario— «lo que separa un curso de
+	 * siete artículos seguidos». Ahora lleva el verde que su eyebrow ya usaba.
+	 */
 	.accion {
-		margin: 3rem 0 2rem;
-		padding: 1.5rem;
-		border: 1px solid var(--border-subtle);
+		margin: 3.5rem 0 2rem;
+		padding: 1.6rem 1.5rem;
+		border: 1px solid var(--tint-ok-line);
 		border-radius: 16px;
-		background: var(--bg-card);
+		background: var(--tint-ok);
 	}
 	.accion-eyebrow {
 		margin: 0 0 0.6rem;
@@ -443,7 +574,9 @@
 	}
 	.accion-texto {
 		margin: 0 0 1.1rem;
-		line-height: 1.6;
+		/* Es la frase que se obedece: no puede ir al tamaño del cuerpo. */
+		font-size: 1.08rem;
+		line-height: 1.55;
 		color: var(--text-primary);
 	}
 	.accion-cta {
@@ -487,6 +620,13 @@
 		gap: 1rem;
 		margin: 3rem 0 2rem;
 	}
+	/*
+	 * Nivel objeto: tarjeta con fondo y sombra. Iba con borde y sin fondo, que era un
+	 * cuarto nivel sin nombre. ⚠️ La sombra va en la regla **base** y no se anula en
+	 * ninguna media query — es la inversa del defecto que este repo ya tiene fichado,
+	 * sombras declaradas en base y puestas a `none` por encima de 1024 px, o sea
+	 * invisibles justo donde se medía.
+	 */
 	.vecina {
 		display: flex;
 		flex-direction: column;
@@ -494,11 +634,15 @@
 		padding: 1rem 1.15rem;
 		border: 1px solid var(--border-subtle);
 		border-radius: 14px;
+		background: var(--bg-card);
+		box-shadow: var(--card-shadow);
 		text-decoration: none;
 		color: var(--text-primary);
+		transition: border-color 0.18s ease, background 0.18s ease;
 	}
 	.vecina:hover {
 		border-color: var(--border-strong);
+		background: var(--bg-card-hover);
 	}
 	.vecina.siguiente {
 		text-align: right;

@@ -130,6 +130,9 @@
 		border: 1px solid var(--border-subtle);
 		border-radius: 16px;
 		background: var(--bg-card);
+		/* Nivel objeto; ver `Cifra`. El relleno sigue siendo `--bg-card`, que es la
+		   superficie contra la que `dataviz` validó estas paletas: la sombra no la toca. */
+		box-shadow: var(--card-shadow);
 	}
 	.titulo {
 		margin: 0 0 1.1rem;

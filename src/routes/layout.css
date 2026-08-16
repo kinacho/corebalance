@@ -80,6 +80,31 @@
 		--bg-overlay: rgba(15, 15, 20, 0.95);
 
 		/*
+		 * ⚠️ **La placa: la única superficie que se aleja de la página en la MISMA
+		 * dirección en los dos temas, y por eso lee como portada y no como otra tarjeta.**
+		 *
+		 * En oscuro sube y en claro **baja** — es la única superficie del sitio más
+		 * oscura que su página. Es la misma inversión que ya hace `--bg-elevated` según
+		 * su propio docblock, llevada al extremo útil: en claro todo lo demás es blanco
+		 * sobre `#f4f4f9`, o sea 1,10 de diferencia y el borde cargando solo, y una
+		 * cabecera más no se distinguía de una tarjeta más.
+		 *
+		 * ⚠️ **Los dos valores no son elegidos, son los que ya están en `FONDOS` de
+		 * `scripts/contraste.mjs`**: la zona de la malla contra la que la guarda **ya**
+		 * mide todo el texto del proyecto, porque exige el umbral contra el peor de los
+		 * tres fondos. Elegirlos así significa que no se introduce ninguna superficie
+		 * nueva que auditar — los cuatro peldaños de texto ya están validados contra
+		 * ella. Cualquier otro valor obligaría a medir la escala entera otra vez.
+		 *
+		 * ⚠️ **Y trae una restricción: `--border-strong` sobre esta placa da 2,77, por
+		 * debajo del 3:1 que WCAG 1.4.11 pide a un objeto gráfico** — y `--border-strong`
+		 * es el color del anillo de foco global. Consecuencia práctica: **la placa no
+		 * lleva controles enfocables dentro**. Si alguna vez tiene que llevarlos, el
+		 * anillo tendría que pasar a `--accent-blue` ahí, ganándole al `!important`.
+		 */
+		--surface-quiet: #131f2e;
+
+		/*
 		 * ⚠️ **La escala de texto tiene cuatro peldaños porque tenía dos, y el hueco
 		 * entre ellos es lo que cada componente rellenó a mano hacia abajo.**
 		 *
@@ -398,6 +423,10 @@
 		--mockup-shadow: 0 0 0 1px rgba(17, 17, 24, 0.05), 0 20px 40px rgba(17, 17, 24, 0.12),
 			0 6px 12px rgba(17, 17, 24, 0.06);
 		--bg-elevated: #ffffff;
+
+		/* Ver el docblock del tema oscuro: aquí la placa **baja**, que es lo que la
+		   separa de una tarjeta blanca en una página casi blanca. */
+		--surface-quiet: #e8eaf2;
 		--bg-scrim: rgba(244, 244, 249, 0.8);
 		--bg-overlay: rgba(255, 255, 255, 0.96);
 

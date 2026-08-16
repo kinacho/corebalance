@@ -214,12 +214,20 @@
 	.opcion:not(.correcta) .marca {
 		color: var(--state-negative);
 	}
+	/*
+	 * ⚠️ **El borde llevaba el valor OSCURO del estado mientras el fondo iba por token.**
+	 * `rgba(52,211,153,·)` es `--state-positive` del tema oscuro escrito a mano; en tema
+	 * claro el token vale `#03714f`, así que el relleno conmutaba y el borde no: quedaba
+	 * un filo menta alrededor de un fondo verde oscuro. Se resuelven los dos desde el
+	 * mismo token con `color-mix`, que es lo que mantiene borde y relleno de acuerdo en
+	 * los dos temas sin duplicar valores.
+	 */
 	.respondida .opcion.correcta button {
-		border-color: rgba(52, 211, 153, 0.4);
+		border-color: color-mix(in srgb, var(--state-positive) 45%, transparent);
 		background: var(--state-positive-soft);
 	}
 	.respondida .opcion.elegida:not(.correcta) button {
-		border-color: rgba(244, 63, 94, 0.4);
+		border-color: color-mix(in srgb, var(--state-negative) 45%, transparent);
 		background: var(--state-negative-soft);
 	}
 	/*

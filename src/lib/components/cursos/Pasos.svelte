@@ -116,9 +116,15 @@
 	.aviso {
 		margin: 0.5rem 0 0;
 		padding-left: 0.7rem;
-		/* El ámbar ya tiene su token por tema, y este filete marca «el paso que la gente
-		   se salta», que es lo más valioso de la pieza: no puede depender del tema. */
-		border-left: 2px solid var(--tint-warn-line);
+		/*
+		 * ⚠️ **Token sólido, no `--tint-warn-line`**, aunque sea el ámbar de al lado.
+		 * Esto es un objeto gráfico de 2 px marcando «el paso que la gente se salta»,
+		 * o sea lo más valioso de la pieza, y le toca el 3:1 de WCAG 1.4.11 — que es
+		 * justo lo que garantiza el token de **marca**. La línea del tinte va a 0,22 en
+		 * oscuro, bastante más floja que el 0,5 literal que había: habría sido arreglar
+		 * el tema claro estropeando el oscuro.
+		 */
+		border-left: 2px solid var(--accent-orange);
 		font-size: 0.85rem;
 		line-height: 1.55;
 		color: var(--text-muted);

@@ -82,11 +82,14 @@
 		max-width: 1150px;
 		margin: 0 auto;
 		padding: 3rem 2.5rem 2.5rem;
-		border: 1px solid rgba(37, 99, 235, 0.28);
+		/* Mismo par que el kit de las lecciones: es el mismo azul y el mismo problema de
+		   alfa calibrada para fondo oscuro. El blanco al 2 % del segundo plano no era
+		   superficie ninguna sobre una página clara. */
+		border: 1px solid var(--tint-info-line);
 		border-radius: 28px;
 		background:
-			radial-gradient(120% 90% at 0% 0%, rgba(37, 99, 235, 0.1), transparent 60%),
-			rgba(255, 255, 255, 0.02);
+			radial-gradient(120% 90% at 0% 0%, var(--tint-info), transparent 60%),
+			var(--bg-card);
 		overflow: hidden;
 	}
 	/* La línea de acento del borde superior: marca el bloque sin añadir ningún texto. */
@@ -152,15 +155,15 @@
 			transform 0.2s ease;
 	}
 	.grid a:hover {
-		border-color: rgba(255, 255, 255, 0.22);
+		border-color: var(--border-strong);
 		transform: translateY(-2px);
 	}
 	.grid li.destacado {
 		grid-column: span 2;
 	}
 	.destacado a {
-		border-color: rgba(37, 99, 235, 0.42);
-		background: rgba(37, 99, 235, 0.06);
+		border-color: var(--tint-info-line);
+		background: var(--tint-info);
 	}
 	.destacado h3 {
 		font-size: 1.35rem;
