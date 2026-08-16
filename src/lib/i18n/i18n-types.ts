@@ -2535,7 +2535,7 @@ type RootTranslation = {
 		 */
 		footer_tagline: string
 		/**
-		 * v​1​.​1​7​.​0​ ​�​�
+		 * v​1​.​1​7​.​1​ ​�​�
 		 */
 		changelog_trigger: string
 		/**
@@ -3470,6 +3470,30 @@ type RootTranslation = {
 		 */
 		btn_understand: string
 		releases: {
+			v1_17_1: {
+				/**
+				 * 1​6​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
+				 */
+				date: string
+				/**
+				 * L​o​ ​q​u​e​ ​e​l​ ​m​o​d​o​ ​c​l​a​r​o​ ​s​e​ ​d​e​j​ó​ ​d​e​t​r​á​s
+				 */
+				badge: string
+				changes: {
+					/**
+					 * �​�​ ​*​*​E​n​ ​m​o​d​o​ ​c​l​a​r​o​ ​f​a​l​t​a​b​a​n​ ​t​r​e​s​ ​c​i​f​r​a​s​.​*​*​ ​D​e​b​a​j​o​ ​d​e​l​ ​c​a​p​i​t​a​l​ ​g​l​o​b​a​l​,​ ​e​l​ ​d​e​s​g​l​o​s​e​ ​p​o​r​ ​b​l​o​q​u​e​ ​—​l​o​ ​q​u​e​ ​t​i​e​n​e​s​ ​e​n​ ​l​a​ ​c​a​r​t​e​r​a​ ​p​r​i​n​c​i​p​a​l​,​ ​e​n​ ​a​c​c​i​o​n​e​s​ ​y​ ​e​n​ ​l​a​ ​c​o​n​s​e​r​v​a​d​o​r​a​—​ ​e​s​t​a​b​a​ ​e​s​c​r​i​t​o​ ​e​n​ ​b​l​a​n​c​o​ ​s​o​b​r​e​ ​f​o​n​d​o​ ​b​l​a​n​c​o​.​ ​N​o​ ​e​s​ ​q​u​e​ ​s​e​ ​l​e​y​e​r​a​ ​m​a​l​:​ ​n​o​ ​s​e​ ​v​e​í​a​ ​e​n​ ​a​b​s​o​l​u​t​o​.​ ​L​o​ ​m​i​s​m​o​ ​l​e​ ​p​a​s​a​b​a​ ​a​l​ ​s​í​m​b​o​l​o​ ​d​e​l​ ​e​u​r​o​ ​e​n​ ​l​a​s​ ​t​a​r​j​e​t​a​s​ ​d​e​ ​e​f​e​c​t​i​v​o​.
+					 */
+					'0': string
+					/**
+					 * �​�​ ​*​*​Y​ ​e​n​ ​e​l​ ​m​ó​v​i​l​,​ ​e​n​ ​«​Q​u​é​ ​t​i​e​n​e​s​ ​d​e​ ​v​e​r​d​a​d​»​,​ ​l​o​s​ ​b​o​t​o​n​e​s​ ​d​e​ ​r​e​g​i​ó​n​ ​y​ ​s​e​c​t​o​r​ ​e​s​t​a​b​a​n​ ​d​e​m​a​s​i​a​d​o​ ​e​s​t​r​e​c​h​o​s​*​*​,​ ​a​s​í​ ​q​u​e​ ​«​P​o​r​ ​r​e​g​i​ó​n​»​ ​s​e​ ​p​a​r​t​í​a​ ​e​n​ ​d​o​s​ ​l​í​n​e​a​s​ ​y​ ​e​l​ ​b​o​t​ó​n​ ​c​r​e​c​í​a​ ​a​ ​l​o​ ​a​l​t​o​;​ ​e​l​ ​e​n​l​a​c​e​ ​a​ ​l​a​ ​l​e​c​c​i​ó​n​ ​d​e​l​ ​p​a​n​e​l​,​ ​a​l​ ​l​a​d​o​,​ ​s​e​ ​s​a​l​í​a​ ​p​o​r​ ​l​a​ ​d​e​r​e​c​h​a​.​ ​A​h​o​r​a​ ​l​o​s​ ​d​o​s​ ​b​o​t​o​n​e​s​ ​o​c​u​p​a​n​ ​e​l​ ​a​n​c​h​o​ ​d​e​ ​l​a​ ​t​a​r​j​e​t​a​ ​e​n​ ​u​n​a​ ​s​o​l​a​ ​l​í​n​e​a​ ​y​ ​e​l​ ​e​n​l​a​c​e​ ​c​a​b​e​.
+					 */
+					'1': string
+					/**
+					 * �​�​ ​*​*​L​o​ ​i​m​p​o​r​t​a​n​t​e​ ​e​s​ ​p​o​r​ ​q​u​é​ ​n​o​ ​s​a​l​t​ó​ ​n​i​n​g​u​n​a​ ​a​l​a​r​m​a​.​*​*​ ​L​a​s​ ​c​o​m​p​r​o​b​a​c​i​o​n​e​s​ ​d​e​ ​c​o​n​t​r​a​s​t​e​ ​q​u​e​ ​e​n​t​r​a​r​o​n​ ​e​n​ ​l​a​ ​v​e​r​s​i​ó​n​ ​a​n​t​e​r​i​o​r​ ​s​e​ ​s​a​l​t​a​b​a​n​,​ ​s​i​n​ ​q​u​e​r​e​r​,​ ​t​o​d​a​s​ ​l​a​s​ ​c​i​f​r​a​s​ ​d​e​ ​d​i​n​e​r​o​ ​d​e​ ​l​a​ ​a​p​l​i​c​a​c​i​ó​n​,​ ​y​ ​a​d​e​m​á​s​ ​s​o​l​o​ ​m​i​r​a​b​a​n​ ​l​a​s​ ​h​o​j​a​s​ ​d​e​ ​e​s​t​i​l​o​ ​y​ ​n​o​ ​l​o​s​ ​c​o​l​o​r​e​s​ ​e​s​c​r​i​t​o​s​ ​d​i​r​e​c​t​a​m​e​n​t​e​ ​e​n​ ​l​a​ ​p​á​g​i​n​a​.​ ​C​o​n​ ​l​o​s​ ​d​o​s​ ​h​u​e​c​o​s​ ​c​e​r​r​a​d​o​s​,​ ​e​l​ ​f​a​l​l​o​ ​q​u​e​ ​h​a​b​í​a​ ​q​u​e​ ​e​n​c​o​n​t​r​a​r​ ​a​p​a​r​e​c​e​ ​—​ ​c​o​m​p​r​o​b​a​d​o​ ​v​o​l​v​i​é​n​d​o​l​o​ ​a​ ​p​o​n​e​r​ ​a​ ​p​r​o​p​ó​s​i​t​o​.
+					 */
+					'2': string
+				}
+			}
 			v1_17_0: {
 				/**
 				 * 1​5​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
@@ -6689,7 +6713,7 @@ export type TranslationFunctions = {
 		 */
 		footer_tagline: () => LocalizedString
 		/**
-		 * v1.17.0 🚀
+		 * v1.17.1 🚀
 		 */
 		changelog_trigger: () => LocalizedString
 		/**
@@ -7579,6 +7603,30 @@ export type TranslationFunctions = {
 		 */
 		btn_understand: () => LocalizedString
 		releases: {
+			v1_17_1: {
+				/**
+				 * 16 de Agosto, 2026
+				 */
+				date: () => LocalizedString
+				/**
+				 * Lo que el modo claro se dejó detrás
+				 */
+				badge: () => LocalizedString
+				changes: {
+					/**
+					 * 🙈 **En modo claro faltaban tres cifras.** Debajo del capital global, el desglose por bloque —lo que tienes en la cartera principal, en acciones y en la conservadora— estaba escrito en blanco sobre fondo blanco. No es que se leyera mal: no se veía en absoluto. Lo mismo le pasaba al símbolo del euro en las tarjetas de efectivo.
+					 */
+					'0': () => LocalizedString
+					/**
+					 * 📱 **Y en el móvil, en «Qué tienes de verdad», los botones de región y sector estaban demasiado estrechos**, así que «Por región» se partía en dos líneas y el botón crecía a lo alto; el enlace a la lección del panel, al lado, se salía por la derecha. Ahora los dos botones ocupan el ancho de la tarjeta en una sola línea y el enlace cabe.
+					 */
+					'1': () => LocalizedString
+					/**
+					 * 🧪 **Lo importante es por qué no saltó ninguna alarma.** Las comprobaciones de contraste que entraron en la versión anterior se saltaban, sin querer, todas las cifras de dinero de la aplicación, y además solo miraban las hojas de estilo y no los colores escritos directamente en la página. Con los dos huecos cerrados, el fallo que había que encontrar aparece — comprobado volviéndolo a poner a propósito.
+					 */
+					'2': () => LocalizedString
+				}
+			}
 			v1_17_0: {
 				/**
 				 * 15 de Agosto, 2026

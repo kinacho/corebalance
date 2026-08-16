@@ -687,7 +687,7 @@ const es = {
     timing_period_note: 'Medido sobre los {days:number} días con datos reales, sin anualizar.',
     legal_disclaimer: '<strong>Aviso Legal:</strong> CoreBalance es una herramienta puramente informativa y educativa. No constituye asesoramiento financiero, de inversión ni fiscal. Los datos mostrados pueden sufrir retrasos o ser inexactos. El desarrollador no se hace responsable de posibles pérdidas financieras derivadas del uso de esta aplicación. Invierte siempre bajo tu propia responsabilidad.',
     footer_tagline: 'Tu centro de mandos para una gestión de activos inteligente y equilibrada.',
-    changelog_trigger: 'v1.17.0 🚀',
+    changelog_trigger: 'v1.17.1 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Hecho con ❤️ para la comunidad inversora',
     reclassify_stocks: 'Acciones Individuales',
@@ -967,6 +967,15 @@ const es = {
     close_aria: 'Cerrar modal',
     btn_understand: 'Entendido',
     releases: {
+      v1_17_1: {
+        date: '16 de Agosto, 2026',
+        badge: 'Lo que el modo claro se dejó detrás',
+        changes: [
+          '🙈 **En modo claro faltaban tres cifras.** Debajo del capital global, el desglose por bloque —lo que tienes en la cartera principal, en acciones y en la conservadora— estaba escrito en blanco sobre fondo blanco. No es que se leyera mal: no se veía en absoluto. Lo mismo le pasaba al símbolo del euro en las tarjetas de efectivo.',
+          '📱 **Y en el móvil, en «Qué tienes de verdad», los botones de región y sector estaban demasiado estrechos**, así que «Por región» se partía en dos líneas y el botón crecía a lo alto; el enlace a la lección del panel, al lado, se salía por la derecha. Ahora los dos botones ocupan el ancho de la tarjeta en una sola línea y el enlace cabe.',
+          '🧪 **Lo importante es por qué no saltó ninguna alarma.** Las comprobaciones de contraste que entraron en la versión anterior se saltaban, sin querer, todas las cifras de dinero de la aplicación, y además solo miraban las hojas de estilo y no los colores escritos directamente en la página. Con los dos huecos cerrados, el fallo que había que encontrar aparece — comprobado volviéndolo a poner a propósito.'
+        ]
+      },
       v1_17_0: {
         date: '15 de Agosto, 2026',
         badge: 'Modo claro, y el contraste que faltaba',

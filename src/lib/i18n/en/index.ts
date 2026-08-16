@@ -672,7 +672,7 @@ const en: Translation = {
     timing_period_note: 'Measured over the {days} days with real data, not annualised.',
     legal_disclaimer: '<strong>Legal Disclaimer:</strong> CoreBalance is a purely informative and educational tool. It does not constitute financial, investment, or tax advice. The data displayed may be subject to delays or inaccuracies. The developer is not responsible for any financial losses resulting from the use of this application. Always invest at your own risk.',
     footer_tagline: 'Your control center for smart and balanced asset management.',
-    changelog_trigger: 'v1.17.0 🚀',
+    changelog_trigger: 'v1.17.1 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Made with ❤️ for the investing community',
     reclassify_stocks: 'Individual Stocks',
@@ -946,6 +946,15 @@ const en: Translation = {
     close_aria: 'Close modal',
     btn_understand: 'Got it',
     releases: {
+      v1_17_1: {
+        date: 'August 16, 2026',
+        badge: 'What light mode left behind',
+        changes: [
+          '🙈 **Three figures were missing in light mode.** Under your global capital, the per-block breakdown — what you hold in the main portfolio, in individual stocks and in the conservative bucket — was written in white on a white background. Not hard to read: not visible at all. The euro symbol on cash cards had the same problem.',
+          '📱 **And on mobile, in «What you actually hold», the region and sector buttons were too narrow**, so «By region» broke onto two lines and the button grew taller; the link to the panel\'s lesson, right next to it, ran off the right edge. Both buttons now take the width of the card on a single line, and the link fits.',
+          '🧪 **What matters is why no alarm went off.** The contrast checks added in the previous version were skipping, unintentionally, every money figure in the app — and they only looked at stylesheets, never at colours written directly into the page. With both gaps closed, the defect they exist to find does show up: verified by putting it back on purpose.'
+        ]
+      },
       v1_17_0: {
         date: 'August 15, 2026',
         badge: 'Light mode, and the contrast that was missing',
