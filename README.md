@@ -108,7 +108,9 @@ Los valores sólo hacen falta para funcionalidades concretas: `KV_REST_API_URL` 
 | `npm run test:coverage` | Los mismos tests más los umbrales de cobertura por fichero de los módulos que calculan dinero. **Es lo que ejecuta CI**, así que si esto pasa, el pipeline pasa |
 | `npm run test:e2e` | Tests de navegador (Playwright) sobre el build. Requiere `npm run build` antes |
 | `npm run test:quality` | Busca tests que no pueden fallar: tautologías y tests sin ninguna aserción |
-| `npm run docs:check` | Busca identificadores y rutas citados en `CLAUDE.md` que ya no existen en el código |
+| `npm run docs:check` | Busca identificadores y rutas citados en `CLAUDE.md` y en `.claude/rules/*.md` que ya no existen en el código, y reglas cuyo `paths:` no casa con ningún fichero — que son reglas que no se cargarían nunca |
+| `npm run a11y:contrast` | Mide el contraste WCAG de cada `color:` de `src/**/*.{svelte,css}` contra los fondos de **los dos temas** y falla por debajo de AA (4,5:1). También audita el atributo `style=` del marcado, donde un color literal es error por ser incomprobable. **Está en CI** |
+| `npm run a11y:vivo` | La misma pregunta en un navegador de verdad: 103 rutas × 2 temas, más el tour, el panel de gestión y una pasada de `:hover`. Coge lo que un analizador estático no puede — quién pinta encima de quién, y lo que solo existe al interactuar. Fuera de CI porque tarda; `e2e/tema.spec.ts` es la versión corta que sí está |
 | `npm run test:mutation` | Mutation testing sobre los seis módulos de dinero: muta el código y comprueba si algún test se queja. Tarda ~18 min y no es una puerta de CI, es una auditoría (semanal). Se ejecuta con `npx`, no es una dependencia |
 | `npm run seo:audit` | Audita el HTML construido: metadatos duplicados, `hreflang`, JSON-LD, imágenes OG y enlaces rotos (requiere `npm run build` antes) |
 | `npm run icons` | Regenera los iconos de `static/` desde los masters de `assets/` |
