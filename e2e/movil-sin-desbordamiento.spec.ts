@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { sembrarCartera, abrirDashboard, CON_OBJETIVOS } from './util/cartera';
+import { sembrarCartera, sembrarHistorial, abrirDashboard, CON_OBJETIVOS } from './util/cartera';
 
 /**
  * Que en móvil no se salga nada de la pantalla.
@@ -51,6 +51,16 @@ test.describe('móvil · nada se sale de la pantalla', () => {
 
 	test('los cinco rangos del histórico caben en la pantalla', async ({ page }) => {
 		await sembrarCartera(page, CON_OBJETIVOS);
+		/**
+		 * ⚠️ **Hay que alargar el historial o aquí no hay nada que medir, y hacen falta
+		 * 400 días exactos.** Desde que los rangos que enseñarían lo mismo que «Todo» se
+		 * dejan de dibujar, la cartera sembrada a pelo —ventana mínima de 30 días— no
+		 * enseña selector ninguno, y con 200 días solo salen tres botones. Este caso mide
+		 * que **los cinco** quepan en 390 px, así que necesita el estado en que existen
+		 * los cinco: más de un año de historial. Sin esto el spec falla con «"1M" no
+		 * tiene caja» o contando tres, que apuntan al localizador y no a la causa.
+		 */
+		await sembrarHistorial(page, 400);
 		await abrirDashboard(page);
 
 		// La pestaña de gráficos es la que lleva el histórico.

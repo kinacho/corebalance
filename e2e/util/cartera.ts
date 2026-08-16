@@ -147,6 +147,67 @@ export async function sembrarCartera(page: Page, semilla: Semilla) {
 }
 
 /**
+ * Alarga el historial de la cartera sembrada, para que los rangos del gráfico de
+ * patrimonio sean de verdad distintos entre sí.
+ *
+ * ⚠️ **Sin esto los cinco rangos enseñan el mismo tramo, y eso es correcto**, no un
+ * fallo: `PortfolioStore.ventanaHistorica` sale de la fecha más antigua del libro o
+ * del log de ediciones con un mínimo de 30 días, así que una cartera sembrada a pelo
+ * se queda en el mínimo y `1M`, `3M`, `YTD`, `1A` y `Todo` coinciden. Desde que los
+ * rangos redundantes se apagan, además, el selector entero desaparece en ese caso —
+ * de modo que un spec que quiera **medir los botones** necesita llamar a esto antes.
+ *
+ * Hacen falta las dos mitades: las ediciones (que fijan la ventana) y una sparkline
+ * que llegue hasta allí (que es de donde sale la reconstrucción). Y la serie tiene
+ * forma a propósito: con una recta plana dos ventanas distintas dibujarían lo mismo
+ * y el test culparía al código de lo que hizo su fixture.
+ *
+ * Llamar **después** de `sembrarCartera()` y antes de navegar.
+ */
+export async function sembrarHistorial(page: Page, dias: number) {
+	const DIA = 86400000;
+	await page.addInitScript(
+		([d, ms]: [number, number]) => {
+			const ahora = Date.now();
+			const holdings = JSON.parse(localStorage.getItem('corebalance_holdings_v2') ?? '{}');
+			const precios = JSON.parse(localStorage.getItem('corebalance_prices_cache') ?? '{}');
+
+			for (const p of Object.values(precios) as { price: number; sparkline?: number[] }[]) {
+				const out: number[] = [];
+				let v = p.price * 0.7;
+				for (let i = 0; i < d + 5; i++) {
+					v *= 1 + 0.001 + 0.03 * Math.sin(i / 9);
+					out.push(v);
+				}
+				const k = p.price / out[out.length - 1];
+				p.sparkline = out.map((x) => +(x * k).toFixed(4));
+			}
+			localStorage.setItem('corebalance_prices_cache', JSON.stringify(precios));
+
+			const ediciones = [];
+			let id = 0;
+			for (const [ticker, h] of Object.entries(holdings) as [string, { shares: number }][]) {
+				for (let k = 0; k < 4; k++) {
+					const cuando = ahora - (d - 5 - k * 8) * ms;
+					ediciones.push({
+						id: `e${id++}`,
+						ticker,
+						date: cuando,
+						sharesBefore: Math.round((h.shares * k) / 4),
+						sharesAfter: Math.round((h.shares * (k + 1)) / 4),
+						reason: 'purchase',
+						origin: 'manual',
+						createdAt: cuando
+					});
+				}
+			}
+			localStorage.setItem('corebalance_holding_edits', JSON.stringify(ediciones));
+		},
+		[dias, DIA]
+	);
+}
+
+/**
  * Errores de consola, filtrando el ruido conocido de `vite preview`.
  *
  * Los scripts de Vercel Analytics y Speed Insights no existen fuera de Vercel y

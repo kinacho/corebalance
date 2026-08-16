@@ -36,7 +36,7 @@
 		TREND_DOWN
 	} from '$lib/chart-theme';
 	import { CATEGORY_COLORS } from '$lib/constants';
-	import { clipNoticeFor, type RangeId } from '$lib/history/range';
+	import { clipNoticeFor, isRangeRedundant, type RangeId } from '$lib/history/range';
 	import { ui } from '$lib/stores/ui.svelte';
 	import { LL, locale } from '$lib/i18n/i18n-svelte';
 
@@ -159,6 +159,47 @@
 			today: new Date()
 		})
 	);
+
+	/**
+	 * Qué rangos no pueden enseñar nada distinto de «Todo», para apagarlos.
+	 *
+	 * Ver `isRangeRedundant`: la queja era «pulso y a veces no reacciona», y con
+	 * historial parcial eso es literal — hasta tres de los cinco botones dibujan el
+	 * mismo lienzo. Un botón apagado lo dice **antes** de pulsarlo, que es la
+	 * diferencia entre una limitación explicada y una interfaz que parece rota.
+	 */
+	const redundantes = $derived.by(() => {
+		const opciones = {
+			firstShownDate: series.points[0]?.date ?? null,
+			oldestKnownDate: series.oldestKnownDate,
+			today: new Date()
+		};
+		return new Set(
+			ranges.filter((r) => isRangeRedundant({ ...opciones, range: r.id })).map((r) => r.id)
+		);
+	});
+
+	/**
+	 * ⚠️ **Si el rango elegido se vuelve redundante, hay que moverlo.** El historial
+	 * crece y encoge solo —llega la serie larga, se importa un CSV— así que se puede
+	 * estar en «1A» y que pase a ser sinónimo de «Todo»; dejarlo seleccionado sería
+	 * justo el botón muerto que esto viene a quitar. Se cae a `ALL`, que es el que
+	 * enseña lo mismo y nunca se apaga.
+	 */
+	$effect(() => {
+		if (redundantes.has(currentRange)) currentRange = 'ALL';
+	});
+
+	/**
+	 * ⚠️ **Con menos de dos opciones reales el selector entero se va, y esto lo
+	 * descubrió su propia guarda.** Apagar los rangos redundantes deja el caso peor
+	 * —cartera recién hecha, ventana de 30 días— con los cuatro apagados y sólo
+	 * «Todo» vivo: una fila de cinco botones con cuatro muertos no es más honesta que
+	 * la de antes, es otra manera de parecer rota. Cuando no hay nada que elegir se
+	 * dice con una frase, que es lo único cierto que se puede decir ahí.
+	 */
+	const rangosVivos = $derived(ranges.filter((r) => !redundantes.has(r.id)));
+	const hayQueElegir = $derived(rangosVivos.length >= 2);
 
 	/** La ventana visible, con el índice TWR rebasado a su primer día. */
 	const view = $derived.by(() => {
@@ -665,8 +706,19 @@
 				</button>
 			</div>
 
-			<div class="range-selector">
-				{#each ranges as range (range.id)}
+			<!--
+				⚠️ **Los rangos que sobran se quitan, no se atenúan, y eso se decidió
+				midiendo.** La primera versión los dejaba `disabled` con un `title` que lo
+				explicaba, y falla por dos motivos a la vez: atenuado son `--text-faint`
+				(#8a8aa3) contra `--text-muted` (#a8a8c0) del vivo —dos peldaños contiguos
+				de la escala, que uno al lado del otro apenas se distinguen— y sobre todo
+				**`title` no se enseña en táctil**, que es exactamente donde se reportó el
+				fallo. Un control apagado que no se ve apagado y no puede explicarse es
+				peor que no estar. Enseñando solo los que hacen algo, el selector no miente
+				nunca y crece solo según crece tu historial.
+			-->
+			<div class="range-selector" class:oculto={!hayQueElegir}>
+				{#each rangosVivos as range (range.id)}
 					<button
 						class="range-btn"
 						class:active={currentRange === range.id}
@@ -690,7 +742,10 @@
 		{#if isSplitMode}
 			<p class="note accent">{$LL.db.chart_split_hint()}</p>
 		{/if}
-		{#if clipNotice === 'short'}
+		{#if !hayQueElegir}
+			<!-- Sin selector, la frase es lo único que explica por qué no hay rangos. -->
+			<p class="note">{$LL.db.chart_range_short()}</p>
+		{:else if clipNotice === 'short'}
 			<p class="note">{$LL.db.chart_range_short()}</p>
 		{:else if clipNotice === 'capped'}
 			<p class="note">{$LL.db.chart_range_capped({ days: series.points.length })}</p>
@@ -787,6 +842,10 @@
 	.toggle-btn:hover,
 	.range-btn:hover {
 		color: var(--text-primary);
+	}
+
+	.range-selector.oculto {
+		display: none;
 	}
 
 	.toggle-btn.active {
