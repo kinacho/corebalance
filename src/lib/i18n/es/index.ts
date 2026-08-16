@@ -687,7 +687,7 @@ const es = {
     timing_period_note: 'Medido sobre los {days:number} días con datos reales, sin anualizar.',
     legal_disclaimer: '<strong>Aviso Legal:</strong> CoreBalance es una herramienta puramente informativa y educativa. No constituye asesoramiento financiero, de inversión ni fiscal. Los datos mostrados pueden sufrir retrasos o ser inexactos. El desarrollador no se hace responsable de posibles pérdidas financieras derivadas del uso de esta aplicación. Invierte siempre bajo tu propia responsabilidad.',
     footer_tagline: 'Tu centro de mandos para una gestión de activos inteligente y equilibrada.',
-    changelog_trigger: 'v1.17.2 🚀',
+    changelog_trigger: 'v1.17.3 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Hecho con ❤️ para la comunidad inversora',
     reclassify_stocks: 'Acciones Individuales',
@@ -945,6 +945,13 @@ const es = {
         title: 'Cuando quieras cambiar algo',
         description: 'Desde aquí ajustas los pesos objetivo, añades activos, activas el libro de transacciones o importas de tu bróker. Este tutorial puedes relanzarlo cuando quieras desde el pie de página.',
       },
+      // Cierre del recorrido cuando lo que se está viendo es la cartera de ejemplo.
+      // En demo no existe el botón de gestionar —el `Header` lo esconde— y además no
+      // habría nada que gestionar: lo siguiente de verdad es salir y montar la tuya.
+      demo_exit: {
+        title: 'Esto es una cartera de ejemplo',
+        description: 'Los números que has visto son inventados, para que el panel tenga algo que enseñar. Sal de la demostración y monta la tuya: se queda en este dispositivo, sin cuenta ni registro. Este tutorial se relanza cuando quieras desde el pie de página.',
+      },
     },
   },
   // Demo Ribbon
@@ -967,6 +974,15 @@ const es = {
     close_aria: 'Cerrar modal',
     btn_understand: 'Entendido',
     releases: {
+      v1_17_3: {
+        date: '16 de Agosto, 2026',
+        badge: 'El tutorial ya señala a donde dice',
+        changes: [
+          '🧭 **El tutorial apuntaba a sitios equivocados, y en cuatro de sus seis paradas.** Cuando llegaba a explicar los mapas señalaba a una esquina vacía, porque los mapas están plegados y él no los abría; en el móvil el sitio correcto quedaba fuera de la pantalla; el paso que enseña a importar el CSV buscaba un botón antes de que el panel se abriera; y si estabas viendo la cartera de ejemplo, el último paso señalaba a un botón que en la demo ni existe. Ahora cada parada prepara su destino —abre el panel, cambia de pestaña, despliega lo que haga falta— y espera a que esté ahí antes de señalarlo.',
+          '📖 **Y de paso los paneles se abren solos al explicarlos.** Antes el tutorial resaltaba la cabecera cerrada de «Cuánto comprar este mes» mientras el texto hablaba del contenido que no se veía.',
+          '🧪 **Un caso nuevo lo vigila.** Recorre el tutorial entero en escritorio y en móvil y comprueba que cada parada señala a algo que existe y se ve, porque este fallo no rompía nada: el globo se dibujaba, el texto se leía y solo estaba mirando al sitio equivocado.'
+        ]
+      },
       v1_17_2: {
         date: '16 de Agosto, 2026',
         badge: 'Los botones de rango que no hacían nada',

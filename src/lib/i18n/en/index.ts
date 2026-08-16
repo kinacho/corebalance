@@ -672,7 +672,7 @@ const en: Translation = {
     timing_period_note: 'Measured over the {days} days with real data, not annualised.',
     legal_disclaimer: '<strong>Legal Disclaimer:</strong> CoreBalance is a purely informative and educational tool. It does not constitute financial, investment, or tax advice. The data displayed may be subject to delays or inaccuracies. The developer is not responsible for any financial losses resulting from the use of this application. Always invest at your own risk.',
     footer_tagline: 'Your control center for smart and balanced asset management.',
-    changelog_trigger: 'v1.17.2 🚀',
+    changelog_trigger: 'v1.17.3 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Made with ❤️ for the investing community',
     reclassify_stocks: 'Individual Stocks',
@@ -924,6 +924,10 @@ const en: Translation = {
         title: 'When you want to change something',
         description: 'From here you adjust target weights, add assets, switch on the transaction ledger or import from your broker. You can relaunch this tutorial any time from the footer.',
       },
+      demo_exit: {
+        title: 'This is a sample portfolio',
+        description: 'The numbers you have seen are made up, so the dashboard has something to show. Leave the demo and build your own: it stays on this device, no account and no sign-up. You can relaunch this tutorial any time from the footer.',
+      },
     },
   },
   // Demo Ribbon
@@ -946,6 +950,15 @@ const en: Translation = {
     close_aria: 'Close modal',
     btn_understand: 'Got it',
     releases: {
+      v1_17_3: {
+        date: 'August 16, 2026',
+        badge: 'The tutorial now points where it says',
+        changes: [
+          '🧭 **The tutorial was pointing at the wrong places — four of its six stops.** When it got to the maps it pointed at an empty corner, because the maps are folded and it never opened them; on mobile the right spot was off-screen; the step that teaches you to import a CSV looked for a button before the panel had opened; and if you were viewing the sample portfolio, the last step pointed at a button that does not exist in the demo. Each stop now prepares its destination — opens the panel, switches tab, unfolds what it needs — and waits for it to be there before pointing at it.',
+          '📖 **And the panels now open themselves as they are explained.** The tutorial used to highlight the closed header of "How much to buy this month" while the text described content you could not see.',
+          '🧪 **A new case watches it.** It walks the whole tutorial on desktop and mobile and checks every stop points at something that exists and is visible — because this failure broke nothing: the bubble was drawn, the text was readable, and it was simply looking the wrong way.'
+        ]
+      },
       v1_17_2: {
         date: 'August 16, 2026',
         badge: 'The range buttons that did nothing',

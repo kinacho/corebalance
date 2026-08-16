@@ -17,6 +17,22 @@
 	let isEditing = $state(false);
 	let editValue = $state('');
 
+	/**
+	 * El tutorial abre este panel antes de explicarlo.
+	 *
+	 * ⚠️ Sin esto el tour resaltaba la cabecera plegada —86 px medidos— mientras el
+	 * globo hablaba de «cuánto comprar este mes»: señalaba a un sitio correcto que no
+	 * enseñaba nada de lo que estaba contando. El estado vive aquí, así que la orden
+	 * se escucha aquí y no en la página, que tendría que ir a buscarlo.
+	 */
+	$effect(() => {
+		const abrir = (e: Event) => {
+			if ((e as CustomEvent).detail?.target === 'abrir-rebalance') isOpen = true;
+		};
+		window.addEventListener('tour-step', abrir);
+		return () => window.removeEventListener('tour-step', abrir);
+	});
+
 	const displayValue = $derived(contribution > 0 ? contribution.toString() : '');
 
 	const currentWeightMap = $derived.by(() => {

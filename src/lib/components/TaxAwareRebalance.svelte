@@ -8,6 +8,15 @@
 
 	let isOpen = $state(false);
 
+	/** El tutorial abre este panel antes de explicarlo; ver `RebalancePanel`. */
+	$effect(() => {
+		const abrir = (e: Event) => {
+			if ((e as CustomEvent).detail?.target === 'abrir-tax') isOpen = true;
+		};
+		window.addEventListener('tour-step', abrir);
+		return () => window.removeEventListener('tour-step', abrir);
+	});
+
 	const plan = $derived(portfolio.taxAwareRebalance);
 	const allMoves = $derived(plan.plans.flatMap((p) => p.moves));
 	const freeMoves = $derived(allMoves.filter((m) => m.taxFree));
