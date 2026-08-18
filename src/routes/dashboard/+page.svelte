@@ -15,6 +15,7 @@ import CompositionBars from "$lib/components/CompositionBars.svelte";
 import DriftChart from "$lib/components/DriftChart.svelte";
   import LeccionDelPanel from "$lib/components/LeccionDelPanel.svelte";
   import LookThroughMap from "$lib/components/LookThroughMap.svelte";
+  import ConcentracionPanel from "$lib/components/ConcentracionPanel.svelte";
   import Projections from "$lib/components/Projections.svelte";
   import CrisisSimulator from "$lib/components/CrisisSimulator.svelte";
   import PaypalDonation from "$lib/components/PaypalDonation.svelte";
@@ -541,6 +542,16 @@ import { formatCompactCurrency } from "$lib/chart-format";
 
           <div class="sidebar-item" class:tab-hidden={activeTab !== "rebalance"}>
             <TaxAwareRebalance />
+          </div>
+
+          <!--
+            El solapamiento de toda la cartera: qué parte del dinero acaba en la
+            misma empresa contando los fondos y las acciones a la vez. Va aquí y no
+            en el mapa del subyacente porque mide sobre el patrimonio total,
+            mientras que aquel mide sobre lo analizado.
+          -->
+          <div class="sidebar-item" class:tab-hidden={activeTab !== "rebalance"}>
+            <ConcentracionPanel />
           </div>
 
           <div class="sidebar-item" class:tab-hidden={activeTab !== "rebalance"}>

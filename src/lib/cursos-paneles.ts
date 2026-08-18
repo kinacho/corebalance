@@ -21,7 +21,7 @@
  * atrás, se encuentra un dashboard vacío. Y como es una SPA, al volver se remonta todo el
  * estado local (pestaña activa, mapas plegados o ampliados, rango del histórico).
  *
- * **Siete de los once paneles.** Los cuatro que quedan fuera, con su motivo:
+ * **Ocho de los doce paneles.** Los cuatro que quedan fuera, con su motivo:
  *
  * - `CompositionBars`, `DonutChart` y `Projections` no tienen lección que los explique.
  * - ⚠️ **`HistoryChart` la tiene y se queda fuera igual.** Su pareja sería `twr-vs-mwr`, que
@@ -44,6 +44,7 @@ export type PanelConLeccion =
 	| 'timing'
 	| 'drift'
 	| 'lookthrough'
+	| 'concentracion'
 	| 'deviation'
 	| 'rebalance'
 	| 'tax'
@@ -57,6 +58,10 @@ const LECCIONES: Record<PanelConLeccion, LeccionDePanel> = {
 	drift: {
 		ruta: '/cursos/rebalancear-no-te-hara-ganar-mas/cuanto-llevas-descuadrado',
 		titulo: 'Cuánto tiempo llevas descuadrado'
+	},
+	concentracion: {
+		ruta: '/cursos/tu-cartera-no-es-la-que-crees/tus-fondos-se-solapan',
+		titulo: 'Tu World y tu S&P 500 apuntan a las mismas empresas'
 	},
 	lookthrough: {
 		ruta: '/cursos/tu-cartera-no-es-la-que-crees/exposicion-real',

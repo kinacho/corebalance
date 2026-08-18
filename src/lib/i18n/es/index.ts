@@ -691,7 +691,7 @@ const es = {
     timing_period_note: 'Medido sobre los {days:number} días con datos reales, sin anualizar.',
     legal_disclaimer: '<strong>Aviso Legal:</strong> CoreBalance es una herramienta puramente informativa y educativa. No constituye asesoramiento financiero, de inversión ni fiscal. Los datos mostrados pueden sufrir retrasos o ser inexactos. El desarrollador no se hace responsable de posibles pérdidas financieras derivadas del uso de esta aplicación. Invierte siempre bajo tu propia responsabilidad.',
     footer_tagline: 'Tu centro de mandos para una gestión de activos inteligente y equilibrada.',
-    changelog_trigger: 'v1.17.3 🚀',
+    changelog_trigger: 'v1.18.0 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Hecho con ❤️ para la comunidad inversora',
     reclassify_stocks: 'Acciones Individuales',
@@ -831,9 +831,6 @@ const es = {
     sector_materials: 'Materiales',
     sector_utilities: 'Servicios públicos',
     sector_real_estate: 'Inmobiliario',
-    overlap_heading: 'Tus fondos se pisan',
-    overlap_row: '{a:string} y {b:string} apuntan a las mismas empresas por unos {amount:string}, un {pct:string} de lo analizado.',
-    overlap_same_index: 'Los dos replican el mismo índice: es duplicación completa.',
     uncovered: '{amount:string} sin analizar ({tickers:string}): acciones sueltas, efectivo o activos cuyo índice no reconocemos.',
     no_sector: '{amount:string} de renta fija se cuenta por región pero no por sector.',
     coverage_note: 'Los porcentajes son sobre lo analizado ({amount:string}), no sobre tu patrimonio total.',
@@ -841,6 +838,33 @@ const es = {
     as_of: 'Pesos de índice a fecha {date:string}, tomados de las fichas oficiales de cada índice.',
     estimated_warning: 'Los pesos de {indices:string} son una estimación sin ficha contrastada, así que tómalos como orden de magnitud.',
     disclaimer: 'Estimación calculada a nivel de índice, no de posición individual: sirve para ver a qué estás expuesto, no como composición exacta de tu cartera.',
+  },
+  // Concentración real: solapamiento a nivel de empresa sobre toda la cartera
+  concentracion: {
+    title: 'Solapamiento real',
+    subtitle: 'Toda tu cartera junta, empresa por empresa',
+    empty: 'Añade fondos indexados o acciones para ver tu concentración real.',
+    headline: 'Al menos {amount:string} de tu cartera, un {pct:string}, llega a la misma empresa por más de un camino.',
+    headline_none: 'Ninguna empresa te llega por dos caminos a la vez.',
+    ranking_heading: 'Empresa por empresa',
+    at_least: 'al menos {pct:string}',
+    source_fund: '{amount:string} dentro de {ticker:string}',
+    source_direct: '{amount:string} en directo',
+    badge_direct_and_fund: 'La tienes suelta y dentro de un fondo',
+    badge_two_funds: 'Te llega por dos fondos',
+    show_all: 'Ver las {count:string} empresas',
+    show_less: 'Ver solo las mayores',
+    funds_heading: 'Y estos fondos tuyos se pisan entre ellos',
+    fund_row: '{a:string} y {b:string} apuntan a las mismas empresas por unos {amount:string}, un {pct:string} de tu patrimonio.',
+    fund_row_bonds: '{a:string} y {b:string} cubren la misma deuda por unos {amount:string}, un {pct:string} de tu patrimonio.',
+    fund_same_index: 'Los dos replican el mismo índice: es duplicación completa.',
+    notes_summary: 'Qué se ha mirado y qué no',
+    floor_note: 'Todas las cifras son un mínimo. De cada índice se ven sus mayores posiciones, nunca la cola, así que tu exposición real a una empresa solo puede ser mayor que la que sale aquí.',
+    coverage_row: 'De {index:string} se ve un {pct:string} del índice.',
+    no_company_data: '{amount:string} sin datos de empresa ({tickers:string}): pequeña capitalización y renta fija, donde un top diez no dice nada sobre concentración.',
+    outside: '{amount:string} fuera del análisis ({tickers:string}): efectivo, cripto o fondos cuyo índice no reconocemos.',
+    as_of: 'Mayores posiciones de cada índice leídas el {date:string}.',
+    disclaimer: 'Estimación a nivel de índice, no la composición exacta de tus fondos.',
   },
   // Projections
   projections: {
@@ -978,6 +1002,18 @@ const es = {
     close_aria: 'Cerrar modal',
     btn_understand: 'Entendido',
     releases: {
+      v1_18_0: {
+        date: '18 de Agosto, 2026',
+        badge: 'Cuánto de tu cartera es la misma empresa',
+        changes: [
+          '🧩 **Panel nuevo: cuánto de tu dinero acaba en la misma empresa.** Suma lo que llevas dentro de cada fondo y lo que tienes en acciones sueltas, y te lo dice empresa por empresa sobre tu patrimonio total: «al menos un 7,3 % en Apple: 6.000 € en directo y 2.470 € más dentro de tu MSCI World». Está en la columna de herramientas, junto al plan de traspaso.',
+          '🔍 **Hasta ahora solo se comparaban los fondos entre ellos, y tus acciones se quedaban literalmente «sin analizar».** El caso más claro era la propia cartera de ejemplo de la app: un MSCI World y, aparte, Apple, Microsoft, Amazon y Alphabet, que son cuatro de sus mayores posiciones. No salía ni un aviso.',
+          '🏦 **Y la cartera conservadora tampoco podía dar ninguno**, porque faltaba la regla que dice que la deuda pública de la zona euro ya va dentro de un agregado global. Ahora está, y también las dos que faltaban del IBEX 35 contra el World y el All-World.',
+          '⚖️ **Todas las cifras son un mínimo, y el panel lo dice sin letra pequeña.** De cada índice se ven sus mayores posiciones, nunca la cola, así que tu exposición real solo puede ser mayor que la que sale. Debajo te enseña qué parte de cada índice está mirando —de un 21 % del MSCI Europe a un 78 % del IBEX— y qué se queda fuera: la pequeña capitalización y la renta fija, donde un top diez no dice nada, y el efectivo.',
+          '🔤 **Las clases de acción de una empresa cuentan como una.** Tu Alphabet es tu Alphabet, llegue por la clase A o por la C; y un Apple comprado en Fráncfort se reconoce por su ISIN. Los códigos se verificaron uno a uno contra la fuente, porque un código mal puesto no deja un hueco: le atribuye tu dinero a otra empresa.',
+          '🧪 **38 casos nuevos**, incluida la cartera de ejemplo entera, y la lista de empresas se comprueba sola: si una posición apunta a una empresa que no existe en el registro, la suite se pone roja.'
+        ]
+      },
       v1_17_3: {
         date: '16 de Agosto, 2026',
         badge: 'El tutorial ya señala a donde dice',

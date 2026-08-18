@@ -160,6 +160,24 @@ test.describe('Tema claro y oscuro', () => {
 		await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
 
 		/**
+		 * El panel de concentración se abre a mano antes de medir.
+		 *
+		 * ⚠️ Su cabecera es un `<button>`, así que su contenido —el titular, el
+		 * ranking de empresas, el aviso de las solapadas y las notas— **solo existe
+		 * en pantalla si alguien lo despliega**, y no se puede forzar desde fuera.
+		 * Se usa el propio evento de la app, el mismo mecanismo con el que el panel
+		 * de traspaso se abre en el tutorial y con el que el arnés llega al panel de
+		 * gestión. Sin esta línea el barrido pasaría en verde sobre texto que no ha
+		 * mirado, que es la forma de fallo que este fichero ya documenta dos veces.
+		 */
+		await page.evaluate(() =>
+			window.dispatchEvent(
+				new CustomEvent('tour-step', { detail: { target: 'abrir-concentracion' } })
+			)
+		);
+		await expect(page.locator('#tour-concentracion .titular, #tour-concentracion .empty')).toBeVisible();
+
+		/**
 		 * ⚠️ Tres detalles de la sonda que vienen de falsos positivos reales, todos
 		 * documentados en `scripts/contraste-vivo.mjs`: el color se resuelve pintando
 		 * y leyendo el píxel (nunca parseando, porque `color-mix()` se computa como

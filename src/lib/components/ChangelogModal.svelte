@@ -26,6 +26,7 @@
 
 	// Mapeo dinámico desde el diccionario de traducciones
 	const releaseVersions = [
+		'v1_18_0',
 		'v1_17_3',
 		'v1_17_2',
 		'v1_17_1',
@@ -84,6 +85,12 @@
 		/* Medido igual que los de abajo: 3,36 en oscuro y 4,34 en claro sobre su propio
 		   tinte — el mejor peor caso de los tonos probados, y sin parecerse al rosa de
 		   la 1.17.2, que va justo debajo. */
+		/* Medido como los de abajo, contra su propio tinte y en los dos temas:
+		   **3,71 en oscuro y 3,91 en claro**, el mejor peor caso de los doce tonos
+		   probados —por encima del 3,35/4,33 del azul de la 1.17.3, que va justo
+		   debajo, y del 3,23 del teal que hace de vara—. El modelo de medida se
+		   contrastó reproduciendo la cifra que este fichero ya anota para la 1.17.3. */
+		v1_18_0: '#c026d3',
 		v1_17_3: '#2563eb',
 		v1_17_2: '#e11d48',
 		v1_17_1: '#8b5cf6',

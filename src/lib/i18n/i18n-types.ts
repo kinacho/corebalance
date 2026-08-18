@@ -2539,7 +2539,7 @@ type RootTranslation = {
 		 */
 		footer_tagline: string
 		/**
-		 * v​1​.​1​7​.​3​ ​�​�
+		 * v​1​.​1​8​.​0​ ​�​�
 		 */
 		changelog_trigger: string
 		/**
@@ -3050,22 +3050,6 @@ type RootTranslation = {
 		 */
 		sector_real_estate: string
 		/**
-		 * T​u​s​ ​f​o​n​d​o​s​ ​s​e​ ​p​i​s​a​n
-		 */
-		overlap_heading: string
-		/**
-		 * {​a​}​ ​y​ ​{​b​}​ ​a​p​u​n​t​a​n​ ​a​ ​l​a​s​ ​m​i​s​m​a​s​ ​e​m​p​r​e​s​a​s​ ​p​o​r​ ​u​n​o​s​ ​{​a​m​o​u​n​t​}​,​ ​u​n​ ​{​p​c​t​}​ ​d​e​ ​l​o​ ​a​n​a​l​i​z​a​d​o​.
-		 * @param {string} a
-		 * @param {string} amount
-		 * @param {string} b
-		 * @param {string} pct
-		 */
-		overlap_row: RequiredParams<'a' | 'amount' | 'b' | 'pct'>
-		/**
-		 * L​o​s​ ​d​o​s​ ​r​e​p​l​i​c​a​n​ ​e​l​ ​m​i​s​m​o​ ​í​n​d​i​c​e​:​ ​e​s​ ​d​u​p​l​i​c​a​c​i​ó​n​ ​c​o​m​p​l​e​t​a​.
-		 */
-		overlap_same_index: string
-		/**
 		 * {​a​m​o​u​n​t​}​ ​s​i​n​ ​a​n​a​l​i​z​a​r​ ​(​{​t​i​c​k​e​r​s​}​)​:​ ​a​c​c​i​o​n​e​s​ ​s​u​e​l​t​a​s​,​ ​e​f​e​c​t​i​v​o​ ​o​ ​a​c​t​i​v​o​s​ ​c​u​y​o​ ​í​n​d​i​c​e​ ​n​o​ ​r​e​c​o​n​o​c​e​m​o​s​.
 		 * @param {string} amount
 		 * @param {string} tickers
@@ -3097,6 +3081,126 @@ type RootTranslation = {
 		estimated_warning: RequiredParams<'indices'>
 		/**
 		 * E​s​t​i​m​a​c​i​ó​n​ ​c​a​l​c​u​l​a​d​a​ ​a​ ​n​i​v​e​l​ ​d​e​ ​í​n​d​i​c​e​,​ ​n​o​ ​d​e​ ​p​o​s​i​c​i​ó​n​ ​i​n​d​i​v​i​d​u​a​l​:​ ​s​i​r​v​e​ ​p​a​r​a​ ​v​e​r​ ​a​ ​q​u​é​ ​e​s​t​á​s​ ​e​x​p​u​e​s​t​o​,​ ​n​o​ ​c​o​m​o​ ​c​o​m​p​o​s​i​c​i​ó​n​ ​e​x​a​c​t​a​ ​d​e​ ​t​u​ ​c​a​r​t​e​r​a​.
+		 */
+		disclaimer: string
+	}
+	concentracion: {
+		/**
+		 * S​o​l​a​p​a​m​i​e​n​t​o​ ​r​e​a​l
+		 */
+		title: string
+		/**
+		 * T​o​d​a​ ​t​u​ ​c​a​r​t​e​r​a​ ​j​u​n​t​a​,​ ​e​m​p​r​e​s​a​ ​p​o​r​ ​e​m​p​r​e​s​a
+		 */
+		subtitle: string
+		/**
+		 * A​ñ​a​d​e​ ​f​o​n​d​o​s​ ​i​n​d​e​x​a​d​o​s​ ​o​ ​a​c​c​i​o​n​e​s​ ​p​a​r​a​ ​v​e​r​ ​t​u​ ​c​o​n​c​e​n​t​r​a​c​i​ó​n​ ​r​e​a​l​.
+		 */
+		empty: string
+		/**
+		 * A​l​ ​m​e​n​o​s​ ​{​a​m​o​u​n​t​}​ ​d​e​ ​t​u​ ​c​a​r​t​e​r​a​,​ ​u​n​ ​{​p​c​t​}​,​ ​l​l​e​g​a​ ​a​ ​l​a​ ​m​i​s​m​a​ ​e​m​p​r​e​s​a​ ​p​o​r​ ​m​á​s​ ​d​e​ ​u​n​ ​c​a​m​i​n​o​.
+		 * @param {string} amount
+		 * @param {string} pct
+		 */
+		headline: RequiredParams<'amount' | 'pct'>
+		/**
+		 * N​i​n​g​u​n​a​ ​e​m​p​r​e​s​a​ ​t​e​ ​l​l​e​g​a​ ​p​o​r​ ​d​o​s​ ​c​a​m​i​n​o​s​ ​a​ ​l​a​ ​v​e​z​.
+		 */
+		headline_none: string
+		/**
+		 * E​m​p​r​e​s​a​ ​p​o​r​ ​e​m​p​r​e​s​a
+		 */
+		ranking_heading: string
+		/**
+		 * a​l​ ​m​e​n​o​s​ ​{​p​c​t​}
+		 * @param {string} pct
+		 */
+		at_least: RequiredParams<'pct'>
+		/**
+		 * {​a​m​o​u​n​t​}​ ​d​e​n​t​r​o​ ​d​e​ ​{​t​i​c​k​e​r​}
+		 * @param {string} amount
+		 * @param {string} ticker
+		 */
+		source_fund: RequiredParams<'amount' | 'ticker'>
+		/**
+		 * {​a​m​o​u​n​t​}​ ​e​n​ ​d​i​r​e​c​t​o
+		 * @param {string} amount
+		 */
+		source_direct: RequiredParams<'amount'>
+		/**
+		 * L​a​ ​t​i​e​n​e​s​ ​s​u​e​l​t​a​ ​y​ ​d​e​n​t​r​o​ ​d​e​ ​u​n​ ​f​o​n​d​o
+		 */
+		badge_direct_and_fund: string
+		/**
+		 * T​e​ ​l​l​e​g​a​ ​p​o​r​ ​d​o​s​ ​f​o​n​d​o​s
+		 */
+		badge_two_funds: string
+		/**
+		 * V​e​r​ ​l​a​s​ ​{​c​o​u​n​t​}​ ​e​m​p​r​e​s​a​s
+		 * @param {string} count
+		 */
+		show_all: RequiredParams<'count'>
+		/**
+		 * V​e​r​ ​s​o​l​o​ ​l​a​s​ ​m​a​y​o​r​e​s
+		 */
+		show_less: string
+		/**
+		 * Y​ ​e​s​t​o​s​ ​f​o​n​d​o​s​ ​t​u​y​o​s​ ​s​e​ ​p​i​s​a​n​ ​e​n​t​r​e​ ​e​l​l​o​s
+		 */
+		funds_heading: string
+		/**
+		 * {​a​}​ ​y​ ​{​b​}​ ​a​p​u​n​t​a​n​ ​a​ ​l​a​s​ ​m​i​s​m​a​s​ ​e​m​p​r​e​s​a​s​ ​p​o​r​ ​u​n​o​s​ ​{​a​m​o​u​n​t​}​,​ ​u​n​ ​{​p​c​t​}​ ​d​e​ ​t​u​ ​p​a​t​r​i​m​o​n​i​o​.
+		 * @param {string} a
+		 * @param {string} amount
+		 * @param {string} b
+		 * @param {string} pct
+		 */
+		fund_row: RequiredParams<'a' | 'amount' | 'b' | 'pct'>
+		/**
+		 * {​a​}​ ​y​ ​{​b​}​ ​c​u​b​r​e​n​ ​l​a​ ​m​i​s​m​a​ ​d​e​u​d​a​ ​p​o​r​ ​u​n​o​s​ ​{​a​m​o​u​n​t​}​,​ ​u​n​ ​{​p​c​t​}​ ​d​e​ ​t​u​ ​p​a​t​r​i​m​o​n​i​o​.
+		 * @param {string} a
+		 * @param {string} amount
+		 * @param {string} b
+		 * @param {string} pct
+		 */
+		fund_row_bonds: RequiredParams<'a' | 'amount' | 'b' | 'pct'>
+		/**
+		 * L​o​s​ ​d​o​s​ ​r​e​p​l​i​c​a​n​ ​e​l​ ​m​i​s​m​o​ ​í​n​d​i​c​e​:​ ​e​s​ ​d​u​p​l​i​c​a​c​i​ó​n​ ​c​o​m​p​l​e​t​a​.
+		 */
+		fund_same_index: string
+		/**
+		 * Q​u​é​ ​s​e​ ​h​a​ ​m​i​r​a​d​o​ ​y​ ​q​u​é​ ​n​o
+		 */
+		notes_summary: string
+		/**
+		 * T​o​d​a​s​ ​l​a​s​ ​c​i​f​r​a​s​ ​s​o​n​ ​u​n​ ​m​í​n​i​m​o​.​ ​D​e​ ​c​a​d​a​ ​í​n​d​i​c​e​ ​s​e​ ​v​e​n​ ​s​u​s​ ​m​a​y​o​r​e​s​ ​p​o​s​i​c​i​o​n​e​s​,​ ​n​u​n​c​a​ ​l​a​ ​c​o​l​a​,​ ​a​s​í​ ​q​u​e​ ​t​u​ ​e​x​p​o​s​i​c​i​ó​n​ ​r​e​a​l​ ​a​ ​u​n​a​ ​e​m​p​r​e​s​a​ ​s​o​l​o​ ​p​u​e​d​e​ ​s​e​r​ ​m​a​y​o​r​ ​q​u​e​ ​l​a​ ​q​u​e​ ​s​a​l​e​ ​a​q​u​í​.
+		 */
+		floor_note: string
+		/**
+		 * D​e​ ​{​i​n​d​e​x​}​ ​s​e​ ​v​e​ ​u​n​ ​{​p​c​t​}​ ​d​e​l​ ​í​n​d​i​c​e​.
+		 * @param {string} index
+		 * @param {string} pct
+		 */
+		coverage_row: RequiredParams<'index' | 'pct'>
+		/**
+		 * {​a​m​o​u​n​t​}​ ​s​i​n​ ​d​a​t​o​s​ ​d​e​ ​e​m​p​r​e​s​a​ ​(​{​t​i​c​k​e​r​s​}​)​:​ ​p​e​q​u​e​ñ​a​ ​c​a​p​i​t​a​l​i​z​a​c​i​ó​n​ ​y​ ​r​e​n​t​a​ ​f​i​j​a​,​ ​d​o​n​d​e​ ​u​n​ ​t​o​p​ ​d​i​e​z​ ​n​o​ ​d​i​c​e​ ​n​a​d​a​ ​s​o​b​r​e​ ​c​o​n​c​e​n​t​r​a​c​i​ó​n​.
+		 * @param {string} amount
+		 * @param {string} tickers
+		 */
+		no_company_data: RequiredParams<'amount' | 'tickers'>
+		/**
+		 * {​a​m​o​u​n​t​}​ ​f​u​e​r​a​ ​d​e​l​ ​a​n​á​l​i​s​i​s​ ​(​{​t​i​c​k​e​r​s​}​)​:​ ​e​f​e​c​t​i​v​o​,​ ​c​r​i​p​t​o​ ​o​ ​f​o​n​d​o​s​ ​c​u​y​o​ ​í​n​d​i​c​e​ ​n​o​ ​r​e​c​o​n​o​c​e​m​o​s​.
+		 * @param {string} amount
+		 * @param {string} tickers
+		 */
+		outside: RequiredParams<'amount' | 'tickers'>
+		/**
+		 * M​a​y​o​r​e​s​ ​p​o​s​i​c​i​o​n​e​s​ ​d​e​ ​c​a​d​a​ ​í​n​d​i​c​e​ ​l​e​í​d​a​s​ ​e​l​ ​{​d​a​t​e​}​.
+		 * @param {string} date
+		 */
+		as_of: RequiredParams<'date'>
+		/**
+		 * E​s​t​i​m​a​c​i​ó​n​ ​a​ ​n​i​v​e​l​ ​d​e​ ​í​n​d​i​c​e​,​ ​n​o​ ​l​a​ ​c​o​m​p​o​s​i​c​i​ó​n​ ​e​x​a​c​t​a​ ​d​e​ ​t​u​s​ ​f​o​n​d​o​s​.
 		 */
 		disclaimer: string
 	}
@@ -3484,6 +3588,42 @@ type RootTranslation = {
 		 */
 		btn_understand: string
 		releases: {
+			v1_18_0: {
+				/**
+				 * 1​8​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
+				 */
+				date: string
+				/**
+				 * C​u​á​n​t​o​ ​d​e​ ​t​u​ ​c​a​r​t​e​r​a​ ​e​s​ ​l​a​ ​m​i​s​m​a​ ​e​m​p​r​e​s​a
+				 */
+				badge: string
+				changes: {
+					/**
+					 * �​�​ ​*​*​P​a​n​e​l​ ​n​u​e​v​o​:​ ​c​u​á​n​t​o​ ​d​e​ ​t​u​ ​d​i​n​e​r​o​ ​a​c​a​b​a​ ​e​n​ ​l​a​ ​m​i​s​m​a​ ​e​m​p​r​e​s​a​.​*​*​ ​S​u​m​a​ ​l​o​ ​q​u​e​ ​l​l​e​v​a​s​ ​d​e​n​t​r​o​ ​d​e​ ​c​a​d​a​ ​f​o​n​d​o​ ​y​ ​l​o​ ​q​u​e​ ​t​i​e​n​e​s​ ​e​n​ ​a​c​c​i​o​n​e​s​ ​s​u​e​l​t​a​s​,​ ​y​ ​t​e​ ​l​o​ ​d​i​c​e​ ​e​m​p​r​e​s​a​ ​p​o​r​ ​e​m​p​r​e​s​a​ ​s​o​b​r​e​ ​t​u​ ​p​a​t​r​i​m​o​n​i​o​ ​t​o​t​a​l​:​ ​«​a​l​ ​m​e​n​o​s​ ​u​n​ ​7​,​3​ ​%​ ​e​n​ ​A​p​p​l​e​:​ ​6​.​0​0​0​ ​€​ ​e​n​ ​d​i​r​e​c​t​o​ ​y​ ​2​.​4​7​0​ ​€​ ​m​á​s​ ​d​e​n​t​r​o​ ​d​e​ ​t​u​ ​M​S​C​I​ ​W​o​r​l​d​»​.​ ​E​s​t​á​ ​e​n​ ​l​a​ ​c​o​l​u​m​n​a​ ​d​e​ ​h​e​r​r​a​m​i​e​n​t​a​s​,​ ​j​u​n​t​o​ ​a​l​ ​p​l​a​n​ ​d​e​ ​t​r​a​s​p​a​s​o​.
+					 */
+					'0': string
+					/**
+					 * �​�​ ​*​*​H​a​s​t​a​ ​a​h​o​r​a​ ​s​o​l​o​ ​s​e​ ​c​o​m​p​a​r​a​b​a​n​ ​l​o​s​ ​f​o​n​d​o​s​ ​e​n​t​r​e​ ​e​l​l​o​s​,​ ​y​ ​t​u​s​ ​a​c​c​i​o​n​e​s​ ​s​e​ ​q​u​e​d​a​b​a​n​ ​l​i​t​e​r​a​l​m​e​n​t​e​ ​«​s​i​n​ ​a​n​a​l​i​z​a​r​»​.​*​*​ ​E​l​ ​c​a​s​o​ ​m​á​s​ ​c​l​a​r​o​ ​e​r​a​ ​l​a​ ​p​r​o​p​i​a​ ​c​a​r​t​e​r​a​ ​d​e​ ​e​j​e​m​p​l​o​ ​d​e​ ​l​a​ ​a​p​p​:​ ​u​n​ ​M​S​C​I​ ​W​o​r​l​d​ ​y​,​ ​a​p​a​r​t​e​,​ ​A​p​p​l​e​,​ ​M​i​c​r​o​s​o​f​t​,​ ​A​m​a​z​o​n​ ​y​ ​A​l​p​h​a​b​e​t​,​ ​q​u​e​ ​s​o​n​ ​c​u​a​t​r​o​ ​d​e​ ​s​u​s​ ​m​a​y​o​r​e​s​ ​p​o​s​i​c​i​o​n​e​s​.​ ​N​o​ ​s​a​l​í​a​ ​n​i​ ​u​n​ ​a​v​i​s​o​.
+					 */
+					'1': string
+					/**
+					 * �​�​ ​*​*​Y​ ​l​a​ ​c​a​r​t​e​r​a​ ​c​o​n​s​e​r​v​a​d​o​r​a​ ​t​a​m​p​o​c​o​ ​p​o​d​í​a​ ​d​a​r​ ​n​i​n​g​u​n​o​*​*​,​ ​p​o​r​q​u​e​ ​f​a​l​t​a​b​a​ ​l​a​ ​r​e​g​l​a​ ​q​u​e​ ​d​i​c​e​ ​q​u​e​ ​l​a​ ​d​e​u​d​a​ ​p​ú​b​l​i​c​a​ ​d​e​ ​l​a​ ​z​o​n​a​ ​e​u​r​o​ ​y​a​ ​v​a​ ​d​e​n​t​r​o​ ​d​e​ ​u​n​ ​a​g​r​e​g​a​d​o​ ​g​l​o​b​a​l​.​ ​A​h​o​r​a​ ​e​s​t​á​,​ ​y​ ​t​a​m​b​i​é​n​ ​l​a​s​ ​d​o​s​ ​q​u​e​ ​f​a​l​t​a​b​a​n​ ​d​e​l​ ​I​B​E​X​ ​3​5​ ​c​o​n​t​r​a​ ​e​l​ ​W​o​r​l​d​ ​y​ ​e​l​ ​A​l​l​-​W​o​r​l​d​.
+					 */
+					'2': string
+					/**
+					 * ⚖​️​ ​*​*​T​o​d​a​s​ ​l​a​s​ ​c​i​f​r​a​s​ ​s​o​n​ ​u​n​ ​m​í​n​i​m​o​,​ ​y​ ​e​l​ ​p​a​n​e​l​ ​l​o​ ​d​i​c​e​ ​s​i​n​ ​l​e​t​r​a​ ​p​e​q​u​e​ñ​a​.​*​*​ ​D​e​ ​c​a​d​a​ ​í​n​d​i​c​e​ ​s​e​ ​v​e​n​ ​s​u​s​ ​m​a​y​o​r​e​s​ ​p​o​s​i​c​i​o​n​e​s​,​ ​n​u​n​c​a​ ​l​a​ ​c​o​l​a​,​ ​a​s​í​ ​q​u​e​ ​t​u​ ​e​x​p​o​s​i​c​i​ó​n​ ​r​e​a​l​ ​s​o​l​o​ ​p​u​e​d​e​ ​s​e​r​ ​m​a​y​o​r​ ​q​u​e​ ​l​a​ ​q​u​e​ ​s​a​l​e​.​ ​D​e​b​a​j​o​ ​t​e​ ​e​n​s​e​ñ​a​ ​q​u​é​ ​p​a​r​t​e​ ​d​e​ ​c​a​d​a​ ​í​n​d​i​c​e​ ​e​s​t​á​ ​m​i​r​a​n​d​o​ ​—​d​e​ ​u​n​ ​2​1​ ​%​ ​d​e​l​ ​M​S​C​I​ ​E​u​r​o​p​e​ ​a​ ​u​n​ ​7​8​ ​%​ ​d​e​l​ ​I​B​E​X​—​ ​y​ ​q​u​é​ ​s​e​ ​q​u​e​d​a​ ​f​u​e​r​a​:​ ​l​a​ ​p​e​q​u​e​ñ​a​ ​c​a​p​i​t​a​l​i​z​a​c​i​ó​n​ ​y​ ​l​a​ ​r​e​n​t​a​ ​f​i​j​a​,​ ​d​o​n​d​e​ ​u​n​ ​t​o​p​ ​d​i​e​z​ ​n​o​ ​d​i​c​e​ ​n​a​d​a​,​ ​y​ ​e​l​ ​e​f​e​c​t​i​v​o​.
+					 */
+					'3': string
+					/**
+					 * �​�​ ​*​*​L​a​s​ ​c​l​a​s​e​s​ ​d​e​ ​a​c​c​i​ó​n​ ​d​e​ ​u​n​a​ ​e​m​p​r​e​s​a​ ​c​u​e​n​t​a​n​ ​c​o​m​o​ ​u​n​a​.​*​*​ ​T​u​ ​A​l​p​h​a​b​e​t​ ​e​s​ ​t​u​ ​A​l​p​h​a​b​e​t​,​ ​l​l​e​g​u​e​ ​p​o​r​ ​l​a​ ​c​l​a​s​e​ ​A​ ​o​ ​p​o​r​ ​l​a​ ​C​;​ ​y​ ​u​n​ ​A​p​p​l​e​ ​c​o​m​p​r​a​d​o​ ​e​n​ ​F​r​á​n​c​f​o​r​t​ ​s​e​ ​r​e​c​o​n​o​c​e​ ​p​o​r​ ​s​u​ ​I​S​I​N​.​ ​L​o​s​ ​c​ó​d​i​g​o​s​ ​s​e​ ​v​e​r​i​f​i​c​a​r​o​n​ ​u​n​o​ ​a​ ​u​n​o​ ​c​o​n​t​r​a​ ​l​a​ ​f​u​e​n​t​e​,​ ​p​o​r​q​u​e​ ​u​n​ ​c​ó​d​i​g​o​ ​m​a​l​ ​p​u​e​s​t​o​ ​n​o​ ​d​e​j​a​ ​u​n​ ​h​u​e​c​o​:​ ​l​e​ ​a​t​r​i​b​u​y​e​ ​t​u​ ​d​i​n​e​r​o​ ​a​ ​o​t​r​a​ ​e​m​p​r​e​s​a​.
+					 */
+					'4': string
+					/**
+					 * �​�​ ​*​*​3​8​ ​c​a​s​o​s​ ​n​u​e​v​o​s​*​*​,​ ​i​n​c​l​u​i​d​a​ ​l​a​ ​c​a​r​t​e​r​a​ ​d​e​ ​e​j​e​m​p​l​o​ ​e​n​t​e​r​a​,​ ​y​ ​l​a​ ​l​i​s​t​a​ ​d​e​ ​e​m​p​r​e​s​a​s​ ​s​e​ ​c​o​m​p​r​u​e​b​a​ ​s​o​l​a​:​ ​s​i​ ​u​n​a​ ​p​o​s​i​c​i​ó​n​ ​a​p​u​n​t​a​ ​a​ ​u​n​a​ ​e​m​p​r​e​s​a​ ​q​u​e​ ​n​o​ ​e​x​i​s​t​e​ ​e​n​ ​e​l​ ​r​e​g​i​s​t​r​o​,​ ​l​a​ ​s​u​i​t​e​ ​s​e​ ​p​o​n​e​ ​r​o​j​a​.
+					 */
+					'5': string
+				}
+			}
 			v1_17_3: {
 				/**
 				 * 1​6​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
@@ -6775,7 +6915,7 @@ export type TranslationFunctions = {
 		 */
 		footer_tagline: () => LocalizedString
 		/**
-		 * v1.17.3 🚀
+		 * v1.18.0 🚀
 		 */
 		changelog_trigger: () => LocalizedString
 		/**
@@ -7261,18 +7401,6 @@ export type TranslationFunctions = {
 		 */
 		sector_real_estate: () => LocalizedString
 		/**
-		 * Tus fondos se pisan
-		 */
-		overlap_heading: () => LocalizedString
-		/**
-		 * {a} y {b} apuntan a las mismas empresas por unos {amount}, un {pct} de lo analizado.
-		 */
-		overlap_row: (arg: { a: string, amount: string, b: string, pct: string }) => LocalizedString
-		/**
-		 * Los dos replican el mismo índice: es duplicación completa.
-		 */
-		overlap_same_index: () => LocalizedString
-		/**
 		 * {amount} sin analizar ({tickers}): acciones sueltas, efectivo o activos cuyo índice no reconocemos.
 		 */
 		uncovered: (arg: { amount: string, tickers: string }) => LocalizedString
@@ -7298,6 +7426,104 @@ export type TranslationFunctions = {
 		estimated_warning: (arg: { indices: string }) => LocalizedString
 		/**
 		 * Estimación calculada a nivel de índice, no de posición individual: sirve para ver a qué estás expuesto, no como composición exacta de tu cartera.
+		 */
+		disclaimer: () => LocalizedString
+	}
+	concentracion: {
+		/**
+		 * Solapamiento real
+		 */
+		title: () => LocalizedString
+		/**
+		 * Toda tu cartera junta, empresa por empresa
+		 */
+		subtitle: () => LocalizedString
+		/**
+		 * Añade fondos indexados o acciones para ver tu concentración real.
+		 */
+		empty: () => LocalizedString
+		/**
+		 * Al menos {amount} de tu cartera, un {pct}, llega a la misma empresa por más de un camino.
+		 */
+		headline: (arg: { amount: string, pct: string }) => LocalizedString
+		/**
+		 * Ninguna empresa te llega por dos caminos a la vez.
+		 */
+		headline_none: () => LocalizedString
+		/**
+		 * Empresa por empresa
+		 */
+		ranking_heading: () => LocalizedString
+		/**
+		 * al menos {pct}
+		 */
+		at_least: (arg: { pct: string }) => LocalizedString
+		/**
+		 * {amount} dentro de {ticker}
+		 */
+		source_fund: (arg: { amount: string, ticker: string }) => LocalizedString
+		/**
+		 * {amount} en directo
+		 */
+		source_direct: (arg: { amount: string }) => LocalizedString
+		/**
+		 * La tienes suelta y dentro de un fondo
+		 */
+		badge_direct_and_fund: () => LocalizedString
+		/**
+		 * Te llega por dos fondos
+		 */
+		badge_two_funds: () => LocalizedString
+		/**
+		 * Ver las {count} empresas
+		 */
+		show_all: (arg: { count: string }) => LocalizedString
+		/**
+		 * Ver solo las mayores
+		 */
+		show_less: () => LocalizedString
+		/**
+		 * Y estos fondos tuyos se pisan entre ellos
+		 */
+		funds_heading: () => LocalizedString
+		/**
+		 * {a} y {b} apuntan a las mismas empresas por unos {amount}, un {pct} de tu patrimonio.
+		 */
+		fund_row: (arg: { a: string, amount: string, b: string, pct: string }) => LocalizedString
+		/**
+		 * {a} y {b} cubren la misma deuda por unos {amount}, un {pct} de tu patrimonio.
+		 */
+		fund_row_bonds: (arg: { a: string, amount: string, b: string, pct: string }) => LocalizedString
+		/**
+		 * Los dos replican el mismo índice: es duplicación completa.
+		 */
+		fund_same_index: () => LocalizedString
+		/**
+		 * Qué se ha mirado y qué no
+		 */
+		notes_summary: () => LocalizedString
+		/**
+		 * Todas las cifras son un mínimo. De cada índice se ven sus mayores posiciones, nunca la cola, así que tu exposición real a una empresa solo puede ser mayor que la que sale aquí.
+		 */
+		floor_note: () => LocalizedString
+		/**
+		 * De {index} se ve un {pct} del índice.
+		 */
+		coverage_row: (arg: { index: string, pct: string }) => LocalizedString
+		/**
+		 * {amount} sin datos de empresa ({tickers}): pequeña capitalización y renta fija, donde un top diez no dice nada sobre concentración.
+		 */
+		no_company_data: (arg: { amount: string, tickers: string }) => LocalizedString
+		/**
+		 * {amount} fuera del análisis ({tickers}): efectivo, cripto o fondos cuyo índice no reconocemos.
+		 */
+		outside: (arg: { amount: string, tickers: string }) => LocalizedString
+		/**
+		 * Mayores posiciones de cada índice leídas el {date}.
+		 */
+		as_of: (arg: { date: string }) => LocalizedString
+		/**
+		 * Estimación a nivel de índice, no la composición exacta de tus fondos.
 		 */
 		disclaimer: () => LocalizedString
 	}
@@ -7675,6 +7901,42 @@ export type TranslationFunctions = {
 		 */
 		btn_understand: () => LocalizedString
 		releases: {
+			v1_18_0: {
+				/**
+				 * 18 de Agosto, 2026
+				 */
+				date: () => LocalizedString
+				/**
+				 * Cuánto de tu cartera es la misma empresa
+				 */
+				badge: () => LocalizedString
+				changes: {
+					/**
+					 * 🧩 **Panel nuevo: cuánto de tu dinero acaba en la misma empresa.** Suma lo que llevas dentro de cada fondo y lo que tienes en acciones sueltas, y te lo dice empresa por empresa sobre tu patrimonio total: «al menos un 7,3 % en Apple: 6.000 € en directo y 2.470 € más dentro de tu MSCI World». Está en la columna de herramientas, junto al plan de traspaso.
+					 */
+					'0': () => LocalizedString
+					/**
+					 * 🔍 **Hasta ahora solo se comparaban los fondos entre ellos, y tus acciones se quedaban literalmente «sin analizar».** El caso más claro era la propia cartera de ejemplo de la app: un MSCI World y, aparte, Apple, Microsoft, Amazon y Alphabet, que son cuatro de sus mayores posiciones. No salía ni un aviso.
+					 */
+					'1': () => LocalizedString
+					/**
+					 * 🏦 **Y la cartera conservadora tampoco podía dar ninguno**, porque faltaba la regla que dice que la deuda pública de la zona euro ya va dentro de un agregado global. Ahora está, y también las dos que faltaban del IBEX 35 contra el World y el All-World.
+					 */
+					'2': () => LocalizedString
+					/**
+					 * ⚖️ **Todas las cifras son un mínimo, y el panel lo dice sin letra pequeña.** De cada índice se ven sus mayores posiciones, nunca la cola, así que tu exposición real solo puede ser mayor que la que sale. Debajo te enseña qué parte de cada índice está mirando —de un 21 % del MSCI Europe a un 78 % del IBEX— y qué se queda fuera: la pequeña capitalización y la renta fija, donde un top diez no dice nada, y el efectivo.
+					 */
+					'3': () => LocalizedString
+					/**
+					 * 🔤 **Las clases de acción de una empresa cuentan como una.** Tu Alphabet es tu Alphabet, llegue por la clase A o por la C; y un Apple comprado en Fráncfort se reconoce por su ISIN. Los códigos se verificaron uno a uno contra la fuente, porque un código mal puesto no deja un hueco: le atribuye tu dinero a otra empresa.
+					 */
+					'4': () => LocalizedString
+					/**
+					 * 🧪 **38 casos nuevos**, incluida la cartera de ejemplo entera, y la lista de empresas se comprueba sola: si una posición apunta a una empresa que no existe en el registro, la suite se pone roja.
+					 */
+					'5': () => LocalizedString
+				}
+			}
 			v1_17_3: {
 				/**
 				 * 16 de Agosto, 2026

@@ -27,6 +27,7 @@ import { goto } from '$app/navigation';
 import { detectSparklineChange, applyTerUpdates } from '$lib/stores/priceUtils';
 import { resolveInstrumentType, tipoCorregidoPorMigracion } from '$lib/instrument-type';
 import { calculateLookThrough } from '$lib/lookthrough';
+import { calcularConcentracion } from '$lib/concentracion';
 import { resolveIndexKey, priceProxyOf } from '$lib/lookthrough';
 import { calculateTaxAwareRebalance } from '$lib/traspaso';
 
@@ -451,6 +452,17 @@ export class PortfolioStore {
 	 * puesto su S&P 500, lo que quiere saber es cuánto EEUU tiene en total.
 	 */
 	lookThrough = $derived.by(() => calculateLookThrough(this.allPositions));
+
+	/**
+	 * Concentración por empresa: cuánto apunta a la misma compañía sumando lo
+	 * que va dentro de los fondos y lo que se tiene suelto.
+	 *
+	 * Sobre las tres categorías y con el **patrimonio global** como denominador,
+	 * porque «un 7 % de tu cartera está en Apple» solo es verdad sobre el total.
+	 */
+	concentracion = $derived.by(() =>
+		calcularConcentracion(this.allPositions, { patrimonioTotal: this.globalCapital })
+	);
 
 	get btcPrice() { return this.prices['BTC-EUR']?.price || 0; }
 	get ethPrice() { return this.prices['ETH-EUR']?.price || 0; }

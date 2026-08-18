@@ -268,11 +268,15 @@ export function calculateLookThrough(positions: PortfolioPosition[]): LookThroug
  * Cruza cada par de posiciones y estima cuánto dinero apunta dos veces a las
  * mismas empresas.
  *
+ * Exportada porque `concentracion.ts` la reutiliza para la capa de fondos de su
+ * panel: es la misma pregunta y tiene guardas escritas a partir de un informe
+ * de mutación, así que reescribirla allí sería perderlas.
+ *
  * La cifra es `min(valorA × compartidoA, valorB × compartidoB)`: el solape no
  * puede ser mayor que lo que aporta el lado más pequeño. Dos posiciones sobre el
  * mismo índice son duplicación completa del menor de los dos.
  */
-function findOverlaps(mapped: { position: PortfolioPosition; indexKey: string }[]): OverlapFinding[] {
+export function findOverlaps(mapped: { position: PortfolioPosition; indexKey: string }[]): OverlapFinding[] {
 	const findings: OverlapFinding[] = [];
 
 	for (let i = 0; i < mapped.length; i++) {

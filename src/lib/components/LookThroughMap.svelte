@@ -3,7 +3,6 @@
 	import { squarify, labelFits, truncateToWidth } from '$lib/treemap';
 	import { formatEUR, formatPercent } from '$lib/utils';
 	import { LL } from '$lib/i18n/i18n-svelte';
-	import { INDICES } from '$lib/lookthrough';
 	import { ASSET_COLORS, CHART_NEUTRAL, MAX_CHART_SLICES } from '$lib/constants';
 	import MapFrame from './MapFrame.svelte';
 
@@ -195,10 +194,6 @@
 		utilities: $LL.lookthrough.sector_utilities(),
 		real_estate: $LL.lookthrough.sector_real_estate()
 	});
-
-	function indexName(key: string): string {
-		return INDICES[key]?.name ?? key;
-	}
 </script>
 
 <MapFrame
@@ -322,30 +317,6 @@
 				</li>
 			{/each}
 		</ol>
-
-		{#if data.overlaps.length > 0}
-			<section class="overlaps">
-				<h5 class="overlap-heading">⚠️ {$LL.lookthrough.overlap_heading()}</h5>
-				{#each data.overlaps.slice(0, expanded ? data.overlaps.length : isNarrow ? 2 : 3) as overlap (overlap.tickerA + overlap.tickerB)}
-					<p class="overlap-row">
-						{$LL.lookthrough.overlap_row({
-							a: overlap.nameA,
-							b: overlap.nameB,
-							amount: formatEUR(overlap.duplicatedValue),
-							pct: formatPercent(overlap.duplicatedWeight, 1)
-						})}
-						{#if overlap.note === 'same-index'}
-							<span class="overlap-note">{$LL.lookthrough.overlap_same_index()}</span>
-						{:else}
-							<span class="overlap-note">{overlap.note}</span>
-						{/if}
-						<span class="overlap-indices">
-							{indexName(overlap.indexA)} · {indexName(overlap.indexB)}
-						</span>
-					</p>
-				{/each}
-			</section>
-		{/if}
 
 		<!--
 			Las notas van plegadas: son cuatro o cinco líneas de letra pequeña que se
@@ -495,42 +466,6 @@
 		font-variant-numeric: tabular-nums;
 	}
 
-	.overlaps {
-		padding: 0.75rem;
-		background: rgba(245, 158, 11, 0.07);
-		border: 1px solid rgba(245, 158, 11, 0.2);
-		border-radius: 14px;
-	}
-
-	.overlap-heading {
-		font-size: 0.72rem;
-		font-weight: 700;
-		color: var(--accent-orange-ink);
-		margin: 0 0 0.5rem 0;
-	}
-
-	.overlap-row {
-		font-size: 0.72rem;
-		color: var(--text-muted);
-		margin: 0 0 0.6rem 0;
-		line-height: 1.5;
-	}
-
-	.overlap-row:last-child {
-		margin-bottom: 0;
-	}
-
-	.overlap-note {
-		display: block;
-		color: var(--text-muted);
-	}
-
-	.overlap-indices {
-		display: block;
-		font-size: 0.65rem;
-		color: var(--text-faint);
-	}
-
 	.notes {
 		padding-top: 0.5rem;
 		border-top: 1px solid var(--border-subtle);
@@ -612,10 +547,6 @@
 
 		.rank-bar {
 			display: none;
-		}
-
-		.overlap-row {
-			font-size: 0.75rem;
 		}
 
 		.note {

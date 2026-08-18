@@ -42,6 +42,7 @@ export default defineConfig({
 				'src/lib/rebalance.ts',
 				'src/lib/ledger.ts',
 				'src/lib/lookthrough.ts',
+				'src/lib/concentracion.ts',
 				'src/lib/treemap.ts',
 				'src/lib/instrument-type.ts',
 				// Sacado de `ManageAssets.svelte` el 7-ago-2026: decide los `targetWeight`,
@@ -113,6 +114,15 @@ export default defineConfig({
 				// Subido el 6-ago-2026 al matar los mutantes del reparto: 97,19/86,25 → 100/97,22.
 				'src/lib/rebalance.ts': { statements: 100, branches: 97, functions: 100 },
 				'src/lib/lookthrough.ts': { statements: 96, branches: 84, functions: 100 },
+				/**
+				 * Medido al nacer, 18-ago-2026: 96,47/88,46/100. Las ramas que faltan son
+				 * cuatro guardas contra un dataset mal formado —un peso a cero, una clave de
+				 * empresa que no existe, un índice sin nombre— y no son inalcanzables sino
+				 * **redundantes**: los tests de integridad de `concentracion.test.ts` prohíben
+				 * ese estado, así que se pondrían rojos antes de que este código llegara a
+				 * correr. Se quedan porque el dataset se edita a mano.
+				 */
+				'src/lib/concentracion.ts': { statements: 96, branches: 88, functions: 100 },
 				'src/lib/treemap.ts': { statements: 92, branches: 91, functions: 88 },
 				// Subido el 6-ago-2026 con la tabla por señal: 90,00/92,10 → 100/100.
 				'src/lib/instrument-type.ts': { statements: 100, branches: 100, functions: 100 },
