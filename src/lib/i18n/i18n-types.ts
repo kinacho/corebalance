@@ -2547,7 +2547,7 @@ type RootTranslation = {
 		 */
 		footer_tagline: string
 		/**
-		 * v​1​.​1​9​.​0​ ​�​�
+		 * v​1​.​1​9​.​1​ ​�​�
 		 */
 		changelog_trigger: string
 		/**
@@ -3607,6 +3607,30 @@ type RootTranslation = {
 		 */
 		btn_understand: string
 		releases: {
+			v1_19_1: {
+				/**
+				 * 1​9​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
+				 */
+				date: string
+				/**
+				 * T​u​s​ ​c​a​m​b​i​o​s​ ​v​u​e​l​v​e​n​ ​a​ ​l​l​e​g​a​r​ ​a​l​ ​m​ó​v​i​l
+				 */
+				badge: string
+				changes: {
+					/**
+					 * ☁​️​ ​*​*​S​i​ ​h​a​b​í​a​s​ ​i​n​i​c​i​a​d​o​ ​s​e​s​i​ó​n​,​ ​l​o​s​ ​c​a​m​b​i​o​s​ ​d​e​ ​t​u​ ​c​a​r​t​e​r​a​ ​n​o​ ​e​s​t​a​b​a​n​ ​s​u​b​i​e​n​d​o​ ​a​ ​l​a​ ​n​u​b​e​.​*​*​ ​C​a​m​b​i​a​b​a​s​ ​l​o​s​ ​p​e​s​o​s​ ​e​n​ ​e​l​ ​o​r​d​e​n​a​d​o​r​ ​y​ ​e​n​ ​e​l​ ​m​ó​v​i​l​ ​s​e​g​u​í​a​s​ ​v​i​e​n​d​o​ ​l​a​ ​c​a​r​t​e​r​a​ ​d​e​ ​a​n​t​e​s​,​ ​a​u​n​q​u​e​ ​l​o​s​ ​d​o​s​ ​e​s​t​u​v​i​e​r​a​n​ ​e​n​ ​l​a​ ​m​i​s​m​a​ ​c​u​e​n​t​a​.​ ​*​*​N​o​ ​s​e​ ​p​e​r​d​i​ó​ ​n​a​d​a​*​*​:​ ​t​o​d​o​ ​s​e​g​u​í​a​ ​g​u​a​r​d​a​d​o​ ​e​n​ ​e​l​ ​n​a​v​e​g​a​d​o​r​ ​d​o​n​d​e​ ​h​i​c​i​s​t​e​ ​e​l​ ​c​a​m​b​i​o​,​ ​y​ ​e​n​ ​c​u​a​n​t​o​ ​a​b​r​a​s​ ​l​a​ ​a​p​p​ ​a​h​í​,​ ​s​e​ ​s​u​b​e​ ​s​o​l​o​.
+					 */
+					'0': string
+					/**
+					 * �​�​ ​*​*​L​a​ ​c​a​u​s​a​:​ ​u​n​ ​a​c​t​i​v​o​ ​s​i​n​ ​í​n​d​i​c​e​ ​r​e​c​o​n​o​c​i​d​o​ ​—​u​n​a​ ​a​c​c​i​ó​n​ ​s​u​e​l​t​a​,​ ​u​n​ ​f​o​n​d​o​ ​p​o​c​o​ ​c​o​m​ú​n​—​ ​t​u​m​b​a​b​a​ ​e​l​ ​g​u​a​r​d​a​d​o​ ​e​n​t​e​r​o​.​*​*​ ​N​o​ ​f​a​l​l​a​b​a​ ​«​e​s​a​ ​p​a​r​t​e​»​:​ ​e​l​ ​s​e​r​v​i​d​o​r​ ​r​e​c​h​a​z​a​b​a​ ​l​a​ ​c​a​r​t​e​r​a​ ​c​o​m​p​l​e​t​a​ ​p​o​r​ ​u​n​ ​s​o​l​o​ ​c​a​m​p​o​ ​v​a​c​í​o​.​ ​A​h​o​r​a​ ​e​s​o​s​ ​c​a​m​p​o​s​ ​s​e​ ​l​i​m​p​i​a​n​ ​a​n​t​e​s​ ​d​e​ ​e​n​v​i​a​r​.
+					 */
+					'1': string
+					/**
+					 * �​�​ ​*​*​Y​ ​u​n​ ​g​u​a​r​d​a​d​o​ ​q​u​e​ ​f​a​l​l​a​ ​y​a​ ​s​e​ ​v​e​.​*​*​ ​H​a​s​t​a​ ​a​h​o​r​a​ ​s​o​l​o​ ​q​u​e​d​a​b​a​ ​c​o​n​s​t​a​n​c​i​a​ ​e​n​ ​l​a​ ​c​o​n​s​o​l​a​ ​d​e​l​ ​n​a​v​e​g​a​d​o​r​,​ ​q​u​e​ ​e​s​ ​c​o​m​o​ ​n​o​ ​d​e​j​a​r​ ​n​i​n​g​u​n​a​:​ ​p​o​r​ ​e​s​o​ ​e​s​t​o​ ​p​u​d​o​ ​e​s​t​a​r​ ​s​e​m​a​n​a​s​ ​p​a​s​a​n​d​o​ ​s​i​n​ ​q​u​e​ ​n​a​d​a​ ​l​o​ ​d​i​j​e​r​a​.
+					 */
+					'2': string
+				}
+			}
 			v1_19_0: {
 				/**
 				 * 1​9​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
@@ -6974,7 +6998,7 @@ export type TranslationFunctions = {
 		 */
 		footer_tagline: () => LocalizedString
 		/**
-		 * v1.19.0 🚀
+		 * v1.19.1 🚀
 		 */
 		changelog_trigger: () => LocalizedString
 		/**
@@ -7968,6 +7992,30 @@ export type TranslationFunctions = {
 		 */
 		btn_understand: () => LocalizedString
 		releases: {
+			v1_19_1: {
+				/**
+				 * 19 de Agosto, 2026
+				 */
+				date: () => LocalizedString
+				/**
+				 * Tus cambios vuelven a llegar al móvil
+				 */
+				badge: () => LocalizedString
+				changes: {
+					/**
+					 * ☁️ **Si habías iniciado sesión, los cambios de tu cartera no estaban subiendo a la nube.** Cambiabas los pesos en el ordenador y en el móvil seguías viendo la cartera de antes, aunque los dos estuvieran en la misma cuenta. **No se perdió nada**: todo seguía guardado en el navegador donde hiciste el cambio, y en cuanto abras la app ahí, se sube solo.
+					 */
+					'0': () => LocalizedString
+					/**
+					 * 🔍 **La causa: un activo sin índice reconocido —una acción suelta, un fondo poco común— tumbaba el guardado entero.** No fallaba «esa parte»: el servidor rechazaba la cartera completa por un solo campo vacío. Ahora esos campos se limpian antes de enviar.
+					 */
+					'1': () => LocalizedString
+					/**
+					 * 🔔 **Y un guardado que falla ya se ve.** Hasta ahora solo quedaba constancia en la consola del navegador, que es como no dejar ninguna: por eso esto pudo estar semanas pasando sin que nada lo dijera.
+					 */
+					'2': () => LocalizedString
+				}
+			}
 			v1_19_0: {
 				/**
 				 * 19 de Agosto, 2026

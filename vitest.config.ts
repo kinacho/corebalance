@@ -48,6 +48,11 @@ export default defineConfig({
 				// Sacado de `ManageAssets.svelte` el 7-ago-2026: decide los `targetWeight`,
 				// que son la entrada de `calculateRebalance()`.
 				'src/lib/weights.ts',
+				// Añadido el 19-ago-2026 al reescribirlo: decide el icono de cada activo, y su
+				// versión anterior no tenía un solo test — cuatro de cinco activos de una cartera
+				// real llevaban el icono equivocado, dos de ellos un escudo de «defensivo» sobre
+				// un indexado global.
+				'src/lib/asset-icon.ts',
 				// Añadidos el 7-ago-2026. No son «módulos de dinero» puros como los de
 				// arriba, pero fallan igual de caro y más callado: un precio malo no da
 				// error en ninguna parte, se convierte en una desviación mal calculada y
@@ -126,6 +131,8 @@ export default defineConfig({
 				'src/lib/treemap.ts': { statements: 92, branches: 91, functions: 88 },
 				// Subido el 6-ago-2026 con la tabla por señal: 90,00/92,10 → 100/100.
 				'src/lib/instrument-type.ts': { statements: 100, branches: 100, functions: 100 },
+				// Medido al nacer la suite, 19-ago-2026: 100 en las cuatro.
+				'src/lib/asset-icon.ts': { statements: 100, branches: 100, functions: 100 },
 				// Medido al nacer, 7-ago-2026.
 				'src/lib/weights.ts': { statements: 100, branches: 93, functions: 100 },
 				// Medidos al nacer la suite, 7-ago-2026. Las funciones no llegan a 100 en

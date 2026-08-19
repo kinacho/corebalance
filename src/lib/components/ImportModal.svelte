@@ -10,7 +10,7 @@
 	import { nextAssetColor } from '$lib/asset-colors';
 	import { resolveInstrumentType } from '$lib/instrument-type';
 	import type { Asset, AssetCategory } from '$lib/types';
-	import { resolveAssetIcon } from '$lib/utils';
+	import { resolveAssetIcon } from '$lib/asset-icon';
 	import { onMount, onDestroy } from 'svelte';
 	import { bloquearScroll, desbloquearScroll } from '$lib/modal-lock';
 	import ColumnMapper from './ColumnMapper.svelte';

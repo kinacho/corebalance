@@ -6,15 +6,63 @@ import { auth, db, googleProvider } from '$lib/firebase';
 import { onAuthStateChanged, signInWithPopup, signOut, type User } from 'firebase/auth';
 import { doc, getDoc, setDoc, collection, getDocs, writeBatch, query, orderBy, deleteDoc, updateDoc, deleteField } from 'firebase/firestore';
 
+/**
+ * Quita del payload las claves cuyo valor es `undefined`, en profundidad.
+ *
+ * ⚠️ **Un solo `undefined` en cualquier rincón tumba la escritura entera.** Firestore
+ * valida el documento completo antes de mandarlo y lanza `Unsupported field value:
+ * undefined`, así que un campo opcional sin resolver no se guarda «a medias»: no se
+ * guarda **nada**. Medido en producción el 19-ago-2026 con la cartera real del autor —
+ * tres activos sin `indexKey` (dos acciones sueltas y un fondo que `resolveIndexKey()`
+ * no reconoce) hacían que `normalizeAssets()` escribiera `indexKey: undefined`, y con
+ * eso **`user_data` llevaba semanas sin recibir una sola escritura**: el móvil seguía
+ * viendo la cartera vieja mientras el escritorio guardaba en `localStorage` tan
+ * ricamente. El error salía por consola y se lo tragaba el `catch`.
+ *
+ * La limpieza vive **aquí y no en quien llama** por la misma razón que la guarda de
+ * `importAllData`: el daño se hace en esta línea, y cualquier camino que traiga un
+ * opcional sin rellenar —un `Transaction.notes`, un `HoldingEdit.priceBase`— repetiría
+ * el fallo exacto. Que `normalizeAssets()` ya no genere la clave es la segunda defensa,
+ * no la primera.
+ *
+ * Solo se descienden objetos planos y arrays: un `Timestamp`, un `Date` o un centinela
+ * como `deleteField()` se copian tal cual, porque reconstruirlos clave a clave los
+ * convertiría en un objeto cualquiera.
+ */
+export function sinIndefinidos<T>(valor: T): T {
+	if (Array.isArray(valor)) {
+		return valor.filter((v) => v !== undefined).map((v) => sinIndefinidos(v)) as unknown as T;
+	}
+	if (valor !== null && typeof valor === 'object') {
+		const proto = Object.getPrototypeOf(valor);
+		if (proto !== Object.prototype && proto !== null) return valor;
+		const limpio: Record<string, unknown> = {};
+		for (const [clave, v] of Object.entries(valor as Record<string, unknown>)) {
+			if (v === undefined) continue;
+			limpio[clave] = sinIndefinidos(v);
+		}
+		return limpio as unknown as T;
+	}
+	return valor;
+}
+
 export class FirebaseStorage implements StorageProvider {
 	isLocal = false;
 
+	/**
+	 * ⚠️ **Relanza el error en lugar de tragárselo.** Que un guardado fallido no se
+	 * distinga de uno correcto es lo que dejó este defecto vivo: el store tiene el
+	 * `catch` que enseña el aviso y reintenta, y sin la excepción nunca se enteraba.
+	 * Estando fuera de línea el SDK no rechaza la promesa —encola la escritura—, así
+	 * que un rechazo aquí es siempre un fallo de verdad, no una red mala.
+	 */
 	async saveUserData(userId: string, data: Partial<UserData>): Promise<void> {
 		if (!db) return;
 		try {
-			await setDoc(doc(db, 'user_data', userId), data, { merge: true });
+			await setDoc(doc(db, 'user_data', userId), sinIndefinidos(data), { merge: true });
 		} catch (e) {
 			console.error('Firestore save error:', e);
+			throw e;
 		}
 	}
 
@@ -35,6 +83,7 @@ export class FirebaseStorage implements StorageProvider {
 	async saveTransactions(userId: string, items: Transaction[]): Promise<void> {
 		if (!db) return;
 		try {
+			items = sinIndefinidos(items);
 			const subcollRef = collection(db, 'user_transactions', userId, 'items');
 			const snap = await getDocs(subcollRef);
 			const existingDocs = new Map<string, any>();
@@ -75,6 +124,7 @@ export class FirebaseStorage implements StorageProvider {
 			}
 		} catch (e) {
 			console.error('Firestore transactions save error:', e);
+			throw e;
 		}
 	}
 
@@ -120,9 +170,10 @@ export class FirebaseStorage implements StorageProvider {
 	async saveHistory(userId: string, points: HistoryPoint[]): Promise<void> {
 		if (!db) return;
 		try {
-			await setDoc(doc(db, 'user_history', userId), { points }, { merge: true });
+			await setDoc(doc(db, 'user_history', userId), { points: sinIndefinidos(points) }, { merge: true });
 		} catch (e) {
 			console.error('Firestore history save error:', e);
+			throw e;
 		}
 	}
 
@@ -153,9 +204,14 @@ export class FirebaseStorage implements StorageProvider {
 		try {
 			const remote = await this.loadHoldingEdits(userId);
 			const merged = mergeHoldingEdits(items, remote);
-			await setDoc(doc(db, 'user_holding_edits', userId), { items: merged }, { merge: true });
+			await setDoc(
+				doc(db, 'user_holding_edits', userId),
+				{ items: sinIndefinidos(merged) },
+				{ merge: true }
+			);
 		} catch (e) {
 			console.error('Firestore holding edits save error:', e);
+			throw e;
 		}
 	}
 
