@@ -26,6 +26,7 @@
 
 	// Mapeo dinámico desde el diccionario de traducciones
 	const releaseVersions = [
+		'v1_19_0',
 		'v1_18_0',
 		'v1_17_3',
 		'v1_17_2',
@@ -90,6 +91,18 @@
 		   probados —por encima del 3,35/4,33 del azul de la 1.17.3, que va justo
 		   debajo, y del 3,23 del teal que hace de vara—. El modelo de medida se
 		   contrastó reproduciendo la cifra que este fichero ya anota para la 1.17.3. */
+		/*
+		 * Medido con el mismo modelo que los de abajo —`color: X` sobre `X20` encima de
+		 * la superficie del modal, en los dos temas—: **3,47 en oscuro y 4,22 en claro**,
+		 * o sea peor caso 3,47, por encima del 3,23 del teal que hace de vara. El modelo
+		 * se calibró reproduciendo la cifra que este fichero ya anota para la 1.17.3
+		 * (#2563eb, 3,35/4,33; el cálculo da 3,37/4,33).
+		 *
+		 * Ámbar oscuro y no el `#f59e0b` de la 1.16.0, que este mismo fichero anota como
+		 * 1,95 en tema claro. Y se elige cálido a propósito: sus dos vecinas son el
+		 * magenta de la 1.18.0 y el azul de la 1.17.3.
+		 */
+		v1_19_0: '#b45309',
 		v1_18_0: '#c026d3',
 		v1_17_3: '#2563eb',
 		v1_17_2: '#e11d48',

@@ -64,7 +64,19 @@
     const limite = performance.now() + 900;
     while (performance.now() < limite) {
       const el = document.querySelector(paso.element);
-      if (el && el.getBoundingClientRect().height > 0) return;
+      /**
+       * ⚠️ **«Tiene caja» dejó de bastar el día que la columna abre una herramienta a
+       * la vez.** Una cabecera plegada siempre tiene alto (~80 px), así que esta espera
+       * se cumplía al instante y driver.js medía la cabecera mientras el cuerpo se
+       * abría debajo — exactamente el defecto que esta función existe para arreglar,
+       * entrando por la puerta de atrás. `data-abierta` lo pone `PanelHerramienta`, y
+       * los destinos que no son un panel plegable no lo llevan: para ellos la
+       * condición se salta, no falla.
+       */
+      if (el && el.getBoundingClientRect().height > 0) {
+        const plegable = el instanceof HTMLElement && 'abierta' in el.dataset;
+        if (!plegable || el.dataset.abierta === 'true') return;
+      }
       await new Promise((r) => requestAnimationFrame(() => r(null)));
     }
   }

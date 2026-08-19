@@ -3,6 +3,7 @@
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { formatEUR } from '$lib/utils';
 	import LeccionDelPanel from './LeccionDelPanel.svelte';
+	import PanelHerramienta from './PanelHerramienta.svelte';
 	/**
 	 * ⚠️ Registro selectivo, no `chart.js/auto`. `auto` arrastra **todos** los
 	 * controladores, escalas y plugins de la librería —incluidos radar, polar,
@@ -44,7 +45,16 @@
 	let dropPercent = $state(40);
 	let monthlyDca = $state(portfolio.contribution || 500);
 	let expectedReturn = $state(7);
-	let isOpen = $state(false);
+	/**
+	 * Abierto/cerrado lo decide el padre: una herramienta abierta a la vez.
+	 *
+	 * ⚠️ Se conserva el alias `isOpen` porque el `$effect` que construye el lienzo de
+	 * Chart.js sale antes si el panel está plegado, y ese cortocircuito es lo que evita
+	 * montar un gráfico invisible.
+	 */
+	const { abierto, onAlternar }: { abierto: boolean; onAlternar: (abrir: boolean) => void } =
+		$props();
+	const isOpen = $derived(abierto);
 
 	// Sincronizar con el store si cambia el capital global, pero solo si el usuario no ha editado manualmente aún
 	let hasManuallyEdited = $state(false);
@@ -253,33 +263,33 @@
 	});
 </script>
 
-<div id="tour-crisis" class="panel" class:open={isOpen}>
-	<button class="panel-header" onclick={() => isOpen = !isOpen} aria-expanded={isOpen}>
-		<div class="panel-info">
-			<!-- Icono de trazo en lugar del emoji 📉, por lo mismo que en Proyecciones. -->
-			<div class="panel-icon" aria-hidden="true">
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-					<path d="M3 7l6 6 4-4 7 7" />
-					<path d="M14 17h6v-6" />
-				</svg>
-			</div>
-			<div class="panel-text">
-				<h2 class="panel-title">{$LL.crisis_simulator.title()}</h2>
-				<p class="panel-subtitle">{$LL.crisis_simulator.subtitle()}</p>
-			</div>
-		</div>
-		<span class="chevron" class:rotated={!isOpen}>
-			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-				<path d="M6 9l6 6 6-6" />
-			</svg>
-		</span>
-	</button>
+<PanelHerramienta
+	id="tour-crisis"
+	titulo={$LL.crisis_simulator.title()}
+	subtitulo={$LL.crisis_simulator.subtitle()}
+	objetivoTour="abrir-crisis"
+	{abierto}
+	{onAlternar}
+>
+	{#snippet icono()}
+		<!-- Icono de trazo en lugar del emoji 📉, por lo mismo que en Proyecciones. -->
+		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+			<path d="M3 7l6 6 4-4 7 7" />
+			<path d="M14 17h6v-6" />
+		</svg>
+	{/snippet}
 
-	<div class="collapsible" class:collapsed={!isOpen}>
-		<div class="wrapper">
-			<div class="content">
-				<!-- Dentro del contenido: la cabecera es un `<button>`. -->
-				<LeccionDelPanel panel="crisis" />
+	{#snippet cifra()}
+		<!--
+			⚠️ El supuesto, no el resultado, y además **el valor crudo y no el animado**:
+			`stats` viaja por stores `tweened` de 600 ms, así que una cabecera plegada con
+			una cifra derivada de ahí enseñaría un número contando solo.
+		-->
+		<span class="supuesto">{$LL.crisis_simulator.assumption({ drop: `−${dropPercent}` })}</span>
+	{/snippet}
+
+	<!-- Dentro del contenido: la cabecera es un `<button>`. -->
+	<LeccionDelPanel panel="crisis" />
 
 				<div class="crisis-edu-card">
 					<div class="edu-header">
@@ -407,111 +417,10 @@
 				<footer class="legal-footer">
 					<p>{$LL.crisis_simulator.total_dca({ total: formatEUR($tTotalDca) })}</p>
 				</footer>
-			</div>
-		</div>
-	</div>
-</div>
+</PanelHerramienta>
 
 <style>
-	.panel {
-		width: 100%;
-		background: var(--bg-card);
-
-		backdrop-filter: blur(24px) saturate(200%);
-		-webkit-backdrop-filter: blur(24px) saturate(200%);
-		border: 1px solid var(--border-subtle);
-		border-radius: 24px;
-		overflow: hidden;
-		transition: all 0.3s ease;
-	}
-
-	.panel:hover {
-		border-color: rgba(255, 255, 255, 0.15);
-		background: var(--bg-card-hover);
-	}
-
-	.panel-header {
-		width: 100%;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 1.25rem;
-		background: none;
-		border: none;
-		cursor: pointer;
-		text-align: left;
-	}
-
-	.panel-info {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-	}
-
-	.panel-icon {
-		width: 40px;
-		height: 40px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: var(--bg-card-hover);
-		border-radius: 12px;
-		color: var(--accent-blue-ink);
-	}
-
-	.panel-icon svg {
-		width: 20px;
-		height: 20px;
-	}
-
-	.panel-title {
-		font-size: 1rem;
-		font-weight: 700;
-		color: var(--text-primary);
-		margin: 0;
-		letter-spacing: -0.01em;
-	}
-
-	.panel-subtitle {
-		font-size: 0.75rem;
-		color: var(--text-muted);
-		margin: 0.1rem 0 0 0;
-	}
-
-	.chevron {
-		color: var(--text-faint);
-		transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-		width: 20px;
-		height: 20px;
-	}
-
-	.chevron.rotated {
-		transform: rotate(-90deg);
-	}
-
-	.collapsible {
-		display: grid;
-		grid-template-rows: 1fr;
-		transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
-		opacity: 1;
-	}
-
-	.collapsible.collapsed {
-		grid-template-rows: 0fr;
-		opacity: 0;
-		pointer-events: none;
-	}
-
-	.wrapper {
-		overflow: hidden;
-	}
-
-	.content {
-		padding: 0 1.25rem 1.25rem 1.25rem;
-		display: flex;
-		flex-direction: column;
-		gap: 1.5rem;
-	}
+	/* El armazón plegable vive en `PanelHerramienta.svelte`; aquí solo el contenido. */
 
 	.controls-grid {
 		display: grid;

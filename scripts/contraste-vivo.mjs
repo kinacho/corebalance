@@ -562,7 +562,23 @@ try {
 			 * y a los dos anchos, y el contenido nuevo no estaba entrando. Quien lo cubría
 			 * era `e2e/tema.spec.ts`, que sí lo abre.
 			 */
-			for (const [objetivo, etiqueta] of [['abrir-concentracion', 'panel solapamiento']]) {
+			/*
+			 * Los cinco, y no uno. ⚠️ **Cuatro de los cinco estaban en ese hueco**: la
+			 * pasada solo abría el de solapamiento, así que el contenido de los otros
+			 * cuatro nunca se midió y salía en cero por no haberse mirado.
+			 *
+			 * Con una herramienta abierta a la vez, abrir la siguiente cierra la anterior:
+			 * son cinco escenas de una herramienta cada una en vez de una escena con cinco
+			 * abiertas. Es más cobertura y ~4 s más por tema, en un script que ya está
+			 * fuera de CI a propósito.
+			 */
+			for (const [objetivo, etiqueta, sel] of [
+				['abrir-rebalance', 'panel rebalanceo', '#tour-rebalance'],
+				['abrir-tax', 'panel fiscal', '#tour-tax'],
+				['abrir-concentracion', 'panel solapamiento', '#tour-concentracion'],
+				['abrir-projections', 'panel proyección', '#tour-projections'],
+				['abrir-crisis', 'panel crisis', '#tour-crisis']
+			]) {
 				await page.evaluate(
 					(t) => window.dispatchEvent(new CustomEvent('tour-step', { detail: { target: t } })),
 					objetivo
@@ -576,7 +592,7 @@ try {
 				 */
 				const abierto = await page.evaluate(
 					(id) => document.querySelector(id)?.classList.contains('open') ?? null,
-					'#tour-concentracion'
+					sel
 				);
 				if (abierto !== true) {
 					console.error(

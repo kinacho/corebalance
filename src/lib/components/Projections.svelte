@@ -4,7 +4,8 @@
 	import { formatCompactCurrency, formatEstimate, niceTicks } from '$lib/chart-format';
 	import { simulateScenarios } from '$lib/montecarlo';
 	import { ui } from '$lib/stores/ui.svelte';
-	import { LL } from '$lib/i18n/i18n-svelte';
+	import { LL, locale } from '$lib/i18n/i18n-svelte';
+	import PanelHerramienta from './PanelHerramienta.svelte';
 
 	/**
 	 * ⚠️ **Esto era un gráfico de 21 barras apiladas hechas con `div`s, y estaba
@@ -35,7 +36,9 @@
 	let volatility = $state(15);
 	let years = $state(20);
 	let monthlySavings = $state(500); // Aportación mensual proyectada
-	let isOpen = $state(false);
+	/** Abierto/cerrado lo decide el padre: una herramienta abierta a la vez. */
+	const { abierto, onAlternar }: { abierto: boolean; onAlternar: (abrir: boolean) => void } =
+		$props();
 
 	let useCustomBase = $state(false);
 	let customBase = $state(portfolio.globalCapital || 10000);
@@ -157,33 +160,36 @@
 	}
 </script>
 
-<div id="tour-projections" class="panel" class:open={isOpen}>
-	<button class="panel-header" onclick={() => (isOpen = !isOpen)} aria-expanded={isOpen}>
-		<div class="panel-info">
-			<!-- Icono de trazo en lugar del emoji 🚀: un emoji se dibuja con la fuente
-			     del sistema, cambia de estilo en cada plataforma y es el detalle que
-			     más abarata una interfaz financiera. -->
-			<div class="panel-icon" aria-hidden="true">
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-					<path d="M3 17l6-6 4 4 7-7" />
-					<path d="M14 7h6v6" />
-				</svg>
-			</div>
-			<div class="panel-text">
-				<h2 class="panel-title">{$LL.projections.title()}</h2>
-				<p class="panel-subtitle">{$LL.projections.subtitle()}</p>
-			</div>
-		</div>
-		<span class="chevron" class:rotated={!isOpen}>
-			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-				<path d="M6 9l6 6 6-6" />
-			</svg>
-		</span>
-	</button>
+<PanelHerramienta
+	id="tour-projections"
+	titulo={$LL.projections.title()}
+	subtitulo={$LL.projections.subtitle()}
+	objetivoTour="abrir-projections"
+	{abierto}
+	{onAlternar}
+>
+	{#snippet icono()}
+		<!-- Icono de trazo en lugar del emoji 🚀: un emoji se dibuja con la fuente
+		     del sistema, cambia de estilo en cada plataforma y es el detalle que
+		     más abarata una interfaz financiera. -->
+		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+			<path d="M3 17l6-6 4 4 7-7" />
+			<path d="M14 7h6v6" />
+		</svg>
+	{/snippet}
 
-	<div class="collapsible" class:collapsed={!isOpen}>
-		<div class="wrapper">
-			<div class="content">
+	{#snippet cifra()}
+		<!--
+			⚠️ **Un supuesto, no una cifra**, y por eso no lleva `.cifra` ni `privacy-blur`:
+			estos números salen de los deslizadores de este panel, no de tu cartera, y sus
+			valores por defecto ni se guardan. La mediana a veinte años aquí sería la frase
+			que este repo ya retiró por educadamente falsa.
+		-->
+		<span class="supuesto">
+			{$LL.projections.assumption({ ret: expectedReturn.toLocaleString($locale), years: String(years) })}
+		</span>
+	{/snippet}
+
 				<div class="controls-grid">
 					<div class="control-item full-width-capital">
 						<div class="control-header">
@@ -428,113 +434,10 @@
 				<footer class="legal-footer">
 					<p>{$LL.projections.sim_note({ paths: PATHS })} {$LL.projections.disclaimer()}</p>
 				</footer>
-			</div>
-		</div>
-	</div>
-</div>
+</PanelHerramienta>
 
 <style>
-	.panel {
-		width: 100%;
-		background: var(--bg-card);
-		backdrop-filter: blur(24px) saturate(200%);
-		-webkit-backdrop-filter: blur(24px) saturate(200%);
-		border: 1px solid var(--border-subtle);
-		border-radius: 24px;
-		overflow: hidden;
-		transition: all 0.3s ease;
-	}
-
-	.panel:hover {
-		border-color: rgba(255, 255, 255, 0.15);
-		background: var(--bg-card-hover);
-	}
-
-	.panel-header {
-		width: 100%;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 1.25rem;
-		background: none;
-		border: none;
-		cursor: pointer;
-		text-align: left;
-		transition: background 0.2s ease;
-	}
-
-	.panel-info {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-	}
-
-	.panel-icon {
-		width: 40px;
-		height: 40px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: var(--bg-card-hover);
-		border-radius: 12px;
-		color: var(--accent-blue-ink);
-	}
-
-	.panel-icon svg {
-		width: 20px;
-		height: 20px;
-	}
-
-	.panel-title {
-		font-size: 1rem;
-		font-weight: 700;
-		color: var(--text-primary);
-		margin: 0;
-		letter-spacing: -0.01em;
-	}
-
-	.panel-subtitle {
-		font-size: 0.75rem;
-		color: var(--text-muted);
-		margin: 0.1rem 0 0 0;
-	}
-
-	.chevron {
-		color: var(--text-faint);
-		transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-		width: 20px;
-		height: 20px;
-	}
-
-	.chevron.rotated {
-		transform: rotate(-90deg);
-	}
-
-	.collapsible {
-		display: grid;
-		grid-template-rows: 1fr;
-		transition:
-			grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-			opacity 0.3s ease;
-		opacity: 1;
-	}
-
-	.collapsible.collapsed {
-		grid-template-rows: 0fr;
-		opacity: 0;
-		pointer-events: none;
-	}
-
-	.wrapper {
-		overflow: hidden;
-	}
-
-	.content {
-		padding: 0 1.25rem 1.25rem 1.25rem;
-		display: flex;
-		flex-direction: column;
-		gap: 1.5rem;
-	}
+	/* El armazón plegable vive en `PanelHerramienta.svelte`; aquí solo el contenido. */
 
 	.controls-grid {
 		display: grid;

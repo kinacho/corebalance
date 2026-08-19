@@ -49,17 +49,29 @@ await shot('01-hero', '.hero-summary');
 await shot('02-historico', '.history-section');
 await shot('03-carrusel', '.charts-row-card');
 
-// Por encima de 1024px no hay pestañas: todo se renderiza. Solo hay que
-// desplegar los paneles, que nacen colapsados.
-for (const header of await page.locator('.panel-header').all()) {
-	try {
-		await header.click();
-		await page.waitForTimeout(400);
-	} catch {}
+/*
+ * Por encima de 1024px no hay pestañas: todo se renderiza. Los paneles nacen plegados,
+ * así que hay que abrir el que se va a fotografiar.
+ *
+ * ⚠️ **Antes esto clicaba TODOS los `.panel-header` en bucle, y con la columna abriendo
+ * una herramienta a la vez eso deja abierta solo la última**: el script seguiría
+ * imprimiendo `ok` sobre la foto de una cabecera plegada, que es un guardián que no puede
+ * fallar. Se abre uno por toma, y por el `tour-step` que la app ya tiene en vez de por
+ * clic a ciegas.
+ */
+async function abrir(objetivo) {
+	await page.evaluate(
+		(t) => window.dispatchEvent(new CustomEvent('tour-step', { detail: { target: t } })),
+		objetivo
+	);
+	await page.waitForTimeout(900);
 }
-await page.waitForTimeout(1800);
+
+await abrir('abrir-projections');
 await shot('04-proyecciones', '#tour-projections');
+await abrir('abrir-crisis');
 await shot('05-crisis', '#tour-crisis');
+await abrir('abrir-rebalance');
 await shot('06-rebalanceo', '.sidebar');
 
 await browser.close();

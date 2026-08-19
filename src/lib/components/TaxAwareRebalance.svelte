@@ -5,17 +5,11 @@
 	import { SAVINGS_TAX_YEAR } from '$lib/fiscal';
 	import type { MoveKind, TransferMove } from '$lib/traspaso';
 	import LeccionDelPanel from './LeccionDelPanel.svelte';
+	import PanelHerramienta from './PanelHerramienta.svelte';
 
-	let isOpen = $state(false);
-
-	/** El tutorial abre este panel antes de explicarlo; ver `RebalancePanel`. */
-	$effect(() => {
-		const abrir = (e: Event) => {
-			if ((e as CustomEvent).detail?.target === 'abrir-tax') isOpen = true;
-		};
-		window.addEventListener('tour-step', abrir);
-		return () => window.removeEventListener('tour-step', abrir);
-	});
+	/** Abierto/cerrado lo decide el padre: una herramienta abierta a la vez. */
+	const { abierto, onAlternar }: { abierto: boolean; onAlternar: (abrir: boolean) => void } =
+		$props();
 
 	const plan = $derived(portfolio.taxAwareRebalance);
 	const allMoves = $derived(plan.plans.flatMap((p) => p.moves));
@@ -49,32 +43,33 @@
 	}
 </script>
 
-<div id="tour-tax" class="panel" class:open={isOpen}>
-	<button class="panel-header" onclick={() => (isOpen = !isOpen)} aria-expanded={isOpen}>
-		<div class="panel-info">
-			<div class="panel-icon">🧾</div>
-			<div class="panel-text">
-				<h2 class="panel-title">{$LL.traspaso.title()}</h2>
-				<p class="panel-subtitle">{$LL.traspaso.subtitle()}</p>
-			</div>
-		</div>
+<PanelHerramienta
+	id="tour-tax"
+	titulo={$LL.traspaso.title()}
+	subtitulo={$LL.traspaso.subtitle()}
+	objetivoTour="abrir-tax"
+	{abierto}
+	{onAlternar}
+>
+	{#snippet icono()}
+		<!-- Un recibo: lo que Hacienda te cobraría por mover, o no. -->
+		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+			<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z" />
+			<path d="M9 8h6M9 12h6" />
+		</svg>
+	{/snippet}
+
+	{#snippet cifra()}
 		{#if plan.hasAnythingToDo}
-			<span class="badge" class:free={plan.totalEstimatedTax <= 0}>
+			<!-- ⚠️ `privacy-blur`: es dinero, y le faltaba. Toda cifra monetaria lo lleva. -->
+			<span class="cifra privacy-blur" class:libre={plan.totalEstimatedTax <= 0}>
 				{plan.totalEstimatedTax <= 0 ? formatEUR(0) : formatEUR(plan.totalEstimatedTax)}
 			</span>
 		{/if}
-		<span class="chevron" class:rotated={!isOpen}>
-			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-				<path d="M6 9l6 6 6-6" />
-			</svg>
-		</span>
-	</button>
+	{/snippet}
 
-	<div class="collapsible" class:collapsed={!isOpen}>
-		<div class="wrapper">
-			<div class="content">
-				<!-- Dentro del contenido: la cabecera es un `<button>`. -->
-				<LeccionDelPanel panel="tax" />
+	<!-- Dentro del contenido: la cabecera es un `<button>`. -->
+	<LeccionDelPanel panel="tax" />
 				{#if !hasPrices}
 					<p class="empty">{$LL.traspaso.no_prices()}</p>
 				{:else if !plan.hasAnythingToDo}
@@ -190,10 +185,7 @@
 						{$LL.traspaso.sources_label()}: {$LL.traspaso.sources_body()}
 					</p>
 				{/if}
-			</div>
-		</div>
-	</div>
-</div>
+</PanelHerramienta>
 
 {#snippet moveRow(move: TransferMove)}
 	<div class="move" class:taxed={!move.taxFree}>
@@ -245,120 +237,7 @@
 {/snippet}
 
 <style>
-	.panel {
-		width: 100%;
-		background: var(--bg-card);
-		backdrop-filter: blur(24px) saturate(200%);
-		-webkit-backdrop-filter: blur(24px) saturate(200%);
-		border: 1px solid var(--border-subtle);
-		border-radius: 24px;
-		overflow: hidden;
-		transition: all 0.3s ease;
-	}
-
-	.panel:hover {
-		border-color: rgba(255, 255, 255, 0.15);
-	}
-
-	.panel-header {
-		width: 100%;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 0.75rem;
-		padding: 1.25rem;
-		background: none;
-		border: none;
-		cursor: pointer;
-		text-align: left;
-	}
-
-	.panel-info {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-		min-width: 0;
-	}
-
-	.panel-icon {
-		width: 40px;
-		height: 40px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: var(--bg-card-hover);
-		border-radius: 12px;
-		font-size: 1.25rem;
-		flex-shrink: 0;
-	}
-
-	.panel-title {
-		font-size: 1rem;
-		font-weight: 700;
-		color: var(--text-primary);
-		margin: 0;
-		letter-spacing: -0.01em;
-	}
-
-	.panel-subtitle {
-		font-size: 0.75rem;
-		color: var(--text-muted);
-		margin: 0.1rem 0 0 0;
-	}
-
-	.badge {
-		font-size: 0.8rem;
-		font-weight: 700;
-		padding: 0.25rem 0.6rem;
-		border-radius: 999px;
-		background: rgba(245, 158, 11, 0.15);
-		color: var(--accent-orange-ink);
-		white-space: nowrap;
-		font-variant-numeric: tabular-nums;
-	}
-
-	.badge.free {
-		background: rgba(16, 185, 129, 0.15);
-		color: var(--accent-green-ink);
-	}
-
-	.chevron {
-		color: var(--text-faint);
-		transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-		width: 20px;
-		height: 20px;
-		flex-shrink: 0;
-	}
-
-	.chevron.rotated {
-		transform: rotate(-90deg);
-	}
-
-	.collapsible {
-		display: grid;
-		grid-template-rows: 1fr;
-		transition:
-			grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-			opacity 0.3s ease;
-		opacity: 1;
-	}
-
-	.collapsible.collapsed {
-		grid-template-rows: 0fr;
-		opacity: 0;
-		pointer-events: none;
-	}
-
-	.wrapper {
-		overflow: hidden;
-	}
-
-	.content {
-		padding: 0 1.25rem 1.25rem 1.25rem;
-		display: flex;
-		flex-direction: column;
-		gap: 1.25rem;
-	}
+	/* El armazón plegable vive en `PanelHerramienta.svelte`; aquí solo el contenido. */
 
 	.empty {
 		font-size: 0.85rem;

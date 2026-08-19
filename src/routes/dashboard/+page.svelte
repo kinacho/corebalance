@@ -83,6 +83,31 @@ import { formatCompactCurrency } from "$lib/chart-format";
   let activeTab = $state<TabId>("assets");
 
   /**
+   * Qué herramienta de la columna está abierta. **Una a la vez, o ninguna.**
+   *
+   * ⚠️ Vive aquí y no dentro de cada panel porque es una decisión entre hermanos, y
+   * porque es lo que acota el alto de la columna: `.sidebar` es `position: sticky` desde
+   * hace tiempo y era decorativo, porque un elemento pegajoso más alto que la ventana no
+   * tiene recorrido. Con cinco acordeones independientes el peor caso era la **suma** de
+   * los cinco; ahora es el **mayor** de los cinco.
+   *
+   * Arranca en `null` —todas cerradas, como hasta ahora— a propósito: abrir una por
+   * defecto sube la columna en reposo unos 250 px y cambia lo que fotografían
+   * `capturar-graficos.mjs` y `auditar-movil.mjs`. Con cifra en las cabeceras, la columna
+   * cerrada ya informa.
+   */
+  let herramientaAbierta = $state<
+    "rebalance" | "tax" | "concentracion" | "projections" | "crisis" | null
+  >(null);
+
+  function alternarHerramienta(
+    id: "rebalance" | "tax" | "concentracion" | "projections" | "crisis",
+    abrir: boolean,
+  ) {
+    herramientaAbierta = abrir ? id : null;
+  }
+
+  /**
    * Qué mapa está ampliado a la fila entera. Son excluyentes: dos mapas a fila
    * completa dejarían la rejilla en una sola columna y nadie querría eso.
    */
@@ -379,7 +404,7 @@ import { formatCompactCurrency } from "$lib/chart-format";
 
       <!-- History Chart Section -->
       <section
-        class="history-section card"
+        class="history-section"
         class:tab-hidden={activeTab !== "charts"}
       >
         <div class="section-header">
@@ -395,7 +420,7 @@ import { formatCompactCurrency } from "$lib/chart-format";
         class="desktop-charts-section"
         class:tab-hidden={activeTab !== "charts"}
       >
-        <div class="charts-row-card card">
+        <div class="charts-row-card">
           <div class="charts-mobile-hint">
             <span>{$LL.db.swipe_hint()}</span>
           </div>
@@ -530,37 +555,64 @@ import { formatCompactCurrency } from "$lib/chart-format";
           />
         </section>
 
-        <!-- Side Column: Tools & Charts -->
-        <aside class="sidebar">
-          <div class="sidebar-item" class:tab-hidden={activeTab !== "rebalance"}>
+        <!--
+          La columna de herramientas, en dos grupos con rótulo.
+          ⚠️ El `tab-hidden` va una sola vez, en el `<aside>`: la columna entera **es** la
+          pestaña «rebalance» en móvil, y colgarlo de cinco envoltorios era repetir cinco
+          veces la misma condición (y obligaba a la contrarregla `.sidebar-item.tab-hidden`).
+        -->
+        <aside class="sidebar" class:tab-hidden={activeTab !== "rebalance"}>
+          <!--
+            Grupo 1: lo que habla de TU dinero. Las tres sacan su cifra del store, así que
+            pueden afirmarla en la cabecera cerrada.
+          -->
+          <section class="grupo">
+            <h2 class="grupo-rotulo">{$LL.db.tools_group_portfolio()}</h2>
+
             <RebalancePanel
               result={portfolio.rebalanceResult}
               contribution={portfolio.contribution}
               onContributionChange={(val) => portfolio.updateContribution(val)}
+              abierto={herramientaAbierta === "rebalance"}
+              onAlternar={(abrir) => alternarHerramienta("rebalance", abrir)}
             />
-          </div>
 
-          <div class="sidebar-item" class:tab-hidden={activeTab !== "rebalance"}>
-            <TaxAwareRebalance />
-          </div>
+            <TaxAwareRebalance
+              abierto={herramientaAbierta === "tax"}
+              onAlternar={(abrir) => alternarHerramienta("tax", abrir)}
+            />
+
+            <!--
+              El solapamiento de toda la cartera: qué parte del dinero acaba en la
+              misma empresa contando los fondos y las acciones a la vez. Va aquí y no
+              en el mapa del subyacente porque mide sobre el patrimonio total,
+              mientras que aquel mide sobre lo analizado.
+            -->
+            <ConcentracionPanel
+              abierto={herramientaAbierta === "concentracion"}
+              onAlternar={(abrir) => alternarHerramienta("concentracion", abrir)}
+            />
+          </section>
 
           <!--
-            El solapamiento de toda la cartera: qué parte del dinero acaba en la
-            misma empresa contando los fondos y las acciones a la vez. Va aquí y no
-            en el mapa del subyacente porque mide sobre el patrimonio total,
-            mientras que aquel mide sobre lo analizado.
+            Grupo 2: los dos simuladores. ⚠️ Están separados por una razón de fondo, no
+            de maquetación: **sus números no salen de tu cartera** sino de sus propios
+            deslizadores, con valores por defecto que ni se guardan. El rótulo es lo que
+            les permite dejar de aparentar que responden sobre tu dinero, sin esconderlos.
           -->
-          <div class="sidebar-item" class:tab-hidden={activeTab !== "rebalance"}>
-            <ConcentracionPanel />
-          </div>
+          <section class="grupo">
+            <h2 class="grupo-rotulo">{$LL.db.tools_group_simulate()}</h2>
 
-          <div class="sidebar-item" class:tab-hidden={activeTab !== "rebalance"}>
-            <Projections />
-          </div>
+            <Projections
+              abierto={herramientaAbierta === "projections"}
+              onAlternar={(abrir) => alternarHerramienta("projections", abrir)}
+            />
 
-          <div class="sidebar-item" class:tab-hidden={activeTab !== "rebalance"}>
-            <CrisisSimulator />
-          </div>
+            <CrisisSimulator
+              abierto={herramientaAbierta === "crisis"}
+              onAlternar={(abrir) => alternarHerramienta("crisis", abrir)}
+            />
+          </section>
         </aside>
 
       </div>
@@ -793,10 +845,36 @@ import { formatCompactCurrency } from "$lib/chart-format";
   .sidebar {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 2rem;
   }
   .tab-hidden {
     display: none;
+  }
+
+  /*
+   * Los dos grupos de la columna. El espacio hace la jerarquía: **entre** grupos hay
+   * aire, **dentro** de un grupo las herramientas van juntas. Cinco paneles con el
+   * mismo hueco entre todos era la mitad de «cinco fichas iguales».
+   */
+  .grupo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  /*
+   * El primer encabezado que esta columna ha tenido. ⚠️ No usa `--text-micro`: ese
+   * token vale 0,6rem en escritorio y 0,7rem en móvil, así que tokenizarlo haría el
+   * rótulo **más pequeño en escritorio** que en el teléfono. Mismo dibujo que los
+   * `.section-heading` que ya había dentro de los paneles.
+   */
+  .grupo-rotulo {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-faint);
+    margin: 0 0 0.25rem 0.25rem;
   }
 
   .history-section {
@@ -1318,15 +1396,44 @@ import { formatCompactCurrency } from "$lib/chart-format";
       gap: 1.5rem;
     }
 
+    /*
+     * ⚠️ Reafirmación obligatoria, y faltaba: `.tab-hidden` mete `display: block
+     * !important` con la misma especificidad, así que en escritorio con
+     * `activeTab !== 'assets'` —alcanzable cambiando de pestaña en el móvil y
+     * ensanchando la ventana— esta columna perdía su `gap` y las tres secciones se
+     * pegaban. La regla está escrita en `.claude/rules/historico-y-rentabilidad.md`
+     * desde hace tiempo; lo que faltaba era el código.
+     */
+    .assets-section.tab-hidden {
+      display: flex !important;
+    }
+
+    /*
+     * ⚠️ **El `top: 6rem` no es un número al azar y no hay que «arreglarlo»**: la
+     * cabecera mide ~81 px en reposo y 65 al hacer scroll, así que 96 despeja las dos.
+     * Lo que hacía este `sticky` decorativo era la ALTURA de la columna, no el `top`:
+     * un elemento pegajoso más alto que la ventana no tiene recorrido. Con una
+     * herramienta abierta a la vez el peor caso pasa de la suma de cinco al mayor de
+     * cinco, y el `max-height` de abajo cierra el caso del panel más alto que la
+     * ventana (los dos simuladores lo son).
+     *
+     * ⚠️ El `overflow` va en el **propio** elemento pegajoso, que es inocuo. En
+     * cualquier ANCESTRO (`.main-content`, `.app-container`, `.dashboard-grid`, el
+     * `body`) mataría el `sticky`: no subirlo ahí.
+     */
     .sidebar {
       position: sticky;
       top: 6rem;
       display: flex;
       flex-direction: column;
-      gap: 2rem;
+      gap: 2.5rem;
+      max-height: calc(100dvh - 8rem);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-gutter: stable;
     }
 
-    .sidebar-item.tab-hidden {
+    .sidebar.tab-hidden {
       display: flex !important;
     }
   }

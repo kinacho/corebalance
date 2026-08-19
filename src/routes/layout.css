@@ -782,7 +782,47 @@
 		}
 	}
 
+	/*
+	 * Lo que un panel de herramientas enseña con la cabecera cerrada, y son dos cosas
+	 * distintas a propósito.
+	 *
+	 * ⚠️ **`.cifra` es un dato de tu cartera; `.supuesto` no lo es.** Rebalanceo,
+	 * Hacienda y Solapamiento sacan su número del store, así que pueden afirmarlo.
+	 * Proyección y Crisis lo sacan de sus propios deslizadores, con valores por defecto
+	 * que ni se guardan, así que un número ahí diría «la mediana con 7 % y 20 años»
+	 * disfrazado de hecho sobre tu dinero. Enseñan sus supuestos, en tono apagado y con
+	 * jerarquía visiblemente menor, y así la cabecera informa sin mentir.
+	 *
+	 * Vive aquí y no en cada panel porque estaba escrito dos veces y ya divergía: uno
+	 * usaba `var(--tint-warn)` y el otro literales `rgba(...)`, que es lo que
+	 * `a11y:contrast` pone rojo.
+	 */
+	.cifra {
+		font-size: 0.8rem;
+		font-weight: 700;
+		padding: 0.25rem 0.6rem;
+		border-radius: 999px;
+		background: var(--tint-warn);
+		color: var(--accent-orange-ink);
+		white-space: nowrap;
+	}
+
+	/* Cuando la respuesta es «no te cuesta nada»: el estado va en el texto, no en relleno. */
+	.cifra.libre {
+		background: var(--tint-ok);
+		color: var(--accent-green-ink);
+	}
+
+	.supuesto {
+		font-size: var(--text-micro);
+		color: var(--text-muted);
+		white-space: nowrap;
+		letter-spacing: 0.02em;
+	}
+
 	/* Tabular nums para cifras financieras */
+	.cifra,
+	.supuesto,
 	.privacy-blur,
 	.metric-value,
 	.summary-value,

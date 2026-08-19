@@ -2298,6 +2298,14 @@ type RootTranslation = {
 		 */
 		chart_historic_title: string
 		/**
+		 * T​u​ ​c​a​r​t​e​r​a
+		 */
+		tools_group_portfolio: string
+		/**
+		 * S​i​m​u​l​a​r
+		 */
+		tools_group_simulate: string
+		/**
 		 * T​o​t​a​l
 		 */
 		chart_label_total: string
@@ -2539,7 +2547,7 @@ type RootTranslation = {
 		 */
 		footer_tagline: string
 		/**
-		 * v​1​.​1​8​.​0​ ​�​�
+		 * v​1​.​1​9​.​0​ ​�​�
 		 */
 		changelog_trigger: string
 		/**
@@ -3307,6 +3315,12 @@ type RootTranslation = {
 		 * A​ñ​o​s
 		 */
 		axis_years: string
+		/**
+		 * {​r​e​t​}​ ​%​ ​·​ ​{​y​e​a​r​s​}​ ​a​ñ​o​s
+		 * @param {string} ret
+		 * @param {string} years
+		 */
+		assumption: RequiredParams<'ret' | 'years'>
 	}
 	crisis_simulator: {
 		/**
@@ -3383,6 +3397,11 @@ type RootTranslation = {
 		 * M​e​s​e​s​ ​d​e​s​d​e​ ​l​a​ ​c​a​í​d​a
 		 */
 		axis_months: string
+		/**
+		 * c​a​í​d​a​ ​{​d​r​o​p​}​ ​%
+		 * @param {string} drop
+		 */
+		assumption: RequiredParams<'drop'>
 		crises: {
 			dotcom: {
 				/**
@@ -3588,6 +3607,38 @@ type RootTranslation = {
 		 */
 		btn_understand: string
 		releases: {
+			v1_19_0: {
+				/**
+				 * 1​9​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
+				 */
+				date: string
+				/**
+				 * L​a​ ​c​o​l​u​m​n​a​ ​d​e​ ​h​e​r​r​a​m​i​e​n​t​a​s​,​ ​r​e​h​e​c​h​a
+				 */
+				badge: string
+				changes: {
+					/**
+					 * �​�​ ​*​*​L​a​s​ ​h​e​r​r​a​m​i​e​n​t​a​s​ ​y​a​ ​t​e​ ​d​i​c​e​n​ ​a​l​g​o​ ​s​i​n​ ​a​b​r​i​r​l​a​s​.​*​*​ ​A​n​t​e​s​ ​e​r​a​n​ ​c​i​n​c​o​ ​f​i​c​h​a​s​ ​i​g​u​a​l​e​s​ ​y​ ​t​r​e​s​ ​d​e​ ​e​l​l​a​s​ ​n​o​ ​d​e​c​í​a​n​ ​n​i​ ​u​n​a​ ​c​i​f​r​a​ ​h​a​s​t​a​ ​q​u​e​ ​l​a​s​ ​d​e​s​p​l​e​g​a​b​a​s​.​ ​A​h​o​r​a​ ​e​l​ ​r​e​b​a​l​a​n​c​e​o​ ​e​n​s​e​ñ​a​ ​t​u​ ​a​p​o​r​t​a​c​i​ó​n​,​ ​e​l​ ​p​a​n​e​l​ ​d​e​ ​H​a​c​i​e​n​d​a​ ​l​o​ ​q​u​e​ ​t​e​ ​c​o​s​t​a​r​í​a​ ​m​o​v​e​r​,​ ​y​ ​e​l​ ​s​o​l​a​p​a​m​i​e​n​t​o​ ​c​u​á​n​t​o​ ​d​e​ ​t​u​ ​c​a​r​t​e​r​a​ ​a​c​a​b​a​ ​e​n​ ​l​a​ ​m​i​s​m​a​ ​e​m​p​r​e​s​a​.
+					 */
+					'0': string
+					/**
+					 * �​�​️​ ​*​*​Y​ ​e​s​t​á​n​ ​s​e​p​a​r​a​d​a​s​ ​e​n​ ​d​o​s​ ​g​r​u​p​o​s​,​ ​«​t​u​ ​c​a​r​t​e​r​a​»​ ​y​ ​«​s​i​m​u​l​a​r​»​,​ ​p​o​r​q​u​e​ ​n​o​ ​h​a​b​l​a​n​ ​d​e​ ​l​o​ ​m​i​s​m​o​.​*​*​ ​L​o​s​ ​t​r​e​s​ ​p​r​i​m​e​r​o​s​ ​s​a​l​e​n​ ​d​e​ ​t​u​s​ ​d​a​t​o​s​.​ ​L​a​ ​p​r​o​y​e​c​c​i​ó​n​ ​y​ ​e​l​ ​s​i​m​u​l​a​d​o​r​ ​d​e​ ​c​r​i​s​i​s​ ​s​a​l​e​n​ ​d​e​ ​l​o​s​ ​d​e​s​l​i​z​a​d​o​r​e​s​ ​q​u​e​ ​t​ú​ ​m​u​e​v​e​s​,​ ​a​s​í​ ​q​u​e​ ​e​n​s​e​ñ​a​n​ ​*​*​s​u​s​ ​s​u​p​u​e​s​t​o​s​*​*​ ​—​«​7​ ​%​ ​·​ ​2​0​ ​a​ñ​o​s​»​,​ ​«​c​a​í​d​a​ ​−​4​0​ ​%​»​—​ ​y​ ​n​o​ ​u​n​ ​n​ú​m​e​r​o​ ​c​o​n​ ​p​i​n​t​a​ ​d​e​ ​d​a​t​o​.​ ​U​n​a​ ​m​e​d​i​a​n​a​ ​a​ ​v​e​i​n​t​e​ ​a​ñ​o​s​ ​e​n​ ​u​n​a​ ​c​a​b​e​c​e​r​a​ ​e​s​ ​u​n​a​ ​p​r​o​m​e​s​a​ ​d​i​s​f​r​a​z​a​d​a​ ​d​e​ ​c​i​f​r​a​.
+					 */
+					'1': string
+					/**
+					 * �​�​ ​*​*​S​e​ ​a​b​r​e​ ​u​n​a​ ​h​e​r​r​a​m​i​e​n​t​a​ ​a​ ​l​a​ ​v​e​z​,​ ​y​ ​c​o​n​ ​e​s​o​ ​l​a​ ​c​o​l​u​m​n​a​ ​t​e​ ​a​c​o​m​p​a​ñ​a​.​*​*​ ​A​l​ ​d​e​j​a​r​ ​d​e​ ​c​r​e​c​e​r​ ​s​i​n​ ​l​í​m​i​t​e​ ​s​e​ ​q​u​e​d​a​ ​f​i​j​a​ ​m​i​e​n​t​r​a​s​ ​h​a​c​e​s​ ​s​c​r​o​l​l​ ​p​o​r​ ​l​o​s​ ​g​r​á​f​i​c​o​s​,​ ​q​u​e​ ​e​s​ ​l​o​ ​q​u​e​ ​h​a​c​í​a​ ​f​a​l​t​a​ ​p​a​r​a​ ​p​o​d​e​r​ ​m​i​r​a​r​ ​u​n​a​ ​c​o​s​a​ ​y​ ​o​t​r​a​ ​s​i​n​ ​p​e​r​d​e​r​ ​e​l​ ​s​i​t​i​o​.
+					 */
+					'2': string
+					/**
+					 * ✏​️​ ​*​*​I​c​o​n​o​s​ ​d​i​b​u​j​a​d​o​s​ ​e​n​ ​v​e​z​ ​d​e​ ​e​m​o​j​i​.​*​*​ ​U​n​ ​e​m​o​j​i​ ​l​o​ ​p​i​n​t​a​ ​l​a​ ​f​u​e​n​t​e​ ​d​e​ ​c​a​d​a​ ​s​i​s​t​e​m​a​ ​o​p​e​r​a​t​i​v​o​,​ ​a​s​í​ ​q​u​e​ ​c​a​m​b​i​a​b​a​ ​d​e​ ​e​s​t​i​l​o​ ​s​e​g​ú​n​ ​e​l​ ​a​p​a​r​a​t​o​;​ ​a​h​o​r​a​ ​l​o​s​ ​c​i​n​c​o​ ​s​o​n​ ​d​e​l​ ​m​i​s​m​o​ ​t​r​a​z​o​ ​y​ ​t​o​m​a​n​ ​e​l​ ​c​o​l​o​r​ ​d​e​l​ ​t​e​m​a​.
+					 */
+					'3': string
+					/**
+					 * �​�​ ​P​o​r​ ​d​e​b​a​j​o​:​ ​e​l​ ​a​r​m​a​z​ó​n​ ​d​e​ ​e​s​o​s​ ​c​i​n​c​o​ ​p​a​n​e​l​e​s​ ​e​s​t​a​b​a​ ​e​s​c​r​i​t​o​ ​c​i​n​c​o​ ​v​e​c​e​s​ ​(​*​*​5​1​3​ ​l​í​n​e​a​s​*​*​ ​r​e​p​e​t​i​d​a​s​)​ ​y​ ​a​h​o​r​a​ ​v​i​v​e​ ​e​n​ ​u​n​ ​s​o​l​o​ ​s​i​t​i​o​.​ ​D​e​ ​p​a​s​o​ ​s​a​l​i​e​r​o​n​ ​t​r​e​s​ ​c​o​s​a​s​ ​q​u​e​ ​n​o​ ​s​e​ ​v​e​í​a​n​:​ ​e​l​ ​p​a​n​e​l​ ​d​e​ ​H​a​c​i​e​n​d​a​ ​e​n​s​e​ñ​a​b​a​ ​u​n​a​ ​c​i​f​r​a​ ​d​e​ ​d​i​n​e​r​o​ ​*​*​s​i​n​ ​d​i​f​u​m​i​n​a​r​*​*​ ​e​n​ ​m​o​d​o​ ​p​r​i​v​a​d​o​,​ ​e​l​ ​t​u​t​o​r​i​a​l​ ​p​o​d​í​a​ ​s​e​ñ​a​l​a​r​ ​u​n​a​ ​c​a​b​e​c​e​r​a​ ​c​e​r​r​a​d​a​,​ ​y​ ​l​a​s​ ​p​r​u​e​b​a​s​ ​d​e​ ​c​o​n​t​r​a​s​t​e​ ​s​o​l​o​ ​m​i​r​a​b​a​n​ ​u​n​o​ ​d​e​ ​l​o​s​ ​c​i​n​c​o​ ​p​a​n​e​l​e​s​.
+					 */
+					'4': string
+				}
+			}
 			v1_18_0: {
 				/**
 				 * 1​8​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
@@ -6687,6 +6738,14 @@ export type TranslationFunctions = {
 		 */
 		chart_historic_title: () => LocalizedString
 		/**
+		 * Tu cartera
+		 */
+		tools_group_portfolio: () => LocalizedString
+		/**
+		 * Simular
+		 */
+		tools_group_simulate: () => LocalizedString
+		/**
 		 * Total
 		 */
 		chart_label_total: () => LocalizedString
@@ -6915,7 +6974,7 @@ export type TranslationFunctions = {
 		 */
 		footer_tagline: () => LocalizedString
 		/**
-		 * v1.18.0 🚀
+		 * v1.19.0 🚀
 		 */
 		changelog_trigger: () => LocalizedString
 		/**
@@ -7624,6 +7683,10 @@ export type TranslationFunctions = {
 		 * Años
 		 */
 		axis_years: () => LocalizedString
+		/**
+		 * {ret} % · {years} años
+		 */
+		assumption: (arg: { ret: string, years: string }) => LocalizedString
 	}
 	crisis_simulator: {
 		/**
@@ -7698,6 +7761,10 @@ export type TranslationFunctions = {
 		 * Meses desde la caída
 		 */
 		axis_months: () => LocalizedString
+		/**
+		 * caída {drop} %
+		 */
+		assumption: (arg: { drop: string }) => LocalizedString
 		crises: {
 			dotcom: {
 				/**
@@ -7901,6 +7968,38 @@ export type TranslationFunctions = {
 		 */
 		btn_understand: () => LocalizedString
 		releases: {
+			v1_19_0: {
+				/**
+				 * 19 de Agosto, 2026
+				 */
+				date: () => LocalizedString
+				/**
+				 * La columna de herramientas, rehecha
+				 */
+				badge: () => LocalizedString
+				changes: {
+					/**
+					 * 🧰 **Las herramientas ya te dicen algo sin abrirlas.** Antes eran cinco fichas iguales y tres de ellas no decían ni una cifra hasta que las desplegabas. Ahora el rebalanceo enseña tu aportación, el panel de Hacienda lo que te costaría mover, y el solapamiento cuánto de tu cartera acaba en la misma empresa.
+					 */
+					'0': () => LocalizedString
+					/**
+					 * 🗂️ **Y están separadas en dos grupos, «tu cartera» y «simular», porque no hablan de lo mismo.** Los tres primeros salen de tus datos. La proyección y el simulador de crisis salen de los deslizadores que tú mueves, así que enseñan **sus supuestos** —«7 % · 20 años», «caída −40 %»— y no un número con pinta de dato. Una mediana a veinte años en una cabecera es una promesa disfrazada de cifra.
+					 */
+					'1': () => LocalizedString
+					/**
+					 * 📌 **Se abre una herramienta a la vez, y con eso la columna te acompaña.** Al dejar de crecer sin límite se queda fija mientras haces scroll por los gráficos, que es lo que hacía falta para poder mirar una cosa y otra sin perder el sitio.
+					 */
+					'2': () => LocalizedString
+					/**
+					 * ✏️ **Iconos dibujados en vez de emoji.** Un emoji lo pinta la fuente de cada sistema operativo, así que cambiaba de estilo según el aparato; ahora los cinco son del mismo trazo y toman el color del tema.
+					 */
+					'3': () => LocalizedString
+					/**
+					 * 🧹 Por debajo: el armazón de esos cinco paneles estaba escrito cinco veces (**513 líneas** repetidas) y ahora vive en un solo sitio. De paso salieron tres cosas que no se veían: el panel de Hacienda enseñaba una cifra de dinero **sin difuminar** en modo privado, el tutorial podía señalar una cabecera cerrada, y las pruebas de contraste solo miraban uno de los cinco paneles.
+					 */
+					'4': () => LocalizedString
+				}
+			}
 			v1_18_0: {
 				/**
 				 * 18 de Agosto, 2026

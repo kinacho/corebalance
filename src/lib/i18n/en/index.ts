@@ -616,6 +616,8 @@ const en: Translation = {
     chart_global_weight: 'Global Weight (Categories)',
     chart_global_detail: 'Global Detail',
     chart_historic_title: 'Portfolio Performance',
+    tools_group_portfolio: 'Your portfolio',
+    tools_group_simulate: 'Simulate',
     chart_label_total: 'Total',
     chart_label_core: 'Core',
     chart_label_stocks: 'Stocks',
@@ -673,7 +675,7 @@ const en: Translation = {
     timing_period_note: 'Measured over the {days} days with real data, not annualised.',
     legal_disclaimer: '<strong>Legal Disclaimer:</strong> CoreBalance is a purely informative and educational tool. It does not constitute financial, investment, or tax advice. The data displayed may be subject to delays or inaccuracies. The developer is not responsible for any financial losses resulting from the use of this application. Always invest at your own risk.',
     footer_tagline: 'Your control center for smart and balanced asset management.',
-    changelog_trigger: 'v1.18.0 🚀',
+    changelog_trigger: 'v1.19.0 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Made with ❤️ for the investing community',
     reclassify_stocks: 'Individual Stocks',
@@ -868,6 +870,7 @@ const en: Translation = {
     legend_invested: 'Contributed',
     legend_profit: 'Growth',
     axis_years: 'Years',
+    assumption: '{ret} % · {years} yr',
   },
   // Crisis Simulator
   crisis_simulator: {
@@ -889,6 +892,7 @@ const en: Translation = {
     total_dca: 'Total contributed via DCA: {total}',
     original_capital: 'Original capital',
     axis_months: 'Months since the drop',
+    assumption: '{drop} % drop',
     crises: {
       dotcom: {
         recovery: '7 years',
@@ -975,6 +979,17 @@ const en: Translation = {
     close_aria: 'Close modal',
     btn_understand: 'Got it',
     releases: {
+      v1_19_0: {
+        date: 'August 19, 2026',
+        badge: 'The tools column, rebuilt',
+        changes: [
+          '🧰 **The tools now tell you something without opening them.** They used to be five identical cards, three of which said nothing until you expanded them. Now the rebalance shows your contribution, the tax panel what moving would cost you, and the overlap panel how much of your portfolio ends up in the same company.',
+          '🗂️ **And they sit in two groups, «your portfolio» and «simulate», because they are not the same kind of thing.** The first three come from your data. The projection and the crisis simulator come from sliders you move, so they show **their assumptions** —«7 % · 20 yr», «40 % drop»— rather than a number that looks like a fact. A twenty-year median in a header is a promise dressed up as a figure.',
+          '📌 **One tool opens at a time, and that is what lets the column follow you.** Once it stops growing without limit it stays put while you scroll the charts, which is what you need to look at one thing and then another without losing your place.',
+          '✏️ **Drawn icons instead of emoji.** An emoji is painted by the font of each operating system, so it changed style depending on the device; the five now share one stroke and take the colour of the theme.',
+          '🧹 Under the hood: the shell of those five panels was written five times (**513 duplicated lines**) and now lives in one place. Three invisible things came out of it: the tax panel showed a money figure **unblurred** in privacy mode, the tutorial could point at a collapsed header, and the contrast checks only looked at one of the five panels.'
+        ]
+      },
       v1_18_0: {
         date: 'August 18, 2026',
         badge: 'How much of your portfolio is the same company',

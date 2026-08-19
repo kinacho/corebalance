@@ -4,34 +4,29 @@
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { LL } from '$lib/i18n/i18n-svelte';
 	import LeccionDelPanel from './LeccionDelPanel.svelte';
+	import PanelHerramienta from './PanelHerramienta.svelte';
 
 	interface Props {
 		contribution: number;
 		result: RebalanceResult | null;
 		onContributionChange: (value: number) => void;
+		/**
+		 * ⚠️ Abierto/cerrado ya no vive aquí, y el motivo es el que el comentario que
+		 * había en su sitio explicaba a medias: el tutorial abre este panel con
+		 * `abrir-rebalance` porque señalar una cabecera plegada —86 px medidos— mientras
+		 * el globo habla de «cuánto comprar este mes» es señalar a un sitio correcto que
+		 * no enseña nada. Ese listener sigue existiendo; lo escucha la concha, y quien
+		 * decide es el padre, porque la columna abre **una herramienta a la vez** y eso
+		 * no puede decidirlo un panel que no sabe de sus hermanos.
+		 */
+		abierto: boolean;
+		onAlternar: (abrir: boolean) => void;
 	}
 
-	let { contribution, result, onContributionChange }: Props = $props();
+	let { contribution, result, onContributionChange, abierto, onAlternar }: Props = $props();
 
-	let isOpen = $state(false);
 	let isEditing = $state(false);
 	let editValue = $state('');
-
-	/**
-	 * El tutorial abre este panel antes de explicarlo.
-	 *
-	 * ⚠️ Sin esto el tour resaltaba la cabecera plegada —86 px medidos— mientras el
-	 * globo hablaba de «cuánto comprar este mes»: señalaba a un sitio correcto que no
-	 * enseñaba nada de lo que estaba contando. El estado vive aquí, así que la orden
-	 * se escucha aquí y no en la página, que tendría que ir a buscarlo.
-	 */
-	$effect(() => {
-		const abrir = (e: Event) => {
-			if ((e as CustomEvent).detail?.target === 'abrir-rebalance') isOpen = true;
-		};
-		window.addEventListener('tour-step', abrir);
-		return () => window.removeEventListener('tour-step', abrir);
-	});
 
 	const displayValue = $derived(contribution > 0 ? contribution.toString() : '');
 
@@ -66,29 +61,36 @@
 	}
 </script>
 
-<div id="tour-rebalance" class="panel" class:open={isOpen}>
-	<button class="panel-header" onclick={() => isOpen = !isOpen} aria-expanded={isOpen}>
+<PanelHerramienta
+	id="tour-rebalance"
+	titulo={$LL.rebalance_panel.title()}
+	subtitulo={$LL.rebalance_panel.subtitle()}
+	objetivoTour="abrir-rebalance"
+	{abierto}
+	{onAlternar}
+>
+	{#snippet icono()}
+		<!-- Dos flechas cruzadas: mover dinero de donde sobra a donde falta. -->
+		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+			<path d="M4 8h13l-3-3" />
+			<path d="M20 16H7l3 3" />
+		</svg>
+	{/snippet}
 
-		<div class="panel-info">
-			<div class="panel-icon">💰</div>
-			<div class="panel-text">
-				<h2 class="panel-title">{$LL.rebalance_panel.title()}</h2>
-				<p class="panel-subtitle">{$LL.rebalance_panel.subtitle()}</p>
-			</div>
-		</div>
-		<span class="chevron" class:rotated={!isOpen}>
-			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-				<path d="M6 9l6 6 6-6" />
-			</svg>
-		</span>
-	</button>
+	{#snippet cifra()}
+		<!--
+			La aportación puesta, que es un dato **persistido** y es la única respuesta que
+			este panel puede dar en cerrado. Deliberadamente no `newTotalCapital` (ya está en
+			el héroe) ni el número de compras (un recuento sin significado).
+		-->
+		{#if contribution > 0}
+			<span class="cifra privacy-blur">{formatEUR(contribution)}</span>
+		{/if}
+	{/snippet}
 
-	<div class="collapsible" class:collapsed={!isOpen}>
-		<div class="wrapper">
-			<div class="content">
-				<!-- Dentro del contenido y no en la cabecera: la cabecera es un `<button>`, y un
-				     enlace dentro de un botón es HTML inválido y además le roba el clic. -->
-				<LeccionDelPanel panel="rebalance" />
+	<!-- Dentro del contenido y no en la cabecera: la cabecera es un `<button>`, y un
+	     enlace dentro de un botón es HTML inválido y además le roba el clic. -->
+	<LeccionDelPanel panel="rebalance" />
 				<div class="input-section">
 					<label class="input-label" for="contribution-input">
 						{$LL.rebalance_panel.input_label()}
@@ -189,107 +191,10 @@
 						</div>
 					</div>
 				{/if}
-			</div>
-		</div>
-	</div>
-</div>
+</PanelHerramienta>
 
 <style>
-	.panel {
-		width: 100%;
-		background: var(--bg-card);
-
-		backdrop-filter: blur(24px) saturate(200%);
-		-webkit-backdrop-filter: blur(24px) saturate(200%);
-		border: 1px solid var(--border-subtle);
-		border-radius: 24px;
-		overflow: hidden;
-		transition: all 0.3s ease;
-	}
-
-	.panel:hover {
-		border-color: rgba(255, 255, 255, 0.15);
-		background: var(--bg-card-hover);
-	}
-
-	.panel-header {
-		width: 100%;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 1.25rem;
-		background: none;
-		border: none;
-		cursor: pointer;
-		text-align: left;
-		transition: background 0.2s ease;
-	}
-
-	.panel-info {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-	}
-
-	.panel-icon {
-		width: 40px;
-		height: 40px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: var(--bg-card-hover);
-		border-radius: 12px;
-		font-size: 1.25rem;
-	}
-
-	.panel-title {
-		font-size: 1rem;
-		font-weight: 700;
-		color: var(--text-primary);
-		margin: 0;
-		letter-spacing: -0.01em;
-	}
-
-	.panel-subtitle {
-		font-size: 0.75rem;
-		color: var(--text-muted);
-		margin: 0.1rem 0 0 0;
-	}
-
-	.chevron {
-		color: var(--text-faint);
-		transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-		width: 20px;
-		height: 20px;
-	}
-
-	.chevron.rotated {
-		transform: rotate(-90deg);
-	}
-
-	.collapsible {
-		display: grid;
-		grid-template-rows: 1fr;
-		transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
-		opacity: 1;
-	}
-
-	.collapsible.collapsed {
-		grid-template-rows: 0fr;
-		opacity: 0;
-		pointer-events: none;
-	}
-
-	.wrapper {
-		overflow: hidden;
-	}
-
-	.content {
-		padding: 0 1.25rem 1.25rem 1.25rem;
-		display: flex;
-		flex-direction: column;
-		gap: 1.5rem;
-	}
+	/* El armazón plegable vive en `PanelHerramienta.svelte`; aquí solo el contenido. */
 
 	.input-section {
 		padding: 1rem;
