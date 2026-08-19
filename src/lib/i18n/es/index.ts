@@ -600,6 +600,10 @@ const es = {
     asset_added: '"{assetName:string}" añadido correctamente',
     save_error: 'Error al guardar los datos en la nube',
     load_error: 'Error al cargar los datos desde la nube',
+    // Dice explícitamente que no se ha borrado nada: el usuario está viendo su
+    // cartera con menos movimientos de los que tiene, y sin esa frase la lectura
+    // natural es que se han perdido.
+    ledger_load_failed: 'No se pudo leer tu libro de movimientos de la nube. Se mantiene el de este dispositivo; no se ha borrado nada.',
     login_error: 'Error al iniciar sesión',
   },
   // Clasificación de cambios manuales en las participaciones

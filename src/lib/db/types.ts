@@ -39,7 +39,19 @@ export interface StorageProvider {
 	
 	// Transactions (Ledger)
 	saveTransactions?(userId: string, transactions: Transaction[]): Promise<void>;
-	loadTransactions?(userId: string): Promise<Transaction[]>;
+	/**
+	 * El libro de movimientos, o `null` si **no se ha podido saber**.
+	 *
+	 * ⚠️ **`null` y `[]` son dos respuestas distintas y confundirlas cuesta dinero.**
+	 * `[]` es «este usuario no tiene movimientos»; `null` es «la lectura falló» —una
+	 * denegación de reglas, la red caída— y el que llama debe entonces **conservar la
+	 * copia local y decirlo**, en lugar de tomarla por vacía. Devolver `[]` en el
+	 * `catch` es lo que hacía que un `Missing or insufficient permissions` de Firestore
+	 * se leyera como un libro vacío: en un navegador sin copia local, el coste medio,
+	 * el TWR y el panel fiscal se calculaban sobre nada sin un solo error a la vista, y
+	 * un respaldo exportado en ese estado afirmaba que no había movimientos.
+	 */
+	loadTransactions?(userId: string): Promise<Transaction[] | null>;
 	
 	// History
 	saveHistory(userId: string, points: HistoryPoint[]): Promise<void>;

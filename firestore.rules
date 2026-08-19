@@ -2,27 +2,39 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Regla base: Nadie sin autenticar puede leer ni escribir nada
-    // Y cada usuario solo puede acceder a su propio documento identificado por userId
-    
-    match /user_data/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+    // Nadie sin autenticar lee ni escribe nada, y cada usuario solo alcanza los
+    // documentos cuyo id es su propio uid.
+    function esDueno(userId) {
+      return request.auth != null && request.auth.uid == userId;
     }
-    
+
+    match /user_data/{userId} {
+      allow read, write: if esDueno(userId);
+    }
+
     match /user_transactions/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-      
-      match /items/{transactionId} {
-        allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if esDueno(userId);
+
+      // ⚠️ **Las reglas de Firestore NO descienden a las subcolecciones**, y esta
+      // línea es la que faltaba desplegada: permitir `user_transactions/{uid}`
+      // no permite nada por debajo de él. El libro de movimientos vive en
+      // `user_transactions/{uid}/items/*`, así que sin esto la consulta de
+      // `loadTransactions` y el `getDocs` con el que arranca `saveTransactions`
+      // se responden con `Missing or insufficient permissions` — que el código
+      // se traga y convierte en «no tienes movimientos». El comodín recursivo
+      // en lugar de `match /items/{transactionId}` para que una subcolección
+      // futura no repita el mismo fallo.
+      match /{document=**} {
+        allow read, write: if esDueno(userId);
       }
     }
-    
+
     match /user_history/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if esDueno(userId);
     }
 
     match /user_holding_edits/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if esDueno(userId);
     }
   }
 }

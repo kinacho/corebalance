@@ -694,21 +694,44 @@ export class PortfolioStore {
 				shouldLoadFromCloud = false;
 			}
 
-			if (shouldLoadFromCloud) {
+			/**
+			 * ⚠️ **Una lectura fallida no es un libro vacío.** `loadTransactions` devuelve
+			 * `null` cuando no se pudo leer —una denegación de reglas de Firestore, la red
+			 * caída—, y entonces no hay nada que comparar: se conserva la copia local que ya
+			 * cargó `loadFromStorage()`, no se persiste el vacío, y **se avisa**.
+			 *
+			 * ⚠️ Lo que se gana aquí es exactamente eso, la señal, y conviene no
+			 * exagerarlo: el `[]` que devolvía antes **no** borraba un libro local con
+			 * datos, porque el desempate por número de items ya lo protegía (`0 >= 2` es
+			 * falso). El daño estaba en callarse — en un navegador nuevo, sin copia local,
+			 * la sesión se quedaba con el libro a cero y la interfaz seguía enseñando coste
+			 * medio, rentabilidad y panel fiscal como si fueran ciertos. Dos tests que
+			 * escribí para esto pasaban también con el defecto puesto y se cayeron en el
+			 * control negativo; lo que sí es daño real está en la exportación, y lo cubre
+			 * `FirebaseStorage.test.ts`.
+			 *
+			 * Se sube la copia local si la hay, que es lo que hará que la nube deje de estar
+			 * vacía en cuanto el permiso exista.
+			 */
+			if (transactions === null) {
+				console.warn('[Portfolio] No se pudo leer el libro de movimientos de la nube. Se conserva la copia local.');
+				ui.addToast(get(LL).toasts.ledger_load_failed(), 'error');
+				if (this.transactions.length > 0) this.scheduleCloudSave();
+			} else if (shouldLoadFromCloud) {
 				// Cargar transacciones: usar las de la nube si hay más que las locales,
 				// o las locales si son más recientes.
 				const localTxJson = localStorage.getItem('corebalance_transactions');
 				const localTxCount = localTxJson ? (JSON.parse(localTxJson) as unknown[]).length : 0;
-				if (transactions && transactions.length >= localTxCount) {
+				if (transactions.length >= localTxCount) {
 					this.transactions = transactions;
 					// Sincronizar localStorage con las transacciones de la nube
 					try { localStorage.setItem('corebalance_transactions', JSON.stringify(transactions)); } catch (_) {}
-				} else if (transactions && transactions.length > 0 && localTxCount === 0) {
+				} else if (transactions.length > 0 && localTxCount === 0) {
 					this.transactions = transactions;
 				}
 				// Si localTxCount > transactions.length, mantenemos las locales (ya cargadas en loadFromStorage)
 				// y las subimos a la nube para sincronizar
-				if (this.user && localTxCount > (transactions?.length ?? 0)) {
+				if (this.user && localTxCount > transactions.length) {
 					console.log('[Portfolio] Más transacciones en local que en nube. Sincronizando...');
 					this.scheduleCloudSave();
 				}

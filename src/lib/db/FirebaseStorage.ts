@@ -78,7 +78,13 @@ export class FirebaseStorage implements StorageProvider {
 		}
 	}
 
-	async loadTransactions(userId: string): Promise<Transaction[]> {
+	/**
+	 * ⚠️ Devuelve `null` cuando la lectura falla, nunca `[]`. Ver el contrato en
+	 * `StorageProvider.loadTransactions`: aquí es donde una denegación de reglas se
+	 * convertía en «no tienes movimientos». `db` ausente sí es `[]`: no hay nube
+	 * configurada, así que no hay nada que perder ni ninguna copia que proteger.
+	 */
+	async loadTransactions(userId: string): Promise<Transaction[] | null> {
 		if (!db) return [];
 		try {
 			const subcollRef = collection(db, 'user_transactions', userId, 'items');
@@ -107,7 +113,7 @@ export class FirebaseStorage implements StorageProvider {
 			return [];
 		} catch (e) {
 			console.error('Firestore transactions load error:', e);
-			return [];
+			return null;
 		}
 	}
 
@@ -207,6 +213,16 @@ export class FirebaseStorage implements StorageProvider {
 		const userData = await this.loadUserData(userId);
 		const history = await this.loadHistory(userId);
 		const transactions = await this.loadTransactions(userId);
+		/**
+		 * ⚠️ **Un respaldo que miente es peor que un respaldo que falla.** Si el libro
+		 * no se ha podido leer, exportar `[]` produce un JSON que dice «no tenías
+		 * movimientos» y que, restaurado, borra el libro de verdad — con `importAllData`
+		 * escribiendo las cuatro tablas. Mejor que la exportación se caiga: `handleExport`
+		 * en `SyncModal.svelte` ya enseña el mensaje del error.
+		 */
+		if (transactions === null) {
+			throw new Error('No se pudo leer tu libro de movimientos, así que el respaldo estaría incompleto. Vuelve a intentarlo.');
+		}
 		const holdingEdits = await this.loadHoldingEdits(userId);
 		return {
 			userData: userData ? [{ ...userData, id: userId }] : [],

@@ -53,11 +53,13 @@ class LazyStorageProvider implements StorageProvider {
 		}
 	}
 
-	async loadTransactions(userId: string): Promise<Transaction[]> {
+	/** `null` propagado tal cual: es «no se pudo leer», no «no hay nada». */
+	async loadTransactions(userId: string): Promise<Transaction[] | null> {
 		const p = await this.getProvider();
 		if (p.loadTransactions) {
 			return p.loadTransactions(userId);
 		}
+		// Un backend sin libro de movimientos no es un fallo de lectura.
 		return [];
 	}
 
