@@ -7,7 +7,7 @@
 	import { ASSET_ICONS } from '$lib/constants';
 	import { nextAssetColor } from '$lib/asset-colors';
 	import type { Asset, AssetCategory, SearchResult } from '$lib/types';
-	import { resolveAssetIcon } from '$lib/utils';
+	import { resolveAssetIcon } from '$lib/asset-icon';
 	import { resolveInstrumentType } from '$lib/instrument-type';
 	import { resolveIndexKey } from '$lib/lookthrough';
 

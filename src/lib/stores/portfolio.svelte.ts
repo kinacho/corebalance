@@ -21,7 +21,8 @@ import {
 import { storageProvider } from '$lib/db';
 import { SYNC_PAYLOAD_VERSION, type SyncPayload } from '$lib/sync-payload';
 import type { HistoryPoint } from '$lib/db/types';
-import { formatDate, resolveAssetIcon } from '$lib/utils';
+import { formatDate } from '$lib/utils';
+import { resolveAssetIcon } from '$lib/asset-icon';
 import { ui } from '$lib/stores/ui.svelte';
 import { goto } from '$app/navigation';
 import { detectSparklineChange, applyTerUpdates } from '$lib/stores/priceUtils';
@@ -42,7 +43,8 @@ import { calculateTaxAwareRebalance } from '$lib/traspaso';
  * Sin destruir lo que el usuario haya corregido a mano: solo escribe donde hay
  * hueco.
  *
- * ⚠️ **Con una excepción, y es una reparación, no un relleno.**
+ * ⚠️ **Con dos excepciones, y las dos son reparaciones y no rellenos** —el icono, cuyo
+ * porqué está en su propia línea más abajo, y el tipo de instrumento:
  * `tipoCorregidoPorMigracion()` va delante del valor guardado porque el valor guardado es
  * precisamente lo que está mal: los activos importados antes del arreglo del regex `0P`
  * tienen `other` o `equity` **fijados en disco**, y como `instrumentTypeOf()` prefiere lo
@@ -54,17 +56,48 @@ import { calculateTaxAwareRebalance } from '$lib/traspaso';
  * El razonamiento completo, y el coste asumido, están en su docblock.
  */
 function normalizeAssets(assets: Asset[]): Asset[] {
-	return assets.map((a) => ({
-		...a,
-		icon: a.icon || resolveAssetIcon(a.ticker, a.name),
-		instrumentType:
+	return assets.map((a) => {
+		const instrumentType =
 			tipoCorregidoPorMigracion(a) ??
 			a.instrumentType ??
 			(a.manualInterestRate !== undefined
 				? 'cash'
-				: resolveInstrumentType(a.ticker, a.name, '', a.isin)),
-		indexKey: a.indexKey ?? resolveIndexKey(a.ticker, a.name)
-	}));
+				: resolveInstrumentType(a.ticker, a.name, '', a.isin));
+		const indice = a.indexKey ?? resolveIndexKey(a.ticker, a.name);
+		const normalizado: Asset = {
+			...a,
+			instrumentType,
+			/**
+			 * ⚠️ **El icono se recalcula siempre, no solo cuando falta**, que es la otra
+			 * excepción al «solo escribe donde hay hueco» de arriba. `Asset.icon` guarda
+			 * un glifo, pero **no hay ninguna pantalla donde el usuario lo elija**: es una
+			 * caché de lo que decide `resolveAssetIcon()`, y respetarla congelaba en disco
+			 * el resultado de la versión que lo guardó. Medido en una cartera real el
+			 * 19-ago-2026: dos fondos indexados globales con escudo de «defensivo» y una
+			 * acción con un `⚛️` que ya no existe en ninguna parte del código, todos
+			 * inmunes a arreglar la deducción. El día que exista un selector de icono,
+			 * esto tiene que volver a ser un relleno y guardar aparte lo que el usuario
+			 * elija — igual que `indexKey`, que sí es corregible y por eso manda.
+			 */
+			icon: resolveAssetIcon(a.ticker, a.name, '', {
+				indexKey: indice,
+				instrumentType,
+				manualInterestRate: a.manualInterestRate
+			})
+		};
+		/**
+		 * ⚠️ **La clave se omite cuando no hay índice; nunca se escribe `undefined`.**
+		 * `resolveIndexKey()` devuelve `string | undefined` —una acción suelta no
+		 * replica ningún índice— y `indexKey: undefined` no es lo mismo que no tener
+		 * la propiedad: viaja en el `$state.snapshot` que se manda a Firestore, y ahí
+		 * un solo `undefined` rechaza el documento **entero**. Es lo que dejó
+		 * `user_data` sin recibir una escritura mientras el resto de la app parecía
+		 * funcionar. La defensa de verdad está en `sinIndefinidos()`, donde se hace el
+		 * daño; esto es no crear el problema de entrada.
+		 */
+		if (indice !== undefined) normalizado.indexKey = indice;
+		return normalizado;
+	});
 }
 
 export interface User { uid: string; displayName?: string | null; photoURL?: string | null; email?: string | null; }

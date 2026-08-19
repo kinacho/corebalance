@@ -26,6 +26,7 @@
 
 	// Mapeo dinámico desde el diccionario de traducciones
 	const releaseVersions = [
+		'v1_19_1',
 		'v1_19_0',
 		'v1_18_0',
 		'v1_17_3',
@@ -102,6 +103,15 @@
 		 * 1,95 en tema claro. Y se elige cálido a propósito: sus dos vecinas son el
 		 * magenta de la 1.18.0 y el azul de la 1.17.3.
 		 */
+		/*
+		 * El teal del logo, reusado tal cual del `v1_17_0` de abajo en vez de buscar un
+		 * tono nuevo: ya está medido en los dos temas (3,4 sobre blanco y 5,4 sobre
+		 * oscuro, o sea peor caso 3,4 — por encima del 3,23 que hace de vara) y no se
+		 * parece al ámbar de la 1.19.0, que va justo debajo. Repetir un color de cinco
+		 * entradas más abajo no es un problema: la lista ya lo hace, y lo que tiene que
+		 * distinguirse es una chapa de su vecina.
+		 */
+		v1_19_1: '#0d9488',
 		v1_19_0: '#b45309',
 		v1_18_0: '#c026d3',
 		v1_17_3: '#2563eb',

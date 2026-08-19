@@ -15,10 +15,33 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
  * prueba es la decisión del `catch`, no Firestore.
  */
 
-const stub = vi.hoisted(() => ({
-	getDocs: vi.fn(),
-	getDoc: vi.fn()
-}));
+const stub = vi.hoisted(() => {
+	/**
+	 * ⚠️ **El `setDoc` de mentira valida como el de verdad.** Firestore recorre el
+	 * documento entero antes de mandarlo y lanza `Unsupported field value: undefined`
+	 * por una sola clave sin valor, en cualquier nivel: no se guarda «casi todo», no se
+	 * guarda **nada**. Un doble que aceptase cualquier cosa dejaría pasar el defecto que
+	 * estos tests fijan, que es precisamente el que estuvo vivo en producción.
+	 */
+	const tieneIndefinido = (v: unknown): boolean => {
+		if (v === undefined) return true;
+		if (Array.isArray(v)) return v.some(tieneIndefinido);
+		if (v !== null && typeof v === 'object') return Object.values(v).some(tieneIndefinido);
+		return false;
+	};
+	return {
+		getDocs: vi.fn(),
+		getDoc: vi.fn(),
+		batchSet: vi.fn(),
+		setDoc: vi.fn(async (ref: { path: string }, datos: unknown) => {
+			if (tieneIndefinido(datos)) {
+				throw new Error(
+					`Function setDoc() called with invalid data. Unsupported field value: undefined (found in document ${ref.path})`
+				);
+			}
+		})
+	};
+});
 
 vi.mock('$lib/firebase', () => ({
 	auth: { currentUser: { uid: 'u1' } },
@@ -39,14 +62,14 @@ vi.mock('firebase/firestore', () => ({
 	orderBy: () => ({}),
 	getDocs: stub.getDocs,
 	getDoc: stub.getDoc,
-	setDoc: vi.fn(async () => {}),
+	setDoc: stub.setDoc,
 	updateDoc: vi.fn(async () => {}),
 	deleteDoc: vi.fn(async () => {}),
 	deleteField: () => ({}),
-	writeBatch: () => ({ set: vi.fn(), delete: vi.fn(), commit: vi.fn(async () => {}) })
+	writeBatch: () => ({ set: stub.batchSet, delete: vi.fn(), commit: vi.fn(async () => {}) })
 }));
 
-import { FirebaseStorage } from './FirebaseStorage';
+import { FirebaseStorage, sinIndefinidos } from './FirebaseStorage';
 
 /** Lo que lanza Firestore cuando la regla no cubre la ruta. */
 function denegado(): Error {
@@ -106,5 +129,75 @@ describe('FirebaseStorage · el respaldo no puede mentir', () => {
 		const datos = await storage.getAllData();
 
 		expect(datos.transactions).toEqual([]);
+	});
+});
+
+/**
+ * El defecto que dejó la sincronización muerta sin que nada se pusiera rojo
+ * (19-ago-2026).
+ *
+ * Medido en la cartera real del autor: tres activos sin `indexKey` —dos acciones
+ * sueltas y un fondo que `resolveIndexKey()` no reconoce— hacían que
+ * `normalizeAssets()` escribiera la clave con valor `undefined`, y Firestore rechazaba
+ * **el documento entero**. Consecuencia: `user_data` dejó de recibir escrituras, el
+ * escritorio seguía guardando en `localStorage` tan contento, y el móvil enseñaba una
+ * cartera de hace semanas. En consola quedaba un `Firestore save error` que se tragaba
+ * el `catch`; en pantalla, nada.
+ */
+describe('FirebaseStorage · un opcional sin valor no puede tumbar el guardado', () => {
+	const storage = new FirebaseStorage();
+
+	beforeEach(() => {
+		vi.clearAllMocks();
+		vi.spyOn(console, 'error').mockImplementation(() => {});
+	});
+
+	it('el doble de setDoc rechaza un undefined, como el de verdad', async () => {
+		// Control: sin esto, los dos tests siguientes pasarían con el defecto puesto.
+		await expect(
+			stub.setDoc({ path: 'user_data/u1' }, { coreAssets: [{ ticker: 'ASTS', indexKey: undefined }] })
+		).rejects.toThrow(/Unsupported field value: undefined/);
+	});
+
+	it('guarda la cartera aunque un activo no tenga índice, quitando la clave', async () => {
+		await expect(
+			storage.saveUserData('u1', {
+				contribution: 500,
+				coreAssets: [
+					{ ticker: 'ASTS', name: 'AST', isin: '', targetWeight: 1, color: '#fff', icon: '📈', ter: 0, category: 'stocks', indexKey: undefined }
+				]
+			} as never)
+		).resolves.toBeUndefined();
+
+		const [, enviado] = stub.setDoc.mock.calls[0];
+		expect(Object.keys((enviado as any).coreAssets[0])).not.toContain('indexKey');
+		// Y lo que sí tiene valor viaja intacto: limpiar no es adelgazar el documento.
+		expect((enviado as any).contribution).toBe(500);
+	});
+
+	it('el libro de movimientos también se limpia antes de subir', async () => {
+		stub.getDocs.mockResolvedValue({ forEach: () => {} });
+
+		await storage.saveTransactions('u1', [
+			{ id: 't1', ticker: 'ASTS', type: 'buy', date: 1, shares: 1, price: 2, currency: 'EUR', fees: 0, fxRate: 1, notes: undefined }
+		] as never);
+
+		const [, enviado] = stub.batchSet.mock.calls[0];
+		expect(Object.keys(enviado as object)).not.toContain('notes');
+	});
+
+	it('relanza el fallo en vez de tragárselo, que es lo que lo mantuvo invisible', async () => {
+		// El store tiene el `catch` que avisa y reintenta; sin la excepción nunca se
+		// enteraba de que la escritura no había ocurrido.
+		stub.setDoc.mockRejectedValueOnce(denegado());
+
+		await expect(storage.saveUserData('u1', { contribution: 1 })).rejects.toThrow(/permissions/);
+	});
+
+	it('no reconstruye lo que no es un objeto plano', async () => {
+		// Un Timestamp, un Date o un centinela como deleteField() dejarían de serlo si
+		// se copiaran clave a clave.
+		const fecha = new Date('2026-08-19T00:00:00.000Z');
+		expect(sinIndefinidos({ fecha }).fecha).toBe(fecha);
 	});
 });

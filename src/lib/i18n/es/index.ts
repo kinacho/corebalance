@@ -697,7 +697,7 @@ const es = {
     timing_period_note: 'Medido sobre los {days:number} días con datos reales, sin anualizar.',
     legal_disclaimer: '<strong>Aviso Legal:</strong> CoreBalance es una herramienta puramente informativa y educativa. No constituye asesoramiento financiero, de inversión ni fiscal. Los datos mostrados pueden sufrir retrasos o ser inexactos. El desarrollador no se hace responsable de posibles pérdidas financieras derivadas del uso de esta aplicación. Invierte siempre bajo tu propia responsabilidad.',
     footer_tagline: 'Tu centro de mandos para una gestión de activos inteligente y equilibrada.',
-    changelog_trigger: 'v1.19.0 🚀',
+    changelog_trigger: 'v1.19.1 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Hecho con ❤️ para la comunidad inversora',
     reclassify_stocks: 'Acciones Individuales',
@@ -1018,6 +1018,17 @@ const es = {
     close_aria: 'Cerrar modal',
     btn_understand: 'Entendido',
     releases: {
+      v1_19_1: {
+        date: '19 de Agosto, 2026',
+        badge: 'Tus cambios llegan al móvil, y los iconos aciertan',
+        changes: [
+          '☁️ **Si habías iniciado sesión, los cambios de tu cartera no estaban subiendo a la nube.** Cambiabas los pesos en el ordenador y en el móvil seguías viendo la cartera de antes, aunque los dos estuvieran en la misma cuenta. **No se perdió nada**: todo seguía guardado en el navegador donde hiciste el cambio, y en cuanto abras la app ahí, se sube solo.',
+          '🔍 **La causa: un activo sin índice reconocido —una acción suelta, un fondo poco común— tumbaba el guardado entero.** No fallaba «esa parte»: el servidor rechazaba la cartera completa por un solo campo vacío. Ahora esos campos se limpian antes de enviar.',
+          '🔔 **Y un guardado que falla ya se ve.** Hasta ahora solo quedaba constancia en la consola del navegador, que es como no dejar ninguna: por eso esto pudo estar semanas pasando sin que nada lo dijera.',
+          '🏷️ **Los iconos de tus activos ya dicen lo que son.** Un indexado global llevaba escudo de «defensivo» por una razón tonta: los proveedores acortan los nombres —«Dev Wld», «EmergMkts», «Ultr Shrt»— y ninguna regla los reconocía, así que el fondo caía en la última red. Ahora se mira **el índice que replica**, que la app ya sabía y no usaba, y el escudo se queda solo para los fondos de defensa.',
+          '🌐 **Y adiós a las banderitas.** Windows no las dibuja: las pinta como dos letras estrechas. En su lugar hay globos —mundo, América, Europa, Asia—, que se ven igual en cualquier aparato y dicen lo mismo.'
+        ]
+      },
       v1_19_0: {
         date: '19 de Agosto, 2026',
         badge: 'La columna de herramientas, rehecha',
