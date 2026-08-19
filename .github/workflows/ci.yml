@@ -117,8 +117,30 @@ jobs:
 
       # Solo Chromium: estos specs comprueban la app y su service worker, no
       # compatibilidad entre motores.
+      #
+      # ⚠️ **Sin `--with-deps`, y no es un ahorro de tiempo: ese flag llama a `apt` y
+      # es lo único de este pipeline que depende de un espejo de paquetes ajeno.** El
+      # 19-ago-2026 tumbó dos intentos seguidos del mismo PR: `azure.archive.ubuntu.com`
+      # no respondía, `apt-get update` se quedó reintentando (`Ign:` en bucle) y el job
+      # murió al agotar sus 20 minutos **sin haber ejecutado un solo test**. La imagen
+      # `ubuntu-latest` ya trae las bibliotecas que Chromium necesita —viene con Chrome
+      # y Edge instalados—, así que lo que `--with-deps` añadía aquí era el riesgo, no
+      # las dependencias.
+      #
+      # Y la caché no es una optimización tampoco: cada descarga es otra oportunidad de
+      # que un servicio de fuera decida el color de este check.
+      - name: Caché del navegador de Playwright
+        id: cache-navegador
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          # La versión de Playwright manda: al subirla, el binario cambia y la caché
+          # tiene que caducar. `package-lock.json` es donde está clavada.
+          key: playwright-chromium-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
       - name: Instalar Chromium
-        run: npx playwright install --with-deps chromium
+        if: steps.cache-navegador.outputs.cache-hit != 'true'
+        run: npx playwright install chromium
 
       # ⚠️ Imprescindible: los specs corren sobre `vite preview`, que sirve el build.
       # Sin build, `preview` arranca y devuelve 404 en todo.
