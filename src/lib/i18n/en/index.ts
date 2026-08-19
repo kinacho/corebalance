@@ -585,6 +585,7 @@ const en: Translation = {
     asset_added: '"{assetName}" added successfully',
     save_error: 'Error saving data to the cloud',
     load_error: 'Error loading data from the cloud',
+    ledger_load_failed: 'Your transaction ledger could not be read from the cloud. The one on this device is kept — nothing was deleted.',
     login_error: 'Error logging in',
   },
   // Classification of manual changes to holdings

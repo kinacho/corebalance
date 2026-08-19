@@ -23,7 +23,8 @@ import type { UserData } from '$lib/db/types';
 const almacen = vi.hoisted(() => ({
 	callback: null as ((user: unknown) => void) | null,
 	userData: null as UserData | null,
-	transactions: [] as Transaction[],
+	/** `null` es «la lectura falló», no «no hay movimientos». Ver el bloque de tests. */
+	transactions: [] as Transaction[] | null,
 	guardados: [] as { userId: string; data: Record<string, unknown> }[],
 	transaccionesGuardadas: [] as Transaction[][]
 }));
@@ -78,6 +79,7 @@ vi.mock('$lib/db', () => ({
 }));
 
 import { PortfolioStore } from './portfolio.svelte';
+import { ui } from './ui.svelte';
 
 const TICKER = 'VWCE';
 
@@ -132,6 +134,9 @@ describe('sincronización con la nube · qué copia gana', () => {
 		almacen.transactions = [];
 		almacen.guardados = [];
 		almacen.transaccionesGuardadas = [];
+		// El store de UI es un singleton de módulo: sin vaciarlo, el aviso de un test
+		// se cuenta como el del siguiente.
+		ui.toasts = [];
 		localStorage.clear();
 		// `fetchPrices` sale a la red al final de la carga; sin esto ensucia la consola.
 		vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, json: async () => ({ prices: {} }) })));
@@ -256,6 +261,47 @@ describe('sincronización con la nube · qué copia gana', () => {
 			const store = await iniciarSesion();
 
 			expect(store.transactions.map((t) => t.id)).toEqual(['nube-1']);
+		});
+	});
+
+	/**
+	 * ⚠️ **El caso que estuvo roto en producción durante meses**: las reglas de
+	 * Firestore no cubrían `user_transactions/{uid}/items`, así que cada lectura del
+	 * libro respondía `Missing or insufficient permissions` y `FirebaseStorage` lo
+	 * convertía en `[]`. En un navegador nuevo —donde tampoco hay copia local— eso
+	 * dejaba la sesión con el libro a cero y **sin decirlo**: la cartera se veía
+	 * correcta y el coste medio, el TWR y el panel fiscal salían de un libro vacío.
+	 *
+	 * ⚠️ **Y aquí conviene ser exacto sobre lo que este arreglo hace y lo que no**,
+	 * porque el control negativo lo corrigió: el `[]` **no** borraba un libro local
+	 * que tuviera datos, porque el desempate por número de items ya lo protegía
+	 * (`0 >= 2` es falso). Lo que hacía era **callarse**. Así que lo que se fija
+	 * abajo es la señal, no una recuperación de datos: dos tests que escribí antes de
+	 * medir —«conserva las locales» y «no pisa localStorage»— pasaban igual con el
+	 * defecto puesto y están fuera. Lo que sí se comprueba en otro sitio, porque ahí
+	 * el daño es real, es la exportación: ver `FirebaseStorage.test.ts`.
+	 */
+	describe('una lectura fallida del libro no es un libro vacío', () => {
+		it('avisa al usuario, porque el fallo le cambia cifras que va a leer como suyas', async () => {
+			localStorage.setItem('corebalance_transactions', JSON.stringify([tx('local-1', 1)]));
+			almacen.userData = nube({ updatedAt: '2026-06-01T00:00:00.000Z' });
+			almacen.transactions = null;
+
+			await iniciarSesion();
+
+			expect(ui.toasts.some((t) => t.type === 'error')).toBe(true);
+		});
+
+		it('una nube vacía de verdad sigue vaciando el libro: es el otro caso', async () => {
+			// Control: con `[]` el comportamiento anterior se mantiene intacto. Si este
+			// test se pusiera verde con `null` también, el arreglo no distinguiría nada.
+			localStorage.setItem('corebalance_transactions', JSON.stringify([]));
+			almacen.userData = nube({ updatedAt: '2026-06-01T00:00:00.000Z' });
+			almacen.transactions = [];
+
+			const store = await iniciarSesion();
+
+			expect(store.transactions).toEqual([]);
 		});
 	});
 

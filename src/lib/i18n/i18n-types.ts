@@ -2188,6 +2188,10 @@ type RootTranslation = {
 		 */
 		load_error: string
 		/**
+		 * N​o​ ​s​e​ ​p​u​d​o​ ​l​e​e​r​ ​t​u​ ​l​i​b​r​o​ ​d​e​ ​m​o​v​i​m​i​e​n​t​o​s​ ​d​e​ ​l​a​ ​n​u​b​e​.​ ​S​e​ ​m​a​n​t​i​e​n​e​ ​e​l​ ​d​e​ ​e​s​t​e​ ​d​i​s​p​o​s​i​t​i​v​o​;​ ​n​o​ ​s​e​ ​h​a​ ​b​o​r​r​a​d​o​ ​n​a​d​a​.
+		 */
+		ledger_load_failed: string
+		/**
 		 * E​r​r​o​r​ ​a​l​ ​i​n​i​c​i​a​r​ ​s​e​s​i​ó​n
 		 */
 		login_error: string
@@ -6438,6 +6442,10 @@ export type TranslationFunctions = {
 		 * Error al cargar los datos desde la nube
 		 */
 		load_error: () => LocalizedString
+		/**
+		 * No se pudo leer tu libro de movimientos de la nube. Se mantiene el de este dispositivo; no se ha borrado nada.
+		 */
+		ledger_load_failed: () => LocalizedString
 		/**
 		 * Error al iniciar sesión
 		 */
