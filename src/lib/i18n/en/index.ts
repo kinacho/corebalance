@@ -673,7 +673,7 @@ const en: Translation = {
     timing_period_note: 'Measured over the {days} days with real data, not annualised.',
     legal_disclaimer: '<strong>Legal Disclaimer:</strong> CoreBalance is a purely informative and educational tool. It does not constitute financial, investment, or tax advice. The data displayed may be subject to delays or inaccuracies. The developer is not responsible for any financial losses resulting from the use of this application. Always invest at your own risk.',
     footer_tagline: 'Your control center for smart and balanced asset management.',
-    changelog_trigger: 'v1.17.3 🚀',
+    changelog_trigger: 'v1.18.0 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Made with ❤️ for the investing community',
     reclassify_stocks: 'Individual Stocks',
@@ -807,9 +807,6 @@ const en: Translation = {
     sector_materials: 'Materials',
     sector_utilities: 'Utilities',
     sector_real_estate: 'Real estate',
-    overlap_heading: 'Your funds overlap',
-    overlap_row: '{a} and {b} point at the same companies for roughly {amount}, {pct} of what was analysed.',
-    overlap_same_index: 'Both track the same index: this is complete duplication.',
     uncovered: '{amount} not analysed ({tickers}): individual shares, cash, or assets whose index we do not recognise.',
     no_sector: '{amount} of fixed income is counted by region but not by sector.',
     coverage_note: 'Percentages are of what was analysed ({amount}), not of your total portfolio.',
@@ -817,6 +814,33 @@ const en: Translation = {
     as_of: 'Index weights as of {date}, taken from each index\'s official factsheet.',
     estimated_warning: 'The weights for {indices} are an estimate with no factsheet checked against them, so treat them as an order of magnitude.',
     disclaimer: 'Estimated at index level, not position by position: useful for seeing what you are exposed to, not as the exact composition of your portfolio.',
+  },
+  // Real concentration: company-level overlap across the whole portfolio
+  concentracion: {
+    title: 'Real overlap',
+    subtitle: 'Your whole portfolio, company by company',
+    empty: 'Add index funds or shares to see your real concentration.',
+    headline: 'At least {amount} of your portfolio, {pct}, reaches the same company by more than one route.',
+    headline_none: 'No company reaches you by two routes at once.',
+    ranking_heading: 'Company by company',
+    at_least: 'at least {pct}',
+    source_fund: '{amount} inside {ticker}',
+    source_direct: '{amount} held directly',
+    badge_direct_and_fund: 'You hold it directly and inside a fund',
+    badge_two_funds: 'It reaches you through two funds',
+    show_all: 'Show all {count} companies',
+    show_less: 'Show only the largest',
+    funds_heading: 'And these funds of yours overlap each other',
+    fund_row: '{a} and {b} point at the same companies for roughly {amount}, {pct} of your net worth.',
+    fund_row_bonds: '{a} and {b} cover the same debt for roughly {amount}, {pct} of your net worth.',
+    fund_same_index: 'Both track the same index: this is complete duplication.',
+    notes_summary: 'What was looked at, and what was not',
+    floor_note: 'Every figure here is a floor. Only each index’s largest positions are visible, never its tail, so your real exposure to a company can only be higher than what you see.',
+    coverage_row: '{pct} of {index} is visible.',
+    no_company_data: '{amount} with no company data ({tickers}): small caps and bonds, where a top ten says nothing about concentration.',
+    outside: '{amount} outside the analysis ({tickers}): cash, crypto or funds whose index we do not recognise.',
+    as_of: 'Each index’s largest positions read on {date}.',
+    disclaimer: 'An index-level estimate, not the exact composition of your funds.',
   },
   // Projections
   projections: {
@@ -951,6 +975,18 @@ const en: Translation = {
     close_aria: 'Close modal',
     btn_understand: 'Got it',
     releases: {
+      v1_18_0: {
+        date: 'August 18, 2026',
+        badge: 'How much of your portfolio is the same company',
+        changes: [
+          '🧩 **New panel: how much of your money ends up in the same company.** It adds up what you hold inside each fund and what you hold as individual shares, and reports it company by company against your total net worth: “at least 7.3% in Apple: €6,000 directly and another €2,470 inside your MSCI World”. It lives in the tools column, next to the transfer plan.',
+          '🔍 **Until now only funds were compared against each other, and your shares were literally left “not analysed”.** The clearest case was the app’s own example portfolio: an MSCI World and, separately, Apple, Microsoft, Amazon and Alphabet — four of its largest holdings. Not a single warning.',
+          '🏦 **And the conservative bucket could not produce one either**, because the rule saying euro government debt already sits inside a global aggregate was missing. It is there now, along with the two missing rules for the IBEX 35 against the World and the All-World.',
+          '⚖️ **Every figure is a floor, and the panel says so without small print.** Only each index’s largest positions are visible, never its tail, so your real exposure can only be higher than what you see. Below it shows how much of each index it is looking at — from 21% of the MSCI Europe to 78% of the IBEX — and what falls outside: small caps and bonds, where a top ten says nothing, and cash.',
+          '🔤 **A company’s share classes count as one.** Your Alphabet is your Alphabet whether it arrives as class A or C; and an Apple bought in Frankfurt is recognised by its ISIN. Every code was verified one by one against the source, because a wrong code does not leave a gap: it hands your money to a different company.',
+          '🧪 **38 new cases**, including the whole example portfolio, and the company list checks itself: if a holding points at a company missing from the registry, the suite goes red.'
+        ]
+      },
       v1_17_3: {
         date: 'August 16, 2026',
         badge: 'The tutorial now points where it says',

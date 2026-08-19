@@ -549,6 +549,44 @@ try {
 			await page.evaluate(() =>
 				window.dispatchEvent(new CustomEvent('tour-step', { detail: { target: 'close-all' } }))
 			);
+
+			/**
+			 * ⚠️ Los paneles plegables del dashboard hay que **abrirlos** o esto mide su
+			 * cabecera y nada más: su contenido está en el DOM pero sin pintar, así que
+			 * un panel entero puede salir con cero hallazgos por no haberse mirado —
+			 * que es el modo de fallo que este repo llama «un guard que no puede fallar».
+			 * Su cabecera es un `<button>` cuyo estado no se fuerza desde fuera, y el
+			 * `tour-step` es el mecanismo que la propia app ya tiene para eso.
+			 *
+			 * Salió al medir el panel de solapamiento: la pasada daba 0 en los dos temas
+			 * y a los dos anchos, y el contenido nuevo no estaba entrando. Quien lo cubría
+			 * era `e2e/tema.spec.ts`, que sí lo abre.
+			 */
+			for (const [objetivo, etiqueta] of [['abrir-concentracion', 'panel solapamiento']]) {
+				await page.evaluate(
+					(t) => window.dispatchEvent(new CustomEvent('tour-step', { detail: { target: t } })),
+					objetivo
+				);
+				await page.waitForTimeout(700);
+				/**
+				 * ⚠️ Guarda sobre la guarda: si el panel no se abre —objetivo renombrado,
+				 * panel movido, `<details>` en vez de clase— la pasada mediría cero y se
+				 * leería como «limpio». Que lo diga en voz alta es la diferencia entre un
+				 * hueco y un silencio.
+				 */
+				const abierto = await page.evaluate(
+					(id) => document.querySelector(id)?.classList.contains('open') ?? null,
+					'#tour-concentracion'
+				);
+				if (abierto !== true) {
+					console.error(
+						`  ⚠️ ${etiqueta} NO se abrió en ${tema} (${abierto === null ? 'no está en la página' : 'sigue plegado'}): lo medido no incluye su contenido.`
+					);
+				}
+				const n = await medir(page, etiqueta, tema);
+				if (!JSON_OUT && n)
+					console.log(`${tema.padEnd(5)} ${etiqueta}${' '.repeat(Math.max(1, 52 - etiqueta.length))}${n}`);
+			}
 		} catch (e) {
 			console.error(`  (el panel no se pudo abrir en ${tema}: ${e.message.split('\n')[0]})`);
 		}

@@ -796,6 +796,8 @@
 	.legend-value,
 	.summary-figure,
 	.move-amount,
+	.emp-valor,
+	.emp-pct,
 	.rank-pct {
 		font-variant-numeric: tabular-nums;
 	}
