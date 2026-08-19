@@ -79,10 +79,17 @@ vi.mock('$lib/stores/portfolio.svelte', () => ({
 	}
 }));
 
+/**
+ * El panel ya no decide si está abierto: la columna abre **una herramienta a la vez**, así
+ * que `abierto` y `onAlternar` vienen del padre. Se renderiza abierto porque lo que este
+ * fichero comprueba es su contenido.
+ */
+const ABIERTO = { props: { abierto: true, onAlternar: () => {} } };
+
 describe('TaxAwareRebalance.svelte', () => {
 	it('muestra el traspaso y lo marca como exento', async () => {
 		const TaxAwareRebalance = (await import('./TaxAwareRebalance.svelte')).default;
-		const { container } = render(TaxAwareRebalance);
+		const { container } = render(TaxAwareRebalance, ABIERTO);
 
 		// Los dos extremos del movimiento y el importe exacto que hay que mover.
 		expect(container.textContent).toContain('Vanguard Global Stock Index');
@@ -91,21 +98,32 @@ describe('TaxAwareRebalance.svelte', () => {
 		expect(container.textContent).toContain('Sin coste fiscal');
 		expect(container.textContent).toContain('Traspaso');
 
-		// Y la insignia de la cabecera dice que cuesta cero.
-		const badge = container.querySelector('.badge');
-		expect(badge).not.toBeNull();
-		expect(badge?.classList.contains('free')).toBe(true);
+		/*
+		 * Y la cifra de la cabecera dice que cuesta cero. `.cifra` es la clase compartida
+		 * de `layout.css`: estaba escrita dos veces con tintes distintos —token en un panel
+		 * y literales `rgba(...)` en el otro— y esa divergencia es lo que `a11y:contrast`
+		 * pone rojo.
+		 */
+		const cifra = container.querySelector('.cifra');
+		expect(cifra).not.toBeNull();
+		expect(cifra?.classList.contains('libre')).toBe(true);
+		/*
+		 * ⚠️ Y lleva `privacy-blur`, que es el arreglo de verdad: este panel enseñaba
+		 * **dinero sin difuminar** en modo privado, contra la convención del repo, y nadie
+		 * lo comprobaba.
+		 */
+		expect(cifra?.classList.contains('privacy-blur')).toBe(true);
 	});
 
 	it('no ofrece la sección de ventas cuando todo es traspasable', async () => {
 		const TaxAwareRebalance = (await import('./TaxAwareRebalance.svelte')).default;
-		const { container } = render(TaxAwareRebalance);
+		const { container } = render(TaxAwareRebalance, ABIERTO);
 		expect(container.textContent).not.toContain('Obliga a vender');
 	});
 
 	it('pide una aportación para poder comparar las dos vías', async () => {
 		const TaxAwareRebalance = (await import('./TaxAwareRebalance.svelte')).default;
-		const { container } = render(TaxAwareRebalance);
+		const { container } = render(TaxAwareRebalance, ABIERTO);
 		// Sin aportación configurada no se puede decir «tardarías N meses».
 		expect(container.textContent).toContain('Configura tu aportación mensual');
 	});
@@ -119,7 +137,7 @@ describe('TaxAwareRebalance.svelte', () => {
 		);
 
 		const TaxAwareRebalance = (await import('./TaxAwareRebalance.svelte')).default;
-		const { container } = render(TaxAwareRebalance);
+		const { container } = render(TaxAwareRebalance, ABIERTO);
 
 		expect(container.textContent).toContain('meses en llegar a lo mismo');
 		// El veredicto de que esperar no ahorra impuestos, porque el plan es gratis.
@@ -167,7 +185,7 @@ describe('TaxAwareRebalance.svelte', () => {
 		);
 
 		const TaxAwareRebalance = (await import('./TaxAwareRebalance.svelte')).default;
-		const { container } = render(TaxAwareRebalance);
+		const { container } = render(TaxAwareRebalance, ABIERTO);
 
 		expect(container.textContent).toContain('Obliga a vender');
 		expect(container.textContent).toContain('Esta pérdida no la podrías compensar todavía');
@@ -190,7 +208,7 @@ describe('TaxAwareRebalance.svelte', () => {
 		);
 
 		const TaxAwareRebalance = (await import('./TaxAwareRebalance.svelte')).default;
-		const { container } = render(TaxAwareRebalance);
+		const { container } = render(TaxAwareRebalance, ABIERTO);
 
 		expect(container.textContent).toContain('ya está en su objetivo');
 		expect(container.querySelector('.badge')).toBeNull();
@@ -199,7 +217,7 @@ describe('TaxAwareRebalance.svelte', () => {
 	it('avisa si todavía no hay precios, en vez de dar un plan sobre ceros', async () => {
 		store.prices = {};
 		const TaxAwareRebalance = (await import('./TaxAwareRebalance.svelte')).default;
-		const { container } = render(TaxAwareRebalance);
+		const { container } = render(TaxAwareRebalance, ABIERTO);
 		expect(container.textContent).toContain('Esperando precios');
 		store.prices = { WORLD: { price: 100, currency: 'EUR', name: 'World', change: 0 } };
 	});

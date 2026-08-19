@@ -634,6 +634,12 @@ const es = {
     chart_global_weight: 'Peso Global (Categorías)',
     chart_global_detail: 'Detalle Global',
     chart_historic_title: 'Evolución del Patrimonio',
+    /*
+     * Los rótulos de la columna de herramientas. La partición no es de maquetación:
+     * el primer grupo habla de la cartera del usuario y el segundo de supuestos suyos.
+     */
+    tools_group_portfolio: 'Tu cartera',
+    tools_group_simulate: 'Simular',
     chart_label_total: 'Total',
     chart_label_core: 'Principal',
     chart_label_stocks: 'Acciones',
@@ -892,6 +898,14 @@ const es = {
     legend_invested: 'Aportado',
     legend_profit: 'Revalorización',
     axis_years: 'Años',
+    /*
+     * Lo que la cabecera enseña con el panel cerrado, y son los SUPUESTOS, no la
+     * conclusión. La mediana a veinte años en una cabecera plegada —sin cono, sin
+     * leyenda y sin las tres cifras que la relativizan— es la misma frase que este
+     * repo ya retiró por ser «la mentira más educada de la app»: decía «tendrás
+     * 702.854,19 €» cuando quería decir «si aciertas el 7 % los 240 meses seguidos».
+     */
+    assumption: '{ret:string} % · {years:string} años',
   },
   // Crisis Simulator
   crisis_simulator: {
@@ -913,6 +927,8 @@ const es = {
     total_dca: 'Total aportado vía DCA: {total:string}',
     original_capital: 'Capital original',
     axis_months: 'Meses desde la caída',
+    /* El supuesto, no el resultado: ver `projections.assumption`. */
+    assumption: 'caída {drop:string} %',
     crises: {
       dotcom: {
         recovery: '7 años',

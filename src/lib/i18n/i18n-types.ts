@@ -2298,6 +2298,14 @@ type RootTranslation = {
 		 */
 		chart_historic_title: string
 		/**
+		 * T​u​ ​c​a​r​t​e​r​a
+		 */
+		tools_group_portfolio: string
+		/**
+		 * S​i​m​u​l​a​r
+		 */
+		tools_group_simulate: string
+		/**
 		 * T​o​t​a​l
 		 */
 		chart_label_total: string
@@ -3307,6 +3315,12 @@ type RootTranslation = {
 		 * A​ñ​o​s
 		 */
 		axis_years: string
+		/**
+		 * {​r​e​t​}​ ​%​ ​·​ ​{​y​e​a​r​s​}​ ​a​ñ​o​s
+		 * @param {string} ret
+		 * @param {string} years
+		 */
+		assumption: RequiredParams<'ret' | 'years'>
 	}
 	crisis_simulator: {
 		/**
@@ -3383,6 +3397,11 @@ type RootTranslation = {
 		 * M​e​s​e​s​ ​d​e​s​d​e​ ​l​a​ ​c​a​í​d​a
 		 */
 		axis_months: string
+		/**
+		 * c​a​í​d​a​ ​{​d​r​o​p​}​ ​%
+		 * @param {string} drop
+		 */
+		assumption: RequiredParams<'drop'>
 		crises: {
 			dotcom: {
 				/**
@@ -6687,6 +6706,14 @@ export type TranslationFunctions = {
 		 */
 		chart_historic_title: () => LocalizedString
 		/**
+		 * Tu cartera
+		 */
+		tools_group_portfolio: () => LocalizedString
+		/**
+		 * Simular
+		 */
+		tools_group_simulate: () => LocalizedString
+		/**
 		 * Total
 		 */
 		chart_label_total: () => LocalizedString
@@ -7624,6 +7651,10 @@ export type TranslationFunctions = {
 		 * Años
 		 */
 		axis_years: () => LocalizedString
+		/**
+		 * {ret} % · {years} años
+		 */
+		assumption: (arg: { ret: string, years: string }) => LocalizedString
 	}
 	crisis_simulator: {
 		/**
@@ -7698,6 +7729,10 @@ export type TranslationFunctions = {
 		 * Meses desde la caída
 		 */
 		axis_months: () => LocalizedString
+		/**
+		 * caída {drop} %
+		 */
+		assumption: (arg: { drop: string }) => LocalizedString
 		crises: {
 			dotcom: {
 				/**

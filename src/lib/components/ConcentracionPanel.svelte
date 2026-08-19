@@ -3,6 +3,7 @@
 	import { formatEUR, formatPercent } from '$lib/utils';
 	import { LL } from '$lib/i18n/i18n-svelte';
 	import LeccionDelPanel from './LeccionDelPanel.svelte';
+	import PanelHerramienta from './PanelHerramienta.svelte';
 
 	/**
 	 * Solapamiento real: cuánto de la cartera acaba en la misma empresa sumando
@@ -16,23 +17,16 @@
 	 * sitios distintos es pedir una contradicción a la vista.
 	 */
 
-	let isOpen = $state(false);
-	let verTodas = $state(false);
-
 	/**
-	 * El tutorial abre este panel antes de explicarlo, igual que `TaxAwareRebalance`.
-	 *
-	 * ⚠️ Y no es solo para el tutorial: es la única vía por la que `contraste-vivo.mjs`
-	 * y `e2e/tema.spec.ts` pueden medir el contenido de un panel plegado, porque su
-	 * cabecera es un `<button>` cuyo estado no se puede forzar desde fuera.
+	 * Abierto/cerrado lo decide el padre: la columna abre **una herramienta a la vez**, y
+	 * eso no puede decidirlo un panel que no sabe de sus hermanos. El listener de
+	 * `tour-step` —la vía por la que el tutorial, `e2e/tema.spec.ts` y
+	 * `scripts/contraste-vivo.mjs` abren un panel plegado— vive ahora en la concha.
 	 */
-	$effect(() => {
-		const abrir = (e: Event) => {
-			if ((e as CustomEvent).detail?.target === 'abrir-concentracion') isOpen = true;
-		};
-		window.addEventListener('tour-step', abrir);
-		return () => window.removeEventListener('tour-step', abrir);
-	});
+	const { abierto, onAlternar }: { abierto: boolean; onAlternar: (abrir: boolean) => void } =
+		$props();
+
+	let verTodas = $state(false);
 
 	const datos = $derived(portfolio.concentracion);
 
@@ -50,31 +44,31 @@
 	const anchoDe = (valor: number) => (mayor > 0 ? Math.max(2, (valor / mayor) * 100) : 0);
 </script>
 
-<div id="tour-concentracion" class="panel" class:open={isOpen}>
-	<button class="panel-header" onclick={() => (isOpen = !isOpen)} aria-expanded={isOpen}>
-		<div class="panel-info">
-			<div class="panel-icon">🧩</div>
-			<div class="panel-text">
-				<h2 class="panel-title">{$LL.concentracion.title()}</h2>
-				<p class="panel-subtitle">{$LL.concentracion.subtitle()}</p>
-			</div>
-		</div>
-		{#if datos.valorSolapado > 0}
-			<span class="badge privacy-blur">{formatPercent(datos.pesoSolapado, 1)}</span>
-		{/if}
-		<span class="chevron" class:rotated={!isOpen}>
-			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-				<path d="M6 9l6 6 6-6" />
-			</svg>
-		</span>
-	</button>
+<PanelHerramienta
+	id="tour-concentracion"
+	titulo={$LL.concentracion.title()}
+	subtitulo={$LL.concentracion.subtitle()}
+	objetivoTour="abrir-concentracion"
+	{abierto}
+	{onAlternar}
+>
+	{#snippet icono()}
+		<!-- Piezas que encajan: el panel dice cuánto de tu cartera es la misma empresa
+		     por más de un camino. -->
+		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+			<path d="M4 5h6v4a2 2 0 0 0 4 0V5h6v6h-4a2 2 0 0 0 0 4h4v4h-6v-4a2 2 0 0 0-4 0v4H4z" />
+		</svg>
+	{/snippet}
 
-	<div class="collapsible" class:collapsed={!isOpen}>
-		<div class="wrapper">
-			<div class="content">
-				<!-- Dentro del contenido: la cabecera es un `<button>` y un `<a>` ahí
-				     dentro es HTML inválido, además de robarle el clic. -->
-				<LeccionDelPanel panel="concentracion" />
+	{#snippet cifra()}
+		{#if datos.valorSolapado > 0}
+			<span class="cifra privacy-blur">{formatPercent(datos.pesoSolapado, 1)}</span>
+		{/if}
+	{/snippet}
+
+	<!-- Dentro del contenido: la cabecera es un `<button>` y un `<a>` ahí
+	     dentro es HTML inválido, además de robarle el clic. -->
+	<LeccionDelPanel panel="concentracion" />
 
 				{#if datos.empresas.length === 0}
 					<p class="empty">{$LL.concentracion.empty()}</p>
@@ -209,121 +203,10 @@
 						</div>
 					</details>
 				{/if}
-			</div>
-		</div>
-	</div>
-</div>
+</PanelHerramienta>
 
 <style>
-	/* El armazón plegable es el mismo de `TaxAwareRebalance` y `Projections`: los
-	   cuatro paneles de la columna lo llevan copiado a mano. */
-	.panel {
-		background: var(--bg-card);
-		border: 1px solid var(--border-subtle);
-		border-radius: 20px;
-		overflow: hidden;
-		transition: all 0.3s ease;
-	}
-
-	.panel:hover {
-		border-color: var(--border-strong);
-	}
-
-	.panel-header {
-		width: 100%;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 0.75rem;
-		padding: 1.25rem;
-		background: none;
-		border: none;
-		cursor: pointer;
-		text-align: left;
-	}
-
-	.panel-info {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-		min-width: 0;
-	}
-
-	.panel-icon {
-		width: 40px;
-		height: 40px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: var(--bg-card-hover);
-		border-radius: 12px;
-		font-size: 1.25rem;
-		flex-shrink: 0;
-	}
-
-	.panel-title {
-		font-size: 1rem;
-		font-weight: 700;
-		color: var(--text-primary);
-		margin: 0;
-		letter-spacing: -0.01em;
-	}
-
-	.panel-subtitle {
-		font-size: 0.75rem;
-		color: var(--text-muted);
-		margin: 0.1rem 0 0 0;
-	}
-
-	.badge {
-		font-size: 0.8rem;
-		font-weight: 700;
-		padding: 0.25rem 0.6rem;
-		border-radius: 999px;
-		background: var(--tint-warn);
-		color: var(--accent-orange-ink);
-		white-space: nowrap;
-		font-variant-numeric: tabular-nums;
-	}
-
-	.chevron {
-		color: var(--text-faint);
-		transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-		width: 20px;
-		height: 20px;
-		flex-shrink: 0;
-	}
-
-	.chevron.rotated {
-		transform: rotate(-90deg);
-	}
-
-	.collapsible {
-		display: grid;
-		grid-template-rows: 1fr;
-		transition:
-			grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-			opacity 0.3s ease;
-		opacity: 1;
-	}
-
-	.collapsible.collapsed {
-		grid-template-rows: 0fr;
-		opacity: 0;
-		pointer-events: none;
-	}
-
-	.wrapper {
-		overflow: hidden;
-	}
-
-	.content {
-		padding: 0 1.25rem 1.25rem 1.25rem;
-		display: flex;
-		flex-direction: column;
-		gap: 1.25rem;
-	}
-
+	/* El armazón plegable vive en `PanelHerramienta.svelte`; aquí solo el contenido. */
 	.empty {
 		font-size: 0.85rem;
 		color: var(--text-muted);

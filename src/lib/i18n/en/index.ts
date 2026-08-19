@@ -616,6 +616,8 @@ const en: Translation = {
     chart_global_weight: 'Global Weight (Categories)',
     chart_global_detail: 'Global Detail',
     chart_historic_title: 'Portfolio Performance',
+    tools_group_portfolio: 'Your portfolio',
+    tools_group_simulate: 'Simulate',
     chart_label_total: 'Total',
     chart_label_core: 'Core',
     chart_label_stocks: 'Stocks',
@@ -868,6 +870,7 @@ const en: Translation = {
     legend_invested: 'Contributed',
     legend_profit: 'Growth',
     axis_years: 'Years',
+    assumption: '{ret} % · {years} yr',
   },
   // Crisis Simulator
   crisis_simulator: {
@@ -889,6 +892,7 @@ const en: Translation = {
     total_dca: 'Total contributed via DCA: {total}',
     original_capital: 'Original capital',
     axis_months: 'Months since the drop',
+    assumption: '{drop} % drop',
     crises: {
       dotcom: {
         recovery: '7 years',
