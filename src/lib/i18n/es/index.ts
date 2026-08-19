@@ -697,7 +697,7 @@ const es = {
     timing_period_note: 'Medido sobre los {days:number} días con datos reales, sin anualizar.',
     legal_disclaimer: '<strong>Aviso Legal:</strong> CoreBalance es una herramienta puramente informativa y educativa. No constituye asesoramiento financiero, de inversión ni fiscal. Los datos mostrados pueden sufrir retrasos o ser inexactos. El desarrollador no se hace responsable de posibles pérdidas financieras derivadas del uso de esta aplicación. Invierte siempre bajo tu propia responsabilidad.',
     footer_tagline: 'Tu centro de mandos para una gestión de activos inteligente y equilibrada.',
-    changelog_trigger: 'v1.18.0 🚀',
+    changelog_trigger: 'v1.19.0 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Hecho con ❤️ para la comunidad inversora',
     reclassify_stocks: 'Acciones Individuales',
@@ -1018,6 +1018,17 @@ const es = {
     close_aria: 'Cerrar modal',
     btn_understand: 'Entendido',
     releases: {
+      v1_19_0: {
+        date: '19 de Agosto, 2026',
+        badge: 'La columna de herramientas, rehecha',
+        changes: [
+          '🧰 **Las herramientas ya te dicen algo sin abrirlas.** Antes eran cinco fichas iguales y tres de ellas no decían ni una cifra hasta que las desplegabas. Ahora el rebalanceo enseña tu aportación, el panel de Hacienda lo que te costaría mover, y el solapamiento cuánto de tu cartera acaba en la misma empresa.',
+          '🗂️ **Y están separadas en dos grupos, «tu cartera» y «simular», porque no hablan de lo mismo.** Los tres primeros salen de tus datos. La proyección y el simulador de crisis salen de los deslizadores que tú mueves, así que enseñan **sus supuestos** —«7 % · 20 años», «caída −40 %»— y no un número con pinta de dato. Una mediana a veinte años en una cabecera es una promesa disfrazada de cifra.',
+          '📌 **Se abre una herramienta a la vez, y con eso la columna te acompaña.** Al dejar de crecer sin límite se queda fija mientras haces scroll por los gráficos, que es lo que hacía falta para poder mirar una cosa y otra sin perder el sitio.',
+          '✏️ **Iconos dibujados en vez de emoji.** Un emoji lo pinta la fuente de cada sistema operativo, así que cambiaba de estilo según el aparato; ahora los cinco son del mismo trazo y toman el color del tema.',
+          '🧹 Por debajo: el armazón de esos cinco paneles estaba escrito cinco veces (**513 líneas** repetidas) y ahora vive en un solo sitio. De paso salieron tres cosas que no se veían: el panel de Hacienda enseñaba una cifra de dinero **sin difuminar** en modo privado, el tutorial podía señalar una cabecera cerrada, y las pruebas de contraste solo miraban uno de los cinco paneles.'
+        ]
+      },
       v1_18_0: {
         date: '18 de Agosto, 2026',
         badge: 'Cuánto de tu cartera es la misma empresa',
