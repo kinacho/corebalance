@@ -702,7 +702,7 @@ const es = {
     timing_period_note: 'Medido sobre los {days:number} días con datos reales, sin anualizar.',
     legal_disclaimer: '<strong>Aviso Legal:</strong> CoreBalance es una herramienta puramente informativa y educativa. No constituye asesoramiento financiero, de inversión ni fiscal. Los datos mostrados pueden sufrir retrasos o ser inexactos. El desarrollador no se hace responsable de posibles pérdidas financieras derivadas del uso de esta aplicación. Invierte siempre bajo tu propia responsabilidad.',
     footer_tagline: 'Tu centro de mandos para una gestión de activos inteligente y equilibrada.',
-    changelog_trigger: 'v1.19.1 🚀',
+    changelog_trigger: 'v1.20.0 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Hecho con ❤️ para la comunidad inversora',
     reclassify_stocks: 'Acciones Individuales',
@@ -1023,6 +1023,16 @@ const es = {
     close_aria: 'Cerrar modal',
     btn_understand: 'Entendido',
     releases: {
+      v1_20_0: {
+        date: '21 de Agosto, 2026',
+        badge: 'Las cifras de arriba se abren por cartera',
+        changes: [
+          '📂 **Toca «Rentabilidad» en la barra de arriba y se abre.** Cuánto llevas ganado en la cartera principal, en tus acciones y en la conservadora, con lo que has aportado a cada una. Las tres cifras **suman exactamente** la de arriba: es un desglose de tu rentabilidad, no tres números puestos debajo.',
+          '📉 **Y «Cambio hoy» te dice qué lo está moviendo.** Además del cambio del día en cada cartera, las tres posiciones que más pesan hoy en esa cifra — ordenadas por lo que mueven de verdad, así que una caída de 300 € va antes que una subida de 20.',
+          '📱 **En el móvil, lo que se abre se ve.** El desglose acababa por debajo del borde de la pantalla y la lista de posiciones quedaba fuera, sin nada que te dijera que estaba ahí. Ahora la página se asoma solo lo justo para que quepa, y en pantalla grande no se mueve nada.',
+          '🙈 **Y en tema claro había una línea invisible.** La minigráfica de «Invertido» estaba pintada de blanco sobre el fondo blanco de su propia tarjeta. Ninguna de las tres comprobaciones automáticas de contraste podía verla, porque el color no estaba en el sitio donde miran.'
+        ]
+      },
       v1_19_1: {
         date: '19 de Agosto, 2026',
         badge: 'Tus cambios llegan al móvil, y los iconos aciertan',

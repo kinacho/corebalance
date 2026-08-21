@@ -2567,7 +2567,7 @@ type RootTranslation = {
 		 */
 		footer_tagline: string
 		/**
-		 * v​1​.​1​9​.​1​ ​�​�
+		 * v​1​.​2​0​.​0​ ​�​�
 		 */
 		changelog_trigger: string
 		/**
@@ -3627,6 +3627,34 @@ type RootTranslation = {
 		 */
 		btn_understand: string
 		releases: {
+			v1_20_0: {
+				/**
+				 * 2​1​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
+				 */
+				date: string
+				/**
+				 * L​a​s​ ​c​i​f​r​a​s​ ​d​e​ ​a​r​r​i​b​a​ ​s​e​ ​a​b​r​e​n​ ​p​o​r​ ​c​a​r​t​e​r​a
+				 */
+				badge: string
+				changes: {
+					/**
+					 * �​�​ ​*​*​T​o​c​a​ ​«​R​e​n​t​a​b​i​l​i​d​a​d​»​ ​e​n​ ​l​a​ ​b​a​r​r​a​ ​d​e​ ​a​r​r​i​b​a​ ​y​ ​s​e​ ​a​b​r​e​.​*​*​ ​C​u​á​n​t​o​ ​l​l​e​v​a​s​ ​g​a​n​a​d​o​ ​e​n​ ​l​a​ ​c​a​r​t​e​r​a​ ​p​r​i​n​c​i​p​a​l​,​ ​e​n​ ​t​u​s​ ​a​c​c​i​o​n​e​s​ ​y​ ​e​n​ ​l​a​ ​c​o​n​s​e​r​v​a​d​o​r​a​,​ ​c​o​n​ ​l​o​ ​q​u​e​ ​h​a​s​ ​a​p​o​r​t​a​d​o​ ​a​ ​c​a​d​a​ ​u​n​a​.​ ​L​a​s​ ​t​r​e​s​ ​c​i​f​r​a​s​ ​*​*​s​u​m​a​n​ ​e​x​a​c​t​a​m​e​n​t​e​*​*​ ​l​a​ ​d​e​ ​a​r​r​i​b​a​:​ ​e​s​ ​u​n​ ​d​e​s​g​l​o​s​e​ ​d​e​ ​t​u​ ​r​e​n​t​a​b​i​l​i​d​a​d​,​ ​n​o​ ​t​r​e​s​ ​n​ú​m​e​r​o​s​ ​p​u​e​s​t​o​s​ ​d​e​b​a​j​o​.
+					 */
+					'0': string
+					/**
+					 * �​�​ ​*​*​Y​ ​«​C​a​m​b​i​o​ ​h​o​y​»​ ​t​e​ ​d​i​c​e​ ​q​u​é​ ​l​o​ ​e​s​t​á​ ​m​o​v​i​e​n​d​o​.​*​*​ ​A​d​e​m​á​s​ ​d​e​l​ ​c​a​m​b​i​o​ ​d​e​l​ ​d​í​a​ ​e​n​ ​c​a​d​a​ ​c​a​r​t​e​r​a​,​ ​l​a​s​ ​t​r​e​s​ ​p​o​s​i​c​i​o​n​e​s​ ​q​u​e​ ​m​á​s​ ​p​e​s​a​n​ ​h​o​y​ ​e​n​ ​e​s​a​ ​c​i​f​r​a​ ​—​ ​o​r​d​e​n​a​d​a​s​ ​p​o​r​ ​l​o​ ​q​u​e​ ​m​u​e​v​e​n​ ​d​e​ ​v​e​r​d​a​d​,​ ​a​s​í​ ​q​u​e​ ​u​n​a​ ​c​a​í​d​a​ ​d​e​ ​3​0​0​ ​€​ ​v​a​ ​a​n​t​e​s​ ​q​u​e​ ​u​n​a​ ​s​u​b​i​d​a​ ​d​e​ ​2​0​.
+					 */
+					'1': string
+					/**
+					 * �​�​ ​*​*​E​n​ ​e​l​ ​m​ó​v​i​l​,​ ​l​o​ ​q​u​e​ ​s​e​ ​a​b​r​e​ ​s​e​ ​v​e​.​*​*​ ​E​l​ ​d​e​s​g​l​o​s​e​ ​a​c​a​b​a​b​a​ ​p​o​r​ ​d​e​b​a​j​o​ ​d​e​l​ ​b​o​r​d​e​ ​d​e​ ​l​a​ ​p​a​n​t​a​l​l​a​ ​y​ ​l​a​ ​l​i​s​t​a​ ​d​e​ ​p​o​s​i​c​i​o​n​e​s​ ​q​u​e​d​a​b​a​ ​f​u​e​r​a​,​ ​s​i​n​ ​n​a​d​a​ ​q​u​e​ ​t​e​ ​d​i​j​e​r​a​ ​q​u​e​ ​e​s​t​a​b​a​ ​a​h​í​.​ ​A​h​o​r​a​ ​l​a​ ​p​á​g​i​n​a​ ​s​e​ ​a​s​o​m​a​ ​s​o​l​o​ ​l​o​ ​j​u​s​t​o​ ​p​a​r​a​ ​q​u​e​ ​q​u​e​p​a​,​ ​y​ ​e​n​ ​p​a​n​t​a​l​l​a​ ​g​r​a​n​d​e​ ​n​o​ ​s​e​ ​m​u​e​v​e​ ​n​a​d​a​.
+					 */
+					'2': string
+					/**
+					 * �​�​ ​*​*​Y​ ​e​n​ ​t​e​m​a​ ​c​l​a​r​o​ ​h​a​b​í​a​ ​u​n​a​ ​l​í​n​e​a​ ​i​n​v​i​s​i​b​l​e​.​*​*​ ​L​a​ ​m​i​n​i​g​r​á​f​i​c​a​ ​d​e​ ​«​I​n​v​e​r​t​i​d​o​»​ ​e​s​t​a​b​a​ ​p​i​n​t​a​d​a​ ​d​e​ ​b​l​a​n​c​o​ ​s​o​b​r​e​ ​e​l​ ​f​o​n​d​o​ ​b​l​a​n​c​o​ ​d​e​ ​s​u​ ​p​r​o​p​i​a​ ​t​a​r​j​e​t​a​.​ ​N​i​n​g​u​n​a​ ​d​e​ ​l​a​s​ ​t​r​e​s​ ​c​o​m​p​r​o​b​a​c​i​o​n​e​s​ ​a​u​t​o​m​á​t​i​c​a​s​ ​d​e​ ​c​o​n​t​r​a​s​t​e​ ​p​o​d​í​a​ ​v​e​r​l​a​,​ ​p​o​r​q​u​e​ ​e​l​ ​c​o​l​o​r​ ​n​o​ ​e​s​t​a​b​a​ ​e​n​ ​e​l​ ​s​i​t​i​o​ ​d​o​n​d​e​ ​m​i​r​a​n​.
+					 */
+					'3': string
+				}
+			}
 			v1_19_1: {
 				/**
 				 * 1​9​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
@@ -7046,7 +7074,7 @@ export type TranslationFunctions = {
 		 */
 		footer_tagline: () => LocalizedString
 		/**
-		 * v1.19.1 🚀
+		 * v1.20.0 🚀
 		 */
 		changelog_trigger: () => LocalizedString
 		/**
@@ -8040,6 +8068,34 @@ export type TranslationFunctions = {
 		 */
 		btn_understand: () => LocalizedString
 		releases: {
+			v1_20_0: {
+				/**
+				 * 21 de Agosto, 2026
+				 */
+				date: () => LocalizedString
+				/**
+				 * Las cifras de arriba se abren por cartera
+				 */
+				badge: () => LocalizedString
+				changes: {
+					/**
+					 * 📂 **Toca «Rentabilidad» en la barra de arriba y se abre.** Cuánto llevas ganado en la cartera principal, en tus acciones y en la conservadora, con lo que has aportado a cada una. Las tres cifras **suman exactamente** la de arriba: es un desglose de tu rentabilidad, no tres números puestos debajo.
+					 */
+					'0': () => LocalizedString
+					/**
+					 * 📉 **Y «Cambio hoy» te dice qué lo está moviendo.** Además del cambio del día en cada cartera, las tres posiciones que más pesan hoy en esa cifra — ordenadas por lo que mueven de verdad, así que una caída de 300 € va antes que una subida de 20.
+					 */
+					'1': () => LocalizedString
+					/**
+					 * 📱 **En el móvil, lo que se abre se ve.** El desglose acababa por debajo del borde de la pantalla y la lista de posiciones quedaba fuera, sin nada que te dijera que estaba ahí. Ahora la página se asoma solo lo justo para que quepa, y en pantalla grande no se mueve nada.
+					 */
+					'2': () => LocalizedString
+					/**
+					 * 🙈 **Y en tema claro había una línea invisible.** La minigráfica de «Invertido» estaba pintada de blanco sobre el fondo blanco de su propia tarjeta. Ninguna de las tres comprobaciones automáticas de contraste podía verla, porque el color no estaba en el sitio donde miran.
+					 */
+					'3': () => LocalizedString
+				}
+			}
 			v1_19_1: {
 				/**
 				 * 19 de Agosto, 2026

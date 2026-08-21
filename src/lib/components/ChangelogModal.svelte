@@ -26,6 +26,7 @@
 
 	// Mapeo dinámico desde el diccionario de traducciones
 	const releaseVersions = [
+		'v1_20_0',
 		'v1_19_1',
 		'v1_19_0',
 		'v1_18_0',
@@ -111,6 +112,15 @@
 		 * entradas más abajo no es un problema: la lista ya lo hace, y lo que tiene que
 		 * distinguirse es una chapa de su vecina.
 		 */
+		/*
+		 * Violeta reusado tal cual del `v1_17_1` de abajo en vez de buscar un tono nuevo:
+		 * ya está medido en los dos temas más arriba en este mismo fichero —**4,01 en
+		 * oscuro y 3,63 en claro**, o sea peor caso 3,63, por encima del 3,23 del teal que
+		 * hace de vara— y no se parece a ese teal, que es justo su vecina de abajo. Elegir
+		 * un tono a ojo aquí es exactamente el error que estos comentarios documentan dos
+		 * veces.
+		 */
+		v1_20_0: '#8b5cf6',
 		v1_19_1: '#0d9488',
 		v1_19_0: '#b45309',
 		v1_18_0: '#c026d3',
