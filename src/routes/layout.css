@@ -838,7 +838,21 @@
 	.move-amount,
 	.emp-valor,
 	.emp-pct,
-	.rank-pct {
+	.rank-pct,
+	/*
+	 * Las cifras de la cabecera: el desglose bajo el capital global, los pesos de las
+	 * píldoras y las cuatro clases del cajón por cartera. ⚠️ `.breakdown-value` y
+	 * `.pill-text` llevaban tiempo enseñando cifras **fuera** de esta lista, así que
+	 * sus dígitos bailaban.
+	 */
+	.breakdown-value,
+	.pill-text,
+	.bloque-cifra,
+	.bloque-pct,
+	.bloque-aportado-valor,
+	.mover-valor,
+	.mover-pct,
+	.aviso-coste {
 		font-variant-numeric: tabular-nums;
 	}
 

@@ -127,6 +127,23 @@ export const FONDOS_DESVIADOS: Semilla = {
 	}
 };
 
+/**
+ * La misma cartera, con **un activo que la API no ha podido cotizar**.
+ *
+ * ⚠️ Es un estado real y silencioso, no un caso de laboratorio: `/api/prices`
+ * responde **200** con los tickers que resuelve y mete el resto en `errors`, que el
+ * store descarta. Pasa con un fondo que no esté en `RELIABLE_FT_MAPPINGS`, con un
+ * ticker mal escrito y con una respuesta parcial de Yahoo.
+ *
+ * `SXR8` cuesta 20 × 400 = 8.000 €, que es lo que la cabecera tiene que declarar
+ * fuera de sus cifras en vez de restarlo como pérdida.
+ */
+export const SIN_UN_PRECIO: Semilla = (() => {
+	const copia = structuredClone(SIN_OBJETIVOS);
+	delete copia.prices.SXR8;
+	return copia;
+})();
+
 /** Deja la cartera puesta y los precios interceptados. Llamar **antes** de navegar. */
 export async function sembrarCartera(page: Page, semilla: Semilla) {
 	await page.route('**/api/prices**', (route) =>

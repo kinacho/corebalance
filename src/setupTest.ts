@@ -20,6 +20,13 @@ Object.defineProperty(window, 'matchMedia', {
 window.scrollTo = vi.fn();
 
 /**
+ * Y de `scrollBy`, que jsdom tampoco trae. Lo usa la cabecera para asomar el cajón
+ * cuando en móvil se abriría por debajo de la ventana; siendo un espía, un test puede
+ * comprobar **si** se desplaza y cuánto, que es justo lo que no se ve en una captura.
+ */
+window.scrollBy = vi.fn();
+
+/**
  * Polyfill de ResizeObserver.
  *
  * jsdom no lo trae, y `bind:clientWidth` de Svelte 5 lo usa por debajo, así que

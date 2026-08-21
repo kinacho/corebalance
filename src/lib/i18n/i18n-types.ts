@@ -783,6 +783,31 @@ type RootTranslation = {
 		 */
 		efficiency_label: string
 		/**
+		 * R​e​s​u​m​e​n​ ​d​e​ ​t​u​ ​c​a​p​i​t​a​l​ ​g​l​o​b​a​l
+		 */
+		summary_aria: string
+		/**
+		 * R​e​n​t​a​b​i​l​i​d​a​d​ ​p​o​r​ ​c​a​r​t​e​r​a
+		 */
+		breakdown_returns_title: string
+		/**
+		 * E​l​ ​c​a​m​b​i​o​ ​d​e​ ​h​o​y​,​ ​p​o​r​ ​c​a​r​t​e​r​a
+		 */
+		breakdown_today_title: string
+		/**
+		 * A​p​o​r​t​a​d​o
+		 */
+		breakdown_invested: string
+		/**
+		 * L​o​ ​q​u​e​ ​m​á​s​ ​l​o​ ​m​u​e​v​e​ ​h​o​y
+		 */
+		movers_title: string
+		/**
+		 * S​i​n​ ​c​o​t​i​z​a​c​i​ó​n​ ​(​{​c​o​u​n​t​}​)​ ​y​ ​f​u​e​r​a​ ​d​e​ ​e​s​t​a​s​ ​c​i​f​r​a​s​ ​—​ ​a​p​o​r​t​a​d​o
+		 * @param {number} count
+		 */
+		unpriced_label: RequiredParams<'count'>
+		/**
 		 * C​a​r​t​e​r​a
 		 */
 		portfolio: string
@@ -2547,7 +2572,7 @@ type RootTranslation = {
 		 */
 		footer_tagline: string
 		/**
-		 * v​1​.​1​9​.​1​ ​�​�
+		 * v​1​.​2​0​.​0​ ​�​�
 		 */
 		changelog_trigger: string
 		/**
@@ -3607,13 +3632,41 @@ type RootTranslation = {
 		 */
 		btn_understand: string
 		releases: {
+			v1_20_0: {
+				/**
+				 * 2​1​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
+				 */
+				date: string
+				/**
+				 * L​a​s​ ​c​i​f​r​a​s​ ​d​e​ ​a​r​r​i​b​a​ ​s​e​ ​a​b​r​e​n​ ​p​o​r​ ​c​a​r​t​e​r​a
+				 */
+				badge: string
+				changes: {
+					/**
+					 * �​�​ ​*​*​T​o​c​a​ ​«​R​e​n​t​a​b​i​l​i​d​a​d​»​ ​e​n​ ​l​a​ ​b​a​r​r​a​ ​d​e​ ​a​r​r​i​b​a​ ​y​ ​s​e​ ​a​b​r​e​.​*​*​ ​C​u​á​n​t​o​ ​l​l​e​v​a​s​ ​g​a​n​a​d​o​ ​e​n​ ​l​a​ ​c​a​r​t​e​r​a​ ​p​r​i​n​c​i​p​a​l​,​ ​e​n​ ​t​u​s​ ​a​c​c​i​o​n​e​s​ ​y​ ​e​n​ ​l​a​ ​c​o​n​s​e​r​v​a​d​o​r​a​,​ ​c​o​n​ ​l​o​ ​q​u​e​ ​h​a​s​ ​a​p​o​r​t​a​d​o​ ​a​ ​c​a​d​a​ ​u​n​a​.​ ​L​a​s​ ​t​r​e​s​ ​c​i​f​r​a​s​ ​*​*​s​u​m​a​n​ ​e​x​a​c​t​a​m​e​n​t​e​*​*​ ​l​a​ ​d​e​ ​a​r​r​i​b​a​:​ ​e​s​ ​u​n​ ​d​e​s​g​l​o​s​e​ ​d​e​ ​t​u​ ​r​e​n​t​a​b​i​l​i​d​a​d​,​ ​n​o​ ​t​r​e​s​ ​n​ú​m​e​r​o​s​ ​p​u​e​s​t​o​s​ ​d​e​b​a​j​o​.
+					 */
+					'0': string
+					/**
+					 * �​�​ ​*​*​Y​ ​«​C​a​m​b​i​o​ ​h​o​y​»​ ​t​e​ ​d​i​c​e​ ​q​u​é​ ​l​o​ ​e​s​t​á​ ​m​o​v​i​e​n​d​o​.​*​*​ ​A​d​e​m​á​s​ ​d​e​l​ ​c​a​m​b​i​o​ ​d​e​l​ ​d​í​a​ ​e​n​ ​c​a​d​a​ ​c​a​r​t​e​r​a​,​ ​l​a​s​ ​t​r​e​s​ ​p​o​s​i​c​i​o​n​e​s​ ​q​u​e​ ​m​á​s​ ​p​e​s​a​n​ ​h​o​y​ ​e​n​ ​e​s​a​ ​c​i​f​r​a​ ​—​ ​o​r​d​e​n​a​d​a​s​ ​p​o​r​ ​l​o​ ​q​u​e​ ​m​u​e​v​e​n​ ​d​e​ ​v​e​r​d​a​d​,​ ​a​s​í​ ​q​u​e​ ​u​n​a​ ​c​a​í​d​a​ ​d​e​ ​3​0​0​ ​€​ ​v​a​ ​a​n​t​e​s​ ​q​u​e​ ​u​n​a​ ​s​u​b​i​d​a​ ​d​e​ ​2​0​.
+					 */
+					'1': string
+					/**
+					 * �​�​ ​*​*​E​n​ ​e​l​ ​m​ó​v​i​l​,​ ​l​o​ ​q​u​e​ ​s​e​ ​a​b​r​e​ ​s​e​ ​v​e​.​*​*​ ​E​l​ ​d​e​s​g​l​o​s​e​ ​a​c​a​b​a​b​a​ ​p​o​r​ ​d​e​b​a​j​o​ ​d​e​l​ ​b​o​r​d​e​ ​d​e​ ​l​a​ ​p​a​n​t​a​l​l​a​ ​y​ ​l​a​ ​l​i​s​t​a​ ​d​e​ ​p​o​s​i​c​i​o​n​e​s​ ​q​u​e​d​a​b​a​ ​f​u​e​r​a​,​ ​s​i​n​ ​n​a​d​a​ ​q​u​e​ ​t​e​ ​d​i​j​e​r​a​ ​q​u​e​ ​e​s​t​a​b​a​ ​a​h​í​.​ ​A​h​o​r​a​ ​l​a​ ​p​á​g​i​n​a​ ​s​e​ ​a​s​o​m​a​ ​s​o​l​o​ ​l​o​ ​j​u​s​t​o​ ​p​a​r​a​ ​q​u​e​ ​q​u​e​p​a​,​ ​y​ ​e​n​ ​p​a​n​t​a​l​l​a​ ​g​r​a​n​d​e​ ​n​o​ ​s​e​ ​m​u​e​v​e​ ​n​a​d​a​.
+					 */
+					'2': string
+					/**
+					 * �​�​ ​*​*​Y​ ​e​n​ ​t​e​m​a​ ​c​l​a​r​o​ ​h​a​b​í​a​ ​u​n​a​ ​l​í​n​e​a​ ​i​n​v​i​s​i​b​l​e​.​*​*​ ​L​a​ ​m​i​n​i​g​r​á​f​i​c​a​ ​d​e​ ​«​I​n​v​e​r​t​i​d​o​»​ ​e​s​t​a​b​a​ ​p​i​n​t​a​d​a​ ​d​e​ ​b​l​a​n​c​o​ ​s​o​b​r​e​ ​e​l​ ​f​o​n​d​o​ ​b​l​a​n​c​o​ ​d​e​ ​s​u​ ​p​r​o​p​i​a​ ​t​a​r​j​e​t​a​.​ ​N​i​n​g​u​n​a​ ​d​e​ ​l​a​s​ ​t​r​e​s​ ​c​o​m​p​r​o​b​a​c​i​o​n​e​s​ ​a​u​t​o​m​á​t​i​c​a​s​ ​d​e​ ​c​o​n​t​r​a​s​t​e​ ​p​o​d​í​a​ ​v​e​r​l​a​,​ ​p​o​r​q​u​e​ ​e​l​ ​c​o​l​o​r​ ​n​o​ ​e​s​t​a​b​a​ ​e​n​ ​e​l​ ​s​i​t​i​o​ ​d​o​n​d​e​ ​m​i​r​a​n​.
+					 */
+					'3': string
+				}
+			}
 			v1_19_1: {
 				/**
 				 * 1​9​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
 				 */
 				date: string
 				/**
-				 * T​u​s​ ​c​a​m​b​i​o​s​ ​v​u​e​l​v​e​n​ ​a​ ​l​l​e​g​a​r​ ​a​l​ ​m​ó​v​i​l
+				 * T​u​s​ ​c​a​m​b​i​o​s​ ​l​l​e​g​a​n​ ​a​l​ ​m​ó​v​i​l​,​ ​y​ ​l​o​s​ ​i​c​o​n​o​s​ ​a​c​i​e​r​t​a​n
 				 */
 				badge: string
 				changes: {
@@ -3629,6 +3682,14 @@ type RootTranslation = {
 					 * �​�​ ​*​*​Y​ ​u​n​ ​g​u​a​r​d​a​d​o​ ​q​u​e​ ​f​a​l​l​a​ ​y​a​ ​s​e​ ​v​e​.​*​*​ ​H​a​s​t​a​ ​a​h​o​r​a​ ​s​o​l​o​ ​q​u​e​d​a​b​a​ ​c​o​n​s​t​a​n​c​i​a​ ​e​n​ ​l​a​ ​c​o​n​s​o​l​a​ ​d​e​l​ ​n​a​v​e​g​a​d​o​r​,​ ​q​u​e​ ​e​s​ ​c​o​m​o​ ​n​o​ ​d​e​j​a​r​ ​n​i​n​g​u​n​a​:​ ​p​o​r​ ​e​s​o​ ​e​s​t​o​ ​p​u​d​o​ ​e​s​t​a​r​ ​s​e​m​a​n​a​s​ ​p​a​s​a​n​d​o​ ​s​i​n​ ​q​u​e​ ​n​a​d​a​ ​l​o​ ​d​i​j​e​r​a​.
 					 */
 					'2': string
+					/**
+					 * �​�​️​ ​*​*​L​o​s​ ​i​c​o​n​o​s​ ​d​e​ ​t​u​s​ ​a​c​t​i​v​o​s​ ​y​a​ ​d​i​c​e​n​ ​l​o​ ​q​u​e​ ​s​o​n​.​*​*​ ​U​n​ ​i​n​d​e​x​a​d​o​ ​g​l​o​b​a​l​ ​l​l​e​v​a​b​a​ ​e​s​c​u​d​o​ ​d​e​ ​«​d​e​f​e​n​s​i​v​o​»​ ​p​o​r​ ​u​n​a​ ​r​a​z​ó​n​ ​t​o​n​t​a​:​ ​l​o​s​ ​p​r​o​v​e​e​d​o​r​e​s​ ​a​c​o​r​t​a​n​ ​l​o​s​ ​n​o​m​b​r​e​s​ ​—​«​D​e​v​ ​W​l​d​»​,​ ​«​E​m​e​r​g​M​k​t​s​»​,​ ​«​U​l​t​r​ ​S​h​r​t​»​—​ ​y​ ​n​i​n​g​u​n​a​ ​r​e​g​l​a​ ​l​o​s​ ​r​e​c​o​n​o​c​í​a​,​ ​a​s​í​ ​q​u​e​ ​e​l​ ​f​o​n​d​o​ ​c​a​í​a​ ​e​n​ ​l​a​ ​ú​l​t​i​m​a​ ​r​e​d​.​ ​A​h​o​r​a​ ​s​e​ ​m​i​r​a​ ​*​*​e​l​ ​í​n​d​i​c​e​ ​q​u​e​ ​r​e​p​l​i​c​a​*​*​,​ ​q​u​e​ ​l​a​ ​a​p​p​ ​y​a​ ​s​a​b​í​a​ ​y​ ​n​o​ ​u​s​a​b​a​,​ ​y​ ​e​l​ ​e​s​c​u​d​o​ ​s​e​ ​q​u​e​d​a​ ​s​o​l​o​ ​p​a​r​a​ ​l​o​s​ ​f​o​n​d​o​s​ ​d​e​ ​d​e​f​e​n​s​a​.
+					 */
+					'3': string
+					/**
+					 * �​�​ ​*​*​Y​ ​a​d​i​ó​s​ ​a​ ​l​a​s​ ​b​a​n​d​e​r​i​t​a​s​.​*​*​ ​W​i​n​d​o​w​s​ ​n​o​ ​l​a​s​ ​d​i​b​u​j​a​:​ ​l​a​s​ ​p​i​n​t​a​ ​c​o​m​o​ ​d​o​s​ ​l​e​t​r​a​s​ ​e​s​t​r​e​c​h​a​s​.​ ​E​n​ ​s​u​ ​l​u​g​a​r​ ​h​a​y​ ​g​l​o​b​o​s​ ​—​m​u​n​d​o​,​ ​A​m​é​r​i​c​a​,​ ​E​u​r​o​p​a​,​ ​A​s​i​a​—​,​ ​q​u​e​ ​s​e​ ​v​e​n​ ​i​g​u​a​l​ ​e​n​ ​c​u​a​l​q​u​i​e​r​ ​a​p​a​r​a​t​o​ ​y​ ​d​i​c​e​n​ ​l​o​ ​m​i​s​m​o​.
+					 */
+					'4': string
 				}
 			}
 			v1_19_0: {
@@ -5297,6 +5358,30 @@ export type TranslationFunctions = {
 		 * Eficiencia (TER)
 		 */
 		efficiency_label: () => LocalizedString
+		/**
+		 * Resumen de tu capital global
+		 */
+		summary_aria: () => LocalizedString
+		/**
+		 * Rentabilidad por cartera
+		 */
+		breakdown_returns_title: () => LocalizedString
+		/**
+		 * El cambio de hoy, por cartera
+		 */
+		breakdown_today_title: () => LocalizedString
+		/**
+		 * Aportado
+		 */
+		breakdown_invested: () => LocalizedString
+		/**
+		 * Lo que más lo mueve hoy
+		 */
+		movers_title: () => LocalizedString
+		/**
+		 * Sin cotización ({count}) y fuera de estas cifras — aportado
+		 */
+		unpriced_label: (arg: { count: number }) => LocalizedString
 		/**
 		 * Cartera
 		 */
@@ -6998,7 +7083,7 @@ export type TranslationFunctions = {
 		 */
 		footer_tagline: () => LocalizedString
 		/**
-		 * v1.19.1 🚀
+		 * v1.20.0 🚀
 		 */
 		changelog_trigger: () => LocalizedString
 		/**
@@ -7992,13 +8077,41 @@ export type TranslationFunctions = {
 		 */
 		btn_understand: () => LocalizedString
 		releases: {
+			v1_20_0: {
+				/**
+				 * 21 de Agosto, 2026
+				 */
+				date: () => LocalizedString
+				/**
+				 * Las cifras de arriba se abren por cartera
+				 */
+				badge: () => LocalizedString
+				changes: {
+					/**
+					 * 📂 **Toca «Rentabilidad» en la barra de arriba y se abre.** Cuánto llevas ganado en la cartera principal, en tus acciones y en la conservadora, con lo que has aportado a cada una. Las tres cifras **suman exactamente** la de arriba: es un desglose de tu rentabilidad, no tres números puestos debajo.
+					 */
+					'0': () => LocalizedString
+					/**
+					 * 📉 **Y «Cambio hoy» te dice qué lo está moviendo.** Además del cambio del día en cada cartera, las tres posiciones que más pesan hoy en esa cifra — ordenadas por lo que mueven de verdad, así que una caída de 300 € va antes que una subida de 20.
+					 */
+					'1': () => LocalizedString
+					/**
+					 * 📱 **En el móvil, lo que se abre se ve.** El desglose acababa por debajo del borde de la pantalla y la lista de posiciones quedaba fuera, sin nada que te dijera que estaba ahí. Ahora la página se asoma solo lo justo para que quepa, y en pantalla grande no se mueve nada.
+					 */
+					'2': () => LocalizedString
+					/**
+					 * 🙈 **Y en tema claro había una línea invisible.** La minigráfica de «Invertido» estaba pintada de blanco sobre el fondo blanco de su propia tarjeta. Ninguna de las tres comprobaciones automáticas de contraste podía verla, porque el color no estaba en el sitio donde miran.
+					 */
+					'3': () => LocalizedString
+				}
+			}
 			v1_19_1: {
 				/**
 				 * 19 de Agosto, 2026
 				 */
 				date: () => LocalizedString
 				/**
-				 * Tus cambios vuelven a llegar al móvil
+				 * Tus cambios llegan al móvil, y los iconos aciertan
 				 */
 				badge: () => LocalizedString
 				changes: {
@@ -8014,6 +8127,14 @@ export type TranslationFunctions = {
 					 * 🔔 **Y un guardado que falla ya se ve.** Hasta ahora solo quedaba constancia en la consola del navegador, que es como no dejar ninguna: por eso esto pudo estar semanas pasando sin que nada lo dijera.
 					 */
 					'2': () => LocalizedString
+					/**
+					 * 🏷️ **Los iconos de tus activos ya dicen lo que son.** Un indexado global llevaba escudo de «defensivo» por una razón tonta: los proveedores acortan los nombres —«Dev Wld», «EmergMkts», «Ultr Shrt»— y ninguna regla los reconocía, así que el fondo caía en la última red. Ahora se mira **el índice que replica**, que la app ya sabía y no usaba, y el escudo se queda solo para los fondos de defensa.
+					 */
+					'3': () => LocalizedString
+					/**
+					 * 🌐 **Y adiós a las banderitas.** Windows no las dibuja: las pinta como dos letras estrechas. En su lugar hay globos —mundo, América, Europa, Asia—, que se ven igual en cualquier aparato y dicen lo mismo.
+					 */
+					'4': () => LocalizedString
 				}
 			}
 			v1_19_0: {

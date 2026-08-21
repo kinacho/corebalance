@@ -270,6 +270,27 @@ export class PortfolioStore {
 	globalDailyChangeValue = $derived(this.portfolioState.dailyChangeValue + this.satelliteState.dailyChangeValue + this.stockState.dailyChangeValue);
 	globalDailyChangePercent = $derived(this.globalCapital > 0 ? this.globalDailyChangeValue / this.globalCapital : 0);
 
+	/**
+	 * Lo que las cifras de arriba **no** incluyen porque no hay cotización con la que
+	 * valorarlo, sumando los tres bloques. `undefined` cuando no hay nada fuera.
+	 *
+	 * ⚠️ Existe porque sin esto el arreglo estaría a medias: dejar la posición fuera de
+	 * los agregados evita la pérdida del 100 % inventada, pero **baja el capital global
+	 * en silencio**, que es cambiar un número mal por otro sin explicación. El aviso va
+	 * pegado a la cifra de la cabecera y no dentro del cajón a propósito: con un solo
+	 * bloque las cajas no son pulsables, así que ahí el cajón no se puede abrir.
+	 */
+	globalUnpriced: { count: number; cost: number } | undefined = $derived.by(() => {
+		const partes = [this.portfolioState, this.satelliteState, this.stockState]
+			.map((estado) => estado.unpriced)
+			.filter((u): u is { count: number; cost: number } => u !== undefined);
+		if (partes.length === 0) return undefined;
+		return {
+			count: partes.reduce((suma, u) => suma + u.count, 0),
+			cost: partes.reduce((suma, u) => suma + u.cost, 0)
+		};
+	});
+
 	sparklineVersion = $state(0); // Incrementa solo cuando cambian los sparklines de la API
 
 

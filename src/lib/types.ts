@@ -83,6 +83,16 @@ export interface PortfolioPosition {
 	mtdChangePercent?: number;
 	oneMonthChangePercent?: number;
 	sparkline?: number[];
+	/**
+	 * Tienes participaciones y **no hay cotización con la que valorarlas**.
+	 *
+	 * ⚠️ No es lo mismo que valer cero: es no saber cuánto vale. La diferencia importa
+	 * porque `totalValue` sí es 0 —no se puede inventar un precio— y con eso
+	 * `totalValue − totalCost` da exactamente **menos todo lo aportado**, o sea una
+	 * pérdida del 100 % fabricada por la resta. Marcarlo es lo que permite dejar la
+	 * posición fuera de los agregados en vez de contaminarlos.
+	 */
+	priceMissing?: boolean;
 }
 
 /** Estado completo de la cartera */
@@ -97,6 +107,15 @@ export interface PortfolioState {
 	dailyChangeValue: number;
 	dailyChangePercent: number;
 	sparkline?: number[];
+	/**
+	 * Lo que ha quedado **fuera** de las cifras de arriba por no tener cotización, y
+	 * el coste que representa. Ausente cuando no hay nada fuera.
+	 *
+	 * Mismo criterio que `uncoveredValue` en el análisis de subyacentes: las cifras
+	 * hablan de lo que se ha podido medir y lo que no cabe se declara, en vez de
+	 * colarse dentro con un cero que se lee como un dato.
+	 */
+	unpriced?: { count: number; cost: number };
 }
 
 /** Resultado del cálculo de rebalanceo */
