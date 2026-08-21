@@ -783,6 +783,26 @@ type RootTranslation = {
 		 */
 		efficiency_label: string
 		/**
+		 * R​e​s​u​m​e​n​ ​d​e​ ​t​u​ ​c​a​p​i​t​a​l​ ​g​l​o​b​a​l
+		 */
+		summary_aria: string
+		/**
+		 * R​e​n​t​a​b​i​l​i​d​a​d​ ​p​o​r​ ​c​a​r​t​e​r​a
+		 */
+		breakdown_returns_title: string
+		/**
+		 * E​l​ ​c​a​m​b​i​o​ ​d​e​ ​h​o​y​,​ ​p​o​r​ ​c​a​r​t​e​r​a
+		 */
+		breakdown_today_title: string
+		/**
+		 * A​p​o​r​t​a​d​o
+		 */
+		breakdown_invested: string
+		/**
+		 * L​o​ ​q​u​e​ ​m​á​s​ ​l​o​ ​m​u​e​v​e​ ​h​o​y
+		 */
+		movers_title: string
+		/**
 		 * C​a​r​t​e​r​a
 		 */
 		portfolio: string
@@ -3613,7 +3633,7 @@ type RootTranslation = {
 				 */
 				date: string
 				/**
-				 * T​u​s​ ​c​a​m​b​i​o​s​ ​v​u​e​l​v​e​n​ ​a​ ​l​l​e​g​a​r​ ​a​l​ ​m​ó​v​i​l
+				 * T​u​s​ ​c​a​m​b​i​o​s​ ​l​l​e​g​a​n​ ​a​l​ ​m​ó​v​i​l​,​ ​y​ ​l​o​s​ ​i​c​o​n​o​s​ ​a​c​i​e​r​t​a​n
 				 */
 				badge: string
 				changes: {
@@ -3629,6 +3649,14 @@ type RootTranslation = {
 					 * �​�​ ​*​*​Y​ ​u​n​ ​g​u​a​r​d​a​d​o​ ​q​u​e​ ​f​a​l​l​a​ ​y​a​ ​s​e​ ​v​e​.​*​*​ ​H​a​s​t​a​ ​a​h​o​r​a​ ​s​o​l​o​ ​q​u​e​d​a​b​a​ ​c​o​n​s​t​a​n​c​i​a​ ​e​n​ ​l​a​ ​c​o​n​s​o​l​a​ ​d​e​l​ ​n​a​v​e​g​a​d​o​r​,​ ​q​u​e​ ​e​s​ ​c​o​m​o​ ​n​o​ ​d​e​j​a​r​ ​n​i​n​g​u​n​a​:​ ​p​o​r​ ​e​s​o​ ​e​s​t​o​ ​p​u​d​o​ ​e​s​t​a​r​ ​s​e​m​a​n​a​s​ ​p​a​s​a​n​d​o​ ​s​i​n​ ​q​u​e​ ​n​a​d​a​ ​l​o​ ​d​i​j​e​r​a​.
 					 */
 					'2': string
+					/**
+					 * �​�​️​ ​*​*​L​o​s​ ​i​c​o​n​o​s​ ​d​e​ ​t​u​s​ ​a​c​t​i​v​o​s​ ​y​a​ ​d​i​c​e​n​ ​l​o​ ​q​u​e​ ​s​o​n​.​*​*​ ​U​n​ ​i​n​d​e​x​a​d​o​ ​g​l​o​b​a​l​ ​l​l​e​v​a​b​a​ ​e​s​c​u​d​o​ ​d​e​ ​«​d​e​f​e​n​s​i​v​o​»​ ​p​o​r​ ​u​n​a​ ​r​a​z​ó​n​ ​t​o​n​t​a​:​ ​l​o​s​ ​p​r​o​v​e​e​d​o​r​e​s​ ​a​c​o​r​t​a​n​ ​l​o​s​ ​n​o​m​b​r​e​s​ ​—​«​D​e​v​ ​W​l​d​»​,​ ​«​E​m​e​r​g​M​k​t​s​»​,​ ​«​U​l​t​r​ ​S​h​r​t​»​—​ ​y​ ​n​i​n​g​u​n​a​ ​r​e​g​l​a​ ​l​o​s​ ​r​e​c​o​n​o​c​í​a​,​ ​a​s​í​ ​q​u​e​ ​e​l​ ​f​o​n​d​o​ ​c​a​í​a​ ​e​n​ ​l​a​ ​ú​l​t​i​m​a​ ​r​e​d​.​ ​A​h​o​r​a​ ​s​e​ ​m​i​r​a​ ​*​*​e​l​ ​í​n​d​i​c​e​ ​q​u​e​ ​r​e​p​l​i​c​a​*​*​,​ ​q​u​e​ ​l​a​ ​a​p​p​ ​y​a​ ​s​a​b​í​a​ ​y​ ​n​o​ ​u​s​a​b​a​,​ ​y​ ​e​l​ ​e​s​c​u​d​o​ ​s​e​ ​q​u​e​d​a​ ​s​o​l​o​ ​p​a​r​a​ ​l​o​s​ ​f​o​n​d​o​s​ ​d​e​ ​d​e​f​e​n​s​a​.
+					 */
+					'3': string
+					/**
+					 * �​�​ ​*​*​Y​ ​a​d​i​ó​s​ ​a​ ​l​a​s​ ​b​a​n​d​e​r​i​t​a​s​.​*​*​ ​W​i​n​d​o​w​s​ ​n​o​ ​l​a​s​ ​d​i​b​u​j​a​:​ ​l​a​s​ ​p​i​n​t​a​ ​c​o​m​o​ ​d​o​s​ ​l​e​t​r​a​s​ ​e​s​t​r​e​c​h​a​s​.​ ​E​n​ ​s​u​ ​l​u​g​a​r​ ​h​a​y​ ​g​l​o​b​o​s​ ​—​m​u​n​d​o​,​ ​A​m​é​r​i​c​a​,​ ​E​u​r​o​p​a​,​ ​A​s​i​a​—​,​ ​q​u​e​ ​s​e​ ​v​e​n​ ​i​g​u​a​l​ ​e​n​ ​c​u​a​l​q​u​i​e​r​ ​a​p​a​r​a​t​o​ ​y​ ​d​i​c​e​n​ ​l​o​ ​m​i​s​m​o​.
+					 */
+					'4': string
 				}
 			}
 			v1_19_0: {
@@ -5297,6 +5325,26 @@ export type TranslationFunctions = {
 		 * Eficiencia (TER)
 		 */
 		efficiency_label: () => LocalizedString
+		/**
+		 * Resumen de tu capital global
+		 */
+		summary_aria: () => LocalizedString
+		/**
+		 * Rentabilidad por cartera
+		 */
+		breakdown_returns_title: () => LocalizedString
+		/**
+		 * El cambio de hoy, por cartera
+		 */
+		breakdown_today_title: () => LocalizedString
+		/**
+		 * Aportado
+		 */
+		breakdown_invested: () => LocalizedString
+		/**
+		 * Lo que más lo mueve hoy
+		 */
+		movers_title: () => LocalizedString
 		/**
 		 * Cartera
 		 */
@@ -7998,7 +8046,7 @@ export type TranslationFunctions = {
 				 */
 				date: () => LocalizedString
 				/**
-				 * Tus cambios vuelven a llegar al móvil
+				 * Tus cambios llegan al móvil, y los iconos aciertan
 				 */
 				badge: () => LocalizedString
 				changes: {
@@ -8014,6 +8062,14 @@ export type TranslationFunctions = {
 					 * 🔔 **Y un guardado que falla ya se ve.** Hasta ahora solo quedaba constancia en la consola del navegador, que es como no dejar ninguna: por eso esto pudo estar semanas pasando sin que nada lo dijera.
 					 */
 					'2': () => LocalizedString
+					/**
+					 * 🏷️ **Los iconos de tus activos ya dicen lo que son.** Un indexado global llevaba escudo de «defensivo» por una razón tonta: los proveedores acortan los nombres —«Dev Wld», «EmergMkts», «Ultr Shrt»— y ninguna regla los reconocía, así que el fondo caía en la última red. Ahora se mira **el índice que replica**, que la app ya sabía y no usaba, y el escudo se queda solo para los fondos de defensa.
+					 */
+					'3': () => LocalizedString
+					/**
+					 * 🌐 **Y adiós a las banderitas.** Windows no las dibuja: las pinta como dos letras estrechas. En su lugar hay globos —mundo, América, Europa, Asia—, que se ven igual en cualquier aparato y dicen lo mismo.
+					 */
+					'4': () => LocalizedString
 				}
 			}
 			v1_19_0: {

@@ -41,6 +41,49 @@ test.describe('Dashboard', () => {
 		expect(errores, `errores de consola: ${errores.join(' | ')}`).toEqual([]);
 	});
 
+	/**
+	 * El cajón por cartera de la cabecera. En unitario está cubierto con el store
+	 * simulado; lo que solo se ve aquí es que las cifras de los **tres bloques de
+	 * verdad** llegan y que abrir uno cierra el otro con el DOM real, donde el
+	 * plegado es un `grid-template-rows` animado y no un `{#if}`.
+	 */
+	test('las cajas de la cabecera abren su desglose por cartera, una a la vez', async ({
+		page
+	}) => {
+		const errores = recogerErrores(page);
+		await sembrarCartera(page, SIN_OBJETIVOS);
+		await abrirDashboard(page);
+
+		const rentabilidad = page.locator('button.metric-card', {
+			has: page.locator('.metric-label', { hasText: 'Rentabilidad' })
+		});
+		const hoy = page.locator('button.metric-card', {
+			has: page.locator('.metric-label', { hasText: 'Cambio Hoy' })
+		});
+
+		// La cartera sembrada tiene los tres bloques con capital, así que ambas abren.
+		await expect(rentabilidad).toHaveAttribute('aria-expanded', 'false');
+
+		await rentabilidad.click();
+		await expect(rentabilidad).toHaveAttribute('aria-expanded', 'true');
+		await expect(page.locator('.cajon-bloque')).toHaveCount(3);
+		// Lo aportado solo sale en este cajón; los movers, en el otro.
+		await expect(page.locator('.bloque-aportado').first()).toBeVisible();
+		await expect(page.locator('.cajon-movers')).toHaveCount(0);
+
+		await hoy.click();
+		await expect(hoy).toHaveAttribute('aria-expanded', 'true');
+		await expect(rentabilidad).toHaveAttribute('aria-expanded', 'false');
+		await expect(page.locator('.cajon-movers')).toBeVisible();
+
+		// Y Escape lo cierra sin dejar el cajón en el orden de tabulación.
+		await page.keyboard.press('Escape');
+		await expect(hoy).toHaveAttribute('aria-expanded', 'false');
+		await expect(page.locator('.cajon-wrapper')).toHaveJSProperty('inert', true);
+
+		expect(errores, `errores de consola: ${errores.join(' | ')}`).toEqual([]);
+	});
+
 	test('el service worker se registra y precachea el esqueleto', async ({ page }) => {
 		// ⚠️ Esto estuvo **inerte en producción desde el primer día** y nadie se enteró:
 		// `injectRegister: 'auto'` generaba `registerSW.js` y no insertaba la etiqueta que

@@ -178,6 +178,37 @@ test.describe('Tema claro y oscuro', () => {
 		await expect(page.locator('#tour-concentracion .titular, #tour-concentracion .empty')).toBeVisible();
 
 		/**
+		 * Y el cajón por cartera de la cabecera, por lo mismo: su contenido está montado
+		 * con el cajón cerrado —hace falta para animar el plegado— así que se mide sin
+		 * pintar y saldría en cero por no haberse mirado.
+		 *
+		 * ⚠️ **Aquí no vale `tour-step`: las cajas son botones visibles, así que se
+		 * clican.** Y **este** es el sitio y no `scripts/contraste-vivo.mjs`, que entra a
+		 * `/dashboard` sin cartera: sin bloques con capital las cajas no llegan a ser
+		 * botones, no hay cajón que abrir y el barrido solo podría dejar un aviso
+		 * permanente — que es lo que ese mismo fichero llama el modo de fallo a evitar.
+		 * Aquí hay `CON_OBJETIVOS` sembrado, con sus tres bloques.
+		 *
+		 * ⚠️ **Se abre «Cambio hoy» y no «Rentabilidad», y la elección está razonada:**
+		 * solo puede haber un cajón abierto a la vez, y el de «hoy» es el que añade las
+		 * filas de movers. Lo único que el otro dibuja aparte es lo aportado, cuyos dos
+		 * colores —`--text-muted` sobre `--bg-card-hover` y `--text-secondary` sobre lo
+		 * mismo— ya los mide esta escena en `.bloque-titulo` y en `.mover-nombre`. O sea
+		 * que no queda ningún par color/fondo del cajón sin medir.
+		 *
+		 * ⚠️ **Y si alguien quiere comprobar que esto de verdad caza algo, dos avisos: los
+		 * dos primeros controles negativos que escribí salieron verdes y ninguno era un
+		 * hueco del test.** Uno ponía `--accent-blue` en `.mover-nombre` con el argumento
+		 * de que mide 3,22:1 — cierto en **oscuro**, donde vale `#3b82f6`; aquí se mide el
+		 * tema **claro**, donde es `#1d4ed8` y pasa de sobra. El otro cambiaba el `color`
+		 * de `.mover-pct`, que **no es la regla que pinta**: toda fila lleva `.positive` o
+		 * `.negative` y esas ganan por especificidad. Para romper esto hay que tocar la
+		 * regla de estado, o un rótulo que no tenga ninguna encima.
+		 */
+		await page.locator('button.metric-card', { hasText: 'Cambio Hoy' }).click();
+		await expect(page.locator('.cajon-movers')).toBeVisible();
+
+		/**
 		 * ⚠️ Tres detalles de la sonda que vienen de falsos positivos reales, todos
 		 * documentados en `scripts/contraste-vivo.mjs`: el color se resuelve pintando
 		 * y leyendo el píxel (nunca parseando, porque `color-mix()` se computa como
