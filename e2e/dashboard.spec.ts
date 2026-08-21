@@ -4,7 +4,8 @@ import {
 	abrirMapas,
 	recogerErrores,
 	sembrarCartera,
-	SIN_OBJETIVOS
+	SIN_OBJETIVOS,
+	SIN_UN_PRECIO
 } from './util/cartera';
 
 /**
@@ -80,6 +81,41 @@ test.describe('Dashboard', () => {
 		await page.keyboard.press('Escape');
 		await expect(hoy).toHaveAttribute('aria-expanded', 'false');
 		await expect(page.locator('.cajon-wrapper')).toHaveJSProperty('inert', true);
+
+		expect(errores, `errores de consola: ${errores.join(' | ')}`).toEqual([]);
+	});
+
+	/**
+	 * ⚠️ **Un activo que la API no cotiza inventaba una pérdida del 100 %**, y lo que
+	 * solo se ve aquí es el cableado: que el aviso llegue de tres `PortfolioState` a un
+	 * derivado del store y de ahí al marcado. La aritmética la fijan los unitarios de
+	 * `rebalance.test.ts`; esto comprueba que la cabecera lo dice de verdad.
+	 *
+	 * Medido antes del arreglo con esta misma semilla: `SXR8` cuesta 8.000 € y salía
+	 * restado de la rentabilidad global como si valiera cero.
+	 */
+	test('un activo sin cotización se declara fuera, y no como pérdida', async ({ page }) => {
+		const errores = recogerErrores(page);
+		await sembrarCartera(page, SIN_UN_PRECIO);
+		await abrirDashboard(page);
+
+		const aviso = page.locator('.aviso-sin-precio');
+		await expect(aviso).toBeVisible();
+		// Un activo fuera, con lo que costó.
+		await expect(aviso).toContainText('1');
+		/*
+		 * ⚠️ `8000` sin punto de millar, y no es un descuido: `es-ES` usa agrupación
+		 * `min2`, así que `Intl` **no** separa los números de cuatro cifras. La primera
+		 * versión esperaba «8.000» y fallaba contra un formateo correcto.
+		 */
+		await expect(page.locator('.aviso-coste')).toContainText('8000');
+
+		// Y la rentabilidad global **no** es negativa por su culpa: el resto de la
+		// cartera sembrada está en ganancias.
+		const rentabilidad = page.locator('button.metric-card, div.metric-card').filter({
+			has: page.locator('.metric-label', { hasText: 'Rentabilidad' })
+		});
+		await expect(rentabilidad).not.toHaveClass(/negative/);
 
 		expect(errores, `errores de consola: ${errores.join(' | ')}`).toEqual([]);
 	});

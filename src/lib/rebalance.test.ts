@@ -32,6 +32,153 @@ describe('rebalance.ts', () => {
 			expect(state.totalProfitPercent).toBeCloseTo(0.6667, 4);
 		});
 
+		/**
+		 * ⚠️ **Una posición con títulos y sin cotización no vale cero: no se sabe cuánto
+		 * vale, y la diferencia costaba una pérdida del 100 % inventada.**
+		 *
+		 * `/api/prices` responde 200 con los tickers que resuelve y mete el resto en
+		 * `errors`, que el store descarta; así que la posición se queda sin entrada en
+		 * `prices`, `totalValue` sale 0 y `totalValue − totalCost` da menos todo lo
+		 * aportado. Medido antes del arreglo con este mismo caso: una cartera que va
+		 * **+15,00 %** se reportaba como **−40,00 %**.
+		 */
+		describe('una posición sin cotización', () => {
+			const conAmbos: Record<string, PriceData> = {
+				AAPL: { price: 150, change: 1.5, currency: 'EUR', name: 'Apple Inc.' },
+				MSFT: { price: 100, change: -1, currency: 'EUR', name: 'Microsoft Corp.' }
+			};
+			const sinLaDeMsft: Record<string, PriceData> = { AAPL: conAmbos.AAPL };
+
+			it('no fabrica una pérdida: sale de los agregados y se declara aparte', () => {
+				const state = calculatePortfolioState(assets, holdings, sinLaDeMsft);
+
+				// Solo AAPL entra: 10 × 150 = 1500 de valor sobre 1000 de coste.
+				expect(state.totalCapital).toBe(1500);
+				expect(state.totalInvested).toBe(1000);
+				expect(state.totalProfit).toBe(500);
+				expect(state.totalProfitPercent).toBeCloseTo(0.5, 6);
+
+				// Y lo que se ha quedado fuera se dice, con su coste.
+				expect(state.unpriced).toEqual({ count: 1, cost: 500 });
+			});
+
+			it('la posición conserva su coste pero no su pérdida inventada', () => {
+				const state = calculatePortfolioState(assets, holdings, sinLaDeMsft);
+				const msft = state.positions[1];
+
+				expect(msft.priceMissing).toBe(true);
+				// El dinero que puso sigue ahí: la tarjeta tiene que poder decirlo.
+				expect(msft.totalCost).toBe(500);
+				// Lo que se va a cero es la resta, no el coste.
+				expect(msft.totalValue).toBe(0);
+				expect(msft.profit).toBe(0);
+				expect(msft.profitPercent).toBe(0);
+			});
+
+			it('⚠️ el cambio del día tampoco la cuenta, ni en euros ni en el porcentaje', () => {
+				const state = calculatePortfolioState(assets, holdings, sinLaDeMsft);
+				// AAPL: 1500 × 1,5 % = 22,50. Sin el arreglo MSFT metía su propio 0 en el
+				// numerador y su 0 en el denominador, así que el porcentaje se medía contra
+				// un capital que no era el suyo.
+				expect(state.dailyChangeValue).toBeCloseTo(22.5, 6);
+				expect(state.dailyChangePercent).toBeCloseTo(22.5 / 1500, 6);
+				expect(state.positions[1].dailyChangeValue).toBe(0);
+				expect(state.positions[1].dailyChangePercent).toBe(0);
+			});
+
+			it('con todos los precios no declara nada fuera, y las cifras son las de siempre', () => {
+				const state = calculatePortfolioState(assets, holdings, conAmbos);
+				expect(state.unpriced).toBeUndefined();
+				expect(state.positions.every((p) => p.priceMissing === false)).toBe(true);
+				expect(state.totalCapital).toBe(2500);
+				expect(state.totalProfit).toBe(1000);
+			});
+
+			/**
+			 * ⚠️ **Un activo a cero títulos NO es un activo sin cotización.** Es lo normal
+			 * en una cartera recién creada, y marcarlo lo sacaría de unos agregados en los
+			 * que no aporta nada, pero también levantaría un aviso permanente al usuario —
+			 * el modo de fallo que este repo persigue.
+			 */
+			it('cero títulos no cuenta como falta de cotización', () => {
+				const state = calculatePortfolioState(
+					assets,
+					{ AAPL: { shares: 10, avgCost: 100 }, MSFT: { shares: 0, avgCost: 0 } },
+					sinLaDeMsft
+				);
+				expect(state.positions[1].priceMissing).toBe(false);
+				expect(state.unpriced).toBeUndefined();
+			});
+
+			/**
+			 * El efectivo no puede caer aquí: `/api/prices` pre-rellena los `CASH-*` a
+			 * 1,00 €. Pero si algún día dejara de hacerlo, el depósito de un usuario
+			 * desaparecería de su patrimonio, así que se fija el precio que lo salva.
+			 */
+			it('un depósito con su precio de 1 € no se marca', () => {
+				const cash: Asset[] = [
+					{ ticker: 'CASH-DEP', name: 'Depósito', isin: '', targetWeight: 1, ter: 0, color: '#000', icon: '', category: 'satellite', manualInterestRate: 0.0365 }
+				];
+				const state = calculatePortfolioState(
+					cash,
+					{ 'CASH-DEP': { shares: 900, avgCost: 1 } },
+					{ 'CASH-DEP': { price: 1, change: 0, currency: 'EUR', name: 'CASH-DEP' } }
+				);
+				expect(state.positions[0].priceMissing).toBe(false);
+				expect(state.totalCapital).toBeGreaterThan(0);
+			});
+
+			/**
+			 * ⚠️ `calculateRebalance` ya estaba a salvo por su propia guarda
+			 * (`unitPrice <= 0` → déficit 0), y conviene fijarlo: sin ella, un activo sin
+			 * precio aparece con peso 0 y por tanto con el déficit más grande de la
+			 * cartera, así que se llevaría **toda** la aportación — y encima a un precio
+			 * de 0, o sea títulos infinitos.
+			 */
+			/**
+			 * ⚠️ **Un precio no finito no es lo mismo que un precio ausente, y esta es la
+			 * entrada que distingue el arreglo de un no-op.**
+			 *
+			 * Con el precio a 0, dejar la posición dentro o fuera del cambio diario da lo
+			 * mismo: su valor es 0 y su aportación al cambio también, así que el filtro
+			 * parecía decorativo. Con `NaN` no: `NaN * 0` es `NaN` y un solo activo
+			 * envenena **las cuatro cifras de la cabecera a la vez**, que además es un
+			 * fallo que no se lee como un fallo — se lee como una cartera vacía.
+			 */
+			it('un precio no finito no envenena ninguna cifra', () => {
+				const state = calculatePortfolioState(assets, holdings, {
+					AAPL: conAmbos.AAPL,
+					MSFT: { price: Number.NaN, change: Number.NaN, currency: 'EUR', name: 'Microsoft Corp.' }
+				});
+
+				expect(state.positions[1].priceMissing).toBe(true);
+				for (const cifra of [
+					state.totalCapital,
+					state.totalInvested,
+					state.totalProfit,
+					state.totalProfitPercent,
+					state.dailyChangeValue,
+					state.dailyChangePercent,
+					state.totalAnnualCost,
+					state.weightedAverageTer
+				]) {
+					expect(Number.isFinite(cifra)).toBe(true);
+				}
+				expect(state.totalCapital).toBe(1500);
+				expect(state.dailyChangeValue).toBeCloseTo(22.5, 6);
+				// Y la propia posición no arrastra el NaN a la tarjeta.
+				expect(state.positions[1].totalValue).toBe(0);
+				expect(state.positions[1].dailyChangeValue).toBe(0);
+			});
+
+			it('el plan de aportación no le asigna nada', () => {
+				const plan = calculateRebalance(assets, holdings, sinLaDeMsft, 1000);
+				const msft = plan.allocations.find((a) => a.asset.ticker === 'MSFT')!;
+				expect(msft.amountToInvest).toBe(0);
+				expect(msft.sharesToBuy).toBe(0);
+			});
+		});
+
 		it('calculates weights and deviations correctly', () => {
 			const state = calculatePortfolioState(assets, holdings, prices);
 			expect(state.positions[0].currentWeight).toBe(0.6);
@@ -48,11 +195,23 @@ describe('rebalance.ts', () => {
 			expect(state.positions.every(p => p.currentWeight === 0)).toBe(true);
 		});
 
-		it('handles missing prices gracefully', () => {
+		/**
+		 * ⚠️ **Este test se llamaba «handles missing prices gracefully» y afirmaba
+		 * `totalProfit === -1500`: la pérdida del 100 % inventada estaba escrita aquí
+		 * como comportamiento deseado, y con la palabra «gracefully» delante.**
+		 *
+		 * Se reescribe con su motivo en vez de borrarse, porque un cambio de contrato
+		 * tiene que verse en el test que lo guardaba — misma decisión que se tomó con
+		 * `e2e/mapa-desviacion.spec.ts` cuando el reparto de los mapas cambió.
+		 */
+		it('sin ningún precio no hay nada que medir, así que tampoco hay pérdida', () => {
 			const state = calculatePortfolioState(assets, holdings, {});
 			expect(state.totalCapital).toBe(0);
-			expect(state.totalInvested).toBe(1500);
-			expect(state.totalProfit).toBe(-1500);
+			expect(state.totalInvested).toBe(0);
+			expect(state.totalProfit).toBe(0);
+			expect(state.totalProfitPercent).toBe(0);
+			// Las dos posiciones se declaran fuera, con lo que costaron.
+			expect(state.unpriced).toEqual({ count: 2, cost: 1500 });
 		});
 
 		it('calculates TER costs correctly', () => {

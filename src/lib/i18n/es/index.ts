@@ -226,6 +226,7 @@ const es = {
     breakdown_today_title: 'El cambio de hoy, por cartera',
     breakdown_invested: 'Aportado',
     movers_title: 'Lo que más lo mueve hoy',
+    unpriced_label: 'Sin cotización ({count:number}) y fuera de estas cifras — aportado',
     portfolio: 'Cartera',
     add_asset: 'Añadir activo',
     per_year: '/año',

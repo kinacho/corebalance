@@ -803,6 +803,11 @@ type RootTranslation = {
 		 */
 		movers_title: string
 		/**
+		 * S​i​n​ ​c​o​t​i​z​a​c​i​ó​n​ ​(​{​c​o​u​n​t​}​)​ ​y​ ​f​u​e​r​a​ ​d​e​ ​e​s​t​a​s​ ​c​i​f​r​a​s​ ​—​ ​a​p​o​r​t​a​d​o
+		 * @param {number} count
+		 */
+		unpriced_label: RequiredParams<'count'>
+		/**
 		 * C​a​r​t​e​r​a
 		 */
 		portfolio: string
@@ -5373,6 +5378,10 @@ export type TranslationFunctions = {
 		 * Lo que más lo mueve hoy
 		 */
 		movers_title: () => LocalizedString
+		/**
+		 * Sin cotización ({count}) y fuera de estas cifras — aportado
+		 */
+		unpriced_label: (arg: { count: number }) => LocalizedString
 		/**
 		 * Cartera
 		 */

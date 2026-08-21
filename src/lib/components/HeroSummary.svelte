@@ -143,6 +143,17 @@
 		window.scrollBy({ top: sobra + MARGEN_ASOMO, behavior: suave ? 'smooth' : 'auto' });
 	}
 
+	/**
+	 * Las píldoras de peso, sin las posiciones que no se pueden valorar.
+	 *
+	 * ⚠️ Una posición sin cotización tiene `currentWeight` 0 —el peso se calcula sobre un
+	 * capital del que no forma parte— así que su píldora decía **0,00 %**: la misma cifra
+	 * inventada que este arreglo quita de la rentabilidad, un piso más arriba, y encima
+	 * la que se lee como «de esto no tienes nada». El mapa de desviación ya las deja
+	 * fuera por su filtro de valor; aquí hacía falta decirlo.
+	 */
+	const pildoras = $derived(portfolio.portfolioState.positions.filter((p) => !p.priceMissing));
+
 	/** El signo se deriva una vez y no dos: antes estaba escrito en las dos expresiones. */
 	function signo(valor: number): string {
 		return valor > 0 ? '+' : '';
@@ -188,6 +199,21 @@
 						</div>
 					{/if}
 				</div>
+			{/if}
+
+			<!--
+				⚠️ **El aviso va aquí, pegado al capital global, y no dentro del cajón.**
+				Es la advertencia de *esta* cifra: una posición sin cotizar la baja, y con un
+				solo bloque con capital las cajas no llegan a ser botones, así que dentro del
+				cajón el aviso sería inalcanzable justo en la cartera más simple.
+			-->
+			{#if portfolio.globalUnpriced}
+				<p class="aviso-sin-precio">
+					{$LL.dashboard.unpriced_label({ count: portfolio.globalUnpriced.count })}
+					<strong class="aviso-coste privacy-blur"
+						>{$LL.dashboard.currency(portfolio.globalUnpriced.cost)}</strong
+					>
+				</p>
 			{/if}
 		</div>
 
@@ -419,7 +445,7 @@
 		<div class="hero-actions">
 			{#if portfolio.hasAnyHoldings}
 				<div class="asset-pills">
-					{#each portfolio.portfolioState.positions as pos}
+					{#each pildoras as pos}
 						<div class="asset-pill" style="--accent: {pos.asset.color}">
 							<span class="pill-dot"></span>
 							<span class="pill-text">{$LL.dashboard.percent(pos.currentWeight)}</span>
@@ -902,6 +928,28 @@
 	.breakdown-divider {
 		color: var(--text-faint);
 		font-weight: 300;
+	}
+
+	/*
+	 * Tinte de atención con los tokens que ya existen para eso (`--tint-warn` y su
+	 * línea), y la tinta en `--accent-orange-ink`, que es la variante de **texto** del
+	 * ámbar: `--accent-orange` es de relleno y como texto no llega a 4,5.
+	 */
+	.aviso-sin-precio {
+		margin: 0.5rem 0 0;
+		max-width: 100%;
+		padding: 0.35rem 0.6rem;
+		border-radius: 12px;
+		background: var(--tint-warn);
+		border: 1px solid var(--tint-warn-line);
+		color: var(--accent-orange-ink);
+		font-size: var(--text-micro);
+		font-weight: 600;
+		text-align: center;
+	}
+
+	.aviso-coste {
+		font-weight: 800;
 	}
 
 	/* Tablet / Small Desktop */

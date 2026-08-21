@@ -224,6 +224,7 @@ const en: Translation = {
     breakdown_today_title: "Today's change, by portfolio",
     breakdown_invested: 'Invested',
     movers_title: "What's moving it today",
+    unpriced_label: 'No quote ({count}), left out of these figures — contributed',
     portfolio: 'Portfolio',
     add_asset: 'Add asset',
     per_year: '/year',

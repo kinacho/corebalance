@@ -43,6 +43,8 @@ vi.mock('$lib/stores/portfolio.svelte', () => {
 			isPrivate: false,
 			targetLabel: 'Objetivo',
 			hasAnyHoldings: true,
+			/** Lo que no se puede valorar. `undefined` = todo tiene precio. */
+			globalUnpriced: undefined,
 			/**
 			 * ⚠️ Los tres estados llevan `positions`, y hace falta: el cajón de «hoy» los
 			 * recorre para ordenar lo que más mueve el día. Si el store dejara de
@@ -399,6 +401,88 @@ describe('HeroSummary — el cajón por cartera', () => {
 
 		rect.mockRestore();
 		vi.restoreAllMocks();
+	});
+
+	/**
+	 * ⚠️ El aviso va pegado al capital global y **no** dentro del cajón: con un solo
+	 * bloque con capital las cajas no llegan a ser botones, así que ahí el aviso sería
+	 * inalcanzable justo en la cartera más simple. El test lo comprueba con las cajas
+	 * abribles y sin abrir ninguna.
+	 */
+	it('avisa de lo que no ha podido valorar, sin necesidad de abrir nada', async () => {
+		const portfolio = await sembrarTresBloques();
+		portfolio.globalUnpriced = { count: 2, cost: 10000 };
+		const { container } = render(HeroSummary);
+
+		const aviso = container.querySelector('.aviso-sin-precio');
+		expect(aviso).not.toBeNull();
+		expect(aviso?.textContent).toContain('2');
+		// El importe va tapado en modo privado, como toda cifra de dinero.
+		expect(container.querySelector('.aviso-coste')?.classList.contains('privacy-blur')).toBe(true);
+		expect(leerEuros(container.querySelector('.aviso-coste')?.textContent)).toBe(10000);
+		// Y está fuera del cajón, que sigue cerrado.
+		expect(aviso?.closest('.hero-cajon')).toBeNull();
+		expect(container.querySelector('.hero-cajon.cerrado')).not.toBeNull();
+
+		portfolio.globalUnpriced = undefined;
+	});
+
+	/**
+	 * ⚠️ Una posición sin cotizar tiene `currentWeight` 0, así que su píldora decía
+	 * «0,00 %» — la misma cifra inventada que el arreglo quita de la rentabilidad, y
+	 * encima la que se lee como «de esto no tienes nada».
+	 */
+	it('la píldora de peso de un activo sin cotizar no se dibuja', async () => {
+		const portfolio = await sembrarTresBloques();
+		const original = portfolio.portfolioState.positions;
+		portfolio.portfolioState.positions = [
+			...original,
+			{
+				asset: {
+					ticker: 'SXR8',
+					name: 'iShares Core S&P 500',
+					color: '#f59e0b',
+					isin: '',
+					targetWeight: 0,
+					icon: '',
+					ter: 0.002,
+					category: 'core' as const
+				},
+				holdings: 20,
+				avgCost: 400,
+				totalCost: 8000,
+				unitPrice: 0,
+				// El valor y el beneficio a cero son lo que `calculatePortfolioState` deja
+				// cuando no hay precio: el coste sí se conserva.
+				totalValue: 0,
+				profit: 0,
+				profitPercent: 0,
+				dailyChangeValue: 0,
+				dailyChangePercent: 0,
+				currentWeight: 0,
+				deviation: 0,
+				targetValue: 0,
+				targetHoldings: 0,
+				priceMissing: true
+			}
+		];
+		const { container } = render(HeroSummary);
+
+		// Dos posiciones en el bloque principal, una sola píldora.
+		expect(container.querySelectorAll('.asset-pill').length).toBe(1);
+		// Y tampoco entra en lo que más mueve el día, porque no mueve nada.
+		await fireEvent.click(caja(container, 'Cambio Hoy'));
+		const nombres = [...container.querySelectorAll('.mover-nombre')].map((n) => n.textContent?.trim());
+		expect(nombres).not.toContain('SXR8');
+
+		portfolio.portfolioState.positions = original;
+	});
+
+	it('y no dice nada cuando todo tiene precio', async () => {
+		const portfolio = await sembrarTresBloques();
+		portfolio.globalUnpriced = undefined;
+		const { container } = render(HeroSummary);
+		expect(container.querySelector('.aviso-sin-precio')).toBeNull();
 	});
 
 	it('toda cifra de dinero del cajón va tapada en modo privado', async () => {

@@ -28,9 +28,43 @@ export function calculatePortfolioState(
 		
 		const totalValueBase = shareCount * currentPrice * fxRate;
 		const isManual = asset.manualInterestRate !== undefined;
-		
-		const changePercent = asset.manualInterestRate !== undefined ? (asset.manualInterestRate * 100 / 365) : (pData?.change ?? 0);
-		const dailyChangeValue = totalValueBase * (changePercent / 100);
+
+		/**
+		 * ⚠️ **Tienes títulos y no hay precio con el que valorarlos.**
+		 *
+		 * Pasa de verdad y sin ruido: `/api/prices` responde 200 con los tickers que ha
+		 * podido resolver y mete el resto en `errors`, que el store **descarta**. Así que
+		 * un fondo que no esté en `RELIABLE_FT_MAPPINGS`, un ticker mal escrito o una
+		 * respuesta parcial de Yahoo dejan la posición sin entrada en `prices`.
+		 *
+		 * Y el daño no era «vale cero»: con `totalValue` en 0, la resta
+		 * `totalValue − totalCost` daba **menos todo lo aportado**, o sea una pérdida del
+		 * 100 % inventada por la aritmética. Medido con dos activos de 10.000 € de coste
+		 * cada uno: una cartera que va **+15,00 %** se reportaba como **−40,00 %**.
+		 *
+		 * El efectivo no entra aquí: `/api/prices` pre-rellena los `CASH-*` a 1,00 €.
+		 */
+		const priceMissing = shareCount > 0 && !(currentPrice > 0);
+
+		const changePercent = priceMissing
+			? 0
+			: isManual
+				? (asset.manualInterestRate! * 100) / 365
+				: (pData?.change ?? 0);
+		/*
+		 * ⚠️ **El cero de aquí es explícito porque un precio puede llegar no finito, no
+		 * solo ausente.** `NaN * 0` es `NaN`, así que sin esto un único activo con el
+		 * precio roto envenena las cuatro cifras de la cabecera a la vez — y ese fallo no
+		 * se lee como un fallo, se lee como una cartera vacía. Hay un test con
+		 * `Number.NaN` de precio que lo fija; con el precio simplemente **ausente** el
+		 * mutante sería equivalente y no lo cazaría nadie.
+		 *
+		 * `dailyChangePercent` **no** lleva la misma guarda a propósito: `changePercent`
+		 * ya es 0 tres líneas arriba cuando falta el precio, así que un ternario aquí
+		 * sería código muerto — un mutante imposible de matar, que es lo que este fichero
+		 * ya documenta del `/ 1` que se borró.
+		 */
+		const dailyChangeValue = priceMissing ? 0 : totalValueBase * (changePercent / 100);
 		const dailyChangePercent = changePercent / 100;
 
 		let totalValue = totalValueBase;
@@ -54,6 +88,17 @@ export function calculatePortfolioState(
 			profit = totalValue - totalCost;
 			profitPercent = totalCost > 0 ? profit / totalCost : 0;
 		}
+
+		/*
+		 * Sin precio no hay beneficio que calcular, ni en un sentido ni en el otro. El
+		 * coste **se conserva** —el usuario puso ese dinero y la tarjeta tiene que
+		 * seguir diciéndolo—; lo que se va a cero es la resta.
+		 */
+		if (priceMissing) {
+			totalValue = 0;
+			profit = 0;
+			profitPercent = 0;
+		}
 		
 		return { 
 			asset, 
@@ -75,17 +120,53 @@ export function calculatePortfolioState(
 			ytdChangePercent: asset.manualInterestRate !== undefined ? asset.manualInterestRate : (pData?.ytdChangePercent !== undefined ? (pData.ytdChangePercent / 100) : undefined),
 			mtdChangePercent: pData?.mtdChangePercent !== undefined ? (pData.mtdChangePercent / 100) : undefined,
 			oneMonthChangePercent: pData?.oneMonthChangePercent !== undefined ? (pData.oneMonthChangePercent / 100) : undefined,
-			sparkline: pData?.sparkline
+			sparkline: pData?.sparkline,
+			priceMissing
 		};
 	});
 
-	const totalCapital = rawPositions.reduce((sum, pos) => sum + pos.totalValue, 0);
-	const totalInvested = rawPositions.reduce((sum, pos) => sum + pos.totalCost, 0);
+	/**
+	 * ⚠️ **Los agregados se calculan sobre lo que se puede medir, no sobre todo.**
+	 *
+	 * Una posición sin cotización tiene valor 0 y coste real, así que dejarla dentro
+	 * hunde la rentabilidad exactamente en lo que costó. Y no vale meter su coste y no
+	 * su valor: las tres cifras que la cabecera enseña —capital, aportado y la resta de
+	 * los dos— solo son coherentes entre sí si la posición entra en las tres o en
+	 * ninguna. Entra en ninguna, y `unpriced` declara lo que se ha quedado fuera.
+	 *
+	 * La alternativa era valorarla a su coste, y es la que este repo ya rechazó en el
+	 * histórico: rellenar un hueco con una recta **afirma** una variación del 0 % que
+	 * nadie ha medido. Mejorar el número no lo convierte en una observación.
+	 */
+	/*
+	 * ⚠️ De los cuatro agregados que filtran, **dos lo hacen por intención y no por
+	 * efecto**, y conviene decirlo para que nadie los "arregle" buscando un test que los
+	 * mate: `totalCapital` y `totalAnnualCost` dan lo mismo con `rawPositions`, porque
+	 * el `totalValue` de una posición sin precio se fuerza a 0 más arriba. Se filtran
+	 * igual porque lo que declaran es *qué entra en la cifra*, y si algún día una
+	 * posición sin precio dejara de valer 0 —una estimación, un valor liquidativo
+	 * antiguo— el filtro ya estaría puesto. Los que sí cambian el resultado son
+	 * `totalInvested` (ahí vive la pérdida inventada) y `dailyChangeValue` (ahí vive el
+	 * NaN).
+	 */
+	const medibles = rawPositions.filter((pos) => !pos.priceMissing);
+	const sinPrecio = rawPositions.filter((pos) => pos.priceMissing);
+
+	const totalCapital = medibles.reduce((sum, pos) => sum + pos.totalValue, 0);
+	const totalInvested = medibles.reduce((sum, pos) => sum + pos.totalCost, 0);
 	const totalProfit = totalCapital - totalInvested;
 	const totalProfitPercent = totalInvested > 0 ? totalProfit / totalInvested : 0;
 
+	const unpriced =
+		sinPrecio.length > 0
+			? {
+					count: sinPrecio.length,
+					cost: sinPrecio.reduce((sum, pos) => sum + pos.totalCost, 0)
+				}
+			: undefined;
+
 	// Calcular costes anuales
-	const totalAnnualCost = rawPositions.reduce((sum, pos) => {
+	const totalAnnualCost = medibles.reduce((sum, pos) => {
 		return sum + (pos.totalValue * pos.asset.ter);
 	}, 0);
 
@@ -112,7 +193,7 @@ export function calculatePortfolioState(
 	});
 
 	// Calcular cambios diarios agregados
-	const dailyChangeValue = rawPositions.reduce((sum, pos) => sum + pos.dailyChangeValue, 0);
+	const dailyChangeValue = medibles.reduce((sum, pos) => sum + pos.dailyChangeValue, 0);
 
 	const dailyChangePercent = totalCapital > 0 ? (dailyChangeValue / totalCapital) : 0;
 
@@ -152,7 +233,8 @@ export function calculatePortfolioState(
 		weightedAverageTer,
 		dailyChangeValue,
 		dailyChangePercent,
-		sparkline
+		sparkline,
+		unpriced
 	};
 }
 

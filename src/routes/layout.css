@@ -851,7 +851,8 @@
 	.bloque-pct,
 	.bloque-aportado-valor,
 	.mover-valor,
-	.mover-pct {
+	.mover-pct,
+	.aviso-coste {
 		font-variant-numeric: tabular-nums;
 	}
 
