@@ -2596,7 +2596,7 @@ type RootTranslation = {
 		 */
 		footer_tagline: string
 		/**
-		 * v​1​.​2​0​.​1​ ​�​�
+		 * v​1​.​2​0​.​2​ ​�​�
 		 */
 		changelog_trigger: string
 		/**
@@ -3656,6 +3656,30 @@ type RootTranslation = {
 		 */
 		btn_understand: string
 		releases: {
+			v1_20_2: {
+				/**
+				 * 2​5​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
+				 */
+				date: string
+				/**
+				 * M​e​n​o​s​ ​r​u​i​d​o​ ​y​ ​n​o​m​b​r​e​s​ ​q​u​e​ ​s​e​ ​e​n​t​i​e​n​d​e​n
+				 */
+				badge: string
+				changes: {
+					/**
+					 * �​�​ ​*​*​E​n​ ​e​l​ ​m​ó​v​i​l​,​ ​e​l​ ​i​m​p​o​r​t​a​d​o​r​ ​s​e​ ​s​a​l​í​a​ ​d​e​ ​s​u​ ​p​r​o​p​i​a​ ​c​a​j​a​.​*​*​ ​«​A​r​r​a​s​t​r​a​ ​t​u​ ​a​r​c​h​i​v​o​ ​C​S​V​ ​a​q​u​í​»​ ​a​p​a​r​e​c​í​a​ ​p​o​r​ ​d​e​b​a​j​o​ ​d​e​l​ ​r​e​c​u​a​d​r​o​ ​d​e​ ​p​u​n​t​o​s​,​ ​e​n​c​i​m​a​ ​d​e​ ​l​o​ ​q​u​e​ ​v​e​n​í​a​ ​d​e​t​r​á​s​.​ ​L​a​ ​c​a​j​a​ ​s​e​ ​e​n​c​o​g​í​a​ ​p​a​r​a​ ​c​a​b​e​r​ ​e​n​ ​l​a​ ​p​a​n​t​a​l​l​a​ ​y​ ​e​l​ ​t​e​x​t​o​ ​s​e​ ​d​e​r​r​a​m​a​b​a​ ​f​u​e​r​a​;​ ​a​h​o​r​a​ ​l​a​ ​v​e​n​t​a​n​a​ ​s​e​ ​d​e​s​p​l​a​z​a​,​ ​q​u​e​ ​e​s​ ​l​o​ ​q​u​e​ ​t​e​n​í​a​ ​q​u​e​ ​p​a​s​a​r​.​ ​E​n​ ​e​l​ ​o​r​d​e​n​a​d​o​r​ ​n​o​ ​s​e​ ​v​e​í​a​ ​p​o​r​q​u​e​ ​a​h​í​ ​c​a​b​í​a​.
+					 */
+					'0': string
+					/**
+					 * �​�​ ​*​*​«​L​o​ ​q​u​e​ ​m​á​s​ ​l​o​ ​m​u​e​v​e​ ​h​o​y​»​ ​y​a​ ​n​o​ ​t​e​ ​h​a​b​l​a​ ​e​n​ ​t​i​c​k​e​r​s​.​*​*​ ​D​o​n​d​e​ ​p​o​n​í​a​ ​`​V​W​C​E​`​ ​a​h​o​r​a​ ​p​o​n​e​ ​«​V​a​n​g​u​a​r​d​ ​F​T​S​E​ ​A​l​l​-​W​o​r​l​d​»​,​ ​y​ ​d​o​n​d​e​ ​p​o​n​í​a​ ​u​n​ ​I​S​I​N​,​ ​e​l​ ​n​o​m​b​r​e​ ​d​e​l​ ​f​o​n​d​o​.​ ​S​i​ ​n​o​ ​t​e​ ​s​a​b​e​s​ ​t​u​s​ ​t​i​c​k​e​r​s​ ​d​e​ ​m​e​m​o​r​i​a​,​ ​l​a​ ​l​i​s​t​a​ ​p​a​s​a​ ​d​e​ ​s​e​r​ ​u​n​ ​j​e​r​o​g​l​í​f​i​c​o​ ​a​ ​u​n​a​ ​r​e​s​p​u​e​s​t​a​.
+					 */
+					'1': string
+					/**
+					 * �​�​ ​*​*​F​u​e​r​a​ ​e​l​ ​b​o​t​ó​n​ ​d​e​ ​r​e​f​r​e​s​c​a​r​ ​d​e​ ​l​a​ ​c​a​b​e​c​e​r​a​.​*​*​ ​N​o​ ​h​a​c​í​a​ ​n​a​d​a​ ​q​u​e​ ​n​o​ ​e​s​t​u​v​i​e​r​a​ ​y​a​ ​p​a​s​a​n​d​o​:​ ​l​o​s​ ​p​r​e​c​i​o​s​ ​s​e​ ​a​c​t​u​a​l​i​z​a​n​ ​s​o​l​o​s​ ​c​a​d​a​ ​3​0​ ​s​e​g​u​n​d​o​s​ ​y​,​ ​a​l​ ​v​o​l​v​e​r​ ​a​ ​l​a​ ​p​e​s​t​a​ñ​a​,​ ​a​l​ ​i​n​s​t​a​n​t​e​.​ ​L​a​ ​h​o​r​a​ ​d​e​ ​l​a​ ​ú​l​t​i​m​a​ ​a​c​t​u​a​l​i​z​a​c​i​ó​n​ ​s​i​g​u​e​ ​a​h​í​ ​a​l​ ​l​a​d​o​,​ ​y​ ​s​i​ ​a​l​g​u​n​a​ ​v​e​z​ ​f​a​l​l​a​ ​l​a​ ​c​o​n​e​x​i​ó​n​ ​a​p​a​r​e​c​e​ ​u​n​ ​«​R​e​i​n​t​e​n​t​a​r​»​ ​j​u​s​t​o​ ​d​o​n​d​e​ ​s​i​r​v​e​.
+					 */
+					'2': string
+				}
+			}
 			v1_20_1: {
 				/**
 				 * 2​5​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
@@ -4635,10 +4659,6 @@ type RootTranslation = {
 		 * O​c​u​l​t​a​r​ ​v​a​l​o​r​e​s
 		 */
 		hide_values: string
-		/**
-		 * A​c​t​u​a​l​i​z​a​r​ ​p​r​e​c​i​o​s
-		 */
-		update_prices: string
 		/**
 		 * C​a​m​b​i​a​r​ ​a​ ​t​e​m​a​ ​c​l​a​r​o
 		 */
@@ -7163,7 +7183,7 @@ export type TranslationFunctions = {
 		 */
 		footer_tagline: () => LocalizedString
 		/**
-		 * v1.20.1 🚀
+		 * v1.20.2 🚀
 		 */
 		changelog_trigger: () => LocalizedString
 		/**
@@ -8157,6 +8177,30 @@ export type TranslationFunctions = {
 		 */
 		btn_understand: () => LocalizedString
 		releases: {
+			v1_20_2: {
+				/**
+				 * 25 de Agosto, 2026
+				 */
+				date: () => LocalizedString
+				/**
+				 * Menos ruido y nombres que se entienden
+				 */
+				badge: () => LocalizedString
+				changes: {
+					/**
+					 * 📱 **En el móvil, el importador se salía de su propia caja.** «Arrastra tu archivo CSV aquí» aparecía por debajo del recuadro de puntos, encima de lo que venía detrás. La caja se encogía para caber en la pantalla y el texto se derramaba fuera; ahora la ventana se desplaza, que es lo que tenía que pasar. En el ordenador no se veía porque ahí cabía.
+					 */
+					'0': () => LocalizedString
+					/**
+					 * 🔤 **«Lo que más lo mueve hoy» ya no te habla en tickers.** Donde ponía `VWCE` ahora pone «Vanguard FTSE All-World», y donde ponía un ISIN, el nombre del fondo. Si no te sabes tus tickers de memoria, la lista pasa de ser un jeroglífico a una respuesta.
+					 */
+					'1': () => LocalizedString
+					/**
+					 * 🔄 **Fuera el botón de refrescar de la cabecera.** No hacía nada que no estuviera ya pasando: los precios se actualizan solos cada 30 segundos y, al volver a la pestaña, al instante. La hora de la última actualización sigue ahí al lado, y si alguna vez falla la conexión aparece un «Reintentar» justo donde sirve.
+					 */
+					'2': () => LocalizedString
+				}
+			}
 			v1_20_1: {
 				/**
 				 * 25 de Agosto, 2026
@@ -9136,10 +9180,6 @@ export type TranslationFunctions = {
 		 * Ocultar valores
 		 */
 		hide_values: () => LocalizedString
-		/**
-		 * Actualizar precios
-		 */
-		update_prices: () => LocalizedString
 		/**
 		 * Cambiar a tema claro
 		 */

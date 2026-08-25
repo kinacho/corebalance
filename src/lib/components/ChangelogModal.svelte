@@ -26,6 +26,7 @@
 
 	// Mapeo dinámico desde el diccionario de traducciones
 	const releaseVersions = [
+		'v1_20_2',
 		'v1_20_1',
 		'v1_20_0',
 		'v1_19_1',
@@ -130,6 +131,13 @@
 		 * Elegir un tono a ojo aquí es exactamente el error que estos comentarios
 		 * documentan dos veces.
 		 */
+		/*
+		 * Azul reusado tal cual del `v1_17_3` de abajo: ya está medido en los dos temas
+		 * más arriba en este mismo fichero —**3,35 en oscuro y 4,33 en claro**, o sea
+		 * peor caso 3,35, por encima del 3,23 del teal que hace de vara— y no se parece
+		 * al rosa de la 1.20.1, que es justo su vecina de abajo.
+		 */
+		v1_20_2: '#2563eb',
 		v1_20_1: '#e11d48',
 		v1_20_0: '#8b5cf6',
 		v1_19_1: '#0d9488',

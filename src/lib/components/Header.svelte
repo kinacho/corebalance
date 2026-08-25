@@ -30,10 +30,6 @@
 	let authNotification = $state<{ type: 'success' | 'info', message: string } | null>(null);
 	let imgError = $state(false);
 
-	function onRefresh() {
-		portfolio.fetchPrices();
-	}
-
 	function toggleUserMenu(event: MouseEvent) {
 		event.stopPropagation();
 		showUserMenu = !showUserMenu;
@@ -179,29 +175,31 @@
 
 			<ThemeToggle clase="action-btn" />
 
-			<button
-				class="action-btn refresh-btn"
-				class:loading={loading}
-				onclick={onRefresh}
-				disabled={loading}
-				aria-label={$LL.header.update_prices()}
-			>
-				<svg
-					class="refresh-icon"
-					class:spinning={loading}
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-				>
-					<path d="M21 2v6h-6" />
-					<path d="M3 12a9 9 0 0 1 15-6.7L21 8" />
-					<path d="M3 22v-6h6" />
-					<path d="M21 12a9 9 0 0 1-15 6.7L3 16" />
-				</svg>
-			</button>
+			<!--
+				⚠️ **Aquí había un botón de refrescar y se quitó a propósito; no lo
+				devuelvas sin releer esto.**
+
+				No hacía nada que no estuviera pasando ya: los precios se sondean solos
+				cada 30 s, y al volver a la pestaña se piden **de inmediato**
+				(`visibilitychange` en el store). Encima vienen de una caché en Redis,
+				así que pulsarlo no traía nada más fresco.
+
+				El único momento en que un refresco manual cambia algo es tras varios
+				errores seguidos, porque ahí el sondeo se espacia hasta cinco minutos
+				— y ese caso ya tiene su propio control, el «Reintentar» del banner de
+				error del dashboard, que además aparece justo cuando sirve.
+
+				Y la señal de «esto está vivo» tampoco se pierde: dos elementos más
+				arriba de este mismo fichero están la hora de actualización con su punto
+				latiendo, el texto de «actualizando» y la barra de carga.
+
+				El argumento de fondo es del producto y ya está escrito en
+				`.claude/rules/graficos-y-mapas.md`: el mapa de desviación colorea por
+				distancia al objetivo y no por el cambio del día porque «el color diario
+				enseña al usuario a mirar cada día y reaccionar, que es el hábito que la
+				app existe para evitar». Un botón de refrescar es el gesto de ese hábito,
+				puesto en la cabecera.
+			-->
 		{/if}
 
 		<div id="tour-sync-auth" class="user-zone">
@@ -554,12 +552,7 @@
 		height: 18px;
 	}
 
-	.refresh-icon.spinning {
-		animation: spin 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-		color: var(--accent-blue-ink);
-		filter: drop-shadow(0 0 5px rgba(59, 130, 246, 0.5));
-	}
-
+	/* `@keyframes spin` se queda: lo usa el indicador de carga del avatar, abajo. */
 	@keyframes spin {
 		from { transform: rotate(0deg); }
 		to { transform: rotate(360deg); }

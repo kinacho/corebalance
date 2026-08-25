@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { assetLabelCandidates, shortestAssetLabel, tickerLabel } from './asset-label';
+import {
+	assetLabelCandidates,
+	descriptiveAssetLabel,
+	shortestAssetLabel,
+	tickerLabel
+} from './asset-label';
 
 const activo = (name: string, ticker = 'X') => ({ name, ticker });
 
@@ -139,5 +144,60 @@ describe('tickerLabel', () => {
 		// Control negativo del regex: doce caracteres exactos y acabado en dígito.
 		expect(tickerLabel({ ticker: 'BRK.B', name: 'Berkshire Hathaway Inc' })).toBe('BRK.B');
 		expect(tickerLabel({ ticker: 'CASH-EUR', name: 'Cuenta Remunerada' })).toBe('CASH-EUR');
+	});
+});
+
+/**
+ * El rótulo de la lista «Lo que más lo mueve hoy», que responde a qué está
+ * moviendo tu dinero. Allí un ticker obliga a traducir antes de entender la
+ * respuesta, así que se sirve el nombre sin fontanería.
+ */
+describe('descriptiveAssetLabel', () => {
+	it('quita la fontanería y conserva la gestora', () => {
+		expect(descriptiveAssetLabel(activo('Vanguard FTSE All-World UCITS ETF', 'VWCE'))).toBe(
+			'Vanguard FTSE All-World'
+		);
+		expect(descriptiveAssetLabel(activo('Fidelity MSCI World Index Fund', 'IE00BYX5NX33'))).toBe(
+			'Fidelity MSCI World'
+		);
+		expect(descriptiveAssetLabel(activo('Apple Inc', 'AAPL'))).toBe('Apple');
+	});
+
+	/**
+	 * ⚠️ El control negativo del atajo evidente. `assetLabelCandidates()[1]` parecía
+	 * valer y no vale: la lista se deduplica, así que con un nombre **sin**
+	 * fontanería el segundo elemento pasa a ser el nombre sin gestora. Aquí eso
+	 * serviría «Core MSCI World», y la gestora es media identidad de un fondo.
+	 */
+	it('conserva la gestora incluso cuando el nombre no trae fontanería que quitar', () => {
+		const asset = activo('iShares Core MSCI World', 'IWDA.AS');
+		expect(assetLabelCandidates(asset)[1]).toBe('Core MSCI World');
+		expect(descriptiveAssetLabel(asset)).toBe('iShares Core MSCI World');
+	});
+
+	it('no colapsa dos fondos del mismo índice en el mismo texto', () => {
+		// La trampa que este módulo existe para evitar: truncar el nombre entero deja
+		// «iShares Core MS…» en los dos.
+		const world = descriptiveAssetLabel(activo('iShares Core MSCI World UCITS ETF', 'IWDA.AS'));
+		const emergentes = descriptiveAssetLabel(activo('iShares Core MSCI EM IMI UCITS ETF', 'EMIM.AS'));
+		expect(world).not.toBe(emergentes);
+	});
+
+	it('prefiere el nombre al ticker aunque el ticker sea perfectamente legible', () => {
+		// Es justo la diferencia con `tickerLabel`, que aquí devolvería «VWCE».
+		expect(tickerLabel(activo('Vanguard FTSE All-World UCITS ETF', 'VWCE'))).toBe('VWCE');
+		expect(descriptiveAssetLabel(activo('Vanguard FTSE All-World UCITS ETF', 'VWCE'))).not.toBe(
+			'VWCE'
+		);
+	});
+
+	it('cae al ticker cuando no hay nombre', () => {
+		expect(descriptiveAssetLabel({ ticker: 'CASH-EUR' })).toBe('CASH-EUR');
+		expect(descriptiveAssetLabel({ ticker: 'CASH-EUR', name: '   ' })).toBe('CASH-EUR');
+	});
+
+	it('devuelve el nombre entero si quitar la fontanería lo dejaría vacío', () => {
+		// «Fondo» entero es fontanería; mejor un nombre pobre que ninguno.
+		expect(descriptiveAssetLabel(activo('Fondo', 'X'))).toBe('Fondo');
 	});
 });

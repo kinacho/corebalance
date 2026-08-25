@@ -3,7 +3,7 @@
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { LL } from '$lib/i18n/i18n-svelte';
 	import Sparkline from './Sparkline.svelte';
-	import { tickerLabel } from '$lib/asset-label';
+	import { descriptiveAssetLabel } from '$lib/asset-label';
 	import type { PortfolioPosition, PortfolioState } from '$lib/types';
 
 	/**
@@ -411,12 +411,17 @@
 									<div class="mover">
 										<span class="mover-dot" style="--accent: {mover.asset.color}"></span>
 										<!--
-											`tickerLabel()` y no el ticker crudo ni el nombre truncado: para un
-											fondo el ticker **es** su ISIN o su código `0P…`, y truncar el nombre
-											colapsa «iShares Core MSCI World» y «iShares Core MSCI EM IMI» al
-											mismo texto. Esa función ya resuelve las dos cosas.
+											⚠️ `descriptiveAssetLabel()` y **no** `tickerLabel()`, que es lo que
+											había. Aquel prefiere el ticker y solo cae al nombre cuando el ticker
+											no dice nada —razonable en una celda estrecha—, pero esta lista
+											contesta a «qué está moviendo tu dinero hoy» y ahí `VWCE` obliga a
+											traducir antes de entender la respuesta. El nombre sin la fontanería
+											(«Vanguard FTSE All-World UCITS ETF» → «Vanguard FTSE All-World»)
+											es descriptivo y además más corto que el nombre entero, así que
+											trunca menos. La gestora se conserva siempre: es la mitad de lo que
+											distingue dos fondos del mismo índice.
 										-->
-										<span class="mover-nombre">{tickerLabel(mover.asset)}</span>
+										<span class="mover-nombre">{descriptiveAssetLabel(mover.asset)}</span>
 										<span
 											class="mover-valor privacy-blur"
 											class:positive={mover.dailyChangeValue > 0}
