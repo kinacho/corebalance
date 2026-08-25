@@ -1,7 +1,7 @@
 import { get } from 'svelte/store';
 import { LL } from '$lib/i18n/i18n-svelte';
 import { DEFAULT_CORE_ASSETS, DEFAULT_SATELLITE_ASSETS, DEFAULT_STOCK_ASSETS, STORAGE_KEY_HOLDINGS, STORAGE_KEY_CONTRIBUTION, STORAGE_KEY_ASSETS, STORAGE_KEY_PRICES, STORAGE_KEY_EDITS } from '$lib/constants';
-import type { Asset, AssetCategory, HoldingData, HoldingsMap, PortfolioPosition, PortfolioState, PriceData, RebalanceResult, Transaction } from '$lib/types';
+import type { Asset, AssetCategory, FundamentalData, HoldingData, HoldingsMap, PortfolioPosition, PortfolioState, PriceData, RebalanceResult, Transaction } from '$lib/types';
 import { calculatePortfolioState, calculateRebalance } from '$lib/rebalance';
 import { calculateLedgerHoldings, type LedgerHoldings } from '$lib/ledger';
 import { assignAssetColors, nextAssetColor } from '$lib/asset-colors';
@@ -117,6 +117,16 @@ export class PortfolioStore {
 	holdings = $state<HoldingsMap>({});
 	transactions = $state<Transaction[]>([]);
 	prices = $state<Record<string, PriceData>>({});
+	/**
+	 * Dividendos y próxima fecha de resultados, **bajo demanda**.
+	 *
+	 * ⚠️ Deliberadamente fuera de `prices`: eso se pide cada 30 s y esto cambia una
+	 * vez al trimestre. Se rellena la primera vez que alguien abre la ficha de un
+	 * activo, con una sola petición para toda la cartera, y no se vuelve a pedir
+	 * mientras el conjunto de tickers no cambie. Quien no abra ninguna ficha no
+	 * gasta ni una petición. Ver `asegurarFundamentales()`.
+	 */
+	fundamentals = $state<Record<string, FundamentalData>>({});
 	contribution = $state(0);
 	loading = $state(true);
 	error = $state<string | null>(null);
@@ -347,6 +357,17 @@ export class PortfolioStore {
 		...this.satelliteState.positions,
 		...this.stockState.positions
 	]);
+
+	/**
+	 * La posición de un activo, mire donde mire quien pregunta.
+	 *
+	 * Existe para no abrir `allPositions` entero: quien necesita una posición suelta
+	 * —la ficha del activo— no tiene por qué recibir las tres carteras concatenadas
+	 * y elegir. La lista sigue siendo privada.
+	 */
+	posicionDe(ticker: string): PortfolioPosition | undefined {
+		return this.allPositions.find((p) => p.asset.ticker === ticker);
+	}
 
 	/**
 	 * Valor actual en divisa base de una participación de cada activo.
@@ -589,6 +610,10 @@ export class PortfolioStore {
 	private isFetching = false;
 	/** Conjunto de tickers para el que ya se pidió el histórico largo. Ver `fetchPrices`. */
 	private firmaHistorialPedido = '';
+
+	/** Conjunto de tickers para el que ya se pidieron los fundamentales. Ver `asegurarFundamentales`. */
+	private firmaFundamentalesPedida = '';
+	private fundamentalesEnCurso = false;
 
 	// --- Cola de guardado en nube (evita race conditions) ---
 	private _cloudSavePending = false;
@@ -1126,12 +1151,49 @@ export class PortfolioStore {
 			if (core.updated || satellite.updated || stock.updated) this.saveToStorage();
 			if (typeof localStorage !== 'undefined') localStorage.setItem(STORAGE_KEY_PRICES, JSON.stringify(this.prices));
 			if (this.user) await this.updateHistoryPoints();
-		} catch (e) { 
-			console.error('Fetch prices error:', e); 
-			this.error = e instanceof Error ? e.message : 'Error de conexión'; 
+		} catch (e) {
+			console.error('Fetch prices error:', e);
+			this.error = e instanceof Error ? e.message : 'Error de conexión';
 			// Incrementar errores para el backoff
 			this.consecutiveErrors++;
 		} finally { this.isFetching = false; }
+	}
+
+	/**
+	 * Pide los fundamentales **una vez por conjunto de tickers**, y solo cuando
+	 * alguien los va a mirar.
+	 *
+	 * ⚠️ **Esto no se llama nunca desde el sondeo**, y ahí está todo el diseño. Son
+	 * datos trimestrales: colgarlos de la petición de precios —que sale cada 30 s—
+	 * es el error que `priceHelpers.ts` documenta haber corregido con el sparkline.
+	 * La llaman las fichas al abrirse, así que un usuario que no abra ninguna no
+	 * gasta ni una petición, y el que abra cinco gasta una sola: `quote()` es en
+	 * bloque y la respuesta trae toda la cartera.
+	 *
+	 * La firma es el conjunto de tickers, igual que `firmaHistorialPedido`: mientras
+	 * no cambie la cartera no se vuelve a preguntar, y el servidor además cachea 24 h.
+	 */
+	async asegurarFundamentales() {
+		if (typeof window === 'undefined') return;
+		const tickers = this.allUserTickers;
+		if (tickers.length === 0) return;
+
+		const firma = tickers.join(',');
+		if (firma === this.firmaFundamentalesPedida || this.fundamentalesEnCurso) return;
+
+		this.fundamentalesEnCurso = true;
+		try {
+			const res = await fetch(`/api/fundamentals?tickers=${encodeURIComponent(firma)}`);
+			if (!res.ok) return;
+			const data = await res.json();
+			this.fundamentals = { ...this.fundamentals, ...(data.fundamentals ?? {}) };
+			// Solo se marca como pedida si de verdad llegó: si no, se reintenta al abrir otra ficha.
+			this.firmaFundamentalesPedida = firma;
+		} catch (e) {
+			console.error('Fundamentals fetch error:', e);
+		} finally {
+			this.fundamentalesEnCurso = false;
+		}
 	}
 
 

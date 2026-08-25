@@ -72,7 +72,19 @@ const store = {
 	addTransaction: vi.fn(),
 	updateTransaction: vi.fn(),
 	removeTransaction: vi.fn(),
-	toggleLedger: vi.fn()
+	toggleLedger: vi.fn(),
+
+	/*
+	 * Lo que necesita la pestaña de ficha, que se monta al abrir el modal. Se
+	 * declara vacío a propósito: lo que este fichero comprueba es el cableado del
+	 * libro, y la ficha tiene su propia suite.
+	 */
+	perShareBase: {} as Record<string, number>,
+	lookThrough: null,
+	concentracion: null,
+	fundamentals: {} as Record<string, unknown>,
+	posicionDe: () => undefined,
+	asegurarFundamentales: vi.fn()
 };
 
 vi.mock('$lib/stores/portfolio.svelte', () => ({
@@ -81,8 +93,21 @@ vi.mock('$lib/stores/portfolio.svelte', () => ({
 	}
 }));
 
+/**
+ * ⚠️ **El modal abre en la pestaña «Ficha» desde que existe**, así que llegar al
+ * libro es ahora un clic más. Se cambia el ayudante en vez de la aserción porque
+ * lo que este fichero decide sigue siendo lo mismo; lo que cambió es el camino.
+ */
+async function irAlLibro(container: HTMLElement) {
+	const pestanas = [...container.querySelectorAll('.pestana')] as HTMLButtonElement[];
+	const libro = pestanas.find((p) => p.textContent?.trim() === 'Libro');
+	if (!libro) throw new Error('no hay pestaña de libro');
+	await fireEvent.click(libro);
+}
+
 /** Abre el formulario de alta y devuelve el campo de participaciones ya escrito. */
 async function abrirFormularioConDatos(container: HTMLElement, participaciones: string) {
+	await irAlLibro(container);
 	const botonAnadir = container.querySelector('.add-tx-btn') as HTMLButtonElement;
 	await fireEvent.click(botonAnadir);
 
@@ -129,7 +154,19 @@ describe('LedgerModal.svelte', () => {
 		expect(campo.value).toBe('123');
 	});
 
-	it('sí reinicia el formulario cuando cambia el activo de verdad', async () => {
+	/**
+	 * ⚠️ Este caso pedía antes «el formulario se cierra» y ahora pide **además que
+	 * la pestaña vuelva a la ficha**, que es lo que de verdad hay que fijar desde
+	 * que el modal tiene dos.
+	 *
+	 * El motivo es el mismo que el del formulario y vale para cualquier estado que
+	 * se añada aquí en el futuro: desde `ManageAssets` este modal **cambia de
+	 * activo sin remontarse**, así que todo lo que no se reinicie en el efecto
+	 * guardado por ticker se queda con lo del activo anterior. Con pestañas eso
+	 * sería peor que antes: te enseñaría el libro de un activo bajo el nombre de
+	 * otro.
+	 */
+	it('al cambiar de activo vuelve a la ficha y no arrastra el formulario', async () => {
 		const LedgerModal = (await import('./LedgerModal.svelte')).default;
 		const { container, rerender } = render(LedgerModal, {
 			props: { asset: ACTIVO, onClose: () => {} }
@@ -141,9 +178,12 @@ describe('LedgerModal.svelte', () => {
 		// Pasa desde `ManageAssets`, que reusa el mismo modal para otro activo.
 		await rerender({ asset: OTRO_ACTIVO, onClose: () => {} });
 
-		expect(formularioAbierto(container)).toBe(false);
+		const activa = container.querySelector('.pestana.activa');
+		expect(activa?.textContent?.trim()).toBe('Ficha');
+		// Y el libro ni siquiera está montado, así que no hay formulario que arrastrar.
+		expect(container.querySelector('.add-tx-btn')).toBeNull();
 
-		// Y al reabrirlo no arrastra lo que se había escrito para el activo anterior.
+		// Al volver al libro, lo escrito para el activo anterior no está.
 		const campo = await abrirFormularioConDatos(container, '');
 		expect(Number(campo.value)).toBe(0);
 	});

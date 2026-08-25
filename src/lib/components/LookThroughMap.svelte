@@ -3,6 +3,7 @@
 	import { squarify, labelFits, truncateToWidth } from '$lib/treemap';
 	import { formatEUR, formatPercent } from '$lib/utils';
 	import { LL } from '$lib/i18n/i18n-svelte';
+	import { etiquetasDeRegion, etiquetasDeSector } from '$lib/etiquetas-indice';
 	import { ASSET_COLORS, CHART_NEUTRAL, MAX_CHART_SLICES } from '$lib/constants';
 	import MapFrame from './MapFrame.svelte';
 
@@ -166,34 +167,10 @@
 		return table[key] ?? key;
 	}
 
-	// Se construyen como objetos en lugar de un `switch` para que un día que
-	// aparezca una clave nueva en el dataset, el test de integridad la cace antes
-	// de que salga en pantalla como texto crudo.
-	const regionLabels = $derived<Record<string, string>>({
-		us: $LL.lookthrough.region_us(),
-		canada: $LL.lookthrough.region_canada(),
-		eurozone: $LL.lookthrough.region_eurozone(),
-		uk: $LL.lookthrough.region_uk(),
-		europe_other: $LL.lookthrough.region_europe_other(),
-		japan: $LL.lookthrough.region_japan(),
-		pacific_ex_japan: $LL.lookthrough.region_pacific_ex_japan(),
-		emerging_asia: $LL.lookthrough.region_emerging_asia(),
-		emerging_other: $LL.lookthrough.region_emerging_other()
-	});
-
-	const sectorLabels = $derived<Record<string, string>>({
-		tech: $LL.lookthrough.sector_tech(),
-		financials: $LL.lookthrough.sector_financials(),
-		healthcare: $LL.lookthrough.sector_healthcare(),
-		consumer_disc: $LL.lookthrough.sector_consumer_disc(),
-		industrials: $LL.lookthrough.sector_industrials(),
-		communication: $LL.lookthrough.sector_communication(),
-		consumer_staples: $LL.lookthrough.sector_consumer_staples(),
-		energy: $LL.lookthrough.sector_energy(),
-		materials: $LL.lookthrough.sector_materials(),
-		utilities: $LL.lookthrough.sector_utilities(),
-		real_estate: $LL.lookthrough.sector_real_estate()
-	});
+	// Los dos mapas viven en `$lib/etiquetas-indice` desde que la ficha del activo
+	// los necesita también: escritos dos veces, una copia se arregla y la otra no.
+	const regionLabels = $derived(etiquetasDeRegion($LL));
+	const sectorLabels = $derived(etiquetasDeSector($LL));
 </script>
 
 <MapFrame

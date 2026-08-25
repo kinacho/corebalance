@@ -32,12 +32,28 @@ async function desplegarSecciones(page: import('@playwright/test').Page) {
 	await expect(page.locator('.asset-card').first()).toBeVisible();
 }
 
-/** Abre el libro del primer fondo desde su tarjeta y despliega el formulario. */
-async function abrirFormularioDelLibro(page: import('@playwright/test').Page) {
+/**
+ * ⚠️ El modal abre en la pestaña **Ficha**, así que llegar al libro es un clic
+ * más. Se cambia el ayudante y no las aserciones: lo que cada caso decide sigue
+ * siendo lo mismo, lo que cambió es el camino.
+ */
+async function irAlLibro(panel: import('@playwright/test').Locator) {
+	await panel.getByRole('tab', { name: 'Libro' }).click();
+}
+
+/** Abre el modal del primer fondo desde su tarjeta. */
+async function abrirModal(page: import('@playwright/test').Page) {
 	await desplegarSecciones(page);
 	await page.locator('.asset-card .asset-icon-wrapper').first().click();
 	const panel = page.locator('.ledger-panel');
 	await expect(panel).toBeVisible();
+	return panel;
+}
+
+/** Abre el libro del primer fondo desde su tarjeta y despliega el formulario. */
+async function abrirFormularioDelLibro(page: import('@playwright/test').Page) {
+	const panel = await abrirModal(page);
+	await irAlLibro(panel);
 
 	await panel.locator('.add-tx-btn').click();
 	await expect(panel.locator('.add-tx-form')).toBeVisible();
@@ -139,8 +155,98 @@ test.describe('Libro de operaciones', () => {
 
 		const panel = page.locator('.ledger-panel');
 		await expect(panel).toBeVisible();
-		// Y desde ahí sí se llega al interruptor que activa el modo libro.
+		// Y desde ahí se llega al interruptor que activa el modo libro, que vive en
+		// la pestaña del libro.
+		await irAlLibro(panel);
 		await expect(panel.locator('.toggle-btn')).toBeVisible();
+	});
+
+	/**
+	 * La ficha es lo primero que se ve al abrir un activo, y su contenido sale
+	 * entero de lo que la app ya calculaba y no enseñaba en ninguna parte.
+	 */
+	test('la ficha abre por defecto y cuenta qué es el activo', async ({ page }) => {
+		await sembrarCartera(page, CON_LIBRO);
+		await abrirDashboard(page);
+
+		const panel = await abrirModal(page);
+
+		await expect(panel.getByRole('tab', { name: 'Ficha' })).toHaveAttribute(
+			'aria-selected',
+			'true'
+		);
+		// Qué índice replica, que hasta ahora solo aparecía dentro de un <select>.
+		await expect(panel).toContainText('World');
+		// Y si se puede traspasar sin tributar: la función existía y no la llamaba nadie.
+		await expect(panel.locator('.traspaso')).toBeVisible();
+	});
+
+	/**
+	 * ⚠️ Desde el panel de gestionar, este modal **cambia de activo sin
+	 * remontarse**. Con pestañas eso es peor que antes: sin reiniciar, te enseñaría
+	 * el libro de un activo bajo el nombre de otro.
+	 */
+	test('cambiar de activo desde gestionar devuelve la pestaña a la ficha', async ({ page }) => {
+		await sembrarCartera(page, CON_LIBRO);
+		await abrirDashboard(page);
+
+		await page.locator('#tour-manage-btn').dispatchEvent('click');
+		await expect(page.locator('.manage-panel')).toBeVisible();
+
+		const libros = page.locator('.manage-panel .action-ledger');
+		await libros.first().click();
+		const panel = page.locator('.ledger-panel');
+		await expect(panel).toBeVisible();
+
+		await irAlLibro(panel);
+		await expect(panel.getByRole('tab', { name: 'Libro' })).toHaveAttribute(
+			'aria-selected',
+			'true'
+		);
+
+		// Cerrar y abrir el de otro activo, que es lo que reusa el mismo modal.
+		await page.keyboard.press('Escape');
+		await expect(panel).toHaveCount(0);
+		await libros.nth(1).click();
+		await expect(page.locator('.ledger-panel')).toBeVisible();
+
+		await expect(page.locator('.ledger-panel').getByRole('tab', { name: 'Ficha' })).toHaveAttribute(
+			'aria-selected',
+			'true'
+		);
+	});
+
+	/**
+	 * ⚠️ **Cambiar de vista no puede hacer desaparecer una cifra.** El coste anual
+	 * del activo lo llevaba la tarjeta grande y no la fila compacta, así que pasar a
+	 * compacta —que es justo la vista con la que se comparan posiciones entre sí, o
+	 * sea cuando el coste importa— lo escondía sin que nada lo dijera.
+	 *
+	 * Se compara **la misma cifra en las dos vistas** y no que exista en cada una:
+	 * así el caso también se pone rojo si una de las dos la calcula distinto.
+	 */
+	test('el coste anual del activo está en la tarjeta y en la fila compacta', async ({ page }) => {
+		await sembrarCartera(page, CON_LIBRO);
+		await abrirDashboard(page);
+		await desplegarSecciones(page);
+
+		const enTarjeta = await page
+			.locator('.asset-card', { hasText: 'Vanguard' })
+			.first()
+			.locator('.cost-metric .metric-value')
+			.innerText();
+		expect(enTarjeta).toMatch(/\d/);
+
+		await page.locator('.view-toggle-btn').first().click();
+		await expect(page.locator('.compact-row').first()).toBeVisible();
+
+		const enCompacta = await page
+			.locator('.compact-row', { hasText: 'Vanguard' })
+			.first()
+			.locator('.perf-row.coste .perf-val')
+			.innerText();
+
+		expect(enCompacta.trim()).toBe(enTarjeta.trim());
 	});
 
 	test('Escape cierra el modal del libro', async ({ page }) => {

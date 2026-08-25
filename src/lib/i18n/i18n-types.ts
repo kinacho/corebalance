@@ -1708,6 +1708,212 @@ type RootTranslation = {
 		 */
 		title_fx_rate: string
 	}
+	ficha: {
+		/**
+		 * F​i​c​h​a
+		 */
+		tab_ficha: string
+		/**
+		 * L​i​b​r​o
+		 */
+		tab_libro: string
+		/**
+		 * F​o​n​d​o​ ​d​e​ ​i​n​v​e​r​s​i​ó​n
+		 */
+		tipo_fund: string
+		/**
+		 * E​T​F
+		 */
+		tipo_etf: string
+		/**
+		 * A​c​c​i​ó​n
+		 */
+		tipo_equity: string
+		/**
+		 * E​f​e​c​t​i​v​o
+		 */
+		tipo_cash: string
+		/**
+		 * S​i​n​ ​c​l​a​s​i​f​i​c​a​r
+		 */
+		tipo_other: string
+		/**
+		 * P​u​e​d​e​s​ ​t​r​a​s​p​a​s​a​r​l​o​ ​a​ ​o​t​r​o​ ​f​o​n​d​o​ ​s​i​n​ ​t​r​i​b​u​t​a​r
+		 */
+		traspasable_si: string
+		/**
+		 * C​a​m​b​i​a​r​l​o​ ​p​o​r​ ​o​t​r​a​ ​c​o​s​a​ ​e​s​ ​u​n​a​ ​v​e​n​t​a​,​ ​y​ ​t​r​i​b​u​t​a
+		 */
+		traspasable_no: string
+		/**
+		 * N​o​ ​s​a​b​e​m​o​s​ ​q​u​é​ ​e​s​,​ ​a​s​í​ ​q​u​e​ ​n​o​ ​t​e​ ​d​e​c​i​m​o​s​ ​s​i​ ​s​e​ ​p​u​e​d​e​ ​t​r​a​s​p​a​s​a​r
+		 */
+		traspasable_desconocido: string
+		/**
+		 * Q​u​é​ ​r​e​p​l​i​c​a
+		 */
+		indice_title: string
+		/**
+		 * P​o​s​i​c​i​o​n​e​s​ ​l​e​í​d​a​s​ ​d​e​ ​{​f​u​e​n​t​e​}​ ​e​l​ ​{​f​e​c​h​a​}
+		 * @param {string} fecha
+		 * @param {string} fuente
+		 */
+		indice_fuente: RequiredParams<'fecha' | 'fuente'>
+		/**
+		 * P​e​s​o​s​ ​a​ ​{​f​e​c​h​a​}
+		 * @param {string} fecha
+		 */
+		indice_pesos_fecha: RequiredParams<'fecha'>
+		/**
+		 * E​s​t​o​s​ ​p​e​s​o​s​ ​s​o​n​ ​u​n​a​ ​e​s​t​i​m​a​c​i​ó​n​ ​s​i​n​ ​v​e​r​i​f​i​c​a​r​ ​c​o​n​t​r​a​ ​e​l​ ​f​o​l​l​e​t​o
+		 */
+		indice_estimado: string
+		/**
+		 * P​o​r​ ​r​e​g​i​ó​n
+		 */
+		regiones_title: string
+		/**
+		 * P​o​r​ ​s​e​c​t​o​r
+		 */
+		sectores_title: string
+		/**
+		 * S​u​s​ ​m​a​y​o​r​e​s​ ​p​o​s​i​c​i​o​n​e​s
+		 */
+		mayores_title: string
+		/**
+		 * E​s​ ​e​l​ ​t​o​p​ ​d​i​e​z​ ​d​e​l​ ​í​n​d​i​c​e​,​ ​a​s​í​ ​q​u​e​ ​l​a​ ​c​o​l​a​ ​n​o​ ​s​e​ ​v​e​:​ ​l​o​ ​q​u​e​ ​t​e​n​g​a​s​ ​d​e​ ​c​a​d​a​ ​e​m​p​r​e​s​a​ ​e​s​ ​a​l​ ​m​e​n​o​s​ ​e​s​t​o​.
+		 */
+		mayores_nota: string
+		/**
+		 * N​o​ ​t​e​n​e​m​o​s​ ​i​d​e​n​t​i​f​i​c​a​d​o​ ​q​u​é​ ​í​n​d​i​c​e​ ​r​e​p​l​i​c​a​.​ ​P​u​e​d​e​s​ ​d​e​c​í​r​s​e​l​o​ ​d​e​s​d​e​ ​G​e​s​t​i​o​n​a​r​ ​c​a​r​t​e​r​a​.
+		 */
+		sin_indice: string
+		/**
+		 * L​o​ ​q​u​e​ ​t​e​ ​c​u​e​s​t​a
+		 */
+		coste_title: string
+		/**
+		 * A​l​ ​a​ñ​o​,​ ​s​o​b​r​e​ ​l​o​ ​q​u​e​ ​t​i​e​n​e​s​ ​a​h​o​r​a
+		 */
+		coste_anual: string
+		/**
+		 * S​i​ ​v​e​n​d​i​e​r​a​s​ ​h​o​y
+		 */
+		fiscal_title: string
+		/**
+		 * P​l​u​s​v​a​l​í​a​ ​l​a​t​e​n​t​e
+		 */
+		fiscal_plusvalia: string
+		/**
+		 * P​é​r​d​i​d​a​ ​l​a​t​e​n​t​e
+		 */
+		fiscal_perdida: string
+		/**
+		 * L​o​ ​q​u​e​ ​p​a​g​a​r​í​a​s
+		 */
+		fiscal_factura: string
+		/**
+		 * V​a​l​o​r​ ​d​e​ ​a​d​q​u​i​s​i​c​i​ó​n
+		 */
+		fiscal_coste: string
+		/**
+		 * T​u​ ​p​a​r​t​i​c​i​p​a​c​i​ó​n​ ​m​á​s​ ​a​n​t​i​g​u​a​ ​e​s​ ​d​e​ ​{​f​e​c​h​a​}
+		 * @param {string} fecha
+		 */
+		fiscal_desde: RequiredParams<'fecha'>
+		/**
+		 * E​s​t​i​m​a​c​i​ó​n​ ​c​o​n​ ​F​I​F​O​ ​y​ ​l​a​ ​e​s​c​a​l​a​ ​d​e​l​ ​a​h​o​r​r​o​ ​d​e​ ​{​a​n​i​o​}​.​ ​N​o​ ​e​s​ ​a​s​e​s​o​r​a​m​i​e​n​t​o​ ​f​i​s​c​a​l​.
+		 * @param {number} anio
+		 */
+		fiscal_estimacion: RequiredParams<'anio'>
+		/**
+		 * T​u​ ​l​i​b​r​o​ ​n​o​ ​c​u​b​r​e​ ​t​o​d​a​s​ ​l​a​s​ ​p​a​r​t​i​c​i​p​a​c​i​o​n​e​s​,​ ​a​s​í​ ​q​u​e​ ​e​s​t​o​ ​e​s​ ​u​n​ ​m​í​n​i​m​o​.
+		 */
+		fiscal_parcial: string
+		/**
+		 * P​a​r​a​ ​c​a​l​c​u​l​a​r​ ​e​s​t​o​ ​h​a​c​e​ ​f​a​l​t​a​ ​e​l​ ​l​i​b​r​o​ ​d​e​ ​o​p​e​r​a​c​i​o​n​e​s​ ​d​e​ ​e​s​t​e​ ​a​c​t​i​v​o​,​ ​c​o​n​ ​l​a​s​ ​f​e​c​h​a​s​ ​y​ ​l​o​s​ ​p​r​e​c​i​o​s​ ​d​e​ ​c​a​d​a​ ​c​o​m​p​r​a​.
+		 */
+		fiscal_sin_libro: string
+		/**
+		 * V​e​r​ ​e​l​ ​l​i​b​r​o
+		 */
+		fiscal_sin_libro_cta: string
+		/**
+		 * S​i​ ​v​e​n​d​e​s​ ​c​o​n​ ​p​é​r​d​i​d​a​s
+		 */
+		recompra_title: string
+		/**
+		 * T​i​e​n​e​s​ ​u​n​a​ ​v​e​n​t​a​n​a​ ​d​e​ ​{​m​e​s​e​s​}​ ​m​e​s​e​s​:​ ​s​i​ ​r​e​c​o​m​p​r​a​s​ ​a​l​g​o​ ​h​o​m​o​g​é​n​e​o​ ​d​e​n​t​r​o​ ​d​e​ ​e​l​l​a​,​ ​l​a​ ​p​é​r​d​i​d​a​ ​s​e​ ​d​i​f​i​e​r​e​.
+		 * @param {number} meses
+		 */
+		recompra_ventana: RequiredParams<'meses'>
+		/**
+		 * Y​a​ ​h​a​s​ ​c​o​m​p​r​a​d​o​ ​d​e​n​t​r​o​ ​d​e​ ​l​a​ ​v​e​n​t​a​n​a​,​ ​a​s​í​ ​q​u​e​ ​e​s​a​ ​p​é​r​d​i​d​a​ ​n​o​ ​c​o​m​p​e​n​s​a​r​í​a​ ​e​s​t​e​ ​e​j​e​r​c​i​c​i​o​.​ ​N​o​ ​s​e​ ​p​i​e​r​d​e​:​ ​s​e​ ​d​i​f​i​e​r​e​.
+		 */
+		recompra_bloqueada: string
+		/**
+		 * F​a​l​t​a​n​ ​{​d​i​a​s​}​ ​d​í​a​s​ ​p​a​r​a​ ​p​o​d​e​r​ ​r​e​c​o​m​p​r​a​r​ ​s​i​n​ ​d​i​f​e​r​i​r​l​a​.
+		 * @param {number} dias
+		 */
+		recompra_dias: RequiredParams<'dias'>
+		/**
+		 * C​o​n​ ​q​u​é​ ​s​e​ ​p​i​s​a
+		 */
+		solape_title: string
+		/**
+		 * F​o​n​d​o​s​ ​q​u​e​ ​a​p​u​n​t​a​n​ ​a​ ​l​o​ ​m​i​s​m​o
+		 */
+		solape_fondos: string
+		/**
+		 * E​s​ ​e​l​ ​d​i​n​e​r​o​ ​q​u​e​,​ ​e​s​t​i​m​a​d​o​,​ ​a​p​u​n​t​a​ ​a​ ​l​a​s​ ​m​i​s​m​a​s​ ​e​m​p​r​e​s​a​s​ ​p​o​r​ ​l​o​s​ ​d​o​s​ ​l​a​d​o​s​.
+		 */
+		solape_fondos_nota: string
+		/**
+		 * E​m​p​r​e​s​a​s​ ​q​u​e​ ​t​a​m​b​i​é​n​ ​t​e​ ​l​l​e​g​a​n​ ​p​o​r​ ​o​t​r​o​ ​s​i​t​i​o
+		 */
+		solape_empresas: string
+		/**
+		 * T​a​m​b​i​é​n​ ​p​o​r​ ​{​d​o​n​d​e​}
+		 * @param {string} donde
+		 */
+		solape_tambien: RequiredParams<'donde'>
+		/**
+		 * D​i​v​i​d​e​n​d​o​s​ ​y​ ​r​e​s​u​l​t​a​d​o​s
+		 */
+		datos_title: string
+		/**
+		 * D​i​v​i​d​e​n​d​o​ ​a​n​u​a​l
+		 */
+		dividendo_anual: string
+		/**
+		 * R​e​n​t​a​b​i​l​i​d​a​d​ ​p​o​r​ ​d​i​v​i​d​e​n​d​o
+		 */
+		dividendo_rentabilidad: string
+		/**
+		 * Ú​l​t​i​m​o​ ​p​a​g​o
+		 */
+		dividendo_ultimo: string
+		/**
+		 * P​r​ó​x​i​m​o​s​ ​r​e​s​u​l​t​a​d​o​s
+		 */
+		resultados_proximos: string
+		/**
+		 * F​e​c​h​a​ ​a​p​r​o​x​i​m​a​d​a​:​ ​l​a​ ​f​u​e​n​t​e​ ​a​d​m​i​t​e​ ​u​n​ ​m​a​r​g​e​n​ ​d​e​ ​u​n​ ​p​a​r​ ​d​e​ ​d​í​a​s​.
+		 */
+		resultados_aprox: string
+		/**
+		 * D​i​v​i​d​e​n​d​o​s​ ​y​ ​r​e​s​u​l​t​a​d​o​s​ ​s​e​g​ú​n​ ​Y​a​h​o​o​ ​F​i​n​a​n​c​e​,​ ​q​u​e​ ​e​s​ ​d​e​ ​d​o​n​d​e​ ​l​a​ ​a​p​p​ ​t​o​m​a​ ​l​o​s​ ​p​r​e​c​i​o​s​.​ ​S​i​ ​a​l​g​u​n​a​ ​c​i​f​r​a​ ​n​o​ ​c​u​a​d​r​a​ ​c​o​n​ ​l​a​ ​d​e​ ​t​u​ ​b​r​ó​k​e​r​,​ ​e​s​ ​l​o​ ​q​u​e​ ​p​u​b​l​i​c​a​ ​l​a​ ​f​u​e​n​t​e​.
+		 */
+		datos_fuente: string
+		/**
+		 * Y​a​h​o​o​ ​F​i​n​a​n​c​e​ ​n​o​ ​c​u​b​r​e​ ​e​s​t​e​ ​a​c​t​i​v​o​,​ ​a​s​í​ ​q​u​e​ ​n​o​ ​t​e​n​e​m​o​s​ ​n​i​ ​d​i​v​i​d​e​n​d​o​s​ ​n​i​ ​r​e​s​u​l​t​a​d​o​s​.
+		 */
+		datos_no_disponibles: string
+		/**
+		 * B​u​s​c​a​n​d​o​…
+		 */
+		datos_cargando: string
+	}
 	manage: {
 		/**
 		 * G​e​s​t​i​o​n​a​r​ ​C​a​r​t​e​r​a
@@ -2596,7 +2802,7 @@ type RootTranslation = {
 		 */
 		footer_tagline: string
 		/**
-		 * v​1​.​2​0​.​2​ ​�​�
+		 * v​1​.​2​1​.​0​ ​�​�
 		 */
 		changelog_trigger: string
 		/**
@@ -3656,6 +3862,42 @@ type RootTranslation = {
 		 */
 		btn_understand: string
 		releases: {
+			v1_21_0: {
+				/**
+				 * 2​5​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
+				 */
+				date: string
+				/**
+				 * C​a​d​a​ ​a​c​t​i​v​o​ ​t​i​e​n​e​ ​p​o​r​ ​f​i​n​ ​s​u​ ​f​i​c​h​a
+				 */
+				badge: string
+				changes: {
+					/**
+					 * �​�​ ​*​*​T​o​c​a​ ​e​l​ ​i​c​o​n​o​ ​d​e​ ​c​u​a​l​q​u​i​e​r​ ​a​c​t​i​v​o​ ​y​ ​a​h​o​r​a​ ​t​e​ ​c​u​e​n​t​a​ ​q​u​é​ ​e​s​.​*​*​ ​Q​u​é​ ​í​n​d​i​c​e​ ​r​e​p​l​i​c​a​,​ ​e​n​ ​q​u​é​ ​s​e​ ​r​e​p​a​r​t​e​ ​p​o​r​ ​r​e​g​i​ó​n​ ​y​ ​p​o​r​ ​s​e​c​t​o​r​,​ ​y​ ​c​u​á​l​e​s​ ​s​o​n​ ​s​u​s​ ​d​i​e​z​ ​m​a​y​o​r​e​s​ ​p​o​s​i​c​i​o​n​e​s​.​ ​L​a​ ​a​p​p​ ​y​a​ ​s​a​b​í​a​ ​t​o​d​o​ ​e​s​t​o​ ​p​a​r​a​ ​p​i​n​t​a​r​ ​l​o​s​ ​m​a​p​a​s​;​ ​l​o​ ​q​u​e​ ​n​o​ ​h​a​c​í​a​ ​e​r​a​ ​d​e​c​í​r​t​e​l​o​ ​a​c​t​i​v​o​ ​p​o​r​ ​a​c​t​i​v​o​.
+					 */
+					'0': string
+					/**
+					 * �​�​️​ ​*​*​Y​ ​s​i​ ​p​u​e​d​e​s​ ​t​r​a​s​p​a​s​a​r​l​o​ ​s​i​n​ ​p​a​g​a​r​ ​a​ ​H​a​c​i​e​n​d​a​.​*​*​ ​S​o​l​o​ ​u​n​ ​f​o​n​d​o​ ​s​e​ ​t​r​a​s​p​a​s​a​ ​c​o​n​ ​l​a​ ​p​l​u​s​v​a​l​í​a​ ​d​i​f​e​r​i​d​a​;​ ​u​n​ ​E​T​F​ ​q​u​e​ ​r​e​p​l​i​q​u​e​ ​e​l​ ​m​i​s​m​o​ ​í​n​d​i​c​e​,​ ​n​o​.​ ​A​h​o​r​a​ ​l​o​ ​d​i​c​e​ ​c​a​d​a​ ​a​c​t​i​v​o​ ​e​n​ ​s​u​ ​f​i​c​h​a​,​ ​e​n​ ​u​n​a​ ​l​í​n​e​a​.
+					 */
+					'1': string
+					/**
+					 * �​�​ ​*​*​C​u​á​n​t​o​ ​t​e​ ​c​o​s​t​a​r​í​a​ ​v​e​n​d​e​r​l​o​ ​h​o​y​.​*​*​ ​P​l​u​s​v​a​l​í​a​ ​l​a​t​e​n​t​e​ ​p​o​r​ ​F​I​F​O​,​ ​l​a​ ​f​a​c​t​u​r​a​ ​q​u​e​ ​s​a​l​d​r​í​a​ ​c​o​n​ ​l​a​ ​e​s​c​a​l​a​ ​d​e​l​ ​a​h​o​r​r​o​,​ ​y​ ​—​s​i​ ​v​a​s​ ​e​n​ ​p​é​r​d​i​d​a​s​—​ ​c​u​á​n​t​o​s​ ​d​í​a​s​ ​f​a​l​t​a​n​ ​p​a​r​a​ ​p​o​d​e​r​ ​r​e​c​o​m​p​r​a​r​ ​s​i​n​ ​q​u​e​ ​s​e​ ​t​e​ ​d​i​f​i​e​r​a​.​ ​P​a​r​a​ ​e​s​t​o​ ​h​a​c​e​ ​f​a​l​t​a​ ​e​l​ ​l​i​b​r​o​ ​d​e​ ​o​p​e​r​a​c​i​o​n​e​s​ ​d​e​l​ ​a​c​t​i​v​o​:​ ​s​i​ ​n​o​ ​l​o​ ​t​i​e​n​e​s​,​ ​t​e​ ​l​o​ ​d​i​c​e​ ​e​n​ ​v​e​z​ ​d​e​ ​e​n​s​e​ñ​a​r​t​e​ ​u​n​ ​c​e​r​o​.
+					 */
+					'2': string
+					/**
+					 * �​�​ ​*​*​C​o​n​ ​q​u​é​ ​s​e​ ​p​i​s​a​ ​l​o​ ​q​u​e​ ​t​i​e​n​e​s​.​*​*​ ​Q​u​é​ ​o​t​r​o​s​ ​f​o​n​d​o​s​ ​t​u​y​o​s​ ​a​p​u​n​t​a​n​ ​a​ ​l​a​s​ ​m​i​s​m​a​s​ ​e​m​p​r​e​s​a​s​ ​y​ ​c​u​á​n​t​o​ ​d​i​n​e​r​o​ ​s​e​ ​d​u​p​l​i​c​a​,​ ​m​i​r​a​d​o​ ​d​e​s​d​e​ ​l​a​ ​p​o​s​i​c​i​ó​n​ ​q​u​e​ ​e​s​t​á​s​ ​a​b​r​i​e​n​d​o​.
+					 */
+					'3': string
+					/**
+					 * �​�​ ​*​*​D​i​v​i​d​e​n​d​o​s​ ​y​,​ ​e​n​ ​l​a​s​ ​a​c​c​i​o​n​e​s​,​ ​l​a​ ​p​r​ó​x​i​m​a​ ​f​e​c​h​a​ ​d​e​ ​r​e​s​u​l​t​a​d​o​s​.​*​*​ ​E​s​t​o​s​ ​d​a​t​o​s​ ​y​a​ ​l​l​e​g​a​b​a​n​ ​c​o​n​ ​l​o​s​ ​p​r​e​c​i​o​s​ ​y​ ​s​e​ ​t​i​r​a​b​a​n​ ​a​ ​l​a​ ​b​a​s​u​r​a​;​ ​a​h​o​r​a​ ​s​e​ ​g​u​a​r​d​a​n​ ​u​n​ ​d​í​a​ ​y​ ​s​e​ ​p​i​d​e​n​ ​s​o​l​o​ ​c​u​a​n​d​o​ ​a​b​r​e​s​ ​u​n​a​ ​f​i​c​h​a​,​ ​a​s​í​ ​q​u​e​ ​n​o​ ​c​u​e​s​t​a​n​ ​n​i​ ​u​n​a​ ​p​e​t​i​c​i​ó​n​ ​e​x​t​r​a​ ​s​i​ ​n​o​ ​l​a​ ​a​b​r​e​s​.​ ​*​*​Y​ ​d​i​c​e​n​ ​d​e​ ​d​ó​n​d​e​ ​s​a​l​e​n​*​*​:​ ​s​o​n​ ​d​e​ ​Y​a​h​o​o​ ​F​i​n​a​n​c​e​,​ ​a​s​í​ ​q​u​e​ ​s​i​ ​u​n​a​ ​c​i​f​r​a​ ​n​o​ ​c​u​a​d​r​a​ ​c​o​n​ ​l​a​ ​d​e​ ​t​u​ ​b​r​ó​k​e​r​ ​s​a​b​e​s​ ​a​ ​q​u​i​é​n​ ​m​i​r​a​r​.​ ​S​i​ ​Y​a​h​o​o​ ​n​o​ ​c​u​b​r​e​ ​u​n​ ​a​c​t​i​v​o​,​ ​t​e​ ​l​o​ ​d​i​c​e​ ​p​o​r​ ​s​u​ ​n​o​m​b​r​e​ ​e​n​ ​v​e​z​ ​d​e​ ​s​o​l​t​a​r​ ​u​n​ ​«​n​o​ ​h​a​y​ ​d​a​t​o​s​»​ ​q​u​e​ ​p​a​r​e​c​e​ ​u​n​ ​f​a​l​l​o​ ​n​u​e​s​t​r​o​.
+					 */
+					'4': string
+					/**
+					 * �​�​️​ ​*​*​E​l​ ​c​o​s​t​e​ ​a​n​u​a​l​ ​d​e​l​ ​a​c​t​i​v​o​ ​a​p​a​r​e​c​e​ ​t​a​m​b​i​é​n​ ​e​n​ ​l​a​ ​v​i​s​t​a​ ​c​o​m​p​a​c​t​a​.​*​*​ ​E​s​t​a​b​a​ ​s​o​l​o​ ​e​n​ ​l​a​ ​v​i​s​t​a​ ​d​e​ ​t​a​r​j​e​t​a​s​,​ ​a​s​í​ ​q​u​e​ ​c​a​m​b​i​a​r​ ​d​e​ ​v​i​s​t​a​ ​h​a​c​í​a​ ​d​e​s​a​p​a​r​e​c​e​r​ ​l​a​ ​c​i​f​r​a​ ​—​ ​y​ ​l​a​ ​c​o​m​p​a​c​t​a​ ​e​s​ ​j​u​s​t​o​ ​l​a​ ​q​u​e​ ​s​e​ ​u​s​a​ ​p​a​r​a​ ​c​o​m​p​a​r​a​r​ ​p​o​s​i​c​i​o​n​e​s​,​ ​q​u​e​ ​e​s​ ​c​u​a​n​d​o​ ​e​l​ ​c​o​s​t​e​ ​i​m​p​o​r​t​a​.
+					 */
+					'5': string
+				}
+			}
 			v1_20_2: {
 				/**
 				 * 2​5​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
@@ -6335,6 +6577,204 @@ export type TranslationFunctions = {
 		 */
 		title_fx_rate: () => LocalizedString
 	}
+	ficha: {
+		/**
+		 * Ficha
+		 */
+		tab_ficha: () => LocalizedString
+		/**
+		 * Libro
+		 */
+		tab_libro: () => LocalizedString
+		/**
+		 * Fondo de inversión
+		 */
+		tipo_fund: () => LocalizedString
+		/**
+		 * ETF
+		 */
+		tipo_etf: () => LocalizedString
+		/**
+		 * Acción
+		 */
+		tipo_equity: () => LocalizedString
+		/**
+		 * Efectivo
+		 */
+		tipo_cash: () => LocalizedString
+		/**
+		 * Sin clasificar
+		 */
+		tipo_other: () => LocalizedString
+		/**
+		 * Puedes traspasarlo a otro fondo sin tributar
+		 */
+		traspasable_si: () => LocalizedString
+		/**
+		 * Cambiarlo por otra cosa es una venta, y tributa
+		 */
+		traspasable_no: () => LocalizedString
+		/**
+		 * No sabemos qué es, así que no te decimos si se puede traspasar
+		 */
+		traspasable_desconocido: () => LocalizedString
+		/**
+		 * Qué replica
+		 */
+		indice_title: () => LocalizedString
+		/**
+		 * Posiciones leídas de {fuente} el {fecha}
+		 */
+		indice_fuente: (arg: { fecha: string, fuente: string }) => LocalizedString
+		/**
+		 * Pesos a {fecha}
+		 */
+		indice_pesos_fecha: (arg: { fecha: string }) => LocalizedString
+		/**
+		 * Estos pesos son una estimación sin verificar contra el folleto
+		 */
+		indice_estimado: () => LocalizedString
+		/**
+		 * Por región
+		 */
+		regiones_title: () => LocalizedString
+		/**
+		 * Por sector
+		 */
+		sectores_title: () => LocalizedString
+		/**
+		 * Sus mayores posiciones
+		 */
+		mayores_title: () => LocalizedString
+		/**
+		 * Es el top diez del índice, así que la cola no se ve: lo que tengas de cada empresa es al menos esto.
+		 */
+		mayores_nota: () => LocalizedString
+		/**
+		 * No tenemos identificado qué índice replica. Puedes decírselo desde Gestionar cartera.
+		 */
+		sin_indice: () => LocalizedString
+		/**
+		 * Lo que te cuesta
+		 */
+		coste_title: () => LocalizedString
+		/**
+		 * Al año, sobre lo que tienes ahora
+		 */
+		coste_anual: () => LocalizedString
+		/**
+		 * Si vendieras hoy
+		 */
+		fiscal_title: () => LocalizedString
+		/**
+		 * Plusvalía latente
+		 */
+		fiscal_plusvalia: () => LocalizedString
+		/**
+		 * Pérdida latente
+		 */
+		fiscal_perdida: () => LocalizedString
+		/**
+		 * Lo que pagarías
+		 */
+		fiscal_factura: () => LocalizedString
+		/**
+		 * Valor de adquisición
+		 */
+		fiscal_coste: () => LocalizedString
+		/**
+		 * Tu participación más antigua es de {fecha}
+		 */
+		fiscal_desde: (arg: { fecha: string }) => LocalizedString
+		/**
+		 * Estimación con FIFO y la escala del ahorro de {anio}. No es asesoramiento fiscal.
+		 */
+		fiscal_estimacion: (arg: { anio: number }) => LocalizedString
+		/**
+		 * Tu libro no cubre todas las participaciones, así que esto es un mínimo.
+		 */
+		fiscal_parcial: () => LocalizedString
+		/**
+		 * Para calcular esto hace falta el libro de operaciones de este activo, con las fechas y los precios de cada compra.
+		 */
+		fiscal_sin_libro: () => LocalizedString
+		/**
+		 * Ver el libro
+		 */
+		fiscal_sin_libro_cta: () => LocalizedString
+		/**
+		 * Si vendes con pérdidas
+		 */
+		recompra_title: () => LocalizedString
+		/**
+		 * Tienes una ventana de {meses} meses: si recompras algo homogéneo dentro de ella, la pérdida se difiere.
+		 */
+		recompra_ventana: (arg: { meses: number }) => LocalizedString
+		/**
+		 * Ya has comprado dentro de la ventana, así que esa pérdida no compensaría este ejercicio. No se pierde: se difiere.
+		 */
+		recompra_bloqueada: () => LocalizedString
+		/**
+		 * Faltan {dias} días para poder recomprar sin diferirla.
+		 */
+		recompra_dias: (arg: { dias: number }) => LocalizedString
+		/**
+		 * Con qué se pisa
+		 */
+		solape_title: () => LocalizedString
+		/**
+		 * Fondos que apuntan a lo mismo
+		 */
+		solape_fondos: () => LocalizedString
+		/**
+		 * Es el dinero que, estimado, apunta a las mismas empresas por los dos lados.
+		 */
+		solape_fondos_nota: () => LocalizedString
+		/**
+		 * Empresas que también te llegan por otro sitio
+		 */
+		solape_empresas: () => LocalizedString
+		/**
+		 * También por {donde}
+		 */
+		solape_tambien: (arg: { donde: string }) => LocalizedString
+		/**
+		 * Dividendos y resultados
+		 */
+		datos_title: () => LocalizedString
+		/**
+		 * Dividendo anual
+		 */
+		dividendo_anual: () => LocalizedString
+		/**
+		 * Rentabilidad por dividendo
+		 */
+		dividendo_rentabilidad: () => LocalizedString
+		/**
+		 * Último pago
+		 */
+		dividendo_ultimo: () => LocalizedString
+		/**
+		 * Próximos resultados
+		 */
+		resultados_proximos: () => LocalizedString
+		/**
+		 * Fecha aproximada: la fuente admite un margen de un par de días.
+		 */
+		resultados_aprox: () => LocalizedString
+		/**
+		 * Dividendos y resultados según Yahoo Finance, que es de donde la app toma los precios. Si alguna cifra no cuadra con la de tu bróker, es lo que publica la fuente.
+		 */
+		datos_fuente: () => LocalizedString
+		/**
+		 * Yahoo Finance no cubre este activo, así que no tenemos ni dividendos ni resultados.
+		 */
+		datos_no_disponibles: () => LocalizedString
+		/**
+		 * Buscando…
+		 */
+		datos_cargando: () => LocalizedString
+	}
 	manage: {
 		/**
 		 * Gestionar Cartera
@@ -7183,7 +7623,7 @@ export type TranslationFunctions = {
 		 */
 		footer_tagline: () => LocalizedString
 		/**
-		 * v1.20.2 🚀
+		 * v1.21.0 🚀
 		 */
 		changelog_trigger: () => LocalizedString
 		/**
@@ -8177,6 +8617,42 @@ export type TranslationFunctions = {
 		 */
 		btn_understand: () => LocalizedString
 		releases: {
+			v1_21_0: {
+				/**
+				 * 25 de Agosto, 2026
+				 */
+				date: () => LocalizedString
+				/**
+				 * Cada activo tiene por fin su ficha
+				 */
+				badge: () => LocalizedString
+				changes: {
+					/**
+					 * 🔍 **Toca el icono de cualquier activo y ahora te cuenta qué es.** Qué índice replica, en qué se reparte por región y por sector, y cuáles son sus diez mayores posiciones. La app ya sabía todo esto para pintar los mapas; lo que no hacía era decírtelo activo por activo.
+					 */
+					'0': () => LocalizedString
+					/**
+					 * 🏛️ **Y si puedes traspasarlo sin pagar a Hacienda.** Solo un fondo se traspasa con la plusvalía diferida; un ETF que replique el mismo índice, no. Ahora lo dice cada activo en su ficha, en una línea.
+					 */
+					'1': () => LocalizedString
+					/**
+					 * 🧮 **Cuánto te costaría venderlo hoy.** Plusvalía latente por FIFO, la factura que saldría con la escala del ahorro, y —si vas en pérdidas— cuántos días faltan para poder recomprar sin que se te difiera. Para esto hace falta el libro de operaciones del activo: si no lo tienes, te lo dice en vez de enseñarte un cero.
+					 */
+					'2': () => LocalizedString
+					/**
+					 * 🔗 **Con qué se pisa lo que tienes.** Qué otros fondos tuyos apuntan a las mismas empresas y cuánto dinero se duplica, mirado desde la posición que estás abriendo.
+					 */
+					'3': () => LocalizedString
+					/**
+					 * 💰 **Dividendos y, en las acciones, la próxima fecha de resultados.** Estos datos ya llegaban con los precios y se tiraban a la basura; ahora se guardan un día y se piden solo cuando abres una ficha, así que no cuestan ni una petición extra si no la abres. **Y dicen de dónde salen**: son de Yahoo Finance, así que si una cifra no cuadra con la de tu bróker sabes a quién mirar. Si Yahoo no cubre un activo, te lo dice por su nombre en vez de soltar un «no hay datos» que parece un fallo nuestro.
+					 */
+					'4': () => LocalizedString
+					/**
+					 * 🏷️ **El coste anual del activo aparece también en la vista compacta.** Estaba solo en la vista de tarjetas, así que cambiar de vista hacía desaparecer la cifra — y la compacta es justo la que se usa para comparar posiciones, que es cuando el coste importa.
+					 */
+					'5': () => LocalizedString
+				}
+			}
 			v1_20_2: {
 				/**
 				 * 25 de Agosto, 2026
