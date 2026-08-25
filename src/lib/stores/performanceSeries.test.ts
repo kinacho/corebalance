@@ -480,3 +480,100 @@ describe('PortfolioStore - commitHoldingEdit', () => {
 		expect(store.holdingEdits.every((e) => e.reason === 'correction')).toBe(true);
 	});
 });
+
+/**
+ * Los fundamentales —dividendos y próxima fecha de resultados— son datos
+ * trimestrales, y este bloque existe para que sigan estando **fuera** del sondeo.
+ */
+describe('PortfolioStore - fundamentales', () => {
+	let store: PortfolioStore;
+
+	beforeEach(() => {
+		vi.clearAllMocks();
+		store = new PortfolioStore();
+		store.transactions = [];
+		store.holdingEdits = [];
+		store.history = [];
+		store.satelliteAssets = [];
+		store.stockAssets = [];
+		store.coreAssets = [VWCE];
+		store.holdings = { VWCE: { shares: 500, avgCost: 70, useLedger: false } };
+		store.prices = {
+			VWCE: { name: 'V', price: 80, currency: 'EUR', change: 0, sparkline: FLAT_SPARKLINE }
+		};
+	});
+
+	/**
+	 * ⚠️ **El control negativo del error que este diseño evita.** La tentación es
+	 * colgar estos campos de `/api/prices`, que ya trae la respuesta de Yahoo donde
+	 * vienen. Pero esa petición sale **cada 30 segundos**, y esto cambia una vez al
+	 * trimestre: es exactamente lo que `priceHelpers.ts` documenta haber corregido
+	 * con el sparkline. Este caso se pone rojo si alguien los mete ahí.
+	 *
+	 * Tiene precedente: el test que comprueba que los proxies de índice sí viajan en
+	 * la URL de precios existe porque cuatro pruebas anteriores no se enteraban de
+	 * que habían dejado de viajar.
+	 */
+	it('un sondeo de precios no pide fundamentales', async () => {
+		const urls: string[] = [];
+		vi.stubGlobal('fetch', vi.fn(async (url: string) => {
+			urls.push(url);
+			return {
+				ok: true,
+				json: async () => ({
+					prices: { VWCE: { name: 'V', price: 80, currency: 'EUR', change: 0, sparkline: FLAT_SPARKLINE } },
+					timestamp: new Date().toISOString()
+				})
+			};
+		}));
+
+		await store.fetchPrices();
+
+		expect(urls).toHaveLength(1);
+		expect(urls[0]).toContain('/api/prices');
+		expect(urls.some((u) => u.includes('fundamentals'))).toBe(false);
+		expect(store.fundamentals).toEqual({});
+
+		vi.unstubAllGlobals();
+	});
+
+	it('se piden una sola vez para el mismo conjunto de tickers', async () => {
+		const urls: string[] = [];
+		vi.stubGlobal('fetch', vi.fn(async (url: string) => {
+			urls.push(url);
+			return { ok: true, json: async () => ({ fundamentals: { VWCE: { disponible: true } } }) };
+		}));
+
+		await store.asegurarFundamentales();
+		await store.asegurarFundamentales();
+
+		expect(urls).toHaveLength(1);
+		expect(urls[0]).toContain('/api/fundamentals');
+		expect(store.fundamentals.VWCE?.disponible).toBe(true);
+
+		vi.unstubAllGlobals();
+	});
+
+	/**
+	 * Si la petición falla no se marca como pedida: la siguiente ficha que se abra
+	 * lo vuelve a intentar, en vez de dejar la cartera sin fundamentales para
+	 * siempre por un fallo puntual de red.
+	 */
+	it('un fallo no bloquea el siguiente intento', async () => {
+		let intentos = 0;
+		vi.stubGlobal('fetch', vi.fn(async () => {
+			intentos++;
+			if (intentos === 1) throw new Error('red caída');
+			return { ok: true, json: async () => ({ fundamentals: { VWCE: { disponible: true } } }) };
+		}));
+
+		await store.asegurarFundamentales();
+		expect(store.fundamentals).toEqual({});
+
+		await store.asegurarFundamentales();
+		expect(store.fundamentals.VWCE?.disponible).toBe(true);
+		expect(intentos).toBe(2);
+
+		vi.unstubAllGlobals();
+	});
+});

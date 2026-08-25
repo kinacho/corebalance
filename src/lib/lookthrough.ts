@@ -34,6 +34,20 @@ export interface IndexDefinition {
 	sectorsConfidence: WeightConfidence;
 	regions: Record<string, number>;
 	sectors: Record<string, number> | null;
+	/**
+	 * El top diez del índice, con su peso. **Opcional a propósito**: los dos de
+	 * renta fija y el de small caps no lo llevan, y esa ausencia es una decisión
+	 * fijada por un test —un bono del Estado no es exposición a una empresa, y en
+	 * un índice de pequeñas la mayor posición pesa 1,65 %, así que su top diez no
+	 * dice nada sobre concentración—.
+	 *
+	 * Ya estaba en el JSON y lo leía `concentracion.ts` con su propia conversión de
+	 * tipo; se declara aquí para que haya **un** tipo del índice y no dos vistas
+	 * parciales del mismo dato.
+	 */
+	topHoldings?: Record<string, number>;
+	/** El ETF de réplica física del que se leyó `topHoldings`, para poder recomprobarlo. */
+	holdingsSource?: string;
 }
 
 export interface OverlapRule {

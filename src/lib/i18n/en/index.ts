@@ -460,6 +460,64 @@ const en: Translation = {
     label_currency: 'Currency / FX',
     title_fx_rate: 'Exchange rate to EUR',
   },
+  // Asset detail
+  ficha: {
+    tab_ficha: 'Detail',
+    tab_libro: 'Ledger',
+
+    tipo_fund: 'Mutual fund',
+    tipo_etf: 'ETF',
+    tipo_equity: 'Stock',
+    tipo_cash: 'Cash',
+    tipo_other: 'Unclassified',
+    traspasable_si: 'You can transfer it to another fund without paying tax',
+    traspasable_no: 'Swapping it for something else is a sale, and it is taxed',
+    traspasable_desconocido: 'We do not know what this is, so we will not tell you whether it can be transferred',
+
+    indice_title: 'What it tracks',
+    indice_fuente: 'Holdings read from {fuente} on {fecha}',
+    indice_pesos_fecha: 'Weights as of {fecha}',
+    indice_estimado: 'These weights are an estimate, not verified against the factsheet',
+    regiones_title: 'By region',
+    sectores_title: 'By sector',
+    mayores_title: 'Its largest holdings',
+    mayores_nota: 'This is the index top ten, so the tail is invisible: whatever you hold of each company is at least this.',
+    sin_indice: 'We have not identified which index this tracks. You can tell it from Manage portfolio.',
+
+    coste_title: 'What it costs you',
+    coste_anual: 'Per year, on what you hold now',
+
+    fiscal_title: 'If you sold today',
+    fiscal_plusvalia: 'Unrealised gain',
+    fiscal_perdida: 'Unrealised loss',
+    fiscal_factura: 'What you would pay',
+    fiscal_coste: 'Acquisition value',
+    fiscal_desde: 'Your oldest units are from {fecha}',
+    fiscal_estimacion: 'Estimate using FIFO and the {anio} savings-income scale. Not tax advice.',
+    fiscal_parcial: 'Your ledger does not cover every unit, so this is a floor.',
+    fiscal_sin_libro: 'To work this out we need this asset ledger, with the date and price of every purchase.',
+    fiscal_sin_libro_cta: 'Open the ledger',
+
+    recompra_title: 'If you sell at a loss',
+    recompra_ventana: 'You have a {meses}-month window: buying something equivalent inside it defers the loss.',
+    recompra_bloqueada: 'You have already bought inside the window, so that loss would not offset this year. It is not lost: it is deferred.',
+    recompra_dias: '{dias} days to go before you can buy back without deferring it.',
+
+    solape_title: 'What it overlaps with',
+    solape_fondos: 'Funds pointing at the same thing',
+    solape_fondos_nota: 'This is the money that, estimated, points at the same companies from both sides.',
+    solape_empresas: 'Companies that also reach you another way',
+    solape_tambien: 'Also through {donde}',
+
+    datos_title: 'Dividends and earnings',
+    dividendo_anual: 'Annual dividend',
+    dividendo_rentabilidad: 'Dividend yield',
+    dividendo_ultimo: 'Last payment',
+    resultados_proximos: 'Next earnings',
+    resultados_aprox: 'Approximate date: the source allows a couple of days either way.',
+    datos_no_disponibles: 'We do not have this data for this asset.',
+    datos_cargando: 'Looking…',
+  },
   // Manage Assets
   manage: {
     title: 'Manage Portfolio',
@@ -687,7 +745,7 @@ const en: Translation = {
     timing_period_note: 'Measured over the {days} days with real data, not annualised.',
     legal_disclaimer: '<strong>Legal Disclaimer:</strong> CoreBalance is a purely informative and educational tool. It does not constitute financial, investment, or tax advice. The data displayed may be subject to delays or inaccuracies. The developer is not responsible for any financial losses resulting from the use of this application. Always invest at your own risk.',
     footer_tagline: 'Your control center for smart and balanced asset management.',
-    changelog_trigger: 'v1.20.2 🚀',
+    changelog_trigger: 'v1.21.0 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Made with ❤️ for the investing community',
     reclassify_stocks: 'Individual Stocks',
@@ -991,6 +1049,17 @@ const en: Translation = {
     close_aria: 'Close modal',
     btn_understand: 'Got it',
     releases: {
+      v1_21_0: {
+        date: 'August 25, 2026',
+        badge: 'Every asset finally has its own detail view',
+        changes: [
+          '🔍 **Tap any asset icon and it now tells you what it is.** Which index it tracks, how that splits by region and by sector, and its ten largest holdings. The app already knew all of this to draw the maps; what it never did was tell you, asset by asset.',
+          '🏛️ **And whether you can transfer it without paying tax.** Only a mutual fund transfers with the gain deferred; an ETF tracking the same index does not. Every asset now says so in its own detail view, in one line.',
+          '🧮 **What selling it today would cost you.** Unrealised gain under FIFO, the bill the savings-income scale would produce, and —if you are down— how many days until you can buy back without deferring the loss. This needs the asset ledger: without it, we say so instead of showing you a zero.',
+          '🔗 **What it overlaps with.** Which of your other funds point at the same companies and how much money is duplicated, seen from the position you are looking at.',
+          '💰 **Dividends and, for stocks, the next earnings date.** This data already arrived with the prices and was thrown away; now it is cached for a day and only requested when you open a detail view, so it costs no extra request if you never open one.'
+        ]
+      },
       v1_20_2: {
         date: 'August 25, 2026',
         badge: 'Less noise, and names you can read',

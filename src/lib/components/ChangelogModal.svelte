@@ -26,6 +26,7 @@
 
 	// Mapeo dinámico desde el diccionario de traducciones
 	const releaseVersions = [
+		'v1_21_0',
 		'v1_20_2',
 		'v1_20_1',
 		'v1_20_0',
@@ -137,6 +138,13 @@
 		 * peor caso 3,35, por encima del 3,23 del teal que hace de vara— y no se parece
 		 * al rosa de la 1.20.1, que es justo su vecina de abajo.
 		 */
+		/*
+		 * Ámbar oscuro reusado del `v1_19_0` de abajo: ya está medido en los dos temas
+		 * más arriba en este mismo fichero —**3,47 en oscuro y 4,22 en claro**, peor
+		 * caso 3,47, por encima del 3,23 del teal que hace de vara— y no se parece al
+		 * azul de la 1.20.2, que es justo su vecina de abajo.
+		 */
+		v1_21_0: '#b45309',
 		v1_20_2: '#2563eb',
 		v1_20_1: '#e11d48',
 		v1_20_0: '#8b5cf6',

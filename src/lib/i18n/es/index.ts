@@ -475,6 +475,64 @@ const es = {
     label_currency: 'Divisa / FX',
     title_fx_rate: 'Tipo de cambio a EUR',
   },
+  // Ficha del activo
+  ficha: {
+    tab_ficha: 'Ficha',
+    tab_libro: 'Libro',
+
+    tipo_fund: 'Fondo de inversión',
+    tipo_etf: 'ETF',
+    tipo_equity: 'Acción',
+    tipo_cash: 'Efectivo',
+    tipo_other: 'Sin clasificar',
+    traspasable_si: 'Puedes traspasarlo a otro fondo sin tributar',
+    traspasable_no: 'Cambiarlo por otra cosa es una venta, y tributa',
+    traspasable_desconocido: 'No sabemos qué es, así que no te decimos si se puede traspasar',
+
+    indice_title: 'Qué replica',
+    indice_fuente: 'Posiciones leídas de {fuente:string} el {fecha:string}',
+    indice_pesos_fecha: 'Pesos a {fecha:string}',
+    indice_estimado: 'Estos pesos son una estimación sin verificar contra el folleto',
+    regiones_title: 'Por región',
+    sectores_title: 'Por sector',
+    mayores_title: 'Sus mayores posiciones',
+    mayores_nota: 'Es el top diez del índice, así que la cola no se ve: lo que tengas de cada empresa es al menos esto.',
+    sin_indice: 'No tenemos identificado qué índice replica. Puedes decírselo desde Gestionar cartera.',
+
+    coste_title: 'Lo que te cuesta',
+    coste_anual: 'Al año, sobre lo que tienes ahora',
+
+    fiscal_title: 'Si vendieras hoy',
+    fiscal_plusvalia: 'Plusvalía latente',
+    fiscal_perdida: 'Pérdida latente',
+    fiscal_factura: 'Lo que pagarías',
+    fiscal_coste: 'Valor de adquisición',
+    fiscal_desde: 'Tu participación más antigua es de {fecha:string}',
+    fiscal_estimacion: 'Estimación con FIFO y la escala del ahorro de {anio:number}. No es asesoramiento fiscal.',
+    fiscal_parcial: 'Tu libro no cubre todas las participaciones, así que esto es un mínimo.',
+    fiscal_sin_libro: 'Para calcular esto hace falta el libro de operaciones de este activo, con las fechas y los precios de cada compra.',
+    fiscal_sin_libro_cta: 'Ver el libro',
+
+    recompra_title: 'Si vendes con pérdidas',
+    recompra_ventana: 'Tienes una ventana de {meses:number} meses: si recompras algo homogéneo dentro de ella, la pérdida se difiere.',
+    recompra_bloqueada: 'Ya has comprado dentro de la ventana, así que esa pérdida no compensaría este ejercicio. No se pierde: se difiere.',
+    recompra_dias: 'Faltan {dias:number} días para poder recomprar sin diferirla.',
+
+    solape_title: 'Con qué se pisa',
+    solape_fondos: 'Fondos que apuntan a lo mismo',
+    solape_fondos_nota: 'Es el dinero que, estimado, apunta a las mismas empresas por los dos lados.',
+    solape_empresas: 'Empresas que también te llegan por otro sitio',
+    solape_tambien: 'También por {donde:string}',
+
+    datos_title: 'Dividendos y resultados',
+    dividendo_anual: 'Dividendo anual',
+    dividendo_rentabilidad: 'Rentabilidad por dividendo',
+    dividendo_ultimo: 'Último pago',
+    resultados_proximos: 'Próximos resultados',
+    resultados_aprox: 'Fecha aproximada: la fuente admite un margen de un par de días.',
+    datos_no_disponibles: 'No tenemos estos datos para este activo.',
+    datos_cargando: 'Buscando…',
+  },
   // Manage Assets
   manage: {
     title: 'Gestionar Cartera',
@@ -709,7 +767,7 @@ const es = {
     timing_period_note: 'Medido sobre los {days:number} días con datos reales, sin anualizar.',
     legal_disclaimer: '<strong>Aviso Legal:</strong> CoreBalance es una herramienta puramente informativa y educativa. No constituye asesoramiento financiero, de inversión ni fiscal. Los datos mostrados pueden sufrir retrasos o ser inexactos. El desarrollador no se hace responsable de posibles pérdidas financieras derivadas del uso de esta aplicación. Invierte siempre bajo tu propia responsabilidad.',
     footer_tagline: 'Tu centro de mandos para una gestión de activos inteligente y equilibrada.',
-    changelog_trigger: 'v1.20.2 🚀',
+    changelog_trigger: 'v1.21.0 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Hecho con ❤️ para la comunidad inversora',
     reclassify_stocks: 'Acciones Individuales',
@@ -1030,6 +1088,17 @@ const es = {
     close_aria: 'Cerrar modal',
     btn_understand: 'Entendido',
     releases: {
+      v1_21_0: {
+        date: '25 de Agosto, 2026',
+        badge: 'Cada activo tiene por fin su ficha',
+        changes: [
+          '🔍 **Toca el icono de cualquier activo y ahora te cuenta qué es.** Qué índice replica, en qué se reparte por región y por sector, y cuáles son sus diez mayores posiciones. La app ya sabía todo esto para pintar los mapas; lo que no hacía era decírtelo activo por activo.',
+          '🏛️ **Y si puedes traspasarlo sin pagar a Hacienda.** Solo un fondo se traspasa con la plusvalía diferida; un ETF que replique el mismo índice, no. Ahora lo dice cada activo en su ficha, en una línea.',
+          '🧮 **Cuánto te costaría venderlo hoy.** Plusvalía latente por FIFO, la factura que saldría con la escala del ahorro, y —si vas en pérdidas— cuántos días faltan para poder recomprar sin que se te difiera. Para esto hace falta el libro de operaciones del activo: si no lo tienes, te lo dice en vez de enseñarte un cero.',
+          '🔗 **Con qué se pisa lo que tienes.** Qué otros fondos tuyos apuntan a las mismas empresas y cuánto dinero se duplica, mirado desde la posición que estás abriendo.',
+          '💰 **Dividendos y, en las acciones, la próxima fecha de resultados.** Estos datos ya llegaban con los precios y se tiraban a la basura; ahora se guardan un día y se piden solo cuando abres una ficha, así que no cuestan ni una petición extra si no la abres.'
+        ]
+      },
       v1_20_2: {
         date: '25 de Agosto, 2026',
         badge: 'Menos ruido y nombres que se entienden',

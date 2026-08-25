@@ -7,6 +7,7 @@
 	import { onMount, onDestroy, untrack } from 'svelte';
 	import { bloquearScroll, desbloquearScroll } from '$lib/modal-lock';
 	import { focusTrap } from '$lib/actions/focusTrap';
+	import FichaDelActivo from './FichaDelActivo.svelte';
 	import { LL, locale } from '$lib/i18n/i18n-svelte';
 
 	interface Props {
@@ -160,10 +161,23 @@
 	 */
 	let tickerMostrado = untrack(() => asset.ticker);
 
+	/**
+	 * Dos pestañas, y **«ficha» por defecto**: entender qué tienes sirve a
+	 * cualquiera que abra esto, mientras que el libro solo lo usa quien lleva
+	 * registro de sus compras. Antes lo primero que veías al abrir un activo era el
+	 * interruptor de modo libro, que para la mayoría no significa nada.
+	 */
+	type Pestana = 'ficha' | 'libro';
+	let pestana = $state<Pestana>('ficha');
+
 	$effect(() => {
 		const ticker = asset.ticker;
 		if (ticker === tickerMostrado) return;
 		tickerMostrado = ticker;
+		// ⚠️ La pestaña se reinicia aquí por el mismo motivo que el formulario: desde
+		// `ManageAssets` este modal cambia de activo sin remontarse, así que un
+		// estado que no entre en este bloque se queda con lo del activo anterior.
+		pestana = 'ficha';
 		editingTxId = null;
 		showAddForm = false;
 		newTx = {
@@ -336,7 +350,31 @@
 			<button class="close-btn" onclick={onClose}>✕</button>
 		</div>
 
+		<div class="pestanas" role="tablist">
+			<button
+				class="pestana"
+				class:activa={pestana === 'ficha'}
+				role="tab"
+				aria-selected={pestana === 'ficha'}
+				onclick={() => (pestana = 'ficha')}
+			>
+				{$LL.ficha.tab_ficha()}
+			</button>
+			<button
+				class="pestana"
+				class:activa={pestana === 'libro'}
+				role="tab"
+				aria-selected={pestana === 'libro'}
+				onclick={() => (pestana = 'libro')}
+			>
+				{$LL.ficha.tab_libro()}
+			</button>
+		</div>
+
 		<div class="ledger-body">
+			{#if pestana === 'ficha'}
+				<FichaDelActivo {asset} onVerLibro={() => (pestana = 'libro')} />
+			{:else}
 			<!-- Ledger Toggle -->
 			<div class="mode-selector" class:active={useLedger}>
 				<div class="mode-info">
@@ -529,6 +567,7 @@
 					<p class="notice-sub">{@html $LL.ledger.notice_manual_sub({ bold: `<b>${$LL.ledger.notice_manual_sub_bold()}</b>` })}</p>
 				</div>
 			{/if}
+			{/if}
 		</div>
 	</div>
 </div>
@@ -610,6 +649,42 @@
 		height: 32px;
 		border-radius: 8px;
 		cursor: pointer;
+	}
+
+	.pestanas {
+		display: flex;
+		gap: 0.25rem;
+		padding: 0 1.5rem;
+		border-bottom: 1px solid var(--border-subtle);
+		/* No se encoge: es el control que decide qué se ve debajo. */
+		flex-shrink: 0;
+	}
+
+	.pestana {
+		background: none;
+		border: none;
+		border-bottom: 2px solid transparent;
+		padding: 0.7rem 0.9rem;
+		font: inherit;
+		font-size: 0.8rem;
+		font-weight: 700;
+		color: var(--text-muted);
+		cursor: pointer;
+		transition: color 0.2s, border-color 0.2s;
+	}
+
+	.pestana:hover {
+		color: var(--text-secondary);
+	}
+
+	/*
+	 * La pestaña activa se marca con el subrayado **y** con el color del texto: dos
+	 * canales, porque solo con el color quedaría a merced de la discriminación de
+	 * tono, que es la regla que este proyecto aplica en los gráficos.
+	 */
+	.pestana.activa {
+		color: var(--text-primary);
+		border-bottom-color: var(--accent-blue);
 	}
 
 	.ledger-body {

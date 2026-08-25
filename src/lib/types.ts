@@ -61,6 +61,36 @@ export interface PricesResponse {
 	errors: string[];
 }
 
+/**
+ * Lo que cambia una vez al trimestre, no cada 30 segundos.
+ *
+ * ⚠️ Vive en su propia respuesta y **no dentro de `PriceData`** a propósito: esa
+ * viaja en el sondeo cada medio minuto, y meter aquí datos trimestrales es el
+ * error que `priceHelpers.ts` documenta haber corregido con el sparkline. Ver
+ * `/api/fundamentals`.
+ */
+export interface FundamentalData {
+	/** Falso cuando la fuente no cubre el activo — los fondos solo de FT, por ejemplo. */
+	disponible: boolean;
+	/** Milisegundos. `null` para fondos y ETF: no presentan resultados. */
+	proximosResultados?: number | null;
+	/** Yahoo declara ±2 días de error en esa fecha. */
+	resultadosEsAproximado?: boolean;
+	/** Dividendo anual por participación, en la divisa del activo. */
+	dividendoAnual?: number | null;
+	/** Fracción 0–1, normalizada: la fuente lo da unas veces en % y otras en tanto por uno. */
+	rentabilidadPorDividendo?: number | null;
+	/** Milisegundos del último pago conocido. */
+	ultimoDividendo?: number | null;
+	/** Rentabilidad a tres meses, tal cual la publica la fuente. */
+	rentabilidadTresMeses?: number | null;
+}
+
+export interface FundamentalsResponse {
+	fundamentals: Record<string, FundamentalData>;
+	error?: string;
+}
+
 /** Posición individual en la cartera */
 export interface PortfolioPosition {
 	asset: Asset;
