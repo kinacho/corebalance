@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import AssetCard from './AssetCard.svelte';
 	import CompactAssetRow from './CompactAssetRow.svelte';
 	import Sparkline from './Sparkline.svelte';
@@ -25,12 +26,19 @@
 		marginTop = false
 	}: Props = $props();
 
-	let isOpen = $state(false);
+	/**
+	 * ⚠️ **`defaultOpen` es un valor inicial, no un efecto.** Era un `$effect.pre`
+	 * que escribía `isOpen = defaultOpen`, es decir un prop mandando sobre el
+	 * «abierto/cerrado» que el usuario controla con la cabecera de aquí abajo.
+	 * Hoy no hacía daño porque **ningún llamante pasa `defaultOpen`**, así que
+	 * corría una vez y escribía `false` sobre `false`. Pero este componente recibe
+	 * `portfolioState`, que es justo el derivado que se recalcula en cada sondeo
+	 * de precios: el día que alguien pasara `defaultOpen={algoDerivado}`, la
+	 * sección se habría cerrado sola cada 30 s, por la misma cadena de props que
+	 * cerraba el formulario del libro. Como inicialización eso no puede pasar.
+	 */
+	let isOpen = $state(untrack(() => defaultOpen));
 	let isCompactView = $state(false);
-
-	$effect.pre(() => {
-		isOpen = defaultOpen;
-	});
 </script>
 
 <button 

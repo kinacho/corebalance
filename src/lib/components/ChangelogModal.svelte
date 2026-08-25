@@ -26,6 +26,7 @@
 
 	// Mapeo dinámico desde el diccionario de traducciones
 	const releaseVersions = [
+		'v1_20_1',
 		'v1_20_0',
 		'v1_19_1',
 		'v1_19_0',
@@ -120,6 +121,16 @@
 		 * un tono a ojo aquí es exactamente el error que estos comentarios documentan dos
 		 * veces.
 		 */
+		/*
+		 * Rosa reusado tal cual del `v1_17_2` de abajo en vez de buscar un tono nuevo:
+		 * ya está medido en los dos temas más arriba en este mismo fichero —**3,76 en
+		 * oscuro y 3,85 en claro**, o sea peor caso 3,76, el mejor de todos los tonos
+		 * que este fichero anota y muy por encima del 3,23 del teal que hace de vara— y
+		 * no se parece al violeta de la 1.20.0, que es justo su vecina de abajo.
+		 * Elegir un tono a ojo aquí es exactamente el error que estos comentarios
+		 * documentan dos veces.
+		 */
+		v1_20_1: '#e11d48',
 		v1_20_0: '#8b5cf6',
 		v1_19_1: '#0d9488',
 		v1_19_0: '#b45309',

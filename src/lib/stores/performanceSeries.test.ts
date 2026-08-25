@@ -369,6 +369,67 @@ describe('PortfolioStore - commitHoldingEdit', () => {
 			vi.unstubAllGlobals();
 		});
 
+		/**
+		 * ⚠️ **Un sondeo sin TER nuevo no puede cambiar la identidad de las listas
+		 * de activos**, y esto no es higiene: es una de las dos vías por las que el
+		 * formulario del libro se cerraba solo.
+		 *
+		 * `applyTerUpdates` hace `assets.map(...)`, así que devolvía un array nuevo
+		 * **aunque no hubiera actualizado nada**, y `fetchPrices` lo asignaba
+		 * siempre. Con eso, cada 30 s se invalidaba todo lo que cuelga de esas tres
+		 * listas —`portfolioState` incluido— sin que hubiera cambiado un solo dato.
+		 * Los componentes que reciben una `position` como prop lo notan.
+		 */
+		it('un sondeo sin TER nuevo no cambia la identidad de las listas de activos', async () => {
+			const antes = store.coreAssets;
+
+			vi.stubGlobal('fetch', vi.fn(async () => ({
+				ok: true,
+				json: async () => ({
+					prices: {
+						// Sin `ter` en la respuesta no hay nada que rellenar.
+						VWCE: { name: 'V', price: 81, currency: 'EUR', change: 0, sparkline: FLAT_SPARKLINE }
+					},
+					timestamp: new Date().toISOString()
+				})
+			})));
+
+			await store.fetchPrices();
+
+			expect(store.coreAssets).toBe(antes);
+			// Y el precio sí se ha movido: el sondeo ocurrió de verdad.
+			expect(store.prices.VWCE.price).toBe(81);
+
+			vi.unstubAllGlobals();
+		});
+
+		it('un TER que llega por primera vez sí reemplaza la lista', async () => {
+			const antes = store.coreAssets;
+
+			vi.stubGlobal('fetch', vi.fn(async () => ({
+				ok: true,
+				json: async () => ({
+					prices: {
+						VWCE: { name: 'V', price: 80, currency: 'EUR', change: 0, ter: 0.0022, sparkline: FLAT_SPARKLINE }
+					},
+					timestamp: new Date().toISOString()
+				})
+			})));
+
+			// El activo del fixture ya trae TER, así que hay que dejarlo a 0 para que
+			// haya hueco que rellenar — que es la única condición que lo actualiza.
+			store.coreAssets = [{ ...VWCE, ter: 0 }];
+			const conTerVacio = store.coreAssets;
+
+			await store.fetchPrices();
+
+			expect(store.coreAssets).not.toBe(conTerVacio);
+			expect(store.coreAssets).not.toBe(antes);
+			expect(store.coreAssets[0].ter).toBe(0.0022);
+
+			vi.unstubAllGlobals();
+		});
+
 		it('la serie de puntos crece con la ventana', () => {
 			const haceNoventa = startOfUTCDay(new Date()) - 90 * DAY_MS;
 			store.transactions = [

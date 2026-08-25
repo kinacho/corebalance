@@ -233,6 +233,7 @@ const en: Translation = {
     holdings: 'Holdings',
     cash_balance: 'Cash balance',
     avg_cost: 'Avg Cost',
+    market_state_unknown: 'Market state unknown',
     price: 'Price',
     value_total: 'Total Value',
     today: 'Today',
@@ -435,7 +436,11 @@ const en: Translation = {
     btn_activate: 'Activate Ledger',
     btn_add_tx: '+ Add',
     btn_save_tx: 'Save Transaction',
+    btn_save_changes: 'Save Changes',
+    title_edit_tx: 'Edit Transaction',
+    title_currency_from_asset: 'The currency is set by the asset',
     title_history: 'Transaction History',
+    title_open_ledger: 'View the transaction ledger',
     empty_history: 'No transactions registered',
     notice_manual: 'You are using {bold}. The data for this asset is managed from the previous screen.',
     notice_manual_bold: 'Manual Mode',
@@ -581,6 +586,7 @@ const en: Translation = {
     asset_deleted: 'Asset deleted',
     shares_greater_than_zero: 'Shares must be greater than 0',
     transaction_added: 'Transaction added',
+    transaction_updated: 'Transaction updated',
     transaction_deleted: 'Transaction deleted',
     invalid_file_type: 'Only CSV, TSV, or TXT files are accepted',
     file_too_large: 'File is too large (max 1 MB)',
@@ -681,7 +687,7 @@ const en: Translation = {
     timing_period_note: 'Measured over the {days} days with real data, not annualised.',
     legal_disclaimer: '<strong>Legal Disclaimer:</strong> CoreBalance is a purely informative and educational tool. It does not constitute financial, investment, or tax advice. The data displayed may be subject to delays or inaccuracies. The developer is not responsible for any financial losses resulting from the use of this application. Always invest at your own risk.',
     footer_tagline: 'Your control center for smart and balanced asset management.',
-    changelog_trigger: 'v1.20.0 🚀',
+    changelog_trigger: 'v1.20.1 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Made with ❤️ for the investing community',
     reclassify_stocks: 'Individual Stocks',
@@ -985,6 +991,17 @@ const en: Translation = {
     close_aria: 'Close modal',
     btn_understand: 'Got it',
     releases: {
+      v1_20_1: {
+        date: 'August 25, 2026',
+        badge: 'The transaction form stops closing on its own',
+        changes: [
+          '✍️ **You would add a transaction to a fund and the form closed by itself a few seconds later**, wiping whatever you were typing. The cause was the price refresh: every 30 seconds the app updated quotes and, along the way, reset the form you had open. Not any more. **No saved transaction was ever lost**: what you lost was what you had not saved yet.',
+          '📅 **And the date picker ate your first click.** With it open, your first click anywhere — including «Save Transaction» — only closed the picker, so everything took two clicks. Now one click does both.',
+          '📜 **The transaction ledger opens from any asset.** In card view it only showed up if that asset already had ledger mode on… and the switch that turns it on lives inside the ledger itself. Tap the asset icon and it always opens.',
+          '⌨️ **Escape closes the ledger**, like every other window in the app. And leaving the CSV importer with Escape no longer discards the changes you had in progress in «Manage assets», which is what it did until now without warning.',
+          '📊 **In the importer you can now leave a column unassigned.** You picked «Not available» and the dropdown snapped straight back to the previous suggestion, over and over.'
+        ]
+      },
       v1_20_0: {
         date: 'August 21, 2026',
         badge: 'The figures up top now open, portfolio by portfolio',

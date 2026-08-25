@@ -60,10 +60,20 @@
 	let hasManuallyEdited = $state(false);
 
 	let hasManuallyEditedDca = $state(false);
+	/**
+	 * Dos efectos y no uno: eran dos ramas con dos dependencias independientes en
+	 * el mismo bloque, así que un cambio de `globalCapital` reejecutaba también la
+	 * del DCA y al revés. Hoy es inocuo porque cada una tiene su bandera, pero es
+	 * la forma exacta que hay que evitar aquí — cualquier escritura futura sin
+	 * guarda en ese bloque quedaría expuesta a la dependencia de la otra.
+	 */
 	$effect(() => {
 		if (portfolio.globalCapital > 0 && !hasManuallyEdited) {
 			initialCapital = Number(portfolio.globalCapital.toFixed(2));
 		}
+	});
+
+	$effect(() => {
 		if (portfolio.contribution > 0 && !hasManuallyEditedDca) {
 			monthlyDca = portfolio.contribution;
 		}

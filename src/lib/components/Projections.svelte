@@ -43,8 +43,18 @@
 	let useCustomBase = $state(false);
 	let customBase = $state(portfolio.globalCapital || 10000);
 
+	/**
+	 * ⚠️ **La guarda tiene que ser «el usuario ya escribió esto», no el modo.**
+	 * Era `!useCustomBase`, que es el **modo** y se cambia con las dos píldoras de
+	 * abajo, no con el teclado. Así que escribir una cifra, volver a «mi capital»
+	 * y regresar a «personalizado» te devolvía lo tecleado pisado por el siguiente
+	 * sondeo de precios — `globalCapital` se mueve cada 30 s. Es el patrón que
+	 * `CrisisSimulator` ya tiene bien con sus dos banderas.
+	 */
+	let baseEditadaAMano = $state(false);
+
 	$effect(() => {
-		if (portfolio.globalCapital > 0 && !useCustomBase) {
+		if (portfolio.globalCapital > 0 && !baseEditadaAMano) {
 			customBase = Number(portfolio.globalCapital.toFixed(2));
 		}
 	});
@@ -208,7 +218,14 @@
 
 							{#if useCustomBase}
 								<div class="custom-capital-input-wrapper">
-									<input type="number" class="custom-capital-input" min="0" step="1000" bind:value={customBase} />
+									<input
+										type="number"
+										class="custom-capital-input"
+										min="0"
+										step="1000"
+										bind:value={customBase}
+										oninput={() => (baseEditadaAMano = true)}
+									/>
 									<span class="currency-symbol">€</span>
 								</div>
 							{/if}

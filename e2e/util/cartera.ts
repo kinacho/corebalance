@@ -26,6 +26,18 @@ export interface Activo {
 	category: 'core' | 'satellite' | 'stocks';
 }
 
+export interface Movimiento {
+	id: string;
+	ticker: string;
+	type: 'buy' | 'sell' | 'dividend' | 'transfer' | 'initial_balance';
+	date: number;
+	shares: number;
+	price: number;
+	currency: string;
+	fees: number;
+	fxRate: number;
+}
+
 export interface Semilla {
 	assets: {
 		coreAssets: Activo[];
@@ -34,6 +46,8 @@ export interface Semilla {
 	};
 	holdings: Record<string, { shares: number; avgCost: number; useLedger: boolean }>;
 	prices: Record<string, unknown>;
+	/** Solo para las carteras con libro; ver `CON_LIBRO`. */
+	transactions?: Movimiento[];
 }
 
 const activo = (
@@ -144,6 +158,46 @@ export const SIN_UN_PRECIO: Semilla = (() => {
 	return copia;
 })();
 
+/**
+ * Una cartera **con el libro de operaciones activo**, que es el estado que ninguna
+ * otra semilla alcanza: en todas las demás `useLedger` es `false`.
+ *
+ * ⚠️ Hace falta para llegar siquiera al formulario de alta de movimientos: sin
+ * modo libro, el cuerpo del modal es el aviso de «modo manual» y no hay ni
+ * historial ni botón de añadir. Las fechas son fijas —nunca `Date.now()`— porque
+ * el libro es aritmética de fechas y un fixture atado al reloj pasa hoy y falla
+ * dentro de tres meses.
+ */
+export const CON_LIBRO: Semilla = (() => {
+	const copia = structuredClone(SIN_OBJETIVOS);
+	copia.holdings.VWCE = { shares: 80, avgCost: 100, useLedger: true };
+	copia.transactions = [
+		{
+			id: 'tx-1',
+			ticker: 'VWCE',
+			type: 'buy',
+			date: new Date(2026, 1, 25).getTime(),
+			shares: 50,
+			price: 98,
+			currency: 'EUR',
+			fees: 0,
+			fxRate: 1
+		},
+		{
+			id: 'tx-2',
+			ticker: 'VWCE',
+			type: 'buy',
+			date: new Date(2026, 3, 1).getTime(),
+			shares: 30,
+			price: 103,
+			currency: 'EUR',
+			fees: 0,
+			fxRate: 1
+		}
+	];
+	return copia;
+})();
+
 /** Deja la cartera puesta y los precios interceptados. Llamar **antes** de navegar. */
 export async function sembrarCartera(page: Page, semilla: Semilla) {
 	await page.route('**/api/prices**', (route) =>
@@ -158,6 +212,9 @@ export async function sembrarCartera(page: Page, semilla: Semilla) {
 		localStorage.setItem('corebalance_user_assets', JSON.stringify(datos.assets));
 		localStorage.setItem('corebalance_holdings_v2', JSON.stringify(datos.holdings));
 		localStorage.setItem('corebalance_prices_cache', JSON.stringify(datos.prices));
+		if (datos.transactions) {
+			localStorage.setItem('corebalance_transactions', JSON.stringify(datos.transactions));
+		}
 		// Sin esto, la landing redirige y el splash se queda por medio.
 		sessionStorage.setItem('bypassLanding', 'true');
 	}, semilla);

@@ -211,8 +211,26 @@
 		showLedger = true;
 	}
 
+	/**
+	 * ⚠️ **Faltaba `showImport`, y eso descartaba el trabajo del usuario sin
+	 * avisar.** Este panel monta tres hijos, y los handlers de `window` no se
+	 * consumen entre sí: con el importador abierto, un Escape disparaba el suyo
+	 * (`ImportModal` también escucha en `window`) **y además** este, que llama a
+	 * `handleCancel()` → `portfolio.restoreState(originalState)`. O sea que salir
+	 * del importador con Escape revertía todos los cambios pendientes de la
+	 * sesión de gestión.
+	 *
+	 * `!showLedger` era hasta ahora una guarda inerte —`LedgerModal` no tenía
+	 * Escape, así que mientras estaba abierto Escape simplemente no hacía nada— y
+	 * pasa a ser imprescindible ahora que sí lo tiene.
+	 *
+	 * El patrón de guardas a mano no escala más allá de esto; con tres hijos
+	 * sigue siendo legible. La salida buena el día que haya un cuarto es contar,
+	 * como hace `modal-lock.ts`: responde al Escape quien tomó el bloqueo más
+	 * reciente, y ningún modal tiene que saber qué hay encima de él.
+	 */
 	function handleKeydown(e: KeyboardEvent) {
-		if (e.key === 'Escape' && !showSearch && !showLedger) handleCancel();
+		if (e.key === 'Escape' && !showSearch && !showLedger && !showImport) handleCancel();
 	}
 </script>
 

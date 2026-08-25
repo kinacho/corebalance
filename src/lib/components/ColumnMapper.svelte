@@ -14,37 +14,50 @@
 
 	let { headers, rows, onConfirm, onBack, initialMapping, mappingScore }: Props = $props();
 
-	let mapping = $state<MappingConfig>({
-		shares: -1,
-		isin: -1,
-		ticker: -1,
-		name: -1,
-		avgCost: -1,
-		currency: -1,
-		date: -1,
-		type: -1
-	});
+	/**
+	 * El análisis de columnas se calculaba **dos veces** —aquí y dentro de
+	 * `calculatedScore`— sobre las mismas cabeceras y las mismas filas.
+	 */
+	const analysis = $derived(analyzeColumns(headers, rows));
 
-	$effect(() => {
-		// 1. Obtener sugerencia del motor analítico
-		const analysis = analyzeColumns(headers, rows);
-		const suggestion = suggestMappingFromAnalysis(analysis);
+	/**
+	 * ⚠️ **Esto era un `$effect`, y por serlo el usuario no podía desasignar una
+	 * columna.** El efecto leía los ocho campos que él mismo escribía
+	 * (`if (mapping.shares === -1) mapping.shares = …`), así que `mapping` era su
+	 * propia dependencia. Y `-1` no es un estado transitorio: es una **opción
+	 * elegible** en los ocho desplegables («No disponible», «Auto-generar»,
+	 * «Auto (EUR)», «No disponible (Posición simple)»…). En cuanto elegías una de
+	 * ellas en un campo para el que el analizador tenía sugerencia, el efecto se
+	 * auto-disparaba, veía `=== -1` y te volvía a meter la sugerencia: el
+	 * desplegable rebotaba solo. En el importador, que es por donde entra la
+	 * mayoría de las carteras reales.
+	 *
+	 * No era un efecto, era una **inicialización**. `ColumnMapper` se monta dentro
+	 * de `{:else if step === 'mapping'}` en `ImportModal` y volver atrás lo
+	 * desmonta, así que `headers`/`rows` no cambian mientras vive: calcularlo una
+	 * vez al construir el estado es exactamente equivalente, y ya no hay nada que
+	 * pueda pisar lo que el usuario elija después.
+	 */
+	function mapeoInicial(): MappingConfig {
+		const sugerencia = suggestMappingFromAnalysis(analysis);
+		const de = (campo: keyof MappingConfig) => initialMapping?.[campo] ?? sugerencia[campo] ?? -1;
+		return {
+			shares: de('shares'),
+			isin: de('isin'),
+			ticker: de('ticker'),
+			name: de('name'),
+			avgCost: de('avgCost'),
+			currency: de('currency'),
+			date: de('date'),
+			type: de('type')
+		};
+	}
 
-		// 2. Aplicar sugerencias o valores predeterminados (priorizando initialMapping de props si existe)
-		if (mapping.shares === -1) mapping.shares = initialMapping?.shares ?? suggestion.shares ?? -1;
-		if (mapping.isin === -1) mapping.isin = initialMapping?.isin ?? suggestion.isin ?? -1;
-		if (mapping.ticker === -1) mapping.ticker = initialMapping?.ticker ?? suggestion.ticker ?? -1;
-		if (mapping.name === -1) mapping.name = initialMapping?.name ?? suggestion.name ?? -1;
-		if (mapping.avgCost === -1) mapping.avgCost = initialMapping?.avgCost ?? suggestion.avgCost ?? -1;
-		if (mapping.currency === -1) mapping.currency = initialMapping?.currency ?? suggestion.currency ?? -1;
-		if (mapping.date === -1) mapping.date = initialMapping?.date ?? suggestion.date ?? -1;
-		if (mapping.type === -1) mapping.type = initialMapping?.type ?? suggestion.type ?? -1;
-	});
+	let mapping = $state<MappingConfig>(mapeoInicial());
 
 	const calculatedScore = $derived.by(() => {
 		if (mappingScore !== undefined) return mappingScore;
-		
-		const analysis = analyzeColumns(headers, rows);
+
 		let totalScore = 0;
 		let count = 0;
 

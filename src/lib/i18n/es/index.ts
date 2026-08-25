@@ -235,6 +235,7 @@ const es = {
     holdings: 'Participaciones',
     cash_balance: 'Saldo en cuenta',
     avg_cost: 'Coste Medio',
+    market_state_unknown: 'Estado de mercado desconocido',
     price: 'Precio',
     value_total: 'Valor Total',
     today: 'Hoy',
@@ -450,7 +451,11 @@ const es = {
     btn_activate: 'Activar Ledger',
     btn_add_tx: '+ Añadir',
     btn_save_tx: 'Guardar Transacción',
+    btn_save_changes: 'Guardar Cambios',
+    title_edit_tx: 'Editar Transacción',
+    title_currency_from_asset: 'La divisa la determina el activo',
     title_history: 'Historial de Operaciones',
+    title_open_ledger: 'Ver el libro de operaciones',
     empty_history: 'No hay transacciones registradas',
     notice_manual: 'Estás usando el {bold:string}. Los datos de este activo se gestionan desde la pantalla anterior.',
     notice_manual_bold: 'Modo Manual',
@@ -596,6 +601,7 @@ const es = {
     asset_deleted: 'Activo eliminado',
     shares_greater_than_zero: 'Las participaciones deben ser mayores a 0',
     transaction_added: 'Transacción añadida',
+    transaction_updated: 'Transacción modificada',
     transaction_deleted: 'Transacción eliminada',
     invalid_file_type: 'Solo se aceptan archivos CSV, TSV o TXT',
     file_too_large: 'El archivo es demasiado grande (máx. 1 MB)',
@@ -703,7 +709,7 @@ const es = {
     timing_period_note: 'Medido sobre los {days:number} días con datos reales, sin anualizar.',
     legal_disclaimer: '<strong>Aviso Legal:</strong> CoreBalance es una herramienta puramente informativa y educativa. No constituye asesoramiento financiero, de inversión ni fiscal. Los datos mostrados pueden sufrir retrasos o ser inexactos. El desarrollador no se hace responsable de posibles pérdidas financieras derivadas del uso de esta aplicación. Invierte siempre bajo tu propia responsabilidad.',
     footer_tagline: 'Tu centro de mandos para una gestión de activos inteligente y equilibrada.',
-    changelog_trigger: 'v1.20.0 🚀',
+    changelog_trigger: 'v1.20.1 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Hecho con ❤️ para la comunidad inversora',
     reclassify_stocks: 'Acciones Individuales',
@@ -1024,6 +1030,17 @@ const es = {
     close_aria: 'Cerrar modal',
     btn_understand: 'Entendido',
     releases: {
+      v1_20_1: {
+        date: '25 de Agosto, 2026',
+        badge: 'El formulario de movimientos deja de cerrarse solo',
+        changes: [
+          '✍️ **Añadías un movimiento a un fondo y el formulario se cerraba solo a los pocos segundos**, borrando lo que estuvieras escribiendo. La causa era la actualización de precios: cada 30 segundos la app refrescaba las cotizaciones y, de paso, reiniciaba el formulario que tenías abierto. Ya no. **Nunca se perdió ningún movimiento guardado**: lo que se perdía era lo que aún no habías guardado.',
+          '📅 **Y el calendario se comía el primer clic.** Con el selector de fecha abierto, tu primer clic en cualquier sitio —incluido «Guardar Transacción»— solo servía para cerrar el calendario, así que había que pulsar dos veces. Ahora un clic hace las dos cosas.',
+          '📜 **El libro de operaciones se abre desde cualquier activo.** En la vista de tarjetas solo aparecía si ese activo ya tenía el modo libro activado… y el interruptor para activarlo está dentro del propio libro. Toca el icono del activo y se abre siempre.',
+          '⌨️ **Escape cierra el libro**, como el resto de ventanas de la app. Y salir del importador de CSV con Escape ya no descarta los cambios que tuvieras a medias en «Gestionar activos», que es lo que hacía hasta ahora sin avisar.',
+          '📊 **En el importador ya puedes dejar una columna sin asignar.** Elegías «No disponible» y el desplegable volvía solo a la sugerencia anterior, una y otra vez.'
+        ]
+      },
       v1_20_0: {
         date: '21 de Agosto, 2026',
         badge: 'Las cifras de arriba se abren por cartera',
