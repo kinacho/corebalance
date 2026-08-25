@@ -515,7 +515,8 @@ const en: Translation = {
     dividendo_ultimo: 'Last payment',
     resultados_proximos: 'Next earnings',
     resultados_aprox: 'Approximate date: the source allows a couple of days either way.',
-    datos_no_disponibles: 'We do not have this data for this asset.',
+    datos_fuente: 'Dividends and earnings per Yahoo Finance, which is where the app takes prices from. If a figure does not match your broker, that is what the source publishes.',
+    datos_no_disponibles: 'Yahoo Finance does not cover this asset, so we have no dividends or earnings for it.',
     datos_cargando: 'Looking…',
   },
   // Manage Assets
@@ -1057,7 +1058,8 @@ const en: Translation = {
           '🏛️ **And whether you can transfer it without paying tax.** Only a mutual fund transfers with the gain deferred; an ETF tracking the same index does not. Every asset now says so in its own detail view, in one line.',
           '🧮 **What selling it today would cost you.** Unrealised gain under FIFO, the bill the savings-income scale would produce, and —if you are down— how many days until you can buy back without deferring the loss. This needs the asset ledger: without it, we say so instead of showing you a zero.',
           '🔗 **What it overlaps with.** Which of your other funds point at the same companies and how much money is duplicated, seen from the position you are looking at.',
-          '💰 **Dividends and, for stocks, the next earnings date.** This data already arrived with the prices and was thrown away; now it is cached for a day and only requested when you open a detail view, so it costs no extra request if you never open one.'
+          '💰 **Dividends and, for stocks, the next earnings date.** This data already arrived with the prices and was thrown away; now it is cached for a day and only requested when you open a detail view, so it costs no extra request if you never open one. **And it says where it comes from**: Yahoo Finance, so if a figure does not match your broker you know who to look at. If Yahoo does not cover an asset, it says so by name rather than a bare «no data» that reads like a bug of ours.',
+          '🏷️ **The annual cost of an asset now shows in the compact view too.** It was only in the card view, so switching views made the figure disappear — and compact is precisely the view you use to compare positions, which is when cost matters.'
         ]
       },
       v1_20_2: {

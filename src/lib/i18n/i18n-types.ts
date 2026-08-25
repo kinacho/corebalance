@@ -1902,7 +1902,11 @@ type RootTranslation = {
 		 */
 		resultados_aprox: string
 		/**
-		 * N​o​ ​t​e​n​e​m​o​s​ ​e​s​t​o​s​ ​d​a​t​o​s​ ​p​a​r​a​ ​e​s​t​e​ ​a​c​t​i​v​o​.
+		 * D​i​v​i​d​e​n​d​o​s​ ​y​ ​r​e​s​u​l​t​a​d​o​s​ ​s​e​g​ú​n​ ​Y​a​h​o​o​ ​F​i​n​a​n​c​e​,​ ​q​u​e​ ​e​s​ ​d​e​ ​d​o​n​d​e​ ​l​a​ ​a​p​p​ ​t​o​m​a​ ​l​o​s​ ​p​r​e​c​i​o​s​.​ ​S​i​ ​a​l​g​u​n​a​ ​c​i​f​r​a​ ​n​o​ ​c​u​a​d​r​a​ ​c​o​n​ ​l​a​ ​d​e​ ​t​u​ ​b​r​ó​k​e​r​,​ ​e​s​ ​l​o​ ​q​u​e​ ​p​u​b​l​i​c​a​ ​l​a​ ​f​u​e​n​t​e​.
+		 */
+		datos_fuente: string
+		/**
+		 * Y​a​h​o​o​ ​F​i​n​a​n​c​e​ ​n​o​ ​c​u​b​r​e​ ​e​s​t​e​ ​a​c​t​i​v​o​,​ ​a​s​í​ ​q​u​e​ ​n​o​ ​t​e​n​e​m​o​s​ ​n​i​ ​d​i​v​i​d​e​n​d​o​s​ ​n​i​ ​r​e​s​u​l​t​a​d​o​s​.
 		 */
 		datos_no_disponibles: string
 		/**
@@ -3885,9 +3889,13 @@ type RootTranslation = {
 					 */
 					'3': string
 					/**
-					 * �​�​ ​*​*​D​i​v​i​d​e​n​d​o​s​ ​y​,​ ​e​n​ ​l​a​s​ ​a​c​c​i​o​n​e​s​,​ ​l​a​ ​p​r​ó​x​i​m​a​ ​f​e​c​h​a​ ​d​e​ ​r​e​s​u​l​t​a​d​o​s​.​*​*​ ​E​s​t​o​s​ ​d​a​t​o​s​ ​y​a​ ​l​l​e​g​a​b​a​n​ ​c​o​n​ ​l​o​s​ ​p​r​e​c​i​o​s​ ​y​ ​s​e​ ​t​i​r​a​b​a​n​ ​a​ ​l​a​ ​b​a​s​u​r​a​;​ ​a​h​o​r​a​ ​s​e​ ​g​u​a​r​d​a​n​ ​u​n​ ​d​í​a​ ​y​ ​s​e​ ​p​i​d​e​n​ ​s​o​l​o​ ​c​u​a​n​d​o​ ​a​b​r​e​s​ ​u​n​a​ ​f​i​c​h​a​,​ ​a​s​í​ ​q​u​e​ ​n​o​ ​c​u​e​s​t​a​n​ ​n​i​ ​u​n​a​ ​p​e​t​i​c​i​ó​n​ ​e​x​t​r​a​ ​s​i​ ​n​o​ ​l​a​ ​a​b​r​e​s​.
+					 * �​�​ ​*​*​D​i​v​i​d​e​n​d​o​s​ ​y​,​ ​e​n​ ​l​a​s​ ​a​c​c​i​o​n​e​s​,​ ​l​a​ ​p​r​ó​x​i​m​a​ ​f​e​c​h​a​ ​d​e​ ​r​e​s​u​l​t​a​d​o​s​.​*​*​ ​E​s​t​o​s​ ​d​a​t​o​s​ ​y​a​ ​l​l​e​g​a​b​a​n​ ​c​o​n​ ​l​o​s​ ​p​r​e​c​i​o​s​ ​y​ ​s​e​ ​t​i​r​a​b​a​n​ ​a​ ​l​a​ ​b​a​s​u​r​a​;​ ​a​h​o​r​a​ ​s​e​ ​g​u​a​r​d​a​n​ ​u​n​ ​d​í​a​ ​y​ ​s​e​ ​p​i​d​e​n​ ​s​o​l​o​ ​c​u​a​n​d​o​ ​a​b​r​e​s​ ​u​n​a​ ​f​i​c​h​a​,​ ​a​s​í​ ​q​u​e​ ​n​o​ ​c​u​e​s​t​a​n​ ​n​i​ ​u​n​a​ ​p​e​t​i​c​i​ó​n​ ​e​x​t​r​a​ ​s​i​ ​n​o​ ​l​a​ ​a​b​r​e​s​.​ ​*​*​Y​ ​d​i​c​e​n​ ​d​e​ ​d​ó​n​d​e​ ​s​a​l​e​n​*​*​:​ ​s​o​n​ ​d​e​ ​Y​a​h​o​o​ ​F​i​n​a​n​c​e​,​ ​a​s​í​ ​q​u​e​ ​s​i​ ​u​n​a​ ​c​i​f​r​a​ ​n​o​ ​c​u​a​d​r​a​ ​c​o​n​ ​l​a​ ​d​e​ ​t​u​ ​b​r​ó​k​e​r​ ​s​a​b​e​s​ ​a​ ​q​u​i​é​n​ ​m​i​r​a​r​.​ ​S​i​ ​Y​a​h​o​o​ ​n​o​ ​c​u​b​r​e​ ​u​n​ ​a​c​t​i​v​o​,​ ​t​e​ ​l​o​ ​d​i​c​e​ ​p​o​r​ ​s​u​ ​n​o​m​b​r​e​ ​e​n​ ​v​e​z​ ​d​e​ ​s​o​l​t​a​r​ ​u​n​ ​«​n​o​ ​h​a​y​ ​d​a​t​o​s​»​ ​q​u​e​ ​p​a​r​e​c​e​ ​u​n​ ​f​a​l​l​o​ ​n​u​e​s​t​r​o​.
 					 */
 					'4': string
+					/**
+					 * �​�​️​ ​*​*​E​l​ ​c​o​s​t​e​ ​a​n​u​a​l​ ​d​e​l​ ​a​c​t​i​v​o​ ​a​p​a​r​e​c​e​ ​t​a​m​b​i​é​n​ ​e​n​ ​l​a​ ​v​i​s​t​a​ ​c​o​m​p​a​c​t​a​.​*​*​ ​E​s​t​a​b​a​ ​s​o​l​o​ ​e​n​ ​l​a​ ​v​i​s​t​a​ ​d​e​ ​t​a​r​j​e​t​a​s​,​ ​a​s​í​ ​q​u​e​ ​c​a​m​b​i​a​r​ ​d​e​ ​v​i​s​t​a​ ​h​a​c​í​a​ ​d​e​s​a​p​a​r​e​c​e​r​ ​l​a​ ​c​i​f​r​a​ ​—​ ​y​ ​l​a​ ​c​o​m​p​a​c​t​a​ ​e​s​ ​j​u​s​t​o​ ​l​a​ ​q​u​e​ ​s​e​ ​u​s​a​ ​p​a​r​a​ ​c​o​m​p​a​r​a​r​ ​p​o​s​i​c​i​o​n​e​s​,​ ​q​u​e​ ​e​s​ ​c​u​a​n​d​o​ ​e​l​ ​c​o​s​t​e​ ​i​m​p​o​r​t​a​.
+					 */
+					'5': string
 				}
 			}
 			v1_20_2: {
@@ -6755,7 +6763,11 @@ export type TranslationFunctions = {
 		 */
 		resultados_aprox: () => LocalizedString
 		/**
-		 * No tenemos estos datos para este activo.
+		 * Dividendos y resultados según Yahoo Finance, que es de donde la app toma los precios. Si alguna cifra no cuadra con la de tu bróker, es lo que publica la fuente.
+		 */
+		datos_fuente: () => LocalizedString
+		/**
+		 * Yahoo Finance no cubre este activo, así que no tenemos ni dividendos ni resultados.
 		 */
 		datos_no_disponibles: () => LocalizedString
 		/**
@@ -8632,9 +8644,13 @@ export type TranslationFunctions = {
 					 */
 					'3': () => LocalizedString
 					/**
-					 * 💰 **Dividendos y, en las acciones, la próxima fecha de resultados.** Estos datos ya llegaban con los precios y se tiraban a la basura; ahora se guardan un día y se piden solo cuando abres una ficha, así que no cuestan ni una petición extra si no la abres.
+					 * 💰 **Dividendos y, en las acciones, la próxima fecha de resultados.** Estos datos ya llegaban con los precios y se tiraban a la basura; ahora se guardan un día y se piden solo cuando abres una ficha, así que no cuestan ni una petición extra si no la abres. **Y dicen de dónde salen**: son de Yahoo Finance, así que si una cifra no cuadra con la de tu bróker sabes a quién mirar. Si Yahoo no cubre un activo, te lo dice por su nombre en vez de soltar un «no hay datos» que parece un fallo nuestro.
 					 */
 					'4': () => LocalizedString
+					/**
+					 * 🏷️ **El coste anual del activo aparece también en la vista compacta.** Estaba solo en la vista de tarjetas, así que cambiar de vista hacía desaparecer la cifra — y la compacta es justo la que se usa para comparar posiciones, que es cuando el coste importa.
+					 */
+					'5': () => LocalizedString
 				}
 			}
 			v1_20_2: {

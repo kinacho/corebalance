@@ -325,6 +325,17 @@
 
 			{#if !fundamentales.rentabilidadPorDividendo && !fundamentales.dividendoAnual && !fundamentales.proximosResultados}
 				<p class="dato-nota">{$LL.ficha.datos_no_disponibles()}</p>
+			{:else}
+				<!--
+					⚠️ **La fuente va escrita, y solo en este bloque.** Esta ficha tiene
+					cuatro procedencias distintas y atribuirlas todas a Yahoo sería
+					falso: lo del índice se lee de un ETF de réplica física y ya lo dice
+					con su ticker y su fecha; lo fiscal sale del libro del propio usuario
+					y ya se rotula como estimación con FIFO; el solapamiento se calcula
+					sobre el dataset curado a mano. Lo único que viene de Yahoo en vivo es
+					esto, y es lo único que no lo decía.
+				-->
+				<p class="procedencia">{$LL.ficha.datos_fuente()}</p>
 			{/if}
 		{/if}
 	</section>

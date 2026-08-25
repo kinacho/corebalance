@@ -184,15 +184,38 @@ describe('FichaDelActivo.svelte', () => {
 	});
 
 	/**
-	 * Los activos que solo existen en FT no están en la fuente de fundamentales.
-	 * Tienen que degradar diciéndolo, no quedarse en «Buscando…» para siempre.
+	 * ⚠️ **La fuente tiene que estar escrita, y solo en este bloque.** Si una cifra
+	 * no cuadra con la del bróker, quien la lee tiene que poder saber de dónde sale
+	 * — y la app no puede cargar con un dato que publica un tercero. Va únicamente
+	 * en dividendos y resultados: los otros tres bloques de la ficha tienen otra
+	 * procedencia y ya la declaran cada uno la suya, así que atribuirlos a Yahoo
+	 * sería falso.
 	 */
-	it('un activo sin datos disponibles lo dice', async () => {
+	it('nombra a Yahoo como fuente de los dividendos, y solo ahí', async () => {
+		store.transactions = [COMPRA];
+		store.fundamentals = { '0P0001XF40.F': { disponible: true, rentabilidadPorDividendo: 0.014 } };
+		const container = await pintar(FONDO);
+
+		expect(container.textContent).toContain('Yahoo Finance');
+		// Una sola vez: no se rotula cada bloque con una fuente que no es la suya.
+		expect(container.textContent!.match(/Yahoo Finance/g)).toHaveLength(1);
+
+		// Y lo fiscal sigue declarando la suya, que es otra.
+		expect(container.textContent).toContain('FIFO');
+	});
+
+	/**
+	 * Los activos que solo existen en FT no están en la fuente de fundamentales.
+	 * Tienen que degradar **nombrando a quién no los cubre**, no quedarse en
+	 * «Buscando…» ni decir un genérico «no tenemos estos datos» que suena a fallo
+	 * de la app.
+	 */
+	it('cuando no hay datos dice que la fuente no cubre el activo', async () => {
 		store.transactions = [];
 		store.fundamentals = { '0P0001XF40.F': { disponible: false } };
 		const container = await pintar(FONDO);
 
-		expect(container.textContent).toContain('No tenemos estos datos');
+		expect(container.textContent).toContain('Yahoo Finance no cubre');
 	});
 
 	it('pide los fundamentales al abrirse', async () => {

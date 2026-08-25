@@ -216,6 +216,39 @@ test.describe('Libro de operaciones', () => {
 		);
 	});
 
+	/**
+	 * ⚠️ **Cambiar de vista no puede hacer desaparecer una cifra.** El coste anual
+	 * del activo lo llevaba la tarjeta grande y no la fila compacta, así que pasar a
+	 * compacta —que es justo la vista con la que se comparan posiciones entre sí, o
+	 * sea cuando el coste importa— lo escondía sin que nada lo dijera.
+	 *
+	 * Se compara **la misma cifra en las dos vistas** y no que exista en cada una:
+	 * así el caso también se pone rojo si una de las dos la calcula distinto.
+	 */
+	test('el coste anual del activo está en la tarjeta y en la fila compacta', async ({ page }) => {
+		await sembrarCartera(page, CON_LIBRO);
+		await abrirDashboard(page);
+		await desplegarSecciones(page);
+
+		const enTarjeta = await page
+			.locator('.asset-card', { hasText: 'Vanguard' })
+			.first()
+			.locator('.cost-metric .metric-value')
+			.innerText();
+		expect(enTarjeta).toMatch(/\d/);
+
+		await page.locator('.view-toggle-btn').first().click();
+		await expect(page.locator('.compact-row').first()).toBeVisible();
+
+		const enCompacta = await page
+			.locator('.compact-row', { hasText: 'Vanguard' })
+			.first()
+			.locator('.perf-row.coste .perf-val')
+			.innerText();
+
+		expect(enCompacta.trim()).toBe(enTarjeta.trim());
+	});
+
 	test('Escape cierra el modal del libro', async ({ page }) => {
 		await sembrarCartera(page, CON_LIBRO);
 		await abrirDashboard(page);

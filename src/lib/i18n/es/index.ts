@@ -530,7 +530,8 @@ const es = {
     dividendo_ultimo: 'Último pago',
     resultados_proximos: 'Próximos resultados',
     resultados_aprox: 'Fecha aproximada: la fuente admite un margen de un par de días.',
-    datos_no_disponibles: 'No tenemos estos datos para este activo.',
+    datos_fuente: 'Dividendos y resultados según Yahoo Finance, que es de donde la app toma los precios. Si alguna cifra no cuadra con la de tu bróker, es lo que publica la fuente.',
+    datos_no_disponibles: 'Yahoo Finance no cubre este activo, así que no tenemos ni dividendos ni resultados.',
     datos_cargando: 'Buscando…',
   },
   // Manage Assets
@@ -1096,7 +1097,8 @@ const es = {
           '🏛️ **Y si puedes traspasarlo sin pagar a Hacienda.** Solo un fondo se traspasa con la plusvalía diferida; un ETF que replique el mismo índice, no. Ahora lo dice cada activo en su ficha, en una línea.',
           '🧮 **Cuánto te costaría venderlo hoy.** Plusvalía latente por FIFO, la factura que saldría con la escala del ahorro, y —si vas en pérdidas— cuántos días faltan para poder recomprar sin que se te difiera. Para esto hace falta el libro de operaciones del activo: si no lo tienes, te lo dice en vez de enseñarte un cero.',
           '🔗 **Con qué se pisa lo que tienes.** Qué otros fondos tuyos apuntan a las mismas empresas y cuánto dinero se duplica, mirado desde la posición que estás abriendo.',
-          '💰 **Dividendos y, en las acciones, la próxima fecha de resultados.** Estos datos ya llegaban con los precios y se tiraban a la basura; ahora se guardan un día y se piden solo cuando abres una ficha, así que no cuestan ni una petición extra si no la abres.'
+          '💰 **Dividendos y, en las acciones, la próxima fecha de resultados.** Estos datos ya llegaban con los precios y se tiraban a la basura; ahora se guardan un día y se piden solo cuando abres una ficha, así que no cuestan ni una petición extra si no la abres. **Y dicen de dónde salen**: son de Yahoo Finance, así que si una cifra no cuadra con la de tu bróker sabes a quién mirar. Si Yahoo no cubre un activo, te lo dice por su nombre en vez de soltar un «no hay datos» que parece un fallo nuestro.',
+          '🏷️ **El coste anual del activo aparece también en la vista compacta.** Estaba solo en la vista de tarjetas, así que cambiar de vista hacía desaparecer la cifra — y la compacta es justo la que se usa para comparar posiciones, que es cuando el coste importa.'
         ]
       },
       v1_20_2: {

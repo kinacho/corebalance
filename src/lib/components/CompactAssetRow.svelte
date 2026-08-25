@@ -202,6 +202,25 @@
 				<span class="perf-pct">({position.profit > 0 ? '+' : ''}{formatPercent(position.profitPercent)})</span>
 			</div>
 		</div>
+		<!--
+			⚠️ **Lo que te cuesta el activo al año, que aquí no estaba.** La tarjeta
+			grande lo lleva desde siempre y esta fila no, así que cambiar de vista hacía
+			desaparecer una cifra sin que nada lo dijera — y la vista compacta es
+			precisamente la que se usa para comparar posiciones entre sí, que es cuando
+			el coste importa. Misma condición y mismas claves que la tarjeta, para que
+			las dos vistas no puedan divergir en cuándo lo enseñan.
+		-->
+		{#if position.asset.ter > 0 && position.asset.manualInterestRate === undefined}
+			<div class="perf-row coste">
+				<span class="perf-label">{$LL.dashboard.estimated_cost()}</span>
+				<div class="perf-values">
+					<span class="perf-val privacy-blur">
+						{$LL.dashboard.currency(position.totalValue * position.asset.ter)}
+					</span>
+					<span class="perf-pct">{$LL.dashboard.per_year()}</span>
+				</div>
+			</div>
+		{/if}
 	</div>
 
 	<div class="cell-weight">
@@ -389,6 +408,19 @@
 		width: 100%;
 		font-size: 0.75rem;
 		font-weight: 700;
+	}
+
+	/*
+	 * El coste va en tono apagado: es un dato de contexto, no un resultado. Si
+	 * llevara el mismo peso que el «Total» competiría con la cifra que se viene a
+	 * mirar, y el proyecto ya tiene esa distinción hecha en la columna de
+	 * herramientas entre una cifra de la cartera y un supuesto.
+	 */
+	.perf-row.coste .perf-label,
+	.perf-row.coste .perf-val,
+	.perf-row.coste .perf-pct {
+		color: var(--text-muted);
+		font-weight: 600;
 	}
 
 	.perf-label {
