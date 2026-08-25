@@ -171,4 +171,65 @@ test.describe('móvil · nada se sale de la pantalla', () => {
 			).toBeLessThanOrEqual(0.5);
 		}
 	});
+
+	/**
+	 * ⚠️ **El importador se derramaba por abajo, y es un desbordamiento que este
+	 * spec no podía ver: no se sale de la *pantalla*, se sale de su propia caja.**
+	 *
+	 * `.import-body` es un flex en columna dentro de un panel con `max-height: 85vh`,
+	 * así que sus hijos se encogían para caber. `.upload-zone` tiene el `overflow`
+	 * visible: al encogerse no recortaba ni desplazaba, **derramaba**. Medido antes
+	 * del arreglo a 390×844, la zona renderizaba 100 px de los 166 que pide y
+	 * «Arrastra tu archivo CSV aquí» acababa **68 px por debajo** del borde
+	 * punteado, encima de la insignia y de la guía; a 360 px son 92, porque el
+	 * título parte en dos líneas. En escritorio cabe (218 de 214) y por eso llevaba
+	 * ahí sin verse.
+	 *
+	 * Se mide el hijo contra su padre y **también** que el cuerpo se pueda desplazar:
+	 * lo que tiene que ceder es el `overflow-y: auto`, y sin esa segunda mitad el
+	 * arreglo cambiaría «se derrama» por «hay contenido inalcanzable».
+	 */
+	test('⚠️ el importador no derrama su contenido fuera de la zona de subida', async ({ page }) => {
+		await sembrarCartera(page, CON_OBJETIVOS);
+		await abrirDashboard(page);
+
+		// El clic se despacha en el elemento: en móvil la cabecera es pegajosa y
+		// Playwright la da por «no estable» mientras se asienta.
+		await page.locator('#tour-manage-btn').dispatchEvent('click');
+		await page.locator('.manage-panel').waitFor({ state: 'visible' });
+		await page.locator('#tour-import-csv').dispatchEvent('click');
+		await page.locator('.upload-zone').waitFor({ state: 'visible' });
+		await page.waitForTimeout(400);
+
+		const medido = await page.evaluate(() => {
+			const zona = document.querySelector('.upload-zone') as HTMLElement;
+			const cuerpo = document.querySelector('.import-body') as HTMLElement;
+			const cz = zona.getBoundingClientRect();
+			const hijos = [...zona.children]
+				.filter((el) => getComputedStyle(el).position !== 'absolute')
+				.map((el) => {
+					const c = el.getBoundingClientRect();
+					return {
+						texto: (el.textContent ?? '').replace(/\s+/g, ' ').trim().slice(0, 40) || el.className,
+						desborde: +(c.bottom - cz.bottom).toFixed(1)
+					};
+				});
+			cuerpo.scrollTop = 99999;
+			return {
+				hijos,
+				aplastada: +(zona.scrollHeight - cz.height).toFixed(1),
+				puedeDesplazarse: cuerpo.scrollHeight > cuerpo.clientHeight ? cuerpo.scrollTop > 0 : true
+			};
+		});
+
+		expect(medido.hijos.length, 'la zona de subida no tiene contenido que medir').toBeGreaterThan(0);
+		for (const h of medido.hijos) {
+			expect(
+				h.desborde,
+				`«${h.texto}» acaba ${h.desborde} px por debajo del borde de la zona`
+			).toBeLessThanOrEqual(0.5);
+		}
+		expect(medido.aplastada, 'la zona de subida se ha encogido por debajo de su contenido').toBeLessThanOrEqual(0.5);
+		expect(medido.puedeDesplazarse, 'el cuerpo del importador no se puede desplazar').toBe(true);
+	});
 });

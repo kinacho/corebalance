@@ -600,6 +600,22 @@
 	.close-btn { width:36px; height:36px; border-radius:10px; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.04); color:var(--text-muted); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .2s; }
 	.close-btn:hover { background:rgba(255,255,255,.08); color:var(--text-primary); }
 	.import-body { flex:1; overflow-y:auto; padding:1.25rem 1.5rem; display:flex; flex-direction:column; gap:1rem; }
+	/*
+	 * ⚠️ **Sin esto el contenido se sale de su propia caja en móvil, y solo en móvil.**
+	 * Esto es un flex en columna dentro de un panel con `max-height: 85vh`, así que
+	 * sus hijos se encogen por defecto para caber. `.upload-zone` tiene el `overflow`
+	 * visible, o sea que al encogerse no recorta ni desplaza: **derrama**. Medido a
+	 * 390×844 antes del arreglo, la zona renderizaba 100 px de los 166 que pide y
+	 * «Arrastra tu archivo CSV aquí» acababa 68 px **por debajo** del borde punteado,
+	 * encima de la insignia y de la guía; a 360 px son 92 px, porque el título parte
+	 * en dos líneas. En escritorio da 218 de 214 y cabe: por eso no se veía.
+	 *
+	 * La regla va sobre todos los hijos y no solo sobre la zona de subida porque el
+	 * cuerpo cambia de contenido en cada paso —subir, mapear, resolver, hecho— y el
+	 * siguiente que no quepa se derramaría igual sin que nada lo dijera. Lo que tiene
+	 * que ceder es el `overflow-y: auto` de arriba, que para eso está.
+	 */
+	.import-body > * { flex-shrink:0; }
 	.import-body::-webkit-scrollbar { width:6px; }
 	.import-body::-webkit-scrollbar-thumb { background:rgba(255,255,255,.1); border-radius:3px; }
 

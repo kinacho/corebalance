@@ -309,3 +309,30 @@ export function tickerLabel(asset: { name?: string; ticker: string }): string {
 	const porNombre = shortestAssetLabel(asset);
 	return porNombre === asset.ticker ? asset.ticker : porNombre;
 }
+
+/**
+ * El rótulo **descriptivo**: el nombre sin la fontanería, conservando la gestora.
+ *
+ * «Fidelity MSCI World Index Fund» → «Fidelity MSCI World»; «Vanguard FTSE
+ * All-World UCITS ETF» → «Vanguard FTSE All-World»; «Apple Inc» → «Apple».
+ *
+ * ⚠️ **No es `tickerLabel()` y la diferencia es deliberada, no un descuido.** Aquel
+ * prefiere el ticker y solo cae al nombre cuando el ticker no dice nada, con el
+ * argumento —bueno, donde aplica— de que un ticker es corto, exacto y es como el
+ * usuario llama a su posición. Eso vale para una celda estrecha. No vale para una
+ * lista que responde a «qué está moviendo tu dinero hoy»: ahí `VWCE` obliga a
+ * traducir mentalmente antes de entender la respuesta, y quien no se sepa sus
+ * tickers de memoria no la entiende en absoluto.
+ *
+ * ⚠️ **Tampoco es `assetLabelCandidates()[1]`**, que era el atajo evidente y está
+ * mal: esa lista se deduplica, así que cuando el nombre no lleva fontanería el
+ * segundo elemento pasa a ser el nombre **sin gestora**, y «iShares Core MSCI
+ * World» se serviría como «Core MSCI World». Aquí la gestora se conserva siempre.
+ *
+ * Sin nombre devuelve el ticker, que es lo único que queda.
+ */
+export function descriptiveAssetLabel(asset: { name?: string; ticker: string }): string {
+	const nombre = (asset.name ?? '').trim().replace(/\s+/g, ' ');
+	if (!nombre) return asset.ticker;
+	return sinFontaneria(nombre) || nombre;
+}

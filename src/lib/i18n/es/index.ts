@@ -709,7 +709,7 @@ const es = {
     timing_period_note: 'Medido sobre los {days:number} días con datos reales, sin anualizar.',
     legal_disclaimer: '<strong>Aviso Legal:</strong> CoreBalance es una herramienta puramente informativa y educativa. No constituye asesoramiento financiero, de inversión ni fiscal. Los datos mostrados pueden sufrir retrasos o ser inexactos. El desarrollador no se hace responsable de posibles pérdidas financieras derivadas del uso de esta aplicación. Invierte siempre bajo tu propia responsabilidad.',
     footer_tagline: 'Tu centro de mandos para una gestión de activos inteligente y equilibrada.',
-    changelog_trigger: 'v1.20.1 🚀',
+    changelog_trigger: 'v1.20.2 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Hecho con ❤️ para la comunidad inversora',
     reclassify_stocks: 'Acciones Individuales',
@@ -1030,6 +1030,15 @@ const es = {
     close_aria: 'Cerrar modal',
     btn_understand: 'Entendido',
     releases: {
+      v1_20_2: {
+        date: '25 de Agosto, 2026',
+        badge: 'Menos ruido y nombres que se entienden',
+        changes: [
+          '📱 **En el móvil, el importador se salía de su propia caja.** «Arrastra tu archivo CSV aquí» aparecía por debajo del recuadro de puntos, encima de lo que venía detrás. La caja se encogía para caber en la pantalla y el texto se derramaba fuera; ahora la ventana se desplaza, que es lo que tenía que pasar. En el ordenador no se veía porque ahí cabía.',
+          '🔤 **«Lo que más lo mueve hoy» ya no te habla en tickers.** Donde ponía `VWCE` ahora pone «Vanguard FTSE All-World», y donde ponía un ISIN, el nombre del fondo. Si no te sabes tus tickers de memoria, la lista pasa de ser un jeroglífico a una respuesta.',
+          '🔄 **Fuera el botón de refrescar de la cabecera.** No hacía nada que no estuviera ya pasando: los precios se actualizan solos cada 30 segundos y, al volver a la pestaña, al instante. La hora de la última actualización sigue ahí al lado, y si alguna vez falla la conexión aparece un «Reintentar» justo donde sirve.'
+        ]
+      },
       v1_20_1: {
         date: '25 de Agosto, 2026',
         badge: 'El formulario de movimientos deja de cerrarse solo',
@@ -1365,7 +1374,6 @@ const es = {
     sync_devices: 'Sincronizar Dispositivos',
     show_values: 'Mostrar valores',
     hide_values: 'Ocultar valores',
-    update_prices: 'Actualizar precios',
     theme_to_light: 'Cambiar a tema claro',
     theme_to_dark: 'Cambiar a tema oscuro',
   },

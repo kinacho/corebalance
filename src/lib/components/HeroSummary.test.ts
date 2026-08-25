@@ -328,10 +328,34 @@ describe('HeroSummary — el cajón por cartera', () => {
 		await fireEvent.click(caja(container, 'Cambio Hoy'));
 
 		const nombres = [...container.querySelectorAll('.mover-nombre')].map((n) => n.textContent?.trim());
-		// El array llega como 12, −80, 40: el mayor en magnitud es el negativo y va primero.
-		expect(nombres[0]).toBe('AAPL');
+		/*
+		 * El array llega como 12, −80, 40: el mayor en magnitud es el negativo y va
+		 * primero.
+		 *
+		 * ⚠️ Esperaba `'AAPL'` y ahora espera `'Apple'`, y el cambio de contrato se
+		 * reescribe aquí en vez de borrar la prueba: esta lista **ya no rotula con el
+		 * ticker**. `tickerLabel()` lo prefería —bien para una celda estrecha— pero
+		 * esta lista contesta a «qué está moviendo tu dinero hoy», y ahí un ticker
+		 * obliga a traducir antes de entender la respuesta. Ver
+		 * `descriptiveAssetLabel()`.
+		 */
+		expect(nombres[0]).toBe('Apple');
 		expect(nombres[1]).not.toBe('IWDA.AS');
 		expect(nombres.length).toBe(3);
+	});
+
+	it('la lista rotula con el nombre y no con el ticker, aunque el ticker sea legible', async () => {
+		await sembrarTresBloques();
+		const { container } = render(HeroSummary);
+
+		await fireEvent.click(caja(container, 'Cambio Hoy'));
+
+		const nombres = [...container.querySelectorAll('.mover-nombre')].map((n) => n.textContent?.trim());
+		// `AAPL` e `IWDA.AS` son tickers perfectamente legibles: antes se servían tal
+		// cual, que es justo lo que este caso impide que vuelva.
+		expect(nombres).not.toContain('AAPL');
+		expect(nombres).not.toContain('IWDA.AS');
+		expect(nombres.every((n) => (n ?? '').length > 0)).toBe(true);
 	});
 
 	it('un fondo no se rotula con su ISIN', async () => {
