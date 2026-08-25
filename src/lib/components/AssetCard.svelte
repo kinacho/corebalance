@@ -124,13 +124,28 @@
 <div class="asset-card" style="--accent: {position.asset.color}">
 	<div class="card-header" style="display: grid; grid-template-columns: 1fr auto; align-items: start; gap: 1rem;">
 		<div class="asset-identity" style="min-width: 0;">
-			<div class="asset-icon-wrapper">
+			<!--
+				⚠️ **El icono abre el libro, y no es un adorno nuevo: es lo que
+				`CompactAssetRow` ya hacía.** Aquí el único abridor estaba dentro de
+				`{#if useLedger}`, y el único interruptor para *activar* el modo libro
+				vive dentro de ese mismo modal — o sea, un ciclo cerrado: no podías
+				activarlo porque para llegar al interruptor hacía falta tenerlo ya
+				activado. Y las dos vistas son intercambiables en el mismo sitio, así
+				que la misma acción estaba o no estaba según el modo de vista elegido.
+				`ManageAssets` tampoco lo condiciona (usa `class:active`, no `{#if}`),
+				lo que confirma que la condición de aquí era el descuido.
+			-->
+			<button
+				class="asset-icon-wrapper"
+				onclick={() => showLedger = true}
+				title={useLedger ? $LL.ledger.active() : $LL.ledger.title_open_ledger()}
+			>
 				<span class="asset-icon">{position.asset.icon || '📈'}</span>
 				{#if !isCash}
 
-					<span class="market-dot" class:open={isMarketOpen(position.asset.ticker, position.marketState)} class:closed={!isMarketOpen(position.asset.ticker, position.marketState)} title={position.marketState || 'Estado desconocido'}></span>
+					<span class="market-dot" class:open={isMarketOpen(position.asset.ticker, position.marketState)} class:closed={!isMarketOpen(position.asset.ticker, position.marketState)} title={position.marketState || $LL.dashboard.market_state_unknown()}></span>
 				{/if}
-			</div>
+			</button>
 			<div class="asset-info" style="min-width: 0; flex: 1;">
 				<div class="header-main" style="min-width: 0;">
 					<div class="ticker-row" style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; width: 100%;">
@@ -139,7 +154,7 @@
 						</span>
 						<div class="ticker-badges">
 							{#if useLedger}
-								<button class="ledger-badge active" onclick={() => showLedger = true} title="Modo Ledger activo (haz clic para ver historial)">
+								<button class="ledger-badge active" onclick={() => showLedger = true} title="{$LL.ledger.active()} — {$LL.ledger.title_history()}">
 									📜
 								</button>
 							{/if}
@@ -450,6 +465,18 @@
 		box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);
 		position: relative;
 		flex-shrink: 0;
+		/* Es un <button> desde que abre el libro: hay que soltar lo que el agente
+		   de usuario le pone por serlo. El anillo de foco es global y no se toca. */
+		padding: 0;
+		font: inherit;
+		color: inherit;
+		cursor: pointer;
+		transition: border-color 0.2s, background 0.2s;
+	}
+
+	.asset-icon-wrapper:hover {
+		border-color: var(--border-strong);
+		background: var(--bg-overlay);
 	}
 
 	.asset-icon {

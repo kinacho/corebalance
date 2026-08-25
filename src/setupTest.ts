@@ -27,6 +27,48 @@ window.scrollTo = vi.fn();
 window.scrollBy = vi.fn();
 
 /**
+ * Polyfill de `Element.animate`.
+ *
+ * jsdom no trae la Web Animations API, y las transiciones de Svelte 5
+ * (`transition:fade`, `slide`, `fly`) se apoyan en ella: cualquier componente que
+ * declare una revienta al renderizar con `element.animate is not a function`.
+ * Eso dejaba fuera de las pruebas de render precisamente a los modales, que son
+ * los que más transiciones llevan.
+ *
+ * Devuelve una animación ya terminada en vez de simularla. Lo que estas pruebas
+ * comprueban es qué hay en el DOM y qué se llamó, no la interpolación —y una
+ * animación que nunca acaba dejaría los nodos de salida colgando, que es peor
+ * que no animar.
+ */
+Element.prototype.animate = vi.fn().mockImplementation(() => {
+	const animacion = {
+		cancel: vi.fn(),
+		finish: vi.fn(),
+		pause: vi.fn(),
+		play: vi.fn(),
+		reverse: vi.fn(),
+		addEventListener: vi.fn(),
+		removeEventListener: vi.fn(),
+		currentTime: 0,
+		playState: 'finished',
+		startTime: 0,
+		effect: { getComputedTiming: () => ({ duration: 0 }) },
+		finished: Promise.resolve(),
+		onfinish: null as null | (() => void)
+	};
+	/*
+	 * ⚠️ Hay que **avisar de que terminó**, no solo decir que está terminada.
+	 * Svelte engancha su limpieza a `onfinish`, así que un doble que nunca lo
+	 * llama deja los nodos de salida colgando en el DOM: un `{#if}` que ya es
+	 * falso sigue teniendo su elemento, y una prueba que compruebe ausencia falla
+	 * sobre código correcto. Se llama en un `setTimeout` y no en un microtask
+	 * porque Svelte asigna `onfinish` después de crear la animación.
+	 */
+	setTimeout(() => animacion.onfinish?.(), 0);
+	return animacion;
+}) as unknown as Element['animate'];
+
+/**
  * Polyfill de ResizeObserver.
  *
  * jsdom no lo trae, y `bind:clientWidth` de Svelte 5 lo usa por debajo, así que

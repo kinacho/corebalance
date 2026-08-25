@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { fade, scale, fly } from 'svelte/transition';
+	import { onMount, onDestroy } from 'svelte';
+	import { bloquearScroll, desbloquearScroll } from '$lib/modal-lock';
 	import { ui } from '$lib/stores/ui.svelte';
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { focusTrap } from '$lib/actions/focusTrap';
@@ -11,6 +13,14 @@
 	let message = $state('');
 	let isSending = $state(false);
 	let isSuccess = $state(false);
+
+	/**
+	 * ⚠️ A diferencia de `AssetSearch`, aquí no había ningún padre que tapara el
+	 * descuido: este modal se monta en `+layout.svelte` sobre la página, así que
+	 * la página **sí** se movía por detrás mientras estaba abierto.
+	 */
+	onMount(() => bloquearScroll());
+	onDestroy(() => desbloquearScroll());
 
 	const type = $derived(ui.supportType);
 	const title = $derived(type === 'bug' ? $LL.support.title_bug() : $LL.support.title_contact());

@@ -1,0 +1,193 @@
+import { test, expect } from './util/test-base';
+import { abrirDashboard, sembrarCartera, CON_LIBRO } from './util/cartera';
+
+/**
+ * El formulario de alta del libro de movimientos, en un navegador de verdad.
+ *
+ * Aquí vive lo que las pruebas de componente **no pueden** decidir, y conviene
+ * tener claro el reparto para no duplicar ni fiarse de lo que no toca:
+ *
+ * - `LedgerModal.test.ts` fija el cableado reactivo (que un `asset` con nueva
+ *   identidad y el mismo ticker no cierre el formulario) y la precedencia del
+ *   Escape. Eso se puede decidir en jsdom.
+ * - Lo de aquí abajo **no**: que el sondeo de precios real no lo cierre, y que un
+ *   clic llegue a su destino habiendo una capa por medio. jsdom no tiene
+ *   disposición ni prueba de impacto, así que allí una capa superpuesta no
+ *   intercepta nada y esa prueba no podría fallar nunca.
+ */
+
+/**
+ * ⚠️ Las secciones de cartera **nacen plegadas**, así que sin esto las tarjetas
+ * están en el DOM pero tapadas por su propio contenedor: el clic falla con
+ * «`section#tour-portfolio-categories` intercepts pointer events», que apunta al
+ * localizador en vez de a la causa. Es el mismo motivo por el que existe
+ * `abrirMapas()` en los ayudantes compartidos.
+ */
+async function desplegarSecciones(page: import('@playwright/test').Page) {
+	const plegadas = page.locator('.section-header-btn[aria-expanded="false"]');
+	for (let i = await plegadas.count(); i > 0; i = await plegadas.count()) {
+		await plegadas.first().click();
+		await expect(plegadas).toHaveCount(i - 1);
+	}
+	await expect(page.locator('.asset-card').first()).toBeVisible();
+}
+
+/** Abre el libro del primer fondo desde su tarjeta y despliega el formulario. */
+async function abrirFormularioDelLibro(page: import('@playwright/test').Page) {
+	await desplegarSecciones(page);
+	await page.locator('.asset-card .asset-icon-wrapper').first().click();
+	const panel = page.locator('.ledger-panel');
+	await expect(panel).toBeVisible();
+
+	await panel.locator('.add-tx-btn').click();
+	await expect(panel.locator('.add-tx-form')).toBeVisible();
+	return panel;
+}
+
+test.describe('Libro de operaciones', () => {
+	/**
+	 * ⚠️ **El fallo tal y como lo reportó el usuario.** El `$effect` que reinicia el
+	 * formulario dependía de la identidad del prop `asset`, que se invalida en cada
+	 * sondeo de precios (30 s): abrías «+ Añadir», empezabas a escribir y a los
+	 * pocos segundos el formulario se cerraba solo, borrando lo escrito.
+	 *
+	 * Se usa `page.clock` para adelantar el reloj en vez de esperar 35 s reales.
+	 */
+	test('el sondeo de precios no cierra el formulario ni borra lo escrito', async ({ page }) => {
+		await page.clock.install();
+		await sembrarCartera(page, CON_LIBRO);
+		await abrirDashboard(page);
+
+		const panel = await abrirFormularioDelLibro(page);
+		await panel.locator('#tx-shares').fill('12.5');
+
+		// Dos sondeos completos por delante, más margen.
+		await page.clock.runFor(70_000);
+
+		await expect(panel.locator('.add-tx-form')).toBeVisible();
+		await expect(panel.locator('#tx-shares')).toHaveValue('12.5');
+	});
+
+	/**
+	 * ⚠️ La otra mitad, la que solo prueba un navegador: el calendario llevaba una
+	 * capa de cierre `position: fixed; inset: 0` **dentro** del panel y con
+	 * `z-index` por encima de todo él, así que el primer clic de cualquier punto de
+	 * la pantalla no hacía más que cerrarla. Guardar exigía dos clics.
+	 */
+	test('con el calendario abierto, el primer clic en guardar guarda', async ({ page }) => {
+		await sembrarCartera(page, CON_LIBRO);
+		await abrirDashboard(page);
+
+		const panel = await abrirFormularioDelLibro(page);
+		await panel.locator('#tx-shares').fill('3');
+
+		await panel.locator('#tx-date').click();
+		await expect(panel.locator('.date-picker')).toBeVisible();
+
+		const movimientosAntes = await panel.locator('.tx-item').count();
+
+		/*
+		 * ⚠️ **Se pregunta quién ocupa el punto, no se cuentan clics, y las dos
+		 * alternativas obvias se probaron y no valen.** `locator.click()`
+		 * **reintenta** cuando algo intercepta el puntero: con la capa puesta el
+		 * primer clic se lo comía el fondo, el fondo se cerraba y el reintento
+		 * llegaba al botón, así que la prueba pasaba con el defecto delante. Y un
+		 * `page.mouse.click()` sobre coordenadas sí falla con el defecto, pero mide
+		 * una caja que en la tanda en paralelo llega a quedarse obsoleta mientras el
+		 * panel se asienta, y entonces el clic aterriza en el fondo del modal y lo
+		 * cierra: rojo intermitente por el motivo equivocado.
+		 *
+		 * `elementFromPoint` responde justo a la pregunta —¿hay algo tapando el
+		 * botón de guardar mientras el calendario está abierto?— sin depender de
+		 * ninguna animación. Control negativo ejecutado: con la capa restaurada
+		 * devuelve `date-picker-backdrop`.
+		 */
+		// El cuerpo del modal tiene su propio scroll: sin esto la caja del botón puede
+		// caer fuera del panel y `elementFromPoint` devuelve el fondo del modal —rojo
+		// por dónde estaba la página, no por lo que se quiere medir.
+		await panel.locator('.submit-tx-btn').scrollIntoViewIfNeeded();
+
+		const quienOcupaElBoton = await panel.locator('.submit-tx-btn').evaluate((boton) => {
+			const caja = boton.getBoundingClientRect();
+			const encima = document.elementFromPoint(caja.x + caja.width / 2, caja.y + caja.height / 2);
+			return encima === boton || boton.contains(encima) ? 'el botón' : (encima?.className ?? '?');
+		});
+		expect(quienOcupaElBoton).toBe('el botón');
+
+		await panel.locator('.submit-tx-btn').click();
+
+		await expect(panel.locator('.date-picker')).toHaveCount(0);
+		await expect(panel.locator('.add-tx-form')).toHaveCount(0);
+		await expect(panel.locator('.tx-item')).toHaveCount(movimientosAntes + 1);
+	});
+
+	/**
+	 * El libro era inalcanzable desde la tarjeta grande para cualquier activo que no
+	 * tuviera ya el modo libro activado — y el interruptor para activarlo vive
+	 * dentro de ese mismo modal, o sea un ciclo cerrado. `SXR8` es el segundo fondo
+	 * de la semilla y no lleva libro.
+	 */
+	test('el libro se abre desde la tarjeta aunque el activo no tenga modo libro', async ({
+		page
+	}) => {
+		await sembrarCartera(page, CON_LIBRO);
+		await abrirDashboard(page);
+
+		await desplegarSecciones(page);
+		const tarjeta = page.locator('.asset-card', { hasText: 'iShares Core S&P 500' }).first();
+		await tarjeta.locator('.asset-icon-wrapper').click();
+
+		const panel = page.locator('.ledger-panel');
+		await expect(panel).toBeVisible();
+		// Y desde ahí sí se llega al interruptor que activa el modo libro.
+		await expect(panel.locator('.toggle-btn')).toBeVisible();
+	});
+
+	test('Escape cierra el modal del libro', async ({ page }) => {
+		await sembrarCartera(page, CON_LIBRO);
+		await abrirDashboard(page);
+
+		await desplegarSecciones(page);
+		await page.locator('.asset-card .asset-icon-wrapper').first().click();
+		await expect(page.locator('.ledger-panel')).toBeVisible();
+
+		await page.keyboard.press('Escape');
+		await expect(page.locator('.ledger-panel')).toHaveCount(0);
+	});
+
+	/**
+	 * ⚠️ **Esto no es del libro, pero es el mismo descuido y hacía daño de verdad.**
+	 * La guarda de Escape de `ManageAssets` enumeraba a mano sus hijos y se dejaba
+	 * el importador. Los handlers de `window` no se consumen entre sí, así que un
+	 * Escape con el importador abierto cerraba el importador **y además** llamaba a
+	 * `handleCancel()` del panel, que hace `restoreState`: salir del importador con
+	 * Escape revertía todos los cambios pendientes de la sesión de gestión.
+	 *
+	 * Se mide por lo que le pasa al usuario —el panel sigue abierto y su cambio
+	 * sigue puesto—, no por la llamada interna.
+	 */
+	test('Escape en el importador no revierte la sesión de gestionar activos', async ({ page }) => {
+		await sembrarCartera(page, CON_LIBRO);
+		await abrirDashboard(page);
+
+		await page.locator('#tour-manage-btn').click();
+		const panel = page.locator('.manage-panel');
+		await expect(panel).toBeVisible();
+
+		// Un cambio pendiente que `restoreState` desharía: el peso objetivo de un
+		// activo, que es lo primero que se toca en este panel.
+		const peso = panel.locator('input.weight-number-input').first();
+		await peso.fill('42');
+		await peso.dispatchEvent('change');
+		await expect(peso).toHaveValue('42');
+
+		await panel.locator('#tour-import-csv').click();
+		await expect(page.locator('.import-panel')).toBeVisible();
+
+		await page.keyboard.press('Escape');
+
+		await expect(page.locator('.import-panel')).toHaveCount(0);
+		await expect(panel).toBeVisible();
+		await expect(peso).toHaveValue('42');
+	});
+});

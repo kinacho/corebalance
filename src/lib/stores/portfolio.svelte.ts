@@ -1103,12 +1103,26 @@ export class PortfolioStore {
 			// Resetear errores en éxito
 			this.consecutiveErrors = 0;
 
+			/**
+			 * ⚠️ **Solo se reasigna si de verdad entró algún TER.** `applyTerUpdates`
+			 * hace `assets.map(...)`, así que devuelve un array nuevo **aunque
+			 * `updated` sea `false`**: reasignar siempre cambiaba la identidad de las
+			 * tres listas cada 30 s e invalidaba todo lo que cuelga de ellas
+			 * —`portfolioState`, `ledgerHoldings`, los dos mapas, los gráficos— sin
+			 * que hubiera cambiado nada. Es equivalente porque, sin TER nuevo, ese
+			 * `map` devuelve los mismos objetos elemento a elemento (`priceUtils.ts`).
+			 *
+			 * No arregla por sí solo el formulario del libro (`this.prices` sí cambia
+			 * en cada sondeo y recalcula `portfolioState` igualmente); lo que quita es
+			 * trabajo inútil, y una de las dos vías por las que aquel efecto se
+			 * re-disparaba.
+			 */
 			const core = applyTerUpdates(this.coreAssets, this.prices);
 			const satellite = applyTerUpdates(this.satelliteAssets, this.prices);
 			const stock = applyTerUpdates(this.stockAssets, this.prices);
-			this.coreAssets = core.assets;
-			this.satelliteAssets = satellite.assets;
-			this.stockAssets = stock.assets;
+			if (core.updated) this.coreAssets = core.assets;
+			if (satellite.updated) this.satelliteAssets = satellite.assets;
+			if (stock.updated) this.stockAssets = stock.assets;
 			if (core.updated || satellite.updated || stock.updated) this.saveToStorage();
 			if (typeof localStorage !== 'undefined') localStorage.setItem(STORAGE_KEY_PRICES, JSON.stringify(this.prices));
 			if (this.user) await this.updateHistoryPoints();

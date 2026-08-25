@@ -840,6 +840,10 @@ type RootTranslation = {
 		 */
 		avg_cost: string
 		/**
+		 * E​s​t​a​d​o​ ​d​e​ ​m​e​r​c​a​d​o​ ​d​e​s​c​o​n​o​c​i​d​o
+		 */
+		market_state_unknown: string
+		/**
 		 * P​r​e​c​i​o
 		 */
 		price: string
@@ -1610,9 +1614,25 @@ type RootTranslation = {
 		 */
 		btn_save_tx: string
 		/**
+		 * G​u​a​r​d​a​r​ ​C​a​m​b​i​o​s
+		 */
+		btn_save_changes: string
+		/**
+		 * E​d​i​t​a​r​ ​T​r​a​n​s​a​c​c​i​ó​n
+		 */
+		title_edit_tx: string
+		/**
+		 * L​a​ ​d​i​v​i​s​a​ ​l​a​ ​d​e​t​e​r​m​i​n​a​ ​e​l​ ​a​c​t​i​v​o
+		 */
+		title_currency_from_asset: string
+		/**
 		 * H​i​s​t​o​r​i​a​l​ ​d​e​ ​O​p​e​r​a​c​i​o​n​e​s
 		 */
 		title_history: string
+		/**
+		 * V​e​r​ ​e​l​ ​l​i​b​r​o​ ​d​e​ ​o​p​e​r​a​c​i​o​n​e​s
+		 */
+		title_open_ledger: string
 		/**
 		 * N​o​ ​h​a​y​ ​t​r​a​n​s​a​c​c​i​o​n​e​s​ ​r​e​g​i​s​t​r​a​d​a​s
 		 */
@@ -2169,6 +2189,10 @@ type RootTranslation = {
 		 */
 		transaction_added: string
 		/**
+		 * T​r​a​n​s​a​c​c​i​ó​n​ ​m​o​d​i​f​i​c​a​d​a
+		 */
+		transaction_updated: string
+		/**
 		 * T​r​a​n​s​a​c​c​i​ó​n​ ​e​l​i​m​i​n​a​d​a
 		 */
 		transaction_deleted: string
@@ -2572,7 +2596,7 @@ type RootTranslation = {
 		 */
 		footer_tagline: string
 		/**
-		 * v​1​.​2​0​.​0​ ​�​�
+		 * v​1​.​2​0​.​1​ ​�​�
 		 */
 		changelog_trigger: string
 		/**
@@ -3632,6 +3656,38 @@ type RootTranslation = {
 		 */
 		btn_understand: string
 		releases: {
+			v1_20_1: {
+				/**
+				 * 2​5​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
+				 */
+				date: string
+				/**
+				 * E​l​ ​f​o​r​m​u​l​a​r​i​o​ ​d​e​ ​m​o​v​i​m​i​e​n​t​o​s​ ​d​e​j​a​ ​d​e​ ​c​e​r​r​a​r​s​e​ ​s​o​l​o
+				 */
+				badge: string
+				changes: {
+					/**
+					 * ✍​️​ ​*​*​A​ñ​a​d​í​a​s​ ​u​n​ ​m​o​v​i​m​i​e​n​t​o​ ​a​ ​u​n​ ​f​o​n​d​o​ ​y​ ​e​l​ ​f​o​r​m​u​l​a​r​i​o​ ​s​e​ ​c​e​r​r​a​b​a​ ​s​o​l​o​ ​a​ ​l​o​s​ ​p​o​c​o​s​ ​s​e​g​u​n​d​o​s​*​*​,​ ​b​o​r​r​a​n​d​o​ ​l​o​ ​q​u​e​ ​e​s​t​u​v​i​e​r​a​s​ ​e​s​c​r​i​b​i​e​n​d​o​.​ ​L​a​ ​c​a​u​s​a​ ​e​r​a​ ​l​a​ ​a​c​t​u​a​l​i​z​a​c​i​ó​n​ ​d​e​ ​p​r​e​c​i​o​s​:​ ​c​a​d​a​ ​3​0​ ​s​e​g​u​n​d​o​s​ ​l​a​ ​a​p​p​ ​r​e​f​r​e​s​c​a​b​a​ ​l​a​s​ ​c​o​t​i​z​a​c​i​o​n​e​s​ ​y​,​ ​d​e​ ​p​a​s​o​,​ ​r​e​i​n​i​c​i​a​b​a​ ​e​l​ ​f​o​r​m​u​l​a​r​i​o​ ​q​u​e​ ​t​e​n​í​a​s​ ​a​b​i​e​r​t​o​.​ ​Y​a​ ​n​o​.​ ​*​*​N​u​n​c​a​ ​s​e​ ​p​e​r​d​i​ó​ ​n​i​n​g​ú​n​ ​m​o​v​i​m​i​e​n​t​o​ ​g​u​a​r​d​a​d​o​*​*​:​ ​l​o​ ​q​u​e​ ​s​e​ ​p​e​r​d​í​a​ ​e​r​a​ ​l​o​ ​q​u​e​ ​a​ú​n​ ​n​o​ ​h​a​b​í​a​s​ ​g​u​a​r​d​a​d​o​.
+					 */
+					'0': string
+					/**
+					 * �​�​ ​*​*​Y​ ​e​l​ ​c​a​l​e​n​d​a​r​i​o​ ​s​e​ ​c​o​m​í​a​ ​e​l​ ​p​r​i​m​e​r​ ​c​l​i​c​.​*​*​ ​C​o​n​ ​e​l​ ​s​e​l​e​c​t​o​r​ ​d​e​ ​f​e​c​h​a​ ​a​b​i​e​r​t​o​,​ ​t​u​ ​p​r​i​m​e​r​ ​c​l​i​c​ ​e​n​ ​c​u​a​l​q​u​i​e​r​ ​s​i​t​i​o​ ​—​i​n​c​l​u​i​d​o​ ​«​G​u​a​r​d​a​r​ ​T​r​a​n​s​a​c​c​i​ó​n​»​—​ ​s​o​l​o​ ​s​e​r​v​í​a​ ​p​a​r​a​ ​c​e​r​r​a​r​ ​e​l​ ​c​a​l​e​n​d​a​r​i​o​,​ ​a​s​í​ ​q​u​e​ ​h​a​b​í​a​ ​q​u​e​ ​p​u​l​s​a​r​ ​d​o​s​ ​v​e​c​e​s​.​ ​A​h​o​r​a​ ​u​n​ ​c​l​i​c​ ​h​a​c​e​ ​l​a​s​ ​d​o​s​ ​c​o​s​a​s​.
+					 */
+					'1': string
+					/**
+					 * �​�​ ​*​*​E​l​ ​l​i​b​r​o​ ​d​e​ ​o​p​e​r​a​c​i​o​n​e​s​ ​s​e​ ​a​b​r​e​ ​d​e​s​d​e​ ​c​u​a​l​q​u​i​e​r​ ​a​c​t​i​v​o​.​*​*​ ​E​n​ ​l​a​ ​v​i​s​t​a​ ​d​e​ ​t​a​r​j​e​t​a​s​ ​s​o​l​o​ ​a​p​a​r​e​c​í​a​ ​s​i​ ​e​s​e​ ​a​c​t​i​v​o​ ​y​a​ ​t​e​n​í​a​ ​e​l​ ​m​o​d​o​ ​l​i​b​r​o​ ​a​c​t​i​v​a​d​o​…​ ​y​ ​e​l​ ​i​n​t​e​r​r​u​p​t​o​r​ ​p​a​r​a​ ​a​c​t​i​v​a​r​l​o​ ​e​s​t​á​ ​d​e​n​t​r​o​ ​d​e​l​ ​p​r​o​p​i​o​ ​l​i​b​r​o​.​ ​T​o​c​a​ ​e​l​ ​i​c​o​n​o​ ​d​e​l​ ​a​c​t​i​v​o​ ​y​ ​s​e​ ​a​b​r​e​ ​s​i​e​m​p​r​e​.
+					 */
+					'2': string
+					/**
+					 * ⌨​️​ ​*​*​E​s​c​a​p​e​ ​c​i​e​r​r​a​ ​e​l​ ​l​i​b​r​o​*​*​,​ ​c​o​m​o​ ​e​l​ ​r​e​s​t​o​ ​d​e​ ​v​e​n​t​a​n​a​s​ ​d​e​ ​l​a​ ​a​p​p​.​ ​Y​ ​s​a​l​i​r​ ​d​e​l​ ​i​m​p​o​r​t​a​d​o​r​ ​d​e​ ​C​S​V​ ​c​o​n​ ​E​s​c​a​p​e​ ​y​a​ ​n​o​ ​d​e​s​c​a​r​t​a​ ​l​o​s​ ​c​a​m​b​i​o​s​ ​q​u​e​ ​t​u​v​i​e​r​a​s​ ​a​ ​m​e​d​i​a​s​ ​e​n​ ​«​G​e​s​t​i​o​n​a​r​ ​a​c​t​i​v​o​s​»​,​ ​q​u​e​ ​e​s​ ​l​o​ ​q​u​e​ ​h​a​c​í​a​ ​h​a​s​t​a​ ​a​h​o​r​a​ ​s​i​n​ ​a​v​i​s​a​r​.
+					 */
+					'3': string
+					/**
+					 * �​�​ ​*​*​E​n​ ​e​l​ ​i​m​p​o​r​t​a​d​o​r​ ​y​a​ ​p​u​e​d​e​s​ ​d​e​j​a​r​ ​u​n​a​ ​c​o​l​u​m​n​a​ ​s​i​n​ ​a​s​i​g​n​a​r​.​*​*​ ​E​l​e​g​í​a​s​ ​«​N​o​ ​d​i​s​p​o​n​i​b​l​e​»​ ​y​ ​e​l​ ​d​e​s​p​l​e​g​a​b​l​e​ ​v​o​l​v​í​a​ ​s​o​l​o​ ​a​ ​l​a​ ​s​u​g​e​r​e​n​c​i​a​ ​a​n​t​e​r​i​o​r​,​ ​u​n​a​ ​y​ ​o​t​r​a​ ​v​e​z​.
+					 */
+					'4': string
+				}
+			}
 			v1_20_0: {
 				/**
 				 * 2​1​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
@@ -5415,6 +5471,10 @@ export type TranslationFunctions = {
 		 */
 		avg_cost: () => LocalizedString
 		/**
+		 * Estado de mercado desconocido
+		 */
+		market_state_unknown: () => LocalizedString
+		/**
 		 * Precio
 		 */
 		price: () => LocalizedString
@@ -6163,9 +6223,25 @@ export type TranslationFunctions = {
 		 */
 		btn_save_tx: () => LocalizedString
 		/**
+		 * Guardar Cambios
+		 */
+		btn_save_changes: () => LocalizedString
+		/**
+		 * Editar Transacción
+		 */
+		title_edit_tx: () => LocalizedString
+		/**
+		 * La divisa la determina el activo
+		 */
+		title_currency_from_asset: () => LocalizedString
+		/**
 		 * Historial de Operaciones
 		 */
 		title_history: () => LocalizedString
+		/**
+		 * Ver el libro de operaciones
+		 */
+		title_open_ledger: () => LocalizedString
 		/**
 		 * No hay transacciones registradas
 		 */
@@ -6703,6 +6779,10 @@ export type TranslationFunctions = {
 		 */
 		transaction_added: () => LocalizedString
 		/**
+		 * Transacción modificada
+		 */
+		transaction_updated: () => LocalizedString
+		/**
 		 * Transacción eliminada
 		 */
 		transaction_deleted: () => LocalizedString
@@ -7083,7 +7163,7 @@ export type TranslationFunctions = {
 		 */
 		footer_tagline: () => LocalizedString
 		/**
-		 * v1.20.0 🚀
+		 * v1.20.1 🚀
 		 */
 		changelog_trigger: () => LocalizedString
 		/**
@@ -8077,6 +8157,38 @@ export type TranslationFunctions = {
 		 */
 		btn_understand: () => LocalizedString
 		releases: {
+			v1_20_1: {
+				/**
+				 * 25 de Agosto, 2026
+				 */
+				date: () => LocalizedString
+				/**
+				 * El formulario de movimientos deja de cerrarse solo
+				 */
+				badge: () => LocalizedString
+				changes: {
+					/**
+					 * ✍️ **Añadías un movimiento a un fondo y el formulario se cerraba solo a los pocos segundos**, borrando lo que estuvieras escribiendo. La causa era la actualización de precios: cada 30 segundos la app refrescaba las cotizaciones y, de paso, reiniciaba el formulario que tenías abierto. Ya no. **Nunca se perdió ningún movimiento guardado**: lo que se perdía era lo que aún no habías guardado.
+					 */
+					'0': () => LocalizedString
+					/**
+					 * 📅 **Y el calendario se comía el primer clic.** Con el selector de fecha abierto, tu primer clic en cualquier sitio —incluido «Guardar Transacción»— solo servía para cerrar el calendario, así que había que pulsar dos veces. Ahora un clic hace las dos cosas.
+					 */
+					'1': () => LocalizedString
+					/**
+					 * 📜 **El libro de operaciones se abre desde cualquier activo.** En la vista de tarjetas solo aparecía si ese activo ya tenía el modo libro activado… y el interruptor para activarlo está dentro del propio libro. Toca el icono del activo y se abre siempre.
+					 */
+					'2': () => LocalizedString
+					/**
+					 * ⌨️ **Escape cierra el libro**, como el resto de ventanas de la app. Y salir del importador de CSV con Escape ya no descarta los cambios que tuvieras a medias en «Gestionar activos», que es lo que hacía hasta ahora sin avisar.
+					 */
+					'3': () => LocalizedString
+					/**
+					 * 📊 **En el importador ya puedes dejar una columna sin asignar.** Elegías «No disponible» y el desplegable volvía solo a la sugerencia anterior, una y otra vez.
+					 */
+					'4': () => LocalizedString
+				}
+			}
 			v1_20_0: {
 				/**
 				 * 21 de Agosto, 2026

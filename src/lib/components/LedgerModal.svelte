@@ -6,6 +6,7 @@
 	import { fade, slide, fly } from 'svelte/transition';
 	import { onMount, onDestroy, untrack } from 'svelte';
 	import { bloquearScroll, desbloquearScroll } from '$lib/modal-lock';
+	import { focusTrap } from '$lib/actions/focusTrap';
 	import { LL, locale } from '$lib/i18n/i18n-svelte';
 
 	interface Props {
@@ -48,6 +49,49 @@
 		showDatePicker = true;
 	}
 
+	/**
+	 * ⚠️ **El calendario se cierra con un listener en `window`, no con una capa.**
+	 *
+	 * Antes había un `.date-picker-backdrop` con `position: fixed; inset: 0` y
+	 * `z-index: 10` viviendo *dentro* del panel. No hay ningún ancestro con
+	 * `transform`/`filter` que lo acote, así que eran los 100vw × 100vh de verdad,
+	 * por encima de todo el modal: con el calendario abierto lo **único** clicable
+	 * de la pantalla era el propio calendario. El primer clic en «Guardar
+	 * Transacción», en cualquier campo o en el fondo del modal no hacía más que
+	 * cerrar el calendario, y hacía falta un segundo clic para todo lo demás.
+	 *
+	 * Es el patrón que este repo ya resuelve bien en `Header.svelte` con el menú de
+	 * usuario, y en `Toast.svelte` con `pointer-events: none`. `pointerdown` va
+	 * antes que `click`, así que el calendario se cierra **y** el clic llega a su
+	 * destino. La guarda de `#tx-date` evita que el propio campo lo cierre y lo
+	 * vuelva a abrir en el mismo gesto.
+	 */
+	function cerrarCalendarioFuera(e: PointerEvent) {
+		if (!showDatePicker) return;
+		const destino = e.target as HTMLElement | null;
+		if (destino?.closest('.date-picker') || destino?.closest('#tx-date')) return;
+		showDatePicker = false;
+	}
+
+	/**
+	 * Escape, que este modal era el único de los cinco en no tener.
+	 *
+	 * ⚠️ Con precedencia: primero el calendario y **solo** el calendario. Los
+	 * handlers de `window` no se consumen entre sí, así que sin este `return` un
+	 * único Escape cerraría los tres niveles apilados (`ManageAssets` → este modal
+	 * → el calendario). Por el otro lado, la guarda `!showLedger` de
+	 * `ManageAssets` —que hasta ahora era inerte, porque aquí no había Escape— es
+	 * la que evita que este cierre arrastre también al panel de gestión.
+	 */
+	function alPulsarTecla(e: KeyboardEvent) {
+		if (e.key !== 'Escape') return;
+		if (showDatePicker) {
+			showDatePicker = false;
+			return;
+		}
+		onClose();
+	}
+
 	function selectYear(y: number) {
 		pickerViewDate = new Date(y, pickerViewDate.getMonth(), 1);
 		pickerStep = 'month';
@@ -88,25 +132,50 @@
 		notes: ''
 	});
 
-	// Inicializar valores cuando cambia el activo o se abre el formulario.
-	// Se usa untrack() para leer defaultPrice/defaultCurrency sin crear dependencia
-	// reactiva en ellos: así el polling de precios (cada 30s) NO re-dispara este
-	// efecto y no borra el historial ni resetea el formulario mientras está abierto.
+	/**
+	 * ⚠️ **Este efecto reinicia el formulario, así que solo puede dispararse cuando
+	 * de verdad cambia el activo — y durante meses se disparó en cada sondeo de
+	 * precios, cerrando el formulario y borrando lo que estabas escribiendo.**
+	 *
+	 * El comentario anterior decía que el `untrack()` de abajo impedía justo eso.
+	 * Es falso, y en la dirección peor: `untrack()` protege los *valores* que se
+	 * leen dentro (`defaultPrice`, `defaultCurrency`), no la dependencia del prop
+	 * `asset`. Y `asset` no es un objeto suelto, es el final de esta cadena:
+	 *
+	 *   asset  ←  AssetCard position.asset  ←  {#each portfolioState.positions}
+	 *
+	 * O sea que la dependencia real del efecto es la fuente del `{#each}`, no el
+	 * objeto `Asset`. Cada recálculo de `portfolioState` escribe un `position`
+	 * nuevo ahí y el efecto vuelve a correr, aunque `position.asset` sea
+	 * exactamente el mismo objeto. `fetchPrices()` lo recalcula cada 30 s.
+	 *
+	 * La guarda es por **valor**, entonces: solo se reinicia si el ticker cambió.
+	 * Con eso el formulario queda inmune a cualquier recálculo del store, no solo
+	 * al que se identificó. `tickerMostrado` no es `$state` a propósito — nadie lo
+	 * pinta, y como estado reactivo leerlo y escribirlo aquí sería un ciclo.
+	 *
+	 * Sigue haciendo falta reiniciar de verdad: desde `ManageAssets` este modal
+	 * cambia de activo sin remontarse (allí el prop es un `$state` local), que es
+	 * también la razón de que el fallo solo se viera desde la tarjeta y la fila.
+	 */
+	let tickerMostrado = untrack(() => asset.ticker);
+
 	$effect(() => {
-		if (asset.ticker) {
-			editingTxId = null;
-			showAddForm = false;
-			newTx = {
-				type: 'buy',
-				date: Date.now(),
-				shares: 0,
-				price: untrack(() => defaultPrice),
-				currency: untrack(() => defaultCurrency),
-				fees: 0,
-				fxRate: 1,
-				notes: ''
-			};
-		}
+		const ticker = asset.ticker;
+		if (ticker === tickerMostrado) return;
+		tickerMostrado = ticker;
+		editingTxId = null;
+		showAddForm = false;
+		newTx = {
+			type: 'buy',
+			date: Date.now(),
+			shares: 0,
+			price: untrack(() => defaultPrice),
+			currency: untrack(() => defaultCurrency),
+			fees: 0,
+			fxRate: 1,
+			notes: ''
+		};
 	});
 
 	$effect(() => {
@@ -156,7 +225,7 @@
 				fxRate: newTx.fxRate || 1,
 				notes: newTx.notes
 			});
-			ui.addToast('Transacción modificada con éxito', 'success');
+			ui.addToast($LL.toasts.transaction_updated(), 'success');
 		} else {
 			const tx: Transaction = {
 				id: crypto.randomUUID(),
@@ -235,15 +304,32 @@
 	};
 </script>
 
+<svelte:window onkeydown={alPulsarTecla} onpointerdown={cerrarCalendarioFuera} />
+
 <div class="ledger-overlay" transition:fade={{ duration: 150 }}>
 	<button class="ledger-backdrop" onclick={onClose} aria-label={$LL.common.close()}></button>
-	
-	<div class="ledger-panel" transition:fly={{ y: 20, duration: 200 }}>
+
+	<!--
+		⚠️ `use:focusTrap` va en el **panel**, no en el overlay, igual que en
+		`ImportModal`: el fondo de cierre es un `<button>` y en el overlay sería el
+		primer elemento enfocable, o sea que abrir el modal dejaría el foco sobre
+		«cerrar». Limitación conocida de la acción, común a los cinco modales:
+		fotografía los elementos enfocables al montar, así que el formulario de alta
+		—que aparece después— queda fuera del ciclo de tabulación.
+	-->
+	<div
+		class="ledger-panel"
+		transition:fly={{ y: 20, duration: 200 }}
+		use:focusTrap
+		role="dialog"
+		aria-modal="true"
+		aria-labelledby="ledger-title"
+	>
 		<div class="ledger-header" style="--accent: {asset.color}">
 			<div class="asset-brand">
 				<span class="asset-icon">{asset.icon}</span>
 				<div>
-					<h2 class="asset-name">{asset.name}</h2>
+					<h2 class="asset-name" id="ledger-title">{asset.name}</h2>
 					<p class="asset-ticker">{asset.ticker}</p>
 				</div>
 			</div>
@@ -295,7 +381,7 @@
 					{#if showAddForm}
 						<div class="add-tx-form" transition:slide>
 							{#if editingTxId}
-								<h4 class="form-title">Editar Transacción</h4>
+								<h4 class="form-title">{$LL.ledger.title_edit_tx()}</h4>
 							{/if}
 							<div class="form-row">
 								<div class="form-group">
@@ -320,13 +406,6 @@
 									/>
 
 									{#if showDatePicker}
-										<!-- svelte-ignore a11y_no_static_element_interactions -->
-										<div 
-											class="date-picker-backdrop" 
-											onclick={() => showDatePicker = false}
-											onkeydown={(e) => e.key === 'Escape' && (showDatePicker = false)}
-											role="presentation"
-										></div>
 										<div class="date-picker">
 
 											{#if pickerStep === 'day'}
@@ -408,14 +487,14 @@
 								<div class="form-group">
 									<label for="tx-currency">{$LL.ledger.label_currency()}</label>
 									<div class="fx-group">
-										<input id="tx-currency" type="text" class="currency-input" bind:value={newTx.currency} maxlength="3" disabled title="La divisa está determinada por el activo" />
+										<input id="tx-currency" type="text" class="currency-input" bind:value={newTx.currency} maxlength="3" disabled title={$LL.ledger.title_currency_from_asset()} />
 										<input type="number" step="0.0001" class="fx-input" bind:value={newTx.fxRate} title={$LL.ledger.title_fx_rate()} />
 									</div>
 								</div>
 							</div>
 
 							<button class="submit-tx-btn" onclick={submitTransaction}>
-								{editingTxId ? 'Guardar Cambios' : $LL.ledger.btn_save_tx()}
+								{editingTxId ? $LL.ledger.btn_save_changes() : $LL.ledger.btn_save_tx()}
 							</button>
 						</div>
 					{/if}
@@ -813,11 +892,6 @@
 		margin-top: 1rem;
 	}
 
-	.date-picker-backdrop {
-		position: fixed;
-		inset: 0;
-		z-index: 10;
-	}
 	.date-picker {
 		position: absolute;
 		top: calc(100% + 4px);

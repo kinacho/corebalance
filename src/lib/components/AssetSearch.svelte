@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
+	import { bloquearScroll, desbloquearScroll } from '$lib/modal-lock';
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { ui } from '$lib/stores/ui.svelte';
 	import { focusTrap } from '$lib/actions/focusTrap';
@@ -24,6 +25,17 @@
 	let searchError = $state<string | null>(null);
 	let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 	let searchInputEl: HTMLInputElement;
+
+	/**
+	 * ⚠️ Este modal no bloqueaba el scroll, y la razón por la que se veía bien es
+	 * la equivocada: solo se abre desde dentro de `ManageAssets`, que sí lo
+	 * bloquea. Es exactamente el razonamiento que el docblock de `modal-lock.ts`
+	 * documenta como defectuoso —«ningún modal debería tener que saber qué hay
+	 * detrás de él»—, y es el que dejó a `LedgerModal` sin soltar el bloqueo. Con
+	 * el contador puesto, tomarlo aquí es gratis y deja de depender del padre.
+	 */
+	onMount(() => bloquearScroll());
+	onDestroy(() => desbloquearScroll());
 
 	onMount(() => {
 		if (searchInputEl) searchInputEl.focus();

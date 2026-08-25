@@ -4,6 +4,7 @@
 	import { formatCurrency, formatPrice, formatPercent, isMarketOpen } from '$lib/utils';
 	import LedgerModal from './LedgerModal.svelte';
 	import EditReasonPrompt from './EditReasonPrompt.svelte';
+	import { LL } from '$lib/i18n/i18n-svelte';
 
 	interface Props {
 		position: PortfolioPosition;
@@ -94,9 +95,9 @@
 
 <div class="compact-row" class:ledger-active={useLedger}>
 	<div class="cell-identity">
-		<button class="asset-icon" onclick={() => showLedger = true} title={useLedger ? 'Modo Ledger activo' : 'Ver transacciones'}>
+		<button class="asset-icon" onclick={() => showLedger = true} title={useLedger ? $LL.ledger.active() : $LL.ledger.title_open_ledger()}>
 			{position.asset.icon || '📈'}
-			<span class="market-dot" class:open={isMarketOpen(position.asset.ticker, position.marketState)} class:closed={!isMarketOpen(position.asset.ticker, position.marketState)} title={position.marketState || 'Estado desconocido'}></span>
+			<span class="market-dot" class:open={isMarketOpen(position.asset.ticker, position.marketState)} class:closed={!isMarketOpen(position.asset.ticker, position.marketState)} title={position.marketState || $LL.dashboard.market_state_unknown()}></span>
 
 			{#if useLedger}
 				<span class="ledger-indicator">📜</span>
