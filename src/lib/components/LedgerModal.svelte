@@ -9,6 +9,19 @@
 	import { focusTrap } from '$lib/actions/focusTrap';
 	import FichaDelActivo from './FichaDelActivo.svelte';
 	import { LL, locale } from '$lib/i18n/i18n-svelte';
+	import { canBeTransferred, classifyMove, instrumentTypeOf } from '$lib/instrument-type';
+	/*
+	 * El icono sale de `asset.icon` y no de `resolveAssetIcon()`: ese campo **es** la
+	 * caché de esa función, y `normalizeAssets()` lo recalcula en cada carga
+	 * precisamente para que no se congele el resultado de una versión vieja. Llamarla
+	 * aquí otra vez sería una segunda fuente de verdad para lo mismo.
+	 */
+	import { descriptiveAssetLabel } from '$lib/asset-label';
+	import {
+		planificarTraspaso,
+		meritaApuntar,
+		type CuantoTraspasar
+	} from '$lib/traspaso-libro';
 
 	interface Props {
 		asset: Asset;
@@ -180,6 +193,14 @@
 		pestana = 'ficha';
 		editingTxId = null;
 		showAddForm = false;
+		/*
+		 * ⚠️ El formulario de traspaso **también**, y aquí es peor que en el resto: un
+		 * destino que sobreviviera al cambio de activo enseñaría el origen de uno con
+		 * el destino del anterior. Es decir, rompería exactamente lo que este
+		 * formulario existe para dejar claro.
+		 */
+		showTransferForm = false;
+		resetTransferForm();
 		newTx = {
 			type: 'buy',
 			date: Date.now(),
@@ -292,6 +313,25 @@
 	}
 
 	function removeTx(id: string) {
+		const tx = portfolio.transactions.find((t) => t.id === id);
+
+		/*
+		 * ⚠️ Borrar una sola pata deja la cartera **descuadrada en silencio**:
+		 * desaparecen las participaciones de un lado y se quedan las del otro. Así que
+		 * se pregunta por las dos, nombrando el otro fondo — sin eso, «¿eliminar las
+		 * dos?» no dice de qué segunda transacción está hablando.
+		 */
+		if (tx?.transferId) {
+			const otro = contraparteDe(tx);
+			const nombre = otro ? descriptiveAssetLabel(otro) : tx.ticker;
+			if (confirm($LL.ledger.confirm_delete_par({ fondo: nombre }))) {
+				portfolio.removeTransferPair(tx.transferId);
+				if (editingTxId === id) cancelForm();
+				ui.addToast($LL.toasts.transaction_deleted(), 'info');
+			}
+			return;
+		}
+
 		if (confirm($LL.ledger.confirm_delete())) {
 			portfolio.removeTransaction(id);
 			if (editingTxId === id) {
@@ -305,17 +345,182 @@
 		buy: $LL.ledger.type_buy(),
 		sell: $LL.ledger.type_sell(),
 		dividend: $LL.ledger.type_dividend(),
+		transfer_in: $LL.ledger.type_transfer_in(),
+		transfer_out: $LL.ledger.type_transfer_out(),
 		transfer: $LL.ledger.type_transfer(),
 		initial_balance: $LL.ledger.type_initial_balance()
 	});
 
+	/*
+	 * ⚠️ **Las dos patas de un traspaso comparten hue, y es a propósito.** Un
+	 * traspaso es **un** evento; dos colores dirían que son dos hechos sin relación,
+	 * que es justo lo que este cambio viene a arreglar. La dirección la llevan la
+	 * flecha y el signo de las participaciones — codificación redundante, y ninguna
+	 * de las dos depende de distinguir tonos.
+	 */
 	const typeColors: Record<TransactionType, string> = {
 		buy: '#10b981',
 		sell: '#ef4444',
 		dividend: '#f59e0b',
+		transfer_in: '#3b82f6',
+		transfer_out: '#3b82f6',
 		transfer: '#3b82f6',
 		initial_balance: '#a78bfa'
 	};
+
+	// ------------------------------------------------------------------
+	// Traspaso a otro fondo
+	// ------------------------------------------------------------------
+
+	/**
+	 * ⚠️ **Todo este estado entra en el `$effect` guardado por ticker de arriba.**
+	 * Desde `ManageAssets` el modal cambia de activo **sin remontarse**, así que un
+	 * destino que sobreviviera al cambio enseñaría el traspaso de un activo bajo el
+	 * nombre de otro — origen de uno y destino del anterior, que es exactamente la
+	 * claridad que este formulario existe para dar.
+	 */
+	let showTransferForm = $state(false);
+	let destinoTicker = $state<string | null>(null);
+	let modoCuanto = $state<'todo' | 'importe' | 'participaciones'>('todo');
+	let importePedido = $state(0);
+	let participacionesPedidas = $state(0);
+	let fechaTraspaso = $state(Date.now());
+	let mostrarPrecios = $state(false);
+	let precioOrigenManual = $state<number | null>(null);
+	let precioDestinoManual = $state<number | null>(null);
+
+	function resetTransferForm() {
+		destinoTicker = null;
+		modoCuanto = 'todo';
+		importePedido = 0;
+		participacionesPedidas = 0;
+		fechaTraspaso = Date.now();
+		mostrarPrecios = false;
+		precioOrigenManual = null;
+		precioDestinoManual = null;
+	}
+
+	/**
+	 * ⚠️ **El traspaso solo se ofrece desde un fondo, y esto se vio abriendo la
+	 * pantalla, no leyendo el código.**
+	 *
+	 * Abierto el libro de una acción, los cinco candidatos caían bajo «esto sería un
+	 * reembolso y tributa»: correcto en el fondo —desde una acción nada está exento—
+	 * pero el rótulo mentía, porque desde una acción no es un reembolso, es una
+	 * **venta**. Y sobre todo, ofrecía una operación que ahí no existe: el
+	 * diferimiento del art. 94 es entre IIC. Desde una acción mover dinero es vender
+	 * y comprar, que es lo que el formulario normal ya hace.
+	 *
+	 * Con el origen restringido a fondos, los dos grupos de la lista dicen
+	 * exactamente lo que son: traspaso o reembolso.
+	 */
+	const puedeTraspasar = $derived(canBeTransferred(asset));
+
+	/** Todos los activos de la cartera menos el propio origen. */
+	const candidatos = $derived(
+		[...portfolio.coreAssets, ...portfolio.satelliteAssets, ...portfolio.stockAssets].filter(
+			(a) => a.ticker !== asset.ticker
+		)
+	);
+
+	/**
+	 * Los candidatos partidos por trato fiscal, y **eso es la interfaz**.
+	 *
+	 * Un desplegable plano con un aviso *después* de elegir te deja descubrir la
+	 * consecuencia cuando ya has decidido. Agrupar la pone delante, en el momento de
+	 * elegir, sin regañar a nadie: elegir un ETF sigue siendo legítimo, solo tiene
+	 * otro precio.
+	 */
+	const candidatosSinTributar = $derived(
+		candidatos.filter((a) => classifyMove(asset, a).taxFree)
+	);
+	const candidatosQueTributan = $derived(
+		candidatos.filter((a) => !classifyMove(asset, a).taxFree)
+	);
+
+	const destino = $derived(candidatos.find((a) => a.ticker === destinoTicker) ?? null);
+
+	/** Precio unitario en divisa base, que es lo que pide `planificarTraspaso`. */
+	function precioBaseDe(ticker: string): number {
+		const p = portfolio.pricesWithFx[ticker];
+		return p?.price ?? 0;
+	}
+
+	const precioOrigen = $derived(precioOrigenManual ?? precioBaseDe(asset.ticker));
+	const precioDestino = $derived(
+		destino ? (precioDestinoManual ?? precioBaseDe(destino.ticker)) : 0
+	);
+
+	const participacionesOrigen = $derived(
+		portfolio.effectiveHoldings[asset.ticker]?.shares ?? 0
+	);
+
+	const cuanto = $derived<CuantoTraspasar>(
+		modoCuanto === 'todo'
+			? { modo: 'todo' }
+			: modoCuanto === 'importe'
+				? { modo: 'importe', importe: importePedido }
+				: { modo: 'participaciones', participaciones: participacionesPedidas }
+	);
+
+	const planTraspaso = $derived(
+		destino
+			? planificarTraspaso({
+					origen: asset,
+					destino,
+					transacciones: portfolio.transactions,
+					participacionesOrigen,
+					precioOrigen,
+					precioDestino,
+					cuanto,
+					fecha: fechaTraspaso
+				})
+			: null
+	);
+
+	/** Si el destino sigue en modo manual, apuntarle el traspaso exige sembrarlo. */
+	const destinoEnManual = $derived(
+		destino ? !(portfolio.holdings[destino.ticker]?.useLedger ?? false) : false
+	);
+
+	function valorDe(ticker: string): number {
+		return (portfolio.effectiveHoldings[ticker]?.shares ?? 0) * precioBaseDe(ticker);
+	}
+
+	function participacionesDe(ticker: string): number {
+		return portfolio.effectiveHoldings[ticker]?.shares ?? 0;
+	}
+
+	function confirmarTraspaso() {
+		const plan = planTraspaso;
+		if (!plan || !meritaApuntar(plan)) return;
+
+		// Sembrar antes de escribir: si no, el `transfer_in` cae en un activo cuyo
+		// libro nadie mira y no cambia nada visible.
+		if (destinoEnManual && destino) {
+			portfolio.seedLedgerFromManual(destino.ticker, plan.fecha);
+		}
+
+		portfolio.registrarTraspaso(plan);
+		ui.addToast($LL.ledger.toast_traspaso_hecho(), 'success');
+		ui.hapticFeedback('medium');
+		showTransferForm = false;
+		resetTransferForm();
+	}
+
+	/** El otro fondo de un traspaso, para poder nombrarlo en la fila. */
+	function contraparteDe(tx: Transaction): Asset | null {
+		if (!tx.transferId) return null;
+		const otra = portfolio.transactions.find(
+			(t) => t.transferId === tx.transferId && t.ticker !== tx.ticker
+		);
+		if (!otra) return null;
+		return (
+			[...portfolio.coreAssets, ...portfolio.satelliteAssets, ...portfolio.stockAssets].find(
+				(a) => a.ticker === otra.ticker
+			) ?? null
+		);
+	}
 </script>
 
 <svelte:window onkeydown={alPulsarTecla} onpointerdown={cerrarCalendarioFuera} />
@@ -411,10 +616,222 @@
 				<div class="transactions-section">
 					<div class="section-header">
 						<h3>{$LL.ledger.title_history()}</h3>
-						<button class="add-tx-btn" onclick={() => { if (showAddForm) { cancelForm(); } else { showAddForm = true; } }}>
-							{showAddForm ? $LL.common.cancel() : $LL.ledger.btn_add_tx()}
-						</button>
+						<div class="section-actions">
+							{#if puedeTraspasar}
+								<button class="transfer-btn" onclick={() => { if (showTransferForm) { showTransferForm = false; resetTransferForm(); } else { showTransferForm = true; showAddForm = false; } }}>
+									{showTransferForm ? $LL.common.cancel() : $LL.ledger.btn_traspasar()}
+								</button>
+							{/if}
+							<button class="add-tx-btn" onclick={() => { if (showAddForm) { cancelForm(); } else { showAddForm = true; showTransferForm = false; } }}>
+								{showAddForm ? $LL.common.cancel() : $LL.ledger.btn_add_tx()}
+							</button>
+						</div>
 					</div>
+
+					{#if showTransferForm && puedeTraspasar}
+						<!--
+							⚠️ **Los dos fondos son la pieza central, no dos etiquetas de campo.**
+							La forma evidente —un formulario con un campo rotulado «destino»— deja
+							el origen *implícito*: solo lo dice la cabecera del modal, arriba y
+							fuera del formulario, mientras el usuario mira el campo. Aquí origen y
+							destino son dos filas con icono, nombre y posición, y la flecha entre
+							ellas lleva el importe.
+						-->
+						<div class="transfer-form" transition:slide>
+							<h4 class="form-title">{$LL.ledger.title_traspaso()}</h4>
+
+							<div class="ruta">
+								<div class="ruta-lado">
+									<span class="ruta-rotulo">{$LL.ledger.label_desde()}</span>
+									<!--
+										El origen es de solo lectura: has abierto el libro de ese fondo.
+										Ofrecerlo como un `<select>` de una opción sugeriría que se puede
+										cambiar y volvería ambiguo lo que ahora es obvio.
+									-->
+									<div class="ruta-activo">
+										<span class="ruta-icono" aria-hidden="true">{asset.icon}</span>
+										<div class="ruta-texto">
+											<span class="ruta-nombre">{descriptiveAssetLabel(asset)}</span>
+											<span class="ruta-posicion privacy-blur">
+												{$LL.ledger.tienes_participaciones({
+													shares: participacionesOrigen.toLocaleString($locale === 'es' ? 'es-ES' : 'en-US'),
+													valor: formatEUR(valorDe(asset.ticker))
+												})}
+											</span>
+										</div>
+									</div>
+								</div>
+
+								<div class="ruta-flecha" aria-hidden="true">
+									<span class="flecha-glifo">↓</span>
+									{#if planTraspaso && planTraspaso.importe > 0}
+										<span class="flecha-importe privacy-blur">{formatEUR(planTraspaso.importe)}</span>
+									{/if}
+								</div>
+
+								<div class="ruta-lado">
+									<span class="ruta-rotulo">{$LL.ledger.label_hacia()}</span>
+									{#if destino}
+										<div class="ruta-activo">
+											<span class="ruta-icono" aria-hidden="true">{destino.icon}</span>
+											<div class="ruta-texto">
+												<span class="ruta-nombre">{descriptiveAssetLabel(destino)}</span>
+												<span class="ruta-posicion privacy-blur">
+													{$LL.ledger.tienes_participaciones({
+														shares: participacionesDe(destino.ticker).toLocaleString($locale === 'es' ? 'es-ES' : 'en-US'),
+														valor: formatEUR(valorDe(destino.ticker))
+													})}
+												</span>
+											</div>
+											<button class="ruta-cambiar" onclick={() => { destinoTicker = null; precioDestinoManual = null; }}>
+												{$LL.ledger.cambiar_destino()}
+											</button>
+										</div>
+									{:else}
+										<!--
+											La consecuencia fiscal va en la ESTRUCTURA de la lista, no en un
+											aviso posterior: agrupada, se lee antes de elegir.
+										-->
+										<div class="destino-lista" role="group" aria-label={$LL.ledger.elegir_destino()}>
+											{#if candidatosSinTributar.length > 0}
+												<span class="destino-grupo">{$LL.ledger.grupo_sin_tributar()}</span>
+												{#each candidatosSinTributar as cand (cand.ticker)}
+													<button class="destino-op" data-ticker={cand.ticker} onclick={() => (destinoTicker = cand.ticker)}>
+														<span class="ruta-icono" aria-hidden="true">{cand.icon}</span>
+														<span class="destino-nombre">{descriptiveAssetLabel(cand)}</span>
+														<span class="destino-tipo">{$LL.ficha[`tipo_${instrumentTypeOf(cand)}`]()}</span>
+														<span class="destino-valor privacy-blur">{formatEUR(valorDe(cand.ticker))}</span>
+													</button>
+												{/each}
+											{/if}
+											{#if candidatosQueTributan.length > 0}
+												<span class="destino-grupo destino-grupo-tributa">{$LL.ledger.grupo_tributa()}</span>
+												{#each candidatosQueTributan as cand (cand.ticker)}
+													<button class="destino-op" data-ticker={cand.ticker} onclick={() => (destinoTicker = cand.ticker)}>
+														<span class="ruta-icono" aria-hidden="true">{cand.icon}</span>
+														<span class="destino-nombre">{descriptiveAssetLabel(cand)}</span>
+														<span class="destino-tipo">{$LL.ficha[`tipo_${instrumentTypeOf(cand)}`]()}</span>
+														<span class="destino-valor privacy-blur">{formatEUR(valorDe(cand.ticker))}</span>
+													</button>
+												{/each}
+											{/if}
+										</div>
+									{/if}
+								</div>
+							</div>
+
+							{#if destino}
+								<div class="form-group">
+									<span class="grupo-rotulo">{$LL.ledger.label_cuanto()}</span>
+									<!-- «Todo» es el caso mayoritario, y así no hay ninguna cuenta que hacer. -->
+									<div class="cuanto-switch">
+										<button class:active={modoCuanto === 'todo'} onclick={() => (modoCuanto = 'todo')}>{$LL.ledger.cuanto_todo()}</button>
+										<button class:active={modoCuanto === 'importe'} onclick={() => (modoCuanto = 'importe')}>{$LL.ledger.cuanto_importe()}</button>
+										<button class:active={modoCuanto === 'participaciones'} onclick={() => (modoCuanto = 'participaciones')}>{$LL.ledger.cuanto_participaciones()}</button>
+									</div>
+								</div>
+
+								{#if modoCuanto === 'importe'}
+									<div class="form-group">
+										<label for="tr-importe">{$LL.ledger.cuanto_importe()}</label>
+										<input id="tr-importe" type="number" step="0.01" min="0" bind:value={importePedido} />
+									</div>
+								{:else if modoCuanto === 'participaciones'}
+									<div class="form-group">
+										<label for="tr-part">{$LL.ledger.cuanto_participaciones()}</label>
+										<input id="tr-part" type="number" step="0.001" min="0" bind:value={participacionesPedidas} />
+									</div>
+								{/if}
+
+								<div class="form-group">
+									<label for="tr-fecha">{$LL.ledger.label_date()}</label>
+									<input
+										id="tr-fecha"
+										type="date"
+										value={new Date(fechaTraspaso).toISOString().slice(0, 10)}
+										onchange={(e) => { const v = (e.currentTarget as HTMLInputElement).value; if (v) fechaTraspaso = new Date(v).getTime(); }}
+									/>
+								</div>
+
+								<!-- Plegado: en el caso normal el precio de hoy vale, y pedirlo convierte
+								     cuatro decisiones en seis. -->
+								<button class="precios-toggle" onclick={() => (mostrarPrecios = !mostrarPrecios)}>
+									{mostrarPrecios ? '▾' : '▸'} {$LL.ledger.ajustar_precios()}
+								</button>
+								{#if mostrarPrecios}
+									<div class="form-row" transition:slide>
+										<div class="form-group">
+											<label for="tr-po">{$LL.ledger.label_precio_salida()}</label>
+											<input id="tr-po" type="number" step="0.0001" min="0" value={precioOrigen} onchange={(e) => (precioOrigenManual = Number((e.currentTarget as HTMLInputElement).value) || null)} />
+										</div>
+										<div class="form-group">
+											<label for="tr-pd">{$LL.ledger.label_precio_entrada()}</label>
+											<input id="tr-pd" type="number" step="0.0001" min="0" value={precioDestino} onchange={(e) => (precioDestinoManual = Number((e.currentTarget as HTMLInputElement).value) || null)} />
+										</div>
+									</div>
+								{/if}
+
+								{#if planTraspaso && meritaApuntar(planTraspaso)}
+									<!-- Tres frases, tres preguntas distintas: qué pasa con mis
+									     participaciones, qué debo, y qué pasa con mi historia. -->
+									<div class="resumen">
+										<p class="resumen-linea">
+											{$LL.ledger.resumen_participaciones({
+												salen: planTraspaso.participacionesOrigen.toLocaleString($locale === 'es' ? 'es-ES' : 'en-US'),
+												origen: descriptiveAssetLabel(asset),
+												entran: planTraspaso.participacionesDestino.toLocaleString($locale === 'es' ? 'es-ES' : 'en-US'),
+												destino: descriptiveAssetLabel(destino)
+											})}
+										</p>
+										<p class="resumen-linea" class:resumen-tributa={!planTraspaso.sinTributar}>
+											{#if planTraspaso.sinTributar}
+												{$LL.ledger.resumen_sin_tributar()}
+											{:else if planTraspaso.trato === 'reembolso'}
+												{$LL.ledger.resumen_reembolso()}
+											{:else}
+												{$LL.ledger.resumen_venta()}
+											{/if}
+										</p>
+										<!-- Los tres estados del coste se ramifican por estado, nunca
+										     comparando contra cero: un 0 € se lee como «no arrastras nada»
+										     cuando lo que pasa es que no se sabe. -->
+										<p class="resumen-linea resumen-coste">
+											{#if planTraspaso.estadoCoste === 'sin-libro'}
+												{$LL.ledger.resumen_sin_libro()}
+											{:else if planTraspaso.estadoCoste === 'parcial'}
+												{$LL.ledger.resumen_parcial({ coste: formatEUR(planTraspaso.costeHeredado ?? 0) })}
+											{:else}
+												{$LL.ledger.resumen_coste_heredado({
+													coste: formatEUR(planTraspaso.costeHeredado ?? 0),
+													// `formatDate` de utils devuelve ISO, que no es para leer. Aquí la
+													// fecha la lee una persona, así que va en su locale.
+													fecha: new Date(
+														planTraspaso.fechaLoteHeredado ?? planTraspaso.fecha
+													).toLocaleDateString($locale === 'es' ? 'es-ES' : 'en-US', {
+														day: 'numeric',
+														month: 'short',
+														year: 'numeric'
+													})
+												})}
+											{/if}
+										</p>
+									</div>
+
+									{#if destinoEnManual}
+										<p class="aviso-manual">
+											{$LL.ledger.aviso_destino_manual({ destino: descriptiveAssetLabel(destino) })}
+										</p>
+									{/if}
+
+									<!-- El importe va en el rótulo: no se puede confirmar sin haber leído
+									     lo que se va a apuntar. -->
+									<button class="submit-tx-btn" onclick={confirmarTraspaso}>
+										{$LL.ledger.btn_confirmar_traspaso({ importe: formatEUR(planTraspaso.importe) })}
+									</button>
+								{/if}
+							{/if}
+						</div>
+					{/if}
 
 					{#if showAddForm}
 						<div class="add-tx-form" transition:slide>
@@ -542,16 +959,36 @@
 							<div class="empty-state">{$LL.ledger.empty_history()}</div>
 						{:else}
 							{#each transactions as tx (tx.id)}
+								{@const contraparte = contraparteDe(tx)}
+								{@const esSalida = tx.type === 'transfer_out' || tx.type === 'sell'}
 								<!-- svelte-ignore a11y_click_events_have_key_events -->
 								<!-- svelte-ignore a11y_no_static_element_interactions -->
 								<div class="tx-item" class:tx-item-editing={editingTxId === tx.id} onclick={() => startEdit(tx)} in:slide>
 									<div class="tx-type-dot" style="background: {typeColors[tx.type]}"></div>
 									<div class="tx-main">
 										<span class="tx-type-label">{typeLabels[tx.type]}</span>
+										<!--
+											El otro fondo, nombrado con su flecha: así abras el libro que abras
+											sigue estando claro de dónde a dónde fue el dinero.
+										-->
+										{#if contraparte}
+											<span class="tx-contraparte">
+												{esSalida
+													? $LL.ledger.hacia_fondo({ fondo: descriptiveAssetLabel(contraparte) })
+													: $LL.ledger.desde_fondo({ fondo: descriptiveAssetLabel(contraparte) })}
+											</span>
+										{/if}
 										<span class="tx-date">{new Date(tx.date).toLocaleDateString()}</span>
 									</div>
 									<div class="tx-details">
-										<span class="tx-shares">{tx.shares > 0 ? '+' : ''}{tx.shares}</span>
+										<!--
+											⚠️ Dos defectos en esta línea, los dos vistos en pantalla.
+											Imprimía `+` en **todas** las filas, ventas incluidas, así que la
+											dirección no se leía en ninguna parte salvo el rótulo. Y el número iba
+											crudo, o sea con punto decimal: `334.922` participaciones se leen como
+											trescientas mil en español, un factor mil en una app de dinero.
+										-->
+										<span class="tx-shares">{esSalida ? '−' : '+'}{tx.shares.toLocaleString($locale === 'es' ? 'es-ES' : 'en-US', { maximumFractionDigits: 3 })}</span>
 										<span class="tx-price">{formatCurrency(tx.price, tx.currency)}</span>
 									</div>
 									<button class="tx-delete" onclick={(e) => { e.stopPropagation(); removeTx(tx.id); }}>✕</button>
@@ -783,14 +1220,294 @@
 		color: var(--text-primary);
 	}
 
+	.section-actions {
+		display: flex;
+		gap: 0.4rem;
+		flex-wrap: wrap;
+		justify-content: flex-end;
+	}
+
+	/* El borde era `rgba(255,255,255,0.2)` a mano, que sobre una superficie clara no
+	   es nada: el mismo defecto que dejó las tarjetas de métricas sin caja. */
 	.add-tx-btn {
 		background: var(--bg-card-hover);
-		border: 1px dashed rgba(255,255,255,0.2);
+		border: 1px dashed var(--border-subtle);
 		color: var(--text-primary);
 		padding: 0.3rem 0.6rem;
 		border-radius: 6px;
 		font-size: 0.75rem;
 		cursor: pointer;
+	}
+
+	.transfer-btn {
+		background: var(--bg-card-hover);
+		border: 1px solid var(--border-subtle);
+		color: var(--text-primary);
+		padding: 0.3rem 0.6rem;
+		border-radius: 6px;
+		font-size: 0.75rem;
+		font-weight: 600;
+		cursor: pointer;
+	}
+
+	/* ---------------- Traspaso a otro fondo ---------------- */
+
+	.transfer-form {
+		background: var(--bg-card);
+		border: 1px solid var(--border-subtle);
+		border-radius: 16px;
+		padding: 1rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.9rem;
+	}
+
+	/*
+	 * La tarjeta de la ruta: los dos fondos apilados con la flecha en medio. Es lo
+	 * primero y lo más grande del formulario a propósito — el requisito es que se vea
+	 * de qué fondo a qué fondo, y eso no lo cumple un campo rotulado «destino».
+	 */
+	.ruta {
+		display: flex;
+		flex-direction: column;
+		gap: 0.4rem;
+		background: var(--bg-card-hover);
+		border: 1px solid var(--border-subtle);
+		border-radius: 12px;
+		padding: 0.75rem;
+	}
+
+	.ruta-lado {
+		display: flex;
+		flex-direction: column;
+		gap: 0.35rem;
+		/* Un hijo flex nace con `min-width: auto`, y sin esto los nombres largos
+		   ensanchan la tarjeta en vez de truncarse. */
+		min-width: 0;
+	}
+
+	.ruta-rotulo {
+		font-size: var(--text-micro);
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--text-faint);
+		font-weight: 700;
+	}
+
+	.ruta-activo {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		min-width: 0;
+	}
+
+	.ruta-icono {
+		font-size: 1.15rem;
+		flex-shrink: 0;
+		line-height: 1;
+	}
+
+	.ruta-texto {
+		display: flex;
+		flex-direction: column;
+		gap: 0.1rem;
+		min-width: 0;
+		flex: 1;
+	}
+
+	.ruta-nombre {
+		font-size: 0.85rem;
+		font-weight: 700;
+		color: var(--text-primary);
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.ruta-posicion {
+		font-size: var(--text-micro);
+		color: var(--text-muted);
+	}
+
+	.ruta-cambiar {
+		background: none;
+		border: none;
+		color: var(--accent-blue-ink);
+		font-size: var(--text-micro);
+		font-weight: 700;
+		cursor: pointer;
+		flex-shrink: 0;
+		padding: 0.25rem;
+	}
+
+	.ruta-flecha {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		padding: 0.15rem 0;
+	}
+
+	.flecha-glifo {
+		color: var(--text-muted);
+		font-size: 1rem;
+		line-height: 1;
+	}
+
+	/* El importe vive en la flecha: es la respuesta a «cuánto muevo» justo donde ya
+	   estás mirando la dirección. */
+	.flecha-importe {
+		font-size: 0.85rem;
+		font-weight: 700;
+		color: var(--text-primary);
+	}
+
+	.destino-lista {
+		display: flex;
+		flex-direction: column;
+		gap: 0.2rem;
+		max-height: 220px;
+		overflow-y: auto;
+	}
+
+	.destino-grupo {
+		font-size: var(--text-micro);
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: var(--accent-green-ink);
+		padding: 0.4rem 0.2rem 0.15rem;
+	}
+
+	.destino-grupo-tributa {
+		color: var(--accent-orange-ink);
+	}
+
+	.destino-op {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		background: var(--bg-card);
+		border: 1px solid var(--border-subtle);
+		border-radius: 8px;
+		padding: 0.45rem 0.55rem;
+		cursor: pointer;
+		text-align: left;
+		min-width: 0;
+	}
+
+	.destino-op:hover {
+		border-color: var(--border-strong);
+	}
+
+	.destino-nombre {
+		font-size: 0.8rem;
+		font-weight: 600;
+		color: var(--text-primary);
+		flex: 1;
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.destino-tipo {
+		font-size: var(--text-micro);
+		color: var(--text-faint);
+		flex-shrink: 0;
+	}
+
+	.destino-valor {
+		font-size: var(--text-micro);
+		color: var(--text-muted);
+		flex-shrink: 0;
+	}
+
+	.grupo-rotulo {
+		font-size: 0.7rem;
+		color: var(--text-faint);
+		font-weight: 600;
+	}
+
+	.cuanto-switch {
+		display: flex;
+		gap: 0.25rem;
+	}
+
+	.cuanto-switch button {
+		flex: 1;
+		min-width: 0;
+		background: var(--bg-card-hover);
+		border: 1px solid var(--border-subtle);
+		color: var(--text-muted);
+		border-radius: 8px;
+		padding: 0.45rem 0.3rem;
+		font-size: 0.75rem;
+		font-weight: 600;
+		cursor: pointer;
+	}
+
+	.cuanto-switch button.active {
+		background: var(--accent-blue);
+		border-color: var(--accent-blue);
+		color: var(--text-on-accent);
+	}
+
+	.precios-toggle {
+		background: none;
+		border: none;
+		color: var(--text-muted);
+		font-size: 0.75rem;
+		font-weight: 600;
+		cursor: pointer;
+		align-self: flex-start;
+		padding: 0.2rem 0;
+	}
+
+	/* Tres frases y no una tabla: cada línea contesta a algo distinto. */
+	.resumen {
+		display: flex;
+		flex-direction: column;
+		gap: 0.45rem;
+		background: var(--bg-card-hover);
+		border: 1px solid var(--border-subtle);
+		border-radius: 12px;
+		padding: 0.7rem 0.8rem;
+	}
+
+	.resumen-linea {
+		margin: 0;
+		font-size: 0.78rem;
+		line-height: 1.45;
+		color: var(--text-secondary);
+	}
+
+	.resumen-tributa {
+		color: var(--accent-orange-ink);
+		font-weight: 600;
+	}
+
+	.resumen-coste {
+		color: var(--text-muted);
+	}
+
+	.aviso-manual {
+		margin: 0;
+		font-size: var(--text-micro);
+		line-height: 1.45;
+		color: var(--accent-orange-ink);
+		background: var(--tint-warn);
+		border: 1px solid var(--tint-warn-line);
+		border-radius: 10px;
+		padding: 0.5rem 0.7rem;
+	}
+
+	.tx-contraparte {
+		font-size: var(--text-micro);
+		color: var(--text-muted);
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
 	.add-tx-form {

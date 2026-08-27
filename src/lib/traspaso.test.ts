@@ -814,9 +814,100 @@ describe('traspaso.ts · casos que el mutation testing dejó al descubierto', ()
 
 			// A la categoría grande le toca 1.000 de los 1.100 en el primer caso y 1.000 de
 			// 1.000 en el segundo: los meses tienen que coincidir.
-			expect(juntas.monthsToConvergeByContribution).toBe(
+		expect(juntas.monthsToConvergeByContribution).toBe(
 				soloGrande.monthsToConvergeByContribution
 			);
+		});
+	});
+
+	/**
+	 * La desviación máxima, que medía algo que no existe.
+	 *
+	 * ⚠️ Los pesos objetivo solo están donde el usuario los ha puesto, así que una
+	 * acción suelta tiene `targetWeight: 0` y su «desviación» es su peso entero dentro
+	 * de su bloque. Visto en la cartera de ejemplo: el panel anunciaba «desviación
+	 * máxima 54,04 % → 54,04 %», que era el peso de un ETF de renta fija en el bloque
+	 * conservador — y que no baja al aplicar el plan, porque ahí no hay nada que
+	 * corregir. Misma conclusión que el mapa de desviación cuando dejó de mezclar los
+	 * tres bloques en un lienzo.
+	 */
+	describe('la desviación máxima solo mide lo que tiene objetivo', () => {
+		it('un bloque sin objetivos no aporta desviación', () => {
+			const acciones = makePositions([
+				{ ticker: 'AAPL', type: 'equity', value: 6000, target: 0 },
+				{ ticker: 'MSFT', type: 'equity', value: 4000, target: 0 }
+			]);
+
+			const r = calculateTaxAwareRebalance([{ category: 'stocks', positions: acciones }], [], {
+				now: NOW
+			});
+
+			// Sin la guarda esto valdría 0,6: el peso de Apple dentro del bloque.
+			expect(r.plans[0].maxDeviationBefore).toBe(0);
+			expect(r.plans[0].maxDeviationAfter).toBe(0);
+		});
+
+		it('un bloque con objetivos sí, y su desviación baja al aplicar el plan', () => {
+			const fondos = makePositions([
+				{ ticker: 'A', type: 'fund', value: 8800, target: 0.8 },
+				{ ticker: 'B', type: 'fund', value: 1200, target: 0.2 }
+			]);
+
+			const r = calculateTaxAwareRebalance([{ category: 'core', positions: fondos }], [], {
+				now: NOW
+			});
+
+			// 88 % contra un objetivo del 80 %: ocho puntos.
+			expect(r.plans[0].maxDeviationBefore).toBeCloseTo(0.08, 3);
+			// Y el traspaso la cierra, que es lo que el panel promete.
+			expect(r.plans[0].maxDeviationAfter).toBeLessThan(0.01);
+		});
+
+		it('⚠️ una acción suelta no contamina la desviación del bloque que sí mide', () => {
+			/*
+			 * El caso exacto de la cartera de ejemplo: dos fondos desviados ocho puntos y
+			 * un bloque de acciones sin objetivos. El panel lee el máximo de **todas** las
+			 * categorías, así que sin la guarda el 54 % de las acciones tapaba el 8 % que
+			 * de verdad hay que corregir.
+			 */
+			const fondos = makePositions([
+				{ ticker: 'A', type: 'fund', value: 8800, target: 0.8 },
+				{ ticker: 'B', type: 'fund', value: 1200, target: 0.2 }
+			]);
+			const acciones = makePositions([
+				{ ticker: 'AAPL', type: 'equity', value: 9000, target: 0 },
+				{ ticker: 'MSFT', type: 'equity', value: 1000, target: 0 }
+			]);
+
+			const r = calculateTaxAwareRebalance(
+				[
+					{ category: 'core', positions: fondos },
+					{ category: 'stocks', positions: acciones }
+				],
+				[],
+				{ now: NOW }
+			);
+
+			const maximo = Math.max(...r.plans.map((p) => p.maxDeviationBefore));
+			expect(maximo).toBeCloseTo(0.08, 3);
+			// Sin la guarda, el 0,9 de Apple ganaría por goleada.
+			expect(maximo).toBeLessThan(0.5);
+		});
+
+		it('una cartera recién importada, con todos los pesos a cero, no está desviada', () => {
+			// Es el estado en el que nace cualquier cartera que entra por CSV.
+			const recienImportada = makePositions([
+				{ ticker: 'A', type: 'fund', value: 9000, target: 0 },
+				{ ticker: 'B', type: 'fund', value: 1000, target: 0 }
+			]);
+
+			const r = calculateTaxAwareRebalance(
+				[{ category: 'core', positions: recienImportada }],
+				[],
+				{ now: NOW }
+			);
+
+			expect(r.plans[0].maxDeviationBefore).toBe(0);
 		});
 	});
 });

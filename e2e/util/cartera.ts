@@ -29,7 +29,7 @@ export interface Activo {
 export interface Movimiento {
 	id: string;
 	ticker: string;
-	type: 'buy' | 'sell' | 'dividend' | 'transfer' | 'initial_balance';
+	type: 'buy' | 'sell' | 'dividend' | 'transfer_in' | 'transfer_out' | 'transfer' | 'initial_balance';
 	date: number;
 	shares: number;
 	price: number;
@@ -140,6 +140,38 @@ export const FONDOS_DESVIADOS: Semilla = {
 		'0P0001EFGH': precio('Vanguard Emerging Markets Index Fund', 100)
 	}
 };
+
+/**
+ * Dos fondos desviados **con libro en el origen**, que es lo que hace falta para
+ * probar un traspaso entre fondos de punta a punta.
+ *
+ * ⚠️ El libro no es decoración aquí: el coste heredado sale de los lotes FIFO del
+ * origen, así que sin transacciones el traspaso se apunta igual pero el destino nace
+ * contando desde el precio de hoy — precisamente el defecto que el traspaso enlazado
+ * arregla. Fechas fijas, nunca `Date.now()`: es aritmética de fechas.
+ *
+ * Los números están elegidos para que el coste heredado sea inequívoco: 500
+ * participaciones compradas a 120 € son **60.000 € de coste** contra los 100.000 € que
+ * valen hoy a 200 €.
+ */
+export const FONDOS_CON_LIBRO: Semilla = (() => {
+	const copia = structuredClone(FONDOS_DESVIADOS);
+	copia.holdings['0P0001ABCD'] = { shares: 500, avgCost: 120, useLedger: true };
+	copia.transactions = [
+		{
+			id: 'trl-1',
+			ticker: '0P0001ABCD',
+			type: 'buy',
+			date: new Date(2026, 1, 10).getTime(),
+			shares: 500,
+			price: 120,
+			currency: 'EUR',
+			fees: 0,
+			fxRate: 1
+		}
+	];
+	return copia;
+})();
 
 /**
  * La misma cartera, con **un activo que la API no ha podido cotizar**.

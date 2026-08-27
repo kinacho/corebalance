@@ -2,6 +2,7 @@
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import type { PortfolioPosition, HoldingData } from '$lib/types';
 	import { formatCurrency, isMarketOpen } from '$lib/utils';
+	import { tickerLabel } from '$lib/asset-label';
 	import LedgerModal from './LedgerModal.svelte';
 	import EditReasonPrompt from './EditReasonPrompt.svelte';
 	import { LL } from '$lib/i18n/i18n-svelte';
@@ -149,8 +150,17 @@
 			<div class="asset-info" style="min-width: 0; flex: 1;">
 				<div class="header-main" style="min-width: 0;">
 					<div class="ticker-row" style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; width: 100%;">
-						<span class="ticker" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; max-width: 75%;">
-							{position.asset.ticker}
+						<!--
+							⚠️ Por `tickerLabel()` y no crudo. Para un ETF o una acción no cambia
+							nada —devuelve el ticker, que es el mejor rótulo corto que hay—, pero
+							el ticker de un **fondo** es su ISIN o su código `0P…` de Yahoo, así
+							que el titular de la tarjeta era literalmente `0P0001XF40.F` con el
+							nombre de verdad debajo en pequeño. La función existía, documentada y
+							con tests, y solo la llamaba `DriftChart`: era invisible porque la
+							cartera de ejemplo no tenía ni un fondo.
+						-->
+						<span class="ticker" title={position.asset.ticker} style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; max-width: 75%;">
+							{tickerLabel(position.asset)}
 						</span>
 						<div class="ticker-badges">
 							{#if useLedger}

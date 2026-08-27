@@ -2,6 +2,7 @@
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import type { PortfolioPosition, HoldingData } from '$lib/types';
 	import { formatCurrency, formatPrice, formatPercent, isMarketOpen } from '$lib/utils';
+	import { tickerLabel } from '$lib/asset-label';
 	import LedgerModal from './LedgerModal.svelte';
 	import EditReasonPrompt from './EditReasonPrompt.svelte';
 	import { LL } from '$lib/i18n/i18n-svelte';
@@ -104,8 +105,14 @@
 			{/if}
 		</button>
 		<div class="asset-names">
-			<span class="asset-ticker">
-				{position.asset.ticker.split('.')[0]}
+		<!--
+				⚠️ `tickerLabel()`, no el ticker partido por el punto. Ese `split` dejaba
+				`0P0001XF40` —el código de Yahoo **sin** su sufijo— como rótulo de un fondo.
+				Para un ETF sigue quitando el mercado (`IWDA.AS` → `IWDA`), que es lo que se
+				quería; para un fondo cae al nombre, que es lo que informa.
+			-->
+			<span class="asset-ticker" title={position.asset.ticker}>
+				{tickerLabel(position.asset).split('.')[0]}
 			</span>
 			<span class="asset-name" title={position.asset.name}>{position.asset.name}</span>
 		</div>

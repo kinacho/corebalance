@@ -54,13 +54,33 @@ describe('utils.ts', () => {
 			expect(formatShares(0)).toBe('0');
 		});
 		it('removes trailing zeros', () => {
-			expect(formatShares(10.100)).toBe('10.1');
+			expect(formatShares(10.100)).toBe('10,1');
 		});
 		it('formats whole numbers without decimals', () => {
 			expect(formatShares(5)).toBe('5');
 		});
 		it('keeps up to 3 decimal places', () => {
-			expect(formatShares(1.234)).toBe('1.234');
+			expect(formatShares(1.234)).toBe('1,234');
+		});
+
+		/**
+		 * ⚠️ **El caso por el que esta función cambió: el separador decimal.**
+		 *
+		 * Con `toFixed(3)` esto devolvía `423.375`, que en castellano se lee como
+		 * cuatrocientas veintitrés **mil** participaciones. El panel fiscal lo pintaba
+		 * tal cual en la propuesta de traspaso, o sea un factor mil en una cifra que el
+		 * usuario va a teclear en su banco. Se vio al meter fondos en la cartera de
+		 * ejemplo: con ETF y acciones las participaciones son números pequeños y el
+		 * punto nunca llegaba a parecer un separador de miles.
+		 *
+		 * Las cuatro aserciones de arriba también cambiaron de `10.1` a `10,1`, y es
+		 * ese mismo cambio de contrato: se reescriben en vez de borrarse, para que se
+		 * vea en la prueba que las guardaba.
+		 */
+		it('separa decimales con coma y miles con punto, no al revés', () => {
+			expect(formatShares(423.375)).toBe('423,375');
+			expect(formatShares(4400)).toBe('4400');
+			expect(formatShares(12500.5)).toBe('12.500,5');
 		});
 	});
 

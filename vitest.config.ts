@@ -114,8 +114,24 @@ export default defineConfig({
 				'src/lib/fiscal.ts': { statements: 98, branches: 97, functions: 100 },
 				// Extraído del store el 6-ago-2026; medido al nacer.
 				'src/lib/ledger.ts': { statements: 100, branches: 88, functions: 100 },
-				// Subido el 6-ago-2026 al matar mutantes del motor fiscal: 96,40/83,54 → 98,20/89,87.
-				'src/lib/traspaso.ts': { statements: 98, branches: 89, functions: 100 },
+				/**
+				 * Subido el 6-ago-2026 al matar mutantes del motor fiscal: 96,40/83,54 →
+				 * 98,20/89,87.
+				 *
+				 * ⚠️ **Bajado a 88 el 27-ago-2026, y es la única vez que este fichero baja un
+				 * suelo, así que aquí está el motivo.** No se ha dejado de probar nada:
+				 * `classifyMove` **salió de este fichero** a `instrument-type.ts`, donde tiene
+				 * su segundo consumidor (`traspaso-libro.ts`), y sus ramas se fueron con ella.
+				 * Eso cambia el denominador —de 89,87 a 88,73 medido— sin que ninguna línea
+				 * quede sin cubrir.
+				 *
+				 * El rigor total **sube**, que es lo que hay que comprobar antes de aceptar una
+				 * bajada: las ramas aterrizan en `instrument-type.ts`, cuyo suelo es
+				 * 100/100/100, o sea más estricto que el 89 de aquí. Comprobado en
+				 * `coverage/coverage-summary.json`, que es donde se ven los ficheros al 100 %
+				 * porque el reporter de texto los omite de la tabla.
+				 */
+				'src/lib/traspaso.ts': { statements: 98, branches: 88, functions: 100 },
 				// Subido el 6-ago-2026 al matar los mutantes del reparto: 97,19/86,25 → 100/97,22.
 				'src/lib/rebalance.ts': { statements: 100, branches: 97, functions: 100 },
 				'src/lib/lookthrough.ts': { statements: 96, branches: 84, functions: 100 },

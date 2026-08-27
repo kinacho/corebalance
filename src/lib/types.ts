@@ -162,7 +162,49 @@ export interface RebalanceResult {
 	newTotalCapital: number;
 }
 
-export type TransactionType = 'buy' | 'sell' | 'dividend' | 'transfer' | 'initial_balance';
+/**
+ * ⚠️ **`'transfer'` es un alias retrocompatible de `'transfer_in'`, no un tipo
+ * que se pueda elegir: conserva la semántica que ya tenía.**
+ *
+ * Hasta la 1.21.0 el único tipo de traspaso era `'transfer'` y en `ledger.ts` y
+ * `fiscal.ts` se comportaba **exactamente como una compra**, así que solo podía
+ * registrar la pata de entrada — y quien elegía «Traspaso» en el fondo de
+ * *origen*, que es lo que dice el rótulo, **aumentaba** su posición. No había
+ * forma de apuntar la salida.
+ *
+ * Se parte en dos porque un traspaso son dos hechos con dos efectos contrarios.
+ * El alias se queda porque hay carteras guardadas que lo usan y las
+ * transacciones entran al store por **tres** caminos distintos —
+ * `loadFromStorage()`, la rama de Firestore y el QR de `applyIncomingSync` —: un
+ * normalizador tendría que entrar en los tres o dejaría fuera precisamente a
+ * quien viene de la nube, que es la trampa que ya obligó a llamar a
+ * `normalizeAssets()` en dos sitios. El alias no necesita migración ninguna.
+ *
+ * ⚠️ **Y se lee siempre por `esEntradaDeTraspaso` / `esSalidaDeTraspaso`, nunca
+ * comparando la cadena a mano.** Cuatro sitios distintos deciden sobre esto
+ * (`ledger.ts`, dos veces en `fiscal.ts`, el modal), que es exactamente el
+ * reparto con el que `ft-assets.ts` acabó implementado cuatro veces y roto en la
+ * copia que importaba.
+ */
+export type TransactionType =
+	| 'buy'
+	| 'sell'
+	| 'dividend'
+	| 'transfer_in'
+	| 'transfer_out'
+	/** @deprecated Alias de `transfer_in` para las carteras guardadas antes de la 1.22.0. */
+	| 'transfer'
+	| 'initial_balance';
+
+/** Una entrada de traspaso: suma participaciones, y puede traer coste heredado. */
+export function esEntradaDeTraspaso(type: TransactionType): boolean {
+	return type === 'transfer_in' || type === 'transfer';
+}
+
+/** Una salida de traspaso: resta participaciones sin realizar plusvalía. */
+export function esSalidaDeTraspaso(type: TransactionType): boolean {
+	return type === 'transfer_out';
+}
 
 export interface Transaction {
 	id: string;
@@ -175,6 +217,33 @@ export interface Transaction {
 	fees: number;
 	fxRate: number; // Rate to base currency at time of transaction
 	notes?: string;
+
+	/**
+	 * Une las dos patas de un mismo traspaso. Sin esto, borrar una deja la cartera
+	 * descuadrada en silencio: desaparecen las participaciones de un lado y se
+	 * quedan las del otro, sin que nada lo diga.
+	 */
+	transferId?: string;
+
+	/**
+	 * ⚠️ **El coste de adquisición que **viaja** en un traspaso, en divisa base, y
+	 * es la razón de ser de todo esto.**
+	 *
+	 * En un traspaso entre fondos el valor **y la fecha** de adquisición de las
+	 * participaciones originales pasan al fondo nuevo (art. 94 LIRPF): el
+	 * diferimiento no es que no pagues, es que pagas *después* sobre la ganancia
+	 * de siempre. Sin este campo la pata de entrada crea un lote FIFO al precio
+	 * del día y la plusvalía latente **desaparece del libro**, lo que hacía que la
+	 * ficha del fondo destino declarase «plusvalía 0 € · impuesto 0 €» justo
+	 * después de un traspaso — un número falso, no una ausencia de número.
+	 *
+	 * Solo en la pata de entrada. Ausente en las filas anteriores a la 1.22.0, y
+	 * entonces se mantiene el comportamiento viejo: es lo que hace seguro el alias.
+	 */
+	carriedCostBase?: number;
+
+	/** La fecha de adquisición heredada: sin ella la ventana antiaplicación se reinicia. */
+	carriedLotDate?: number;
 }
 
 /** Datos de un activo guardados en localStorage */

@@ -26,6 +26,7 @@
 
 	// Mapeo dinámico desde el diccionario de traducciones
 	const releaseVersions = [
+		'v1_22_0',
 		'v1_21_0',
 		'v1_20_2',
 		'v1_20_1',
@@ -144,6 +145,15 @@
 		 * caso 3,47, por encima del 3,23 del teal que hace de vara— y no se parece al
 		 * azul de la 1.20.2, que es justo su vecina de abajo.
 		 */
+		/*
+		 * Magenta reusado tal cual del `v1_18_0` de abajo en vez de buscar un tono nuevo:
+		 * ya está medido en los dos temas más arriba en este mismo fichero —**3,71 en
+		 * oscuro y 3,91 en claro**, o sea peor caso 3,71, por encima del 3,23 del teal
+		 * que hace de vara— y es lo más lejos del ámbar de la 1.21.0, que es justo su
+		 * vecina de abajo (magenta ~295° de matiz contra ~28° del ámbar). Elegir un tono
+		 * a ojo aquí es exactamente el error que estos comentarios documentan dos veces.
+		 */
+		v1_22_0: '#c026d3',
 		v1_21_0: '#b45309',
 		v1_20_2: '#2563eb',
 		v1_20_1: '#e11d48',

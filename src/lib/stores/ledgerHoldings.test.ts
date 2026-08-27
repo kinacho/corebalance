@@ -430,4 +430,101 @@ describe('PortfolioStore · el ledger en sus bordes', () => {
 			spy.mockRestore();
 		});
 	});
+
+	/*
+	 * Las dos patas de un traspaso, que hasta la 1.22.0 no se podían apuntar: el
+	 * único tipo era `'transfer'` y se comportaba **como una compra**, así que elegir
+	 * «Traspaso» en el fondo de origen —que es lo que dice el rótulo— le **subía** la
+	 * posición.
+	 */
+	describe('las dos patas de un traspaso', () => {
+		it('una salida resta participaciones y deja intacto el coste medio', () => {
+			// Igual que una venta: para el libro las participaciones se han ido. Donde
+			// se separan es en `fiscal.ts`, donde la venta realiza plusvalía y esta no.
+			store.transactions = [
+				compra({ shares: 10, price: 100 }),
+				compra({ type: 'transfer_out', shares: 4, price: 150, date: T0 + DIA })
+			];
+			store.holdings = conLedger('AAPL');
+
+			expect(store.ledgerHoldings['AAPL'].shares).toBe(6);
+			expect(store.ledgerHoldings['AAPL'].avgCost).toBe(100);
+			expect(store.ledgerHoldings['AAPL'].totalCostBase).toBe(600);
+		});
+
+		it('una entrada con coste heredado apunta ESE coste, no `shares × price`', () => {
+			/*
+			 * El caso que da sentido a todo: entran 400 participaciones que hoy valen
+			 * 8.000 € pero cuyo coste heredado es 4.200 €. Apuntar el precio del día
+			 * convertiría la plusvalía latente en coste y la haría desaparecer.
+			 */
+			store.transactions = [
+				compra({
+					type: 'transfer_in',
+					shares: 400,
+					price: 20,
+					carriedCostBase: 4200,
+					carriedLotDate: T0 - 1000 * DIA
+				})
+			];
+			store.holdings = conLedger('AAPL');
+
+			expect(store.ledgerHoldings['AAPL'].shares).toBe(400);
+			expect(store.ledgerHoldings['AAPL'].totalCostBase).toBe(4200);
+			// 4.200 / 400 = 10,50 €, no los 20 € del día.
+			expect(store.ledgerHoldings['AAPL'].avgCost).toBe(10.5);
+		});
+
+		it('una entrada SIN coste heredado se comporta como antes: es lo que hace seguro el alias', () => {
+			store.transactions = [compra({ type: 'transfer_in', shares: 400, price: 20 })];
+			store.holdings = conLedger('AAPL');
+
+			expect(store.ledgerHoldings['AAPL'].totalCostBase).toBe(8000);
+			expect(store.ledgerHoldings['AAPL'].avgCost).toBe(20);
+		});
+
+		it("el alias `'transfer'` de las carteras guardadas sigue sumando", () => {
+			// Retrocompatibilidad: es el tipo que hay escrito en disco desde antes de
+			// la 1.22.0, y significaba entrada.
+			store.transactions = [compra({ type: 'transfer', shares: 400, price: 20 })];
+			store.holdings = conLedger('AAPL');
+
+			expect(store.ledgerHoldings['AAPL'].shares).toBe(400);
+			expect(store.ledgerHoldings['AAPL'].totalCostBase).toBe(8000);
+		});
+
+		it('el coste heredado llega en divisa base y no se convierte dos veces', () => {
+			/*
+			 * `carriedCostBase` ya viene convertido, igual que lo pide `simulateSale`.
+			 * Aplicarle el `fxRate` otra vez es el bug histórico de beneficios de este
+			 * repo, y aquí saldría un coste inflado por el cambio.
+			 */
+			store.transactions = [
+				compra({
+					type: 'transfer_in',
+					shares: 100,
+					price: 20,
+					currency: 'USD',
+					fxRate: 0.9,
+					carriedCostBase: 1800
+				})
+			];
+			store.holdings = conLedger('AAPL');
+
+			expect(store.ledgerHoldings['AAPL'].totalCostBase).toBe(1800);
+			// Y el coste medio se expresa en divisa del activo: 1.800 € / 0,9 = 2.000 $.
+			expect(store.ledgerHoldings['AAPL'].avgCost).toBe(20);
+		});
+
+		it('un traspaso completo deja el origen a cero sin coste residual', () => {
+			store.transactions = [
+				compra({ shares: 100, price: 42 }),
+				compra({ type: 'transfer_out', shares: 100, price: 80, date: T0 + DIA })
+			];
+			store.holdings = conLedger('AAPL');
+
+			expect(store.ledgerHoldings['AAPL'].shares).toBe(0);
+			expect(store.ledgerHoldings['AAPL'].totalCostBase).toBe(0);
+		});
+	});
 });

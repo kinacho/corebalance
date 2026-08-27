@@ -1,4 +1,9 @@
-import type { InstrumentType, Transaction } from './types';
+import {
+	esEntradaDeTraspaso,
+	esSalidaDeTraspaso,
+	type InstrumentType,
+	type Transaction
+} from './types';
 
 /**
  * Cálculo fiscal de una venta, para el IRPF español.
@@ -116,6 +121,21 @@ export interface FifoLot {
  * fiscalmente un dividendo es rendimiento del capital mobiliario del año en que
  * se cobra y no toca el valor de adquisición de nada. Aplicar el criterio del
  * ledger aquí inflaría la plusvalía y con ella el impuesto estimado.
+ *
+ * ⚠️ **Las dos patas de un traspaso son el caso interesante de esta función, y
+ * la que decide si la app dice la verdad sobre el fondo destino.**
+ *
+ * Una **salida** consume lotes exactamente como una venta —las participaciones
+ * se han ido— pero eso es todo lo que hace: la plusvalía no se realiza, porque
+ * el art. 94 la difiere. Aquí no hay nada que declarar, y por eso no aparece en
+ * ningún sitio de este módulo salvo consumiendo lotes.
+ *
+ * Una **entrada** empuja un lote con la fecha y el coste **heredados**, no con
+ * los del día. Es la mitad que faltaba: sin ella el lote nacía al precio de hoy,
+ * la plusvalía latente desaparecía del libro y la ficha del destino declaraba
+ * «plusvalía 0 € · impuesto 0 €» justo después de un traspaso — un número falso,
+ * que es peor que la ausencia de número. Y la fecha importa por separado del
+ * coste: sin heredarla, la ventana antiaplicación de doce meses se reiniciaba.
  */
 export function buildFifoLots(transactions: Transaction[], ticker: string): FifoLot[] {
 	const relevant = transactions
@@ -124,22 +144,61 @@ export function buildFifoLots(transactions: Transaction[], ticker: string): Fifo
 
 	const lots: FifoLot[] = [];
 
+	const consumirFifo = (shares: number) => {
+		let toConsume = shares;
+		while (toConsume > 0 && lots.length > 0) {
+			const lot = lots[0];
+			const taken = Math.min(lot.shares, toConsume);
+			lot.shares -= taken;
+			toConsume -= taken;
+			if (lot.shares <= 1e-9) lots.shift();
+		}
+	};
+
+	/**
+	 * Mete el lote **en su sitio por fecha**, no al final.
+	 *
+	 * ⚠️ **Sin esto el array deja de estar ordenado por antigüedad y FIFO consume el
+	 * lote equivocado.** Las transacciones se recorren por su propia fecha, así que
+	 * hasta la 1.22.0 un `push` al final bastaba: la fecha del lote *era* la de la
+	 * transacción. Con el coste heredado ya no: una entrada de traspaso apuntada hoy
+	 * lleva un lote de hace tres años, y detrás de un saldo inicial de hoy quedaría
+	 * segundo en la cola. Entonces `simulateSale` consume primero el lote **nuevo**
+	 * —que es lo contrario de lo que el art. 37.2 obliga— y devuelve como
+	 * `oldestLotDate` una fecha que no es la más antigua, con lo que la ventana
+	 * antiaplicación se mide desde el día equivocado.
+	 *
+	 * ⚠️ Y no se puede arreglar ordenando al final: una **venta** solo puede consumir
+	 * los lotes que existían cuando ocurrió, así que el orden tiene que estar bien
+	 * *durante* el recorrido y no solo al terminar.
+	 *
+	 * Lo encontró `e2e/libro-de-operaciones.spec.ts` recorriendo el ciclo completo: el
+	 * destino declaraba «tu participación más antigua es de hoy» teniendo dentro un
+	 * lote heredado de febrero.
+	 */
+	const insertarPorFecha = (lot: FifoLot) => {
+		let i = lots.length;
+		while (i > 0 && lots[i - 1].date > lot.date) i--;
+		lots.splice(i, 0, lot);
+	};
+
 	for (const t of relevant) {
-		if (t.type === 'buy' || t.type === 'initial_balance' || t.type === 'transfer') {
+		if (t.type === 'buy' || t.type === 'initial_balance' || esEntradaDeTraspaso(t.type)) {
 			if (t.shares <= 0) continue;
 			const fx = t.fxRate || 1;
-			// Las comisiones de compra aumentan el valor de adquisición.
-			const costBase = t.shares * t.price * fx + (t.fees || 0) * fx;
-			lots.push({ date: t.date, shares: t.shares, unitCostBase: costBase / t.shares });
-		} else if (t.type === 'sell') {
-			let toConsume = t.shares;
-			while (toConsume > 0 && lots.length > 0) {
-				const lot = lots[0];
-				const taken = Math.min(lot.shares, toConsume);
-				lot.shares -= taken;
-				toConsume -= taken;
-				if (lot.shares <= 1e-9) lots.shift();
-			}
+			const heredado = t.carriedCostBase !== undefined && t.carriedCostBase >= 0;
+			// Las comisiones de compra aumentan el valor de adquisición. El coste heredado
+			// ya viene en divisa base, así que no se le aplica `fx`: sería convertir dos veces.
+			const costBase = heredado
+				? (t.carriedCostBase as number)
+				: t.shares * t.price * fx + (t.fees || 0) * fx;
+			insertarPorFecha({
+				date: t.carriedLotDate ?? t.date,
+				shares: t.shares,
+				unitCostBase: costBase / t.shares
+			});
+		} else if (t.type === 'sell' || esSalidaDeTraspaso(t.type)) {
+			consumirFifo(t.shares);
 		}
 		// Los dividendos no crean ni consumen lotes. Ver la nota de arriba.
 	}
@@ -260,11 +319,17 @@ export function checkAntiApplicationRule(
 	const windowMonths = antiApplicationWindowMonths(type);
 	const windowMs = windowMonths * 30.44 * DAY_MS;
 
+	/*
+	 * ⚠️ Una **entrada** de traspaso sí bloquea: es una adquisición de valores
+	 * homogéneos, que es lo que la regla mira. Una **salida** no, y no es un olvido:
+	 * es una transmisión, y contarla como recompra bloquearía la pérdida de la
+	 * propia operación contra sí misma.
+	 */
 	const blockingPurchases = transactions
 		.filter(
 			(t) =>
 				t.ticker === ticker &&
-				(t.type === 'buy' || t.type === 'transfer') &&
+				(t.type === 'buy' || esEntradaDeTraspaso(t.type)) &&
 				t.shares > 0 &&
 				Math.abs(t.date - saleDate) <= windowMs
 		)

@@ -450,7 +450,10 @@ const en: Translation = {
     type_buy: 'Buy',
     type_sell: 'Sell',
     type_dividend: 'Dividend',
-    type_transfer: 'Transfer',
+    type_transfer_in: 'Transfer in',
+    type_transfer_out: 'Transfer out',
+    // The type that existed before 1.22.0 and is still written in saved portfolios.
+    type_transfer: 'Transfer in',
     type_initial_balance: 'Initial Balance',
     label_type: 'Type',
     label_date: 'Date',
@@ -459,6 +462,47 @@ const en: Translation = {
     label_fees: 'Fees',
     label_currency: 'Currency / FX',
     title_fx_rate: 'Exchange rate to EUR',
+
+    // --- Fund-to-fund transfer ---
+    btn_traspasar: 'Transfer to another fund',
+    title_traspaso: 'Transfer to another fund',
+    label_desde: 'From',
+    label_hacia: 'To',
+    elegir_destino: 'Choose the destination fund',
+    cambiar_destino: 'Change',
+    tienes_participaciones: 'you hold {shares} units · {valor}',
+    grupo_sin_tributar: 'Tax-free — transfer between funds',
+    grupo_tributa: 'This would be a redemption and is taxed',
+    label_cuanto: 'How much',
+    cuanto_todo: 'Everything',
+    cuanto_importe: 'An amount',
+    cuanto_participaciones: 'Units',
+    ajustar_precios: 'Adjust prices',
+    label_precio_salida: 'Price out',
+    label_precio_entrada: 'Price in',
+    resumen_participaciones:
+      'You sell {salen} units of {origen} and buy {entran} of {destino}.',
+    resumen_sin_tributar:
+      'No tax due: this is a transfer between funds (art. 94 of the Spanish income tax act).',
+    resumen_reembolso:
+      'This is taxed: redeeming a fund to buy something that is not a fund is a sale.',
+    resumen_venta: 'This is taxed: it is a sale, not a transfer.',
+    resumen_coste_heredado:
+      'You carry over {coste} of cost basis from a purchase on {fecha}, so your unrealised gain travels with the money.',
+    resumen_sin_libro:
+      'This fund has no recorded transactions, so there is no cost basis to carry over: the destination will start counting from today’s price.',
+    resumen_parcial:
+      'The ledger only covers part of these units, so the carried cost basis ({coste}) is incomplete.',
+    btn_confirmar_traspaso: 'Transfer {importe}',
+    aviso_destino_manual:
+      '{destino} is in Manual Mode. To record the transfer it has to move to Ledger Mode, and an initial balance will be created with what it holds now.',
+    aviso_origen_manual:
+      'This asset is in Manual Mode. Switch it to Ledger Mode to be able to record transfers.',
+    hacia_fondo: '→ {fondo}',
+    desde_fondo: '← {fondo}',
+    confirm_delete_par:
+      'This is one of the two legs of a transfer with {fondo}. Delete both?',
+    toast_traspaso_hecho: 'Transfer recorded in both funds',
   },
   // Asset detail
   ficha: {
@@ -746,7 +790,7 @@ const en: Translation = {
     timing_period_note: 'Measured over the {days} days with real data, not annualised.',
     legal_disclaimer: '<strong>Legal Disclaimer:</strong> CoreBalance is a purely informative and educational tool. It does not constitute financial, investment, or tax advice. The data displayed may be subject to delays or inaccuracies. The developer is not responsible for any financial losses resulting from the use of this application. Always invest at your own risk.',
     footer_tagline: 'Your control center for smart and balanced asset management.',
-    changelog_trigger: 'v1.21.0 🚀',
+    changelog_trigger: 'v1.22.0 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Made with ❤️ for the investing community',
     reclassify_stocks: 'Individual Stocks',
@@ -826,6 +870,7 @@ const en: Translation = {
     loss_blocked_desc: 'You bought {ticker} inside the {months}-month window of the Spanish wash-sale rule (art. 33.5 LIRPF). If you sell at a loss now, the loss is not forfeited — you still declare it — but it does not offset gains until you finally sell the repurchased units. Wait {days} more days and it offsets in this tax year.',
     loss_blocked_window: 'The window is two months for ETFs and shares, and one year for fund units, which are not traded on a market.',
     partial_gain: 'Approximate gain: the transaction ledger is missing purchase history, so the acquisition value is incomplete.',
+    btn_apuntar: 'Record this transfer in the ledger',
     excluded: 'Left out of the plan: {tickers}. The app does not know how they are taxed, so it will not propose moving them.',
     band_note: 'A deviation below one percentage point counts as "on target".',
     disclaimer: '<strong>An estimate, not a tax return.</strong> It does not know the rest of your savings tax base for this year, your carried-forward losses from previous years, or your personal situation. Rates are the {year} Spanish savings-income brackets. Check with your adviser before moving anything.',
@@ -1050,6 +1095,18 @@ const en: Translation = {
     close_aria: 'Close modal',
     btn_understand: 'Got it',
     releases: {
+      v1_22_0: {
+        date: 'August 27, 2026',
+        badge: 'Move money between funds in one gesture',
+        changes: [
+          '🔄 **A fund-to-fund transfer is now recorded once, not twice.** Before, you had to open the source fund’s ledger, record a sale, open the destination’s and record the incoming leg — with two unit figures you had to work out yourself by dividing by two NAVs. Now you pick the destination fund, say "everything" or how much, and the app writes both linked legs.',
+          '👀 **And it is clear which fund goes to which, at every step.** Both funds with their name and icon, one above the other, with the amount on the arrow. In the transaction list each leg names the other fund, so whichever ledger you open, where the money went stays clear.',
+          '🏛️ **The destination list tells you the tax cost before you choose, not after.** Funds are grouped under "tax-free" and ETFs and shares under "this would be a redemption and is taxed". Nothing is blocked: a redemption is legitimate, it just costs.',
+          '⚠️ **And the most important part, which you cannot see: your unrealised gain now travels with the money.** In a transfer, the price and date you bought at carry over to the new fund (art. 94 of the Spanish income tax act) — that is what deferral means. Until now the app recorded the incoming leg at the day’s price, so the destination fund’s detail view said "gain €0, tax €0" right after a transfer. A false figure, which is worse than no figure. It now inherits the cost and the date, and with it the twelve-month repurchase window no longer resets.',
+          '📌 **From the tax panel, a button to record the transfer it already suggests.** The plan had been calculated for months and could not be executed without redoing it by hand.',
+          '🌗 **Fixed: the buy / sell / transfer dropdown was invisible in dark mode.** White text on white, measured at 1.00 contrast: the options were there and unreadable. It affected all seventeen dropdowns in the app, not just that one.',
+        ]
+      },
       v1_21_0: {
         date: 'August 25, 2026',
         badge: 'Every asset finally has its own detail view',

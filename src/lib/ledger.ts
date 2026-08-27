@@ -1,4 +1,4 @@
-import type { Asset, Transaction } from './types';
+import { esEntradaDeTraspaso, esSalidaDeTraspaso, type Asset, type Transaction } from './types';
 
 /**
  * Contabilidad del libro de transacciones: coste medio ponderado, coste en divisa base
@@ -88,21 +88,43 @@ export function calculateLedgerHoldings(
 		devengar(pos, t.date, tipoDe(t.ticker));
 		pos.lastTxDate = t.date;
 
-		if (t.type === 'buy' || t.type === 'initial_balance' || t.type === 'transfer') {
+		if (t.type === 'buy' || t.type === 'initial_balance' || esEntradaDeTraspaso(t.type)) {
 			if (t.shares > 0) {
-				// Las comisiones de compra **suman** al coste.
-				const txCostRaw = t.shares * t.price + (t.fees || 0);
-				const txCostBase = txCostRaw * (t.fxRate || 1);
+				/*
+				 * ⚠️ **Con coste heredado el coste NO es `shares × price`, y ahí está toda
+				 * la diferencia entre un traspaso y una compra.**
+				 *
+				 * En un traspaso entre fondos el valor de adquisición viaja con el dinero
+				 * (art. 94 LIRPF), así que apuntar el precio del día convertiría una
+				 * plusvalía latente en coste y la haría desaparecer del libro. La entrada
+				 * llega ya en divisa base, que es como la calcula `traspaso-libro.ts`
+				 * leyendo los lotes del origen, así que **no** se le aplica `fxRate`: sería
+				 * la conversión dos veces, que es el bug histórico de `simulateSale`.
+				 *
+				 * Sin el campo —filas anteriores a la 1.22.0, o el alias `'transfer'`— se
+				 * mantiene el comportamiento de siempre. Es lo que hace seguro el alias.
+				 */
+				const heredado = t.carriedCostBase !== undefined && t.carriedCostBase >= 0;
+				const txCostRaw = heredado
+					? (t.carriedCostBase as number) / (t.fxRate || 1)
+					: t.shares * t.price + (t.fees || 0);
+				const txCostBase = heredado ? (t.carriedCostBase as number) : txCostRaw * (t.fxRate || 1);
 				const newShares = pos.shares + t.shares;
 				pos.totalCostRaw += txCostRaw;
 				pos.totalCostBase += txCostBase;
 				pos.avgCost = newShares > 0 ? pos.totalCostRaw / newShares : 0;
 				pos.shares = newShares;
 			}
-		} else if (t.type === 'sell') {
+		} else if (t.type === 'sell' || esSalidaDeTraspaso(t.type)) {
 			if (pos.shares > 0) {
-				// Una venta reduce el coste total **en proporción** y deja intacto el coste
-				// medio: vender no cambia a qué precio compraste lo que sigue en cartera.
+				/*
+				 * Una venta reduce el coste total **en proporción** y deja intacto el coste
+				 * medio: vender no cambia a qué precio compraste lo que sigue en cartera.
+				 *
+				 * Una salida de traspaso hace lo mismo **aquí**, porque para el libro las
+				 * participaciones se han ido igual. Donde las dos se separan es en
+				 * `fiscal.ts`: la venta realiza plusvalía y la salida no.
+				 */
 				const ratio = Math.min(1, t.shares / pos.shares);
 				pos.totalCostRaw -= pos.totalCostRaw * ratio;
 				pos.totalCostBase -= pos.totalCostBase * ratio;

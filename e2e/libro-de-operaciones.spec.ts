@@ -1,5 +1,5 @@
 import { test, expect } from './util/test-base';
-import { abrirDashboard, sembrarCartera, CON_LIBRO } from './util/cartera';
+import { abrirDashboard, sembrarCartera, CON_LIBRO, FONDOS_CON_LIBRO } from './util/cartera';
 
 /**
  * El formulario de alta del libro de movimientos, en un navegador de verdad.
@@ -295,5 +295,159 @@ test.describe('Libro de operaciones', () => {
 		await expect(page.locator('.import-panel')).toHaveCount(0);
 		await expect(panel).toBeVisible();
 		await expect(peso).toHaveValue('42');
+	});
+});
+
+/**
+ * El traspaso entre fondos, de punta a punta y en un navegador de verdad.
+ *
+ * Aquí vive lo que ninguna prueba de componente decide: que el par escrito por el
+ * store llegue al libro de **los dos** fondos, y que la ficha del destino declare la
+ * plusvalía heredada. Eso último es la razón de ser del cambio — antes decía
+ * «plusvalía 0 €» justo después de traspasar, que es un número falso y no una
+ * ausencia de número — y solo se ve recorriendo el ciclo completo.
+ */
+test.describe('Traspaso entre fondos', () => {
+	/** Abre el libro del fondo cuyo nombre se pide y despliega el formulario de traspaso. */
+	async function abrirTraspaso(page: import('@playwright/test').Page, fragmento: string) {
+		await desplegarSecciones(page);
+		const tarjeta = page.locator('.asset-card').filter({ hasText: fragmento }).first();
+		await tarjeta.locator('.asset-icon-wrapper').click();
+		const panel = page.locator('.ledger-panel');
+		await expect(panel).toBeVisible();
+		await irAlLibro(panel);
+		await panel.locator('.transfer-btn').click();
+		await expect(panel.locator('.transfer-form')).toBeVisible();
+		return panel;
+	}
+
+	test('la tarjeta nombra los dos fondos y agrupa los destinos por trato fiscal', async ({
+		page
+	}) => {
+		await sembrarCartera(page, FONDOS_CON_LIBRO);
+		await abrirDashboard(page);
+
+		const panel = await abrirTraspaso(page, 'Global Stock');
+
+		// El origen ya está nombrado DENTRO del formulario, no solo en la cabecera del
+		// modal: es el requisito del que cuelga todo este formulario.
+		const ruta = panel.locator('.ruta');
+		await expect(ruta).toContainText('Vanguard Global Stock');
+
+		// Y el destino se elige de una lista agrupada: la consecuencia fiscal se lee
+		// ANTES de elegir, no en un aviso posterior.
+		await expect(panel.locator('.destino-grupo').first()).toContainText('Sin tributar');
+		await panel.locator('.destino-op').first().click();
+
+		// Los dos, en la misma tarjeta.
+		await expect(ruta).toContainText('Vanguard Global Stock');
+		await expect(ruta).toContainText('Vanguard Emerging Markets');
+	});
+
+	test('apuntarlo escribe las dos patas, cada una nombrando al otro fondo', async ({ page }) => {
+		await sembrarCartera(page, FONDOS_CON_LIBRO);
+		await abrirDashboard(page);
+
+		const panel = await abrirTraspaso(page, 'Global Stock');
+		await panel.locator('.destino-op').first().click();
+
+		/*
+		 * La tercera frase del resumen es la que hace visible el arreglo: 500
+		 * participaciones compradas a 120 € son 60.000 € de coste que viajan con el
+		 * dinero, con su fecha de 2026.
+		 */
+		await expect(panel.locator('.resumen')).toContainText('Heredas');
+		await expect(panel.locator('.resumen')).toContainText('No tributas');
+
+		await panel.locator('.submit-tx-btn').click();
+
+		// En el libro del ORIGEN: la pata de salida, con el destino nombrado.
+		const salida = panel.locator('.tx-item').filter({ hasText: 'Traspaso enviado' });
+		await expect(salida).toHaveCount(1);
+		await expect(salida).toContainText('Vanguard Emerging Markets');
+
+		// Y en el del DESTINO: la de entrada, con el origen nombrado. Se llega cerrando
+		// este modal y abriendo el del otro fondo, que es lo que haría el usuario.
+		await page.keyboard.press('Escape');
+		await expect(page.locator('.ledger-panel')).toHaveCount(0);
+
+		const tarjetaDestino = page
+			.locator('.asset-card')
+			.filter({ hasText: 'Emerging Markets' })
+			.first();
+		await tarjetaDestino.locator('.asset-icon-wrapper').click();
+		const panelDestino = page.locator('.ledger-panel');
+		await expect(panelDestino).toBeVisible();
+
+		/*
+		 * ⚠️ **La aserción que justifica todo el cambio, y la única que solo se puede
+		 * hacer aquí.** Antes de heredar el coste, la ficha del destino declaraba
+		 * plusvalía y factura ≈ 0 € justo después de un traspaso, porque el lote nacía
+		 * al precio del día. Ahora tiene que declarar el valor de adquisición heredado.
+		 */
+		await expect(panelDestino).toContainText('Si vendieras hoy');
+
+		/*
+		 * ⚠️ **70.000 € y no los 60.000 € heredados, y la diferencia es el arreglo del
+		 * destino en modo manual.** Este fondo tenía 100 participaciones a 100 € sin
+		 * libro, así que apuntar el traspaso primero le siembra un saldo inicial de
+		 * 10.000 € —si no, la entrada caería en un libro que nadie mira y la posición se
+		 * quedaría a cero— y luego mete el lote heredado de 60.000 €. La suma es lo que
+		 * el usuario tiene de verdad.
+		 *
+		 * Y la fecha es la del lote **heredado**, no la del saldo inicial de hoy: es lo
+		 * que destapó que `buildFifoLots` metía los lotes al final de la cola en vez de
+		 * por su fecha.
+		 */
+		await expect(panelDestino).toContainText('70.000,00 €');
+		await expect(panelDestino).toContainText('10/2/2026');
+
+		await irAlLibro(panelDestino);
+		const entrada = panelDestino.locator('.tx-item').filter({ hasText: 'Traspaso recibido' });
+		await expect(entrada).toHaveCount(1);
+		await expect(entrada).toContainText('Vanguard Global Stock');
+	});
+
+	/**
+	 * ⚠️ **Lo que se desborda es justo lo que no sale en la captura**, así que esto no
+	 * se puede comprobar mirando: se mide cada elemento contra su propio contenedor,
+	 * como ya hace `movil-sin-desbordamiento.spec.ts` con el enlace de la lección.
+	 */
+	test('a 390 px la tarjeta de la ruta no se sale de su contenedor', async ({ page }) => {
+		await page.setViewportSize({ width: 390, height: 844 });
+		await sembrarCartera(page, FONDOS_CON_LIBRO);
+		await abrirDashboard(page);
+
+		const panel = await abrirTraspaso(page, 'Global Stock');
+		await panel.locator('.destino-op').first().click();
+		await expect(panel.locator('.resumen')).toBeVisible();
+
+		const desbordes = await page.evaluate(() => {
+			const form = document.querySelector('.transfer-form') as HTMLElement;
+			const limite = form.getBoundingClientRect();
+			const fuera: { cls: string; right: number; limite: number }[] = [];
+			for (const el of form.querySelectorAll<HTMLElement>('*')) {
+				const r = el.getBoundingClientRect();
+				if (r.width === 0) continue;
+				// Un par de píxeles de tolerancia: los bordes y las sombras cuentan.
+				if (r.right > limite.right + 2) {
+					fuera.push({
+						cls: (el.className || el.tagName).toString().slice(0, 40),
+						right: Math.round(r.right),
+						limite: Math.round(limite.right)
+					});
+				}
+			}
+			return fuera;
+		});
+
+		expect(desbordes, JSON.stringify(desbordes)).toEqual([]);
+
+		// Y el documento tampoco se sale de la ventana, que es la otra mitad.
+		const ancho = await page.evaluate(() => ({
+			doc: document.documentElement.scrollWidth,
+			win: window.innerWidth
+		}));
+		expect(ancho.doc).toBeLessThanOrEqual(ancho.win);
 	});
 });

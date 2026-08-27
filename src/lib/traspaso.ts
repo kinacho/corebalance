@@ -1,5 +1,5 @@
 import type { Asset, AssetCategory, PortfolioPosition, Transaction } from './types';
-import { instrumentTypeOf } from './instrument-type';
+import { classifyMove, instrumentTypeOf, type MoveKind } from './instrument-type';
 import {
 	buildFifoLots,
 	simulateSale,
@@ -64,7 +64,14 @@ export const DEVIATION_BAND = 0.01;
 /** Tope de la simulación de convergencia por aportaciones, en meses. */
 const MAX_CONVERGENCE_MONTHS = 240;
 
-export type MoveKind = 'traspaso' | 'reembolso' | 'venta' | 'efectivo';
+/*
+ * `MoveKind` y `classifyMove` viven en `instrument-type.ts` desde la 1.22.0, que es
+ * donde vive el resto de «qué es esto y qué puedes hacer con ello»: ahora tienen dos
+ * consumidores —este planificador y `traspaso-libro.ts`— y una regla fiscal escrita
+ * dos veces divergiría en algo peor que un color. Se reexporta para no tocar el
+ * `import type { MoveKind } from '$lib/traspaso'` de `TaxAwareRebalance.svelte`.
+ */
+export type { MoveKind };
 
 export interface TransferMove {
 	from: Asset;
@@ -145,29 +152,34 @@ function unitPriceBaseOf(position: PortfolioPosition): number {
 	return position.unitPrice;
 }
 
-/**
- * Si mover dinero de un activo a otro está libre de impuestos.
- *
- * Dos condiciones, y las dos importan:
- *   - **fondo → fondo** es traspaso con diferimiento. Un fondo que se reembolsa
- *     para comprar un ETF **no** lo es, aunque el origen sea un fondo: el
- *     destino tiene que ser también una IIC traspasable.
- *   - **desde efectivo** no hay transmisión de nada, así que no hay ganancia
- *     patrimonial que declarar.
- */
-function classifyMove(from: Asset, to: Asset): { kind: MoveKind; taxFree: boolean } {
-	const fromType = instrumentTypeOf(from);
-	const toType = instrumentTypeOf(to);
-
-	if (fromType === 'cash') return { kind: 'efectivo', taxFree: true };
-	if (fromType === 'fund' && toType === 'fund') return { kind: 'traspaso', taxFree: true };
-	if (fromType === 'fund') return { kind: 'reembolso', taxFree: false };
-	return { kind: 'venta', taxFree: false };
-}
-
 /** Un activo cuyo trato fiscal no conocemos no se toca. */
 function isMovable(asset: Asset): boolean {
 	return instrumentTypeOf(asset) !== 'other';
+}
+
+/**
+ * Si una posición tiene un objetivo con el que medir su desviación.
+ *
+ * ⚠️ **Sin esto, la «desviación máxima» del panel medía algo que no existe.** Los
+ * pesos objetivo solo están definidos donde el usuario los ha puesto — en la práctica
+ * dentro de `core`—, así que una acción suelta o un fondo del bloque conservador
+ * tienen `targetWeight: 0` y su «desviación» es su peso entero dentro de su bloque.
+ * Medido en la cartera de ejemplo: el panel anunciaba **«desviación máxima 54,04 % →
+ * 54,04 %»**, que era el peso del ETF de renta fija dentro del bloque conservador —
+ * una cifra que no baja al aplicar el plan porque no hay nada que corregir ahí.
+ *
+ * Es exactamente la conclusión a la que ya llegó el mapa de desviación cuando dejó de
+ * squarificar los tres bloques en un lienzo: **un activo que estructuralmente no puede
+ * tener objetivo no es una excepción que señalar, es un activo que esa pregunta no le
+ * toca.** Y se decide por el dato y nunca por el nombre del bloque, igual que allí: si
+ * alguien pone objetivos a sus satélites, se miden.
+ *
+ * También cubre la cartera recién importada, donde **todos** los pesos son 0: ahí no
+ * hay nada medido y la desviación máxima es 0, en vez de ser el peso del activo más
+ * grande.
+ */
+function conObjetivo(position: PortfolioPosition): boolean {
+	return position.asset.targetWeight > 0;
 }
 
 /**
@@ -243,10 +255,10 @@ export function calculateTaxAwareRebalance(
 			.filter((p) => !isMovable(p.asset) && p.totalValue > 0)
 			.map((p) => p.asset.ticker);
 
-		const maxDeviationBefore = positions.reduce(
-			(max, p) => Math.max(max, Math.abs(p.deviation)),
-			0
-		);
+		// Solo las posiciones con objetivo: ver el docblock de `conObjetivo`.
+		const maxDeviationBefore = positions
+			.filter(conObjetivo)
+			.reduce((max, p) => Math.max(max, Math.abs(p.deviation)), 0);
 
 		// Excedente y déficit en divisa base. `targetValue` ya viene calculado
 		// sobre el capital de la categoría, así que los dos lados cuadran.
@@ -383,8 +395,13 @@ function residualDeviation(positions: PortfolioPosition[], moves: TransferMove[]
 	const total = [...valueByTicker.values()].reduce((a, b) => a + b, 0);
 	if (total <= 0) return 0;
 
+	/*
+	 * El denominador es **todo** el capital de la categoría —los pesos se miden sobre
+	 * el bloque entero—, pero solo se mide la desviación de lo que tiene objetivo. Ver
+	 * el docblock de `conObjetivo`.
+	 */
 	let max = 0;
-	for (const position of positions) {
+	for (const position of positions.filter(conObjetivo)) {
 		const value = valueByTicker.get(position.asset.ticker) ?? 0;
 		max = Math.max(max, Math.abs(value / total - position.asset.targetWeight));
 	}
