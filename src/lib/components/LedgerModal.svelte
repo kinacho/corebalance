@@ -17,11 +17,7 @@
 	 * aquí otra vez sería una segunda fuente de verdad para lo mismo.
 	 */
 	import { descriptiveAssetLabel } from '$lib/asset-label';
-	import {
-		planificarTraspaso,
-		meritaApuntar,
-		type CuantoTraspasar
-	} from '$lib/traspaso-libro';
+	import { planificarTraspaso, meritaApuntar, type CuantoTraspasar } from '$lib/traspaso-libro';
 
 	interface Props {
 		asset: Asset;
@@ -387,7 +383,16 @@
 	let fechaTraspaso = $state(Date.now());
 	let mostrarPrecios = $state(false);
 	let precioOrigenManual = $state<number | null>(null);
-	let precioDestinoManual = $state<number | null>(null);
+
+	/**
+	 * ⚠️ **Cómo queda el destino, escrito por el usuario, y `null` mientras no lo
+	 * toque.** El `null` no es un cero disfrazado: distingue «acepto lo que has
+	 * estimado» de «te corrijo con lo que dice mi banco», y es lo que permite
+	 * precargar sin que el precargado se quede pegado cuando cambian el importe o el
+	 * destino.
+	 */
+	let destinoParticipacionesManual = $state<number | null>(null);
+	let destinoCosteMedioManual = $state<number | null>(null);
 
 	function resetTransferForm() {
 		destinoTicker = null;
@@ -397,7 +402,8 @@
 		fechaTraspaso = Date.now();
 		mostrarPrecios = false;
 		precioOrigenManual = null;
-		precioDestinoManual = null;
+		destinoParticipacionesManual = null;
+		destinoCosteMedioManual = null;
 	}
 
 	/**
@@ -447,9 +453,6 @@
 	}
 
 	const precioOrigen = $derived(precioOrigenManual ?? precioBaseDe(asset.ticker));
-	const precioDestino = $derived(
-		destino ? (precioDestinoManual ?? precioBaseDe(destino.ticker)) : 0
-	);
 
 	const participacionesOrigen = $derived(
 		portfolio.effectiveHoldings[asset.ticker]?.shares ?? 0
@@ -463,19 +466,72 @@
 				: { modo: 'participaciones', participaciones: participacionesPedidas }
 	);
 
-	const planTraspaso = $derived(
+	/** Lo que el destino tiene ahora, que es de lo que se resta para saber qué entra. */
+	const destinoAntes = $derived.by(() => {
+		if (!destino) return { participaciones: 0, costeTotalBase: 0 };
+		const h = portfolio.effectiveHoldings[destino.ticker];
+		const participaciones = h?.shares ?? 0;
+		/*
+		 * `totalCostBase` es el coste exacto en divisa base cuando existe —lo precalcula
+		 * el libro—, y si no, se reconstruye del coste medio. No se puede dar por hecho:
+		 * un activo en modo manual no lo tiene.
+		 */
+		return {
+			participaciones,
+			costeTotalBase: h?.totalCostBase ?? participaciones * (h?.avgCost ?? 0)
+		};
+	});
+
+	const entradaComun = $derived(
 		destino
-			? planificarTraspaso({
+			? {
 					origen: asset,
 					destino,
 					transacciones: portfolio.transactions,
 					participacionesOrigen,
 					precioOrigen,
-					precioDestino,
+					precioDestinoHoy: precioBaseDe(destino.ticker),
 					cuanto,
+					destinoAntes,
 					fecha: fechaTraspaso
-				})
+				}
 			: null
+	);
+
+	/**
+	 * El plan **sin declarar nada**, que es de donde sale la estimación con la que se
+	 * precargan los dos campos del destino.
+	 *
+	 * ⚠️ Va antes que `planTraspaso` y no se puede fusionar con él: leer la estimación
+	 * del plan final sería una dependencia circular —el plan necesita el estado y el
+	 * estado necesita el plan—, y reconstruirla en el componente sería una segunda
+	 * copia de la misma aritmética. Con esto la estimación tiene un único sitio: el
+	 * módulo la resuelve y la devuelve en `destinoResultante`.
+	 */
+	const planEstimado = $derived(entradaComun ? planificarTraspaso(entradaComun) : null);
+
+	/** Lo que se pinta en los dos campos: lo escrito, o la estimación. */
+	const destinoResultante = $derived({
+		participaciones:
+			destinoParticipacionesManual ?? planEstimado?.destinoResultante.participaciones ?? 0,
+		costeMedio: destinoCosteMedioManual ?? planEstimado?.destinoResultante.costeMedio ?? 0
+	});
+
+	const estadoDeclarado = $derived(
+		destinoParticipacionesManual !== null || destinoCosteMedioManual !== null
+	);
+
+	/*
+	 * Con nada declarado el plan es el estimado tal cual: una sola llamada. En cuanto
+	 * el usuario toca un campo se recalcula con lo que ha puesto, y entonces el módulo
+	 * puede además comparar las dos cifras y devolver el descuadre.
+	 */
+	const planTraspaso = $derived(
+		!entradaComun
+			? null
+			: !estadoDeclarado
+				? planEstimado
+				: planificarTraspaso({ ...entradaComun, destinoResultante })
 	);
 
 	/** Si el destino sigue en modo manual, apuntarle el traspaso exige sembrarlo. */
@@ -683,9 +739,60 @@
 													})}
 												</span>
 											</div>
-											<button class="ruta-cambiar" onclick={() => { destinoTicker = null; precioDestinoManual = null; }}>
+										<button class="ruta-cambiar" onclick={() => { destinoTicker = null; destinoParticipacionesManual = null; destinoCosteMedioManual = null; }}>
 												{$LL.ledger.cambiar_destino()}
 											</button>
+										</div>
+
+										<!--
+											⚠️ **El estado final del destino, y sustituye a pedir un «precio de
+											entrada».** En un traspaso los dos valores liquidativos —el de reembolso
+											y el de suscripción— se fijan días después de dar la orden, así que el
+											usuario no los sabe: pedírselos convertía dos cifras que tiene delante
+											en el extracto en dos que tiene que adivinar, y cualquier error ahí
+											descuadra las dos posiciones al céntimo sin forma de cerrarlo luego.
+
+											Lo que sí sabe es cuántas participaciones tiene en el fondo destino y a
+											qué coste medio. De ahí sale lo que entra, por resta y sin dividir por
+											ningún precio. Y se cuadra por construcción: al declarar el final no
+											queda residuo.
+
+											Van precargados con la estimación de la app, así que en el caso fácil
+											se aceptan y en el real se escribe encima.
+										-->
+										<div class="estado-destino">
+											<span class="grupo-rotulo">{$LL.ledger.label_como_queda()}</span>
+											<div class="form-row">
+												<div class="form-group">
+													<label for="tr-dp">{$LL.ledger.label_participaciones_totales()}</label>
+													<input
+														id="tr-dp"
+														type="number"
+														step="0.001"
+														min="0"
+														value={destinoResultante.participaciones}
+														onchange={(e) => {
+															const v = Number((e.currentTarget as HTMLInputElement).value);
+															destinoParticipacionesManual = Number.isFinite(v) && v >= 0 ? v : null;
+														}}
+													/>
+												</div>
+												<div class="form-group">
+													<label for="tr-dc">{$LL.ledger.label_coste_medio_final()}</label>
+													<input
+														id="tr-dc"
+														type="number"
+														step="0.0001"
+														min="0"
+														value={destinoResultante.costeMedio}
+														onchange={(e) => {
+															const v = Number((e.currentTarget as HTMLInputElement).value);
+															destinoCosteMedioManual = Number.isFinite(v) && v >= 0 ? v : null;
+														}}
+													/>
+												</div>
+											</div>
+											<p class="estado-nota">{$LL.ledger.nota_como_queda()}</p>
 										</div>
 									{:else}
 										<!--
@@ -753,21 +860,19 @@
 									/>
 								</div>
 
-								<!-- Plegado: en el caso normal el precio de hoy vale, y pedirlo convierte
-								     cuatro decisiones en seis. -->
+							<!--
+									Plegado, y **solo el del origen**. El de entrada ya no se pide: lo
+									sustituye el estado final del destino de arriba. Este sigue existiendo
+									porque es lo que valora *cuánto* sale cuando se pide por importe, y
+									porque el valor liquidativo de reembolso también puede no ser el de hoy.
+								-->
 								<button class="precios-toggle" onclick={() => (mostrarPrecios = !mostrarPrecios)}>
 									{mostrarPrecios ? '▾' : '▸'} {$LL.ledger.ajustar_precios()}
 								</button>
 								{#if mostrarPrecios}
-									<div class="form-row" transition:slide>
-										<div class="form-group">
-											<label for="tr-po">{$LL.ledger.label_precio_salida()}</label>
-											<input id="tr-po" type="number" step="0.0001" min="0" value={precioOrigen} onchange={(e) => (precioOrigenManual = Number((e.currentTarget as HTMLInputElement).value) || null)} />
-										</div>
-										<div class="form-group">
-											<label for="tr-pd">{$LL.ledger.label_precio_entrada()}</label>
-											<input id="tr-pd" type="number" step="0.0001" min="0" value={precioDestino} onchange={(e) => (precioDestinoManual = Number((e.currentTarget as HTMLInputElement).value) || null)} />
-										</div>
+									<div class="form-group" transition:slide>
+										<label for="tr-po">{$LL.ledger.label_precio_salida()}</label>
+										<input id="tr-po" type="number" step="0.0001" min="0" value={precioOrigen} onchange={(e) => (precioOrigenManual = Number((e.currentTarget as HTMLInputElement).value) || null)} />
 									</div>
 								{/if}
 
@@ -813,8 +918,23 @@
 														year: 'numeric'
 													})
 												})}
-											{/if}
+										{/if}
 										</p>
+										<!--
+											⚠️ El descuadre se **dice**, no se tapa. Cuando lo que declara el
+											extracto no cuadra con lo que salió según el libro, eso es información:
+											o al libro del origen le falta historial —un CSV de doce meses es el
+											caso normal—, o la gestora aplicó otro valor de adquisición. Manda lo
+											declarado, porque es lo que la gestora reportará a Hacienda.
+										-->
+										{#if planTraspaso.descuadre !== null && Math.abs(planTraspaso.descuadre) >= 1}
+											<p class="resumen-linea resumen-descuadre">
+												{$LL.ledger.resumen_descuadre({
+													declarado: formatEUR(planTraspaso.costeHeredado ?? 0),
+													libro: formatEUR(planTraspaso.costeSegunElLibro ?? 0)
+												})}
+											</p>
+										{/if}
 									</div>
 
 									{#if destinoEnManual}
@@ -1491,6 +1611,28 @@
 		color: var(--text-muted);
 	}
 
+	.resumen-descuadre {
+		color: var(--accent-orange-ink);
+	}
+
+	/* Va dentro de la tarjeta de la ruta, pegado a la fila del destino, porque es lo
+	   que declara ese fondo y no un campo suelto del formulario. */
+	.estado-destino {
+		display: flex;
+		flex-direction: column;
+		gap: 0.4rem;
+		margin-top: 0.5rem;
+		padding-top: 0.6rem;
+		border-top: 1px solid var(--border-subtle);
+	}
+
+	.estado-nota {
+		margin: 0;
+		font-size: var(--text-micro);
+		line-height: 1.45;
+		color: var(--text-muted);
+	}
+
 	.aviso-manual {
 		margin: 0;
 		font-size: var(--text-micro);
@@ -1527,9 +1669,20 @@
 		margin: 0 0 0.25rem 0;
 	}
 
+	/*
+	 * ⚠️ `minmax(0, 1fr)` y no `1fr`, que es `minmax(auto, 1fr)`: el mínimo `auto` de un
+	 * elemento de rejilla es su tamaño de contenido mínimo, y un `input[type=number]`
+	 * tiene un ancho intrínseco de ~150 px que **no encoge**. Dos de ellos más el hueco
+	 * no caben en un contenedor estrecho y la fila se sale.
+	 *
+	 * Estaba así desde siempre y no se veía porque estas filas colgaban directamente
+	 * del formulario, que es ancho; se destapó al anidar una dentro de la tarjeta de la
+	 * ruta, que tiene su propio relleno. Lo cazó el e2e de 390 px midiendo cada elemento
+	 * contra su contenedor: `right: 431` contra un límite de `349`.
+	 */
 	.form-row {
 		display: grid;
-		grid-template-columns: 1fr 1fr;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 		gap: 1rem;
 	}
 
@@ -1537,6 +1690,8 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.4rem;
+		/* La otra mitad del arreglo de arriba: sin esto el propio grupo tampoco encoge. */
+		min-width: 0;
 	}
 
 	.form-group label {
@@ -1552,6 +1707,14 @@
 		padding: 0.5rem;
 		color: var(--text-primary);
 		font-size: 0.85rem;
+		/*
+		 * Que el campo ocupe su columna en vez de su ancho intrínseco, y `border-box`
+		 * para que el relleno y el borde no lo saquen de ella. `.currency-input` lleva su
+		 * ancho con `!important` y sigue ganando.
+		 */
+		width: 100%;
+		box-sizing: border-box;
+		min-width: 0;
 	}
 
 	.fx-group {

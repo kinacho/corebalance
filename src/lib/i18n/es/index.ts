@@ -492,9 +492,15 @@ const es = {
     cuanto_todo: 'Todo',
     cuanto_importe: 'Un importe',
     cuanto_participaciones: 'Participaciones',
-    ajustar_precios: 'Ajustar precios',
-    label_precio_salida: 'Precio de salida',
-    label_precio_entrada: 'Precio de entrada',
+    ajustar_precios: 'Ajustar el precio de salida',
+    label_precio_salida: 'Valor liquidativo de reembolso',
+    label_como_queda: 'Cómo queda este fondo',
+    label_participaciones_totales: 'Participaciones totales',
+    label_coste_medio_final: 'Coste medio',
+    nota_como_queda:
+      'Cópialo de tu banco tal cual. Los valores liquidativos de un traspaso se fijan días después de la orden, así que estas dos cifras son las únicas que puedes saber con certeza — y con ellas cuadra solo.',
+    resumen_descuadre:
+      'Ojo: según lo que has puesto entran {declarado:string} de coste, y según tu libro salieron {libro:string}. Se apunta lo que has puesto, que es lo que dirá tu gestora. Si no esperabas esa diferencia, a tu fondo de origen probablemente le falten compras antiguas en el libro.',
     resumen_participaciones:
       'Vendes {salen:string} participaciones de {origen:string} y compras {entran:string} de {destino:string}.',
     resumen_sin_tributar: 'No tributas: es un traspaso entre fondos (art. 94 LIRPF).',

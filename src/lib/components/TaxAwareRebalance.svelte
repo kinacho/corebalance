@@ -58,16 +58,28 @@
 	}
 
 	function apuntar(move: TransferMove) {
+		const antes = portfolio.effectiveHoldings[move.to.ticker];
+		const participacionesDestino = antes?.shares ?? 0;
+
 		const plan = planificarTraspaso({
 			origen: move.from,
 			destino: move.to,
 			transacciones: portfolio.transactions,
 			participacionesOrigen: portfolio.effectiveHoldings[move.from.ticker]?.shares ?? 0,
 			precioOrigen: portfolio.pricesWithFx[move.from.ticker]?.price ?? 0,
-			precioDestino: portfolio.pricesWithFx[move.to.ticker]?.price ?? 0,
+			precioDestinoHoy: portfolio.pricesWithFx[move.to.ticker]?.price ?? 0,
 			// El plan viene expresado en euros, que es la forma en la que el usuario ya lo
 			// está leyendo en esta tarjeta.
 			cuanto: { modo: 'importe', importe: move.amount },
+			/*
+			 * Sin `destinoResultante`: aquí no hay nadie escribiendo el extracto, así que
+			 * se estima. Quien quiera cuadrar al céntimo con lo que dice su banco lo hace
+			 * desde el formulario del libro, que es donde están los dos campos.
+			 */
+			destinoAntes: {
+				participaciones: participacionesDestino,
+				costeTotalBase: antes?.totalCostBase ?? participacionesDestino * (antes?.avgCost ?? 0)
+			},
 			fecha: Date.now()
 		});
 

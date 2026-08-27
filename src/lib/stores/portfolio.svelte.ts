@@ -1311,7 +1311,20 @@ export class PortfolioStore {
 			type: 'transfer_in',
 			date: plan.fecha,
 			shares: plan.participacionesDestino,
-			price: plan.precioDestino,
+			/*
+			 * ⚠️ El precio de la fila es el **coste unitario heredado**, no un valor
+			 * liquidativo de suscripción — que en la fecha de la orden no existe todavía y
+			 * que por eso el formulario ya no pide. En la pata de entrada el precio es
+			 * decoración: `ledger.ts` y `fiscal.ts` usan `carriedCostBase` cuando está. Así
+			 * que se pinta la cifra que sí significa algo, y la fila se lee coherente con
+			 * el coste medio que el usuario acaba de declarar.
+			 */
+			price:
+				plan.costeHeredado !== null && plan.participacionesDestino > 0
+					? plan.costeHeredado / plan.participacionesDestino
+					: plan.participacionesDestino > 0
+						? plan.importe / plan.participacionesDestino
+						: 0,
 			currency: divisaDe(plan.destino.ticker),
 			fees: 0,
 			fxRate: 1,

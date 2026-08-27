@@ -477,9 +477,15 @@ const en: Translation = {
     cuanto_todo: 'Everything',
     cuanto_importe: 'An amount',
     cuanto_participaciones: 'Units',
-    ajustar_precios: 'Adjust prices',
-    label_precio_salida: 'Price out',
-    label_precio_entrada: 'Price in',
+    ajustar_precios: 'Adjust the redemption price',
+    label_precio_salida: 'Redemption NAV',
+    label_como_queda: 'How this fund ends up',
+    label_participaciones_totales: 'Total units',
+    label_coste_medio_final: 'Average cost',
+    nota_como_queda:
+      'Copy it straight from your bank. The NAVs of a transfer are set days after the order, so these two figures are the only ones you can know for certain — and with them everything reconciles by itself.',
+    resumen_descuadre:
+      'Note: what you entered implies {declarado} of cost basis coming in, while your ledger says {libro} went out. What you entered is what gets recorded, since that is what your fund manager will report. If you did not expect that gap, your source fund is probably missing older purchases in the ledger.',
     resumen_participaciones:
       'You sell {salen} units of {origen} and buy {entran} of {destino}.',
     resumen_sin_tributar:

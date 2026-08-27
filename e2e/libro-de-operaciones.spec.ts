@@ -409,6 +409,63 @@ test.describe('Traspaso entre fondos', () => {
 	});
 
 	/**
+	 * ⚠️ **Declarar cómo queda el destino, que es la única forma de cuadrar al
+	 * céntimo.**
+	 *
+	 * Los dos valores liquidativos de un traspaso se fijan días después de la orden, así
+	 * que el usuario no los sabe; lo que sí tiene delante en el extracto es cuántas
+	 * participaciones hay en el fondo destino y a qué coste medio. Este caso comprueba
+	 * que esas dos cifras mandan de punta a punta: se escriben, y el valor de
+	 * adquisición que acaba declarando la ficha es exactamente el que implican.
+	 */
+	test('lo que declaras del destino manda sobre el valor liquidativo de hoy', async ({ page }) => {
+		await sembrarCartera(page, FONDOS_CON_LIBRO);
+		await abrirDashboard(page);
+
+		const panel = await abrirTraspaso(page, 'Global Stock');
+		await panel.locator('.destino-op').first().click();
+
+		// Precargado con la estimación de la app, no vacío.
+		const participaciones = panel.locator('#tr-dp');
+		const costeMedio = panel.locator('#tr-dc');
+		await expect(participaciones).not.toHaveValue('');
+		await expect(costeMedio).not.toHaveValue('');
+
+		/*
+		 * El destino tiene 100 participaciones a 100 € (1.000 € de coste según el
+		 * fixture, sin libro). Se declara que acaba con 1.100 a 100 €: entran 1.000
+		 * participaciones y 1.100 × 100 − 1.000 × ... — mejor por la cifra final, que es
+		 * lo que el usuario lee: 1.100 × 100 = 110.000 € de valor de adquisición.
+		 */
+		await participaciones.fill('1100');
+		await participaciones.dispatchEvent('change');
+		await costeMedio.fill('100');
+		await costeMedio.dispatchEvent('change');
+
+		// Entran 1.100 − 100 = 1.000 participaciones, sin dividir por ningún precio.
+		await expect(panel.locator('.resumen')).toContainText('1000');
+
+		await panel.locator('.submit-tx-btn').click();
+		await page.keyboard.press('Escape');
+		await expect(page.locator('.ledger-panel')).toHaveCount(0);
+
+		const tarjetaDestino = page
+			.locator('.asset-card')
+			.filter({ hasText: 'Emerging Markets' })
+			.first();
+		await tarjetaDestino.locator('.asset-icon-wrapper').click();
+		const panelDestino = page.locator('.ledger-panel');
+		await expect(panelDestino).toBeVisible();
+
+		/*
+		 * ⚠️ La aserción que importa: 110.000 €, que es 1.100 × 100 tal cual lo declaró
+		 * el usuario. Con el modelo anterior esto habría salido del valor liquidativo de
+		 * hoy y no habría cuadrado con su extracto por más que lo intentara.
+		 */
+		await expect(panelDestino).toContainText('110.000,00 €');
+	});
+
+	/**
 	 * ⚠️ **Lo que se desborda es justo lo que no sale en la captura**, así que esto no
 	 * se puede comprobar mirando: se mide cada elemento contra su propio contenedor,
 	 * como ya hace `movil-sin-desbordamiento.spec.ts` con el enlace de la lección.

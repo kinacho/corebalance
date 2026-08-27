@@ -44,6 +44,39 @@ export type EstadoCoste =
 	/** El origen no tiene transacciones, así que no hay nada que heredar. */
 	| 'sin-libro';
 
+/**
+ * Cómo queda el fondo de destino, **tal como lo dice el banco**.
+ *
+ * ⚠️ **Esta es la forma de entrada que de verdad se puede rellenar, y sustituye a
+ * pedir un «precio de entrada».** En un traspaso los dos valores liquidativos —el de
+ * reembolso en el origen y el de suscripción en el destino— se fijan días después de
+ * dar la orden, así que el usuario **no los sabe**, y pedírselos convertía dos cifras
+ * que él conoce con certeza en dos que tiene que adivinar. Cualquier error ahí
+ * descuadra las dos posiciones al céntimo y no hay forma de cerrarlo después.
+ *
+ * Lo que sí tiene delante en el extracto es el estado final: cuántas participaciones
+ * hay en el fondo destino y a qué coste medio. De ahí sale todo:
+ *
+ *     participaciones que entran = participaciones − antes.participaciones
+ *     coste que entra            = participaciones × costeMedio − antes.costeTotalBase
+ *
+ * Y **se cuadra por construcción**: declarando el estado final no queda residuo que
+ * reconciliar, que es el problema que esto viene a resolver.
+ */
+export interface EstadoDestino {
+	/** Participaciones **totales** en el destino después del traspaso. */
+	participaciones: number;
+	/** Coste medio **total** del destino después, en divisa del activo. */
+	costeMedio: number;
+}
+
+/** Lo que el destino tenía antes, para poder restar y quedarse con lo que entra. */
+export interface DestinoAntes {
+	participaciones: number;
+	/** Coste total acumulado, en divisa base. */
+	costeTotalBase: number;
+}
+
 export interface PlanDeTraspaso {
 	origen: Asset;
 	destino: Asset;
@@ -54,17 +87,43 @@ export interface PlanDeTraspaso {
 	participacionesOrigen: number;
 	participacionesDestino: number;
 
-	/** Precios unitarios en divisa base, tal como se han usado para el reparto. */
+	/** Precio unitario del origen en divisa base: solo valora lo que sale. */
 	precioOrigen: number;
-	precioDestino: number;
+
+	/**
+	 * El estado final del destino **ya resuelto**: el que declaró el usuario, o el
+	 * estimado si no declaró nada.
+	 *
+	 * Se devuelve para que el formulario precargue sus dos campos con esto en vez de
+	 * volver a estimarlo por su cuenta — que era una dependencia circular y, peor, una
+	 * segunda copia de la misma aritmética.
+	 */
+	destinoResultante: EstadoDestino;
 
 	/** Qué es esto fiscalmente. `traspaso` es el único que difiere el impuesto. */
 	trato: MoveKind;
 	sinTributar: boolean;
 
 	estadoCoste: EstadoCoste;
-	/** Coste de adquisición que viaja, en divisa base. `null` si no hay libro. */
+	/**
+	 * Coste de adquisición que viaja al destino, en divisa base — el que se escribe
+	 * como `carriedCostBase`.
+	 *
+	 * ⚠️ Sale del **estado final que declara el usuario**, no de los lotes del origen,
+	 * y esa preferencia es deliberada: la cifra del banco es la que la gestora
+	 * reportará a Hacienda, mientras que la del libro depende de que el libro del
+	 * origen esté completo. `costeSegunElLibro` guarda la otra para poder compararlas.
+	 *
+	 * `null` cuando no hay ni libro ni cifra declarada: no se sabe.
+	 */
 	costeHeredado: number | null;
+	/**
+	 * Lo que los lotes FIFO del origen dicen que sale. `null` si el origen no tiene
+	 * libro. Se devuelve para poder avisar cuando no cuadra con lo declarado.
+	 */
+	costeSegunElLibro: number | null;
+	/** Cuánto se separan las dos cifras, en divisa base. `null` si falta una. */
+	descuadre: number | null;
 	/** Fecha de adquisición que viaja. `null` si no hay libro. */
 	fechaLoteHeredado: number | null;
 	/** Plusvalía latente que se lleva consigo. `null` si no hay libro. */
@@ -112,10 +171,13 @@ function participacionesASacar(
 /**
  * Qué apuntar para traspasar de un fondo a otro.
  *
- * `precioOrigen` y `precioDestino` llegan **ya convertidos a divisa base**, igual
- * que los pide `simulateSale`, y por el mismo motivo: recibirlos sin convertir
- * invita a aplicar el tipo de cambio dos veces, que es de donde salió un bug real
- * de beneficios.
+ * `precioOrigen` llega **ya convertido a divisa base**, igual que lo pide
+ * `simulateSale`, y por el mismo motivo: recibirlo sin convertir invita a aplicar el
+ * tipo de cambio dos veces, que es de donde salió un bug real de beneficios.
+ *
+ * ⚠️ **Y no hay `precioDestino`, a propósito.** Lo que entra en el destino se deduce
+ * del estado final que declara el usuario (ver `EstadoDestino`), no de un valor
+ * liquidativo que en la fecha de la orden todavía no existe.
  */
 export function planificarTraspaso(entrada: {
 	origen: Asset;
@@ -123,8 +185,15 @@ export function planificarTraspaso(entrada: {
 	transacciones: Transaction[];
 	participacionesOrigen: number;
 	precioOrigen: number;
-	precioDestino: number;
+	/** Valor liquidativo de hoy del destino, en divisa base. Solo para la estimación. */
+	precioDestinoHoy: number;
 	cuanto: CuantoTraspasar;
+	/**
+	 * Cómo queda el destino según el banco. **Omitirlo es lo normal**: entonces se
+	 * estima, y es lo que precarga los campos del formulario. Ver `EstadoDestino`.
+	 */
+	destinoResultante?: EstadoDestino;
+	destinoAntes: DestinoAntes;
 	fecha: number;
 }): PlanDeTraspaso {
 	const {
@@ -133,8 +202,9 @@ export function planificarTraspaso(entrada: {
 		transacciones,
 		participacionesOrigen,
 		precioOrigen,
-		precioDestino,
+		precioDestinoHoy,
 		cuanto,
+		destinoAntes,
 		fecha
 	} = entrada;
 
@@ -142,26 +212,27 @@ export function planificarTraspaso(entrada: {
 
 	const sacadas = participacionesASacar(cuanto, participacionesOrigen, precioOrigen);
 	const importe = redondear2(sacadas * precioOrigen);
-	const compradas = precioDestino > 0 ? redondear3(importe / precioDestino) : 0;
 
 	/*
-	 * El coste heredado sale de los lotes FIFO del origen, con `simulateSale` —
+	 * El coste según el libro sale de los lotes FIFO del origen, con `simulateSale` —
 	 * reusando `fiscal.ts` y sin reimplementar FIFO aquí. Fiscalmente eso es lo
 	 * mismo que se calcularía para una venta: el valor de adquisición de lo que
 	 * sale. La diferencia es qué se hace con él: en una venta se resta del importe
 	 * para dar la plusvalía a declarar, y aquí **viaja** al destino.
+	 *
+	 * Va antes de resolver el estado final porque la estimación lo necesita.
 	 */
 	const lotes = buildFifoLots(transacciones, origen.ticker);
 
 	let estadoCoste: EstadoCoste = 'sin-libro';
-	let costeHeredado: number | null = null;
+	let costeSegunElLibro: number | null = null;
 	let fechaLoteHeredado: number | null = null;
 	let plusvaliaLatente: number | null = null;
 
 	if (lotes.length > 0 && sacadas > 0) {
 		const salida = simulateSale(lotes, sacadas, precioOrigen);
 		estadoCoste = salida.incomplete ? 'parcial' : 'completo';
-		costeHeredado = salida.acquisitionCost;
+		costeSegunElLibro = salida.acquisitionCost;
 		/*
 		 * ⚠️ La fecha heredada es la del lote **más antiguo consumido**, no la de hoy
 		 * ni la del más reciente. Es lo que decide la ventana antiaplicación del
@@ -173,6 +244,82 @@ export function planificarTraspaso(entrada: {
 		plusvaliaLatente = salida.gain;
 	}
 
+	/*
+	 * Sin estado declarado se estima, aquí dentro y no en el componente: así los dos
+	 * consumidores —el formulario del libro y el panel de Hacienda— llaman una sola vez
+	 * y la estimación tiene un único sitio donde estar probada.
+	 */
+	const declarado = entrada.destinoResultante !== undefined;
+	const destinoResultante =
+		entrada.destinoResultante ??
+		sugerirEstadoDestino({
+			importe,
+			precioDestinoHoy,
+			costeQueViaja: costeSegunElLibro,
+			destinoAntes
+		});
+
+	/*
+	 * Lo que entra es la diferencia entre cómo queda el destino y cómo estaba. Es una
+	 * resta, no una división por un precio: por eso no hace falta el valor liquidativo
+	 * de suscripción, que es el dato que el usuario no tiene.
+	 *
+	 * El `max(0, …)` no es cosmético: un estado final **menor** que el de antes no es
+	 * un traspaso de entrada, es que el usuario ha escrito otra cosa. Sin el tope
+	 * entrarían participaciones negativas, que `ledger.ts` y `fiscal.ts` ignoran en
+	 * silencio (los dos filtran `shares > 0`), o sea que se apuntaría un movimiento
+	 * que no hace nada.
+	 */
+	const compradas = redondear3(
+		Math.max(0, destinoResultante.participaciones - destinoAntes.participaciones)
+	);
+	const costeDeclarado =
+		compradas > 0
+			? redondear2(
+					Math.max(
+						0,
+						destinoResultante.participaciones * destinoResultante.costeMedio -
+							destinoAntes.costeTotalBase
+					)
+				)
+			: null;
+
+	/*
+	 * ⚠️ **Manda lo declarado, y solo se cae al libro cuando no hay nada declarado.**
+	 *
+	 * La cifra del banco es la que la gestora reportará a Hacienda; la del libro
+	 * depende de que el libro del origen esté completo, que es justo lo que no se puede
+	 * dar por hecho (un CSV que solo trae doce meses es el caso normal). Las dos se
+	 * devuelven para que la interfaz pueda avisar cuando se separan: ese descuadre es
+	 * información —o falta historial en el origen, o la gestora aplicó otro valor de
+	 * adquisición—, no un error que tapar.
+	 */
+	/*
+	 * ⚠️ **La cifra estimada NO cuenta como coste heredado, y esa distinción es la que
+	 * mantiene honesto el `carriedCostBase` que se escribe en el libro.**
+	 *
+	 * Sin libro en el origen y sin nada declarado, la estimación vale «lo que cuesta
+	 * hoy» — que es una valoración, no un valor de adquisición. Devolverla aquí haría
+	 * que el destino naciera afirmando un coste que nadie ha comprobado, y es
+	 * exactamente el defecto que este repo arrastra documentado desde el importador que
+	 * metía activos a coste 0: el problema no era el cero, era afirmar un coste.
+	 *
+	 * Y al contrario: si el usuario **declara** el estado final, hay coste heredado
+	 * aunque el origen no tenga libro, porque lo dice su banco. Eso es capacidad nueva,
+	 * no un efecto colateral.
+	 */
+	const costeHeredado = declarado ? costeDeclarado : costeSegunElLibro;
+	/*
+	 * Solo hay descuadre que avisar cuando el usuario ha **declarado** el estado final.
+	 * Con la estimación las dos cifras coinciden por construcción, así que compararlas
+	 * ahí sería un aviso permanente sobre datos correctos — la forma de fallo que este
+	 * repo persigue.
+	 */
+	const descuadre =
+		declarado && costeDeclarado !== null && costeSegunElLibro !== null
+			? redondear2(costeDeclarado - costeSegunElLibro)
+			: null;
+
 	return {
 		origen,
 		destino,
@@ -181,11 +328,13 @@ export function planificarTraspaso(entrada: {
 		participacionesOrigen: redondear3(sacadas),
 		participacionesDestino: compradas,
 		precioOrigen,
-		precioDestino,
+		destinoResultante,
 		trato: kind,
 		sinTributar: taxFree,
 		estadoCoste,
 		costeHeredado,
+		costeSegunElLibro,
+		descuadre,
 		fechaLoteHeredado,
 		plusvaliaLatente,
 		// Con tolerancia, porque `sacadas` viene de una división en el modo importe.
@@ -202,4 +351,44 @@ export function planificarTraspaso(entrada: {
  */
 export function meritaApuntar(plan: PlanDeTraspaso): boolean {
 	return plan.participacionesOrigen > 0 && plan.participacionesDestino > 0;
+}
+
+/**
+ * La estimación con la que se precargan los dos campos del destino.
+ *
+ * ⚠️ **Es una estimación y el usuario la sobrescribe, no al revés — y ese reparto es
+ * el punto.** La app puede calcular a qué participaciones equivaldría el importe al
+ * valor liquidativo **de hoy**, pero un traspaso no se ejecuta al de hoy: el reembolso
+ * y la suscripción se valoran días después. Así que esto sirve para no dejar dos
+ * campos vacíos en el caso fácil, y lo que manda es lo que ponga el extracto.
+ *
+ * Vive aquí y no en el componente por el criterio de siempre: decide cifras de dinero,
+ * y una estimación sin test es una estimación que nadie ha comprobado.
+ */
+export function sugerirEstadoDestino(entrada: {
+	importe: number;
+	/** Valor liquidativo de hoy del destino, en divisa base. */
+	precioDestinoHoy: number;
+	/** El coste que viajaría según el libro del origen; `null` si no hay libro. */
+	costeQueViaja: number | null;
+	destinoAntes: DestinoAntes;
+}): EstadoDestino {
+	const { importe, precioDestinoHoy, costeQueViaja, destinoAntes } = entrada;
+
+	const entran = precioDestinoHoy > 0 ? importe / precioDestinoHoy : 0;
+	const participaciones = redondear3(destinoAntes.participaciones + entran);
+
+	/*
+	 * Sin libro en el origen no hay coste que heredar, así que la mejor estimación del
+	 * coste de lo que entra es lo que vale hoy — que es exactamente lo que la app hacía
+	 * antes de que existiera el coste heredado. La interfaz lo dice en su tercera
+	 * frase; aquí no se puede hacer mejor.
+	 */
+	const costeQueEntra = costeQueViaja ?? importe;
+	const costeTotal = destinoAntes.costeTotalBase + costeQueEntra;
+
+	return {
+		participaciones,
+		costeMedio: participaciones > 0 ? redondear2(costeTotal / participaciones) : 0
+	};
 }

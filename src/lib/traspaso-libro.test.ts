@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { planificarTraspaso, meritaApuntar } from './traspaso-libro';
+import { planificarTraspaso, sugerirEstadoDestino, meritaApuntar } from './traspaso-libro';
 import type { Asset, InstrumentType, Transaction } from './types';
 
 /*
@@ -53,7 +53,8 @@ describe('planificarTraspaso', () => {
 				transacciones: [compra(FONDO_A.ticker, HACE_TRES_ANOS, 100, 42)],
 				participacionesOrigen: 100,
 				precioOrigen: 80,
-				precioDestino: 20,
+				precioDestinoHoy: 20,
+				destinoAntes: { participaciones: 0, costeTotalBase: 0 },
 				cuanto: { modo: 'todo' },
 				fecha: HOY
 			});
@@ -72,7 +73,8 @@ describe('planificarTraspaso', () => {
 				transacciones: [compra(FONDO_A.ticker, HACE_TRES_ANOS, 100, 42)],
 				participacionesOrigen: 100,
 				precioOrigen: 80,
-				precioDestino: 20,
+				precioDestinoHoy: 20,
+				destinoAntes: { participaciones: 0, costeTotalBase: 0 },
 				cuanto: { modo: 'importe', importe: 5000 },
 				fecha: HOY
 			});
@@ -90,7 +92,8 @@ describe('planificarTraspaso', () => {
 				transacciones: [compra(FONDO_A.ticker, HACE_TRES_ANOS, 100, 42)],
 				participacionesOrigen: 100,
 				precioOrigen: 80,
-				precioDestino: 20,
+				precioDestinoHoy: 20,
+				destinoAntes: { participaciones: 0, costeTotalBase: 0 },
 				cuanto: { modo: 'participaciones', participaciones: 25 },
 				fecha: HOY
 			});
@@ -100,21 +103,36 @@ describe('planificarTraspaso', () => {
 			expect(plan.participacionesDestino).toBe(100);
 		});
 
-		it('el importe de los dos lados es el mismo dinero, no dos cifras sueltas', () => {
+	/**
+		 * ⚠️ **Este caso comprobaba antes que el importe cuadraba dividiéndolo por el
+		 * precio de destino, y ese precio ya no existe.** Se reescribe en vez de
+		 * borrarse, porque es un cambio de contrato y tiene que verse en la prueba que
+		 * lo guardaba: las participaciones que entran salen de una **resta** contra el
+		 * estado final, no de dividir el importe por un valor liquidativo que en la
+		 * fecha de la orden todavía no se conoce.
+		 */
+		it('lo que entra sale de una resta contra el estado final, no de dividir por un precio', () => {
 			const plan = planificarTraspaso({
 				origen: FONDO_A,
 				destino: FONDO_B,
 				transacciones: [compra(FONDO_A.ticker, HACE_TRES_ANOS, 100, 42)],
 				participacionesOrigen: 100,
 				precioOrigen: 137.42,
-				precioDestino: 8.31,
+				// Un precio de destino absurdo a propósito: no debe influir en nada cuando
+				// el usuario declara el estado final.
+				precioDestinoHoy: 8.31,
+				destinoAntes: { participaciones: 120, costeTotalBase: 1000 },
+				destinoResultante: { participaciones: 700, costeMedio: 9 },
 				cuanto: { modo: 'importe', importe: 5000 },
 				fecha: HOY
 			});
 
-			// Lo que sale del origen y lo que entra en el destino valen lo mismo.
+			// Lo que sale del origen sigue valiendo el importe pedido.
 			expect(plan.participacionesOrigen * plan.precioOrigen).toBeCloseTo(plan.importe, 1);
-			expect(plan.participacionesDestino * plan.precioDestino).toBeCloseTo(plan.importe, 1);
+			// Y lo que entra es 700 − 120, sin que el 8,31 aparezca por ninguna parte.
+			expect(plan.participacionesDestino).toBe(580);
+			// Coste que entra: 700 × 9 − 1.000 = 5.300.
+			expect(plan.costeHeredado).toBe(5300);
 		});
 	});
 
@@ -131,7 +149,8 @@ describe('planificarTraspaso', () => {
 				transacciones: [compra(FONDO_A.ticker, HACE_TRES_ANOS, 50, 42)],
 				participacionesOrigen: 50,
 				precioOrigen: 80,
-				precioDestino: 20,
+				precioDestinoHoy: 20,
+				destinoAntes: { participaciones: 0, costeTotalBase: 0 },
 				cuanto: { modo: 'importe', importe: 999_999 },
 				fecha: HOY
 			});
@@ -148,7 +167,8 @@ describe('planificarTraspaso', () => {
 				transacciones: [compra(FONDO_A.ticker, HACE_TRES_ANOS, 50, 42)],
 				participacionesOrigen: 50,
 				precioOrigen: 80,
-				precioDestino: 20,
+				precioDestinoHoy: 20,
+				destinoAntes: { participaciones: 0, costeTotalBase: 0 },
 				cuanto: { modo: 'participaciones', participaciones: 500 },
 				fecha: HOY
 			});
@@ -166,7 +186,8 @@ describe('planificarTraspaso', () => {
 				transacciones: [compra(FONDO_A.ticker, HACE_TRES_ANOS, 100, 42)],
 				participacionesOrigen: 100,
 				precioOrigen: 80,
-				precioDestino: 20,
+				precioDestinoHoy: 20,
+				destinoAntes: { participaciones: 0, costeTotalBase: 0 },
 				cuanto: { modo: 'todo' },
 				fecha: HOY
 			});
@@ -192,7 +213,8 @@ describe('planificarTraspaso', () => {
 				],
 				participacionesOrigen: 100,
 				precioOrigen: 80,
-				precioDestino: 20,
+				precioDestinoHoy: 20,
+				destinoAntes: { participaciones: 0, costeTotalBase: 0 },
 				cuanto: { modo: 'todo' },
 				fecha: HOY
 			});
@@ -212,7 +234,8 @@ describe('planificarTraspaso', () => {
 				],
 				participacionesOrigen: 100,
 				precioOrigen: 80,
-				precioDestino: 20,
+				precioDestinoHoy: 20,
+				destinoAntes: { participaciones: 0, costeTotalBase: 0 },
 				cuanto: { modo: 'participaciones', participaciones: 40 },
 				fecha: HOY
 			});
@@ -236,7 +259,8 @@ describe('planificarTraspaso', () => {
 				transacciones: [],
 				participacionesOrigen: 100,
 				precioOrigen: 80,
-				precioDestino: 20,
+				precioDestinoHoy: 20,
+				destinoAntes: { participaciones: 0, costeTotalBase: 0 },
 				cuanto: { modo: 'todo' },
 				fecha: HOY
 			});
@@ -256,7 +280,8 @@ describe('planificarTraspaso', () => {
 				transacciones: [compra(FONDO_B.ticker, HACE_TRES_ANOS, 100, 42)],
 				participacionesOrigen: 100,
 				precioOrigen: 80,
-				precioDestino: 20,
+				precioDestinoHoy: 20,
+				destinoAntes: { participaciones: 0, costeTotalBase: 0 },
 				cuanto: { modo: 'todo' },
 				fecha: HOY
 			});
@@ -273,7 +298,8 @@ describe('planificarTraspaso', () => {
 				transacciones: [compra(FONDO_A.ticker, HACE_TRES_ANOS, 30, 42)],
 				participacionesOrigen: 100,
 				precioOrigen: 80,
-				precioDestino: 20,
+				precioDestinoHoy: 20,
+				destinoAntes: { participaciones: 0, costeTotalBase: 0 },
 				cuanto: { modo: 'todo' },
 				fecha: HOY
 			});
@@ -291,7 +317,8 @@ describe('planificarTraspaso', () => {
 				transacciones: [compra(FONDO_A.ticker, HACE_TRES_ANOS, 100, 42)],
 				participacionesOrigen: 100,
 				precioOrigen: 80,
-				precioDestino: 20,
+				precioDestinoHoy: 20,
+				destinoAntes: { participaciones: 0, costeTotalBase: 0 },
 				cuanto: { modo: 'todo' },
 				fecha: HOY
 			});
@@ -307,7 +334,8 @@ describe('planificarTraspaso', () => {
 				transacciones: [compra(FONDO_A.ticker, HACE_TRES_ANOS, 100, 42)],
 				participacionesOrigen: 100,
 				precioOrigen: 80,
-				precioDestino: 20,
+				precioDestinoHoy: 20,
+				destinoAntes: { participaciones: 0, costeTotalBase: 0 },
 				cuanto: { modo: 'todo' },
 				fecha: HOY
 			});
@@ -327,7 +355,8 @@ describe('planificarTraspaso', () => {
 				transacciones: [compra(FONDO_A.ticker, HACE_TRES_ANOS, 100, 42)],
 				participacionesOrigen: 100,
 				precioOrigen: 80,
-				precioDestino: 0,
+				precioDestinoHoy: 0,
+				destinoAntes: { participaciones: 0, costeTotalBase: 0 },
 				cuanto: { modo: 'todo' },
 				fecha: HOY
 			});
@@ -344,7 +373,8 @@ describe('planificarTraspaso', () => {
 				transacciones: [compra(FONDO_A.ticker, HACE_TRES_ANOS, 100, 42)],
 				participacionesOrigen: 100,
 				precioOrigen: 0,
-				precioDestino: 20,
+				precioDestinoHoy: 20,
+				destinoAntes: { participaciones: 0, costeTotalBase: 0 },
 				cuanto: { modo: 'importe', importe: 5000 },
 				fecha: HOY
 			});
@@ -362,7 +392,8 @@ describe('planificarTraspaso', () => {
 				transacciones: [compra(FONDO_A.ticker, HACE_TRES_ANOS, 100, 42)],
 				participacionesOrigen: 100,
 				precioOrigen: 80,
-				precioDestino: 20,
+				precioDestinoHoy: 20,
+				destinoAntes: { participaciones: 0, costeTotalBase: 0 },
 				cuanto: { modo: 'todo' },
 				fecha: HOY
 			});
@@ -377,7 +408,8 @@ describe('planificarTraspaso', () => {
 				transacciones: [compra(FONDO_A.ticker, HACE_TRES_ANOS, 100, 42)],
 				participacionesOrigen: 100,
 				precioOrigen: 80,
-				precioDestino: 20,
+				precioDestinoHoy: 20,
+				destinoAntes: { participaciones: 0, costeTotalBase: 0 },
 				cuanto: { modo: 'importe', importe: 0 },
 				fecha: HOY
 			});
@@ -392,7 +424,8 @@ describe('planificarTraspaso', () => {
 				transacciones: [],
 				participacionesOrigen: 0,
 				precioOrigen: 80,
-				precioDestino: 20,
+				precioDestinoHoy: 20,
+				destinoAntes: { participaciones: 0, costeTotalBase: 0 },
 				cuanto: { modo: 'todo' },
 				fecha: HOY
 			});
@@ -408,11 +441,188 @@ describe('planificarTraspaso', () => {
 			transacciones: [compra(FONDO_A.ticker, HACE_TRES_ANOS, 100, 42)],
 			participacionesOrigen: 100,
 			precioOrigen: 80,
-			precioDestino: 20,
+			precioDestinoHoy: 20,
+				destinoAntes: { participaciones: 0, costeTotalBase: 0 },
 			cuanto: { modo: 'todo' },
 			fecha: HOY - 30 * DIA
 		});
 
-		expect(plan.fecha).toBe(HOY - 30 * DIA);
+	expect(plan.fecha).toBe(HOY - 30 * DIA);
+	});
+
+	/**
+	 * ⚠️ **Declarar cómo queda el destino, que es la forma de entrada que de verdad se
+	 * puede rellenar.**
+	 *
+	 * En un traspaso los dos valores liquidativos —el de reembolso y el de
+	 * suscripción— se fijan días después de dar la orden, así que el usuario no los
+	 * sabe: pedírselos convertía dos cifras que tiene delante en el extracto en dos que
+	 * tiene que adivinar, y cualquier error ahí descuadra las dos posiciones al céntimo
+	 * sin forma de cerrarlo después. Lo que sí sabe es cuántas participaciones tiene en
+	 * el fondo destino y a qué coste medio.
+	 */
+	describe('el estado final que declara el usuario', () => {
+		const base = {
+			origen: FONDO_A,
+			destino: FONDO_B,
+			transacciones: [compra(FONDO_A.ticker, HACE_TRES_ANOS, 100, 42)],
+			participacionesOrigen: 100,
+			precioOrigen: 80,
+			precioDestinoHoy: 20,
+			cuanto: { modo: 'todo' } as const,
+			fecha: HOY
+		};
+
+		it('cuadra por construcción: lo que entra es la resta contra lo que había', () => {
+			const plan = planificarTraspaso({
+				...base,
+				destinoAntes: { participaciones: 45, costeTotalBase: 540 },
+				// «Mi banco dice que ahora tengo 445 participaciones a 12,54 € de media.»
+				destinoResultante: { participaciones: 445, costeMedio: 12.54 }
+			});
+
+			expect(plan.participacionesDestino).toBe(400);
+			// 445 × 12,54 = 5.580,30, menos los 540 € que ya había = 5.040,30
+			expect(plan.costeHeredado).toBe(5040.3);
+			// Y el estado final resuelto se devuelve, que es lo que precarga el formulario.
+			expect(plan.destinoResultante).toEqual({ participaciones: 445, costeMedio: 12.54 });
+		});
+
+		it('el valor liquidativo del destino NO influye cuando se declara el resultado', () => {
+			/*
+			 * Es el punto entero: el precio de hoy sirve para estimar y nada más. Con el
+			 * estado declarado, cambiarlo no puede mover ni una participación.
+			 */
+			const conUnPrecio = planificarTraspaso({
+				...base,
+				precioDestinoHoy: 20,
+				destinoAntes: { participaciones: 0, costeTotalBase: 0 },
+				destinoResultante: { participaciones: 400, costeMedio: 10.5 }
+			});
+			const conOtro = planificarTraspaso({
+				...base,
+				precioDestinoHoy: 999,
+				destinoAntes: { participaciones: 0, costeTotalBase: 0 },
+				destinoResultante: { participaciones: 400, costeMedio: 10.5 }
+			});
+
+			expect(conOtro.participacionesDestino).toBe(conUnPrecio.participacionesDestino);
+			expect(conOtro.costeHeredado).toBe(conUnPrecio.costeHeredado);
+		});
+
+		it('sin declarar nada, la estimación coincide con el libro y NO hay descuadre', () => {
+			/*
+			 * Comparar las dos cifras cuando las dos salen del mismo sitio sería un aviso
+			 * permanente sobre datos correctos, que es la forma de fallo que este repo
+			 * persigue: una guarda que grita siempre se acaba silenciando.
+			 */
+			const plan = planificarTraspaso({
+				...base,
+				destinoAntes: { participaciones: 0, costeTotalBase: 0 }
+			});
+
+			expect(plan.descuadre).toBeNull();
+			expect(plan.costeHeredado).toBe(4200);
+			// La estimación pone las 400 participaciones a los 4.200 € que viajan.
+			expect(plan.destinoResultante.participaciones).toBe(400);
+			expect(plan.destinoResultante.costeMedio).toBe(10.5);
+		});
+
+		it('declarar algo distinto de lo que dice el libro devuelve el descuadre, y manda lo declarado', () => {
+			const plan = planificarTraspaso({
+				...base,
+				destinoAntes: { participaciones: 0, costeTotalBase: 0 },
+				// El banco dice 4.900 € de coste; el libro del origen decía 4.200 €.
+				destinoResultante: { participaciones: 400, costeMedio: 12.25 }
+			});
+
+			expect(plan.costeSegunElLibro).toBe(4200);
+			expect(plan.costeHeredado).toBe(4900);
+			expect(plan.descuadre).toBe(700);
+		});
+
+		it('⚠️ con el origen sin libro, declarar el resultado SÍ da coste heredado', () => {
+			/*
+			 * Capacidad nueva y no un efecto colateral: sin libro en el origen la app no
+			 * tenía de dónde sacar el valor de adquisición, pero el banco sí lo sabe. Lo
+			 * que no vale es la estimación —eso es una valoración de hoy, no un coste—, y
+			 * el caso de al lado lo fija.
+			 */
+			const declarado = planificarTraspaso({
+				...base,
+				transacciones: [],
+				destinoAntes: { participaciones: 0, costeTotalBase: 0 },
+				destinoResultante: { participaciones: 400, costeMedio: 10.5 }
+			});
+			expect(declarado.estadoCoste).toBe('sin-libro');
+			expect(declarado.costeHeredado).toBe(4200);
+			// No hay con qué comparar, así que tampoco hay descuadre que avisar.
+			expect(declarado.descuadre).toBeNull();
+
+			const estimado = planificarTraspaso({
+				...base,
+				transacciones: [],
+				destinoAntes: { participaciones: 0, costeTotalBase: 0 }
+			});
+			expect(estimado.costeHeredado).toBeNull();
+		});
+
+		it('un estado final MENOR que el de antes no mete participaciones negativas', () => {
+			/*
+			 * `ledger.ts` y `fiscal.ts` filtran los dos por `shares > 0`, así que un
+			 * movimiento negativo se apuntaría y no haría nada: silencio, que es peor que
+			 * un error.
+			 */
+			const plan = planificarTraspaso({
+				...base,
+				destinoAntes: { participaciones: 500, costeTotalBase: 6000 },
+				destinoResultante: { participaciones: 100, costeMedio: 12 }
+			});
+
+			expect(plan.participacionesDestino).toBe(0);
+			expect(meritaApuntar(plan)).toBe(false);
+		});
+	});
+
+	describe('sugerirEstadoDestino', () => {
+		it('suma lo que entra a lo que había, y promedia los dos costes', () => {
+			const s = sugerirEstadoDestino({
+				importe: 8000,
+				precioDestinoHoy: 20,
+				costeQueViaja: 4200,
+				destinoAntes: { participaciones: 100, costeTotalBase: 1000 }
+			});
+
+			// 100 + 8.000/20 = 500 participaciones.
+			expect(s.participaciones).toBe(500);
+			// (1.000 + 4.200) / 500 = 10,40 €.
+			expect(s.costeMedio).toBe(10.4);
+		});
+
+		it('sin coste que viaje, estima el coste como lo que vale hoy', () => {
+			// Es lo que la app hacía antes de que existiera el coste heredado, y aquí no se
+			// puede hacer mejor: la interfaz lo dice en su tercera frase.
+			const s = sugerirEstadoDestino({
+				importe: 8000,
+				precioDestinoHoy: 20,
+				costeQueViaja: null,
+				destinoAntes: { participaciones: 0, costeTotalBase: 0 }
+			});
+
+			expect(s.participaciones).toBe(400);
+			expect(s.costeMedio).toBe(20);
+		});
+
+		it('un precio de hoy a cero no da participaciones infinitas', () => {
+			const s = sugerirEstadoDestino({
+				importe: 8000,
+				precioDestinoHoy: 0,
+				costeQueViaja: 4200,
+				destinoAntes: { participaciones: 0, costeTotalBase: 0 }
+			});
+
+			expect(s.participaciones).toBe(0);
+			expect(s.costeMedio).toBe(0);
+		});
 	});
 });

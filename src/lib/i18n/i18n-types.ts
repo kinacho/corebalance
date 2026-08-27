@@ -1770,17 +1770,35 @@ type RootTranslation = {
 		 */
 		cuanto_participaciones: string
 		/**
-		 * A​j​u​s​t​a​r​ ​p​r​e​c​i​o​s
+		 * A​j​u​s​t​a​r​ ​e​l​ ​p​r​e​c​i​o​ ​d​e​ ​s​a​l​i​d​a
 		 */
 		ajustar_precios: string
 		/**
-		 * P​r​e​c​i​o​ ​d​e​ ​s​a​l​i​d​a
+		 * V​a​l​o​r​ ​l​i​q​u​i​d​a​t​i​v​o​ ​d​e​ ​r​e​e​m​b​o​l​s​o
 		 */
 		label_precio_salida: string
 		/**
-		 * P​r​e​c​i​o​ ​d​e​ ​e​n​t​r​a​d​a
+		 * C​ó​m​o​ ​q​u​e​d​a​ ​e​s​t​e​ ​f​o​n​d​o
 		 */
-		label_precio_entrada: string
+		label_como_queda: string
+		/**
+		 * P​a​r​t​i​c​i​p​a​c​i​o​n​e​s​ ​t​o​t​a​l​e​s
+		 */
+		label_participaciones_totales: string
+		/**
+		 * C​o​s​t​e​ ​m​e​d​i​o
+		 */
+		label_coste_medio_final: string
+		/**
+		 * C​ó​p​i​a​l​o​ ​d​e​ ​t​u​ ​b​a​n​c​o​ ​t​a​l​ ​c​u​a​l​.​ ​L​o​s​ ​v​a​l​o​r​e​s​ ​l​i​q​u​i​d​a​t​i​v​o​s​ ​d​e​ ​u​n​ ​t​r​a​s​p​a​s​o​ ​s​e​ ​f​i​j​a​n​ ​d​í​a​s​ ​d​e​s​p​u​é​s​ ​d​e​ ​l​a​ ​o​r​d​e​n​,​ ​a​s​í​ ​q​u​e​ ​e​s​t​a​s​ ​d​o​s​ ​c​i​f​r​a​s​ ​s​o​n​ ​l​a​s​ ​ú​n​i​c​a​s​ ​q​u​e​ ​p​u​e​d​e​s​ ​s​a​b​e​r​ ​c​o​n​ ​c​e​r​t​e​z​a​ ​—​ ​y​ ​c​o​n​ ​e​l​l​a​s​ ​c​u​a​d​r​a​ ​s​o​l​o​.
+		 */
+		nota_como_queda: string
+		/**
+		 * O​j​o​:​ ​s​e​g​ú​n​ ​l​o​ ​q​u​e​ ​h​a​s​ ​p​u​e​s​t​o​ ​e​n​t​r​a​n​ ​{​d​e​c​l​a​r​a​d​o​}​ ​d​e​ ​c​o​s​t​e​,​ ​y​ ​s​e​g​ú​n​ ​t​u​ ​l​i​b​r​o​ ​s​a​l​i​e​r​o​n​ ​{​l​i​b​r​o​}​.​ ​S​e​ ​a​p​u​n​t​a​ ​l​o​ ​q​u​e​ ​h​a​s​ ​p​u​e​s​t​o​,​ ​q​u​e​ ​e​s​ ​l​o​ ​q​u​e​ ​d​i​r​á​ ​t​u​ ​g​e​s​t​o​r​a​.​ ​S​i​ ​n​o​ ​e​s​p​e​r​a​b​a​s​ ​e​s​a​ ​d​i​f​e​r​e​n​c​i​a​,​ ​a​ ​t​u​ ​f​o​n​d​o​ ​d​e​ ​o​r​i​g​e​n​ ​p​r​o​b​a​b​l​e​m​e​n​t​e​ ​l​e​ ​f​a​l​t​e​n​ ​c​o​m​p​r​a​s​ ​a​n​t​i​g​u​a​s​ ​e​n​ ​e​l​ ​l​i​b​r​o​.
+		 * @param {string} declarado
+		 * @param {string} libro
+		 */
+		resumen_descuadre: RequiredParams<'declarado' | 'libro'>
 		/**
 		 * V​e​n​d​e​s​ ​{​s​a​l​e​n​}​ ​p​a​r​t​i​c​i​p​a​c​i​o​n​e​s​ ​d​e​ ​{​o​r​i​g​e​n​}​ ​y​ ​c​o​m​p​r​a​s​ ​{​e​n​t​r​a​n​}​ ​d​e​ ​{​d​e​s​t​i​n​o​}​.
 		 * @param {string} destino
@@ -6819,17 +6837,33 @@ export type TranslationFunctions = {
 		 */
 		cuanto_participaciones: () => LocalizedString
 		/**
-		 * Ajustar precios
+		 * Ajustar el precio de salida
 		 */
 		ajustar_precios: () => LocalizedString
 		/**
-		 * Precio de salida
+		 * Valor liquidativo de reembolso
 		 */
 		label_precio_salida: () => LocalizedString
 		/**
-		 * Precio de entrada
+		 * Cómo queda este fondo
 		 */
-		label_precio_entrada: () => LocalizedString
+		label_como_queda: () => LocalizedString
+		/**
+		 * Participaciones totales
+		 */
+		label_participaciones_totales: () => LocalizedString
+		/**
+		 * Coste medio
+		 */
+		label_coste_medio_final: () => LocalizedString
+		/**
+		 * Cópialo de tu banco tal cual. Los valores liquidativos de un traspaso se fijan días después de la orden, así que estas dos cifras son las únicas que puedes saber con certeza — y con ellas cuadra solo.
+		 */
+		nota_como_queda: () => LocalizedString
+		/**
+		 * Ojo: según lo que has puesto entran {declarado} de coste, y según tu libro salieron {libro}. Se apunta lo que has puesto, que es lo que dirá tu gestora. Si no esperabas esa diferencia, a tu fondo de origen probablemente le falten compras antiguas en el libro.
+		 */
+		resumen_descuadre: (arg: { declarado: string, libro: string }) => LocalizedString
 		/**
 		 * Vendes {salen} participaciones de {origen} y compras {entran} de {destino}.
 		 */
