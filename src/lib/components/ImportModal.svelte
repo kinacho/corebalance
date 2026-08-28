@@ -81,7 +81,7 @@
 	);
 	const costesHeredados = $derived(resolverCostesHeredados(operacionesDecididas));
 	const recalculo = $derived(
-		reduceTransactionsToPositions(operacionesDecididas, costesHeredados)
+		reduceTransactionsToPositions(operacionesDecididas)
 	);
 	const posicionesRecalculadas = $derived(recalculo.positions);
 	/**

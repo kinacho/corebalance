@@ -1312,19 +1312,24 @@ export class PortfolioStore {
 			date: plan.fecha,
 			shares: plan.participacionesDestino,
 			/*
-			 * ⚠️ El precio de la fila es el **coste unitario heredado**, no un valor
-			 * liquidativo de suscripción — que en la fecha de la orden no existe todavía y
-			 * que por eso el formulario ya no pide. En la pata de entrada el precio es
-			 * decoración: `ledger.ts` y `fiscal.ts` usan `carriedCostBase` cuando está. Así
-			 * que se pinta la cifra que sí significa algo, y la fila se lee coherente con
-			 * el coste medio que el usuario acaba de declarar.
+			 * ⚠️ **El precio de la fila es el coste unitario SUSCRITO, y en la 1.23.0 era
+			 * el heredado — que es el defecto que esta versión corrige.**
+			 *
+			 * Entonces se razonó que en la pata de entrada el precio era decoración,
+			 * porque `ledger.ts` y `fiscal.ts` leían los dos `carriedCostBase`. Ya no:
+			 * `ledger.ts` usa el precio, así que esta línea decide el coste medio que la
+			 * app enseña — y tiene que ser el que la gestora pondrá en el extracto, no el
+			 * valor de adquisición del art. 94, que viaja aparte en `carriedCostBase`.
+			 *
+			 * Consecuencia práctica y visible: el campo «precio» de esa fila **deja de ser
+			 * inerte**. Antes se podía editar sin que cambiara nada y sin que nada lo
+			 * dijera — se guardaba, salía el aviso de «actualizado» y el coste medio se
+			 * quedaba igual, que es como se descubrió todo esto.
 			 */
 			price:
-				plan.costeHeredado !== null && plan.participacionesDestino > 0
-					? plan.costeHeredado / plan.participacionesDestino
-					: plan.participacionesDestino > 0
-						? plan.importe / plan.participacionesDestino
-						: 0,
+				plan.costeSuscripcion !== null && plan.participacionesDestino > 0
+					? plan.costeSuscripcion / plan.participacionesDestino
+					: 0,
 			currency: divisaDe(plan.destino.ticker),
 			fees: 0,
 			fxRate: 1,

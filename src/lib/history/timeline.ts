@@ -1,4 +1,4 @@
-import type { Transaction } from '$lib/types';
+import { esSalidaDeTraspaso, type Transaction } from '$lib/types';
 import type { Flow, HoldingEdit, PositionTimeline, TimelineSegment } from './types';
 import { isFlowReason } from './types';
 
@@ -124,8 +124,23 @@ export function buildTimelineFromLedger(
 			continue;
 		}
 
+		/*
+		 * ⚠️ **Una salida de traspaso RESTA, y hasta la 1.23.1 caía en el `else` y
+		 * sumaba.** El `transfer_out` nació en la 1.22.0 y este `if` no se enteró: se
+		 * escribió cuando los únicos tipos que quitaban participaciones eran `sell`.
+		 *
+		 * El daño es el mismo «error al doble» que este subsistema ya documenta en el
+		 * importador, y aquí sale por dos sitios: `sharesAt()` devuelve de más, así que
+		 * **todo el patrimonio pasado se dibuja inflado**, y el flujo se apunta como
+		 * `purchase`, así que la línea de «lo que has aportado» da un escalón hacia
+		 * arriba el día del traspaso — dinero que nunca entró. Medido: 100 compradas y
+		 * 40 traspasadas fuera daban **140**.
+		 *
+		 * Se lee por `esSalidaDeTraspaso` y no comparando la cadena, que es la regla que
+		 * `types.ts` fija precisamente porque este predicado vive en varios sitios.
+		 */
 		let delta = 0;
-		if (tx.type === 'sell') {
+		if (tx.type === 'sell' || esSalidaDeTraspaso(tx.type)) {
 			delta = -Math.min(tx.shares, running);
 		} else {
 			delta = tx.shares;

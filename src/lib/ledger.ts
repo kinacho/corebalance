@@ -11,6 +11,14 @@ import { esEntradaDeTraspaso, esSalidaDeTraspaso, type Asset, type Transaction }
  * valor de adquisición de nada, así que `fiscal.ts` los ignora y usa FIFO en vez de coste
  * medio. Sirven para preguntas distintas y dan cifras distintas a propósito.
  *
+ * ⚠️ **Desde la 1.23.1 la divergencia tiene un segundo caso, y es el mismo principio: un
+ * traspaso entra aquí por su importe suscrito y en `fiscal.ts` por su valor de
+ * adquisición heredado.** La regla que gobierna este módulo es que **la fuente de la
+ * verdad de «cuánto me costó» es la gestora**: todo lo que se pinte aquí tiene que poder
+ * cuadrarse contra un extracto. Un número correcto que el usuario no puede verificar
+ * contra ningún papel suyo vale menos que uno que sí — y en la 1.23.0 la app llegó a
+ * enseñar 12,58 € donde el banco decía 13,41 €. Ver la nota larga en la rama de entrada.
+ *
  * Vivía dentro del `$derived.by()` del store, con dos consecuencias: usaba `Date.now()`
  * por dentro —así que no se podía fijar la fecha, y el devengo de intereses es aritmética
  * de fechas— y tenía dos predicados escritos dos veces. El mutation testing lo delató:
@@ -91,24 +99,34 @@ export function calculateLedgerHoldings(
 		if (t.type === 'buy' || t.type === 'initial_balance' || esEntradaDeTraspaso(t.type)) {
 			if (t.shares > 0) {
 				/*
-				 * ⚠️ **Con coste heredado el coste NO es `shares × price`, y ahí está toda
-				 * la diferencia entre un traspaso y una compra.**
+				 * ⚠️ **Una entrada de traspaso cuesta lo que costó SUSCRIBIRLA, igual que
+				 * una compra — y NO su `carriedCostBase`.** Esto se hizo al revés en la
+				 * 1.23.0 y se corrigió aquí; el motivo por el que la primera versión estaba
+				 * mal merece quedar escrito, porque el argumento sonaba bien.
 				 *
-				 * En un traspaso entre fondos el valor de adquisición viaja con el dinero
-				 * (art. 94 LIRPF), así que apuntar el precio del día convertiría una
-				 * plusvalía latente en coste y la haría desaparecer del libro. La entrada
-				 * llega ya en divisa base, que es como la calcula `traspaso-libro.ts`
-				 * leyendo los lotes del origen, así que **no** se le aplica `fxRate`: sería
-				 * la conversión dos veces, que es el bug histórico de `simulateSale`.
+				 * El razonamiento original era que, si la entrada se apuntaba al importe
+				 * suscrito, el invertido total de la cartera **crecía** al traspasar y el
+				 * beneficio bajaba sin que el usuario hubiera perdido nada — así que el
+				 * coste heredado «conservaba» la aritmética. Medido contra un extracto real
+				 * de MyInvestor, esa conservación **no es una propiedad del mundo real**:
+				 * el banco quitó del origen el coste proporcional (642,27 €) y sumó al
+				 * destino el importe suscrito (709,38 €), o sea que su propio invertido
+				 * total crece 67,11 € al traspasar. La conservación era un invariante
+				 * inventado aquí, no el comportamiento de ninguna gestora.
 				 *
-				 * Sin el campo —filas anteriores a la 1.22.0, o el alias `'transfer'`— se
-				 * mantiene el comportamiento de siempre. Es lo que hace seguro el alias.
+				 * Y el precio de equivocarse era alto: la app enseñaba un coste medio
+				 * —12,58 € donde el banco decía 13,41 €— **que no aparece en ningún
+				 * extracto que el usuario tenga**, o sea imposible de verificar. La fuente
+				 * de la verdad de «cuánto me costó esta posición» es la gestora.
+				 *
+				 * ⚠️ **Esto NO borra `carriedCostBase`: lo devuelve a su única capa.**
+				 * `fiscal.ts` lo sigue usando para el valor de adquisición del art. 94, que
+				 * es lo que impide que la ficha declare «plusvalía 0 €» tras un traspaso.
+				 * Es la misma divergencia deliberada que ya existe con los dividendos: aquí
+				 * se contesta «¿cuánto llevo metido?» y allí «¿cuánto tributaré?».
 				 */
-				const heredado = t.carriedCostBase !== undefined && t.carriedCostBase >= 0;
-				const txCostRaw = heredado
-					? (t.carriedCostBase as number) / (t.fxRate || 1)
-					: t.shares * t.price + (t.fees || 0);
-				const txCostBase = heredado ? (t.carriedCostBase as number) : txCostRaw * (t.fxRate || 1);
+				const txCostRaw = t.shares * t.price + (t.fees || 0);
+				const txCostBase = txCostRaw * (t.fxRate || 1);
 				const newShares = pos.shares + t.shares;
 				pos.totalCostRaw += txCostRaw;
 				pos.totalCostBase += txCostBase;

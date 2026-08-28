@@ -26,6 +26,7 @@
 
 	// Mapeo dinámico desde el diccionario de traducciones
 	const releaseVersions = [
+		'v1_23_1',
 		'v1_23_0',
 		'v1_22_0',
 		'v1_21_0',
@@ -154,6 +155,17 @@
 		 * vecina de abajo (magenta ~295° de matiz contra ~28° del ámbar). Elegir un tono
 		 * a ojo aquí es exactamente el error que estos comentarios documentan dos veces.
 		 */
+		/*
+		 * Medido con el mismo modelo que los de abajo —`color: X` sobre `X20` encima de la
+		 * superficie del modal, en los dos temas—: **4,17 en oscuro y 3,48 en claro**, o sea
+		 * peor caso 3,48, por encima del 3,23 del teal que hace de vara. El modelo se
+		 * calibró reproduciendo las cifras que este fichero ya anota para la 1.17.3
+		 * (3,35/4,33; el cálculo da 3,37/4,32) y para la 1.18.0.
+		 *
+		 * Azul cielo y no otro verde: su vecina de abajo es el verde de la 1.23.0, y lo que
+		 * tiene que distinguirse es una chapa de la de al lado.
+		 */
+		v1_23_1: '#0284c7',
 		v1_23_0: '#15803d',
 		v1_22_0: '#c026d3',
 		v1_21_0: '#b45309',

@@ -210,3 +210,53 @@ describe('sharesAt / isEstimatedAt', () => {
 		expect(isEstimatedAt(timeline, D2)).toBe(false);
 	});
 });
+
+/**
+ * ⚠️ **Las dos patas de un traspaso, que hasta la 1.23.1 este módulo no conocía.**
+ *
+ * `transfer_out` nació en la 1.22.0 y el `if` que decide el signo se quedó comparando
+ * solo contra `'sell'`, así que una salida caía en el `else` y **sumaba**. El daño es el
+ * mismo «error al doble» que el importador ya tiene documentado, y aquí sale por dos
+ * sitios a la vez: `sharesAt()` devuelve de más —así que todo el patrimonio pasado se
+ * dibuja inflado— y el flujo se apunta como `purchase`, o sea que la línea de «lo que
+ * has aportado» da un escalón hacia arriba con dinero que nunca entró.
+ */
+describe('buildTimelineFromLedger con traspasos', () => {
+	it('una salida de traspaso resta participaciones, como una venta', () => {
+		const timeline = buildTimelineFromLedger('VWCE', [
+			tx(D1, 'buy', 100, 10),
+			tx(D2, 'transfer_out', 40, 12)
+		]);
+
+		// Con el defecto daba 140: 100 + 40 en vez de 100 − 40.
+		expect(sharesAt(timeline, D2 + DAY)).toBe(60);
+	});
+
+	it('y su flujo sale de la cartera en vez de entrar', () => {
+		const timeline = buildTimelineFromLedger('VWCE', [
+			tx(D1, 'buy', 100, 10),
+			tx(D2, 'transfer_out', 40, 12)
+		]);
+
+		expect(timeline.flows.map((f) => f.kind)).toEqual(['purchase', 'sale']);
+		// −40 × 12 = −480: es lo que sale, no una aportación de 480 €.
+		expect(timeline.flows[1].amount).toBe(-480);
+	});
+
+	it('una entrada de traspaso suma, como una compra', () => {
+		const timeline = buildTimelineFromLedger('VWCE', [tx(D1, 'transfer_in', 50, 13)]);
+
+		expect(sharesAt(timeline, D1 + DAY)).toBe(50);
+		expect(timeline.flows[0].kind).toBe('purchase');
+	});
+
+	/**
+	 * El alias de las carteras guardadas antes de la 1.22.0 significaba entrada, así que
+	 * tiene que seguir sumando. Va aquí porque es el caso que un `esSalidaDeTraspaso`
+	 * escrito a mano —comparando contra `'transfer'`— rompería en silencio.
+	 */
+	it("el alias `'transfer'` sigue sumando", () => {
+		const timeline = buildTimelineFromLedger('VWCE', [tx(D1, 'transfer', 50, 13)]);
+		expect(sharesAt(timeline, D1 + DAY)).toBe(50);
+	});
+});

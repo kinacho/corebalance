@@ -1794,11 +1794,11 @@ type RootTranslation = {
 		 */
 		nota_como_queda: string
 		/**
-		 * O​j​o​:​ ​s​e​g​ú​n​ ​l​o​ ​q​u​e​ ​h​a​s​ ​p​u​e​s​t​o​ ​e​n​t​r​a​n​ ​{​d​e​c​l​a​r​a​d​o​}​ ​d​e​ ​c​o​s​t​e​,​ ​y​ ​s​e​g​ú​n​ ​t​u​ ​l​i​b​r​o​ ​s​a​l​i​e​r​o​n​ ​{​l​i​b​r​o​}​.​ ​S​e​ ​a​p​u​n​t​a​ ​l​o​ ​q​u​e​ ​h​a​s​ ​p​u​e​s​t​o​,​ ​q​u​e​ ​e​s​ ​l​o​ ​q​u​e​ ​d​i​r​á​ ​t​u​ ​g​e​s​t​o​r​a​.​ ​S​i​ ​n​o​ ​e​s​p​e​r​a​b​a​s​ ​e​s​a​ ​d​i​f​e​r​e​n​c​i​a​,​ ​a​ ​t​u​ ​f​o​n​d​o​ ​d​e​ ​o​r​i​g​e​n​ ​p​r​o​b​a​b​l​e​m​e​n​t​e​ ​l​e​ ​f​a​l​t​e​n​ ​c​o​m​p​r​a​s​ ​a​n​t​i​g​u​a​s​ ​e​n​ ​e​l​ ​l​i​b​r​o​.
-		 * @param {string} declarado
-		 * @param {string} libro
+		 * T​u​ ​b​a​n​c​o​ ​d​i​r​á​ ​q​u​e​ ​e​n​ ​e​l​ ​d​e​s​t​i​n​o​ ​h​a​y​ ​{​s​u​s​c​r​i​t​o​}​ ​i​n​v​e​r​t​i​d​o​s​,​ ​y​ ​l​a​ ​a​p​p​ ​e​n​s​e​ñ​a​r​á​ ​e​s​a​ ​m​i​s​m​a​ ​c​i​f​r​a​.​ ​A​ ​e​f​e​c​t​o​s​ ​f​i​s​c​a​l​e​s​,​ ​e​n​ ​c​a​m​b​i​o​,​ ​a​r​r​a​s​t​r​a​ ​{​f​i​s​c​a​l​}​ ​d​e​ ​v​a​l​o​r​ ​d​e​ ​a​d​q​u​i​s​i​c​i​ó​n​ ​(​a​r​t​.​ ​9​4​)​,​ ​q​u​e​ ​e​s​ ​s​o​b​r​e​ ​l​o​ ​q​u​e​ ​t​r​i​b​u​t​a​r​á​s​ ​e​l​ ​d​í​a​ ​q​u​e​ ​v​e​n​d​a​s​.​ ​L​a​s​ ​d​o​s​ ​s​o​n​ ​c​o​r​r​e​c​t​a​s​ ​y​ ​c​o​n​t​e​s​t​a​n​ ​a​ ​p​r​e​g​u​n​t​a​s​ ​d​i​s​t​i​n​t​a​s​.
+		 * @param {string} fiscal
+		 * @param {string} suscrito
 		 */
-		resumen_descuadre: RequiredParams<'declarado' | 'libro'>
+		resumen_dos_costes: RequiredParams<'fiscal' | 'suscrito'>
 		/**
 		 * V​e​n​d​e​s​ ​{​s​a​l​e​n​}​ ​p​a​r​t​i​c​i​p​a​c​i​o​n​e​s​ ​d​e​ ​{​o​r​i​g​e​n​}​ ​y​ ​c​o​m​p​r​a​s​ ​{​e​n​t​r​a​n​}​ ​d​e​ ​{​d​e​s​t​i​n​o​}​.
 		 * @param {string} destino
@@ -2466,7 +2466,7 @@ type RootTranslation = {
 		 */
 		dir_suggest_undo: string
 		/**
-		 * E​l​ ​v​a​l​o​r​ ​d​e​ ​a​d​q​u​i​s​i​c​i​ó​n​ ​v​i​a​j​a​ ​c​o​n​ ​e​l​ ​d​i​n​e​r​o​ ​(​a​r​t​.​ ​9​4​ ​L​I​R​P​F​)​,​ ​a​s​í​ ​q​u​e​ ​{​t​o​}​ ​h​e​r​e​d​a​ ​{​c​o​s​t​}​ ​d​e​ ​c​o​s​t​e​ ​y​ ​l​a​ ​f​e​c​h​a​ ​d​e​ ​t​u​ ​p​a​r​t​i​c​i​p​a​c​i​ó​n​ ​m​á​s​ ​a​n​t​i​g​u​a​.​ ​T​u​ ​b​a​n​c​o​ ​e​n​s​e​ñ​a​r​á​ ​e​l​ ​i​m​p​o​r​t​e​ ​s​u​s​c​r​i​t​o​ ​e​n​ ​s​u​ ​c​a​s​i​l​l​a​ ​d​e​ ​«​i​n​v​e​r​t​i​d​o​»​:​ ​l​a​s​ ​d​o​s​ ​c​i​f​r​a​s​ ​s​o​n​ ​c​o​r​r​e​c​t​a​s​ ​y​ ​s​i​r​v​e​n​ ​p​a​r​a​ ​c​o​s​a​s​ ​d​i​s​t​i​n​t​a​s​,​ ​p​e​r​o​ ​l​a​ ​q​u​e​ ​t​r​i​b​u​t​a​r​á​ ​e​s​ ​e​s​t​a​.
+		 * E​l​ ​c​o​s​t​e​ ​m​e​d​i​o​ ​q​u​e​ ​v​e​r​á​s​ ​e​n​ ​{​t​o​}​ ​s​e​r​á​ ​e​l​ ​d​e​ ​t​u​ ​b​a​n​c​o​,​ ​e​l​ ​i​m​p​o​r​t​e​ ​s​u​s​c​r​i​t​o​.​ ​Y​ ​p​o​r​ ​d​e​b​a​j​o​,​ ​a​ ​e​f​e​c​t​o​s​ ​f​i​s​c​a​l​e​s​,​ ​h​e​r​e​d​a​ ​{​c​o​s​t​}​ ​d​e​ ​v​a​l​o​r​ ​d​e​ ​a​d​q​u​i​s​i​c​i​ó​n​ ​y​ ​l​a​ ​f​e​c​h​a​ ​d​e​ ​t​u​ ​p​a​r​t​i​c​i​p​a​c​i​ó​n​ ​m​á​s​ ​a​n​t​i​g​u​a​ ​(​a​r​t​.​ ​9​4​ ​L​I​R​P​F​)​:​ ​e​s​o​ ​e​s​ ​l​o​ ​q​u​e​ ​t​r​i​b​u​t​a​r​á​ ​e​l​ ​d​í​a​ ​q​u​e​ ​v​e​n​d​a​s​,​ ​y​ ​e​s​ ​l​o​ ​q​u​e​ ​h​a​c​e​ ​q​u​e​ ​e​l​ ​p​a​n​e​l​ ​d​e​ ​H​a​c​i​e​n​d​a​ ​n​o​ ​t​e​ ​d​i​g​a​ ​«​p​l​u​s​v​a​l​í​a​ ​0​ ​€​»​ ​j​u​s​t​o​ ​d​e​s​p​u​é​s​ ​d​e​ ​t​r​a​s​p​a​s​a​r​.
 		 * @param {string} cost
 		 * @param {string} to
 		 */
@@ -3037,7 +3037,7 @@ type RootTranslation = {
 		 */
 		footer_tagline: string
 		/**
-		 * v​1​.​2​3​.​0​ ​�​�
+		 * v​1​.​2​3​.​1​ ​�​�
 		 */
 		changelog_trigger: string
 		/**
@@ -4101,6 +4101,34 @@ type RootTranslation = {
 		 */
 		btn_understand: string
 		releases: {
+			v1_23_1: {
+				/**
+				 * 2​8​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
+				 */
+				date: string
+				/**
+				 * E​l​ ​c​o​s​t​e​ ​m​e​d​i​o​ ​v​u​e​l​v​e​ ​a​ ​s​e​r​ ​e​l​ ​q​u​e​ ​d​i​c​e​ ​t​u​ ​b​a​n​c​o
+				 */
+				badge: string
+				changes: {
+					/**
+					 * �​�​ ​*​*​E​l​ ​c​o​s​t​e​ ​m​e​d​i​o​ ​d​e​ ​u​n​ ​f​o​n​d​o​ ​t​r​a​s​p​a​s​a​d​o​ ​y​a​ ​c​o​i​n​c​i​d​e​ ​c​o​n​ ​e​l​ ​d​e​ ​t​u​ ​e​x​t​r​a​c​t​o​.​*​*​ ​E​n​ ​l​a​ ​1​.​2​3​.​0​ ​l​a​ ​a​p​p​ ​e​n​s​e​ñ​a​b​a​ ​e​l​ ​v​a​l​o​r​ ​d​e​ ​a​d​q​u​i​s​i​c​i​ó​n​ ​q​u​e​ ​a​r​r​a​s​t​r​a​ ​e​l​ ​t​r​a​s​p​a​s​o​ ​(​a​r​t​.​ ​9​4​)​ ​e​n​ ​l​a​ ​c​a​s​i​l​l​a​ ​d​e​l​ ​c​o​s​t​e​ ​m​e​d​i​o​,​ ​a​s​í​ ​q​u​e​ ​d​e​c​í​a​ ​1​2​,​5​8​ ​€​ ​d​o​n​d​e​ ​e​l​ ​b​a​n​c​o​ ​d​e​c​í​a​ ​1​3​,​4​1​ ​€​:​ ​u​n​a​ ​c​i​f​r​a​ ​c​o​r​r​e​c​t​a​ ​p​e​r​o​ ​*​*​q​u​e​ ​n​o​ ​a​p​a​r​e​c​e​ ​e​n​ ​n​i​n​g​ú​n​ ​p​a​p​e​l​ ​q​u​e​ ​t​e​n​g​a​s​*​*​,​ ​o​ ​s​e​a​ ​i​m​p​o​s​i​b​l​e​ ​d​e​ ​c​o​m​p​r​o​b​a​r​.​ ​L​a​ ​f​u​e​n​t​e​ ​d​e​ ​l​a​ ​v​e​r​d​a​d​ ​d​e​ ​«​c​u​á​n​t​o​ ​m​e​ ​c​o​s​t​ó​ ​e​s​t​o​»​ ​e​s​ ​t​u​ ​g​e​s​t​o​r​a​,​ ​y​ ​a​h​o​r​a​ ​e​s​ ​l​o​ ​q​u​e​ ​s​e​ ​e​n​s​e​ñ​a​.
+					 */
+					'0': string
+					/**
+					 * �​�​ ​*​*​L​o​ ​f​i​s​c​a​l​ ​n​o​ ​s​e​ ​p​i​e​r​d​e​,​ ​s​o​l​o​ ​d​e​j​a​ ​d​e​ ​m​e​z​c​l​a​r​s​e​.​*​*​ ​E​l​ ​v​a​l​o​r​ ​d​e​ ​a​d​q​u​i​s​i​c​i​ó​n​ ​h​e​r​e​d​a​d​o​ ​s​i​g​u​e​ ​g​u​a​r​d​a​d​o​ ​y​ ​s​i​g​u​e​ ​s​i​e​n​d​o​ ​l​o​ ​q​u​e​ ​u​s​a​ ​e​l​ ​p​a​n​e​l​ ​d​e​ ​I​R​P​F​ ​y​ ​l​a​ ​f​i​c​h​a​ ​d​e​l​ ​a​c​t​i​v​o​ ​—​ ​q​u​e​ ​e​s​ ​l​o​ ​q​u​e​ ​i​m​p​i​d​e​ ​q​u​e​ ​t​e​ ​d​i​g​a​n​ ​«​p​l​u​s​v​a​l​í​a​ ​0​ ​€​»​ ​j​u​s​t​o​ ​d​e​s​p​u​é​s​ ​d​e​ ​t​r​a​s​p​a​s​a​r​.​ ​S​o​n​ ​d​o​s​ ​c​i​f​r​a​s​ ​q​u​e​ ​c​o​n​t​e​s​t​a​n​ ​a​ ​d​o​s​ ​p​r​e​g​u​n​t​a​s​,​ ​y​ ​a​h​o​r​a​ ​c​a​d​a​ ​u​n​a​ ​v​i​v​e​ ​d​o​n​d​e​ ​l​e​ ​t​o​c​a​.​ ​C​u​a​n​d​o​ ​d​i​f​i​e​r​e​n​,​ ​e​l​ ​r​e​s​u​m​e​n​ ​d​e​l​ ​t​r​a​s​p​a​s​o​ ​t​e​ ​l​o​ ​d​i​c​e​ ​c​o​n​ ​l​a​s​ ​d​o​s​ ​c​a​n​t​i​d​a​d​e​s​.
+					 */
+					'1': string
+					/**
+					 * ✏​️​ ​*​*​Y​ ​e​d​i​t​a​r​ ​e​l​ ​p​r​e​c​i​o​ ​d​e​ ​u​n​a​ ​e​n​t​r​a​d​a​ ​d​e​ ​t​r​a​s​p​a​s​o​ ​v​u​e​l​v​e​ ​a​ ​h​a​c​e​r​ ​a​l​g​o​.​*​*​ ​A​n​t​e​s​ ​e​s​e​ ​c​a​m​p​o​ ​e​r​a​ ​d​e​c​o​r​a​t​i​v​o​:​ ​l​o​ ​c​a​m​b​i​a​b​a​s​,​ ​s​a​l​í​a​ ​e​l​ ​a​v​i​s​o​ ​d​e​ ​«​a​c​t​u​a​l​i​z​a​d​o​»​ ​y​ ​e​l​ ​c​o​s​t​e​ ​m​e​d​i​o​ ​s​e​ ​q​u​e​d​a​b​a​ ​i​g​u​a​l​,​ ​s​i​n​ ​n​a​d​a​ ​q​u​e​ ​e​x​p​l​i​c​a​r​a​ ​p​o​r​ ​q​u​é​.​ ​A​s​í​ ​s​e​ ​e​n​c​o​n​t​r​ó​ ​t​o​d​o​ ​e​s​t​o​.
+					 */
+					'2': string
+					/**
+					 * �​�​ ​*​*​A​r​r​e​g​l​a​d​o​ ​e​l​ ​h​i​s​t​ó​r​i​c​o​:​ ​u​n​ ​t​r​a​s​p​a​s​o​ ​d​e​ ​s​a​l​i​d​a​ ​s​u​m​a​b​a​ ​p​a​r​t​i​c​i​p​a​c​i​o​n​e​s​ ​e​n​ ​v​e​z​ ​d​e​ ​r​e​s​t​a​r​l​a​s​.​*​*​ ​C​i​e​n​ ​c​o​m​p​r​a​d​a​s​ ​y​ ​c​u​a​r​e​n​t​a​ ​t​r​a​s​p​a​s​a​d​a​s​ ​f​u​e​r​a​ ​d​a​b​a​n​ ​c​i​e​n​t​o​ ​c​u​a​r​e​n​t​a​.​ ​E​s​o​ ​i​n​f​l​a​b​a​ ​t​o​d​o​ ​t​u​ ​p​a​t​r​i​m​o​n​i​o​ ​p​a​s​a​d​o​ ​e​n​ ​e​l​ ​g​r​á​f​i​c​o​ ​d​e​ ​e​v​o​l​u​c​i​ó​n​ ​y​ ​m​e​t​í​a​ ​u​n​ ​e​s​c​a​l​ó​n​ ​h​a​c​i​a​ ​a​r​r​i​b​a​ ​e​n​ ​l​a​ ​l​í​n​e​a​ ​d​e​ ​«​l​o​ ​q​u​e​ ​h​a​s​ ​a​p​o​r​t​a​d​o​»​ ​—​ ​d​i​n​e​r​o​ ​q​u​e​ ​n​u​n​c​a​ ​e​n​t​r​ó​.​ ​V​e​n​í​a​ ​d​e​ ​l​a​ ​1​.​2​2​.​0​.
+					 */
+					'3': string
+				}
+			}
 			v1_23_0: {
 				/**
 				 * 2​8​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
@@ -6972,9 +7000,9 @@ export type TranslationFunctions = {
 		 */
 		nota_como_queda: () => LocalizedString
 		/**
-		 * Ojo: según lo que has puesto entran {declarado} de coste, y según tu libro salieron {libro}. Se apunta lo que has puesto, que es lo que dirá tu gestora. Si no esperabas esa diferencia, a tu fondo de origen probablemente le falten compras antiguas en el libro.
+		 * Tu banco dirá que en el destino hay {suscrito} invertidos, y la app enseñará esa misma cifra. A efectos fiscales, en cambio, arrastra {fiscal} de valor de adquisición (art. 94), que es sobre lo que tributarás el día que vendas. Las dos son correctas y contestan a preguntas distintas.
 		 */
-		resumen_descuadre: (arg: { declarado: string, libro: string }) => LocalizedString
+		resumen_dos_costes: (arg: { fiscal: string, suscrito: string }) => LocalizedString
 		/**
 		 * Vendes {salen} participaciones de {origen} y compras {entran} de {destino}.
 		 */
@@ -7600,7 +7628,7 @@ export type TranslationFunctions = {
 		 */
 		dir_suggest_undo: () => LocalizedString
 		/**
-		 * El valor de adquisición viaja con el dinero (art. 94 LIRPF), así que {to} hereda {cost} de coste y la fecha de tu participación más antigua. Tu banco enseñará el importe suscrito en su casilla de «invertido»: las dos cifras son correctas y sirven para cosas distintas, pero la que tributará es esta.
+		 * El coste medio que verás en {to} será el de tu banco, el importe suscrito. Y por debajo, a efectos fiscales, hereda {cost} de valor de adquisición y la fecha de tu participación más antigua (art. 94 LIRPF): eso es lo que tributará el día que vendas, y es lo que hace que el panel de Hacienda no te diga «plusvalía 0 €» justo después de traspasar.
 		 */
 		dir_suggest_cost: (arg: { cost: string, to: string }) => LocalizedString
 		/**
@@ -8142,7 +8170,7 @@ export type TranslationFunctions = {
 		 */
 		footer_tagline: () => LocalizedString
 		/**
-		 * v1.23.0 🚀
+		 * v1.23.1 🚀
 		 */
 		changelog_trigger: () => LocalizedString
 		/**
@@ -9140,6 +9168,34 @@ export type TranslationFunctions = {
 		 */
 		btn_understand: () => LocalizedString
 		releases: {
+			v1_23_1: {
+				/**
+				 * 28 de Agosto, 2026
+				 */
+				date: () => LocalizedString
+				/**
+				 * El coste medio vuelve a ser el que dice tu banco
+				 */
+				badge: () => LocalizedString
+				changes: {
+					/**
+					 * 💶 **El coste medio de un fondo traspasado ya coincide con el de tu extracto.** En la 1.23.0 la app enseñaba el valor de adquisición que arrastra el traspaso (art. 94) en la casilla del coste medio, así que decía 12,58 € donde el banco decía 13,41 €: una cifra correcta pero **que no aparece en ningún papel que tengas**, o sea imposible de comprobar. La fuente de la verdad de «cuánto me costó esto» es tu gestora, y ahora es lo que se enseña.
+					 */
+					'0': () => LocalizedString
+					/**
+					 * 🧾 **Lo fiscal no se pierde, solo deja de mezclarse.** El valor de adquisición heredado sigue guardado y sigue siendo lo que usa el panel de IRPF y la ficha del activo — que es lo que impide que te digan «plusvalía 0 €» justo después de traspasar. Son dos cifras que contestan a dos preguntas, y ahora cada una vive donde le toca. Cuando difieren, el resumen del traspaso te lo dice con las dos cantidades.
+					 */
+					'1': () => LocalizedString
+					/**
+					 * ✏️ **Y editar el precio de una entrada de traspaso vuelve a hacer algo.** Antes ese campo era decorativo: lo cambiabas, salía el aviso de «actualizado» y el coste medio se quedaba igual, sin nada que explicara por qué. Así se encontró todo esto.
+					 */
+					'2': () => LocalizedString
+					/**
+					 * 📉 **Arreglado el histórico: un traspaso de salida sumaba participaciones en vez de restarlas.** Cien compradas y cuarenta traspasadas fuera daban ciento cuarenta. Eso inflaba todo tu patrimonio pasado en el gráfico de evolución y metía un escalón hacia arriba en la línea de «lo que has aportado» — dinero que nunca entró. Venía de la 1.22.0.
+					 */
+					'3': () => LocalizedString
+				}
+			}
 			v1_23_0: {
 				/**
 				 * 28 de Agosto, 2026

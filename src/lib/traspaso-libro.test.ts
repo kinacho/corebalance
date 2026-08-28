@@ -131,8 +131,8 @@ describe('planificarTraspaso', () => {
 			expect(plan.participacionesOrigen * plan.precioOrigen).toBeCloseTo(plan.importe, 1);
 			// Y lo que entra es 700 − 120, sin que el 8,31 aparezca por ninguna parte.
 			expect(plan.participacionesDestino).toBe(580);
-			// Coste que entra: 700 × 9 − 1.000 = 5.300.
-			expect(plan.costeHeredado).toBe(5300);
+			// Coste suscrito que entra: 700 × 9 − 1.000 = 5.300.
+			expect(plan.costeSuscripcion).toBe(5300);
 		});
 	});
 
@@ -482,8 +482,11 @@ describe('planificarTraspaso', () => {
 			});
 
 			expect(plan.participacionesDestino).toBe(400);
-			// 445 × 12,54 = 5.580,30, menos los 540 € que ya había = 5.040,30
-			expect(plan.costeHeredado).toBe(5040.3);
+			// 445 × 12,54 = 5.580,30, menos los 540 € que ya había = 5.040,30.
+			// Es `costeSuscripcion` y no `costeHeredado`: la resta contra el estado
+			// declarado da lo que el banco dice que has metido, no el valor de
+			// adquisición del art. 94, que sale de los lotes del origen.
+			expect(plan.costeSuscripcion).toBe(5040.3);
 			// Y el estado final resuelto se devuelve, que es lo que precarga el formulario.
 			expect(plan.destinoResultante).toEqual({ participaciones: 445, costeMedio: 12.54 });
 		});
@@ -510,44 +513,51 @@ describe('planificarTraspaso', () => {
 			expect(conOtro.costeHeredado).toBe(conUnPrecio.costeHeredado);
 		});
 
-		it('sin declarar nada, la estimación coincide con el libro y NO hay descuadre', () => {
-			/*
-			 * Comparar las dos cifras cuando las dos salen del mismo sitio sería un aviso
-			 * permanente sobre datos correctos, que es la forma de fallo que este repo
-			 * persigue: una guarda que grita siempre se acaba silenciando.
-			 */
+		it('sin declarar nada, lo fiscal sale del libro y lo suscrito del importe movido', () => {
 			const plan = planificarTraspaso({
 				...base,
 				destinoAntes: { participaciones: 0, costeTotalBase: 0 }
 			});
 
-			expect(plan.descuadre).toBeNull();
 			expect(plan.costeHeredado).toBe(4200);
 			// La estimación pone las 400 participaciones a los 4.200 € que viajan.
 			expect(plan.destinoResultante.participaciones).toBe(400);
 			expect(plan.destinoResultante.costeMedio).toBe(10.5);
 		});
 
-		it('declarar algo distinto de lo que dice el libro devuelve el descuadre, y manda lo declarado', () => {
+		/**
+		 * ⚠️ **Este caso afirmaba que lo declarado MANDA sobre el libro, y en la 1.23.1 se
+		 * invierte. Se reescribe en vez de borrarse porque un cambio de contrato tiene que
+		 * verse en la prueba que lo guardaba.**
+		 *
+		 * El argumento de entonces era que la cifra del banco «es la que la gestora
+		 * reportará a Hacienda». Es falso, y esa confusión es el defecto: lo que el usuario
+		 * lee en su extracto es el **importe suscrito**, un flujo de caja, no el valor de
+		 * adquisición del art. 94 — que la gestora arrastra por obligación y no enseña en
+		 * esa pantalla. Ahora son dos campos: lo fiscal siempre del libro, lo suscrito de
+		 * lo declarado.
+		 */
+		it('lo declarado alimenta el coste suscrito, y lo fiscal sigue saliendo del libro', () => {
 			const plan = planificarTraspaso({
 				...base,
 				destinoAntes: { participaciones: 0, costeTotalBase: 0 },
-				// El banco dice 4.900 € de coste; el libro del origen decía 4.200 €.
+				// El banco dice 4.900 € suscritos; el libro del origen dice que viajan 4.200 €.
 				destinoResultante: { participaciones: 400, costeMedio: 12.25 }
 			});
 
 			expect(plan.costeSegunElLibro).toBe(4200);
-			expect(plan.costeHeredado).toBe(4900);
-			expect(plan.descuadre).toBe(700);
+			expect(plan.costeHeredado).toBe(4200);
+			expect(plan.costeSuscripcion).toBe(4900);
 		});
 
-		it('⚠️ con el origen sin libro, declarar el resultado SÍ da coste heredado', () => {
-			/*
-			 * Capacidad nueva y no un efecto colateral: sin libro en el origen la app no
-			 * tenía de dónde sacar el valor de adquisición, pero el banco sí lo sabe. Lo
-			 * que no vale es la estimación —eso es una valoración de hoy, no un coste—, y
-			 * el caso de al lado lo fija.
-			 */
+		/**
+		 * ⚠️ **Y este decía que declarar el resultado da coste heredado aunque el origen no
+		 * tenga libro — «capacidad nueva».** No lo era: lo declarado es el importe suscrito,
+		 * así que sin libro en el origen el valor de adquisición sigue sin saberse y `null`
+		 * es la única respuesta honesta. Afirmar un coste que nadie ha comprobado es el
+		 * defecto del importador que metía activos a coste 0.
+		 */
+		it('con el origen sin libro no hay coste fiscal, se declare lo que se declare', () => {
 			const declarado = planificarTraspaso({
 				...base,
 				transacciones: [],
@@ -555,9 +565,9 @@ describe('planificarTraspaso', () => {
 				destinoResultante: { participaciones: 400, costeMedio: 10.5 }
 			});
 			expect(declarado.estadoCoste).toBe('sin-libro');
-			expect(declarado.costeHeredado).toBe(4200);
-			// No hay con qué comparar, así que tampoco hay descuadre que avisar.
-			expect(declarado.descuadre).toBeNull();
+			expect(declarado.costeHeredado).toBeNull();
+			// Pero lo suscrito sí se sabe: es lo que el banco dice que hay metido.
+			expect(declarado.costeSuscripcion).toBe(4200);
 
 			const estimado = planificarTraspaso({
 				...base,
