@@ -140,3 +140,34 @@ export function isTaxableOnSale(asset: Asset): boolean {
 	const type = instrumentTypeOf(asset);
 	return type === 'etf' || type === 'equity';
 }
+
+/** Qué es, fiscalmente, mover dinero de un activo a otro. */
+export type MoveKind = 'traspaso' | 'reembolso' | 'venta' | 'efectivo';
+
+/**
+ * Si mover dinero de un activo a otro está libre de impuestos.
+ *
+ * Dos condiciones, y las dos importan:
+ *   - **fondo → fondo** es traspaso con diferimiento. Un fondo que se reembolsa
+ *     para comprar un ETF **no** lo es, aunque el origen sea un fondo: el
+ *     destino tiene que ser también una IIC traspasable.
+ *   - **desde efectivo** no hay transmisión de nada, así que no hay ganancia
+ *     patrimonial que declarar.
+ *
+ * ⚠️ **Vive aquí y no en `traspaso.ts`, donde nació privada, porque tiene dos
+ * consumidores.** El planificador de rebalanceo la usa para emparejar, y
+ * `traspaso-libro.ts` la usa para decirle al usuario qué va a pasar *antes* de
+ * que elija destino. Escribirla dos veces es exactamente cómo `ft-assets.ts`
+ * acabó implementado cuatro veces y roto en la copia que importaba — y aquí las
+ * dos copias divergirían en algo peor que un color: en si tributas o no.
+ * `traspaso.ts` reexporta `MoveKind` para no tocar a `TaxAwareRebalance.svelte`.
+ */
+export function classifyMove(from: Asset, to: Asset): { kind: MoveKind; taxFree: boolean } {
+	const fromType = instrumentTypeOf(from);
+	const toType = instrumentTypeOf(to);
+
+	if (fromType === 'cash') return { kind: 'efectivo', taxFree: true };
+	if (fromType === 'fund' && toType === 'fund') return { kind: 'traspaso', taxFree: true };
+	if (fromType === 'fund') return { kind: 'reembolso', taxFree: false };
+	return { kind: 'venta', taxFree: false };
+}

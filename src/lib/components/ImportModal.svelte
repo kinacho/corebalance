@@ -2,13 +2,21 @@
 	import { portfolio } from '$lib/stores/portfolio.svelte';
 	import { ui } from '$lib/stores/ui.svelte';
 	import { focusTrap } from '$lib/actions/focusTrap';
-	import { LL } from '$lib/i18n/i18n-svelte';
-	import { importFromCSV, importWithMapping, generateCsvSignature } from '$lib/importers';
+	import { LL, locale } from '$lib/i18n/i18n-svelte';
+	import { importFromCSV, importWithMapping, generateCsvSignature, reduceTransactionsToPositions } from '$lib/importers';
 	import type { ImportResult, ParsedPosition, MappingConfig, SkippedDetail } from '$lib/importers';
 	import { planificarImportacion } from '$lib/importers/ledger-import';
+	import {
+		hayDireccionSupuesta,
+		sugerirTraspasos,
+		aplicarDireccion,
+		resolverCostesHeredados,
+		type ParejaSugerida
+	} from '$lib/importers/direccion';
+	import { formatCurrency, formatShares } from '$lib/utils';
 	import { ASSET_ICONS } from '$lib/constants';
 	import { nextAssetColor } from '$lib/asset-colors';
-	import { resolveInstrumentType } from '$lib/instrument-type';
+	import { resolveInstrumentType, canBeTransferred } from '$lib/instrument-type';
 	import type { Asset, AssetCategory } from '$lib/types';
 	import { resolveAssetIcon } from '$lib/asset-icon';
 	import { onMount, onDestroy } from 'svelte';
@@ -27,7 +35,7 @@
 	onDestroy(() => desbloquearScroll());
 
 	// --- State Machine ---
-	type Step = 'upload' | 'mapping' | 'resolving' | 'preview' | 'done';
+	type Step = 'upload' | 'mapping' | 'resolving' | 'direccion' | 'preview' | 'done';
 	let step = $state<Step>('upload');
 	let isDragging = $state(false);
 	let rawFileContent = $state<string>('');
@@ -43,6 +51,139 @@
 	let savedMapping = $state<MappingConfig | undefined>(undefined);
 	let showSkippedDetails = $state(false);
 	const skippedDetails = $derived(importResult?.skippedDetails ?? []);
+
+	/**
+	 * ⚠️ **El paso de dirección, que existe porque hay exports donde una salida y una
+	 * compra son literalmente la misma fila.** Ver `direccion.ts`: el de Órdenes de
+	 * MyInvestor no trae columna de tipo, así que el parser tiene que suponer compra, y
+	 * suponerlo en silencio dejaba el fondo con el **doble** de lo que salió sin un solo
+	 * aviso. Solo aparece cuando hay algo que suponer.
+	 */
+	let salidasMarcadas = $state<Set<number>>(new Set());
+	let traspasosConfirmados = $state<ParejaSugerida[]>([]);
+	let traspasosSugeridos = $state<ParejaSugerida[]>([]);
+
+	const operacionesCrudas = $derived(importResult?.transactions ?? []);
+
+	/**
+	 * Lo que se va a escribir, recalculado en cada clic.
+	 *
+	 * ⚠️ **La previsualización tiene que enseñar el mismo número que se escribe**, así
+	 * que las posiciones del paso salen de la misma cadena que usa `confirmImport`:
+	 * decidir → resolver el coste que viaja → agregar. Calcularlas por otro camino sería
+	 * volver a tener dos aritméticas para la misma cifra.
+	 */
+	const operacionesDecididas = $derived(
+		aplicarDireccion(operacionesCrudas, {
+			salidas: salidasMarcadas,
+			traspasos: traspasosConfirmados
+		})
+	);
+	const costesHeredados = $derived(resolverCostesHeredados(operacionesDecididas));
+	const recalculo = $derived(
+		reduceTransactionsToPositions(operacionesDecididas, costesHeredados)
+	);
+	const posicionesRecalculadas = $derived(recalculo.positions);
+	/**
+	 * ⚠️ **Los avisos del agregador se enseñan aquí y no solo en la previsualización.**
+	 *
+	 * Marcar una salida de más deja el fondo a cero, y una posición a cero **desaparece
+	 * del listado**: sin el aviso, el usuario ve un fondo esfumarse de «cómo queda cada
+	 * fondo» y no tiene nada que mirar — que es exactamente el defecto por el que
+	 * `reduceTransactionsToPositions` devuelve avisos. Aquí es más importante que en la
+	 * previsualización, porque este es el paso donde el usuario puede deshacerlo.
+	 */
+	const avisosDelRecalculo = $derived(recalculo.warnings);
+
+	/**
+	 * Las operaciones en orden de extracto, conservando su índice original.
+	 *
+	 * El índice es la identidad en todo este paso —las decisiones se guardan por índice—
+	 * así que ordenar sin llevárselo detrás desalinearía cada clic con su fila.
+	 */
+	const ordenCronologico = $derived(
+		operacionesCrudas
+			.map((op, idx) => ({ idx, op }))
+			.sort((a, b) => a.op.date.getTime() - b.op.date.getTime())
+	);
+
+	/** Índice → la pareja confirmada en la que participa, para pintar la fila. */
+	const parejaDe = $derived.by(() => {
+		const mapa = new Map<number, ParejaSugerida>();
+		for (const p of traspasosConfirmados) {
+			mapa.set(p.salida, p);
+			mapa.set(p.entrada, p);
+		}
+		return mapa;
+	});
+
+	const esSalida = (idx: number) =>
+		operacionesDecididas[idx]?.type === 'SELL' || operacionesDecididas[idx]?.type === 'TRANSFER_OUT';
+
+	function alternarDireccion(idx: number) {
+		// Una fila dentro de un traspaso confirmado no se voltea suelta: se deshace la pareja.
+		if (parejaDe.has(idx)) return;
+		const s = new Set(salidasMarcadas);
+		s.has(idx) ? s.delete(idx) : s.add(idx);
+		salidasMarcadas = s;
+		ui.hapticFeedback('light');
+	}
+
+	function confirmarTraspaso(pareja: ParejaSugerida) {
+		traspasosConfirmados = [...traspasosConfirmados, pareja];
+		ui.hapticFeedback('medium');
+	}
+
+	function deshacerTraspaso(pareja: ParejaSugerida) {
+		traspasosConfirmados = traspasosConfirmados.filter(
+			(p) => !(p.salida === pareja.salida && p.entrada === pareja.entrada)
+		);
+	}
+
+	const estaConfirmada = (pareja: ParejaSugerida) =>
+		traspasosConfirmados.some((p) => p.salida === pareja.salida && p.entrada === pareja.entrada);
+
+	/** El nombre de una operación tal y como se puede enseñar: el resuelto si lo hay. */
+	function nombreDeOperacion(idx: number): string {
+		const op = operacionesCrudas[idx];
+		if (!op) return '';
+		const resuelto = op.isin ? resolvedMap[op.isin] : undefined;
+		return resuelto?.name || op.name || op.isin || '';
+	}
+
+	/**
+	 * Día, mes y año con dos cifras el día y el mes.
+	 *
+	 * Sin `2-digit` sale «10/1/2026» junto a «15/3/2026»: en una columna de fechas que se
+	 * lee de arriba abajo para localizar una operación, la anchura variable obliga a leer
+	 * cada línea entera en vez de barrer.
+	 */
+	const fechaCorta = (d: Date) =>
+		d.toLocaleDateString($locale === 'en' ? 'en-GB' : 'es-ES', {
+			day: '2-digit',
+			month: '2-digit',
+			year: 'numeric'
+		});
+
+	/**
+	 * Cierra el paso: lo decidido pasa a ser el resultado de la importación.
+	 *
+	 * Se rehace la selección entera porque las posiciones se han recalculado y sus
+	 * índices no tienen por qué ser los de antes. `resolvedMap` sí sobrevive: va por
+	 * ISIN, y los ISIN no cambian por marcar una salida.
+	 */
+	function cerrarPasoDeDireccion() {
+		if (!importResult) return;
+		importResult = {
+			...importResult,
+			positions: posicionesRecalculadas,
+			transactions: operacionesDecididas,
+			// Los del parseo más los que hayan salido de lo decidido, sin duplicar.
+			warnings: [...new Set([...importResult.warnings, ...avisosDelRecalculo])]
+		};
+		selectedPositions = new Set(posicionesRecalculadas.map((_, i) => String(i)));
+		step = 'preview';
+	}
 
 	// --- File Handling ---
 	function handleDragOver(e: DragEvent) { e.preventDefault(); isDragging = true; }
@@ -156,11 +297,54 @@
 				}
 			}
 			resolvedMap = map;
-			step = 'preview';
+			step = siguientePaso();
 		} catch (e) {
 			resolveError = e instanceof Error ? e.message : $LL.common.error_generic();
-			step = 'preview'; // Still show what we have
+			step = siguientePaso(); // Still show what we have
 		}
+	}
+
+	/**
+	 * El paso de dirección se interpone **solo cuando hay algo que decidir**.
+	 *
+	 * Un fichero que dice el tipo de cada fila no tiene nada que preguntar, y meter una
+	 * pantalla en medio del caso normal para cubrir el raro es cobrarle a todo el mundo
+	 * el precio de un export concreto. Las sugerencias se calculan aquí, una vez, y no
+	 * en un `$derived`: dependen de las operaciones crudas, que ya no cambian.
+	 */
+	function siguientePaso(): Step {
+		const ops = importResult?.transactions ?? [];
+		if (!hayDireccionSupuesta(ops)) return 'preview';
+		traspasosSugeridos = sugerirTraspasos(ops, { esTraspasable });
+		return 'direccion';
+	}
+
+	/**
+	 * ⚠️ **Solo un fondo se traspasa, y esto se pregunta con la regla que ya existe.**
+	 *
+	 * `canBeTransferred()` es `instrumentTypeOf(...) === 'fund'`, que es la misma
+	 * condición que `classifyMove()` exige en el origen y en el destino: un fondo que se
+	 * reembolsa para comprar un ETF **tributa** aunque el origen sea un fondo. Escribirla
+	 * aquí otra vez sería una regla fiscal en dos sitios, que es peor que un color
+	 * repetido.
+	 *
+	 * El tipo de Yahoo (`MUTUALFUND`) es la señal limpia y llega en `resolvedMap`; sin
+	 * resolución se cae a `resolveInstrumentType`, que decide por ticker, nombre e ISIN —
+	 * y ante la duda devuelve `other`, que aquí significa no proponer nada.
+	 */
+	function esTraspasable(op: { isin?: string; ticker?: string; name: string }): boolean {
+		const resuelto = resolvedMap[op.isin || ''] || resolvedMap[op.ticker || ''];
+		return canBeTransferred({
+			ticker: resuelto?.ticker || op.ticker || '',
+			name: resuelto?.name || op.name,
+			isin: op.isin || '',
+			instrumentType: resolveInstrumentType(
+				resuelto?.ticker || op.ticker || '',
+				resuelto?.name || op.name,
+				resuelto?.type || '',
+				op.isin || ''
+			)
+		} as Asset);
 	}
 
 	// --- Import Logic ---
@@ -288,7 +472,15 @@
 			tickerDe: (op) => {
 				const porIsin = op.isin ? resolvedMap[op.isin]?.ticker : undefined;
 				return porIsin ?? (op.ticker ? op.ticker.toUpperCase() : null) ?? null;
-			}
+			},
+			/*
+			 * ⚠️ Se recalcula sobre `importResult.transactions`, que a estas alturas ya son
+			 * las decididas: `cerrarPasoDeDireccion()` las ha escrito ahí. Volver a calcular
+			 * en vez de arrastrar el `$derived` del paso es a propósito — el paso puede no
+			 * haber existido (un fichero que sí dice el tipo trae sus traspasos de fábrica,
+			 * y también heredan coste), así que este camino tiene que valer para los dos.
+			 */
+			costesHeredados: resolverCostesHeredados(importResult.transactions ?? [])
 		});
 		const planPorTicker = new Map(plan.map((p) => [p.ticker, p]));
 
@@ -385,6 +577,7 @@
 					{#if step === 'upload'}{$LL.import.subtitle_upload()}
 					{:else if step === 'mapping'}{$LL.import.subtitle_mapping()}
 					{:else if step === 'resolving'}{$LL.import.subtitle_resolving()}
+					{:else if step === 'direccion'}{$LL.import.subtitle_direction()}
 					{:else if step === 'preview'}{$LL.import.subtitle_preview()}
 					{:else}{$LL.import.subtitle_done()}
 					{/if}
@@ -441,6 +634,126 @@
 					<div class="resolving-spinner"></div>
 					<p>{$LL.import.resolving_count({ count: importResult?.positions.length ?? 0 })}</p>
 					<p class="resolving-hint">{$LL.import.resolving_hint()}</p>
+				</div>
+
+			<!--
+				STEP 3.5: Dirección.
+
+				⚠️ Solo aparece cuando el fichero no puede decir si una orden entra o sale.
+				Nada de aquí se aplica solo: lo que hace la pantalla es enseñar la
+				suposición que el parser ya estaba haciendo en silencio, y darle al usuario
+				la forma de corregirla **antes** de que se escriba nada. Ver `direccion.ts`.
+			-->
+			{:else if step === 'direccion'}
+				<div class="dir-explica">
+					<p class="dir-titulo">⚠️ {$LL.import.dir_title()}</p>
+					<p class="dir-texto">{$LL.import.dir_explain()}</p>
+					<p class="dir-texto dir-doble">{$LL.import.dir_explain_double()}</p>
+				</div>
+
+				{#each traspasosSugeridos as pareja (`${pareja.salida}-${pareja.entrada}`)}
+					{@const confirmada = estaConfirmada(pareja)}
+					{@const idTraspaso = operacionesDecididas[pareja.entrada]?.transferId}
+					{@const heredado = idTraspaso ? costesHeredados.get(idTraspaso) : undefined}
+					{@const salida = operacionesCrudas[pareja.salida]}
+					{@const entrada = operacionesCrudas[pareja.entrada]}
+					<div class="dir-sugerencia" class:confirmada>
+						<p class="dir-sug-titulo">🔄 {$LL.import.dir_suggest_title()}</p>
+						<p class="dir-sug-detalle">
+							{$LL.import.dir_suggest_detail({
+								amountOut: formatCurrency(salida.shares * salida.price, salida.currency),
+								from: nombreDeOperacion(pareja.salida),
+								dateOut: fechaCorta(salida.date),
+								amountIn: formatCurrency(entrada.shares * entrada.price, entrada.currency),
+								to: nombreDeOperacion(pareja.entrada),
+								days: pareja.dias
+							})}
+						</p>
+						{#if confirmada}
+							<!--
+								Que el destino herede el coste cambia lo que la app enseña frente a
+								lo que enseña el banco, así que se dice aquí y no en una nota al pie:
+								la casilla «invertido» del banco es el importe suscrito, y esta es la
+								que tributará.
+							-->
+							{#if heredado?.coste != null}
+								<p class="dir-sug-coste">
+									{$LL.import.dir_suggest_cost({
+										to: nombreDeOperacion(pareja.entrada),
+										cost: formatCurrency(heredado.coste, entrada.currency)
+									})}
+								</p>
+							{:else}
+								<p class="dir-sug-coste dir-sug-sin-coste">
+									{$LL.import.dir_suggest_no_cost({ from: nombreDeOperacion(pareja.salida) })}
+								</p>
+							{/if}
+							<button class="dir-sug-btn deshacer" onclick={() => deshacerTraspaso(pareja)}>
+								✓ {$LL.import.dir_suggest_undo()}
+							</button>
+						{:else}
+							<button class="dir-sug-btn" onclick={() => confirmarTraspaso(pareja)}>
+								{$LL.import.dir_suggest_confirm()}
+							</button>
+						{/if}
+					</div>
+				{/each}
+
+				<div class="dir-lista">
+					{#each ordenCronologico as { idx, op } (idx)}
+						{@const enPareja = parejaDe.has(idx)}
+						{@const fuera = esSalida(idx)}
+						<div class="dir-fila" class:es-salida={fuera}>
+							<span class="dir-fecha">{fechaCorta(op.date)}</span>
+							<span class="dir-nombre">{nombreDeOperacion(idx)}</span>
+							<span class="dir-importe">{formatCurrency(op.shares * op.price, op.currency)}</span>
+							{#if enPareja}
+								<!--
+									La flecha no es decoración: las dos patas de un traspaso son dos
+									filas idénticas salvo por la dirección, y sin ella el rótulo
+									«Traspaso» dice lo mismo en las dos. Misma convención que el
+									interruptor de al lado, ↑ sale y ↓ entra.
+								-->
+								<span class="dir-badge">
+									{fuera ? '↑' : '↓'} {$LL.import.dir_transfer_badge()}
+								</span>
+							{:else}
+								<button
+									class="dir-toggle"
+									class:fuera
+									onclick={() => alternarDireccion(idx)}
+									aria-pressed={fuera}
+								>
+									{fuera ? `↑ ${$LL.import.dir_row_out()}` : `↓ ${$LL.import.dir_row_in()}`}
+								</button>
+							{/if}
+						</div>
+					{/each}
+				</div>
+
+				<!--
+					La reconciliación en vivo: es exactamente el gesto con el que se descubrió
+					el defecto —mirar la posición de la app al lado de la del banco— así que la
+					pantalla lo pone delante en vez de esperar a que alguien lo haga por su
+					cuenta después de importar.
+				-->
+				<div class="dir-resultado">
+					<p class="dir-res-titulo">{$LL.import.dir_result_title()}</p>
+					{#each avisosDelRecalculo as aviso}
+						<p class="dir-res-aviso">⚠️ {aviso}</p>
+					{/each}
+					{#each posicionesRecalculadas as pos (pos.isin || pos.name)}
+						<div class="dir-res-fila">
+							<span class="dir-res-nombre">{resolvedMap[pos.isin]?.name || pos.name}</span>
+							<span class="dir-res-cifras">
+								{$LL.import.dir_result_line({
+									shares: formatShares(pos.shares),
+									avgCost: formatCurrency(pos.avgCost, pos.currency)
+								})}
+							</span>
+						</div>
+					{/each}
+					<p class="dir-res-pista">{$LL.import.dir_compare_hint()}</p>
 				</div>
 
 			<!-- STEP 3: Preview -->
@@ -570,7 +883,11 @@
 
 		<!-- Footer -->
 		<div class="import-footer">
-			{#if step === 'preview'}
+			{#if step === 'direccion'}
+				<button class="btn-import" onclick={cerrarPasoDeDireccion}>
+					{$LL.import.btn_continue()}
+				</button>
+			{:else if step === 'preview'}
 				<button class="btn-import" onclick={confirmImport} disabled={resolvableCount === 0}>
 					<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
 					{$LL.import.btn_import_assets({ count: resolvableCount })}
@@ -651,6 +968,49 @@
 	.skipped-preview { font-size: 0.62rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 	.skipped-reason { font-size: 0.6rem; color: var(--accent-orange-ink); font-style: italic; flex-shrink: 0; max-width: 130px; text-align: right; }
 	.skipped-more { font-size: 0.6rem; color: var(--text-faint); margin: 0.25rem 0 0; text-align: center; }
+
+	/*
+	 * Paso de dirección.
+	 *
+	 * Todo va por tokens, como el resto del fichero: un literal aquí solo funcionaría en
+	 * un tema, y `npm run a11y:contrast` lo rechaza en la hoja y —desde el 16-ago— también
+	 * en el `style=` del marcado.
+	 */
+	.dir-explica { background:rgba(251,191,36,.08); border:1px solid rgba(251,191,36,.15); border-radius:12px; padding:.75rem .9rem; }
+	.dir-titulo { margin:0 0 .35rem; font-size:.82rem; font-weight:700; color:var(--accent-orange-ink); }
+	.dir-texto { margin:0; font-size:.72rem; line-height:1.5; color:var(--text-secondary); }
+	.dir-doble { margin-top:.4rem; font-weight:600; color:var(--text-primary); }
+
+	.dir-sugerencia { background:var(--bg-card-hover); border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:.75rem .9rem; display:flex; flex-direction:column; gap:.4rem; }
+	.dir-sugerencia.confirmada { border-color:rgba(16,185,129,.35); background:rgba(16,185,129,.06); }
+	.dir-sug-titulo { margin:0; font-size:.78rem; font-weight:700; color:var(--text-primary); }
+	.dir-sug-detalle { margin:0; font-size:.72rem; line-height:1.5; color:var(--text-secondary); }
+	.dir-sug-coste { margin:0; font-size:.68rem; line-height:1.5; color:var(--accent-green-ink); }
+	.dir-sug-sin-coste { color:var(--accent-orange-ink); }
+	.dir-sug-btn { align-self:flex-start; background:var(--accent-blue); color:var(--text-on-accent); border:none; border-radius:8px; padding:.35rem .7rem; font-size:.7rem; font-weight:700; cursor:pointer; }
+	.dir-sug-btn.deshacer { background:transparent; color:var(--accent-green-ink); border:1px solid rgba(16,185,129,.3); }
+
+	.dir-lista { display:flex; flex-direction:column; gap:.15rem; max-height:220px; overflow-y:auto; }
+	.dir-lista::-webkit-scrollbar { width:4px; }
+	.dir-lista::-webkit-scrollbar-thumb { background:rgba(255,255,255,.08); border-radius:2px; }
+	.dir-fila { display:grid; grid-template-columns:5rem 1fr auto auto; gap:.5rem; align-items:center; padding:.3rem .4rem; border-radius:8px; }
+	.dir-fila:hover { background:rgba(255,255,255,.03); }
+	.dir-fila.es-salida { background:rgba(251,191,36,.06); }
+	.dir-fecha { font-size:.62rem; color:var(--text-faint); font-family:'Monaco','Menlo',monospace; }
+	.dir-nombre { font-size:.7rem; color:var(--text-secondary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+	.dir-importe { font-size:.7rem; font-weight:600; color:var(--text-primary); }
+	.dir-badge { font-size:.58rem; font-weight:800; text-transform:uppercase; letter-spacing:.04em; color:var(--accent-green-ink); border:1px solid rgba(16,185,129,.3); border-radius:6px; padding:.1rem .35rem; }
+	/* 44 px de alto mínimo: es un objetivo táctil, y el barrido móvil mide por debajo de 40. */
+	.dir-toggle { min-width:4.5rem; min-height:1.9rem; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); border-radius:8px; color:var(--text-secondary); font-size:.65rem; font-weight:700; cursor:pointer; padding:.25rem .45rem; }
+	.dir-toggle.fuera { background:rgba(251,191,36,.12); border-color:rgba(251,191,36,.3); color:var(--accent-orange-ink); }
+
+	.dir-resultado { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:.6rem .8rem; display:flex; flex-direction:column; gap:.25rem; }
+	.dir-res-titulo { margin:0 0 .2rem; font-size:.7rem; font-weight:700; color:var(--text-primary); }
+	.dir-res-fila { display:flex; justify-content:space-between; align-items:baseline; gap:.6rem; }
+	.dir-res-nombre { font-size:.7rem; color:var(--text-secondary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+	.dir-res-cifras { font-size:.7rem; font-weight:600; color:var(--text-primary); white-space:nowrap; }
+	.dir-res-aviso { margin:0 0 .3rem; font-size:.66rem; line-height:1.45; color:var(--accent-orange-ink); }
+	.dir-res-pista { margin:.35rem 0 0; font-size:.65rem; line-height:1.45; color:var(--text-muted); }
 
 	/* Resolving */
 	.resolving-state { text-align:center; padding:3rem 1rem; }

@@ -1,9 +1,11 @@
 <script lang="ts">
 	import { portfolio } from '$lib/stores/portfolio.svelte';
-	import { formatEUR, formatPercent, formatShares } from '$lib/utils';
+	import { formatEUR, formatShares } from '$lib/utils';
 	import { LL } from '$lib/i18n/i18n-svelte';
 	import { SAVINGS_TAX_YEAR } from '$lib/fiscal';
 	import type { MoveKind, TransferMove } from '$lib/traspaso';
+	import { planificarTraspaso, meritaApuntar } from '$lib/traspaso-libro';
+	import { ui } from '$lib/stores/ui.svelte';
 	import LeccionDelPanel from './LeccionDelPanel.svelte';
 	import PanelHerramienta from './PanelHerramienta.svelte';
 
@@ -40,6 +42,55 @@
 		if (kind === 'reembolso') return $LL.traspaso.kind_reembolso_hint();
 		if (kind === 'efectivo') return $LL.traspaso.kind_efectivo_hint();
 		return $LL.traspaso.kind_venta_hint();
+	}
+
+	/**
+	 * Si este movimiento se puede apuntar en el libro tal cual.
+	 *
+	 * ⚠️ Exige el **origen** en modo libro, porque de ahí sale el coste heredado: sin
+	 * libro no hay lotes FIFO que leer y el destino nacería contando desde el precio
+	 * de hoy, que es exactamente el defecto que el traspaso enlazado arregla. Del
+	 * destino no se exige nada: `seedLedgerFromManual` lo siembra con su posición
+	 * actual, que es lo que ya hace el formulario del libro.
+	 */
+	function apuntable(move: TransferMove): boolean {
+		return portfolio.holdings[move.from.ticker]?.useLedger === true;
+	}
+
+	function apuntar(move: TransferMove) {
+		const antes = portfolio.effectiveHoldings[move.to.ticker];
+		const participacionesDestino = antes?.shares ?? 0;
+
+		const plan = planificarTraspaso({
+			origen: move.from,
+			destino: move.to,
+			transacciones: portfolio.transactions,
+			participacionesOrigen: portfolio.effectiveHoldings[move.from.ticker]?.shares ?? 0,
+			precioOrigen: portfolio.pricesWithFx[move.from.ticker]?.price ?? 0,
+			precioDestinoHoy: portfolio.pricesWithFx[move.to.ticker]?.price ?? 0,
+			// El plan viene expresado en euros, que es la forma en la que el usuario ya lo
+			// está leyendo en esta tarjeta.
+			cuanto: { modo: 'importe', importe: move.amount },
+			/*
+			 * Sin `destinoResultante`: aquí no hay nadie escribiendo el extracto, así que
+			 * se estima. Quien quiera cuadrar al céntimo con lo que dice su banco lo hace
+			 * desde el formulario del libro, que es donde están los dos campos.
+			 */
+			destinoAntes: {
+				participaciones: participacionesDestino,
+				costeTotalBase: antes?.totalCostBase ?? participacionesDestino * (antes?.avgCost ?? 0)
+			},
+			fecha: Date.now()
+		});
+
+		if (!meritaApuntar(plan)) return;
+
+		if (!(portfolio.holdings[move.to.ticker]?.useLedger ?? false)) {
+			portfolio.seedLedgerFromManual(move.to.ticker, plan.fecha);
+		}
+		portfolio.registrarTraspaso(plan);
+		ui.addToast($LL.ledger.toast_traspaso_hecho(), 'success');
+		ui.hapticFeedback('medium');
 	}
 </script>
 
@@ -128,9 +179,15 @@
 						</div>
 						<div class="summary-row muted">
 							<span class="summary-label">
-								{$LL.traspaso.summary_deviation({
-									before: formatPercent(deviationBefore, 1),
-									after: formatPercent(deviationAfter, 1)
+							<!--
+								⚠️ `$LL.dashboard.percent()` y **no** `formatPercent()` de utils, que
+								formatea con `toFixed` y por tanto con **punto decimal**: en una app en
+								castellano pintaba «54.0%». Es el defecto que este repo ya tiene
+								documentado y que un test de la ficha cazó en su día; aquí seguía vivo.
+							-->
+							{$LL.traspaso.summary_deviation({
+									before: $LL.dashboard.percent(deviationBefore),
+									after: $LL.dashboard.percent(deviationAfter)
 								})}
 							</span>
 						</div>
@@ -232,6 +289,20 @@
 			{#if move.gainIsPartial}
 				<p class="footnote inline">{$LL.traspaso.partial_gain()}</p>
 			{/if}
+		{/if}
+
+		<!--
+			⚠️ Solo en los traspasos, y solo con las dos patas en modo libro.
+			El plan se calculaba desde la 1.13 y **no se podía ejecutar**: había que
+			abrir dos libros y apuntar dos movimientos a mano. Aquí ya está todo
+			—`from`, `to`, `amount`— así que apuntarlo es mapear a `PlanDeTraspaso`.
+			Se limita al traspaso porque un reembolso o una venta son una venta y una
+			compra sueltas, no un par enlazado con coste heredado.
+		-->
+		{#if move.kind === 'traspaso' && apuntable(move)}
+			<button class="apuntar-btn" onclick={() => apuntar(move)}>
+				{$LL.traspaso.btn_apuntar()}
+			</button>
 		{/if}
 	</div>
 {/snippet}
@@ -375,6 +446,25 @@
 		gap: 1rem;
 		margin-top: 0.5rem;
 		flex-wrap: wrap;
+	}
+
+	/* `align-self` porque en una columna flex el hijo se estira, y sin él el botón
+	   mide todo el ancho de la tarjeta — la lección de `LeccionDelPanel`. */
+	.apuntar-btn {
+		align-self: flex-start;
+		margin-top: 0.6rem;
+		background: var(--bg-card-hover);
+		border: 1px solid var(--border-subtle);
+		color: var(--text-primary);
+		border-radius: 8px;
+		padding: 0.4rem 0.7rem;
+		font-size: 0.75rem;
+		font-weight: 600;
+		cursor: pointer;
+	}
+
+	.apuntar-btn:hover {
+		border-color: var(--border-strong);
 	}
 
 	.tax-item {

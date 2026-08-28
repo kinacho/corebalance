@@ -31,6 +31,7 @@ import { calculateLookThrough } from '$lib/lookthrough';
 import { calcularConcentracion } from '$lib/concentracion';
 import { resolveIndexKey, priceProxyOf } from '$lib/lookthrough';
 import { calculateTaxAwareRebalance } from '$lib/traspaso';
+import { meritaApuntar, type PlanDeTraspaso } from '$lib/traspaso-libro';
 
 /**
  * Rellena los campos que las carteras guardadas antes de que existieran no
@@ -1225,6 +1226,123 @@ export class PortfolioStore {
 	toggleLedger(ticker: string, enabled: boolean) { this.updateHolding(ticker, { useLedger: enabled }); }
 
 	/**
+	 * Borra las dos patas de un traspaso a la vez.
+	 *
+	 * Existe porque borrar una sola deja la cartera **descuadrada en silencio**:
+	 * desaparecen las participaciones de un lado y se quedan las del otro, y eso no
+	 * se ve como un error, se ve como una cartera. Una sola escritura, igual que
+	 * `addTransactions` y por el mismo motivo.
+	 */
+	removeTransferPair(transferId: string) {
+		this.transactions = this.transactions.filter((t) => t.transferId !== transferId);
+		this.saveToStorage();
+	}
+
+	/**
+	 * Pasa un activo a modo libro **sin perder la posición que ya tenía**.
+	 *
+	 * ⚠️ `toggleLedger(ticker, true)` a secas deja la posición en **0** si el activo
+	 * no tiene transacciones, porque `effectiveHoldings` deja de mirar los datos
+	 * manuales y el libro está vacío. Es la trampa del traspaso hacia un fondo en
+	 * modo manual, que es el caso normal: el destino casi nunca lleva libro.
+	 *
+	 * El saldo inicial es exactamente la pieza que la app ya tiene para esto —es
+	 * cómo entra una cartera importada—, así que se siembra con lo que hubiera y
+	 * luego se conmuta. No hace nada si ya está en modo libro.
+	 */
+	seedLedgerFromManual(ticker: string, fecha: number) {
+		if (this.holdings[ticker]?.useLedger) return;
+
+		const manual = this.holdings[ticker];
+		const shares = manual?.shares ?? 0;
+		if (shares > 0) {
+			// El coste medio manual está en divisa del activo, que es lo que espera una
+			// transacción: `avgCost` se compara con el precio de cotización.
+			this.addTransaction({
+				id: crypto.randomUUID(),
+				ticker,
+				type: 'initial_balance',
+				date: fecha,
+				shares,
+				price: manual?.avgCost ?? 0,
+				currency: this.prices[ticker]?.currency || ui.baseCurrency,
+				fees: 0,
+				fxRate: 1
+			});
+		}
+		this.toggleLedger(ticker, true);
+	}
+
+	/**
+	 * Apunta un traspaso entre dos fondos: las dos patas, de una vez, enlazadas.
+	 *
+	 * ⚠️ **El coste heredado se lee aquí y no en el formulario**, porque depende del
+	 * libro completo del origen —lotes FIFO incluidos— y eso lo sabe el store. El
+	 * plan llega ya calculado por `planificarTraspaso`, que es quien reusa
+	 * `buildFifoLots` + `simulateSale`: aquí no se reimplementa FIFO.
+	 *
+	 * Una sola escritura para las dos, por el mismo motivo que `addTransactions`:
+	 * dos llamadas serían dos guardados y dos recálculos de `ledgerHoldings`, que es
+	 * un `$derived` sobre todo el array — y, peor, dejarían un instante en el que la
+	 * cartera tiene el dinero en ningún sitio.
+	 */
+	registrarTraspaso(plan: PlanDeTraspaso) {
+		if (!meritaApuntar(plan)) return;
+
+		const transferId = crypto.randomUUID();
+		const divisaDe = (ticker: string) => this.prices[ticker]?.currency || ui.baseCurrency;
+
+		const salida: Transaction = {
+			id: crypto.randomUUID(),
+			ticker: plan.origen.ticker,
+			type: 'transfer_out',
+			date: plan.fecha,
+			shares: plan.participacionesOrigen,
+			price: plan.precioOrigen,
+			currency: divisaDe(plan.origen.ticker),
+			fees: 0,
+			fxRate: 1,
+			transferId
+		};
+
+		const entrada: Transaction = {
+			id: crypto.randomUUID(),
+			ticker: plan.destino.ticker,
+			type: 'transfer_in',
+			date: plan.fecha,
+			shares: plan.participacionesDestino,
+			/*
+			 * ⚠️ El precio de la fila es el **coste unitario heredado**, no un valor
+			 * liquidativo de suscripción — que en la fecha de la orden no existe todavía y
+			 * que por eso el formulario ya no pide. En la pata de entrada el precio es
+			 * decoración: `ledger.ts` y `fiscal.ts` usan `carriedCostBase` cuando está. Así
+			 * que se pinta la cifra que sí significa algo, y la fila se lee coherente con
+			 * el coste medio que el usuario acaba de declarar.
+			 */
+			price:
+				plan.costeHeredado !== null && plan.participacionesDestino > 0
+					? plan.costeHeredado / plan.participacionesDestino
+					: plan.participacionesDestino > 0
+						? plan.importe / plan.participacionesDestino
+						: 0,
+			currency: divisaDe(plan.destino.ticker),
+			fees: 0,
+			fxRate: 1,
+			transferId,
+			/*
+			 * ⚠️ Solo se escriben si el origen tenía libro. Con `sin-libro` no hay coste
+			 * que heredar, y escribir un 0 diría «coste cero» —plusvalía del 100 %— en
+			 * lugar de «no se sabe», que es el defecto que este repo arrastra documentado
+			 * desde el importador que metía activos a coste 0.
+			 */
+			...(plan.costeHeredado !== null ? { carriedCostBase: plan.costeHeredado } : {}),
+			...(plan.fechaLoteHeredado !== null ? { carriedLotDate: plan.fechaLoteHeredado } : {})
+		};
+
+		this.addTransactions([salida, entrada]);
+	}
+
+	/**
 	 * Valor base de una participación en una fecha pasada, vía el ratio del
 	 * sparkline. Permite valorar correctamente un flujo que el usuario retrofecha
 	 * en lugar de aplicarle el precio de hoy.
@@ -1432,22 +1550,59 @@ export class PortfolioStore {
 		// Sin `color`: lo reparte `assignAssetColors` unas líneas más abajo.
 		type SinColor = Omit<Asset, 'color'>;
 
+		/**
+		 * ⚠️ **`instrumentType` e `indexKey` van declarados a mano en todos, porque
+		 * `loadDemoData` NO pasa por `normalizeAssets()`.** Es el único camino de carga
+		 * que no lo hace —el local y el de la nube sí—, así que aquí no hay nadie que
+		 * rellene los huecos y todo lo que dependa de esos dos campos cae en la
+		 * deducción por nombre. Que para las abreviaturas de Yahoo **falla**: `WLD` no
+		 * contiene `WORLD`, que es exactamente el defecto documentado en
+		 * `asset-icon.ts`. Los nombres se escriben completos por el mismo motivo, y
+		 * porque es como los ve el usuario en su extracto.
+		 *
+		 * ⚠️ **Y los dos fondos indexados no son decorativos: sin un solo fondo, media
+		 * app está apagada en la demo.** Antes eran tres ETF y cinco acciones, o sea
+		 * ningún `instrumentType: 'fund'` — y solo un fondo se traspasa con diferimiento
+		 * (art. 94 LIRPF). Consecuencia medida en el navegador: «Traspasar a otro fondo»
+		 * no aparecía nunca, `canBeTransferred()` decía no a todo, y la ficha no tenía
+		 * un solo activo del que contar el caso interesante. La demo es lo primero que
+		 * ve cualquier visitante, así que era la peor propaganda posible de la mitad
+		 * fiscal de la herramienta.
+		 *
+		 * ⚠️ **Y es un 80/20 en fondos porque es lo más típico aquí, no para lucir la
+		 * herramienta.** Es literalmente lo que enseñan dos lecciones de los cursos de
+		 * la propia app («dos fondos bastan», «el 80/20 y ese 20») y lo que vende
+		 * cualquier comercializadora española de indexados. La demo anterior era tres
+		 * ETF con un sesgo *small cap value* y cinco tecnológicas americanas: una
+		 * cartera perfectamente posible y que no se parece a la de nadie que llegue aquí
+		 * buscando cómo rebalancear.
+		 */
 		const demoCore: SinColor[] = [
-			{ ticker: 'IWDA.AS', name: 'iShares Core MSCI World', isin: 'IE00B4L5Y983', targetWeight: 0.8, category: 'core', ter: 0.002, icon: resolveAssetIcon('IWDA.AS', 'iShares Core MSCI World') },
-			{ ticker: 'ZPRV.DE', name: 'SPDR MSCI USA Small Cap Value', isin: 'IE00BS166D92', targetWeight: 0.1, category: 'core', ter: 0.003, icon: resolveAssetIcon('ZPRV.DE', 'SPDR MSCI USA Small Cap Value') },
-			{ ticker: 'EMIM.AS', name: 'iShares Core MSCI EM IMI', isin: 'IE00BKM4GZ66', targetWeight: 0.1, category: 'core', ter: 0.0018, icon: resolveAssetIcon('EMIM.AS', 'iShares Core MSCI EM IMI') }
+			{ ticker: '0P0001XF40.F', name: 'iShares Developed World Index Fund', isin: 'IE00BD0NCM55', targetWeight: 0.8, category: 'core', ter: 0.0012, instrumentType: 'fund', indexKey: 'msci-world', icon: resolveAssetIcon('0P0001XF40.F', 'iShares Developed World Index Fund', '', { instrumentType: 'fund', indexKey: 'msci-world' }) },
+			{ ticker: '0P0001XF3Z.F', name: 'iShares Emerging Markets Index Fund', isin: 'IE00BD0NCL49', targetWeight: 0.2, category: 'core', ter: 0.002, instrumentType: 'fund', indexKey: 'msci-emerging', icon: resolveAssetIcon('0P0001XF3Z.F', 'iShares Emerging Markets Index Fund', '', { instrumentType: 'fund', indexKey: 'msci-emerging' }) }
 		];
 
+		/*
+		 * Tres acciones sueltas y no cinco: lo típico de quien llega a lo indexado es
+		 * arrastrar unas pocas de antes, no una cartera tecnológica. Sirven para que el
+		 * bloque exista, para que el panel de concentración tenga con qué solapar
+		 * contra el fondo global, y para enseñar que ahí los objetivos no aplican.
+		 */
 		const demoStocks: SinColor[] = [
-			{ ticker: 'MSFT', name: 'Microsoft Corp', isin: 'US5949181045', targetWeight: 0, category: 'stocks', icon: resolveAssetIcon('MSFT', 'Microsoft Corp'), ter: 0 },
-			{ ticker: 'AAPL', name: 'Apple Inc', isin: 'US0378331005', targetWeight: 0, category: 'stocks', icon: resolveAssetIcon('AAPL', 'Apple Inc'), ter: 0 },
-			{ ticker: 'AMZN', name: 'Amazon.com Inc', isin: 'US0231351067', targetWeight: 0, category: 'stocks', icon: resolveAssetIcon('AMZN', 'Amazon.com Inc'), ter: 0 },
-			{ ticker: 'GOOGL', name: 'Alphabet Inc', isin: 'US02079K3059', targetWeight: 0, category: 'stocks', icon: resolveAssetIcon('GOOGL', 'Alphabet Inc'), ter: 0 },
-			{ ticker: 'TSLA', name: 'Tesla, Inc.', isin: 'US88160R1014', targetWeight: 0, category: 'stocks', icon: resolveAssetIcon('TSLA', 'Tesla, Inc.'), ter: 0 }
+			{ ticker: 'AAPL', name: 'Apple Inc', isin: 'US0378331005', targetWeight: 0, category: 'stocks', instrumentType: 'equity', icon: resolveAssetIcon('AAPL', 'Apple Inc', '', { instrumentType: 'equity' }), ter: 0 },
+			{ ticker: 'MSFT', name: 'Microsoft Corp', isin: 'US5949181045', targetWeight: 0, category: 'stocks', instrumentType: 'equity', icon: resolveAssetIcon('MSFT', 'Microsoft Corp', '', { instrumentType: 'equity' }), ter: 0 },
+			{ ticker: 'AMZN', name: 'Amazon.com Inc', isin: 'US0231351067', targetWeight: 0, category: 'stocks', instrumentType: 'equity', icon: resolveAssetIcon('AMZN', 'Amazon.com Inc', '', { instrumentType: 'equity' }), ter: 0 }
 		];
 
+		/*
+		 * El bloque conservador era solo efectivo, así que la renta fija —que es la otra
+		 * mitad de lo que la gente pone ahí— no aparecía en ninguna parte: ni en el mapa
+		 * de solapamiento, ni en la regla de solapamiento entre índices de bonos que
+		 * existe y no tenía con qué dispararse en la demo.
+		 */
 		const demoSatellite: SinColor[] = [
-			{ ticker: 'CASH-DEMO', name: 'Cuenta Remunerada (Demo)', isin: '', targetWeight: 0, category: 'satellite', icon: resolveAssetIcon('CASH-DEMO', 'Cuenta Remunerada (Demo)'), ter: 0, manualInterestRate: 0.03 }
+			{ ticker: 'AGGH.MI', name: 'iShares Core Global Aggregate Bond UCITS ETF', isin: 'IE00BDBRDM35', targetWeight: 0, category: 'satellite', ter: 0.001, instrumentType: 'etf', indexKey: 'global-agg-bond', icon: resolveAssetIcon('AGGH.MI', 'iShares Core Global Aggregate Bond UCITS ETF', '', { instrumentType: 'etf', indexKey: 'global-agg-bond' }) },
+			{ ticker: 'CASH-DEMO', name: 'Cuenta Remunerada (Demo)', isin: '', targetWeight: 0, category: 'satellite', instrumentType: 'cash', icon: resolveAssetIcon('CASH-DEMO', 'Cuenta Remunerada (Demo)', '', { manualInterestRate: 0.03 }), ter: 0, manualInterestRate: 0.03 }
 		];
 
 		/**
@@ -1470,7 +1625,15 @@ export class PortfolioStore {
 		 * Con el orden de declaración, Alphabet caía séptimo, repetía el ámbar de
 		 * IWDA y los dos salían juntos en pantalla.
 		 */
-		const porPesoEsperado = ['IWDA.AS', 'ZPRV.DE', 'AMZN', 'GOOGL', 'EMIM.AS', 'AAPL', 'MSFT', 'CASH-DEMO', 'TSLA'];
+		const porPesoEsperado = [
+			'0P0001XF40.F',
+			'0P0001XF3Z.F',
+			'AMZN',
+			'AGGH.MI',
+			'MSFT',
+			'CASH-DEMO',
+			'AAPL'
+		];
 		const orden = (t: string) => {
 			const i = porPesoEsperado.indexOf(t);
 			return i === -1 ? porPesoEsperado.length : i;
@@ -1486,30 +1649,77 @@ export class PortfolioStore {
 		this.stockAssets = pintar(demoStocks);
 		this.satelliteAssets = pintar(demoSatellite);
 
+		/**
+		 * ⚠️ **La cartera de la demo está deliberadamente FUERA de objetivo, y antes
+		 * estaba justo en objetivo — con la consecuencia de que tres paneles decían
+		 * «nada que hacer» a todo el que abría la app por primera vez.**
+		 *
+		 * Está documentado en dos sitios de este repo como el motivo de existir de dos
+		 * suites (`TaxAwareRebalance.test.ts`, `e2e/panel-fiscal.spec.ts`): con la
+		 * cartera cuadrada, el panel fiscal siempre dice «ya está equilibrada» y el
+		 * camino que calcula traspasos no se ejercitaba en ningún navegador. Una
+		 * herramienta de rebalanceo cuya demo no tiene nada que rebalancear se enseña
+		 * apagada.
+		 *
+		 * La desviación es la que le pasa a cualquiera que lleve un 80/20 sin tocarlo:
+		 * el World ha corrido más que los emergentes, así que el fondo global está
+		 * **+8 pp** por encima y el de emergentes **−8 pp** por debajo. Y siendo los dos
+		 * fondos, `traspaso.ts` empareja fondo→fondo y sale un traspaso **exento** — el
+		 * caso estrella de la app, el que justifica todo el motor fiscal, y el que la
+		 * demo no podía enseñar porque no tenía ni un fondo.
+		 */
 		this.holdings = {
-			'IWDA.AS': { shares: 450.5, avgCost: 72.4, useLedger: false },
-			'ZPRV.DE': { shares: 120, avgCost: 45.2, useLedger: false },
-			'EMIM.AS': { shares: 180, avgCost: 28.5, useLedger: false },
-			'MSFT': { shares: 15, avgCost: 320.5, useLedger: false },
+			// El único con libro; sus participaciones salen de las transacciones de abajo.
+			'0P0001XF40.F': { shares: 4400, avgCost: 11.24, useLedger: true },
+			'0P0001XF3Z.F': { shares: 500, avgCost: 12.6, useLedger: false },
 			'AAPL': { shares: 25, avgCost: 150.2, useLedger: false },
+			'MSFT': { shares: 15, avgCost: 320.5, useLedger: false },
 			'AMZN': { shares: 40, avgCost: 110.8, useLedger: false },
-			'GOOGL': { shares: 30, avgCost: 125.4, useLedger: false },
-			'TSLA': { shares: 10, avgCost: 185.2, useLedger: false },
+			'AGGH.MI': { shares: 1200, avgCost: 4.72, useLedger: false },
 			'CASH-DEMO': { shares: 5000, avgCost: 1, useLedger: false }
 		};
+
+		/**
+		 * ⚠️ **El libro de la demo, que hasta ahora no existía — y su ausencia dejaba
+		 * apagado todo lo que cuelga de él.**
+		 *
+		 * `loadDemoData` guardaba `transactions` en `_backup` y nunca las escribía, así
+		 * que en la demo el libro quedaba con las del usuario: invisibles, porque se
+		 * filtran por ticker y los de la demo son otros. Con `useLedger: false` en los
+		 * doce activos, el modo libro, el FIFO, el bloque fiscal de la ficha y el coste
+		 * heredado de un traspaso no tenían de dónde salir.
+		 *
+		 * Tres compras, que es lo que tiene quien aporta cada pocos meses, así que hay
+		 * lotes de verdad que consumir por FIFO y la plusvalía latente que eso implica
+		 * (4.400 participaciones a 11,24 € de coste medio contra unos 12,15 € de
+		 * mercado). Y **fechas fijas, no relativas**: la ventana de reconstrucción del
+		 * histórico se deriva de la transacción más antigua, así que con fechas
+		 * relativas el primer visitante pediría una serie de precios de longitud
+		 * distinta cada día.
+		 */
+		this.transactions = [
+			{ id: 'demo-tx-1', ticker: '0P0001XF40.F', type: 'buy', date: Date.UTC(2026, 1, 10), shares: 2500, price: 10.9, currency: 'EUR', fees: 0, fxRate: 1 },
+			{ id: 'demo-tx-2', ticker: '0P0001XF40.F', type: 'buy', date: Date.UTC(2026, 3, 22), shares: 1200, price: 11.55, currency: 'EUR', fees: 0, fxRate: 1 },
+			{ id: 'demo-tx-3', ticker: '0P0001XF40.F', type: 'buy', date: Date.UTC(2026, 5, 30), shares: 700, price: 11.9, currency: 'EUR', fees: 0, fxRate: 1 }
+		];
 
 		this.contribution = 1500;
 		this.history = [];
 		this.holdingEdits = [];
+		/*
+		 * Precios de arranque, que `fetchPrices()` sustituye por los reales unas líneas
+		 * más abajo. Están puestos cerca de lo medido para que el primer pintado no dé
+		 * un salto: los dos fondos cotizan de verdad (comprobado contra
+		 * `/api/prices`), que es la condición sin la cual un activo de la demo se
+		 * quedaría a cero y desaparecería de los mapas por el filtro de valor.
+		 */
 		this.prices = {
-			'IWDA.AS': { name: 'iShares Core MSCI World', price: 88.45, currency: 'EUR', change: 0.85 },
-			'ZPRV.DE': { name: 'SPDR MSCI USA Small Cap Value', price: 54.12, currency: 'EUR', change: -0.42 },
-			'EMIM.AS': { name: 'iShares Core MSCI EM IMI', price: 32.18, currency: 'EUR', change: 0.12 },
-			'MSFT': { name: 'Microsoft Corp', price: 415.20, currency: 'USD', change: 1.25 },
+			'0P0001XF40.F': { name: 'iShares Developed World Index Fund', price: 12.15, currency: 'EUR', change: 0.42 },
+			'0P0001XF3Z.F': { name: 'iShares Emerging Markets Index Fund', price: 13.87, currency: 'EUR', change: 0.18 },
 			'AAPL': { name: 'Apple Inc', price: 189.45, currency: 'USD', change: -0.85 },
+			'MSFT': { name: 'Microsoft Corp', price: 415.20, currency: 'USD', change: 1.25 },
 			'AMZN': { name: 'Amazon.com Inc', price: 178.12, currency: 'USD', change: 2.15 },
-			'GOOGL': { name: 'Alphabet Inc', price: 154.32, currency: 'USD', change: 0.45 },
-			'TSLA': { name: 'Tesla, Inc.', price: 175.60, currency: 'USD', change: -3.20 },
+			'AGGH.MI': { name: 'iShares Core Global Aggregate Bond UCITS ETF', price: 4.90, currency: 'EUR', change: 0.05 },
 			'CASH-DEMO': { name: 'Cuenta Remunerada (Demo)', price: 1, currency: 'EUR', change: 0 },
 			'EURUSD=X': { name: 'EUR/USD', price: 1.08, currency: 'USD', change: 0 }
 		};

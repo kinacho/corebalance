@@ -596,10 +596,10 @@
     transition: border-color 0.2s ease;
   }
 
-  .input-group select option {
-    background: var(--bg-overlay);
-    color: var(--text-primary);
-  }
+  /*
+   * El fondo del `<option>` lo pone ahora `layout.css` para todos los `<select>`;
+   * ver el docblock de `select option` allí. Aquí estaba con estos mismos valores.
+   */
 
   .input-group input:focus,
   .input-group select:focus {

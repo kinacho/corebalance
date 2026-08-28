@@ -45,10 +45,32 @@ export function formatPercent(value: number, decimals = 2): string {
 	return (value * 100).toFixed(decimals) + '%';
 }
 
-/** Formatea un número de participaciones */
+/**
+ * Formatea un número de participaciones.
+ *
+ * ⚠️ **Va por locale, y antes iba por `toFixed(3)`, que escribe punto decimal.** En
+ * castellano el punto es el separador de **miles**, así que el panel fiscal proponía
+ * mover «423.375 part.» de un fondo a otro: cuatrocientas veintitrés mil
+ * participaciones donde había cuatrocientas veintitrés. Un factor mil en una cifra
+ * que el usuario va a teclear en su banco.
+ *
+ * Es el mismo defecto que este repo ya tiene documentado para `formatPercent` («en
+ * una app en castellano pinta 0.12%»), y se vio al meter fondos en la cartera de
+ * ejemplo: con ETF y acciones las participaciones son números pequeños y el punto
+ * nunca llegaba a parecer un separador de miles.
+ *
+ * `maximumFractionDigits: 3` recorta los ceros por sí solo, así que ya no hace falta
+ * el `replace` que lo hacía a mano.
+ */
 export function formatShares(value: number): string {
 	if (value === 0) return '0';
-	return value.toFixed(3).replace(/\.?0+$/, '');
+	let formatLocale = 'es-ES';
+	try {
+		if (get(localeStore) === 'en') formatLocale = 'en-US';
+	} catch {
+		formatLocale = 'es-ES';
+	}
+	return new Intl.NumberFormat(formatLocale, { maximumFractionDigits: 3 }).format(value);
 }
 
 /** Determina si el mercado para un activo está abierto actualmente */

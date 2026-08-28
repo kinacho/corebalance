@@ -711,10 +711,11 @@
 		outline: none;
 	}
 
-	.currency-select option {
-		background: var(--bg-overlay);
-		color: var(--text-primary);
-	}
+	/*
+	 * El fondo del `<option>` lo pone ahora `layout.css` para los diecisiete
+	 * `<select>` del proyecto; ver el docblock de `select option` allí, que es donde
+	 * está medido por qué hace falta. Aquí estaba escrito con estos mismos valores.
+	 */
 
 	/* Auth Notifications */
 	.auth-notification {

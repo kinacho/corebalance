@@ -348,8 +348,15 @@ describe('fiscal.ts · casos que el mutation testing dejó al descubierto', () =
 	 * app—; un **saldo inicial** es como llega toda cartera importada de un CSV.
 	 */
 	describe('transacciones que crean valor de adquisición', () => {
-		it('un traspaso entrante crea lote con su valor de adquisición', () => {
+		it("el alias `'transfer'` sigue creando lote con su valor de adquisición", () => {
+			// Es el tipo escrito en disco antes de la 1.22.0, y significaba entrada.
 			const lots = buildFifoLots([tx({ type: 'transfer', shares: 10, price: 50 })], 'FUND');
+			expect(lots).toHaveLength(1);
+			expect(lots[0].unitCostBase).toBeCloseTo(50, 6);
+		});
+
+		it('un `transfer_in` sin coste heredado se comporta igual que el alias', () => {
+			const lots = buildFifoLots([tx({ type: 'transfer_in', shares: 10, price: 50 })], 'FUND');
 			expect(lots).toHaveLength(1);
 			expect(lots[0].unitCostBase).toBeCloseTo(50, 6);
 		});
@@ -523,6 +530,237 @@ describe('fiscal.ts · casos que el mutation testing dejó al descubierto', () =
 				T0
 			);
 			expect(check.blocked).toBe(false);
+		});
+	});
+});
+
+/**
+ * Las dos patas de un traspaso, que es donde este módulo decide si la app dice la
+ * verdad sobre el fondo destino.
+ *
+ * Hasta la 1.22.0 solo existía la entrada y creaba un lote **al precio del día**,
+ * así que la plusvalía latente desaparecía del libro y `ficha-activo.ts` declaraba
+ * «plusvalía 0 € · impuesto 0 €» justo después de un traspaso. Un número falso, que
+ * es peor que la ausencia de número.
+ */
+describe('las dos patas de un traspaso', () => {
+	describe('la salida', () => {
+		it('consume lotes por FIFO igual que una venta', () => {
+			// Para el patrimonio las participaciones se han ido, así que el lote también.
+			const lots = buildFifoLots(
+				[
+					tx({ shares: 10, price: 10, date: T0 }),
+					tx({ shares: 10, price: 20, date: T0 + 100 * DAY }),
+					tx({ type: 'transfer_out', shares: 15, price: 40, date: T0 + 200 * DAY })
+				],
+				'FUND'
+			);
+
+			expect(lots.map((l) => [l.shares, l.unitCostBase])).toEqual([[5, 20]]);
+		});
+
+		it('vaciar la posición por traspaso no deja lotes fantasma', () => {
+			const lots = buildFifoLots(
+				[
+					tx({ shares: 10, price: 10, date: T0 }),
+					tx({ type: 'transfer_out', shares: 10, price: 40, date: T0 + 100 * DAY })
+				],
+				'FUND'
+			);
+
+			expect(lots).toHaveLength(0);
+		});
+
+		it('⚠️ NO cuenta como recompra bloqueante, y no es un olvido', () => {
+			/*
+			 * Una salida es una **transmisión**, no una adquisición. Contarla bloquearía la
+			 * pérdida de la propia operación contra sí misma. La entrada sí bloquea, y está
+			 * en el test siguiente: son dos hechos distintos con dos efectos contrarios, y
+			 * es exactamente el motivo de haber partido el tipo en dos.
+			 */
+			const check = checkAntiApplicationRule(
+				[tx({ type: 'transfer_out', shares: 5, price: 100, date: T0 + 20 * DAY })],
+				'FUND',
+				'fund',
+				T0
+			);
+
+			expect(check.blocked).toBe(false);
+		});
+
+		it('una entrada SÍ bloquea: es una adquisición de valores homogéneos', () => {
+			const check = checkAntiApplicationRule(
+				[tx({ type: 'transfer_in', shares: 5, price: 100, date: T0 + 20 * DAY })],
+				'FUND',
+				'fund',
+				T0
+			);
+
+			expect(check.blocked).toBe(true);
+			expect(check.windowMonths).toBe(12);
+		});
+	});
+
+	describe('la entrada con coste heredado', () => {
+		it('el lote nace con el coste heredado, no con `shares × price`', () => {
+			// Entran 400 participaciones que hoy valen 8.000 € y cuyo coste es 4.200 €.
+			const lots = buildFifoLots(
+				[
+					tx({
+						type: 'transfer_in',
+						shares: 400,
+						price: 20,
+						carriedCostBase: 4200,
+						carriedLotDate: T0 - 1000 * DAY
+					})
+				],
+				'FUND'
+			);
+
+			expect(lots).toHaveLength(1);
+			expect(lots[0].unitCostBase).toBeCloseTo(10.5, 6);
+		});
+
+		it('y con la FECHA heredada, que es lo que impide reiniciar la ventana', () => {
+			const compraOriginal = T0 - 1000 * DAY;
+			const lots = buildFifoLots(
+				[
+					tx({
+						type: 'transfer_in',
+						shares: 400,
+						price: 20,
+						date: T0,
+						carriedCostBase: 4200,
+						carriedLotDate: compraOriginal
+					})
+				],
+				'FUND'
+			);
+
+			expect(lots[0].date).toBe(compraOriginal);
+			expect(lots[0].date).not.toBe(T0);
+		});
+
+		it('el coste heredado llega en divisa base y NO se convierte otra vez', () => {
+			// Aplicarle el `fxRate` es el bug histórico de este repo: aquí inflaría el
+			// valor de adquisición y con él bajaría la plusvalía estimada.
+			const lots = buildFifoLots(
+				[
+					tx({
+						type: 'transfer_in',
+						shares: 100,
+						price: 20,
+						currency: 'USD',
+						fxRate: 0.9,
+						carriedCostBase: 1800
+					})
+				],
+				'FUND'
+			);
+
+			expect(lots[0].unitCostBase).toBeCloseTo(18, 6);
+		});
+
+		it('la plusvalía latente sobrevive al traspaso: es el defecto que esto arregla', () => {
+			/*
+			 * El caso que cierra el círculo. Traspasadas 400 participaciones con 4.200 € de
+			 * coste, vender al día siguiente a 20 € realiza 3.800 € — la ganancia de
+			 * siempre, diferida y no perdonada. Sin el coste heredado, el lote nacía a 20 €
+			 * y esto daba **0 €**.
+			 */
+			const lots = buildFifoLots(
+				[
+					tx({
+						type: 'transfer_in',
+						shares: 400,
+						price: 20,
+						carriedCostBase: 4200,
+						carriedLotDate: T0 - 1000 * DAY
+					})
+				],
+				'FUND'
+			);
+			const venta = simulateSale(lots, 400, 20);
+
+			expect(venta.acquisitionCost).toBe(4200);
+			expect(venta.gain).toBe(3800);
+			expect(venta.oldestLotDate).toBe(T0 - 1000 * DAY);
+		});
+
+		it('⚠️ el lote heredado se coloca por SU fecha, no al final de la cola', () => {
+			/*
+			 * El defecto que encontró el e2e recorriendo el ciclo completo. Al traspasar
+			 * hacia un fondo que estaba en modo manual, la app le siembra un saldo inicial
+			 * **con la fecha de hoy** y luego apunta la entrada, que lleva un lote de hace
+			 * meses. Con un `push` al final, ese lote antiguo quedaba **detrás** del saldo
+			 * inicial de hoy: FIFO consumía primero el nuevo —lo contrario de lo que
+			 * obliga el art. 37.2— y `oldestLotDate` devolvía hoy, con lo que la ventana
+			 * antiaplicación se medía desde el día equivocado.
+			 */
+			const lots = buildFifoLots(
+				[
+					// Los dos apuntados hoy, en este orden.
+					tx({ type: 'initial_balance', shares: 100, price: 100, date: T0 }),
+					tx({
+						type: 'transfer_in',
+						shares: 500,
+						price: 200,
+						date: T0,
+						carriedCostBase: 60_000,
+						carriedLotDate: T0 - 200 * DAY
+					})
+				],
+				'FUND'
+			);
+
+			// El heredado va primero porque es más antiguo, aunque se apuntara después.
+			expect(lots.map((l) => l.date)).toEqual([T0 - 200 * DAY, T0]);
+
+			// Y por tanto FIFO lo consume primero, y la fecha más antigua es la suya.
+			const venta = simulateSale(lots, 500, 200);
+			expect(venta.oldestLotDate).toBe(T0 - 200 * DAY);
+			expect(venta.acquisitionCost).toBe(60_000);
+		});
+
+		it('una venta anterior no puede consumir un lote heredado que llega después', () => {
+			/*
+			 * ⚠️ Por esto el orden se mantiene **durante** el recorrido y no ordenando al
+			 * final: una venta solo puede consumir los lotes que existían cuando ocurrió.
+			 * Ordenar el array al terminar dejaría que la venta de enero se comiera un
+			 * lote que entró en marzo con fecha heredada de 2023.
+			 */
+			const lots = buildFifoLots(
+				[
+					tx({ shares: 100, price: 10, date: T0 }),
+					tx({ type: 'sell', shares: 100, price: 20, date: T0 + 30 * DAY }),
+					tx({
+						type: 'transfer_in',
+						shares: 50,
+						price: 30,
+						date: T0 + 60 * DAY,
+						carriedCostBase: 500,
+						carriedLotDate: T0 - 500 * DAY
+					})
+				],
+				'FUND'
+			);
+
+			// La venta se comió la compra de T0; el lote heredado sobrevive entero.
+			expect(lots).toHaveLength(1);
+			expect(lots[0].shares).toBe(50);
+			expect(lots[0].date).toBe(T0 - 500 * DAY);
+		});
+
+		it('un coste heredado de 0 € es un dato, no un dato ausente', () => {
+			// Puede pasar de verdad: un fondo comprado a coste 0 por una promoción. El 0 se
+			// respeta en vez de caer al precio del día, que es lo contrario de lo que
+			// significa.
+			const lots = buildFifoLots(
+				[tx({ type: 'transfer_in', shares: 100, price: 20, carriedCostBase: 0 })],
+				'FUND'
+			);
+
+			expect(lots[0].unitCostBase).toBe(0);
 		});
 	});
 });

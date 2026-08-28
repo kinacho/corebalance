@@ -24,6 +24,12 @@ setLocale('es');
  * situación: es el control negativo de la corrección.
  */
 
+/*
+ * `instrumentType` va declarado a propósito en los tres: de él depende quién puede
+ * traspasar a quién, y dejarlo a la deducción por el nombre haría que estas pruebas
+ * midieran el clasificador en vez del formulario. `instrument-type.test.ts` es quien
+ * cubre la deducción.
+ */
 const ACTIVO: Asset = {
 	ticker: 'IE00BYX5NX33.SG',
 	name: 'Fidelity MSCI World Index Fund',
@@ -32,7 +38,8 @@ const ACTIVO: Asset = {
 	color: '#3b82f6',
 	icon: '🌐',
 	ter: 0.0012,
-	category: 'core'
+	category: 'core',
+	instrumentType: 'fund'
 };
 
 const OTRO_ACTIVO: Asset = {
@@ -40,6 +47,40 @@ const OTRO_ACTIVO: Asset = {
 	ticker: 'IE00B4L5Y983',
 	name: 'iShares Core MSCI World',
 	isin: 'IE00B4L5Y983'
+};
+
+/** El caso que separa un traspaso de un reembolso: mismo índice, otro envoltorio. */
+const UN_ETF: Asset = {
+	...ACTIVO,
+	ticker: 'IWDA.AS',
+	name: 'iShares Core MSCI World UCITS ETF',
+	isin: 'IE00B4L5Y983',
+	instrumentType: 'etf'
+};
+
+/**
+ * Un tercer fondo, y hace falta para que una prueba pueda fallar.
+ *
+ * ⚠️ El caso «al cambiar de activo no queda el destino del anterior» **no se puede
+ * comprobar cambiando al fondo que era el destino**: ahí el ticker filtrado coincide
+ * con el origen nuevo, `candidatos` lo excluye y el destino saldría vacío por la
+ * razón equivocada — verde con el defecto delante. Con un tercero, un destino que
+ * sobreviviera sigue estando entre los candidatos y se ve.
+ */
+const TERCER_FONDO: Asset = {
+	...ACTIVO,
+	ticker: 'LU0996182563',
+	name: 'Amundi Index MSCI Emerging Markets',
+	isin: 'LU0996182563'
+};
+
+/** Una acción: desde aquí un traspaso no existe, así que no se ofrece. */
+const UNA_ACCION: Asset = {
+	...ACTIVO,
+	ticker: 'AAPL',
+	name: 'Apple Inc',
+	isin: 'US0378331005',
+	instrumentType: 'equity'
 };
 
 const MOVIMIENTO: Transaction = {
@@ -58,7 +99,12 @@ const MOVIMIENTO: Transaction = {
 const store = {
 	holdings: {
 		[ACTIVO.ticker]: { shares: 121.505, avgCost: 12.33, useLedger: true },
-		[OTRO_ACTIVO.ticker]: { shares: 10, avgCost: 100, useLedger: true }
+		[OTRO_ACTIVO.ticker]: { shares: 10, avgCost: 100, useLedger: true },
+		// Los cuatro en modo libro: sin `useLedger` el modal enseña el aviso de modo
+		// manual y no monta la sección, así que ni el alta ni el traspaso existen.
+		[UN_ETF.ticker]: { shares: 5, avgCost: 90, useLedger: true },
+		[TERCER_FONDO.ticker]: { shares: 20, avgCost: 40, useLedger: true },
+		[UNA_ACCION.ticker]: { shares: 3, avgCost: 150, useLedger: true }
 	} as Record<string, { shares: number; avgCost: number; useLedger: boolean }>,
 	prices: {
 		[ACTIVO.ticker]: { price: 13.88, currency: 'EUR', name: ACTIVO.name, change: 0 },
@@ -73,6 +119,28 @@ const store = {
 	updateTransaction: vi.fn(),
 	removeTransaction: vi.fn(),
 	toggleLedger: vi.fn(),
+
+	// Lo que necesita el formulario de traspaso.
+	coreAssets: [ACTIVO, OTRO_ACTIVO, TERCER_FONDO, UN_ETF] as Asset[],
+	satelliteAssets: [] as Asset[],
+	stockAssets: [UNA_ACCION] as Asset[],
+	effectiveHoldings: {
+		[ACTIVO.ticker]: { shares: 121.505, avgCost: 12.33, useLedger: true },
+		[OTRO_ACTIVO.ticker]: { shares: 10, avgCost: 100, useLedger: true },
+		[UN_ETF.ticker]: { shares: 5, avgCost: 90, useLedger: true },
+		[TERCER_FONDO.ticker]: { shares: 20, avgCost: 40, useLedger: true },
+		[UNA_ACCION.ticker]: { shares: 3, avgCost: 150, useLedger: true }
+	} as Record<string, { shares: number; avgCost: number; useLedger: boolean }>,
+	pricesWithFx: {
+		[ACTIVO.ticker]: { price: 13.88, currency: 'EUR' },
+		[OTRO_ACTIVO.ticker]: { price: 95, currency: 'EUR' },
+		[UN_ETF.ticker]: { price: 95, currency: 'EUR' },
+		[TERCER_FONDO.ticker]: { price: 45, currency: 'EUR' },
+		[UNA_ACCION.ticker]: { price: 200, currency: 'EUR' }
+	} as Record<string, { price: number; currency: string }>,
+	registrarTraspaso: vi.fn(),
+	seedLedgerFromManual: vi.fn(),
+	removeTransferPair: vi.fn(),
 
 	/*
 	 * Lo que necesita la pestaña de ficha, que se monta al abrir el modal. Se
@@ -245,5 +313,182 @@ describe('LedgerModal.svelte', () => {
 
 		await fireEvent.keyDown(window, { key: 'Escape' });
 		expect(onClose).toHaveBeenCalledTimes(1);
+	});
+
+	/**
+	 * ⚠️ **Lo que guarda el requisito de este formulario: que en todo momento se vea
+	 * de qué fondo a qué fondo.** No es aritmética —eso lo cubre
+	 * `traspaso-libro.test.ts`—, es qué hay escrito en la pantalla, y por eso se
+	 * prueba aquí y no en un módulo puro.
+	 */
+	describe('el formulario de traspaso', () => {
+		async function abrirTraspaso(container: HTMLElement) {
+			await irAlLibro(container);
+			const boton = container.querySelector('.transfer-btn') as HTMLButtonElement;
+			expect(boton).not.toBeNull();
+			await fireEvent.click(boton);
+			return container.querySelector('.transfer-form') as HTMLElement;
+		}
+
+		it('nombra los DOS fondos a la vez, no solo el destino', async () => {
+			/*
+			 * Es el caso central. La forma evidente —un campo rotulado «destino»— deja el
+			 * origen implícito: solo lo dice la cabecera del modal, fuera del formulario.
+			 */
+			const LedgerModal = (await import('./LedgerModal.svelte')).default;
+			const { container } = render(LedgerModal, {
+				props: { asset: ACTIVO, onClose: () => {} }
+			});
+
+			const form = await abrirTraspaso(container);
+			// Antes de elegir destino, el origen ya está nombrado dentro del formulario.
+			expect(form.textContent).toContain('Fidelity MSCI World');
+
+			const op = form.querySelector(
+				`.destino-op[data-ticker="${OTRO_ACTIVO.ticker}"]`
+			) as HTMLButtonElement;
+			await fireEvent.click(op);
+
+			// Y ahora los dos, en la misma tarjeta.
+			const ruta = form.querySelector('.ruta') as HTMLElement;
+			expect(ruta.textContent).toContain('Fidelity MSCI World');
+			expect(ruta.textContent).toContain('iShares Core MSCI World');
+		});
+
+		it('el nombre conserva la gestora, que es lo que separa dos fondos del mismo índice', async () => {
+			// `descriptiveAssetLabel` frente a `assetLabelCandidates()[1]`, que se
+			// deduplica y devolvería «Core MSCI World» sin la gestora.
+			const LedgerModal = (await import('./LedgerModal.svelte')).default;
+			const { container } = render(LedgerModal, {
+				props: { asset: ACTIVO, onClose: () => {} }
+			});
+
+			const form = await abrirTraspaso(container);
+			const nombres = [...form.querySelectorAll('.destino-nombre')].map((n) =>
+				n.textContent?.trim()
+			);
+
+			expect(nombres).toContain('iShares Core MSCI World');
+			// Y no el ISIN, que es lo que devolvería `tickerLabel`.
+			expect(nombres.join(' ')).not.toContain('IE00B4L5Y983');
+		});
+
+		it('el ETF va en el grupo que tributa, y el fondo del mismo índice en el que no', async () => {
+			/*
+			 * La consecuencia fiscal va en la ESTRUCTURA de la lista: agrupada se lee
+			 * antes de elegir, no en un aviso que aparece cuando ya has decidido. El caso
+			 * elegido es el que de verdad importa —el fondo y el ETF del **mismo
+			 * índice**—, porque es donde la intuición falla: replican lo mismo y solo uno
+			 * se puede traspasar sin tributar.
+			 *
+			 * ⚠️ Se empareja por `data-ticker` y **no por el texto**, y eso lo enseñó este
+			 * mismo test: `descriptiveAssetLabel` quita la fontanería, así que «iShares
+			 * Core MSCI World» y «iShares Core MSCI World UCITS ETF» se pintan **con el
+			 * mismo rótulo**. En pantalla los distinguen su grupo y su columna de tipo;
+			 * emparejar por substring no los distinguía y el test acusaba a la fila
+			 * correcta.
+			 */
+			const LedgerModal = (await import('./LedgerModal.svelte')).default;
+			const { container } = render(LedgerModal, {
+				props: { asset: ACTIVO, onClose: () => {} }
+			});
+
+			const form = await abrirTraspaso(container);
+
+			// Se recorre en orden de documento y se anota bajo qué grupo cae cada fila.
+			let tributando = false;
+			const grupoDe: Record<string, boolean> = {};
+			for (const n of form.querySelectorAll('.destino-grupo, .destino-op')) {
+				if (n.classList.contains('destino-grupo')) {
+					tributando = n.classList.contains('destino-grupo-tributa');
+					continue;
+				}
+				const tk = n.getAttribute('data-ticker');
+				if (tk) grupoDe[tk] = tributando;
+			}
+
+			expect(grupoDe[OTRO_ACTIVO.ticker]).toBe(false);
+			expect(grupoDe[UN_ETF.ticker]).toBe(true);
+			expect(grupoDe[UNA_ACCION.ticker]).toBe(true);
+		});
+
+		it('desde una acción no se ofrece traspasar, porque ahí no existe', async () => {
+			/*
+			 * Visto abriendo la pantalla, no leyendo el código: con el origen en una
+			 * acción los cinco candidatos caían bajo «esto sería un reembolso», que desde
+			 * una acción es falso —es una venta— y encima ofrecía una operación que el
+			 * art. 94 reserva a las IIC.
+			 */
+			const LedgerModal = (await import('./LedgerModal.svelte')).default;
+			const { container } = render(LedgerModal, {
+				props: { asset: UNA_ACCION, onClose: () => {} }
+			});
+
+			await irAlLibro(container);
+			expect(container.querySelector('.transfer-btn')).toBeNull();
+			// Pero el alta normal sigue estando: vender y comprar sí se puede apuntar.
+			expect(container.querySelector('.add-tx-btn')).not.toBeNull();
+		});
+
+		it('⚠️ al cambiar de activo no queda el destino del anterior', async () => {
+			/*
+			 * El modo exacto en el que el `$effect` guardado por ticker rompería
+			 * precisamente la claridad que este formulario da: desde `ManageAssets` el
+			 * modal cambia de activo **sin remontarse**, así que un destino que
+			 * sobreviviera enseñaría el origen de uno con el destino del otro.
+			 */
+			const LedgerModal = (await import('./LedgerModal.svelte')).default;
+			const { container, rerender } = render(LedgerModal, {
+				props: { asset: ACTIVO, onClose: () => {} }
+			});
+
+			const form = await abrirTraspaso(container);
+			const op = form.querySelector(
+				`.destino-op[data-ticker="${OTRO_ACTIVO.ticker}"]`
+			) as HTMLButtonElement;
+			await fireEvent.click(op);
+			expect((container.querySelector('.ruta') as HTMLElement).textContent).toContain(
+				'iShares Core MSCI World'
+			);
+
+			// A un TERCER fondo, no al que era el destino: ver el docblock de
+			// `TERCER_FONDO`. Con el destino, este caso pasaría por el motivo equivocado.
+			await rerender({ asset: TERCER_FONDO, onClose: () => {} });
+
+			// Vuelve a la ficha, así que el formulario ni está montado.
+			expect(container.querySelector('.transfer-form')).toBeNull();
+
+			// Y al reabrirlo desde el activo nuevo, no hay destino heredado: la fila
+			// «hacia» es otra vez el selector.
+			await irAlLibro(container);
+			const boton = container.querySelector('.transfer-btn') as HTMLButtonElement;
+			await fireEvent.click(boton);
+			const form2 = container.querySelector('.transfer-form') as HTMLElement;
+			expect(form2.querySelector('.destino-lista')).not.toBeNull();
+			expect(form2.querySelector('.ruta-cambiar')).toBeNull();
+		});
+
+		it('un traspaso a otro fondo se apunta como par, con su coste heredado', async () => {
+			const LedgerModal = (await import('./LedgerModal.svelte')).default;
+			const { container } = render(LedgerModal, {
+				props: { asset: ACTIVO, onClose: () => {} }
+			});
+
+			const form = await abrirTraspaso(container);
+			const op = form.querySelector(
+				`.destino-op[data-ticker="${OTRO_ACTIVO.ticker}"]`
+			) as HTMLButtonElement;
+			await fireEvent.click(op);
+
+			await fireEvent.click(form.querySelector('.submit-tx-btn') as HTMLButtonElement);
+
+			expect(store.registrarTraspaso).toHaveBeenCalledTimes(1);
+			const plan = store.registrarTraspaso.mock.calls[0][0];
+			expect(plan.origen.ticker).toBe(ACTIVO.ticker);
+			expect(plan.destino.ticker).toBe(OTRO_ACTIVO.ticker);
+			expect(plan.sinTributar).toBe(true);
+			// El destino ya está en modo libro, así que no hay que sembrarlo.
+			expect(store.seedLedgerFromManual).not.toHaveBeenCalled();
+		});
 	});
 });

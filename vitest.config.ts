@@ -69,6 +69,13 @@ export default defineConfig({
 				'src/lib/importers/parsers.ts',
 				'src/lib/importers/csv-utils.ts',
 				'src/lib/importers/aggregator.ts',
+				// Añadidos el 28-ago-2026 con el paso de dirección. Los dos deciden dinero:
+				// `direccion.ts` calcula por FIFO el valor de adquisición que viaja en un
+				// traspaso, y `ledger-import.ts` es quien lo escribe en el libro. Un coste
+				// heredado equivocado no da error en ninguna parte — se convierte en la
+				// plusvalía que el usuario declarará dentro de unos años.
+				'src/lib/importers/direccion.ts',
+				'src/lib/importers/ledger-import.ts',
 				// Añadido el 10-ago-2026. No calcula nada, pero es **dónde escribe cada usuario
 				// en cada cambio**, y sus dos operaciones destructivas no tenían red: hasta hoy
 				// `importAllData({history: []})` vaciaba las cuatro tablas sin restaurar nada.
@@ -114,8 +121,24 @@ export default defineConfig({
 				'src/lib/fiscal.ts': { statements: 98, branches: 97, functions: 100 },
 				// Extraído del store el 6-ago-2026; medido al nacer.
 				'src/lib/ledger.ts': { statements: 100, branches: 88, functions: 100 },
-				// Subido el 6-ago-2026 al matar mutantes del motor fiscal: 96,40/83,54 → 98,20/89,87.
-				'src/lib/traspaso.ts': { statements: 98, branches: 89, functions: 100 },
+				/**
+				 * Subido el 6-ago-2026 al matar mutantes del motor fiscal: 96,40/83,54 →
+				 * 98,20/89,87.
+				 *
+				 * ⚠️ **Bajado a 88 el 27-ago-2026, y es la única vez que este fichero baja un
+				 * suelo, así que aquí está el motivo.** No se ha dejado de probar nada:
+				 * `classifyMove` **salió de este fichero** a `instrument-type.ts`, donde tiene
+				 * su segundo consumidor (`traspaso-libro.ts`), y sus ramas se fueron con ella.
+				 * Eso cambia el denominador —de 89,87 a 88,73 medido— sin que ninguna línea
+				 * quede sin cubrir.
+				 *
+				 * El rigor total **sube**, que es lo que hay que comprobar antes de aceptar una
+				 * bajada: las ramas aterrizan en `instrument-type.ts`, cuyo suelo es
+				 * 100/100/100, o sea más estricto que el 89 de aquí. Comprobado en
+				 * `coverage/coverage-summary.json`, que es donde se ven los ficheros al 100 %
+				 * porque el reporter de texto los omite de la tabla.
+				 */
+				'src/lib/traspaso.ts': { statements: 98, branches: 88, functions: 100 },
 				// Subido el 6-ago-2026 al matar los mutantes del reparto: 97,19/86,25 → 100/97,22.
 				'src/lib/rebalance.ts': { statements: 100, branches: 97, functions: 100 },
 				'src/lib/lookthrough.ts': { statements: 96, branches: 84, functions: 100 },
@@ -156,6 +179,14 @@ export default defineConfig({
 				'src/lib/importers/parsers.ts': { statements: 62, branches: 54, functions: 76 },
 				'src/lib/importers/csv-utils.ts': { statements: 96, branches: 93, functions: 100 },
 				'src/lib/importers/aggregator.ts': { statements: 91, branches: 70, functions: 100 },
+				/*
+				 * Medidos al nacer, 28-ago-2026, redondeados hacia abajo como el resto: el
+				 * trinquete solo puede apretarse. Lo único que `direccion.ts` no ejerce es su
+				 * `crypto.randomUUID` por defecto —los tests inyectan ids para poder afirmar
+				 * sobre ellos— y en `ledger-import.ts` quedan cuatro ramas de guardas.
+				 */
+				'src/lib/importers/direccion.ts': { statements: 94, branches: 84, functions: 86 },
+				'src/lib/importers/ledger-import.ts': { statements: 98, branches: 91, functions: 90 },
 				/**
 				 * Medido al nacer la suite, 10-ago-2026. Las ramas se quedan en 67 y es honesto
 				 * que se queden: la mitad son los `if (!localDB) return` de cada método, que sólo

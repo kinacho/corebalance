@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/svelte';
+import { render, screen, fireEvent } from '@testing-library/svelte';
 import { loadLocale } from '$lib/i18n/i18n-util.sync';
 import { setLocale } from '$lib/i18n/i18n-svelte';
 import { calculateTaxAwareRebalance } from '$lib/traspaso';
@@ -63,6 +63,20 @@ const store = {
 	>,
 	transactions: [] as unknown[],
 	contribution: 0,
+	/*
+	 * `holdings` decide si «apuntar este traspaso en el libro» aparece: exige el
+	 * origen en modo libro, porque de ahí sale el coste heredado. Vacío por defecto,
+	 * así que el botón no sale — lo que este fichero mide es el plan, y el botón tiene
+	 * su propio caso más abajo.
+	 */
+	holdings: {} as Record<string, { shares: number; avgCost: number; useLedger?: boolean }>,
+	effectiveHoldings: {} as Record<string, { shares: number; avgCost: number }>,
+	pricesWithFx: { WORLD: { price: 100, currency: 'EUR' } } as Record<
+		string,
+		{ price: number; currency: string }
+	>,
+	registrarTraspaso: vi.fn(),
+	seedLedgerFromManual: vi.fn(),
 	taxAwareRebalance: calculateTaxAwareRebalance(
 		[{ category: 'core', positions: DEVIATED }],
 		[],
@@ -220,5 +234,83 @@ describe('TaxAwareRebalance.svelte', () => {
 		const { container } = render(TaxAwareRebalance, ABIERTO);
 		expect(container.textContent).toContain('Esperando precios');
 		store.prices = { WORLD: { price: 100, currency: 'EUR', name: 'World', change: 0 } };
+	});
+
+	/**
+	 * El plan se calculaba desde la 1.13 y **no se podía ejecutar**: había que abrir
+	 * dos libros y apuntar dos movimientos a mano, con las participaciones sacadas a
+	 * ojo. Estos dos casos fijan cuándo se ofrece hacerlo de un clic y cuándo no.
+	 */
+	describe('apuntar el traspaso en el libro', () => {
+		function restaurarDesviada() {
+			store.portfolioState = { positions: DEVIATED };
+			store.taxAwareRebalance = calculateTaxAwareRebalance(
+				[{ category: 'core', positions: DEVIATED }],
+				[],
+				{}
+			);
+		}
+
+		it('no se ofrece si el origen no lleva libro: no habría coste que heredar', async () => {
+			/*
+			 * ⚠️ Y ese es el punto entero de la 1.22.0: sin lotes FIFO en el origen, el
+			 * destino nacería contando desde el precio de hoy y su ficha diría
+			 * «plusvalía 0 €». Mejor no ofrecerlo que apuntarlo mal.
+			 */
+			restaurarDesviada();
+			store.holdings = {};
+
+			const TaxAwareRebalance = (await import('./TaxAwareRebalance.svelte')).default;
+			const { container } = render(TaxAwareRebalance, ABIERTO);
+
+			expect(container.querySelector('.apuntar-btn')).toBeNull();
+		});
+
+		it('se ofrece cuando el origen lleva libro, y escribe el par al pulsarlo', async () => {
+			restaurarDesviada();
+			store.holdings = { WORLD: { shares: 70, avgCost: 100, useLedger: true } };
+			store.effectiveHoldings = { WORLD: { shares: 70, avgCost: 100 } };
+			store.pricesWithFx = {
+				WORLD: { price: 100, currency: 'EUR' },
+				BONDS: { price: 100, currency: 'EUR' }
+			};
+			store.transactions = [
+				{
+					id: 'c1',
+					ticker: 'WORLD',
+					type: 'buy',
+					// Fecha fija: el coste heredado arrastra su fecha, o sea aritmética de fechas.
+					date: Date.UTC(2023, 2, 12),
+					shares: 70,
+					price: 60,
+					currency: 'EUR',
+					fees: 0,
+					fxRate: 1
+				}
+			];
+			store.registrarTraspaso.mockClear();
+
+			const TaxAwareRebalance = (await import('./TaxAwareRebalance.svelte')).default;
+			const { container } = render(TaxAwareRebalance, ABIERTO);
+
+			const boton = container.querySelector('.apuntar-btn') as HTMLButtonElement;
+			expect(boton).not.toBeNull();
+
+			await fireEvent.click(boton);
+
+			expect(store.registrarTraspaso).toHaveBeenCalledTimes(1);
+			const plan = store.registrarTraspaso.mock.calls[0][0];
+			expect(plan.origen.ticker).toBe('WORLD');
+			expect(plan.destino.ticker).toBe('BONDS');
+			expect(plan.sinTributar).toBe(true);
+			// El coste y la fecha heredados, que es lo que hace honesta la ficha del destino.
+			expect(plan.costeHeredado).toBeGreaterThan(0);
+			expect(plan.fechaLoteHeredado).toBe(Date.UTC(2023, 2, 12));
+			// El destino no lleva libro, así que hay que sembrarlo antes de escribir.
+			expect(store.seedLedgerFromManual).toHaveBeenCalledWith('BONDS', expect.any(Number));
+
+			store.transactions = [];
+			store.holdings = {};
+		});
 	});
 });

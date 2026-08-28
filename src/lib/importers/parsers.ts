@@ -962,12 +962,31 @@ const myinvestorDetector: BrokerDetector = {
 				const shares = parseNumber(findField(headers, row,
 					'Participaciones', 'Títulos', 'Titulos', 'Cantidad', 'participaciones', 'Nº participaciones'));
 				
-				// Determinar dirección: positivo para suscripciones/traspasos entrada/compras, negativo para reembolsos/traspasos salida/ventas
+				/*
+				 * ⚠️ **Un traspaso se reconoce ANTES que la entrada o la salida sueltas, y
+				 * el orden no es cosmético: `'traspaso entrada'` contiene `'entrada'`.**
+				 *
+				 * Y la distinción cuesta dinero. Hasta ahora las cuatro se aplastaban contra
+				 * `BUY`/`SELL`, así que una «Traspaso salida» entraba como venta y `fiscal.ts`
+				 * le **realizaba una plusvalía que el art. 94 difiere** — un impuesto
+				 * inventado en el panel de IRPF, sin error en ninguna parte. Es la misma
+				 * familia del `transfer` único que el store tenía antes de la 1.22.0.
+				 */
+				const esTraspaso = tipoOp.includes('traspaso');
 				let isIncrease = tipoOp.includes('suscripcion') || tipoOp.includes('entrada') || tipoOp.includes('compra') || tipoOp.includes('aportacion');
 				let isDecrease = tipoOp.includes('reembolso') || tipoOp.includes('salida') || tipoOp.includes('venta');
-				
-				// HEURÍSTICA: Si no hay tipo de operación pero sí participaciones y estado finalizado, asumimos COMPRA (Suscripción)
-				if (!tipoOp && shares > 0 && estado.includes('finalizada')) {
+
+				/*
+				 * ⚠️ **Sin columna de tipo la dirección no se puede saber, y suponerla en
+				 * silencio era el defecto.** Ver `directionAssumed` en `types.ts`: el export
+				 * de Órdenes de MyInvestor no tiene esa columna y todas las cifras van en
+				 * positivo, así que un reembolso y una suscripción son la misma fila. Se
+				 * sigue suponiendo compra —no hay nada mejor que suponer— pero **queda
+				 * marcado**, y el paso de dirección del importador lo enseña para que el
+				 * usuario lo corrija antes de escribir nada.
+				 */
+				const direccionSupuesta = !tipoOp && shares > 0 && estado.includes('finalizada');
+				if (direccionSupuesta) {
 					isIncrease = true;
 				}
 
@@ -1011,14 +1030,19 @@ const myinvestorDetector: BrokerDetector = {
 					continue;
 				}
 
+				const tipoFinal = esTraspaso
+					? (isIncrease ? 'TRANSFER_IN' : 'TRANSFER_OUT')
+					: (isIncrease ? 'BUY' : 'SELL');
+
 				transactions.push({
 					date,
-					type: isIncrease ? 'BUY' : 'SELL',
+					type: tipoFinal,
 					isin,
 					name: name || isin,
 					shares: Math.abs(shares),
 					price: costPerShare,
 					currency: 'EUR',
+					...(direccionSupuesta ? { directionAssumed: true } : {})
 				});
 			} catch {
 				skipRow(rowIdx, row, 'Error inesperado al procesar la fila');

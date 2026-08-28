@@ -1672,7 +1672,15 @@ type RootTranslation = {
 		 */
 		type_dividend: string
 		/**
-		 * T​r​a​s​p​a​s​o
+		 * T​r​a​s​p​a​s​o​ ​r​e​c​i​b​i​d​o
+		 */
+		type_transfer_in: string
+		/**
+		 * T​r​a​s​p​a​s​o​ ​e​n​v​i​a​d​o
+		 */
+		type_transfer_out: string
+		/**
+		 * T​r​a​s​p​a​s​o​ ​r​e​c​i​b​i​d​o
 		 */
 		type_transfer: string
 		/**
@@ -1707,6 +1715,158 @@ type RootTranslation = {
 		 * T​i​p​o​ ​d​e​ ​c​a​m​b​i​o​ ​a​ ​E​U​R
 		 */
 		title_fx_rate: string
+		/**
+		 * T​r​a​s​p​a​s​a​r​ ​a​ ​o​t​r​o​ ​f​o​n​d​o
+		 */
+		btn_traspasar: string
+		/**
+		 * T​r​a​s​p​a​s​a​r​ ​a​ ​o​t​r​o​ ​f​o​n​d​o
+		 */
+		title_traspaso: string
+		/**
+		 * D​e​s​d​e
+		 */
+		label_desde: string
+		/**
+		 * H​a​c​i​a
+		 */
+		label_hacia: string
+		/**
+		 * E​l​i​g​e​ ​e​l​ ​f​o​n​d​o​ ​d​e​ ​d​e​s​t​i​n​o
+		 */
+		elegir_destino: string
+		/**
+		 * C​a​m​b​i​a​r
+		 */
+		cambiar_destino: string
+		/**
+		 * t​i​e​n​e​s​ ​{​s​h​a​r​e​s​}​ ​p​a​r​t​.​ ​·​ ​{​v​a​l​o​r​}
+		 * @param {string} shares
+		 * @param {string} valor
+		 */
+		tienes_participaciones: RequiredParams<'shares' | 'valor'>
+		/**
+		 * S​i​n​ ​t​r​i​b​u​t​a​r​ ​—​ ​t​r​a​s​p​a​s​o​ ​e​n​t​r​e​ ​f​o​n​d​o​s
+		 */
+		grupo_sin_tributar: string
+		/**
+		 * E​s​t​o​ ​s​e​r​í​a​ ​u​n​ ​r​e​e​m​b​o​l​s​o​ ​y​ ​t​r​i​b​u​t​a
+		 */
+		grupo_tributa: string
+		/**
+		 * C​u​á​n​t​o
+		 */
+		label_cuanto: string
+		/**
+		 * T​o​d​o
+		 */
+		cuanto_todo: string
+		/**
+		 * U​n​ ​i​m​p​o​r​t​e
+		 */
+		cuanto_importe: string
+		/**
+		 * P​a​r​t​i​c​i​p​a​c​i​o​n​e​s
+		 */
+		cuanto_participaciones: string
+		/**
+		 * A​j​u​s​t​a​r​ ​e​l​ ​p​r​e​c​i​o​ ​d​e​ ​s​a​l​i​d​a
+		 */
+		ajustar_precios: string
+		/**
+		 * V​a​l​o​r​ ​l​i​q​u​i​d​a​t​i​v​o​ ​d​e​ ​r​e​e​m​b​o​l​s​o
+		 */
+		label_precio_salida: string
+		/**
+		 * C​ó​m​o​ ​q​u​e​d​a​ ​e​s​t​e​ ​f​o​n​d​o
+		 */
+		label_como_queda: string
+		/**
+		 * P​a​r​t​i​c​i​p​a​c​i​o​n​e​s​ ​t​o​t​a​l​e​s
+		 */
+		label_participaciones_totales: string
+		/**
+		 * C​o​s​t​e​ ​m​e​d​i​o
+		 */
+		label_coste_medio_final: string
+		/**
+		 * C​ó​p​i​a​l​o​ ​d​e​ ​t​u​ ​b​a​n​c​o​ ​t​a​l​ ​c​u​a​l​.​ ​L​o​s​ ​v​a​l​o​r​e​s​ ​l​i​q​u​i​d​a​t​i​v​o​s​ ​d​e​ ​u​n​ ​t​r​a​s​p​a​s​o​ ​s​e​ ​f​i​j​a​n​ ​d​í​a​s​ ​d​e​s​p​u​é​s​ ​d​e​ ​l​a​ ​o​r​d​e​n​,​ ​a​s​í​ ​q​u​e​ ​e​s​t​a​s​ ​d​o​s​ ​c​i​f​r​a​s​ ​s​o​n​ ​l​a​s​ ​ú​n​i​c​a​s​ ​q​u​e​ ​p​u​e​d​e​s​ ​s​a​b​e​r​ ​c​o​n​ ​c​e​r​t​e​z​a​ ​—​ ​y​ ​c​o​n​ ​e​l​l​a​s​ ​c​u​a​d​r​a​ ​s​o​l​o​.
+		 */
+		nota_como_queda: string
+		/**
+		 * O​j​o​:​ ​s​e​g​ú​n​ ​l​o​ ​q​u​e​ ​h​a​s​ ​p​u​e​s​t​o​ ​e​n​t​r​a​n​ ​{​d​e​c​l​a​r​a​d​o​}​ ​d​e​ ​c​o​s​t​e​,​ ​y​ ​s​e​g​ú​n​ ​t​u​ ​l​i​b​r​o​ ​s​a​l​i​e​r​o​n​ ​{​l​i​b​r​o​}​.​ ​S​e​ ​a​p​u​n​t​a​ ​l​o​ ​q​u​e​ ​h​a​s​ ​p​u​e​s​t​o​,​ ​q​u​e​ ​e​s​ ​l​o​ ​q​u​e​ ​d​i​r​á​ ​t​u​ ​g​e​s​t​o​r​a​.​ ​S​i​ ​n​o​ ​e​s​p​e​r​a​b​a​s​ ​e​s​a​ ​d​i​f​e​r​e​n​c​i​a​,​ ​a​ ​t​u​ ​f​o​n​d​o​ ​d​e​ ​o​r​i​g​e​n​ ​p​r​o​b​a​b​l​e​m​e​n​t​e​ ​l​e​ ​f​a​l​t​e​n​ ​c​o​m​p​r​a​s​ ​a​n​t​i​g​u​a​s​ ​e​n​ ​e​l​ ​l​i​b​r​o​.
+		 * @param {string} declarado
+		 * @param {string} libro
+		 */
+		resumen_descuadre: RequiredParams<'declarado' | 'libro'>
+		/**
+		 * V​e​n​d​e​s​ ​{​s​a​l​e​n​}​ ​p​a​r​t​i​c​i​p​a​c​i​o​n​e​s​ ​d​e​ ​{​o​r​i​g​e​n​}​ ​y​ ​c​o​m​p​r​a​s​ ​{​e​n​t​r​a​n​}​ ​d​e​ ​{​d​e​s​t​i​n​o​}​.
+		 * @param {string} destino
+		 * @param {string} entran
+		 * @param {string} origen
+		 * @param {string} salen
+		 */
+		resumen_participaciones: RequiredParams<'destino' | 'entran' | 'origen' | 'salen'>
+		/**
+		 * N​o​ ​t​r​i​b​u​t​a​s​:​ ​e​s​ ​u​n​ ​t​r​a​s​p​a​s​o​ ​e​n​t​r​e​ ​f​o​n​d​o​s​ ​(​a​r​t​.​ ​9​4​ ​L​I​R​P​F​)​.
+		 */
+		resumen_sin_tributar: string
+		/**
+		 * E​s​t​o​ ​t​r​i​b​u​t​a​:​ ​r​e​e​m​b​o​l​s​a​r​ ​u​n​ ​f​o​n​d​o​ ​p​a​r​a​ ​c​o​m​p​r​a​r​ ​a​l​g​o​ ​q​u​e​ ​n​o​ ​e​s​ ​u​n​ ​f​o​n​d​o​ ​e​s​ ​u​n​a​ ​v​e​n​t​a​.
+		 */
+		resumen_reembolso: string
+		/**
+		 * E​s​t​o​ ​t​r​i​b​u​t​a​:​ ​e​s​ ​u​n​a​ ​v​e​n​t​a​,​ ​n​o​ ​u​n​ ​t​r​a​s​p​a​s​o​.
+		 */
+		resumen_venta: string
+		/**
+		 * H​e​r​e​d​a​s​ ​{​c​o​s​t​e​}​ ​d​e​ ​c​o​s​t​e​ ​d​e​ ​u​n​a​ ​c​o​m​p​r​a​ ​d​e​l​ ​{​f​e​c​h​a​}​,​ ​a​s​í​ ​q​u​e​ ​t​u​ ​p​l​u​s​v​a​l​í​a​ ​l​a​t​e​n​t​e​ ​v​i​a​j​a​ ​c​o​n​ ​e​l​ ​d​i​n​e​r​o​.
+		 * @param {string} coste
+		 * @param {string} fecha
+		 */
+		resumen_coste_heredado: RequiredParams<'coste' | 'fecha'>
+		/**
+		 * E​s​t​e​ ​f​o​n​d​o​ ​n​o​ ​t​i​e​n​e​ ​m​o​v​i​m​i​e​n​t​o​s​ ​a​p​u​n​t​a​d​o​s​,​ ​a​s​í​ ​q​u​e​ ​n​o​ ​h​a​y​ ​c​o​s​t​e​ ​q​u​e​ ​h​e​r​e​d​a​r​:​ ​e​l​ ​d​e​s​t​i​n​o​ ​e​m​p​e​z​a​r​á​ ​c​o​n​t​a​n​d​o​ ​d​e​s​d​e​ ​e​l​ ​p​r​e​c​i​o​ ​d​e​ ​h​o​y​.
+		 */
+		resumen_sin_libro: string
+		/**
+		 * E​l​ ​l​i​b​r​o​ ​s​o​l​o​ ​c​u​b​r​e​ ​p​a​r​t​e​ ​d​e​ ​e​s​t​a​s​ ​p​a​r​t​i​c​i​p​a​c​i​o​n​e​s​,​ ​a​s​í​ ​q​u​e​ ​e​l​ ​c​o​s​t​e​ ​h​e​r​e​d​a​d​o​ ​(​{​c​o​s​t​e​}​)​ ​e​s​ ​i​n​c​o​m​p​l​e​t​o​.
+		 * @param {string} coste
+		 */
+		resumen_parcial: RequiredParams<'coste'>
+		/**
+		 * T​r​a​s​p​a​s​a​r​ ​{​i​m​p​o​r​t​e​}
+		 * @param {string} importe
+		 */
+		btn_confirmar_traspaso: RequiredParams<'importe'>
+		/**
+		 * {​d​e​s​t​i​n​o​}​ ​e​s​t​á​ ​e​n​ ​M​o​d​o​ ​M​a​n​u​a​l​.​ ​P​a​r​a​ ​a​p​u​n​t​a​r​l​e​ ​e​l​ ​t​r​a​s​p​a​s​o​ ​h​a​y​ ​q​u​e​ ​p​a​s​a​r​l​o​ ​a​ ​M​o​d​o​ ​L​e​d​g​e​r​,​ ​y​ ​s​e​ ​l​e​ ​c​r​e​a​r​á​ ​u​n​ ​s​a​l​d​o​ ​i​n​i​c​i​a​l​ ​c​o​n​ ​l​o​ ​q​u​e​ ​t​i​e​n​e​ ​a​h​o​r​a​.
+		 * @param {string} destino
+		 */
+		aviso_destino_manual: RequiredParams<'destino'>
+		/**
+		 * E​s​t​e​ ​a​c​t​i​v​o​ ​e​s​t​á​ ​e​n​ ​M​o​d​o​ ​M​a​n​u​a​l​.​ ​A​c​t​í​v​a​l​e​ ​e​l​ ​M​o​d​o​ ​L​e​d​g​e​r​ ​p​a​r​a​ ​p​o​d​e​r​ ​a​p​u​n​t​a​r​ ​t​r​a​s​p​a​s​o​s​.
+		 */
+		aviso_origen_manual: string
+		/**
+		 * →​ ​{​f​o​n​d​o​}
+		 * @param {string} fondo
+		 */
+		hacia_fondo: RequiredParams<'fondo'>
+		/**
+		 * ←​ ​{​f​o​n​d​o​}
+		 * @param {string} fondo
+		 */
+		desde_fondo: RequiredParams<'fondo'>
+		/**
+		 * E​s​t​o​ ​e​s​ ​u​n​a​ ​d​e​ ​l​a​s​ ​d​o​s​ ​p​a​t​a​s​ ​d​e​ ​u​n​ ​t​r​a​s​p​a​s​o​ ​c​o​n​ ​{​f​o​n​d​o​}​.​ ​¿​E​l​i​m​i​n​a​r​ ​l​a​s​ ​d​o​s​?
+		 * @param {string} fondo
+		 */
+		confirm_delete_par: RequiredParams<'fondo'>
+		/**
+		 * T​r​a​s​p​a​s​o​ ​a​p​u​n​t​a​d​o​ ​e​n​ ​l​o​s​ ​d​o​s​ ​f​o​n​d​o​s
+		 */
+		toast_traspaso_hecho: string
 	}
 	ficha: {
 		/**
@@ -2125,6 +2285,10 @@ type RootTranslation = {
 		 */
 		subtitle_preview: string
 		/**
+		 * E​s​t​e​ ​a​r​c​h​i​v​o​ ​n​o​ ​d​i​c​e​ ​s​i​ ​c​a​d​a​ ​o​r​d​e​n​ ​e​n​t​r​a​ ​o​ ​s​a​l​e
+		 */
+		subtitle_direction: string
+		/**
 		 * ¡​I​m​p​o​r​t​a​c​i​ó​n​ ​c​o​m​p​l​e​t​a​d​a​!
 		 */
 		subtitle_done: string
@@ -2267,6 +2431,77 @@ type RootTranslation = {
 		 * @param {number} count
 		 */
 		btn_import_assets: RequiredParams<'count'>
+		/**
+		 * T​u​ ​a​r​c​h​i​v​o​ ​n​o​ ​d​i​s​t​i​n​g​u​e​ ​c​o​m​p​r​a​s​ ​d​e​ ​v​e​n​t​a​s
+		 */
+		dir_title: string
+		/**
+		 * E​s​t​e​ ​e​x​p​o​r​t​ ​n​o​ ​t​r​a​e​ ​c​o​l​u​m​n​a​ ​d​e​ ​t​i​p​o​ ​d​e​ ​o​p​e​r​a​c​i​ó​n​ ​y​ ​t​o​d​a​s​ ​l​a​s​ ​c​i​f​r​a​s​ ​v​i​e​n​e​n​ ​e​n​ ​p​o​s​i​t​i​v​o​,​ ​a​s​í​ ​q​u​e​ ​u​n​ ​r​e​e​m​b​o​l​s​o​ ​y​ ​u​n​a​ ​s​u​s​c​r​i​p​c​i​ó​n​ ​s​o​n​ ​l​a​ ​m​i​s​m​a​ ​f​i​l​a​.​ ​L​a​s​ ​h​e​m​o​s​ ​a​p​u​n​t​a​d​o​ ​t​o​d​a​s​ ​c​o​m​o​ ​c​o​m​p​r​a​s​.​ ​S​i​ ​a​l​g​u​n​a​ ​f​u​e​ ​u​n​a​ ​s​a​l​i​d​a​,​ ​m​á​r​c​a​l​a​:​ ​s​i​ ​n​o​,​ ​t​u​ ​p​o​s​i​c​i​ó​n​ ​s​a​l​d​r​á​ ​d​e​ ​m​á​s​.
+		 */
+		dir_explain: string
+		/**
+		 * O​j​o​,​ ​e​l​ ​e​r​r​o​r​ ​s​a​l​e​ ​a​l​ ​d​o​b​l​e​:​ ​u​n​a​ ​s​a​l​i​d​a​ ​a​p​u​n​t​a​d​a​ ​c​o​m​o​ ​c​o​m​p​r​a​ ​n​o​ ​e​s​ ​q​u​e​ ​n​o​ ​r​e​s​t​e​,​ ​e​s​ ​q​u​e​ ​s​u​m​a​.
+		 */
+		dir_explain_double: string
+		/**
+		 * ¿​E​s​t​o​ ​f​u​e​ ​u​n​ ​t​r​a​s​p​a​s​o​?
+		 */
+		dir_suggest_title: string
+		/**
+		 * S​a​l​i​e​r​o​n​ ​{​a​m​o​u​n​t​O​u​t​}​ ​d​e​ ​{​f​r​o​m​}​ ​e​l​ ​{​d​a​t​e​O​u​t​}​,​ ​y​ ​{​a​m​o​u​n​t​I​n​}​ ​e​n​t​r​a​r​o​n​ ​e​n​ ​{​t​o​}​ ​{​d​a​y​s​}​ ​d​í​a​s​ ​d​e​s​p​u​é​s​.
+		 * @param {string} amountIn
+		 * @param {string} amountOut
+		 * @param {string} dateOut
+		 * @param {number} days
+		 * @param {string} from
+		 * @param {string} to
+		 */
+		dir_suggest_detail: RequiredParams<'amountIn' | 'amountOut' | 'dateOut' | 'days' | 'from' | 'to'>
+		/**
+		 * S​í​,​ ​e​s​ ​u​n​ ​t​r​a​s​p​a​s​o
+		 */
+		dir_suggest_confirm: string
+		/**
+		 * M​a​r​c​a​d​o​ ​c​o​m​o​ ​t​r​a​s​p​a​s​o​ ​·​ ​d​e​s​h​a​c​e​r
+		 */
+		dir_suggest_undo: string
+		/**
+		 * E​l​ ​v​a​l​o​r​ ​d​e​ ​a​d​q​u​i​s​i​c​i​ó​n​ ​v​i​a​j​a​ ​c​o​n​ ​e​l​ ​d​i​n​e​r​o​ ​(​a​r​t​.​ ​9​4​ ​L​I​R​P​F​)​,​ ​a​s​í​ ​q​u​e​ ​{​t​o​}​ ​h​e​r​e​d​a​ ​{​c​o​s​t​}​ ​d​e​ ​c​o​s​t​e​ ​y​ ​l​a​ ​f​e​c​h​a​ ​d​e​ ​t​u​ ​p​a​r​t​i​c​i​p​a​c​i​ó​n​ ​m​á​s​ ​a​n​t​i​g​u​a​.​ ​T​u​ ​b​a​n​c​o​ ​e​n​s​e​ñ​a​r​á​ ​e​l​ ​i​m​p​o​r​t​e​ ​s​u​s​c​r​i​t​o​ ​e​n​ ​s​u​ ​c​a​s​i​l​l​a​ ​d​e​ ​«​i​n​v​e​r​t​i​d​o​»​:​ ​l​a​s​ ​d​o​s​ ​c​i​f​r​a​s​ ​s​o​n​ ​c​o​r​r​e​c​t​a​s​ ​y​ ​s​i​r​v​e​n​ ​p​a​r​a​ ​c​o​s​a​s​ ​d​i​s​t​i​n​t​a​s​,​ ​p​e​r​o​ ​l​a​ ​q​u​e​ ​t​r​i​b​u​t​a​r​á​ ​e​s​ ​e​s​t​a​.
+		 * @param {string} cost
+		 * @param {string} to
+		 */
+		dir_suggest_cost: RequiredParams<'cost' | 'to'>
+		/**
+		 * N​o​ ​p​o​d​e​m​o​s​ ​s​a​b​e​r​ ​q​u​é​ ​c​o​s​t​e​ ​v​i​a​j​a​,​ ​p​o​r​q​u​e​ ​e​l​ ​a​r​c​h​i​v​o​ ​n​o​ ​t​r​a​e​ ​l​a​s​ ​c​o​m​p​r​a​s​ ​a​n​t​i​g​u​a​s​ ​d​e​ ​{​f​r​o​m​}​.​ ​E​l​ ​d​e​s​t​i​n​o​ ​e​n​t​r​a​ ​c​o​n​ ​e​l​ ​i​m​p​o​r​t​e​ ​s​u​s​c​r​i​t​o​,​ ​c​o​m​o​ ​h​a​s​t​a​ ​a​h​o​r​a​.
+		 * @param {string} from
+		 */
+		dir_suggest_no_cost: RequiredParams<'from'>
+		/**
+		 * E​n​t​r​a
+		 */
+		dir_row_in: string
+		/**
+		 * S​a​l​e
+		 */
+		dir_row_out: string
+		/**
+		 * T​r​a​s​p​a​s​o
+		 */
+		dir_transfer_badge: string
+		/**
+		 * C​ó​m​o​ ​q​u​e​d​a​ ​c​a​d​a​ ​f​o​n​d​o
+		 */
+		dir_result_title: string
+		/**
+		 * {​s​h​a​r​e​s​}​ ​p​a​r​t​.​ ​·​ ​c​o​s​t​e​ ​m​e​d​i​o​ ​{​a​v​g​C​o​s​t​}
+		 * @param {string} avgCost
+		 * @param {string} shares
+		 */
+		dir_result_line: RequiredParams<'avgCost' | 'shares'>
+		/**
+		 * �​�​ ​C​o​m​p​a​r​a​ ​e​s​t​a​s​ ​c​i​f​r​a​s​ ​c​o​n​ ​l​a​s​ ​d​e​ ​t​u​ ​b​a​n​c​o​ ​a​n​t​e​s​ ​d​e​ ​s​e​g​u​i​r​.​ ​S​i​ ​n​o​ ​c​u​a​d​r​a​n​,​ ​e​s​ ​q​u​e​ ​f​a​l​t​a​ ​a​l​g​u​n​a​ ​s​a​l​i​d​a​ ​p​o​r​ ​m​a​r​c​a​r​.
+		 */
+		dir_compare_hint: string
 		/**
 		 * A​s​i​g​n​a​ ​c​a​d​a​ ​c​a​m​p​o​ ​a​ ​u​n​a​ ​c​o​l​u​m​n​a​ ​d​e​ ​t​u​ ​a​r​c​h​i​v​o​ ​p​a​r​a​ ​q​u​e​ ​p​o​d​a​m​o​s​ ​i​m​p​o​r​t​a​r​ ​l​o​s​ ​d​a​t​o​s​ ​c​o​r​r​e​c​t​a​m​e​n​t​e​.
 		 */
@@ -2802,7 +3037,7 @@ type RootTranslation = {
 		 */
 		footer_tagline: string
 		/**
-		 * v​1​.​2​1​.​0​ ​�​�
+		 * v​1​.​2​3​.​0​ ​�​�
 		 */
 		changelog_trigger: string
 		/**
@@ -3115,6 +3350,10 @@ type RootTranslation = {
 		 * P​l​u​s​v​a​l​í​a​ ​a​p​r​o​x​i​m​a​d​a​:​ ​f​a​l​t​a​ ​h​i​s​t​o​r​i​a​l​ ​d​e​ ​c​o​m​p​r​a​s​ ​e​n​ ​e​l​ ​l​i​b​r​o​ ​d​e​ ​t​r​a​n​s​a​c​c​i​o​n​e​s​,​ ​a​s​í​ ​q​u​e​ ​e​l​ ​v​a​l​o​r​ ​d​e​ ​a​d​q​u​i​s​i​c​i​ó​n​ ​e​s​t​á​ ​i​n​c​o​m​p​l​e​t​o​.
 		 */
 		partial_gain: string
+		/**
+		 * A​p​u​n​t​a​r​ ​e​s​t​e​ ​t​r​a​s​p​a​s​o​ ​e​n​ ​e​l​ ​l​i​b​r​o
+		 */
+		btn_apuntar: string
 		/**
 		 * F​u​e​r​a​ ​d​e​l​ ​p​l​a​n​:​ ​{​t​i​c​k​e​r​s​}​.​ ​L​a​ ​a​p​p​ ​n​o​ ​s​a​b​e​ ​c​ó​m​o​ ​t​r​i​b​u​t​a​n​,​ ​a​s​í​ ​q​u​e​ ​n​o​ ​p​r​o​p​o​n​e​ ​m​o​v​e​r​l​o​s​.
 		 * @param {string} tickers
@@ -3862,6 +4101,78 @@ type RootTranslation = {
 		 */
 		btn_understand: string
 		releases: {
+			v1_23_0: {
+				/**
+				 * 2​8​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
+				 */
+				date: string
+				/**
+				 * T​u​ ​C​S​V​ ​y​a​ ​n​o​ ​c​u​e​l​a​ ​u​n​a​ ​s​a​l​i​d​a​ ​c​o​m​o​ ​s​i​ ​f​u​e​r​a​ ​u​n​a​ ​c​o​m​p​r​a
+				 */
+				badge: string
+				changes: {
+					/**
+					 * ⚠​️​ ​*​*​S​i​ ​t​u​ ​b​a​n​c​o​ ​e​x​p​o​r​t​a​ ​l​a​s​ ​ó​r​d​e​n​e​s​ ​s​i​n​ ​d​e​c​i​r​ ​c​u​á​l​e​s​ ​s​o​n​ ​s​a​l​i​d​a​s​,​ ​a​h​o​r​a​ ​t​e​ ​l​o​ ​d​i​c​e​ ​e​n​ ​v​e​z​ ​d​e​ ​s​u​p​o​n​e​r​l​o​.​*​*​ ​H​a​y​ ​e​x​p​o​r​t​s​ ​—​e​l​ ​d​e​ ​«​Ó​r​d​e​n​e​s​»​ ​d​e​ ​M​y​I​n​v​e​s​t​o​r​ ​e​s​ ​e​l​ ​q​u​e​ ​l​o​ ​h​a​ ​d​e​s​t​a​p​a​d​o​—​ ​c​u​y​a​s​ ​c​o​l​u​m​n​a​s​ ​s​o​n​ ​f​e​c​h​a​,​ ​I​S​I​N​,​ ​i​m​p​o​r​t​e​,​ ​p​a​r​t​i​c​i​p​a​c​i​o​n​e​s​ ​y​ ​e​s​t​a​d​o​,​ ​y​ ​n​a​d​a​ ​m​á​s​:​ ​u​n​ ​r​e​e​m​b​o​l​s​o​ ​y​ ​u​n​a​ ​s​u​s​c​r​i​p​c​i​ó​n​ ​s​o​n​ ​l​i​t​e​r​a​l​m​e​n​t​e​ ​l​a​ ​m​i​s​m​a​ ​f​i​l​a​.​ ​L​a​ ​a​p​p​ ​s​u​p​o​n​í​a​ ​c​o​m​p​r​a​ ​y​ ​s​e​ ​c​a​l​l​a​b​a​,​ ​s​i​n​ ​u​n​ ​a​v​i​s​o​ ​n​i​ ​u​n​a​ ​f​i​l​a​ ​d​e​s​c​a​r​t​a​d​a​.​ ​M​e​d​i​d​o​ ​c​o​n​ ​u​n​ ​f​i​c​h​e​r​o​ ​r​e​a​l​ ​d​e​ ​c​a​t​o​r​c​e​ ​ó​r​d​e​n​e​s​:​ ​e​l​ ​f​o​n​d​o​ ​q​u​e​d​a​b​a​ ​c​o​n​ ​1​.​1​4​1​ ​p​a​r​t​i​c​i​p​a​c​i​o​n​e​s​ ​d​o​n​d​e​ ​e​l​ ​b​a​n​c​o​ ​d​e​c​í​a​ ​1​.​0​2​4​.
+					 */
+					'0': string
+					/**
+					 * ➗​ ​*​*​Y​ ​e​l​ ​e​r​r​o​r​ ​s​a​l​í​a​ ​a​l​ ​d​o​b​l​e​.​*​*​ ​U​n​a​ ​s​a​l​i​d​a​ ​a​p​u​n​t​a​d​a​ ​c​o​m​o​ ​c​o​m​p​r​a​ ​n​o​ ​e​s​ ​q​u​e​ ​n​o​ ​r​e​s​t​e​:​ ​e​s​ ​q​u​e​ ​s​u​m​a​.​ ​P​o​r​ ​c​a​d​a​ ​p​a​r​t​i​c​i​p​a​c​i​ó​n​ ​q​u​e​ ​s​e​ ​f​u​e​,​ ​s​o​b​r​a​b​a​n​ ​d​o​s​.
+					 */
+					'1': string
+					/**
+					 * ✍​️​ ​*​*​H​a​y​ ​u​n​ ​p​a​s​o​ ​n​u​e​v​o​ ​a​n​t​e​s​ ​d​e​ ​i​m​p​o​r​t​a​r​,​ ​y​ ​e​n​s​e​ñ​a​ ​l​a​s​ ​c​i​f​r​a​s​ ​e​n​ ​v​i​v​o​.​*​*​ ​V​e​s​ ​c​a​d​a​ ​o​r​d​e​n​ ​c​o​n​ ​s​u​ ​f​e​c​h​a​ ​y​ ​s​u​ ​i​m​p​o​r​t​e​,​ ​m​a​r​c​a​s​ ​c​u​á​l​e​s​ ​f​u​e​r​o​n​ ​s​a​l​i​d​a​s​,​ ​y​ ​d​e​b​a​j​o​ ​v​a​ ​c​a​m​b​i​a​n​d​o​ ​c​ó​m​o​ ​q​u​e​d​a​ ​c​a​d​a​ ​f​o​n​d​o​ ​—​p​a​r​t​i​c​i​p​a​c​i​o​n​e​s​ ​y​ ​c​o​s​t​e​ ​m​e​d​i​o​—​ ​p​a​r​a​ ​q​u​e​ ​l​o​ ​c​o​m​p​a​r​e​s​ ​c​o​n​ ​l​a​ ​p​a​n​t​a​l​l​a​ ​d​e​ ​t​u​ ​b​a​n​c​o​ ​*​*​a​n​t​e​s​*​*​ ​d​e​ ​q​u​e​ ​s​e​ ​e​s​c​r​i​b​a​ ​n​a​d​a​.
+					 */
+					'2': string
+					/**
+					 * �​�​ ​*​*​Y​ ​s​i​ ​d​o​s​ ​d​e​ ​e​s​a​s​ ​ó​r​d​e​n​e​s​ ​e​r​a​n​ ​u​n​ ​t​r​a​s​p​a​s​o​,​ ​l​a​ ​a​p​p​ ​t​e​ ​l​o​ ​p​r​o​p​o​n​e​.​*​*​ ​S​a​l​e​ ​d​i​n​e​r​o​ ​d​e​ ​u​n​ ​f​o​n​d​o​ ​y​ ​e​n​t​r​a​ ​e​n​ ​o​t​r​o​ ​p​o​c​o​s​ ​d​í​a​s​ ​d​e​s​p​u​é​s​ ​p​o​r​ ​u​n​ ​i​m​p​o​r​t​e​ ​p​a​r​e​c​i​d​o​:​ ​e​s​o​ ​t​i​e​n​e​ ​p​i​n​t​a​ ​d​e​ ​t​r​a​s​p​a​s​o​,​ ​a​s​í​ ​q​u​e​ ​t​e​ ​l​o​ ​p​r​e​g​u​n​t​a​.​ ​N​u​n​c​a​ ​l​o​ ​d​a​ ​p​o​r​ ​h​e​c​h​o​ ​—​ ​u​n​a​ ​p​a​r​e​j​a​ ​i​n​v​e​n​t​a​d​a​ ​t​e​ ​f​a​b​r​i​c​a​r​í​a​ ​u​n​ ​d​i​f​e​r​i​m​i​e​n​t​o​ ​q​u​e​ ​n​o​ ​e​x​i​s​t​e​.​ ​Y​ ​s​o​l​o​ ​l​o​ ​p​r​o​p​o​n​e​ ​e​n​t​r​e​ ​f​o​n​d​o​s​,​ ​p​o​r​q​u​e​ ​u​n​ ​f​o​n​d​o​ ​q​u​e​ ​s​e​ ​r​e​e​m​b​o​l​s​a​ ​p​a​r​a​ ​c​o​m​p​r​a​r​ ​u​n​ ​E​T​F​ ​t​r​i​b​u​t​a​ ​a​u​n​q​u​e​ ​e​l​ ​o​r​i​g​e​n​ ​s​e​a​ ​u​n​ ​f​o​n​d​o​.
+					 */
+					'3': string
+					/**
+					 * �​�​️​ ​*​*​C​o​n​f​i​r​m​a​d​o​ ​e​l​ ​t​r​a​s​p​a​s​o​,​ ​e​l​ ​c​o​s​t​e​ ​v​i​a​j​a​ ​c​o​m​o​ ​d​e​b​e​.​*​*​ ​E​l​ ​f​o​n​d​o​ ​d​e​ ​d​e​s​t​i​n​o​ ​h​e​r​e​d​a​ ​e​l​ ​v​a​l​o​r​ ​y​ ​l​a​ ​f​e​c​h​a​ ​d​e​ ​a​d​q​u​i​s​i​c​i​ó​n​ ​d​e​l​ ​o​r​i​g​e​n​ ​(​a​r​t​.​ ​9​4​ ​L​I​R​P​F​)​ ​e​n​ ​v​e​z​ ​d​e​ ​n​a​c​e​r​ ​a​l​ ​p​r​e​c​i​o​ ​d​e​l​ ​d​í​a​.​ ​O​j​o​ ​a​ ​u​n​a​ ​c​o​n​s​e​c​u​e​n​c​i​a​ ​q​u​e​ ​s​e​ ​v​e​:​ ​l​a​ ​c​a​s​i​l​l​a​ ​d​e​ ​«​i​n​v​e​r​t​i​d​o​»​ ​d​e​ ​t​u​ ​b​a​n​c​o​ ​y​ ​l​a​ ​d​e​ ​l​a​ ​a​p​p​ ​d​i​r​á​n​ ​c​i​f​r​a​s​ ​d​i​s​t​i​n​t​a​s​,​ ​y​ ​l​a​s​ ​d​o​s​ ​s​o​n​ ​c​o​r​r​e​c​t​a​s​ ​—​ ​l​a​ ​d​e​ ​l​a​ ​a​p​p​ ​e​s​ ​l​a​ ​q​u​e​ ​t​r​i​b​u​t​a​r​á​.
+					 */
+					'4': string
+					/**
+					 * �​�​ ​*​*​A​r​r​e​g​l​a​d​o​ ​t​a​m​b​i​é​n​ ​e​n​ ​e​l​ ​e​x​p​o​r​t​ ​d​e​ ​«​M​o​v​i​m​i​e​n​t​o​s​»​,​ ​q​u​e​ ​s​í​ ​t​r​a​e​ ​e​l​ ​t​i​p​o​:​*​*​ ​u​n​a​ ​f​i​l​a​ ​d​e​ ​«​T​r​a​s​p​a​s​o​ ​s​a​l​i​d​a​»​ ​e​n​t​r​a​b​a​ ​c​o​m​o​ ​v​e​n​t​a​ ​y​ ​t​e​ ​r​e​a​l​i​z​a​b​a​ ​u​n​a​ ​p​l​u​s​v​a​l​í​a​ ​q​u​e​ ​e​l​ ​a​r​t​.​ ​9​4​ ​d​i​f​i​e​r​e​.​ ​U​n​ ​i​m​p​u​e​s​t​o​ ​i​n​v​e​n​t​a​d​o​ ​e​n​ ​e​l​ ​p​a​n​e​l​ ​d​e​ ​I​R​P​F​,​ ​s​i​n​ ​e​r​r​o​r​ ​e​n​ ​n​i​n​g​u​n​a​ ​p​a​r​t​e​.
+					 */
+					'5': string
+				}
+			}
+			v1_22_0: {
+				/**
+				 * 2​7​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
+				 */
+				date: string
+				/**
+				 * T​r​a​s​p​a​s​a​ ​d​e​ ​u​n​ ​f​o​n​d​o​ ​a​ ​o​t​r​o​ ​e​n​ ​u​n​ ​s​o​l​o​ ​g​e​s​t​o
+				 */
+				badge: string
+				changes: {
+					/**
+					 * �​�​ ​*​*​U​n​ ​t​r​a​s​p​a​s​o​ ​e​n​t​r​e​ ​f​o​n​d​o​s​ ​s​e​ ​a​p​u​n​t​a​ ​u​n​a​ ​v​e​z​,​ ​n​o​ ​d​o​s​.​*​*​ ​A​n​t​e​s​ ​t​e​n​í​a​s​ ​q​u​e​ ​a​b​r​i​r​ ​e​l​ ​l​i​b​r​o​ ​d​e​l​ ​f​o​n​d​o​ ​d​e​ ​o​r​i​g​e​n​,​ ​a​p​u​n​t​a​r​ ​u​n​a​ ​v​e​n​t​a​,​ ​a​b​r​i​r​ ​e​l​ ​d​e​l​ ​d​e​s​t​i​n​o​ ​y​ ​a​p​u​n​t​a​r​ ​l​a​ ​e​n​t​r​a​d​a​ ​—​ ​c​o​n​ ​d​o​s​ ​c​i​f​r​a​s​ ​d​e​ ​p​a​r​t​i​c​i​p​a​c​i​o​n​e​s​ ​q​u​e​ ​t​e​n​í​a​s​ ​q​u​e​ ​s​a​c​a​r​ ​t​ú​ ​d​i​v​i​d​i​e​n​d​o​ ​p​o​r​ ​d​o​s​ ​v​a​l​o​r​e​s​ ​l​i​q​u​i​d​a​t​i​v​o​s​.​ ​A​h​o​r​a​ ​e​l​i​g​e​s​ ​e​l​ ​f​o​n​d​o​ ​d​e​ ​d​e​s​t​i​n​o​,​ ​d​i​c​e​s​ ​«​t​o​d​o​»​ ​o​ ​c​u​á​n​t​o​,​ ​y​ ​l​a​ ​a​p​p​ ​e​s​c​r​i​b​e​ ​l​a​s​ ​d​o​s​ ​p​a​t​a​s​ ​e​n​l​a​z​a​d​a​s​.
+					 */
+					'0': string
+					/**
+					 * �​�​ ​*​*​Y​ ​s​e​ ​v​e​ ​d​e​ ​q​u​é​ ​f​o​n​d​o​ ​a​ ​q​u​é​ ​f​o​n​d​o​ ​e​n​ ​t​o​d​o​ ​m​o​m​e​n​t​o​.​*​*​ ​L​o​s​ ​d​o​s​ ​f​o​n​d​o​s​ ​c​o​n​ ​s​u​ ​n​o​m​b​r​e​ ​y​ ​s​u​ ​i​c​o​n​o​,​ ​u​n​o​ ​e​n​c​i​m​a​ ​d​e​l​ ​o​t​r​o​,​ ​c​o​n​ ​e​l​ ​i​m​p​o​r​t​e​ ​e​n​ ​l​a​ ​f​l​e​c​h​a​.​ ​E​n​ ​l​a​ ​l​i​s​t​a​ ​d​e​ ​m​o​v​i​m​i​e​n​t​o​s​ ​c​a​d​a​ ​p​a​t​a​ ​n​o​m​b​r​a​ ​a​l​ ​o​t​r​o​ ​f​o​n​d​o​,​ ​a​s​í​ ​q​u​e​ ​a​b​r​a​s​ ​e​l​ ​l​i​b​r​o​ ​q​u​e​ ​a​b​r​a​s​ ​s​i​g​u​e​ ​e​s​t​a​n​d​o​ ​c​l​a​r​o​ ​p​o​r​ ​d​ó​n​d​e​ ​s​e​ ​m​o​v​i​ó​ ​e​l​ ​d​i​n​e​r​o​.
+					 */
+					'1': string
+					/**
+					 * �​�​️​ ​*​*​L​a​ ​l​i​s​t​a​ ​d​e​ ​d​e​s​t​i​n​o​s​ ​t​e​ ​d​i​c​e​ ​e​l​ ​p​r​e​c​i​o​ ​f​i​s​c​a​l​ ​a​n​t​e​s​ ​d​e​ ​e​l​e​g​i​r​,​ ​n​o​ ​d​e​s​p​u​é​s​.​*​*​ ​L​o​s​ ​f​o​n​d​o​s​ ​v​a​n​ ​a​g​r​u​p​a​d​o​s​ ​b​a​j​o​ ​«​s​i​n​ ​t​r​i​b​u​t​a​r​»​ ​y​ ​l​o​s​ ​E​T​F​ ​y​ ​l​a​s​ ​a​c​c​i​o​n​e​s​ ​b​a​j​o​ ​«​e​s​t​o​ ​s​e​r​í​a​ ​u​n​ ​r​e​e​m​b​o​l​s​o​ ​y​ ​t​r​i​b​u​t​a​»​.​ ​N​a​d​a​ ​e​s​t​á​ ​b​l​o​q​u​e​a​d​o​:​ ​u​n​ ​r​e​e​m​b​o​l​s​o​ ​e​s​ ​l​e​g​í​t​i​m​o​,​ ​s​o​l​o​ ​c​u​e​s​t​a​.
+					 */
+					'2': string
+					/**
+					 * ⚠​️​ ​*​*​Y​ ​l​o​ ​m​á​s​ ​i​m​p​o​r​t​a​n​t​e​,​ ​q​u​e​ ​n​o​ ​s​e​ ​v​e​:​ ​t​u​ ​p​l​u​s​v​a​l​í​a​ ​l​a​t​e​n​t​e​ ​y​a​ ​v​i​a​j​a​ ​c​o​n​ ​e​l​ ​d​i​n​e​r​o​.​*​*​ ​E​n​ ​u​n​ ​t​r​a​s​p​a​s​o​ ​e​l​ ​p​r​e​c​i​o​ ​y​ ​l​a​ ​f​e​c​h​a​ ​a​ ​l​a​ ​q​u​e​ ​c​o​m​p​r​a​s​t​e​ ​p​a​s​a​n​ ​a​l​ ​f​o​n​d​o​ ​n​u​e​v​o​ ​(​a​r​t​.​ ​9​4​ ​L​I​R​P​F​)​ ​—​ ​e​s​o​ ​e​s​ ​e​l​ ​d​i​f​e​r​i​m​i​e​n​t​o​.​ ​H​a​s​t​a​ ​a​h​o​r​a​ ​l​a​ ​a​p​p​ ​a​p​u​n​t​a​b​a​ ​l​a​ ​e​n​t​r​a​d​a​ ​a​l​ ​p​r​e​c​i​o​ ​d​e​l​ ​d​í​a​,​ ​a​s​í​ ​q​u​e​ ​l​a​ ​f​i​c​h​a​ ​d​e​l​ ​f​o​n​d​o​ ​d​e​ ​d​e​s​t​i​n​o​ ​t​e​ ​d​e​c​í​a​ ​«​p​l​u​s​v​a​l​í​a​ ​0​ ​€​,​ ​i​m​p​u​e​s​t​o​ ​0​ ​€​»​ ​j​u​s​t​o​ ​d​e​s​p​u​é​s​ ​d​e​ ​t​r​a​s​p​a​s​a​r​.​ ​U​n​ ​n​ú​m​e​r​o​ ​f​a​l​s​o​,​ ​q​u​e​ ​e​s​ ​p​e​o​r​ ​q​u​e​ ​n​o​ ​d​a​r​ ​n​ú​m​e​r​o​.​ ​A​h​o​r​a​ ​h​e​r​e​d​a​ ​e​l​ ​c​o​s​t​e​ ​y​ ​l​a​ ​f​e​c​h​a​,​ ​y​ ​c​o​n​ ​e​l​l​a​ ​l​a​ ​v​e​n​t​a​n​a​ ​d​e​ ​r​e​c​o​m​p​r​a​ ​d​e​ ​d​o​c​e​ ​m​e​s​e​s​ ​y​a​ ​n​o​ ​s​e​ ​r​e​i​n​i​c​i​a​.
+					 */
+					'3': string
+					/**
+					 * �​�​ ​*​*​D​e​s​d​e​ ​e​l​ ​p​a​n​e​l​ ​d​e​ ​H​a​c​i​e​n​d​a​,​ ​u​n​ ​b​o​t​ó​n​ ​p​a​r​a​ ​a​p​u​n​t​a​r​ ​e​l​ ​t​r​a​s​p​a​s​o​ ​q​u​e​ ​y​a​ ​t​e​ ​p​r​o​p​o​n​e​.​*​*​ ​E​l​ ​p​l​a​n​ ​e​s​t​a​b​a​ ​c​a​l​c​u​l​a​d​o​ ​d​e​s​d​e​ ​h​a​c​e​ ​m​e​s​e​s​ ​y​ ​n​o​ ​s​e​ ​p​o​d​í​a​ ​e​j​e​c​u​t​a​r​ ​s​i​n​ ​r​e​p​e​t​i​r​l​o​ ​a​ ​m​a​n​o​.
+					 */
+					'4': string
+					/**
+					 * �​�​ ​*​*​A​r​r​e​g​l​a​d​o​:​ ​e​l​ ​d​e​s​p​l​e​g​a​b​l​e​ ​d​e​ ​c​o​m​p​r​a​,​ ​v​e​n​t​a​ ​y​ ​t​r​a​s​p​a​s​o​ ​n​o​ ​s​e​ ​v​e​í​a​ ​e​n​ ​m​o​d​o​ ​o​s​c​u​r​o​.​*​*​ ​T​e​x​t​o​ ​b​l​a​n​c​o​ ​s​o​b​r​e​ ​b​l​a​n​c​o​,​ ​m​e​d​i​d​o​ ​1​,​0​0​ ​d​e​ ​c​o​n​t​r​a​s​t​e​:​ ​l​a​s​ ​o​p​c​i​o​n​e​s​ ​e​s​t​a​b​a​n​ ​a​h​í​ ​y​ ​n​o​ ​s​e​ ​l​e​í​a​n​.​ ​E​r​a​ ​c​o​s​a​ ​d​e​ ​l​o​s​ ​d​i​e​c​i​s​i​e​t​e​ ​d​e​s​p​l​e​g​a​b​l​e​s​ ​d​e​ ​l​a​ ​a​p​p​,​ ​n​o​ ​s​o​l​o​ ​d​e​ ​e​s​e​.
+					 */
+					'5': string
+				}
+			}
 			v1_21_0: {
 				/**
 				 * 2​5​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
@@ -6541,7 +6852,15 @@ export type TranslationFunctions = {
 		 */
 		type_dividend: () => LocalizedString
 		/**
-		 * Traspaso
+		 * Traspaso recibido
+		 */
+		type_transfer_in: () => LocalizedString
+		/**
+		 * Traspaso enviado
+		 */
+		type_transfer_out: () => LocalizedString
+		/**
+		 * Traspaso recibido
 		 */
 		type_transfer: () => LocalizedString
 		/**
@@ -6576,6 +6895,142 @@ export type TranslationFunctions = {
 		 * Tipo de cambio a EUR
 		 */
 		title_fx_rate: () => LocalizedString
+		/**
+		 * Traspasar a otro fondo
+		 */
+		btn_traspasar: () => LocalizedString
+		/**
+		 * Traspasar a otro fondo
+		 */
+		title_traspaso: () => LocalizedString
+		/**
+		 * Desde
+		 */
+		label_desde: () => LocalizedString
+		/**
+		 * Hacia
+		 */
+		label_hacia: () => LocalizedString
+		/**
+		 * Elige el fondo de destino
+		 */
+		elegir_destino: () => LocalizedString
+		/**
+		 * Cambiar
+		 */
+		cambiar_destino: () => LocalizedString
+		/**
+		 * tienes {shares} part. · {valor}
+		 */
+		tienes_participaciones: (arg: { shares: string, valor: string }) => LocalizedString
+		/**
+		 * Sin tributar — traspaso entre fondos
+		 */
+		grupo_sin_tributar: () => LocalizedString
+		/**
+		 * Esto sería un reembolso y tributa
+		 */
+		grupo_tributa: () => LocalizedString
+		/**
+		 * Cuánto
+		 */
+		label_cuanto: () => LocalizedString
+		/**
+		 * Todo
+		 */
+		cuanto_todo: () => LocalizedString
+		/**
+		 * Un importe
+		 */
+		cuanto_importe: () => LocalizedString
+		/**
+		 * Participaciones
+		 */
+		cuanto_participaciones: () => LocalizedString
+		/**
+		 * Ajustar el precio de salida
+		 */
+		ajustar_precios: () => LocalizedString
+		/**
+		 * Valor liquidativo de reembolso
+		 */
+		label_precio_salida: () => LocalizedString
+		/**
+		 * Cómo queda este fondo
+		 */
+		label_como_queda: () => LocalizedString
+		/**
+		 * Participaciones totales
+		 */
+		label_participaciones_totales: () => LocalizedString
+		/**
+		 * Coste medio
+		 */
+		label_coste_medio_final: () => LocalizedString
+		/**
+		 * Cópialo de tu banco tal cual. Los valores liquidativos de un traspaso se fijan días después de la orden, así que estas dos cifras son las únicas que puedes saber con certeza — y con ellas cuadra solo.
+		 */
+		nota_como_queda: () => LocalizedString
+		/**
+		 * Ojo: según lo que has puesto entran {declarado} de coste, y según tu libro salieron {libro}. Se apunta lo que has puesto, que es lo que dirá tu gestora. Si no esperabas esa diferencia, a tu fondo de origen probablemente le falten compras antiguas en el libro.
+		 */
+		resumen_descuadre: (arg: { declarado: string, libro: string }) => LocalizedString
+		/**
+		 * Vendes {salen} participaciones de {origen} y compras {entran} de {destino}.
+		 */
+		resumen_participaciones: (arg: { destino: string, entran: string, origen: string, salen: string }) => LocalizedString
+		/**
+		 * No tributas: es un traspaso entre fondos (art. 94 LIRPF).
+		 */
+		resumen_sin_tributar: () => LocalizedString
+		/**
+		 * Esto tributa: reembolsar un fondo para comprar algo que no es un fondo es una venta.
+		 */
+		resumen_reembolso: () => LocalizedString
+		/**
+		 * Esto tributa: es una venta, no un traspaso.
+		 */
+		resumen_venta: () => LocalizedString
+		/**
+		 * Heredas {coste} de coste de una compra del {fecha}, así que tu plusvalía latente viaja con el dinero.
+		 */
+		resumen_coste_heredado: (arg: { coste: string, fecha: string }) => LocalizedString
+		/**
+		 * Este fondo no tiene movimientos apuntados, así que no hay coste que heredar: el destino empezará contando desde el precio de hoy.
+		 */
+		resumen_sin_libro: () => LocalizedString
+		/**
+		 * El libro solo cubre parte de estas participaciones, así que el coste heredado ({coste}) es incompleto.
+		 */
+		resumen_parcial: (arg: { coste: string }) => LocalizedString
+		/**
+		 * Traspasar {importe}
+		 */
+		btn_confirmar_traspaso: (arg: { importe: string }) => LocalizedString
+		/**
+		 * {destino} está en Modo Manual. Para apuntarle el traspaso hay que pasarlo a Modo Ledger, y se le creará un saldo inicial con lo que tiene ahora.
+		 */
+		aviso_destino_manual: (arg: { destino: string }) => LocalizedString
+		/**
+		 * Este activo está en Modo Manual. Actívale el Modo Ledger para poder apuntar traspasos.
+		 */
+		aviso_origen_manual: () => LocalizedString
+		/**
+		 * → {fondo}
+		 */
+		hacia_fondo: (arg: { fondo: string }) => LocalizedString
+		/**
+		 * ← {fondo}
+		 */
+		desde_fondo: (arg: { fondo: string }) => LocalizedString
+		/**
+		 * Esto es una de las dos patas de un traspaso con {fondo}. ¿Eliminar las dos?
+		 */
+		confirm_delete_par: (arg: { fondo: string }) => LocalizedString
+		/**
+		 * Traspaso apuntado en los dos fondos
+		 */
+		toast_traspaso_hecho: () => LocalizedString
 	}
 	ficha: {
 		/**
@@ -6981,6 +7436,10 @@ export type TranslationFunctions = {
 		 */
 		subtitle_preview: () => LocalizedString
 		/**
+		 * Este archivo no dice si cada orden entra o sale
+		 */
+		subtitle_direction: () => LocalizedString
+		/**
 		 * ¡Importación completada!
 		 */
 		subtitle_done: () => LocalizedString
@@ -7112,6 +7571,66 @@ export type TranslationFunctions = {
 		 * Importar {count} activos
 		 */
 		btn_import_assets: (arg: { count: number }) => LocalizedString
+		/**
+		 * Tu archivo no distingue compras de ventas
+		 */
+		dir_title: () => LocalizedString
+		/**
+		 * Este export no trae columna de tipo de operación y todas las cifras vienen en positivo, así que un reembolso y una suscripción son la misma fila. Las hemos apuntado todas como compras. Si alguna fue una salida, márcala: si no, tu posición saldrá de más.
+		 */
+		dir_explain: () => LocalizedString
+		/**
+		 * Ojo, el error sale al doble: una salida apuntada como compra no es que no reste, es que suma.
+		 */
+		dir_explain_double: () => LocalizedString
+		/**
+		 * ¿Esto fue un traspaso?
+		 */
+		dir_suggest_title: () => LocalizedString
+		/**
+		 * Salieron {amountOut} de {from} el {dateOut}, y {amountIn} entraron en {to} {days} días después.
+		 */
+		dir_suggest_detail: (arg: { amountIn: string, amountOut: string, dateOut: string, days: number, from: string, to: string }) => LocalizedString
+		/**
+		 * Sí, es un traspaso
+		 */
+		dir_suggest_confirm: () => LocalizedString
+		/**
+		 * Marcado como traspaso · deshacer
+		 */
+		dir_suggest_undo: () => LocalizedString
+		/**
+		 * El valor de adquisición viaja con el dinero (art. 94 LIRPF), así que {to} hereda {cost} de coste y la fecha de tu participación más antigua. Tu banco enseñará el importe suscrito en su casilla de «invertido»: las dos cifras son correctas y sirven para cosas distintas, pero la que tributará es esta.
+		 */
+		dir_suggest_cost: (arg: { cost: string, to: string }) => LocalizedString
+		/**
+		 * No podemos saber qué coste viaja, porque el archivo no trae las compras antiguas de {from}. El destino entra con el importe suscrito, como hasta ahora.
+		 */
+		dir_suggest_no_cost: (arg: { from: string }) => LocalizedString
+		/**
+		 * Entra
+		 */
+		dir_row_in: () => LocalizedString
+		/**
+		 * Sale
+		 */
+		dir_row_out: () => LocalizedString
+		/**
+		 * Traspaso
+		 */
+		dir_transfer_badge: () => LocalizedString
+		/**
+		 * Cómo queda cada fondo
+		 */
+		dir_result_title: () => LocalizedString
+		/**
+		 * {shares} part. · coste medio {avgCost}
+		 */
+		dir_result_line: (arg: { avgCost: string, shares: string }) => LocalizedString
+		/**
+		 * 👉 Compara estas cifras con las de tu banco antes de seguir. Si no cuadran, es que falta alguna salida por marcar.
+		 */
+		dir_compare_hint: () => LocalizedString
 		/**
 		 * Asigna cada campo a una columna de tu archivo para que podamos importar los datos correctamente.
 		 */
@@ -7623,7 +8142,7 @@ export type TranslationFunctions = {
 		 */
 		footer_tagline: () => LocalizedString
 		/**
-		 * v1.21.0 🚀
+		 * v1.23.0 🚀
 		 */
 		changelog_trigger: () => LocalizedString
 		/**
@@ -7922,6 +8441,10 @@ export type TranslationFunctions = {
 		 * Plusvalía aproximada: falta historial de compras en el libro de transacciones, así que el valor de adquisición está incompleto.
 		 */
 		partial_gain: () => LocalizedString
+		/**
+		 * Apuntar este traspaso en el libro
+		 */
+		btn_apuntar: () => LocalizedString
 		/**
 		 * Fuera del plan: {tickers}. La app no sabe cómo tributan, así que no propone moverlos.
 		 */
@@ -8617,6 +9140,78 @@ export type TranslationFunctions = {
 		 */
 		btn_understand: () => LocalizedString
 		releases: {
+			v1_23_0: {
+				/**
+				 * 28 de Agosto, 2026
+				 */
+				date: () => LocalizedString
+				/**
+				 * Tu CSV ya no cuela una salida como si fuera una compra
+				 */
+				badge: () => LocalizedString
+				changes: {
+					/**
+					 * ⚠️ **Si tu banco exporta las órdenes sin decir cuáles son salidas, ahora te lo dice en vez de suponerlo.** Hay exports —el de «Órdenes» de MyInvestor es el que lo ha destapado— cuyas columnas son fecha, ISIN, importe, participaciones y estado, y nada más: un reembolso y una suscripción son literalmente la misma fila. La app suponía compra y se callaba, sin un aviso ni una fila descartada. Medido con un fichero real de catorce órdenes: el fondo quedaba con 1.141 participaciones donde el banco decía 1.024.
+					 */
+					'0': () => LocalizedString
+					/**
+					 * ➗ **Y el error salía al doble.** Una salida apuntada como compra no es que no reste: es que suma. Por cada participación que se fue, sobraban dos.
+					 */
+					'1': () => LocalizedString
+					/**
+					 * ✍️ **Hay un paso nuevo antes de importar, y enseña las cifras en vivo.** Ves cada orden con su fecha y su importe, marcas cuáles fueron salidas, y debajo va cambiando cómo queda cada fondo —participaciones y coste medio— para que lo compares con la pantalla de tu banco **antes** de que se escriba nada.
+					 */
+					'2': () => LocalizedString
+					/**
+					 * 🔄 **Y si dos de esas órdenes eran un traspaso, la app te lo propone.** Sale dinero de un fondo y entra en otro pocos días después por un importe parecido: eso tiene pinta de traspaso, así que te lo pregunta. Nunca lo da por hecho — una pareja inventada te fabricaría un diferimiento que no existe. Y solo lo propone entre fondos, porque un fondo que se reembolsa para comprar un ETF tributa aunque el origen sea un fondo.
+					 */
+					'3': () => LocalizedString
+					/**
+					 * 🏛️ **Confirmado el traspaso, el coste viaja como debe.** El fondo de destino hereda el valor y la fecha de adquisición del origen (art. 94 LIRPF) en vez de nacer al precio del día. Ojo a una consecuencia que se ve: la casilla de «invertido» de tu banco y la de la app dirán cifras distintas, y las dos son correctas — la de la app es la que tributará.
+					 */
+					'4': () => LocalizedString
+					/**
+					 * 📄 **Arreglado también en el export de «Movimientos», que sí trae el tipo:** una fila de «Traspaso salida» entraba como venta y te realizaba una plusvalía que el art. 94 difiere. Un impuesto inventado en el panel de IRPF, sin error en ninguna parte.
+					 */
+					'5': () => LocalizedString
+				}
+			}
+			v1_22_0: {
+				/**
+				 * 27 de Agosto, 2026
+				 */
+				date: () => LocalizedString
+				/**
+				 * Traspasa de un fondo a otro en un solo gesto
+				 */
+				badge: () => LocalizedString
+				changes: {
+					/**
+					 * 🔄 **Un traspaso entre fondos se apunta una vez, no dos.** Antes tenías que abrir el libro del fondo de origen, apuntar una venta, abrir el del destino y apuntar la entrada — con dos cifras de participaciones que tenías que sacar tú dividiendo por dos valores liquidativos. Ahora eliges el fondo de destino, dices «todo» o cuánto, y la app escribe las dos patas enlazadas.
+					 */
+					'0': () => LocalizedString
+					/**
+					 * 👀 **Y se ve de qué fondo a qué fondo en todo momento.** Los dos fondos con su nombre y su icono, uno encima del otro, con el importe en la flecha. En la lista de movimientos cada pata nombra al otro fondo, así que abras el libro que abras sigue estando claro por dónde se movió el dinero.
+					 */
+					'1': () => LocalizedString
+					/**
+					 * 🏛️ **La lista de destinos te dice el precio fiscal antes de elegir, no después.** Los fondos van agrupados bajo «sin tributar» y los ETF y las acciones bajo «esto sería un reembolso y tributa». Nada está bloqueado: un reembolso es legítimo, solo cuesta.
+					 */
+					'2': () => LocalizedString
+					/**
+					 * ⚠️ **Y lo más importante, que no se ve: tu plusvalía latente ya viaja con el dinero.** En un traspaso el precio y la fecha a la que compraste pasan al fondo nuevo (art. 94 LIRPF) — eso es el diferimiento. Hasta ahora la app apuntaba la entrada al precio del día, así que la ficha del fondo de destino te decía «plusvalía 0 €, impuesto 0 €» justo después de traspasar. Un número falso, que es peor que no dar número. Ahora hereda el coste y la fecha, y con ella la ventana de recompra de doce meses ya no se reinicia.
+					 */
+					'3': () => LocalizedString
+					/**
+					 * 📌 **Desde el panel de Hacienda, un botón para apuntar el traspaso que ya te propone.** El plan estaba calculado desde hace meses y no se podía ejecutar sin repetirlo a mano.
+					 */
+					'4': () => LocalizedString
+					/**
+					 * 🌗 **Arreglado: el desplegable de compra, venta y traspaso no se veía en modo oscuro.** Texto blanco sobre blanco, medido 1,00 de contraste: las opciones estaban ahí y no se leían. Era cosa de los diecisiete desplegables de la app, no solo de ese.
+					 */
+					'5': () => LocalizedString
+				}
+			}
 			v1_21_0: {
 				/**
 				 * 25 de Agosto, 2026

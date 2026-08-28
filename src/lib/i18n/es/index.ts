@@ -465,7 +465,10 @@ const es = {
     type_buy: 'Compra',
     type_sell: 'Venta',
     type_dividend: 'Dividendo',
-    type_transfer: 'Traspaso',
+    type_transfer_in: 'Traspaso recibido',
+    type_transfer_out: 'Traspaso enviado',
+    // El tipo que había antes de la 1.22.0 y que sigue escrito en las carteras guardadas.
+    type_transfer: 'Traspaso recibido',
     type_initial_balance: 'Saldo Inicial',
     label_type: 'Tipo',
     label_date: 'Fecha',
@@ -474,6 +477,52 @@ const es = {
     label_fees: 'Comisiones',
     label_currency: 'Divisa / FX',
     title_fx_rate: 'Tipo de cambio a EUR',
+
+    // --- Traspaso entre fondos ---
+    btn_traspasar: 'Traspasar a otro fondo',
+    title_traspaso: 'Traspasar a otro fondo',
+    label_desde: 'Desde',
+    label_hacia: 'Hacia',
+    elegir_destino: 'Elige el fondo de destino',
+    cambiar_destino: 'Cambiar',
+    tienes_participaciones: 'tienes {shares:string} part. · {valor:string}',
+    grupo_sin_tributar: 'Sin tributar — traspaso entre fondos',
+    grupo_tributa: 'Esto sería un reembolso y tributa',
+    label_cuanto: 'Cuánto',
+    cuanto_todo: 'Todo',
+    cuanto_importe: 'Un importe',
+    cuanto_participaciones: 'Participaciones',
+    ajustar_precios: 'Ajustar el precio de salida',
+    label_precio_salida: 'Valor liquidativo de reembolso',
+    label_como_queda: 'Cómo queda este fondo',
+    label_participaciones_totales: 'Participaciones totales',
+    label_coste_medio_final: 'Coste medio',
+    nota_como_queda:
+      'Cópialo de tu banco tal cual. Los valores liquidativos de un traspaso se fijan días después de la orden, así que estas dos cifras son las únicas que puedes saber con certeza — y con ellas cuadra solo.',
+    resumen_descuadre:
+      'Ojo: según lo que has puesto entran {declarado:string} de coste, y según tu libro salieron {libro:string}. Se apunta lo que has puesto, que es lo que dirá tu gestora. Si no esperabas esa diferencia, a tu fondo de origen probablemente le falten compras antiguas en el libro.',
+    resumen_participaciones:
+      'Vendes {salen:string} participaciones de {origen:string} y compras {entran:string} de {destino:string}.',
+    resumen_sin_tributar: 'No tributas: es un traspaso entre fondos (art. 94 LIRPF).',
+    resumen_reembolso:
+      'Esto tributa: reembolsar un fondo para comprar algo que no es un fondo es una venta.',
+    resumen_venta: 'Esto tributa: es una venta, no un traspaso.',
+    resumen_coste_heredado:
+      'Heredas {coste:string} de coste de una compra del {fecha:string}, así que tu plusvalía latente viaja con el dinero.',
+    resumen_sin_libro:
+      'Este fondo no tiene movimientos apuntados, así que no hay coste que heredar: el destino empezará contando desde el precio de hoy.',
+    resumen_parcial:
+      'El libro solo cubre parte de estas participaciones, así que el coste heredado ({coste:string}) es incompleto.',
+    btn_confirmar_traspaso: 'Traspasar {importe:string}',
+    aviso_destino_manual:
+      '{destino:string} está en Modo Manual. Para apuntarle el traspaso hay que pasarlo a Modo Ledger, y se le creará un saldo inicial con lo que tiene ahora.',
+    aviso_origen_manual:
+      'Este activo está en Modo Manual. Actívale el Modo Ledger para poder apuntar traspasos.',
+    hacia_fondo: '→ {fondo:string}',
+    desde_fondo: '← {fondo:string}',
+    confirm_delete_par:
+      'Esto es una de las dos patas de un traspaso con {fondo:string}. ¿Eliminar las dos?',
+    toast_traspaso_hecho: 'Traspaso apuntado en los dos fondos',
   },
   // Ficha del activo
   ficha: {
@@ -592,6 +641,7 @@ const es = {
     subtitle_mapping: 'Configura las columnas de tu archivo',
     subtitle_resolving: 'Buscando activos en Yahoo Finance...',
     subtitle_preview: 'Revisa y confirma las posiciones',
+    subtitle_direction: 'Este archivo no dice si cada orden entra o sale',
     subtitle_done: '¡Importación completada!',
     upload_title: 'Arrastra tu archivo CSV aquí',
     upload_hint: 'o haz clic para seleccionarlo',
@@ -625,6 +675,22 @@ const es = {
     done_ledger: '{count:number} de ellos con su libro de operaciones: llevan las fechas y los precios de cada compra, así que tienes cálculo fiscal FIFO y el histórico real de tu patrimonio.',
     done_hint: 'Los precios se actualizarán automáticamente en unos segundos.',
     btn_import_assets: 'Importar {count:number} activos',
+    // Paso de dirección: el fichero no distingue entrada de salida
+    dir_title: 'Tu archivo no distingue compras de ventas',
+    dir_explain: 'Este export no trae columna de tipo de operación y todas las cifras vienen en positivo, así que un reembolso y una suscripción son la misma fila. Las hemos apuntado todas como compras. Si alguna fue una salida, márcala: si no, tu posición saldrá de más.',
+    dir_explain_double: 'Ojo, el error sale al doble: una salida apuntada como compra no es que no reste, es que suma.',
+    dir_suggest_title: '¿Esto fue un traspaso?',
+    dir_suggest_detail: 'Salieron {amountOut:string} de {from:string} el {dateOut:string}, y {amountIn:string} entraron en {to:string} {days:number} días después.',
+    dir_suggest_confirm: 'Sí, es un traspaso',
+    dir_suggest_undo: 'Marcado como traspaso · deshacer',
+    dir_suggest_cost: 'El valor de adquisición viaja con el dinero (art. 94 LIRPF), así que {to:string} hereda {cost:string} de coste y la fecha de tu participación más antigua. Tu banco enseñará el importe suscrito en su casilla de «invertido»: las dos cifras son correctas y sirven para cosas distintas, pero la que tributará es esta.',
+    dir_suggest_no_cost: 'No podemos saber qué coste viaja, porque el archivo no trae las compras antiguas de {from:string}. El destino entra con el importe suscrito, como hasta ahora.',
+    dir_row_in: 'Entra',
+    dir_row_out: 'Sale',
+    dir_transfer_badge: 'Traspaso',
+    dir_result_title: 'Cómo queda cada fondo',
+    dir_result_line: '{shares:string} part. · coste medio {avgCost:string}',
+    dir_compare_hint: '👉 Compara estas cifras con las de tu banco antes de seguir. Si no cuadran, es que falta alguna salida por marcar.',
     // ColumnMapper
     mapper_hint: 'Asigna cada campo a una columna de tu archivo para que podamos importar los datos correctamente.',
     mapper_coverage: 'Cobertura estimada del mapeo: {score:number}%.',
@@ -768,7 +834,7 @@ const es = {
     timing_period_note: 'Medido sobre los {days:number} días con datos reales, sin anualizar.',
     legal_disclaimer: '<strong>Aviso Legal:</strong> CoreBalance es una herramienta puramente informativa y educativa. No constituye asesoramiento financiero, de inversión ni fiscal. Los datos mostrados pueden sufrir retrasos o ser inexactos. El desarrollador no se hace responsable de posibles pérdidas financieras derivadas del uso de esta aplicación. Invierte siempre bajo tu propia responsabilidad.',
     footer_tagline: 'Tu centro de mandos para una gestión de activos inteligente y equilibrada.',
-    changelog_trigger: 'v1.21.0 🚀',
+    changelog_trigger: 'v1.23.0 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Hecho con ❤️ para la comunidad inversora',
     reclassify_stocks: 'Acciones Individuales',
@@ -848,6 +914,7 @@ const es = {
     loss_blocked_desc: 'Has comprado {ticker:string} dentro de la ventana de {months:number} meses de la regla antiaplicación (art. 33.5 LIRPF). Si vendes ahora en pérdidas, la pérdida no se pierde —se declara igual— pero no compensa ganancias hasta que vendas definitivamente las participaciones recompradas. Si esperas {days:number} días más, compensa este mismo ejercicio.',
     loss_blocked_window: 'La ventana es de dos meses para ETF y acciones, y de un año para participaciones de fondos, que no cotizan en mercado.',
     partial_gain: 'Plusvalía aproximada: falta historial de compras en el libro de transacciones, así que el valor de adquisición está incompleto.',
+    btn_apuntar: 'Apuntar este traspaso en el libro',
     excluded: 'Fuera del plan: {tickers:string}. La app no sabe cómo tributan, así que no propone moverlos.',
     band_note: 'Se considera «en objetivo» una desviación de menos de un punto porcentual.',
     disclaimer: '<strong>Estimación, no una liquidación.</strong> No conoce el resto de tu base del ahorro de este año, ni tus pérdidas pendientes de compensar de ejercicios anteriores, ni tu situación personal. Los tipos usados son los de la base del ahorro de {year:number}. Contrasta con tu asesor antes de mover nada.',
@@ -1089,6 +1156,30 @@ const es = {
     close_aria: 'Cerrar modal',
     btn_understand: 'Entendido',
     releases: {
+      v1_23_0: {
+        date: '28 de Agosto, 2026',
+        badge: 'Tu CSV ya no cuela una salida como si fuera una compra',
+        changes: [
+          '⚠️ **Si tu banco exporta las órdenes sin decir cuáles son salidas, ahora te lo dice en vez de suponerlo.** Hay exports —el de «Órdenes» de MyInvestor es el que lo ha destapado— cuyas columnas son fecha, ISIN, importe, participaciones y estado, y nada más: un reembolso y una suscripción son literalmente la misma fila. La app suponía compra y se callaba, sin un aviso ni una fila descartada. Medido con un fichero real de catorce órdenes: el fondo quedaba con 1.141 participaciones donde el banco decía 1.024.',
+          '➗ **Y el error salía al doble.** Una salida apuntada como compra no es que no reste: es que suma. Por cada participación que se fue, sobraban dos.',
+          '✍️ **Hay un paso nuevo antes de importar, y enseña las cifras en vivo.** Ves cada orden con su fecha y su importe, marcas cuáles fueron salidas, y debajo va cambiando cómo queda cada fondo —participaciones y coste medio— para que lo compares con la pantalla de tu banco **antes** de que se escriba nada.',
+          '🔄 **Y si dos de esas órdenes eran un traspaso, la app te lo propone.** Sale dinero de un fondo y entra en otro pocos días después por un importe parecido: eso tiene pinta de traspaso, así que te lo pregunta. Nunca lo da por hecho — una pareja inventada te fabricaría un diferimiento que no existe. Y solo lo propone entre fondos, porque un fondo que se reembolsa para comprar un ETF tributa aunque el origen sea un fondo.',
+          '🏛️ **Confirmado el traspaso, el coste viaja como debe.** El fondo de destino hereda el valor y la fecha de adquisición del origen (art. 94 LIRPF) en vez de nacer al precio del día. Ojo a una consecuencia que se ve: la casilla de «invertido» de tu banco y la de la app dirán cifras distintas, y las dos son correctas — la de la app es la que tributará.',
+          '📄 **Arreglado también en el export de «Movimientos», que sí trae el tipo:** una fila de «Traspaso salida» entraba como venta y te realizaba una plusvalía que el art. 94 difiere. Un impuesto inventado en el panel de IRPF, sin error en ninguna parte.',
+        ]
+      },
+      v1_22_0: {
+        date: '27 de Agosto, 2026',
+        badge: 'Traspasa de un fondo a otro en un solo gesto',
+        changes: [
+          '🔄 **Un traspaso entre fondos se apunta una vez, no dos.** Antes tenías que abrir el libro del fondo de origen, apuntar una venta, abrir el del destino y apuntar la entrada — con dos cifras de participaciones que tenías que sacar tú dividiendo por dos valores liquidativos. Ahora eliges el fondo de destino, dices «todo» o cuánto, y la app escribe las dos patas enlazadas.',
+          '👀 **Y se ve de qué fondo a qué fondo en todo momento.** Los dos fondos con su nombre y su icono, uno encima del otro, con el importe en la flecha. En la lista de movimientos cada pata nombra al otro fondo, así que abras el libro que abras sigue estando claro por dónde se movió el dinero.',
+          '🏛️ **La lista de destinos te dice el precio fiscal antes de elegir, no después.** Los fondos van agrupados bajo «sin tributar» y los ETF y las acciones bajo «esto sería un reembolso y tributa». Nada está bloqueado: un reembolso es legítimo, solo cuesta.',
+          '⚠️ **Y lo más importante, que no se ve: tu plusvalía latente ya viaja con el dinero.** En un traspaso el precio y la fecha a la que compraste pasan al fondo nuevo (art. 94 LIRPF) — eso es el diferimiento. Hasta ahora la app apuntaba la entrada al precio del día, así que la ficha del fondo de destino te decía «plusvalía 0 €, impuesto 0 €» justo después de traspasar. Un número falso, que es peor que no dar número. Ahora hereda el coste y la fecha, y con ella la ventana de recompra de doce meses ya no se reinicia.',
+          '📌 **Desde el panel de Hacienda, un botón para apuntar el traspaso que ya te propone.** El plan estaba calculado desde hace meses y no se podía ejecutar sin repetirlo a mano.',
+          '🌗 **Arreglado: el desplegable de compra, venta y traspaso no se veía en modo oscuro.** Texto blanco sobre blanco, medido 1,00 de contraste: las opciones estaban ahí y no se leían. Era cosa de los diecisiete desplegables de la app, no solo de ese.',
+        ]
+      },
       v1_21_0: {
         date: '25 de Agosto, 2026',
         badge: 'Cada activo tiene por fin su ficha',

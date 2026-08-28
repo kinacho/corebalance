@@ -596,6 +596,38 @@
 		border-radius: inherit;
 	}
 
+	/*
+	 * ⚠️ **El `<option>` de un `<select>` nativo no hereda el fondo del campo, y sin
+	 * fondo propio el desplegable abierto es texto blanco sobre blanco.**
+	 *
+	 * El desplegable no lo pinta la página: lo pinta el navegador sobre su propia
+	 * base **blanca**, donde el `background` del `select` no llega. Medido en el
+	 * `#tx-type` del libro de operaciones con el tema oscuro puesto —el que se
+	 * reportó—, `getComputedStyle(option).backgroundColor` devuelve
+	 * `rgba(0, 0, 0, 0)` y `color` devuelve `rgb(255, 255, 255)`: **1,00:1**, o sea
+	 * las cinco opciones no están. En claro no se nota, porque ahí la tinta ya es
+	 * oscura, así que es un defecto que **solo existe en un tema** — la misma forma
+	 * que el literal de `.landing-page`.
+	 *
+	 * ⚠️ **Y no lo veía ninguna guarda.** `contraste.mjs` empareja cada `color:` con
+	 * el `background` de su **mismo bloque**, y aquí el bloque que declara el color
+	 * es el del `select`, cuyo fondo existe y mide de sobra; el fondo que de verdad
+	 * queda detrás del texto es el del `option`, que es otro bloque y no declaraba
+	 * ninguno. Misma lección que los tres `style="color: #fff"` del hero: el
+	 * analizador mira donde mira, y esto también lo reportó quien lo usa.
+	 *
+	 * Va aquí y no en cada componente porque hay diecisiete `<select>` repartidos por
+	 * cinco ficheros y solo dos lo tenían resuelto a mano (`Header.svelte` y la
+	 * calculadora de precio medio, con estos mismos valores). Un global cubre además
+	 * el `<select>` número dieciocho, que es la forma en la que este defecto vuelve.
+	 * `--bg-overlay` lleva alfa, que aquí es inocuo: compone sobre la base blanca del
+	 * desplegable a ~`#1b1b20`, con `--text-primary` a ~16:1.
+	 */
+	select option {
+		background: var(--bg-overlay);
+		color: var(--text-primary);
+	}
+
 	.background-mesh {
 		position: fixed;
 		top: 0;

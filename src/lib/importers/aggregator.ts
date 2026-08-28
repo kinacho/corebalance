@@ -1,3 +1,4 @@
+import { claveDeGrupo, type CosteHeredado } from './direccion';
 import type { Transaction, ParsedPosition } from './types';
 
 /**
@@ -15,7 +16,23 @@ import type { Transaction, ParsedPosition } from './types';
  * de los que tiene —o ninguno, si el recorte llega a cero y la posición desaparece del
  * listado— con `skippedRows: 0` y `warnings: []`, es decir, sin nada que mirar.
  */
-export function reduceTransactionsToPositions(transactions: Transaction[]): {
+export function reduceTransactionsToPositions(
+	transactions: Transaction[],
+	/**
+	 * El coste que viaja en cada traspaso confirmado, por `transferId`.
+	 *
+	 * ⚠️ **Sin esto la posición del destino sale con el coste de suscripción, y eso es
+	 * precisamente la plusvalía latente desapareciendo.** En un traspaso el valor de
+	 * adquisición viaja con el dinero (art. 94 LIRPF), así que la entrada no vale lo
+	 * que costó suscribir sino lo que costó comprar en el origen. Es la misma regla
+	 * que aplica `ledger.ts` con `carriedCostBase`; aquí se aplica a la instantánea
+	 * para que la previsualización enseñe **el mismo número que se va a escribir**.
+	 *
+	 * Opcional: sin el mapa —o con un traspaso cuyo coste no se sabe— se cae al precio
+	 * del fichero, que es el comportamiento de siempre.
+	 */
+	costesHeredados?: Map<string, CosteHeredado>
+): {
 	positions: ParsedPosition[];
 	warnings: string[];
 } {
@@ -33,11 +50,26 @@ export function reduceTransactionsToPositions(transactions: Transaction[]): {
 	}>();
 
 	for (const tx of sorted) {
-		const key = (tx.isin || tx.ticker || tx.name).toUpperCase();
+		const key = claveDeGrupo(tx);
 		const existing = positions.get(key);
 
-		if (tx.type === 'BUY') {
-			const txCost = tx.shares * tx.price;
+		const entra = tx.type === 'BUY' || tx.type === 'TRANSFER_IN';
+		const sale = tx.type === 'SELL' || tx.type === 'TRANSFER_OUT';
+
+		if (entra) {
+			/*
+			 * El coste heredado manda sobre el precio del fichero cuando lo hay: ver el
+			 * parámetro `costesHeredados`. ⚠️ La comparación es contra `null` explícito y
+			 * no un `||`: un coste heredado de **0 € es un valor legítimo** —un fondo
+			 * regalado, o uno cuyo libro no tiene coste— y con `||` se caería al precio
+			 * del día, que es justo la plusvalía latente desapareciendo. `null` significa
+			 * «no se sabe», y solo eso cae al precio.
+			 */
+			const heredado =
+				tx.type === 'TRANSFER_IN' && tx.transferId
+					? (costesHeredados?.get(tx.transferId)?.coste ?? null)
+					: null;
+			const txCost = heredado !== null ? heredado : tx.shares * tx.price;
 			if (existing) {
 				existing.shares += tx.shares;
 				existing.totalCost += txCost;
@@ -57,7 +89,16 @@ export function reduceTransactionsToPositions(transactions: Transaction[]): {
 					currency: tx.currency
 				});
 			}
-		} else if (tx.type === 'SELL') {
+		} else if (sale) {
+			/*
+			 * Una salida de traspaso reduce la posición **igual que una venta**: para la
+			 * instantánea las participaciones se han ido de la misma manera, y el coste
+			 * total baja en proporción sin mover el coste medio. Donde las dos se separan
+			 * es en `fiscal.ts`, que realiza plusvalía en la venta y la difiere en el
+			 * traspaso — y eso no se decide aquí.
+			 */
+			const verbo = tx.type === 'TRANSFER_OUT' ? 'traspasaron' : 'vendieron';
+			const sustantivo = tx.type === 'TRANSFER_OUT' ? 'salida de traspaso' : 'venta';
 			if (existing) {
 				const prevShares = existing.shares;
 				const prevAvgCost = prevShares > 0 ? (existing.totalCost / prevShares) : 0;
@@ -71,7 +112,7 @@ export function reduceTransactionsToPositions(transactions: Transaction[]): {
 				} else {
 					if (existing.shares < -0.0001) {
 						warnings.push(
-							`Se vendieron más títulos de ${existing.name} de los que constan comprados en el archivo ` +
+							`Se ${verbo} más títulos de ${existing.name} de los que constan comprados en el archivo ` +
 							`(faltan ${Math.abs(existing.shares).toLocaleString('es-ES')}). La posición queda a 0; ` +
 							`probablemente el histórico no incluye las compras más antiguas.`
 						);
@@ -81,7 +122,7 @@ export function reduceTransactionsToPositions(transactions: Transaction[]): {
 				}
 			} else {
 				warnings.push(
-					`Se ha ignorado una venta de ${tx.shares.toLocaleString('es-ES')} de ${tx.name} porque en el ` +
+					`Se ha ignorado una ${sustantivo} de ${tx.shares.toLocaleString('es-ES')} de ${tx.name} porque en el ` +
 					`archivo no consta ninguna compra previa. Si descargaste solo un periodo reciente, ` +
 					`las compras anteriores no están en el fichero.`
 				);
