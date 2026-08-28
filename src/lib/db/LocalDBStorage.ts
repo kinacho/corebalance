@@ -33,8 +33,14 @@ export const localDB = browser ? new CoreBalanceDB() : null;
 export class LocalDBStorage implements StorageProvider {
 	isLocal = true;
 
-	async saveUserData(userId: string, data: Partial<UserData>): Promise<void> {
-		if (!localDB) return;
+	/**
+	 * ⚠️ Ignora `revEsperada` **a propósito**: IndexedDB es de un solo dispositivo, así
+	 * que aquí no hay dos escritores y no hay conflicto que detectar. Devuelve `null`
+	 * para decir «no llevo contador», que es lo que el store lee como «no hay guarda
+	 * que aplicar».
+	 */
+	async saveUserData(userId: string, data: Partial<UserData>): Promise<number | null> {
+		if (!localDB) return null;
 		const existing = await localDB.userData.get(userId);
 
 		/**
@@ -58,6 +64,7 @@ export class LocalDBStorage implements StorageProvider {
 		};
 
 		await localDB.userData.put(merged as UserData & { id: string });
+		return null;
 	}
 
 	async loadUserData(userId: string): Promise<UserData | null> {

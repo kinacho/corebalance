@@ -32,6 +32,9 @@ const stub = vi.hoisted(() => {
 	return {
 		getDocs: vi.fn(),
 		getDoc: vi.fn(),
+		txGet: vi.fn(),
+		txSet: vi.fn(),
+		onSnapshot: vi.fn(),
 		batchSet: vi.fn(),
 		setDoc: vi.fn(async (ref: { path: string }, datos: unknown) => {
 			if (tieneIndefinido(datos)) {
@@ -66,10 +69,19 @@ vi.mock('firebase/firestore', () => ({
 	updateDoc: vi.fn(async () => {}),
 	deleteDoc: vi.fn(async () => {}),
 	deleteField: () => ({}),
-	writeBatch: () => ({ set: stub.batchSet, delete: vi.fn(), commit: vi.fn(async () => {}) })
+	writeBatch: () => ({ set: stub.batchSet, delete: vi.fn(), commit: vi.fn(async () => {}) }),
+	/*
+	 * ⚠️ El doble de la transacción **ejecuta el cuerpo de verdad** en vez de saltárselo.
+	 * Lo que se prueba es la decisión de dentro —comparar la revisión y rechazar—, así
+	 * que un doble que devolviera un valor fijo no probaría absolutamente nada.
+	 */
+	runTransaction: async (_db: unknown, cuerpo: (tx: unknown) => Promise<unknown>) =>
+		cuerpo({ get: stub.txGet, set: stub.txSet }),
+	onSnapshot: stub.onSnapshot
 }));
 
 import { FirebaseStorage, sinIndefinidos } from './FirebaseStorage';
+import { ConflictoDeSincronizacion } from './types';
 
 /** Lo que lanza Firestore cuando la regla no cubre la ruta. */
 function denegado(): Error {
@@ -167,7 +179,9 @@ describe('FirebaseStorage · un opcional sin valor no puede tumbar el guardado',
 					{ ticker: 'ASTS', name: 'AST', isin: '', targetWeight: 1, color: '#fff', icon: '📈', ter: 0, category: 'stocks', indexKey: undefined }
 				]
 			} as never)
-		).resolves.toBeUndefined();
+			// `null` y no `undefined` desde la 1.23.2: `saveUserData` devuelve la revisión
+			// resultante, y sin `revEsperada` no hay escritura condicional que la produzca.
+		).resolves.toBeNull();
 
 		const [, enviado] = stub.setDoc.mock.calls[0];
 		expect(Object.keys((enviado as any).coreAssets[0])).not.toContain('indexKey');
@@ -199,5 +213,143 @@ describe('FirebaseStorage · un opcional sin valor no puede tumbar el guardado',
 		// se copiaran clave a clave.
 		const fecha = new Date('2026-08-19T00:00:00.000Z');
 		expect(sinIndefinidos({ fecha }).fecha).toBe(fecha);
+	});
+});
+
+/**
+ * La guarda que impide que un dispositivo con el estado de hace horas pise lo que otro
+ * acaba de guardar.
+ *
+ * ⚠️ **Esto es la mitad del arreglo de un defecto real y reportado**: dos sesiones
+ * abiertas con la misma cuenta, cambio en el PC, y el móvil —que nunca releía la nube—
+ * subía su estado viejo encima. La otra mitad es `subscribeUserData`, abajo. La guarda
+ * sola convierte la pérdida en un aviso; la escucha sola no impide la carrera.
+ */
+describe('FirebaseStorage · escritura condicional por revisión', () => {
+	const storage = new FirebaseStorage();
+
+	beforeEach(() => {
+		vi.clearAllMocks();
+		vi.spyOn(console, 'error').mockImplementation(() => {});
+	});
+
+	/** Un documento en la nube con la revisión dada. */
+	const enLaNube = (rev: number | undefined) =>
+		stub.txGet.mockResolvedValue({ exists: () => true, data: () => ({ rev }) });
+
+	it('escribe y sube la revisión cuando coincide con la esperada', async () => {
+		enLaNube(7);
+
+		const nueva = await storage.saveUserData('u1', { contribution: 100 }, { revEsperada: 7 });
+
+		expect(nueva).toBe(8);
+		expect(stub.txSet).toHaveBeenCalledTimes(1);
+		expect(stub.txSet.mock.calls[0][1]).toMatchObject({ contribution: 100, rev: 8 });
+	});
+
+	/**
+	 * ⚠️ **El caso que perdía los datos.** El móvil cree ir por la revisión 7, pero el PC
+	 * ya escribió y la nube va por la 8. Lo que NO puede pasar es que se escriba: si se
+	 * escribe, el cambio del PC desaparece.
+	 */
+	it('rechaza la escritura si la nube avanzó, y no escribe nada', async () => {
+		enLaNube(8);
+
+		await expect(
+			storage.saveUserData('u1', { contribution: 100 }, { revEsperada: 7 })
+		).rejects.toBeInstanceOf(ConflictoDeSincronizacion);
+
+		expect(stub.txSet).not.toHaveBeenCalled();
+	});
+
+	it('el conflicto dice por qué revisión va la nube, para poder recargarla', async () => {
+		enLaNube(8);
+
+		const error = await storage
+			.saveUserData('u1', { contribution: 100 }, { revEsperada: 7 })
+			.catch((e) => e);
+
+		expect(error).toBeInstanceOf(ConflictoDeSincronizacion);
+		expect((error as ConflictoDeSincronizacion).revActual).toBe(8);
+	});
+
+	/**
+	 * ⚠️ Un documento **sin `rev`** es de antes de que existiera el contador. Rechazarlo
+	 * dejaría a cada usuario ya registrado sin poder guardar nunca más, que es un defecto
+	 * peor que el que se estaba arreglando.
+	 */
+	it('un documento anterior al contador no se rechaza: lo estrena', async () => {
+		enLaNube(undefined);
+
+		const nueva = await storage.saveUserData('u1', { contribution: 100 }, { revEsperada: null });
+
+		expect(nueva).toBe(1);
+		expect(stub.txSet).toHaveBeenCalledTimes(1);
+	});
+
+	it('sin documento en la nube, la primera escritura estrena la revisión 1', async () => {
+		stub.txGet.mockResolvedValue({ exists: () => false, data: () => ({}) });
+
+		expect(await storage.saveUserData('u1', { contribution: 100 }, { revEsperada: null })).toBe(1);
+	});
+
+	/**
+	 * Sin `revEsperada` se pisa a propósito, y hay un consumidor que lo necesita: importar
+	 * un respaldo es justamente pedir que se sustituya. Si esta rama se volviera
+	 * condicional, restaurar una copia fallaría con un conflicto.
+	 */
+	it('sin revEsperada no hay guarda: escribe directo, como siempre', async () => {
+		expect(await storage.saveUserData('u1', { contribution: 100 })).toBeNull();
+		expect(stub.setDoc).toHaveBeenCalledTimes(1);
+		expect(stub.txSet).not.toHaveBeenCalled();
+	});
+});
+
+describe('FirebaseStorage · escucha de cambios de otro dispositivo', () => {
+	const storage = new FirebaseStorage();
+
+	beforeEach(() => {
+		vi.clearAllMocks();
+		vi.spyOn(console, 'error').mockImplementation(() => {});
+	});
+
+	/** Dispara la escucha con una instantánea y devuelve lo que llegó al callback. */
+	function emitir(meta: { hasPendingWrites: boolean; fromCache: boolean }, datos: unknown) {
+		const recibido: unknown[] = [];
+		stub.onSnapshot.mockImplementation(
+			(_ref: unknown, _opts: unknown, alRecibir: (i: unknown) => void) => {
+				alRecibir({ exists: () => true, metadata: meta, data: () => datos });
+				return () => {};
+			}
+		);
+		storage.subscribeUserData('u1', (d) => recibido.push(d));
+		return recibido;
+	}
+
+	it('avisa de un cambio confirmado que viene del servidor', () => {
+		expect(emitir({ hasPendingWrites: false, fromCache: false }, { rev: 9 })).toEqual([{ rev: 9 }]);
+	});
+
+	/**
+	 * ⚠️ **El eco de las escrituras propias no se notifica.** Firestore avisa también de
+	 * lo que acabas de escribir tú, primero desde la caché local. Sin filtrarlo, cada
+	 * guardado se reaplicaría a sí mismo encima de lo que el usuario esté escribiendo en
+	 * ese instante.
+	 */
+	it('ignora el eco de la escritura propia', () => {
+		expect(emitir({ hasPendingWrites: true, fromCache: false }, { rev: 9 })).toEqual([]);
+	});
+
+	it('ignora una instantánea que solo viene de caché', () => {
+		expect(emitir({ hasPendingWrites: false, fromCache: true }, { rev: 9 })).toEqual([]);
+	});
+
+	it('devuelve una baja que corta la escucha', () => {
+		const cortar = vi.fn();
+		stub.onSnapshot.mockReturnValue(cortar);
+
+		storage.subscribeUserData('u1', () => {})();
+
+		expect(cortar).toHaveBeenCalledTimes(1);
 	});
 });
