@@ -736,6 +736,8 @@ const es = {
     category_weight_limit: 'La cartera {catName:string} ya suma {weight:string}%. Ajusta los pesos antes de importar más activos.',
     asset_added: '"{assetName:string}" añadido correctamente',
     save_error: 'Error al guardar los datos en la nube',
+    sync_conflict: 'Otro dispositivo cambió tu cartera mientras tanto. Se ha recargado lo último para no pisarlo.',
+    sync_remote_change: 'Tu cartera se ha actualizado desde otro dispositivo.',
     load_error: 'Error al cargar los datos desde la nube',
     // Dice explícitamente que no se ha borrado nada: el usuario está viendo su
     // cartera con menos movimientos de los que tiene, y sin esa frase la lectura
@@ -834,7 +836,7 @@ const es = {
     timing_period_note: 'Medido sobre los {days:number} días con datos reales, sin anualizar.',
     legal_disclaimer: '<strong>Aviso Legal:</strong> CoreBalance es una herramienta puramente informativa y educativa. No constituye asesoramiento financiero, de inversión ni fiscal. Los datos mostrados pueden sufrir retrasos o ser inexactos. El desarrollador no se hace responsable de posibles pérdidas financieras derivadas del uso de esta aplicación. Invierte siempre bajo tu propia responsabilidad.',
     footer_tagline: 'Tu centro de mandos para una gestión de activos inteligente y equilibrada.',
-    changelog_trigger: 'v1.23.1 🚀',
+    changelog_trigger: 'v1.23.2 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Hecho con ❤️ para la comunidad inversora',
     reclassify_stocks: 'Acciones Individuales',
@@ -1156,6 +1158,16 @@ const es = {
     close_aria: 'Cerrar modal',
     btn_understand: 'Entendido',
     releases: {
+      v1_23_2: {
+        date: '28 de Agosto, 2026',
+        badge: 'Dos dispositivos a la vez dejan de pisarse',
+        changes: [
+          '🛡️ **Arreglada una pérdida de datos con la sesión abierta en dos sitios.** Si tenías la app abierta en el ordenador y en el móvil con la misma cuenta, la pestaña que llevaba rato abierta **no volvía a leer la nube nunca**: enseñaba lo de hace horas y, en cuanto guardaba cualquier cosa, subía ese estado viejo encima del bueno. El cambio que acababas de hacer en el otro dispositivo desaparecía, y al recargar aparecía el dato antiguo en los dos.',
+          '📡 **Ahora los cambios llegan solos, sin recargar.** Tocas algo en el ordenador y el móvil se actualiza en cuanto ocurre, aunque lleve horas abierto.',
+          '🔒 **Y ninguna sesión puede escribir encima de lo que no ha leído.** Cada guardado dice qué versión creía tener y se rechaza si la nube ha avanzado entretanto; entonces se recarga lo último y se te avisa, en vez de pisarlo en silencio.',
+          '🕐 **De paso, el desempate deja de depender de la hora de cada aparato.** Antes se comparaban dos relojes distintos, así que un móvil adelantado un minuto ganaba llevando datos viejos. Ahora se compara un contador de versiones, que es el mismo para todos.',
+        ]
+      },
       v1_23_1: {
         date: '28 de Agosto, 2026',
         badge: 'El coste medio vuelve a ser el que dice tu banco',

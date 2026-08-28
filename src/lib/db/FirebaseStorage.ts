@@ -1,10 +1,11 @@
 import type { StorageProvider, UserData, HistoryPoint } from './types';
+import { ConflictoDeSincronizacion } from './types';
 import type { Transaction } from '$lib/types';
 import type { HoldingEdit } from '$lib/history/types';
 import { mergeHoldingEdits } from '$lib/history/merge';
 import { auth, db, googleProvider } from '$lib/firebase';
 import { onAuthStateChanged, signInWithPopup, signOut, type User } from 'firebase/auth';
-import { doc, getDoc, setDoc, collection, getDocs, writeBatch, query, orderBy, deleteDoc, updateDoc, deleteField } from 'firebase/firestore';
+import { doc, getDoc, setDoc, collection, getDocs, writeBatch, query, orderBy, deleteDoc, updateDoc, deleteField, runTransaction, onSnapshot } from 'firebase/firestore';
 
 /**
  * Quita del payload las claves cuyo valor es `undefined`, en profundidad.
@@ -56,14 +57,85 @@ export class FirebaseStorage implements StorageProvider {
 	 * Estando fuera de línea el SDK no rechaza la promesa —encola la escritura—, así
 	 * que un rechazo aquí es siempre un fallo de verdad, no una red mala.
 	 */
-	async saveUserData(userId: string, data: Partial<UserData>): Promise<void> {
-		if (!db) return;
+	async saveUserData(
+		userId: string,
+		data: Partial<UserData>,
+		opciones: { revEsperada?: number | null } = {}
+	): Promise<number | null> {
+		if (!db) return null;
+		const referencia = doc(db, 'user_data', userId);
+		const limpio = sinIndefinidos(data);
+
+		/*
+		 * Sin `revEsperada` se pisa, que es lo de siempre y lo que necesita la
+		 * importación de un respaldo: ahí el usuario ha pedido expresamente sustituir.
+		 */
+		if (opciones.revEsperada === undefined) {
+			try {
+				await setDoc(referencia, limpio, { merge: true });
+				return null;
+			} catch (e) {
+				console.error('Firestore save error:', e);
+				throw e;
+			}
+		}
+
+		/*
+		 * ⚠️ **La escritura condicional va en una transacción, y no vale leer antes y
+		 * escribir después.** Entre una cosa y otra cabe la escritura de otro
+		 * dispositivo, que es exactamente la carrera que este código existe para cerrar;
+		 * la transacción de Firestore reintenta sola si el documento cambia mientras
+		 * tanto, así que la comparación y la escritura son atómicas de verdad.
+		 *
+		 * ⚠️ Un documento **sin `rev`** es uno guardado antes de la 1.23.2. Ahí no hay
+		 * nada que comparar y se estrena el contador en lugar de rechazar: si no, la
+		 * primera escritura de cada usuario existente fallaría para siempre.
+		 */
 		try {
-			await setDoc(doc(db, 'user_data', userId), sinIndefinidos(data), { merge: true });
+			return await runTransaction(db, async (tx) => {
+				const actual = await tx.get(referencia);
+				const revNube: number | null = actual.exists()
+					? ((actual.data() as UserData).rev ?? null)
+					: null;
+
+				if (revNube !== null && revNube !== opciones.revEsperada) {
+					throw new ConflictoDeSincronizacion(revNube);
+				}
+
+				const nuevaRev = (revNube ?? 0) + 1;
+				tx.set(referencia, { ...limpio, rev: nuevaRev }, { merge: true });
+				return nuevaRev;
+			});
 		} catch (e) {
+			if (e instanceof ConflictoDeSincronizacion) throw e;
 			console.error('Firestore save error:', e);
 			throw e;
 		}
+	}
+
+	/**
+	 * ⚠️ **`metadata.hasPendingWrites` es lo que distingue el eco de un cambio ajeno.**
+	 * Firestore notifica también las escrituras propias, primero desde la caché local
+	 * con esa marca a `true`. Sin filtrarlas, cada guardado se reaplicaría a sí mismo —
+	 * y peor, reaplicaría un estado a medio confirmar encima de lo que el usuario esté
+	 * escribiendo en ese momento.
+	 *
+	 * Tampoco se notifica la primera instantánea si viene de caché: el arranque ya lo
+	 * cubre `loadUserData`, y avisar ahí sería pisar la carga inicial con algo más viejo.
+	 */
+	subscribeUserData(userId: string, alCambiar: (data: UserData) => void): () => void {
+		if (!db) return () => {};
+		return onSnapshot(
+			doc(db, 'user_data', userId),
+			{ includeMetadataChanges: false },
+			(instantanea) => {
+				if (!instantanea.exists()) return;
+				if (instantanea.metadata.hasPendingWrites) return;
+				if (instantanea.metadata.fromCache) return;
+				alCambiar(instantanea.data() as UserData);
+			},
+			(e) => console.error('Firestore subscribe error:', e)
+		);
 	}
 
 	async loadUserData(userId: string): Promise<UserData | null> {

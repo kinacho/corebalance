@@ -722,6 +722,8 @@ const en: Translation = {
     category_weight_limit: 'The portfolio {catName} already sums {weight}%. Adjust weights before importing more assets.',
     asset_added: '"{assetName}" added successfully',
     save_error: 'Error saving data to the cloud',
+    sync_conflict: 'Another device changed your portfolio in the meantime. The latest version has been reloaded so nothing gets overwritten.',
+    sync_remote_change: 'Your portfolio was updated from another device.',
     load_error: 'Error loading data from the cloud',
     ledger_load_failed: 'Your transaction ledger could not be read from the cloud. The one on this device is kept — nothing was deleted.',
     login_error: 'Error logging in',
@@ -813,7 +815,7 @@ const en: Translation = {
     timing_period_note: 'Measured over the {days} days with real data, not annualised.',
     legal_disclaimer: '<strong>Legal Disclaimer:</strong> CoreBalance is a purely informative and educational tool. It does not constitute financial, investment, or tax advice. The data displayed may be subject to delays or inaccuracies. The developer is not responsible for any financial losses resulting from the use of this application. Always invest at your own risk.',
     footer_tagline: 'Your control center for smart and balanced asset management.',
-    changelog_trigger: 'v1.23.1 🚀',
+    changelog_trigger: 'v1.23.2 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Made with ❤️ for the investing community',
     reclassify_stocks: 'Individual Stocks',
@@ -1118,6 +1120,16 @@ const en: Translation = {
     close_aria: 'Close modal',
     btn_understand: 'Got it',
     releases: {
+      v1_23_2: {
+        date: 'August 28, 2026',
+        badge: 'Two devices at once stop overwriting each other',
+        changes: [
+          '🛡️ **Fixed a data loss when signed in on two devices.** If you had the app open on your computer and your phone with the same account, the tab that had been open for a while **never re-read the cloud**: it showed hours-old data and, as soon as it saved anything, uploaded that stale state over the good one. The change you had just made on the other device disappeared, and on reload the old figure showed up on both.',
+          '📡 **Changes now arrive on their own, no reload needed.** Touch something on the computer and the phone updates as it happens, even if it has been open for hours.',
+          '🔒 **And no session can write over what it has not read.** Every save states which version it believed it had and is rejected if the cloud moved on; the latest version is then reloaded and you are told, instead of it being overwritten silently.',
+          '🕐 **The tie-break no longer depends on each device\'s clock.** It used to compare two different clocks, so a phone running a minute fast would win while carrying old data. Now it compares a version counter, which is the same for everyone.',
+        ]
+      },
       v1_23_1: {
         date: 'August 28, 2026',
         badge: 'Average cost is your bank\'s figure again',

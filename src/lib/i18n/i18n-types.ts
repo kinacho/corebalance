@@ -2674,6 +2674,14 @@ type RootTranslation = {
 		 */
 		save_error: string
 		/**
+		 * O​t​r​o​ ​d​i​s​p​o​s​i​t​i​v​o​ ​c​a​m​b​i​ó​ ​t​u​ ​c​a​r​t​e​r​a​ ​m​i​e​n​t​r​a​s​ ​t​a​n​t​o​.​ ​S​e​ ​h​a​ ​r​e​c​a​r​g​a​d​o​ ​l​o​ ​ú​l​t​i​m​o​ ​p​a​r​a​ ​n​o​ ​p​i​s​a​r​l​o​.
+		 */
+		sync_conflict: string
+		/**
+		 * T​u​ ​c​a​r​t​e​r​a​ ​s​e​ ​h​a​ ​a​c​t​u​a​l​i​z​a​d​o​ ​d​e​s​d​e​ ​o​t​r​o​ ​d​i​s​p​o​s​i​t​i​v​o​.
+		 */
+		sync_remote_change: string
+		/**
 		 * E​r​r​o​r​ ​a​l​ ​c​a​r​g​a​r​ ​l​o​s​ ​d​a​t​o​s​ ​d​e​s​d​e​ ​l​a​ ​n​u​b​e
 		 */
 		load_error: string
@@ -3037,7 +3045,7 @@ type RootTranslation = {
 		 */
 		footer_tagline: string
 		/**
-		 * v​1​.​2​3​.​1​ ​�​�
+		 * v​1​.​2​3​.​2​ ​�​�
 		 */
 		changelog_trigger: string
 		/**
@@ -4101,6 +4109,34 @@ type RootTranslation = {
 		 */
 		btn_understand: string
 		releases: {
+			v1_23_2: {
+				/**
+				 * 2​8​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
+				 */
+				date: string
+				/**
+				 * D​o​s​ ​d​i​s​p​o​s​i​t​i​v​o​s​ ​a​ ​l​a​ ​v​e​z​ ​d​e​j​a​n​ ​d​e​ ​p​i​s​a​r​s​e
+				 */
+				badge: string
+				changes: {
+					/**
+					 * �​�​️​ ​*​*​A​r​r​e​g​l​a​d​a​ ​u​n​a​ ​p​é​r​d​i​d​a​ ​d​e​ ​d​a​t​o​s​ ​c​o​n​ ​l​a​ ​s​e​s​i​ó​n​ ​a​b​i​e​r​t​a​ ​e​n​ ​d​o​s​ ​s​i​t​i​o​s​.​*​*​ ​S​i​ ​t​e​n​í​a​s​ ​l​a​ ​a​p​p​ ​a​b​i​e​r​t​a​ ​e​n​ ​e​l​ ​o​r​d​e​n​a​d​o​r​ ​y​ ​e​n​ ​e​l​ ​m​ó​v​i​l​ ​c​o​n​ ​l​a​ ​m​i​s​m​a​ ​c​u​e​n​t​a​,​ ​l​a​ ​p​e​s​t​a​ñ​a​ ​q​u​e​ ​l​l​e​v​a​b​a​ ​r​a​t​o​ ​a​b​i​e​r​t​a​ ​*​*​n​o​ ​v​o​l​v​í​a​ ​a​ ​l​e​e​r​ ​l​a​ ​n​u​b​e​ ​n​u​n​c​a​*​*​:​ ​e​n​s​e​ñ​a​b​a​ ​l​o​ ​d​e​ ​h​a​c​e​ ​h​o​r​a​s​ ​y​,​ ​e​n​ ​c​u​a​n​t​o​ ​g​u​a​r​d​a​b​a​ ​c​u​a​l​q​u​i​e​r​ ​c​o​s​a​,​ ​s​u​b​í​a​ ​e​s​e​ ​e​s​t​a​d​o​ ​v​i​e​j​o​ ​e​n​c​i​m​a​ ​d​e​l​ ​b​u​e​n​o​.​ ​E​l​ ​c​a​m​b​i​o​ ​q​u​e​ ​a​c​a​b​a​b​a​s​ ​d​e​ ​h​a​c​e​r​ ​e​n​ ​e​l​ ​o​t​r​o​ ​d​i​s​p​o​s​i​t​i​v​o​ ​d​e​s​a​p​a​r​e​c​í​a​,​ ​y​ ​a​l​ ​r​e​c​a​r​g​a​r​ ​a​p​a​r​e​c​í​a​ ​e​l​ ​d​a​t​o​ ​a​n​t​i​g​u​o​ ​e​n​ ​l​o​s​ ​d​o​s​.
+					 */
+					'0': string
+					/**
+					 * �​�​ ​*​*​A​h​o​r​a​ ​l​o​s​ ​c​a​m​b​i​o​s​ ​l​l​e​g​a​n​ ​s​o​l​o​s​,​ ​s​i​n​ ​r​e​c​a​r​g​a​r​.​*​*​ ​T​o​c​a​s​ ​a​l​g​o​ ​e​n​ ​e​l​ ​o​r​d​e​n​a​d​o​r​ ​y​ ​e​l​ ​m​ó​v​i​l​ ​s​e​ ​a​c​t​u​a​l​i​z​a​ ​e​n​ ​c​u​a​n​t​o​ ​o​c​u​r​r​e​,​ ​a​u​n​q​u​e​ ​l​l​e​v​e​ ​h​o​r​a​s​ ​a​b​i​e​r​t​o​.
+					 */
+					'1': string
+					/**
+					 * �​�​ ​*​*​Y​ ​n​i​n​g​u​n​a​ ​s​e​s​i​ó​n​ ​p​u​e​d​e​ ​e​s​c​r​i​b​i​r​ ​e​n​c​i​m​a​ ​d​e​ ​l​o​ ​q​u​e​ ​n​o​ ​h​a​ ​l​e​í​d​o​.​*​*​ ​C​a​d​a​ ​g​u​a​r​d​a​d​o​ ​d​i​c​e​ ​q​u​é​ ​v​e​r​s​i​ó​n​ ​c​r​e​í​a​ ​t​e​n​e​r​ ​y​ ​s​e​ ​r​e​c​h​a​z​a​ ​s​i​ ​l​a​ ​n​u​b​e​ ​h​a​ ​a​v​a​n​z​a​d​o​ ​e​n​t​r​e​t​a​n​t​o​;​ ​e​n​t​o​n​c​e​s​ ​s​e​ ​r​e​c​a​r​g​a​ ​l​o​ ​ú​l​t​i​m​o​ ​y​ ​s​e​ ​t​e​ ​a​v​i​s​a​,​ ​e​n​ ​v​e​z​ ​d​e​ ​p​i​s​a​r​l​o​ ​e​n​ ​s​i​l​e​n​c​i​o​.
+					 */
+					'2': string
+					/**
+					 * �​�​ ​*​*​D​e​ ​p​a​s​o​,​ ​e​l​ ​d​e​s​e​m​p​a​t​e​ ​d​e​j​a​ ​d​e​ ​d​e​p​e​n​d​e​r​ ​d​e​ ​l​a​ ​h​o​r​a​ ​d​e​ ​c​a​d​a​ ​a​p​a​r​a​t​o​.​*​*​ ​A​n​t​e​s​ ​s​e​ ​c​o​m​p​a​r​a​b​a​n​ ​d​o​s​ ​r​e​l​o​j​e​s​ ​d​i​s​t​i​n​t​o​s​,​ ​a​s​í​ ​q​u​e​ ​u​n​ ​m​ó​v​i​l​ ​a​d​e​l​a​n​t​a​d​o​ ​u​n​ ​m​i​n​u​t​o​ ​g​a​n​a​b​a​ ​l​l​e​v​a​n​d​o​ ​d​a​t​o​s​ ​v​i​e​j​o​s​.​ ​A​h​o​r​a​ ​s​e​ ​c​o​m​p​a​r​a​ ​u​n​ ​c​o​n​t​a​d​o​r​ ​d​e​ ​v​e​r​s​i​o​n​e​s​,​ ​q​u​e​ ​e​s​ ​e​l​ ​m​i​s​m​o​ ​p​a​r​a​ ​t​o​d​o​s​.
+					 */
+					'3': string
+				}
+			}
 			v1_23_1: {
 				/**
 				 * 2​8​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
@@ -7826,6 +7862,14 @@ export type TranslationFunctions = {
 		 */
 		save_error: () => LocalizedString
 		/**
+		 * Otro dispositivo cambió tu cartera mientras tanto. Se ha recargado lo último para no pisarlo.
+		 */
+		sync_conflict: () => LocalizedString
+		/**
+		 * Tu cartera se ha actualizado desde otro dispositivo.
+		 */
+		sync_remote_change: () => LocalizedString
+		/**
 		 * Error al cargar los datos desde la nube
 		 */
 		load_error: () => LocalizedString
@@ -8170,7 +8214,7 @@ export type TranslationFunctions = {
 		 */
 		footer_tagline: () => LocalizedString
 		/**
-		 * v1.23.1 🚀
+		 * v1.23.2 🚀
 		 */
 		changelog_trigger: () => LocalizedString
 		/**
@@ -9168,6 +9212,34 @@ export type TranslationFunctions = {
 		 */
 		btn_understand: () => LocalizedString
 		releases: {
+			v1_23_2: {
+				/**
+				 * 28 de Agosto, 2026
+				 */
+				date: () => LocalizedString
+				/**
+				 * Dos dispositivos a la vez dejan de pisarse
+				 */
+				badge: () => LocalizedString
+				changes: {
+					/**
+					 * 🛡️ **Arreglada una pérdida de datos con la sesión abierta en dos sitios.** Si tenías la app abierta en el ordenador y en el móvil con la misma cuenta, la pestaña que llevaba rato abierta **no volvía a leer la nube nunca**: enseñaba lo de hace horas y, en cuanto guardaba cualquier cosa, subía ese estado viejo encima del bueno. El cambio que acababas de hacer en el otro dispositivo desaparecía, y al recargar aparecía el dato antiguo en los dos.
+					 */
+					'0': () => LocalizedString
+					/**
+					 * 📡 **Ahora los cambios llegan solos, sin recargar.** Tocas algo en el ordenador y el móvil se actualiza en cuanto ocurre, aunque lleve horas abierto.
+					 */
+					'1': () => LocalizedString
+					/**
+					 * 🔒 **Y ninguna sesión puede escribir encima de lo que no ha leído.** Cada guardado dice qué versión creía tener y se rechaza si la nube ha avanzado entretanto; entonces se recarga lo último y se te avisa, en vez de pisarlo en silencio.
+					 */
+					'2': () => LocalizedString
+					/**
+					 * 🕐 **De paso, el desempate deja de depender de la hora de cada aparato.** Antes se comparaban dos relojes distintos, así que un móvil adelantado un minuto ganaba llevando datos viejos. Ahora se compara un contador de versiones, que es el mismo para todos.
+					 */
+					'3': () => LocalizedString
+				}
+			}
 			v1_23_1: {
 				/**
 				 * 28 de Agosto, 2026

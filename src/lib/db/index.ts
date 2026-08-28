@@ -36,9 +36,34 @@ class LazyStorageProvider implements StorageProvider {
 		return this.providerPromise;
 	}
 
-	async saveUserData(userId: string, data: Partial<UserData>): Promise<void> {
+	async saveUserData(
+		userId: string,
+		data: Partial<UserData>,
+		opciones?: { revEsperada?: number | null }
+	): Promise<number | null> {
 		const p = await this.getProvider();
-		return p.saveUserData(userId, data);
+		return p.saveUserData(userId, data, opciones);
+	}
+
+	/**
+	 * ⚠️ Devuelve la baja **de forma síncrona** aunque el proveedor se resuelva después:
+	 * quien se suscribe necesita poder cancelar sin esperar, y una promesa aquí obligaría
+	 * a todos los que llaman a guardar un `await` que en un `onDestroy` no existe. Si la
+	 * baja llega antes que el proveedor, se anota y la suscripción se cierra en cuanto se
+	 * abre — sin eso quedaría una escucha viva sobre un usuario que ya cerró sesión.
+	 */
+	subscribeUserData(userId: string, alCambiar: (data: UserData) => void): () => void {
+		let bajaReal: (() => void) | null = null;
+		let cancelado = false;
+		this.getProvider().then((p) => {
+			if (cancelado || !p.subscribeUserData) return;
+			bajaReal = p.subscribeUserData(userId, alCambiar);
+			if (cancelado) bajaReal();
+		});
+		return () => {
+			cancelado = true;
+			if (bajaReal) bajaReal();
+		};
 	}
 
 	async loadUserData(userId: string): Promise<UserData | null> {

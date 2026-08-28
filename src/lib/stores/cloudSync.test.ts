@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import type { Transaction } from '$lib/types';
 import type { UserData } from '$lib/db/types';
+import { ConflictoDeSincronizacion } from '$lib/db/types';
 
 /**
  * La resolución de conflictos entre el navegador y la nube.
@@ -26,7 +27,14 @@ const almacen = vi.hoisted(() => ({
 	/** `null` es «la lectura falló», no «no hay movimientos». Ver el bloque de tests. */
 	transactions: [] as Transaction[] | null,
 	guardados: [] as { userId: string; data: Record<string, unknown> }[],
-	transaccionesGuardadas: [] as Transaction[][]
+	transaccionesGuardadas: [] as Transaction[][],
+	/** La revisión que tiene la nube ahora mismo. Ver `rev` en `db/types.ts`. */
+	revNube: null as number | null,
+	/** Lo que cada guardado dijo creer tener, para poder afirmar sobre la guarda. */
+	revsEsperadas: [] as (number | null | undefined)[],
+	/** El callback de la escucha en tiempo real, para simular el otro dispositivo. */
+	alCambiar: null as ((data: UserData) => void) | null,
+	bajas: 0
 }));
 
 vi.mock('$env/dynamic/private', () => ({ env: {} }));
@@ -67,8 +75,32 @@ vi.mock('$lib/db', () => ({
 		loadTransactions: async () => almacen.transactions,
 		loadHistory: async () => [],
 		loadHoldingEdits: async () => [],
-		saveUserData: async (userId: string, data: Record<string, unknown>) => {
+		/*
+		 * ⚠️ Este doble **aplica la guarda de revisión de verdad**, porque es justo lo que
+		 * estos tests deciden. Un doble que siempre acepta dejaría pasar exactamente el
+		 * defecto que se está arreglando.
+		 */
+		saveUserData: async (
+			userId: string,
+			data: Record<string, unknown>,
+			opciones?: { revEsperada?: number | null }
+		) => {
+			almacen.revsEsperadas.push(opciones?.revEsperada);
+			if (opciones && opciones.revEsperada !== undefined) {
+				if (almacen.revNube !== null && almacen.revNube !== opciones.revEsperada) {
+					throw new ConflictoDeSincronizacion(almacen.revNube);
+				}
+				almacen.revNube = (almacen.revNube ?? 0) + 1;
+			}
 			almacen.guardados.push({ userId, data });
+			return almacen.revNube;
+		},
+		subscribeUserData: (_userId: string, alCambiar: (data: UserData) => void) => {
+			almacen.alCambiar = alCambiar;
+			return () => {
+				almacen.bajas++;
+				almacen.alCambiar = null;
+			};
 		},
 		saveTransactions: async (_userId: string, tx: Transaction[]) => {
 			almacen.transaccionesGuardadas.push(tx);
@@ -117,6 +149,17 @@ function tx(id: string, date: number): Transaction {
 	};
 }
 
+/**
+ * Deja correr el debounce de 300 ms de `scheduleCloudSave` y las promesas que encadena.
+ * Sin esto, el guardado que estos tests miden todavía no ha ocurrido.
+ */
+async function esperarGuardado() {
+	// Reloj real y no `vi.useFakeTimers()`: esta suite no los usa, y activarlos aquí
+	// congelaría también el sondeo de precios que el store arranca en el constructor.
+	await new Promise((r) => setTimeout(r, 400));
+	for (let i = 0; i < 20; i++) await Promise.resolve();
+}
+
 /** Construye el store y simula que Firebase acaba de reconocer al usuario. */
 async function iniciarSesion(): Promise<PortfolioStore> {
 	const store = new PortfolioStore();
@@ -134,6 +177,10 @@ describe('sincronización con la nube · qué copia gana', () => {
 		almacen.transactions = [];
 		almacen.guardados = [];
 		almacen.transaccionesGuardadas = [];
+		almacen.revNube = null;
+		almacen.revsEsperadas = [];
+		almacen.alCambiar = null;
+		almacen.bajas = 0;
 		// El store de UI es un singleton de módulo: sin vaciarlo, el aviso de un test
 		// se cuenta como el del siguiente.
 		ui.toasts = [];
@@ -347,6 +394,100 @@ describe('sincronización con la nube · qué copia gana', () => {
 			expect(store.holdings[TICKER].shares).toBe(1.235);
 			expect(store.holdings[TICKER].avgCost).toBe(9.877);
 			expect(store.holdings[TICKER].useLedger).toBe(false);
+		});
+	});
+
+	/**
+	 * ⚠️ **El defecto reportado el 28-ago-2026, y es pérdida de datos silenciosa.**
+	 *
+	 * Tal y como lo contó el usuario: dos sesiones abiertas con la misma cuenta de Google,
+	 * un cambio hecho en el PC, y al ir al móvil «salía el dato antiguo — pero no solo eso,
+	 * sino que ese dato antiguo ha machacado al nuevo, y luego en el pc me salía el dato
+	 * que tenía en el móvil».
+	 *
+	 * La causa eran dos agujeros que se sumaban. `loadFromCloud()` se llamaba **desde un
+	 * único sitio**, el callback de la sesión, así que una pestaña ya abierta no volvía a
+	 * leer la nube nunca; y cualquier guardado suyo subía el documento **entero** desde un
+	 * estado de hace horas, sin comprobar si entretanto había cambiado.
+	 */
+	describe('dos dispositivos a la vez', () => {
+		it('una sesión con el estado viejo NO puede pisar lo que escribió la otra', async () => {
+			almacen.userData = nube({ contribution: 100, rev: 4 });
+			const store = await iniciarSesion();
+			expect(store.contribution).toBe(100);
+
+			// El PC escribe mientras este móvil sigue abierto: la nube avanza sola.
+			almacen.revNube = 9;
+			const guardadosAntes = almacen.guardados.length;
+
+			store.updateContribution(555);
+			await esperarGuardado();
+
+			// Lo que NO puede pasar: que el 555 de esta sesión llegue a la nube.
+			expect(almacen.guardados.length).toBe(guardadosAntes);
+			expect(almacen.revNube).toBe(9);
+		});
+
+		it('y en vez de callarse, recarga y lo dice', async () => {
+			const avisos = vi.spyOn(ui, 'addToast');
+			almacen.userData = nube({ contribution: 100, rev: 4 });
+			const store = await iniciarSesion();
+
+			// El otro dispositivo dejó la nube en la revisión 9 con otra aportación.
+			almacen.revNube = 9;
+			almacen.userData = nube({ contribution: 777, rev: 9 });
+
+			store.updateContribution(555);
+			await esperarGuardado();
+
+			expect(store.contribution).toBe(777);
+			/*
+			 * Se comprueba el tipo del aviso y no su texto: en esta suite i18n no está
+			 * arrancado y `LL` devuelve cadena vacía, así que afirmar sobre el texto sería
+			 * una aserción que no puede fallar por el motivo que dice. Que el aviso exista
+			 * es lo que decide si el usuario se entera, y eso sí se puede medir aquí.
+			 */
+			expect(avisos).toHaveBeenCalledWith(expect.anything(), 'info');
+		});
+
+		/**
+		 * La otra mitad: sin esto la guarda solo convierte la pérdida en un aviso, y el
+		 * usuario seguiría mirando datos viejos hasta recargar a mano.
+		 */
+		it('un cambio del otro dispositivo llega solo, sin recargar la página', async () => {
+			almacen.userData = nube({ contribution: 100, rev: 4 });
+			const store = await iniciarSesion();
+
+			expect(almacen.alCambiar).not.toBeNull();
+			almacen.alCambiar!(nube({ contribution: 777, rev: 5 }));
+
+			expect(store.contribution).toBe(777);
+		});
+
+		/**
+		 * ⚠️ Firestore reenvía instantáneas, y reaplicar una que no trae nada nuevo pisaría
+		 * lo que el usuario esté escribiendo en ese instante con un estado idéntico pero
+		 * llegado tarde.
+		 */
+		it('una instantánea que no avanza la revisión se ignora', async () => {
+			almacen.userData = nube({ contribution: 100, rev: 4 });
+			const store = await iniciarSesion();
+
+			almacen.alCambiar!(nube({ contribution: 777, rev: 4 }));
+
+			expect(store.contribution).toBe(100);
+		});
+
+		it('la escritura declara la revisión que se leyó al entrar', async () => {
+			almacen.userData = nube({ contribution: 100, rev: 4 });
+			almacen.revNube = 4;
+			const store = await iniciarSesion();
+
+			store.updateContribution(555);
+			await esperarGuardado();
+
+			expect(almacen.revsEsperadas).toContain(4);
+			expect(almacen.revNube).toBe(5);
 		});
 	});
 });

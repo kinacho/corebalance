@@ -20,7 +20,8 @@ import {
 } from '$lib/history';
 import { storageProvider } from '$lib/db';
 import { SYNC_PAYLOAD_VERSION, type SyncPayload } from '$lib/sync-payload';
-import type { HistoryPoint } from '$lib/db/types';
+import type { HistoryPoint, UserData } from '$lib/db/types';
+import { ConflictoDeSincronizacion } from '$lib/db/types';
 import { formatDate } from '$lib/utils';
 import { resolveAssetIcon } from '$lib/asset-icon';
 import { ui } from '$lib/stores/ui.svelte';
@@ -585,6 +586,12 @@ export class PortfolioStore {
 			
 			if (user) {
 				await this.loadFromCloud();
+				// Después de la carga inicial, no antes: la escucha compara contra
+				// `revVista`, y sin haberla anotado el primer aviso sería un falso positivo.
+				this.escucharLaNube(user.uid);
+			} else {
+				this.dejarDeEscucharLaNube();
+				this.revVista = null;
 			}
 
 			this.isInitialized = true;
@@ -615,6 +622,19 @@ export class PortfolioStore {
 	/** Conjunto de tickers para el que ya se pidieron los fundamentales. Ver `asegurarFundamentales`. */
 	private firmaFundamentalesPedida = '';
 	private fundamentalesEnCurso = false;
+
+	/**
+	 * La revisión del documento de la nube que esta sesión cree tener.
+	 *
+	 * ⚠️ **No es un dato de la cartera, es la memoria de contra qué se puede escribir.**
+	 * Se manda en cada guardado como *compare-and-set* y la escritura se rechaza si la
+	 * nube ya no está ahí — que es lo que impide que una pestaña con el estado de hace
+	 * horas suba ese estado encima del bueno. `null` significa «todavía no he leído» o
+	 * «este documento es anterior al contador», y entonces no hay guarda que aplicar.
+	 */
+	private revVista: number | null = null;
+	/** Baja de la escucha en tiempo real. Ver `escucharLaNube`. */
+	private bajaDeEscucha: (() => void) | null = null;
 
 	// --- Cola de guardado en nube (evita race conditions) ---
 	private _cloudSavePending = false;
@@ -659,6 +679,9 @@ export class PortfolioStore {
 		if (this._cloudSaveDebounceTimer) clearTimeout(this._cloudSaveDebounceTimer);
 		if (this.visibilityHandler) document.removeEventListener('visibilitychange', this.visibilityHandler);
 		if (this.authUnsubscribe) this.authUnsubscribe();
+		// Una escucha de Firestore que sobrevive al store es una fuga y, peor, sigue
+		// escribiendo en un store que ya nadie mira.
+		this.dejarDeEscucharLaNube();
 	}
 
 	/**
@@ -702,7 +725,16 @@ export class PortfolioStore {
 				stockAssets: $state.snapshot(this.stockAssets),
 				updatedAt: new Date().toISOString()
 			};
-			await storageProvider.saveUserData(this.user.uid, dataToSave);
+			/*
+			 * ⚠️ **Escritura condicional: se dice qué revisión creíamos tener.** Sin esto,
+			 * una pestaña con el estado de hace horas subía ese estado entero encima del
+			 * bueno y la app se comía el cambio hecho en el otro dispositivo. Ver `rev` en
+			 * `db/types.ts`.
+			 */
+			const nuevaRev = await storageProvider.saveUserData(this.user.uid, dataToSave, {
+				revEsperada: this.revVista
+			});
+			if (nuevaRev !== null) this.revVista = nuevaRev;
 			if (storageProvider.saveTransactions) {
 				await storageProvider.saveTransactions(this.user.uid, $state.snapshot(this.transactions));
 			}
@@ -712,6 +744,21 @@ export class PortfolioStore {
 				await this._flushCloudSave();
 			}
 		} catch (e) {
+			/*
+			 * ⚠️ **Un conflicto NO se reintenta, y esa es la diferencia con cualquier otro
+			 * fallo.** Reintentar es literalmente lo que destruía el dato: significa «la
+			 * nube cambió desde que la leí», así que volver a mandar lo mío es pisar el
+			 * cambio de otro dispositivo otra vez, ahora con más ganas. Se recarga y se
+			 * **dice**, porque adoptar lo remoto en silencio es hacer desaparecer lo que el
+			 * usuario acababa de tocar.
+			 */
+			if (e instanceof ConflictoDeSincronizacion) {
+				console.warn('[Portfolio] La nube cambió desde la última lectura. Recargando.');
+				this._cloudSavePending = false;
+				ui.addToast(get(LL).toasts.sync_conflict(), 'info');
+				await this.loadFromCloud();
+				return;
+			}
 			console.error('Storage save error:', e);
 			ui.addToast(get(LL).toasts.save_error(), 'error');
 			// Reintentar si había un guardado pendiente
@@ -727,6 +774,60 @@ export class PortfolioStore {
 	/** @deprecated Usar scheduleCloudSave() internamente. Mantenido para compatibilidad. */
 	private saveToCloud() {
 		this.scheduleCloudSave();
+	}
+
+	/**
+	 * Vuelca en el store un documento venido de la nube.
+	 *
+	 * Extraído de `loadFromCloud` al aparecer su segundo consumidor —la escucha en
+	 * tiempo real—, y por el motivo de siempre en este repo: escrito dos veces, las dos
+	 * copias divergen, y aquí divergir significa que un dispositivo aplica un campo que
+	 * el otro no. `revVista` se actualiza aquí porque va indisolublemente unido a los
+	 * datos que se acaban de adoptar: separarlos es cómo se pierde la guarda.
+	 */
+	private aplicarDatosDeLaNube(userData: UserData) {
+		this.revVista = userData.rev ?? this.revVista;
+		this.holdings = this.sanitizeHoldings(userData.holdings || {});
+		this.contribution = userData.contribution || 0;
+		this.isPrivate = userData.isPrivate ?? this.isPrivate;
+		if (userData.coreAssets && Array.isArray(userData.coreAssets)) this.coreAssets = normalizeAssets(userData.coreAssets);
+		if (userData.satelliteAssets && Array.isArray(userData.satelliteAssets)) this.satelliteAssets = normalizeAssets(userData.satelliteAssets);
+		if (userData.stockAssets && Array.isArray(userData.stockAssets)) this.stockAssets = normalizeAssets(userData.stockAssets);
+
+		// Sincronizar localStorage con los datos cargados de la nube
+		this.syncLocalStorage();
+	}
+
+	/**
+	 * ⚠️ **Escuchar la nube es la mitad que faltaba, y sin ella la guarda de revisión
+	 * solo convierte una pérdida silenciosa en un aviso.**
+	 *
+	 * `loadFromCloud()` se llamaba desde un único sitio, el callback de la sesión, así
+	 * que una pestaña ya abierta **no volvía a leer la nube nunca**: seguía enseñando lo
+	 * de hace horas. El `visibilitychange` que ya existía refresca **precios**, no datos.
+	 * Con esto, un cambio hecho en el otro dispositivo llega solo.
+	 *
+	 * ⚠️ Se ignora un documento cuya revisión no sea **mayor** que la vista. Firestore
+	 * puede reenviar la misma instantánea, y reaplicarla pisaría lo que el usuario esté
+	 * escribiendo en ese momento con un estado idéntico pero llegado tarde.
+	 */
+	private escucharLaNube(uid: string) {
+		this.dejarDeEscucharLaNube();
+		if (!storageProvider.subscribeUserData) return;
+		this.bajaDeEscucha = storageProvider.subscribeUserData(uid, (userData) => {
+			const revEntrante = userData.rev ?? null;
+			if (revEntrante === null || (this.revVista !== null && revEntrante <= this.revVista)) return;
+			console.log('[Portfolio] Cambio desde otro dispositivo, rev', revEntrante);
+			this.aplicarDatosDeLaNube(userData);
+			ui.addToast(get(LL).toasts.sync_remote_change(), 'info');
+		});
+	}
+
+	private dejarDeEscucharLaNube() {
+		if (this.bajaDeEscucha) {
+			this.bajaDeEscucha();
+			this.bajaDeEscucha = null;
+		}
 	}
 
 	private async loadFromCloud() {
@@ -754,6 +855,15 @@ export class PortfolioStore {
 			let shouldLoadFromCloud = true;
 
 			if (userData) {
+				/*
+				 * ⚠️ **Anotar la revisión ANTES de decidir nada.** Si se sube la copia local
+				 * sin haberla leído, la escritura condicional de `_flushCloudSave` va con
+				 * `revEsperada: null` contra un documento que sí tiene revisión, la rechaza
+				 * como conflicto y el camino legítimo de «tenía trabajo sin guardar» queda
+				 * roto. Es la primera trampa que apareció al montar esto.
+				 */
+				this.revVista = userData.rev ?? null;
+
 				// Comparar timestamps: si el localStorage tiene datos MÁS RECIENTES
 				// que Firestore (ej: guardado pendiente que no llegó a completarse),
 				// subimos los datos locales en lugar de sobreescribirlos.
@@ -770,15 +880,7 @@ export class PortfolioStore {
 					shouldLoadFromCloud = false;
 				} else {
 					// Los datos de la nube son más recientes: los cargamos
-					this.holdings = this.sanitizeHoldings(userData.holdings || {});
-					this.contribution = userData.contribution || 0;
-					this.isPrivate = userData.isPrivate ?? this.isPrivate;
-					if (userData.coreAssets && Array.isArray(userData.coreAssets)) this.coreAssets = normalizeAssets(userData.coreAssets);
-					if (userData.satelliteAssets && Array.isArray(userData.satelliteAssets)) this.satelliteAssets = normalizeAssets(userData.satelliteAssets);
-					if (userData.stockAssets && Array.isArray(userData.stockAssets)) this.stockAssets = normalizeAssets(userData.stockAssets);
-
-					// Sincronizar localStorage con los datos cargados de la nube
-					this.syncLocalStorage();
+					this.aplicarDatosDeLaNube(userData);
 				}
 			} else if (Object.keys(this.holdings).length > 0 || this.coreAssets.length > 0 || this.satelliteAssets.length > 0 || this.stockAssets.length > 0) {
 				// No hay datos en la nube pero sí locales: subimos los locales
