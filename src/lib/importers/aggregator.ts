@@ -1,4 +1,4 @@
-import { claveDeGrupo, type CosteHeredado } from './direccion';
+import { claveDeGrupo } from './direccion';
 import type { Transaction, ParsedPosition } from './types';
 
 /**
@@ -15,24 +15,19 @@ import type { Transaction, ParsedPosition } from './types';
  * meses y las compras antiguas quedan fuera de la ventana. El usuario veía menos títulos
  * de los que tiene —o ninguno, si el recorte llega a cero y la posición desaparece del
  * listado— con `skippedRows: 0` y `warnings: []`, es decir, sin nada que mirar.
+ *
+ * ⚠️ **Tenía un segundo parámetro con el coste heredado de cada traspaso y se ha
+ * quitado en la 1.23.1.** Aplicaba a la instantánea el valor de adquisición del art. 94
+ * en vez del importe suscrito, con el argumento de que si no «la plusvalía latente
+ * desaparece». El argumento vale para `fiscal.ts` y no para aquí: esta cifra es la que
+ * el usuario coteja contra su extracto, y **la fuente de la verdad de «cuánto llevo
+ * metido» es la gestora**. Con el coste heredado la previsualización enseñaba un coste
+ * medio que no aparece en ningún papel que el usuario tenga.
+ *
+ * El coste heredado no se pierde: `ledger-import.ts` lo sigue escribiendo como
+ * `carriedCostBase` en la pata de entrada, y de ahí lo lee `fiscal.ts`.
  */
-export function reduceTransactionsToPositions(
-	transactions: Transaction[],
-	/**
-	 * El coste que viaja en cada traspaso confirmado, por `transferId`.
-	 *
-	 * ⚠️ **Sin esto la posición del destino sale con el coste de suscripción, y eso es
-	 * precisamente la plusvalía latente desapareciendo.** En un traspaso el valor de
-	 * adquisición viaja con el dinero (art. 94 LIRPF), así que la entrada no vale lo
-	 * que costó suscribir sino lo que costó comprar en el origen. Es la misma regla
-	 * que aplica `ledger.ts` con `carriedCostBase`; aquí se aplica a la instantánea
-	 * para que la previsualización enseñe **el mismo número que se va a escribir**.
-	 *
-	 * Opcional: sin el mapa —o con un traspaso cuyo coste no se sabe— se cae al precio
-	 * del fichero, que es el comportamiento de siempre.
-	 */
-	costesHeredados?: Map<string, CosteHeredado>
-): {
+export function reduceTransactionsToPositions(transactions: Transaction[]): {
 	positions: ParsedPosition[];
 	warnings: string[];
 } {
@@ -57,19 +52,8 @@ export function reduceTransactionsToPositions(
 		const sale = tx.type === 'SELL' || tx.type === 'TRANSFER_OUT';
 
 		if (entra) {
-			/*
-			 * El coste heredado manda sobre el precio del fichero cuando lo hay: ver el
-			 * parámetro `costesHeredados`. ⚠️ La comparación es contra `null` explícito y
-			 * no un `||`: un coste heredado de **0 € es un valor legítimo** —un fondo
-			 * regalado, o uno cuyo libro no tiene coste— y con `||` se caería al precio
-			 * del día, que es justo la plusvalía latente desapareciendo. `null` significa
-			 * «no se sabe», y solo eso cae al precio.
-			 */
-			const heredado =
-				tx.type === 'TRANSFER_IN' && tx.transferId
-					? (costesHeredados?.get(tx.transferId)?.coste ?? null)
-					: null;
-			const txCost = heredado !== null ? heredado : tx.shares * tx.price;
+			// Una entrada de traspaso cuesta lo suscrito, igual que una compra. Ver arriba.
+			const txCost = tx.shares * tx.price;
 			if (existing) {
 				existing.shares += tx.shares;
 				existing.totalCost += txCost;

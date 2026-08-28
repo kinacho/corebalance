@@ -484,8 +484,8 @@ const en: Translation = {
     label_coste_medio_final: 'Average cost',
     nota_como_queda:
       'Copy it straight from your bank. The NAVs of a transfer are set days after the order, so these two figures are the only ones you can know for certain — and with them everything reconciles by itself.',
-    resumen_descuadre:
-      'Note: what you entered implies {declarado} of cost basis coming in, while your ledger says {libro} went out. What you entered is what gets recorded, since that is what your fund manager will report. If you did not expect that gap, your source fund is probably missing older purchases in the ledger.',
+    resumen_dos_costes:
+      'Your bank will say the destination holds {suscrito} invested, and the app shows that same figure. For tax purposes it instead carries {fiscal} of acquisition value (art. 94), which is what you will be taxed on when you sell. Both are correct and answer different questions.',
     resumen_participaciones:
       'You sell {salen} units of {origen} and buy {entran} of {destino}.',
     resumen_sin_tributar:
@@ -669,7 +669,7 @@ const en: Translation = {
     dir_suggest_detail: '{amountOut} left {from} on {dateOut}, and {amountIn} went into {to} {days} days later.',
     dir_suggest_confirm: 'Yes, it is a transfer',
     dir_suggest_undo: 'Marked as a transfer · undo',
-    dir_suggest_cost: 'The acquisition value travels with the money (art. 94 LIRPF), so {to} inherits {cost} of cost basis and the date of your oldest holding. Your bank will show the subscribed amount in its "invested" box: both figures are correct and answer different questions, but this is the one that will be taxed.',
+    dir_suggest_cost: 'The average cost you will see on {to} is your bank\'s — the subscribed amount. Underneath, for tax purposes, it inherits {cost} of acquisition value and the date of your oldest holding (art. 94 LIRPF): that is what will be taxed when you sell, and what stops the tax panel telling you "€0 capital gain" right after a transfer.',
     dir_suggest_no_cost: 'We cannot tell what cost basis travels, because the file does not carry the older purchases of {from}. The destination comes in at the subscribed amount, as before.',
     dir_row_in: 'In',
     dir_row_out: 'Out',
@@ -813,7 +813,7 @@ const en: Translation = {
     timing_period_note: 'Measured over the {days} days with real data, not annualised.',
     legal_disclaimer: '<strong>Legal Disclaimer:</strong> CoreBalance is a purely informative and educational tool. It does not constitute financial, investment, or tax advice. The data displayed may be subject to delays or inaccuracies. The developer is not responsible for any financial losses resulting from the use of this application. Always invest at your own risk.',
     footer_tagline: 'Your control center for smart and balanced asset management.',
-    changelog_trigger: 'v1.23.0 🚀',
+    changelog_trigger: 'v1.23.1 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Made with ❤️ for the investing community',
     reclassify_stocks: 'Individual Stocks',
@@ -1118,6 +1118,16 @@ const en: Translation = {
     close_aria: 'Close modal',
     btn_understand: 'Got it',
     releases: {
+      v1_23_1: {
+        date: 'August 28, 2026',
+        badge: 'Average cost is your bank\'s figure again',
+        changes: [
+          '💶 **The average cost of a transferred fund now matches your statement.** In 1.23.0 the app put the acquisition value carried by the transfer (art. 94) in the average-cost box, so it said €12.58 where the bank said €13.41 — a correct figure, but **one that appears on no paper you hold**, and therefore impossible to check. The source of truth for "what did this cost me" is your fund manager, and that is what is shown now.',
+          '🧾 **The tax figure is not lost, it just stops being mixed in.** The inherited acquisition value is still stored and is still what the IRPF panel and the asset sheet use — which is what stops them telling you "€0 capital gain" right after a transfer. Two figures answering two questions, each now living where it belongs. When they differ, the transfer summary says so with both amounts.',
+          '✏️ **And editing the price of a transfer-in row does something again.** That field used to be decorative: you changed it, the "updated" toast appeared and the average cost stayed put, with nothing explaining why. That is how all of this was found.',
+          '📉 **Fixed in the history: an outgoing transfer added units instead of subtracting them.** A hundred bought and forty transferred out came to a hundred and forty. That inflated your entire past net worth on the evolution chart and put an upward step in the "what you contributed" line — money that never came in. It dated from 1.22.0.',
+        ]
+      },
       v1_23_0: {
         date: 'August 28, 2026',
         badge: 'Your CSV no longer slips an outflow through as a purchase',

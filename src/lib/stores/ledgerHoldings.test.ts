@@ -452,12 +452,24 @@ describe('PortfolioStore · el ledger en sus bordes', () => {
 			expect(store.ledgerHoldings['AAPL'].totalCostBase).toBe(600);
 		});
 
-		it('una entrada con coste heredado apunta ESE coste, no `shares × price`', () => {
-			/*
-			 * El caso que da sentido a todo: entran 400 participaciones que hoy valen
-			 * 8.000 € pero cuyo coste heredado es 4.200 €. Apuntar el precio del día
-			 * convertiría la plusvalía latente en coste y la haría desaparecer.
-			 */
+		/**
+		 * ⚠️ **Este caso afirmaba lo contrario hasta la 1.23.1, y se reescribe en vez de
+		 * borrarse porque un cambio de contrato tiene que verse en la prueba que lo
+		 * guardaba.**
+		 *
+		 * Decía que la entrada apunta su `carriedCostBase` y no `shares × price`, con el
+		 * argumento de que si no la plusvalía latente se convierte en coste y desaparece.
+		 * El argumento es cierto **para `fiscal.ts`** y falso para este módulo, y separarlos
+		 * es lo que arregla el defecto: aquí se contesta «¿cuánto llevo metido?», que es la
+		 * cifra que el usuario coteja contra su extracto, y la fuente de la verdad de eso
+		 * es la gestora. Medido contra un extracto real, la app enseñaba 12,58 € donde el
+		 * banco decía 13,41 €.
+		 *
+		 * El coste heredado no se pierde: sigue escrito en la transacción y `fiscal.ts` lo
+		 * usa para el valor de adquisición del art. 94, que es lo que impide que la ficha
+		 * declare «plusvalía 0 €» tras un traspaso. Lo pinta `fiscal.test.ts`.
+		 */
+		it('una entrada de traspaso cuesta lo suscrito, aunque traiga coste heredado', () => {
 			store.transactions = [
 				compra({
 					type: 'transfer_in',
@@ -470,9 +482,30 @@ describe('PortfolioStore · el ledger en sus bordes', () => {
 			store.holdings = conLedger('AAPL');
 
 			expect(store.ledgerHoldings['AAPL'].shares).toBe(400);
-			expect(store.ledgerHoldings['AAPL'].totalCostBase).toBe(4200);
-			// 4.200 / 400 = 10,50 €, no los 20 € del día.
-			expect(store.ledgerHoldings['AAPL'].avgCost).toBe(10.5);
+			// 400 × 20 = 8.000 €, lo que la gestora dirá que hay invertido.
+			expect(store.ledgerHoldings['AAPL'].totalCostBase).toBe(8000);
+			expect(store.ledgerHoldings['AAPL'].avgCost).toBe(20);
+		});
+
+		/**
+		 * La otra mitad del reparto, y va aquí al lado a propósito: el coste heredado tiene
+		 * que **seguir vivo en la transacción** para que `fiscal.ts` lo lea. Si alguien
+		 * decide que ya no hace falta y lo quita del modelo, este caso se pone rojo antes
+		 * de que lo haga el panel de IRPF.
+		 */
+		it('y el coste heredado sigue guardado en la transacción para la capa fiscal', () => {
+			const tx = compra({
+				type: 'transfer_in',
+				shares: 400,
+				price: 20,
+				carriedCostBase: 4200,
+				carriedLotDate: T0 - 1000 * DIA
+			});
+			store.transactions = [tx];
+			store.holdings = conLedger('AAPL');
+
+			expect(store.transactions[0].carriedCostBase).toBe(4200);
+			expect(store.transactions[0].carriedLotDate).toBe(T0 - 1000 * DIA);
 		});
 
 		it('una entrada SIN coste heredado se comporta como antes: es lo que hace seguro el alias', () => {
@@ -493,12 +526,19 @@ describe('PortfolioStore · el ledger en sus bordes', () => {
 			expect(store.ledgerHoldings['AAPL'].totalCostBase).toBe(8000);
 		});
 
-		it('el coste heredado llega en divisa base y no se convierte dos veces', () => {
-			/*
-			 * `carriedCostBase` ya viene convertido, igual que lo pide `simulateSale`.
-			 * Aplicarle el `fxRate` otra vez es el bug histórico de beneficios de este
-			 * repo, y aquí saldría un coste inflado por el cambio.
-			 */
+		/**
+		 * ⚠️ **Este caso decía «el coste heredado llega en divisa base y no se convierte
+		 * dos veces», y desde la 1.23.1 ya no puede fallar por ese motivo**: este módulo no
+		 * lee `carriedCostBase`. Sus números además coincidían (100 × 20 × 0,9 = 1.800),
+		 * así que habría seguido verde sin probar nada — una señal falsa, que es lo que
+		 * este repo persigue antes que la cobertura. Se reorienta a lo que sí decide hoy:
+		 * que una entrada de traspaso en divisa extranjera convierte **una sola vez**,
+		 * exactamente como una compra.
+		 *
+		 * La versión de esta invariante que sigue aplicando al coste heredado vive ahora en
+		 * `fiscal.test.ts`, que es quien lo lee.
+		 */
+		it('una entrada de traspaso en divisa extranjera convierte una sola vez', () => {
 			store.transactions = [
 				compra({
 					type: 'transfer_in',
@@ -506,13 +546,16 @@ describe('PortfolioStore · el ledger en sus bordes', () => {
 					price: 20,
 					currency: 'USD',
 					fxRate: 0.9,
-					carriedCostBase: 1800
+					// Deliberadamente distinto de `shares × price × fx`: si alguien lo
+					// volviera a leer aquí, el caso se pondría rojo en vez de coincidir.
+					carriedCostBase: 500
 				})
 			];
 			store.holdings = conLedger('AAPL');
 
+			// 100 × 20 $ = 2.000 $, y 2.000 × 0,9 = 1.800 €. Una conversión, no dos.
 			expect(store.ledgerHoldings['AAPL'].totalCostBase).toBe(1800);
-			// Y el coste medio se expresa en divisa del activo: 1.800 € / 0,9 = 2.000 $.
+			// Y el coste medio se expresa en divisa del activo: 20 $.
 			expect(store.ledgerHoldings['AAPL'].avgCost).toBe(20);
 		});
 

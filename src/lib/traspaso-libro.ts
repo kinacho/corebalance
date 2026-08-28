@@ -106,24 +106,39 @@ export interface PlanDeTraspaso {
 
 	estadoCoste: EstadoCoste;
 	/**
-	 * Coste de adquisición que viaja al destino, en divisa base — el que se escribe
-	 * como `carriedCostBase`.
+	 * Valor de adquisición que viaja al destino, en divisa base — el que se escribe
+	 * como `carriedCostBase` y que **solo lee `fiscal.ts`**.
 	 *
-	 * ⚠️ Sale del **estado final que declara el usuario**, no de los lotes del origen,
-	 * y esa preferencia es deliberada: la cifra del banco es la que la gestora
-	 * reportará a Hacienda, mientras que la del libro depende de que el libro del
-	 * origen esté completo. `costeSegunElLibro` guarda la otra para poder compararlas.
+	 * ⚠️ **Sale de los lotes FIFO del origen, no del estado final que declara el
+	 * usuario, y hasta la 1.23.1 era al revés.** El argumento de entonces era que «la
+	 * cifra del banco es la que la gestora reportará a Hacienda»; es falso, y la
+	 * confusión entre esas dos cosas es justo el defecto que se corrigió. Lo que el
+	 * usuario lee en su extracto es el **importe suscrito** —un flujo de caja—, no el
+	 * valor de adquisición: la gestora arrastra el segundo por obligación del art. 94 y
+	 * no lo enseña en esa pantalla. Los dos números son legítimos y se separan aquí:
+	 * este para Hacienda, `costeSuscripcion` para lo que se pinta.
 	 *
-	 * `null` cuando no hay ni libro ni cifra declarada: no se sabe.
+	 * `null` cuando el origen no tiene libro: entonces no se sabe, y afirmar un coste
+	 * que nadie ha comprobado es el defecto del importador que metía activos a coste 0.
 	 */
 	costeHeredado: number | null;
 	/**
-	 * Lo que los lotes FIFO del origen dicen que sale. `null` si el origen no tiene
-	 * libro. Se devuelve para poder avisar cuando no cuadra con lo declarado.
+	 * Lo que **entra de verdad** en el destino según su extracto, en divisa base: el
+	 * importe suscrito. Es lo que alimenta el precio de la fila y, por tanto, el coste
+	 * medio que la app enseña.
+	 *
+	 * ⚠️ Va separado de `costeHeredado` porque **la fuente de la verdad de «cuánto me
+	 * costó» es la gestora**: un coste medio que no aparece en ningún extracto del
+	 * usuario no se puede verificar, y la 1.23.0 llegó a enseñar 12,58 € donde el banco
+	 * decía 13,41 €.
+	 */
+	costeSuscripcion: number | null;
+	/**
+	 * Lo que los lotes FIFO del origen dicen que sale. Es el mismo número que
+	 * `costeHeredado`; se mantiene con su nombre porque la interfaz lo cita al explicar
+	 * de dónde viene la cifra fiscal.
 	 */
 	costeSegunElLibro: number | null;
-	/** Cuánto se separan las dos cifras, en divisa base. `null` si falta una. */
-	descuadre: number | null;
 	/** Fecha de adquisición que viaja. `null` si no hay libro. */
 	fechaLoteHeredado: number | null;
 	/** Plusvalía latente que se lleva consigo. `null` si no hay libro. */
@@ -285,40 +300,28 @@ export function planificarTraspaso(entrada: {
 			: null;
 
 	/*
-	 * ⚠️ **Manda lo declarado, y solo se cae al libro cuando no hay nada declarado.**
+	 * ⚠️ **Las dos cifras se separan aquí, y esa separación es el arreglo de la 1.23.1.**
 	 *
-	 * La cifra del banco es la que la gestora reportará a Hacienda; la del libro
-	 * depende de que el libro del origen esté completo, que es justo lo que no se puede
-	 * dar por hecho (un CSV que solo trae doce meses es el caso normal). Las dos se
-	 * devuelven para que la interfaz pueda avisar cuando se separan: ese descuadre es
-	 * información —o falta historial en el origen, o la gestora aplicó otro valor de
-	 * adquisición—, no un error que tapar.
+	 * Lo fiscal sale **siempre de los lotes del origen**: es el valor de adquisición que
+	 * el art. 94 hace viajar. Sin libro en el origen no se sabe, y ahí `null` es la
+	 * respuesta correcta — la estimación vale «lo que cuesta hoy», que es una valoración
+	 * y no un valor de adquisición, y devolverla haría que el destino naciera afirmando
+	 * un coste que nadie ha comprobado (el defecto del importador que metía activos a
+	 * coste 0: el problema no era el cero, era afirmarlo).
+	 *
+	 * ⚠️ Hasta la 1.23.1 el estado declarado mandaba sobre el libro, «porque lo dice su
+	 * banco». Eso confundía dos cosas distintas: lo que el banco enseña en esa casilla es
+	 * el **importe suscrito**, no el valor de adquisición. De ahí sale `costeSuscripcion`,
+	 * que es lo que se pinta, mientras que lo fiscal sigue saliendo del libro.
 	 */
+	const costeHeredado = costeSegunElLibro;
 	/*
-	 * ⚠️ **La cifra estimada NO cuenta como coste heredado, y esa distinción es la que
-	 * mantiene honesto el `carriedCostBase` que se escribe en el libro.**
-	 *
-	 * Sin libro en el origen y sin nada declarado, la estimación vale «lo que cuesta
-	 * hoy» — que es una valoración, no un valor de adquisición. Devolverla aquí haría
-	 * que el destino naciera afirmando un coste que nadie ha comprobado, y es
-	 * exactamente el defecto que este repo arrastra documentado desde el importador que
-	 * metía activos a coste 0: el problema no era el cero, era afirmar un coste.
-	 *
-	 * Y al contrario: si el usuario **declara** el estado final, hay coste heredado
-	 * aunque el origen no tenga libro, porque lo dice su banco. Eso es capacidad nueva,
-	 * no un efecto colateral.
+	 * Y lo que se pinta: lo declarado si lo hay, y si no el importe movido —que es lo
+	 * que el destino habrá suscrito, valorado a día de hoy—. Nunca `null` cuando entran
+	 * participaciones, porque «cuánto he metido» siempre tiene respuesta aunque no se
+	 * sepa a cuánto se compró en su día.
 	 */
-	const costeHeredado = declarado ? costeDeclarado : costeSegunElLibro;
-	/*
-	 * Solo hay descuadre que avisar cuando el usuario ha **declarado** el estado final.
-	 * Con la estimación las dos cifras coinciden por construcción, así que compararlas
-	 * ahí sería un aviso permanente sobre datos correctos — la forma de fallo que este
-	 * repo persigue.
-	 */
-	const descuadre =
-		declarado && costeDeclarado !== null && costeSegunElLibro !== null
-			? redondear2(costeDeclarado - costeSegunElLibro)
-			: null;
+	const costeSuscripcion = compradas > 0 ? (costeDeclarado ?? importe) : null;
 
 	return {
 		origen,
@@ -333,8 +336,8 @@ export function planificarTraspaso(entrada: {
 		sinTributar: taxFree,
 		estadoCoste,
 		costeHeredado,
+		costeSuscripcion,
 		costeSegunElLibro,
-		descuadre,
 		fechaLoteHeredado,
 		plusvaliaLatente,
 		// Con tolerancia, porque `sacadas` viene de una división en el modo importe.

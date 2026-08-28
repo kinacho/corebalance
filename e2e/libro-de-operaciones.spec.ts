@@ -414,9 +414,18 @@ test.describe('Traspaso entre fondos', () => {
 	 *
 	 * Los dos valores liquidativos de un traspaso se fijan días después de la orden, así
 	 * que el usuario no los sabe; lo que sí tiene delante en el extracto es cuántas
-	 * participaciones hay en el fondo destino y a qué coste medio. Este caso comprueba
-	 * que esas dos cifras mandan de punta a punta: se escriben, y el valor de
-	 * adquisición que acaba declarando la ficha es exactamente el que implican.
+	 * participaciones hay en el fondo destino y a qué coste medio.
+	 *
+	 * ⚠️ **Este caso afirmaba que lo declarado acaba siendo el VALOR DE ADQUISICIÓN de la
+	 * ficha, y en la 1.23.1 se parte en dos. Se reescribe en vez de borrarse porque un
+	 * cambio de contrato tiene que verse en la prueba que lo guardaba.**
+	 *
+	 * Lo declarado es el importe suscrito —lo que el banco enseña como invertido— y no el
+	 * valor de adquisición del art. 94, que sale de los lotes del origen y viaja aparte.
+	 * Confundirlos es lo que hacía que la app enseñara un coste medio imposible de cuadrar
+	 * contra ningún extracto. Ahora se vigilan **las dos mitades a la vez**, que es más
+	 * fuerte que la aserción de antes: el libro tiene que decir lo declarado y la ficha lo
+	 * heredado, y ninguna de las dos puede volver a comerse a la otra sin ponerse roja.
 	 */
 	test('lo que declaras del destino manda sobre el valor liquidativo de hoy', async ({ page }) => {
 		await sembrarCartera(page, FONDOS_CON_LIBRO);
@@ -458,11 +467,23 @@ test.describe('Traspaso entre fondos', () => {
 		await expect(panelDestino).toBeVisible();
 
 		/*
-		 * ⚠️ La aserción que importa: 110.000 €, que es 1.100 × 100 tal cual lo declaró
-		 * el usuario. Con el modelo anterior esto habría salido del valor liquidativo de
-		 * hoy y no habría cuadrado con su extracto por más que lo intentara.
+		 * ⚠️ Primera mitad, en el LIBRO: 100,00 € de coste medio, que es tal cual lo que el
+		 * usuario declaró leyéndolo de su extracto. Es la cifra que tiene que poder cuadrar
+		 * contra el banco, y la que la 1.23.0 rompió al pintar ahí el coste heredado.
 		 */
-		await expect(panelDestino).toContainText('110.000,00 €');
+		await irAlLibro(panelDestino);
+		await expect(panelDestino.locator('.stats-grid')).toContainText('100,00 €');
+		await expect(panelDestino.locator('.stats-grid')).toContainText('1100');
+
+		/*
+		 * ⚠️ Segunda mitad, en la FICHA: el valor de adquisición NO es 110.000 € sino los
+		 * 70.000 € que arrastran los lotes del origen (art. 94). Son dos preguntas
+		 * distintas y cada una tiene que dar su propia respuesta; si alguien vuelve a
+		 * fundirlas, una de estas dos aserciones cae.
+		 */
+		await panelDestino.getByRole('tab', { name: 'Ficha' }).click();
+		await expect(panelDestino).toContainText('70.000,00 €');
+		await expect(panelDestino).not.toContainText('110.000,00 €');
 	});
 
 	/**

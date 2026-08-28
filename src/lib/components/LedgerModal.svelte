@@ -921,17 +921,22 @@
 										{/if}
 										</p>
 										<!--
-											⚠️ El descuadre se **dice**, no se tapa. Cuando lo que declara el
-											extracto no cuadra con lo que salió según el libro, eso es información:
-											o al libro del origen le falta historial —un CSV de doce meses es el
-											caso normal—, o la gestora aplicó otro valor de adquisición. Manda lo
-											declarado, porque es lo que la gestora reportará a Hacienda.
+											⚠️ **Aquí había un aviso de «descuadre» y se ha quitado, no movido.**
+											Comparaba lo declarado contra los lotes del origen dando por hecho que
+											las dos cifras eran la misma cosa. No lo son —una es el importe
+											suscrito y la otra el valor de adquisición— así que difieren por la
+											plusvalía latente **por construcción**: era un aviso permanente sobre
+											datos correctos, que es la forma de fallo que este repo persigue.
+
+											Lo que sí hay que decir es que son dos cifras y por qué, porque si no
+											el usuario compara el coste medio de la app con el de su banco, no
+											cuadran, y da la app por rota. Solo cuando de verdad hay dos números.
 										-->
-										{#if planTraspaso.descuadre !== null && Math.abs(planTraspaso.descuadre) >= 1}
-											<p class="resumen-linea resumen-descuadre">
-												{$LL.ledger.resumen_descuadre({
-													declarado: formatEUR(planTraspaso.costeHeredado ?? 0),
-													libro: formatEUR(planTraspaso.costeSegunElLibro ?? 0)
+										{#if planTraspaso.costeHeredado !== null && planTraspaso.costeSuscripcion !== null && Math.abs(planTraspaso.costeSuscripcion - planTraspaso.costeHeredado) >= 1}
+											<p class="resumen-linea resumen-dos-costes">
+												{$LL.ledger.resumen_dos_costes({
+													suscrito: formatEUR(planTraspaso.costeSuscripcion),
+													fiscal: formatEUR(planTraspaso.costeHeredado)
 												})}
 											</p>
 										{/if}
@@ -1611,7 +1616,7 @@
 		color: var(--text-muted);
 	}
 
-	.resumen-descuadre {
+	.resumen-dos-costes {
 		color: var(--accent-orange-ink);
 	}
 

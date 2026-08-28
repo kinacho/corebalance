@@ -499,8 +499,8 @@ const es = {
     label_coste_medio_final: 'Coste medio',
     nota_como_queda:
       'Cópialo de tu banco tal cual. Los valores liquidativos de un traspaso se fijan días después de la orden, así que estas dos cifras son las únicas que puedes saber con certeza — y con ellas cuadra solo.',
-    resumen_descuadre:
-      'Ojo: según lo que has puesto entran {declarado:string} de coste, y según tu libro salieron {libro:string}. Se apunta lo que has puesto, que es lo que dirá tu gestora. Si no esperabas esa diferencia, a tu fondo de origen probablemente le falten compras antiguas en el libro.',
+    resumen_dos_costes:
+      'Tu banco dirá que en el destino hay {suscrito:string} invertidos, y la app enseñará esa misma cifra. A efectos fiscales, en cambio, arrastra {fiscal:string} de valor de adquisición (art. 94), que es sobre lo que tributarás el día que vendas. Las dos son correctas y contestan a preguntas distintas.',
     resumen_participaciones:
       'Vendes {salen:string} participaciones de {origen:string} y compras {entran:string} de {destino:string}.',
     resumen_sin_tributar: 'No tributas: es un traspaso entre fondos (art. 94 LIRPF).',
@@ -683,7 +683,7 @@ const es = {
     dir_suggest_detail: 'Salieron {amountOut:string} de {from:string} el {dateOut:string}, y {amountIn:string} entraron en {to:string} {days:number} días después.',
     dir_suggest_confirm: 'Sí, es un traspaso',
     dir_suggest_undo: 'Marcado como traspaso · deshacer',
-    dir_suggest_cost: 'El valor de adquisición viaja con el dinero (art. 94 LIRPF), así que {to:string} hereda {cost:string} de coste y la fecha de tu participación más antigua. Tu banco enseñará el importe suscrito en su casilla de «invertido»: las dos cifras son correctas y sirven para cosas distintas, pero la que tributará es esta.',
+    dir_suggest_cost: 'El coste medio que verás en {to:string} será el de tu banco, el importe suscrito. Y por debajo, a efectos fiscales, hereda {cost:string} de valor de adquisición y la fecha de tu participación más antigua (art. 94 LIRPF): eso es lo que tributará el día que vendas, y es lo que hace que el panel de Hacienda no te diga «plusvalía 0 €» justo después de traspasar.',
     dir_suggest_no_cost: 'No podemos saber qué coste viaja, porque el archivo no trae las compras antiguas de {from:string}. El destino entra con el importe suscrito, como hasta ahora.',
     dir_row_in: 'Entra',
     dir_row_out: 'Sale',
@@ -834,7 +834,7 @@ const es = {
     timing_period_note: 'Medido sobre los {days:number} días con datos reales, sin anualizar.',
     legal_disclaimer: '<strong>Aviso Legal:</strong> CoreBalance es una herramienta puramente informativa y educativa. No constituye asesoramiento financiero, de inversión ni fiscal. Los datos mostrados pueden sufrir retrasos o ser inexactos. El desarrollador no se hace responsable de posibles pérdidas financieras derivadas del uso de esta aplicación. Invierte siempre bajo tu propia responsabilidad.',
     footer_tagline: 'Tu centro de mandos para una gestión de activos inteligente y equilibrada.',
-    changelog_trigger: 'v1.23.0 🚀',
+    changelog_trigger: 'v1.23.1 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Hecho con ❤️ para la comunidad inversora',
     reclassify_stocks: 'Acciones Individuales',
@@ -1156,6 +1156,16 @@ const es = {
     close_aria: 'Cerrar modal',
     btn_understand: 'Entendido',
     releases: {
+      v1_23_1: {
+        date: '28 de Agosto, 2026',
+        badge: 'El coste medio vuelve a ser el que dice tu banco',
+        changes: [
+          '💶 **El coste medio de un fondo traspasado ya coincide con el de tu extracto.** En la 1.23.0 la app enseñaba el valor de adquisición que arrastra el traspaso (art. 94) en la casilla del coste medio, así que decía 12,58 € donde el banco decía 13,41 €: una cifra correcta pero **que no aparece en ningún papel que tengas**, o sea imposible de comprobar. La fuente de la verdad de «cuánto me costó esto» es tu gestora, y ahora es lo que se enseña.',
+          '🧾 **Lo fiscal no se pierde, solo deja de mezclarse.** El valor de adquisición heredado sigue guardado y sigue siendo lo que usa el panel de IRPF y la ficha del activo — que es lo que impide que te digan «plusvalía 0 €» justo después de traspasar. Son dos cifras que contestan a dos preguntas, y ahora cada una vive donde le toca. Cuando difieren, el resumen del traspaso te lo dice con las dos cantidades.',
+          '✏️ **Y editar el precio de una entrada de traspaso vuelve a hacer algo.** Antes ese campo era decorativo: lo cambiabas, salía el aviso de «actualizado» y el coste medio se quedaba igual, sin nada que explicara por qué. Así se encontró todo esto.',
+          '📉 **Arreglado el histórico: un traspaso de salida sumaba participaciones en vez de restarlas.** Cien compradas y cuarenta traspasadas fuera daban ciento cuarenta. Eso inflaba todo tu patrimonio pasado en el gráfico de evolución y metía un escalón hacia arriba en la línea de «lo que has aportado» — dinero que nunca entró. Venía de la 1.22.0.',
+        ]
+      },
       v1_23_0: {
         date: '28 de Agosto, 2026',
         badge: 'Tu CSV ya no cuela una salida como si fuera una compra',

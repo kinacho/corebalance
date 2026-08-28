@@ -347,14 +347,24 @@ describe('el fichero sin dirección, de punta a punta', () => {
 		expect(a?.shares).toBe(250);
 	});
 
-	it('confirmado el traspaso, el origen cuadra y el destino hereda el coste', () => {
+	/**
+	 * ⚠️ **Este caso esperaba que el destino saliera a 10 € —el coste heredado— y desde la
+	 * 1.23.1 espera 13,10 €, lo suscrito. Se reescribe en vez de borrarse porque un cambio
+	 * de contrato tiene que verse en la prueba que lo guardaba.**
+	 *
+	 * El razonamiento de entonces («el valor de adquisición viaja, así que la entrada no
+	 * vale lo que costó suscribir») es correcto **para `fiscal.ts`** y equivocado para lo
+	 * que se pinta: esta cifra es la que el usuario coteja contra su extracto, y la fuente
+	 * de la verdad de «cuánto llevo metido» es la gestora. Con el criterio viejo la app
+	 * enseñaba un coste medio que no aparece en ningún papel suyo.
+	 */
+	it('confirmado el traspaso, el origen cuadra y el destino entra por lo suscrito', () => {
 		const ops = aplicarDireccion(
 			ficheroConTraspaso(),
 			{ traspasos: [{ salida: 2, entrada: 3, dias: 3, diferencia: 5 }] },
 			() => 'tid'
 		);
-		const costes = resolverCostesHeredados(ops);
-		const { positions } = reduceTransactionsToPositions(ops, costes);
+		const { positions } = reduceTransactionsToPositions(ops);
 
 		const a = positions.find((p) => p.isin === 'IE00FONDOA');
 		const b = positions.find((p) => p.isin === 'IE00FONDOB');
@@ -363,21 +373,68 @@ describe('el fichero sin dirección, de punta a punta', () => {
 		expect(a?.shares).toBe(150);
 		expect(a?.avgCost).toBeCloseTo(11, 6);
 
-		/*
-		 * ⚠️ El destino a 10 € y no a 13,10 €: el valor de adquisición viaja con el dinero
-		 * (art. 94), así que la entrada NO vale lo que costó suscribir. Los 155 € de
-		 * diferencia son la plusvalía latente, que sigue viva en vez de haberse convertido
-		 * en coste. Es el número que el banco no enseña y que decide lo que se pagará.
-		 */
 		expect(b?.shares).toBe(50);
-		expect(b?.avgCost).toBeCloseTo(10, 6);
+		expect(b?.avgCost).toBeCloseTo(13.1, 6);
+
+		/*
+		 * Y la otra mitad del reparto, aquí al lado a propósito: el valor de adquisición
+		 * del art. 94 sigue calculándose y sigue siendo 500 € —no los 655 € suscritos—,
+		 * para que `ledger-import.ts` lo escriba y `fiscal.ts` lo lea. Que la instantánea
+		 * ya no lo use no significa que se haya perdido.
+		 */
+		expect(resolverCostesHeredados(ops).get('tid')?.coste).toBe(500);
 	});
 
 	it('marcada solo como venta, el origen cuadra igual y el destino no hereda nada', () => {
 		const ops = aplicarDireccion(ficheroConTraspaso(), { salidas: new Set([2]) });
-		const { positions } = reduceTransactionsToPositions(ops, resolverCostesHeredados(ops));
+		const { positions } = reduceTransactionsToPositions(ops);
 
 		expect(positions.find((p) => p.isin === 'IE00FONDOA')?.shares).toBe(150);
 		expect(positions.find((p) => p.isin === 'IE00FONDOB')?.avgCost).toBeCloseTo(13.1, 6);
+	});
+});
+
+/**
+ * El caso que destapó el defecto de la 1.23.0, con su forma y no con sus cifras — el
+ * fichero real lleva ISIN y saldos de una persona y este repo es público.
+ *
+ * ⚠️ **La invariante que fija es la que se rompió: el coste medio de la app tiene que ser
+ * el mismo que el usuario lee en su banco.** Un número correcto que no aparece en ningún
+ * extracto suyo no se puede verificar, y ahí es donde la app dijo 12,58 € contra los
+ * 13,41 € del banco. La comprobación se hace sobre las **tres** filas del destino a la
+ * vez, porque el defecto solo aparece cuando una de ellas es una entrada de traspaso.
+ */
+describe('el coste medio que enseña la app es el del extracto', () => {
+	const dia = (d: string) => new Date(`${d}T00:00:00Z`);
+
+	it('un destino con dos compras y una entrada de traspaso cuadra con el banco', () => {
+		const ops: Transaction[] = [
+			op({ date: dia('2026-04-13'), shares: 1.61, price: 12.578, isin: 'IE00DEST', name: 'Destino' }),
+			op({ date: dia('2026-04-27'), shares: 43.43, price: 12.894, isin: 'IE00DEST', name: 'Destino' }),
+			{
+				date: dia('2026-08-24'),
+				type: 'TRANSFER_IN',
+				isin: 'IE00DEST',
+				name: 'Destino',
+				shares: 51.13,
+				price: 13.874,
+				currency: 'EUR',
+				transferId: 'tid'
+			}
+		];
+
+		const destino = reduceTransactionsToPositions(ops).positions[0];
+
+		expect(destino.shares).toBeCloseTo(96.17, 6);
+		/*
+		 * 20,25 + 560,00 + 709,38 = 1.289,63 € invertidos, y 1.289,63 / 96,17 = 13,41 €.
+		 * Con el criterio de la 1.23.0 —la entrada valorada a su coste heredado— salía
+		 * 12,58 €, que es la cifra que el usuario no podía cuadrar contra nada.
+		 */
+		// Un decimal y no dos: los precios unitarios de arriba vienen de dividir importes
+		// del extracto entre participaciones, así que arrastran ~1,5 céntimos de redondeo.
+		// Lo que se fija es el coste medio, que es la cifra que el usuario compara.
+		expect(destino.shares * destino.avgCost).toBeCloseTo(1289.63, 1);
+		expect(destino.avgCost).toBeCloseTo(13.41, 2);
 	});
 });
