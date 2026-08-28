@@ -26,6 +26,7 @@
 
 	// Mapeo dinámico desde el diccionario de traducciones
 	const releaseVersions = [
+		'v1_23_0',
 		'v1_22_0',
 		'v1_21_0',
 		'v1_20_2',
@@ -153,6 +154,7 @@
 		 * vecina de abajo (magenta ~295° de matiz contra ~28° del ámbar). Elegir un tono
 		 * a ojo aquí es exactamente el error que estos comentarios documentan dos veces.
 		 */
+		v1_23_0: '#15803d',
 		v1_22_0: '#c026d3',
 		v1_21_0: '#b45309',
 		v1_20_2: '#2563eb',

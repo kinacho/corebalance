@@ -641,6 +641,7 @@ const es = {
     subtitle_mapping: 'Configura las columnas de tu archivo',
     subtitle_resolving: 'Buscando activos en Yahoo Finance...',
     subtitle_preview: 'Revisa y confirma las posiciones',
+    subtitle_direction: 'Este archivo no dice si cada orden entra o sale',
     subtitle_done: '¡Importación completada!',
     upload_title: 'Arrastra tu archivo CSV aquí',
     upload_hint: 'o haz clic para seleccionarlo',
@@ -674,6 +675,22 @@ const es = {
     done_ledger: '{count:number} de ellos con su libro de operaciones: llevan las fechas y los precios de cada compra, así que tienes cálculo fiscal FIFO y el histórico real de tu patrimonio.',
     done_hint: 'Los precios se actualizarán automáticamente en unos segundos.',
     btn_import_assets: 'Importar {count:number} activos',
+    // Paso de dirección: el fichero no distingue entrada de salida
+    dir_title: 'Tu archivo no distingue compras de ventas',
+    dir_explain: 'Este export no trae columna de tipo de operación y todas las cifras vienen en positivo, así que un reembolso y una suscripción son la misma fila. Las hemos apuntado todas como compras. Si alguna fue una salida, márcala: si no, tu posición saldrá de más.',
+    dir_explain_double: 'Ojo, el error sale al doble: una salida apuntada como compra no es que no reste, es que suma.',
+    dir_suggest_title: '¿Esto fue un traspaso?',
+    dir_suggest_detail: 'Salieron {amountOut:string} de {from:string} el {dateOut:string}, y {amountIn:string} entraron en {to:string} {days:number} días después.',
+    dir_suggest_confirm: 'Sí, es un traspaso',
+    dir_suggest_undo: 'Marcado como traspaso · deshacer',
+    dir_suggest_cost: 'El valor de adquisición viaja con el dinero (art. 94 LIRPF), así que {to:string} hereda {cost:string} de coste y la fecha de tu participación más antigua. Tu banco enseñará el importe suscrito en su casilla de «invertido»: las dos cifras son correctas y sirven para cosas distintas, pero la que tributará es esta.',
+    dir_suggest_no_cost: 'No podemos saber qué coste viaja, porque el archivo no trae las compras antiguas de {from:string}. El destino entra con el importe suscrito, como hasta ahora.',
+    dir_row_in: 'Entra',
+    dir_row_out: 'Sale',
+    dir_transfer_badge: 'Traspaso',
+    dir_result_title: 'Cómo queda cada fondo',
+    dir_result_line: '{shares:string} part. · coste medio {avgCost:string}',
+    dir_compare_hint: '👉 Compara estas cifras con las de tu banco antes de seguir. Si no cuadran, es que falta alguna salida por marcar.',
     // ColumnMapper
     mapper_hint: 'Asigna cada campo a una columna de tu archivo para que podamos importar los datos correctamente.',
     mapper_coverage: 'Cobertura estimada del mapeo: {score:number}%.',
@@ -817,7 +834,7 @@ const es = {
     timing_period_note: 'Medido sobre los {days:number} días con datos reales, sin anualizar.',
     legal_disclaimer: '<strong>Aviso Legal:</strong> CoreBalance es una herramienta puramente informativa y educativa. No constituye asesoramiento financiero, de inversión ni fiscal. Los datos mostrados pueden sufrir retrasos o ser inexactos. El desarrollador no se hace responsable de posibles pérdidas financieras derivadas del uso de esta aplicación. Invierte siempre bajo tu propia responsabilidad.',
     footer_tagline: 'Tu centro de mandos para una gestión de activos inteligente y equilibrada.',
-    changelog_trigger: 'v1.22.0 🚀',
+    changelog_trigger: 'v1.23.0 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Hecho con ❤️ para la comunidad inversora',
     reclassify_stocks: 'Acciones Individuales',
@@ -1139,6 +1156,18 @@ const es = {
     close_aria: 'Cerrar modal',
     btn_understand: 'Entendido',
     releases: {
+      v1_23_0: {
+        date: '28 de Agosto, 2026',
+        badge: 'Tu CSV ya no cuela una salida como si fuera una compra',
+        changes: [
+          '⚠️ **Si tu banco exporta las órdenes sin decir cuáles son salidas, ahora te lo dice en vez de suponerlo.** Hay exports —el de «Órdenes» de MyInvestor es el que lo ha destapado— cuyas columnas son fecha, ISIN, importe, participaciones y estado, y nada más: un reembolso y una suscripción son literalmente la misma fila. La app suponía compra y se callaba, sin un aviso ni una fila descartada. Medido con un fichero real de catorce órdenes: el fondo quedaba con 1.141 participaciones donde el banco decía 1.024.',
+          '➗ **Y el error salía al doble.** Una salida apuntada como compra no es que no reste: es que suma. Por cada participación que se fue, sobraban dos.',
+          '✍️ **Hay un paso nuevo antes de importar, y enseña las cifras en vivo.** Ves cada orden con su fecha y su importe, marcas cuáles fueron salidas, y debajo va cambiando cómo queda cada fondo —participaciones y coste medio— para que lo compares con la pantalla de tu banco **antes** de que se escriba nada.',
+          '🔄 **Y si dos de esas órdenes eran un traspaso, la app te lo propone.** Sale dinero de un fondo y entra en otro pocos días después por un importe parecido: eso tiene pinta de traspaso, así que te lo pregunta. Nunca lo da por hecho — una pareja inventada te fabricaría un diferimiento que no existe. Y solo lo propone entre fondos, porque un fondo que se reembolsa para comprar un ETF tributa aunque el origen sea un fondo.',
+          '🏛️ **Confirmado el traspaso, el coste viaja como debe.** El fondo de destino hereda el valor y la fecha de adquisición del origen (art. 94 LIRPF) en vez de nacer al precio del día. Ojo a una consecuencia que se ve: la casilla de «invertido» de tu banco y la de la app dirán cifras distintas, y las dos son correctas — la de la app es la que tributará.',
+          '📄 **Arreglado también en el export de «Movimientos», que sí trae el tipo:** una fila de «Traspaso salida» entraba como venta y te realizaba una plusvalía que el art. 94 difiere. Un impuesto inventado en el panel de IRPF, sin error en ninguna parte.',
+        ]
+      },
       v1_22_0: {
         date: '27 de Agosto, 2026',
         badge: 'Traspasa de un fondo a otro en un solo gesto',

@@ -111,8 +111,16 @@ export interface ImportResult {
 	transactions?: Transaction[];
 }
 
-/** Tipo de operación de transacción */
-export type TransactionType = 'BUY' | 'SELL';
+/**
+ * Tipo de operación de transacción.
+ *
+ * ⚠️ **Las dos patas de traspaso no son un lujo del modelo: sin ellas una «Traspaso
+ * salida» se importaba como `SELL` y realizaba una plusvalía que no existe.** El
+ * export de Movimientos de MyInvestor las distingue por su nombre desde siempre, y
+ * el parser las aplastaba contra `BUY`/`SELL` — que es la misma familia de defectos
+ * que el `transfer` único del store antes de la 1.22.0, una capa más afuera.
+ */
+export type TransactionType = 'BUY' | 'SELL' | 'TRANSFER_IN' | 'TRANSFER_OUT';
 
 /** Una transacción individual extraída de un historial de bróker */
 export interface Transaction {
@@ -124,5 +132,34 @@ export interface Transaction {
 	shares: number;
 	price: number;
 	currency: string;
+
+	/**
+	 * ⚠️ **`true` cuando el fichero no dice la dirección y el parser la ha supuesto.**
+	 *
+	 * Hay exports —el de **Órdenes** de MyInvestor es el caso medido— cuyas columnas
+	 * son `Fecha;ISIN;Importe;Participaciones;Estado` y nada más: **no existe columna
+	 * de tipo y todas las cifras van en positivo**, así que un reembolso y una
+	 * suscripción son literalmente la misma fila. El parser no puede hacer otra cosa
+	 * que suponer compra, y hasta ahora lo hacía en silencio: una salida no solo no
+	 * restaba, sumaba, y el error salía al **doble** de lo que se fue.
+	 *
+	 * Medido contra un fichero real de 14 órdenes con un traspaso dentro: el fondo
+	 * quedaba con 1.141,23 participaciones en vez de 1.024,15 y 12.644,48 € en vez de
+	 * 11.287,11 €, con `warnings: []` y `skippedRows: 0`. O sea, sin nada que mirar.
+	 *
+	 * Este campo es lo que convierte esa suposición en algo que la interfaz puede
+	 * enseñar y el usuario puede corregir antes de importar. **No se adivina nada:**
+	 * el valor por defecto sigue siendo compra, que es el comportamiento de siempre.
+	 */
+	directionAssumed?: boolean;
+
+	/**
+	 * Une las dos patas de un traspaso **dentro de esta importación**.
+	 *
+	 * Se llena en `direccion.ts` cuando el usuario confirma una pareja, y viaja hasta
+	 * el `transferId` del libro. Sin él las dos patas serían dos apuntes sueltos y
+	 * borrar uno dejaría la cartera descuadrada en silencio.
+	 */
+	transferId?: string;
 }
 

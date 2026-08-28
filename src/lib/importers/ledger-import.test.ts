@@ -194,3 +194,123 @@ describe('planificarImportacion', () => {
 		expect(resultado.operaciones).toHaveLength(1);
 	});
 });
+
+/**
+ * Las dos patas de un traspaso, que es lo que el paso de dirección acaba escribiendo.
+ *
+ * ⚠️ Lo que se prueba aquí no es la aritmética del coste heredado —eso vive en
+ * `direccion.test.ts`— sino que **llega al libro**: el tipo correcto en cada pata, el
+ * `transferId` que las une, y que `carriedCostBase` se escriba solo cuando se sabe. Sin
+ * ese campo la entrada crea un lote FIFO al precio del día y la plusvalía latente
+ * desaparece, que es la ficha del destino declarando «plusvalía 0 €» justo después de
+ * traspasar: un número falso, no una ausencia de número.
+ */
+describe('planificarImportacion con traspasos', () => {
+	const traspaso = (
+		fecha: string,
+		tipo: 'TRANSFER_IN' | 'TRANSFER_OUT',
+		shares: number,
+		price: number
+	): OperacionCSV => ({
+		date: new Date(fecha),
+		type: tipo,
+		isin: 'IE00TEST0001',
+		name: 'Acme World',
+		shares,
+		price,
+		currency: 'EUR',
+		transferId: 'tid'
+	});
+
+	it('escribe cada pata con su tipo y las une por transferId', () => {
+		const resultado = planificarImportacion({
+			posiciones: [posicion(60, 10)],
+			operaciones: [op('2025-02-10', 'BUY', 100, 10), traspaso('2025-03-10', 'TRANSFER_OUT', 40, 12)],
+			tickerDe: () => 'ACME.F',
+			nuevoId: idsFijos()
+		})[0];
+
+		expect(resultado.conLibro).toBe(true);
+		expect(resultado.operaciones.map((o) => o.type)).toEqual(['buy', 'transfer_out']);
+		expect(resultado.operaciones[1].transferId).toBe('tid');
+	});
+
+	/**
+	 * ⚠️ Una salida de traspaso **resta**. Si se contara como suma, el neto sería 140
+	 * contra una posición de 60 y el activo perdería el libro por `descuadre` sin que
+	 * nada dijera por qué — o, cuadrando por casualidad, escribiría el doble.
+	 */
+	it('la salida de traspaso resta en el neto, igual que una venta', () => {
+		const resultado = planificarImportacion({
+			posiciones: [posicion(60, 10)],
+			operaciones: [op('2025-02-10', 'BUY', 100, 10), traspaso('2025-03-10', 'TRANSFER_OUT', 40, 12)],
+			tickerDe: () => 'ACME.F',
+			nuevoId: idsFijos()
+		})[0];
+
+		expect(resultado.motivo).toBeUndefined();
+	});
+
+	it('la entrada hereda coste y fecha cuando se saben', () => {
+		const resultado = planificarImportacion({
+			posiciones: [posicion(40, 10)],
+			operaciones: [traspaso('2025-03-10', 'TRANSFER_IN', 40, 12)],
+			tickerDe: () => 'ACME.F',
+			nuevoId: idsFijos(),
+			costesHeredados: new Map([
+				['tid', { coste: 300, fechaLote: 1700000000000, estado: 'completo', costeParcial: 300 }]
+			])
+		})[0];
+
+		expect(resultado.operaciones[0].type).toBe('transfer_in');
+		expect(resultado.operaciones[0].carriedCostBase).toBe(300);
+		expect(resultado.operaciones[0].carriedLotDate).toBe(1700000000000);
+	});
+
+	/**
+	 * ⚠️ **Un coste desconocido deja el campo fuera, no lo pone a cero.** Con `null` la
+	 * entrada se comporta como antes de la 1.22.0, que es el fallback documentado; con un
+	 * 0 afirmaría que no costó nada y fabricaría una plusvalía del 100 %.
+	 */
+	it('sin coste conocido no escribe carriedCostBase', () => {
+		const resultado = planificarImportacion({
+			posiciones: [posicion(40, 10)],
+			operaciones: [traspaso('2025-03-10', 'TRANSFER_IN', 40, 12)],
+			tickerDe: () => 'ACME.F',
+			nuevoId: idsFijos(),
+			costesHeredados: new Map([
+				['tid', { coste: null, fechaLote: null, estado: 'sin-libro', costeParcial: null }]
+			])
+		})[0];
+
+		expect(resultado.operaciones[0].carriedCostBase).toBeUndefined();
+		expect(resultado.operaciones[0].carriedLotDate).toBeUndefined();
+	});
+
+	it('sin mapa de costes tampoco lo escribe', () => {
+		const resultado = planificarImportacion({
+			posiciones: [posicion(40, 10)],
+			operaciones: [traspaso('2025-03-10', 'TRANSFER_IN', 40, 12)],
+			tickerDe: () => 'ACME.F',
+			nuevoId: idsFijos()
+		})[0];
+
+		expect(resultado.operaciones[0].carriedCostBase).toBeUndefined();
+	});
+
+	/**
+	 * La otra guarda: una salida que se lleva más de lo que consta comprado es la señal de
+	 * que el fichero no trae el histórico entero, y ahí el libro no se activa.
+	 */
+	it('una salida de traspaso sin compras previas deja el activo sin libro', () => {
+		const resultado = planificarImportacion({
+			posiciones: [posicion(40, 10)],
+			operaciones: [traspaso('2025-03-10', 'TRANSFER_OUT', 40, 12)],
+			tickerDe: () => 'ACME.F',
+			nuevoId: idsFijos()
+		})[0];
+
+		expect(resultado.conLibro).toBe(false);
+		expect(resultado.motivo).toBe('historial-incompleto');
+	});
+});

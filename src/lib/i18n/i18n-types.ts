@@ -2285,6 +2285,10 @@ type RootTranslation = {
 		 */
 		subtitle_preview: string
 		/**
+		 * E​s​t​e​ ​a​r​c​h​i​v​o​ ​n​o​ ​d​i​c​e​ ​s​i​ ​c​a​d​a​ ​o​r​d​e​n​ ​e​n​t​r​a​ ​o​ ​s​a​l​e
+		 */
+		subtitle_direction: string
+		/**
 		 * ¡​I​m​p​o​r​t​a​c​i​ó​n​ ​c​o​m​p​l​e​t​a​d​a​!
 		 */
 		subtitle_done: string
@@ -2427,6 +2431,77 @@ type RootTranslation = {
 		 * @param {number} count
 		 */
 		btn_import_assets: RequiredParams<'count'>
+		/**
+		 * T​u​ ​a​r​c​h​i​v​o​ ​n​o​ ​d​i​s​t​i​n​g​u​e​ ​c​o​m​p​r​a​s​ ​d​e​ ​v​e​n​t​a​s
+		 */
+		dir_title: string
+		/**
+		 * E​s​t​e​ ​e​x​p​o​r​t​ ​n​o​ ​t​r​a​e​ ​c​o​l​u​m​n​a​ ​d​e​ ​t​i​p​o​ ​d​e​ ​o​p​e​r​a​c​i​ó​n​ ​y​ ​t​o​d​a​s​ ​l​a​s​ ​c​i​f​r​a​s​ ​v​i​e​n​e​n​ ​e​n​ ​p​o​s​i​t​i​v​o​,​ ​a​s​í​ ​q​u​e​ ​u​n​ ​r​e​e​m​b​o​l​s​o​ ​y​ ​u​n​a​ ​s​u​s​c​r​i​p​c​i​ó​n​ ​s​o​n​ ​l​a​ ​m​i​s​m​a​ ​f​i​l​a​.​ ​L​a​s​ ​h​e​m​o​s​ ​a​p​u​n​t​a​d​o​ ​t​o​d​a​s​ ​c​o​m​o​ ​c​o​m​p​r​a​s​.​ ​S​i​ ​a​l​g​u​n​a​ ​f​u​e​ ​u​n​a​ ​s​a​l​i​d​a​,​ ​m​á​r​c​a​l​a​:​ ​s​i​ ​n​o​,​ ​t​u​ ​p​o​s​i​c​i​ó​n​ ​s​a​l​d​r​á​ ​d​e​ ​m​á​s​.
+		 */
+		dir_explain: string
+		/**
+		 * O​j​o​,​ ​e​l​ ​e​r​r​o​r​ ​s​a​l​e​ ​a​l​ ​d​o​b​l​e​:​ ​u​n​a​ ​s​a​l​i​d​a​ ​a​p​u​n​t​a​d​a​ ​c​o​m​o​ ​c​o​m​p​r​a​ ​n​o​ ​e​s​ ​q​u​e​ ​n​o​ ​r​e​s​t​e​,​ ​e​s​ ​q​u​e​ ​s​u​m​a​.
+		 */
+		dir_explain_double: string
+		/**
+		 * ¿​E​s​t​o​ ​f​u​e​ ​u​n​ ​t​r​a​s​p​a​s​o​?
+		 */
+		dir_suggest_title: string
+		/**
+		 * S​a​l​i​e​r​o​n​ ​{​a​m​o​u​n​t​O​u​t​}​ ​d​e​ ​{​f​r​o​m​}​ ​e​l​ ​{​d​a​t​e​O​u​t​}​,​ ​y​ ​{​a​m​o​u​n​t​I​n​}​ ​e​n​t​r​a​r​o​n​ ​e​n​ ​{​t​o​}​ ​{​d​a​y​s​}​ ​d​í​a​s​ ​d​e​s​p​u​é​s​.
+		 * @param {string} amountIn
+		 * @param {string} amountOut
+		 * @param {string} dateOut
+		 * @param {number} days
+		 * @param {string} from
+		 * @param {string} to
+		 */
+		dir_suggest_detail: RequiredParams<'amountIn' | 'amountOut' | 'dateOut' | 'days' | 'from' | 'to'>
+		/**
+		 * S​í​,​ ​e​s​ ​u​n​ ​t​r​a​s​p​a​s​o
+		 */
+		dir_suggest_confirm: string
+		/**
+		 * M​a​r​c​a​d​o​ ​c​o​m​o​ ​t​r​a​s​p​a​s​o​ ​·​ ​d​e​s​h​a​c​e​r
+		 */
+		dir_suggest_undo: string
+		/**
+		 * E​l​ ​v​a​l​o​r​ ​d​e​ ​a​d​q​u​i​s​i​c​i​ó​n​ ​v​i​a​j​a​ ​c​o​n​ ​e​l​ ​d​i​n​e​r​o​ ​(​a​r​t​.​ ​9​4​ ​L​I​R​P​F​)​,​ ​a​s​í​ ​q​u​e​ ​{​t​o​}​ ​h​e​r​e​d​a​ ​{​c​o​s​t​}​ ​d​e​ ​c​o​s​t​e​ ​y​ ​l​a​ ​f​e​c​h​a​ ​d​e​ ​t​u​ ​p​a​r​t​i​c​i​p​a​c​i​ó​n​ ​m​á​s​ ​a​n​t​i​g​u​a​.​ ​T​u​ ​b​a​n​c​o​ ​e​n​s​e​ñ​a​r​á​ ​e​l​ ​i​m​p​o​r​t​e​ ​s​u​s​c​r​i​t​o​ ​e​n​ ​s​u​ ​c​a​s​i​l​l​a​ ​d​e​ ​«​i​n​v​e​r​t​i​d​o​»​:​ ​l​a​s​ ​d​o​s​ ​c​i​f​r​a​s​ ​s​o​n​ ​c​o​r​r​e​c​t​a​s​ ​y​ ​s​i​r​v​e​n​ ​p​a​r​a​ ​c​o​s​a​s​ ​d​i​s​t​i​n​t​a​s​,​ ​p​e​r​o​ ​l​a​ ​q​u​e​ ​t​r​i​b​u​t​a​r​á​ ​e​s​ ​e​s​t​a​.
+		 * @param {string} cost
+		 * @param {string} to
+		 */
+		dir_suggest_cost: RequiredParams<'cost' | 'to'>
+		/**
+		 * N​o​ ​p​o​d​e​m​o​s​ ​s​a​b​e​r​ ​q​u​é​ ​c​o​s​t​e​ ​v​i​a​j​a​,​ ​p​o​r​q​u​e​ ​e​l​ ​a​r​c​h​i​v​o​ ​n​o​ ​t​r​a​e​ ​l​a​s​ ​c​o​m​p​r​a​s​ ​a​n​t​i​g​u​a​s​ ​d​e​ ​{​f​r​o​m​}​.​ ​E​l​ ​d​e​s​t​i​n​o​ ​e​n​t​r​a​ ​c​o​n​ ​e​l​ ​i​m​p​o​r​t​e​ ​s​u​s​c​r​i​t​o​,​ ​c​o​m​o​ ​h​a​s​t​a​ ​a​h​o​r​a​.
+		 * @param {string} from
+		 */
+		dir_suggest_no_cost: RequiredParams<'from'>
+		/**
+		 * E​n​t​r​a
+		 */
+		dir_row_in: string
+		/**
+		 * S​a​l​e
+		 */
+		dir_row_out: string
+		/**
+		 * T​r​a​s​p​a​s​o
+		 */
+		dir_transfer_badge: string
+		/**
+		 * C​ó​m​o​ ​q​u​e​d​a​ ​c​a​d​a​ ​f​o​n​d​o
+		 */
+		dir_result_title: string
+		/**
+		 * {​s​h​a​r​e​s​}​ ​p​a​r​t​.​ ​·​ ​c​o​s​t​e​ ​m​e​d​i​o​ ​{​a​v​g​C​o​s​t​}
+		 * @param {string} avgCost
+		 * @param {string} shares
+		 */
+		dir_result_line: RequiredParams<'avgCost' | 'shares'>
+		/**
+		 * �​�​ ​C​o​m​p​a​r​a​ ​e​s​t​a​s​ ​c​i​f​r​a​s​ ​c​o​n​ ​l​a​s​ ​d​e​ ​t​u​ ​b​a​n​c​o​ ​a​n​t​e​s​ ​d​e​ ​s​e​g​u​i​r​.​ ​S​i​ ​n​o​ ​c​u​a​d​r​a​n​,​ ​e​s​ ​q​u​e​ ​f​a​l​t​a​ ​a​l​g​u​n​a​ ​s​a​l​i​d​a​ ​p​o​r​ ​m​a​r​c​a​r​.
+		 */
+		dir_compare_hint: string
 		/**
 		 * A​s​i​g​n​a​ ​c​a​d​a​ ​c​a​m​p​o​ ​a​ ​u​n​a​ ​c​o​l​u​m​n​a​ ​d​e​ ​t​u​ ​a​r​c​h​i​v​o​ ​p​a​r​a​ ​q​u​e​ ​p​o​d​a​m​o​s​ ​i​m​p​o​r​t​a​r​ ​l​o​s​ ​d​a​t​o​s​ ​c​o​r​r​e​c​t​a​m​e​n​t​e​.
 		 */
@@ -2962,7 +3037,7 @@ type RootTranslation = {
 		 */
 		footer_tagline: string
 		/**
-		 * v​1​.​2​2​.​0​ ​�​�
+		 * v​1​.​2​3​.​0​ ​�​�
 		 */
 		changelog_trigger: string
 		/**
@@ -4026,6 +4101,42 @@ type RootTranslation = {
 		 */
 		btn_understand: string
 		releases: {
+			v1_23_0: {
+				/**
+				 * 2​8​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
+				 */
+				date: string
+				/**
+				 * T​u​ ​C​S​V​ ​y​a​ ​n​o​ ​c​u​e​l​a​ ​u​n​a​ ​s​a​l​i​d​a​ ​c​o​m​o​ ​s​i​ ​f​u​e​r​a​ ​u​n​a​ ​c​o​m​p​r​a
+				 */
+				badge: string
+				changes: {
+					/**
+					 * ⚠​️​ ​*​*​S​i​ ​t​u​ ​b​a​n​c​o​ ​e​x​p​o​r​t​a​ ​l​a​s​ ​ó​r​d​e​n​e​s​ ​s​i​n​ ​d​e​c​i​r​ ​c​u​á​l​e​s​ ​s​o​n​ ​s​a​l​i​d​a​s​,​ ​a​h​o​r​a​ ​t​e​ ​l​o​ ​d​i​c​e​ ​e​n​ ​v​e​z​ ​d​e​ ​s​u​p​o​n​e​r​l​o​.​*​*​ ​H​a​y​ ​e​x​p​o​r​t​s​ ​—​e​l​ ​d​e​ ​«​Ó​r​d​e​n​e​s​»​ ​d​e​ ​M​y​I​n​v​e​s​t​o​r​ ​e​s​ ​e​l​ ​q​u​e​ ​l​o​ ​h​a​ ​d​e​s​t​a​p​a​d​o​—​ ​c​u​y​a​s​ ​c​o​l​u​m​n​a​s​ ​s​o​n​ ​f​e​c​h​a​,​ ​I​S​I​N​,​ ​i​m​p​o​r​t​e​,​ ​p​a​r​t​i​c​i​p​a​c​i​o​n​e​s​ ​y​ ​e​s​t​a​d​o​,​ ​y​ ​n​a​d​a​ ​m​á​s​:​ ​u​n​ ​r​e​e​m​b​o​l​s​o​ ​y​ ​u​n​a​ ​s​u​s​c​r​i​p​c​i​ó​n​ ​s​o​n​ ​l​i​t​e​r​a​l​m​e​n​t​e​ ​l​a​ ​m​i​s​m​a​ ​f​i​l​a​.​ ​L​a​ ​a​p​p​ ​s​u​p​o​n​í​a​ ​c​o​m​p​r​a​ ​y​ ​s​e​ ​c​a​l​l​a​b​a​,​ ​s​i​n​ ​u​n​ ​a​v​i​s​o​ ​n​i​ ​u​n​a​ ​f​i​l​a​ ​d​e​s​c​a​r​t​a​d​a​.​ ​M​e​d​i​d​o​ ​c​o​n​ ​u​n​ ​f​i​c​h​e​r​o​ ​r​e​a​l​ ​d​e​ ​c​a​t​o​r​c​e​ ​ó​r​d​e​n​e​s​:​ ​e​l​ ​f​o​n​d​o​ ​q​u​e​d​a​b​a​ ​c​o​n​ ​1​.​1​4​1​ ​p​a​r​t​i​c​i​p​a​c​i​o​n​e​s​ ​d​o​n​d​e​ ​e​l​ ​b​a​n​c​o​ ​d​e​c​í​a​ ​1​.​0​2​4​.
+					 */
+					'0': string
+					/**
+					 * ➗​ ​*​*​Y​ ​e​l​ ​e​r​r​o​r​ ​s​a​l​í​a​ ​a​l​ ​d​o​b​l​e​.​*​*​ ​U​n​a​ ​s​a​l​i​d​a​ ​a​p​u​n​t​a​d​a​ ​c​o​m​o​ ​c​o​m​p​r​a​ ​n​o​ ​e​s​ ​q​u​e​ ​n​o​ ​r​e​s​t​e​:​ ​e​s​ ​q​u​e​ ​s​u​m​a​.​ ​P​o​r​ ​c​a​d​a​ ​p​a​r​t​i​c​i​p​a​c​i​ó​n​ ​q​u​e​ ​s​e​ ​f​u​e​,​ ​s​o​b​r​a​b​a​n​ ​d​o​s​.
+					 */
+					'1': string
+					/**
+					 * ✍​️​ ​*​*​H​a​y​ ​u​n​ ​p​a​s​o​ ​n​u​e​v​o​ ​a​n​t​e​s​ ​d​e​ ​i​m​p​o​r​t​a​r​,​ ​y​ ​e​n​s​e​ñ​a​ ​l​a​s​ ​c​i​f​r​a​s​ ​e​n​ ​v​i​v​o​.​*​*​ ​V​e​s​ ​c​a​d​a​ ​o​r​d​e​n​ ​c​o​n​ ​s​u​ ​f​e​c​h​a​ ​y​ ​s​u​ ​i​m​p​o​r​t​e​,​ ​m​a​r​c​a​s​ ​c​u​á​l​e​s​ ​f​u​e​r​o​n​ ​s​a​l​i​d​a​s​,​ ​y​ ​d​e​b​a​j​o​ ​v​a​ ​c​a​m​b​i​a​n​d​o​ ​c​ó​m​o​ ​q​u​e​d​a​ ​c​a​d​a​ ​f​o​n​d​o​ ​—​p​a​r​t​i​c​i​p​a​c​i​o​n​e​s​ ​y​ ​c​o​s​t​e​ ​m​e​d​i​o​—​ ​p​a​r​a​ ​q​u​e​ ​l​o​ ​c​o​m​p​a​r​e​s​ ​c​o​n​ ​l​a​ ​p​a​n​t​a​l​l​a​ ​d​e​ ​t​u​ ​b​a​n​c​o​ ​*​*​a​n​t​e​s​*​*​ ​d​e​ ​q​u​e​ ​s​e​ ​e​s​c​r​i​b​a​ ​n​a​d​a​.
+					 */
+					'2': string
+					/**
+					 * �​�​ ​*​*​Y​ ​s​i​ ​d​o​s​ ​d​e​ ​e​s​a​s​ ​ó​r​d​e​n​e​s​ ​e​r​a​n​ ​u​n​ ​t​r​a​s​p​a​s​o​,​ ​l​a​ ​a​p​p​ ​t​e​ ​l​o​ ​p​r​o​p​o​n​e​.​*​*​ ​S​a​l​e​ ​d​i​n​e​r​o​ ​d​e​ ​u​n​ ​f​o​n​d​o​ ​y​ ​e​n​t​r​a​ ​e​n​ ​o​t​r​o​ ​p​o​c​o​s​ ​d​í​a​s​ ​d​e​s​p​u​é​s​ ​p​o​r​ ​u​n​ ​i​m​p​o​r​t​e​ ​p​a​r​e​c​i​d​o​:​ ​e​s​o​ ​t​i​e​n​e​ ​p​i​n​t​a​ ​d​e​ ​t​r​a​s​p​a​s​o​,​ ​a​s​í​ ​q​u​e​ ​t​e​ ​l​o​ ​p​r​e​g​u​n​t​a​.​ ​N​u​n​c​a​ ​l​o​ ​d​a​ ​p​o​r​ ​h​e​c​h​o​ ​—​ ​u​n​a​ ​p​a​r​e​j​a​ ​i​n​v​e​n​t​a​d​a​ ​t​e​ ​f​a​b​r​i​c​a​r​í​a​ ​u​n​ ​d​i​f​e​r​i​m​i​e​n​t​o​ ​q​u​e​ ​n​o​ ​e​x​i​s​t​e​.​ ​Y​ ​s​o​l​o​ ​l​o​ ​p​r​o​p​o​n​e​ ​e​n​t​r​e​ ​f​o​n​d​o​s​,​ ​p​o​r​q​u​e​ ​u​n​ ​f​o​n​d​o​ ​q​u​e​ ​s​e​ ​r​e​e​m​b​o​l​s​a​ ​p​a​r​a​ ​c​o​m​p​r​a​r​ ​u​n​ ​E​T​F​ ​t​r​i​b​u​t​a​ ​a​u​n​q​u​e​ ​e​l​ ​o​r​i​g​e​n​ ​s​e​a​ ​u​n​ ​f​o​n​d​o​.
+					 */
+					'3': string
+					/**
+					 * �​�​️​ ​*​*​C​o​n​f​i​r​m​a​d​o​ ​e​l​ ​t​r​a​s​p​a​s​o​,​ ​e​l​ ​c​o​s​t​e​ ​v​i​a​j​a​ ​c​o​m​o​ ​d​e​b​e​.​*​*​ ​E​l​ ​f​o​n​d​o​ ​d​e​ ​d​e​s​t​i​n​o​ ​h​e​r​e​d​a​ ​e​l​ ​v​a​l​o​r​ ​y​ ​l​a​ ​f​e​c​h​a​ ​d​e​ ​a​d​q​u​i​s​i​c​i​ó​n​ ​d​e​l​ ​o​r​i​g​e​n​ ​(​a​r​t​.​ ​9​4​ ​L​I​R​P​F​)​ ​e​n​ ​v​e​z​ ​d​e​ ​n​a​c​e​r​ ​a​l​ ​p​r​e​c​i​o​ ​d​e​l​ ​d​í​a​.​ ​O​j​o​ ​a​ ​u​n​a​ ​c​o​n​s​e​c​u​e​n​c​i​a​ ​q​u​e​ ​s​e​ ​v​e​:​ ​l​a​ ​c​a​s​i​l​l​a​ ​d​e​ ​«​i​n​v​e​r​t​i​d​o​»​ ​d​e​ ​t​u​ ​b​a​n​c​o​ ​y​ ​l​a​ ​d​e​ ​l​a​ ​a​p​p​ ​d​i​r​á​n​ ​c​i​f​r​a​s​ ​d​i​s​t​i​n​t​a​s​,​ ​y​ ​l​a​s​ ​d​o​s​ ​s​o​n​ ​c​o​r​r​e​c​t​a​s​ ​—​ ​l​a​ ​d​e​ ​l​a​ ​a​p​p​ ​e​s​ ​l​a​ ​q​u​e​ ​t​r​i​b​u​t​a​r​á​.
+					 */
+					'4': string
+					/**
+					 * �​�​ ​*​*​A​r​r​e​g​l​a​d​o​ ​t​a​m​b​i​é​n​ ​e​n​ ​e​l​ ​e​x​p​o​r​t​ ​d​e​ ​«​M​o​v​i​m​i​e​n​t​o​s​»​,​ ​q​u​e​ ​s​í​ ​t​r​a​e​ ​e​l​ ​t​i​p​o​:​*​*​ ​u​n​a​ ​f​i​l​a​ ​d​e​ ​«​T​r​a​s​p​a​s​o​ ​s​a​l​i​d​a​»​ ​e​n​t​r​a​b​a​ ​c​o​m​o​ ​v​e​n​t​a​ ​y​ ​t​e​ ​r​e​a​l​i​z​a​b​a​ ​u​n​a​ ​p​l​u​s​v​a​l​í​a​ ​q​u​e​ ​e​l​ ​a​r​t​.​ ​9​4​ ​d​i​f​i​e​r​e​.​ ​U​n​ ​i​m​p​u​e​s​t​o​ ​i​n​v​e​n​t​a​d​o​ ​e​n​ ​e​l​ ​p​a​n​e​l​ ​d​e​ ​I​R​P​F​,​ ​s​i​n​ ​e​r​r​o​r​ ​e​n​ ​n​i​n​g​u​n​a​ ​p​a​r​t​e​.
+					 */
+					'5': string
+				}
+			}
 			v1_22_0: {
 				/**
 				 * 2​7​ ​d​e​ ​A​g​o​s​t​o​,​ ​2​0​2​6
@@ -7325,6 +7436,10 @@ export type TranslationFunctions = {
 		 */
 		subtitle_preview: () => LocalizedString
 		/**
+		 * Este archivo no dice si cada orden entra o sale
+		 */
+		subtitle_direction: () => LocalizedString
+		/**
 		 * ¡Importación completada!
 		 */
 		subtitle_done: () => LocalizedString
@@ -7456,6 +7571,66 @@ export type TranslationFunctions = {
 		 * Importar {count} activos
 		 */
 		btn_import_assets: (arg: { count: number }) => LocalizedString
+		/**
+		 * Tu archivo no distingue compras de ventas
+		 */
+		dir_title: () => LocalizedString
+		/**
+		 * Este export no trae columna de tipo de operación y todas las cifras vienen en positivo, así que un reembolso y una suscripción son la misma fila. Las hemos apuntado todas como compras. Si alguna fue una salida, márcala: si no, tu posición saldrá de más.
+		 */
+		dir_explain: () => LocalizedString
+		/**
+		 * Ojo, el error sale al doble: una salida apuntada como compra no es que no reste, es que suma.
+		 */
+		dir_explain_double: () => LocalizedString
+		/**
+		 * ¿Esto fue un traspaso?
+		 */
+		dir_suggest_title: () => LocalizedString
+		/**
+		 * Salieron {amountOut} de {from} el {dateOut}, y {amountIn} entraron en {to} {days} días después.
+		 */
+		dir_suggest_detail: (arg: { amountIn: string, amountOut: string, dateOut: string, days: number, from: string, to: string }) => LocalizedString
+		/**
+		 * Sí, es un traspaso
+		 */
+		dir_suggest_confirm: () => LocalizedString
+		/**
+		 * Marcado como traspaso · deshacer
+		 */
+		dir_suggest_undo: () => LocalizedString
+		/**
+		 * El valor de adquisición viaja con el dinero (art. 94 LIRPF), así que {to} hereda {cost} de coste y la fecha de tu participación más antigua. Tu banco enseñará el importe suscrito en su casilla de «invertido»: las dos cifras son correctas y sirven para cosas distintas, pero la que tributará es esta.
+		 */
+		dir_suggest_cost: (arg: { cost: string, to: string }) => LocalizedString
+		/**
+		 * No podemos saber qué coste viaja, porque el archivo no trae las compras antiguas de {from}. El destino entra con el importe suscrito, como hasta ahora.
+		 */
+		dir_suggest_no_cost: (arg: { from: string }) => LocalizedString
+		/**
+		 * Entra
+		 */
+		dir_row_in: () => LocalizedString
+		/**
+		 * Sale
+		 */
+		dir_row_out: () => LocalizedString
+		/**
+		 * Traspaso
+		 */
+		dir_transfer_badge: () => LocalizedString
+		/**
+		 * Cómo queda cada fondo
+		 */
+		dir_result_title: () => LocalizedString
+		/**
+		 * {shares} part. · coste medio {avgCost}
+		 */
+		dir_result_line: (arg: { avgCost: string, shares: string }) => LocalizedString
+		/**
+		 * 👉 Compara estas cifras con las de tu banco antes de seguir. Si no cuadran, es que falta alguna salida por marcar.
+		 */
+		dir_compare_hint: () => LocalizedString
 		/**
 		 * Asigna cada campo a una columna de tu archivo para que podamos importar los datos correctamente.
 		 */
@@ -7967,7 +8142,7 @@ export type TranslationFunctions = {
 		 */
 		footer_tagline: () => LocalizedString
 		/**
-		 * v1.22.0 🚀
+		 * v1.23.0 🚀
 		 */
 		changelog_trigger: () => LocalizedString
 		/**
@@ -8965,6 +9140,42 @@ export type TranslationFunctions = {
 		 */
 		btn_understand: () => LocalizedString
 		releases: {
+			v1_23_0: {
+				/**
+				 * 28 de Agosto, 2026
+				 */
+				date: () => LocalizedString
+				/**
+				 * Tu CSV ya no cuela una salida como si fuera una compra
+				 */
+				badge: () => LocalizedString
+				changes: {
+					/**
+					 * ⚠️ **Si tu banco exporta las órdenes sin decir cuáles son salidas, ahora te lo dice en vez de suponerlo.** Hay exports —el de «Órdenes» de MyInvestor es el que lo ha destapado— cuyas columnas son fecha, ISIN, importe, participaciones y estado, y nada más: un reembolso y una suscripción son literalmente la misma fila. La app suponía compra y se callaba, sin un aviso ni una fila descartada. Medido con un fichero real de catorce órdenes: el fondo quedaba con 1.141 participaciones donde el banco decía 1.024.
+					 */
+					'0': () => LocalizedString
+					/**
+					 * ➗ **Y el error salía al doble.** Una salida apuntada como compra no es que no reste: es que suma. Por cada participación que se fue, sobraban dos.
+					 */
+					'1': () => LocalizedString
+					/**
+					 * ✍️ **Hay un paso nuevo antes de importar, y enseña las cifras en vivo.** Ves cada orden con su fecha y su importe, marcas cuáles fueron salidas, y debajo va cambiando cómo queda cada fondo —participaciones y coste medio— para que lo compares con la pantalla de tu banco **antes** de que se escriba nada.
+					 */
+					'2': () => LocalizedString
+					/**
+					 * 🔄 **Y si dos de esas órdenes eran un traspaso, la app te lo propone.** Sale dinero de un fondo y entra en otro pocos días después por un importe parecido: eso tiene pinta de traspaso, así que te lo pregunta. Nunca lo da por hecho — una pareja inventada te fabricaría un diferimiento que no existe. Y solo lo propone entre fondos, porque un fondo que se reembolsa para comprar un ETF tributa aunque el origen sea un fondo.
+					 */
+					'3': () => LocalizedString
+					/**
+					 * 🏛️ **Confirmado el traspaso, el coste viaja como debe.** El fondo de destino hereda el valor y la fecha de adquisición del origen (art. 94 LIRPF) en vez de nacer al precio del día. Ojo a una consecuencia que se ve: la casilla de «invertido» de tu banco y la de la app dirán cifras distintas, y las dos son correctas — la de la app es la que tributará.
+					 */
+					'4': () => LocalizedString
+					/**
+					 * 📄 **Arreglado también en el export de «Movimientos», que sí trae el tipo:** una fila de «Traspaso salida» entraba como venta y te realizaba una plusvalía que el art. 94 difiere. Un impuesto inventado en el panel de IRPF, sin error en ninguna parte.
+					 */
+					'5': () => LocalizedString
+				}
+			}
 			v1_22_0: {
 				/**
 				 * 27 de Agosto, 2026

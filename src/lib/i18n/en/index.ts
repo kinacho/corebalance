@@ -627,6 +627,7 @@ const en: Translation = {
     subtitle_mapping: 'Configure your file columns',
     subtitle_resolving: 'Finding assets on Yahoo Finance...',
     subtitle_preview: 'Review and confirm positions',
+    subtitle_direction: 'This file does not say whether each order goes in or out',
     subtitle_done: 'Import completed!',
     upload_title: 'Drag your CSV file here',
     upload_hint: 'or click to select it',
@@ -660,6 +661,22 @@ const en: Translation = {
     done_ledger: '{count} of them with their transaction ledger: they carry the date and price of every purchase, so you get FIFO tax figures and the real history of your net worth.',
     done_hint: 'Prices will be updated automatically in a few seconds.',
     btn_import_assets: 'Import {count} assets',
+    // Direction step: the file does not tell inflows from outflows
+    dir_title: 'Your file does not tell buys from sells',
+    dir_explain: 'This export has no operation-type column and every figure comes through positive, so a redemption and a subscription are the same row. We have recorded them all as purchases. If any of them was an outflow, mark it — otherwise your position will come out too high.',
+    dir_explain_double: 'Careful, the error lands at double: an outflow recorded as a purchase does not merely fail to subtract, it adds.',
+    dir_suggest_title: 'Was this a transfer?',
+    dir_suggest_detail: '{amountOut} left {from} on {dateOut}, and {amountIn} went into {to} {days} days later.',
+    dir_suggest_confirm: 'Yes, it is a transfer',
+    dir_suggest_undo: 'Marked as a transfer · undo',
+    dir_suggest_cost: 'The acquisition value travels with the money (art. 94 LIRPF), so {to} inherits {cost} of cost basis and the date of your oldest holding. Your bank will show the subscribed amount in its "invested" box: both figures are correct and answer different questions, but this is the one that will be taxed.',
+    dir_suggest_no_cost: 'We cannot tell what cost basis travels, because the file does not carry the older purchases of {from}. The destination comes in at the subscribed amount, as before.',
+    dir_row_in: 'In',
+    dir_row_out: 'Out',
+    dir_transfer_badge: 'Transfer',
+    dir_result_title: 'How each fund ends up',
+    dir_result_line: '{shares} units · average cost {avgCost}',
+    dir_compare_hint: '👉 Compare these figures against your bank before continuing. If they do not match, an outflow is still unmarked.',
     // ColumnMapper
     mapper_hint: 'Assign each field to a column of your file so we can import the data correctly.',
     mapper_coverage: 'Estimated mapping coverage: {score}%.',
@@ -796,7 +813,7 @@ const en: Translation = {
     timing_period_note: 'Measured over the {days} days with real data, not annualised.',
     legal_disclaimer: '<strong>Legal Disclaimer:</strong> CoreBalance is a purely informative and educational tool. It does not constitute financial, investment, or tax advice. The data displayed may be subject to delays or inaccuracies. The developer is not responsible for any financial losses resulting from the use of this application. Always invest at your own risk.',
     footer_tagline: 'Your control center for smart and balanced asset management.',
-    changelog_trigger: 'v1.22.0 🚀',
+    changelog_trigger: 'v1.23.0 🚀',
     tutorial_trigger: '🎓 Tutorial',
     footer_made_with: 'Made with ❤️ for the investing community',
     reclassify_stocks: 'Individual Stocks',
@@ -1101,6 +1118,18 @@ const en: Translation = {
     close_aria: 'Close modal',
     btn_understand: 'Got it',
     releases: {
+      v1_23_0: {
+        date: 'August 28, 2026',
+        badge: 'Your CSV no longer slips an outflow through as a purchase',
+        changes: [
+          '⚠️ **If your bank exports orders without saying which ones are outflows, the app now tells you instead of assuming.** Some exports — MyInvestor\'s "Órdenes" is the one that surfaced this — carry nothing but date, ISIN, amount, units and status: a redemption and a subscription are literally the same row. The app assumed a purchase and said nothing, no warning and no skipped row. Measured against a real 14-order file: the fund came out at 1,141 units where the bank said 1,024.',
+          '➗ **And the error landed at double.** An outflow recorded as a purchase does not merely fail to subtract — it adds. For every unit that left, two were in surplus.',
+          '✍️ **There is a new step before importing, and it shows the figures live.** You see each order with its date and amount, mark which ones were outflows, and below it the resulting position of each fund — units and average cost — updates as you go, so you can compare it against your bank **before** anything is written.',
+          '🔄 **And if two of those orders were a transfer, the app suggests it.** Money leaves one fund and enters another a few days later for a similar amount: that looks like a transfer, so it asks. It never assumes — an invented pair would fabricate a tax deferral that does not exist. And it only suggests it between funds, because a fund redeemed to buy an ETF is taxed even though the source is a fund.',
+          '🏛️ **Once you confirm the transfer, the cost basis travels as it should.** The destination fund inherits the acquisition value and date from the source (art. 94 LIRPF) instead of being born at the day\'s price. One visible consequence: your bank\'s "invested" box and the app\'s will show different figures, and both are correct — the app\'s is the one that will be taxed.',
+          '📄 **Also fixed in the "Movimientos" export, which does carry the type:** a "Traspaso salida" row came in as a sale and realised a capital gain that art. 94 defers. An invented tax in the IRPF panel, with no error anywhere.',
+        ]
+      },
       v1_22_0: {
         date: 'August 27, 2026',
         badge: 'Move money between funds in one gesture',
