@@ -1411,15 +1411,11 @@ import { formatCompactCurrency } from "$lib/chart-format";
     /*
      * ⚠️ **El `top: 6rem` no es un número al azar y no hay que «arreglarlo»**: la
      * cabecera mide ~81 px en reposo y 65 al hacer scroll, así que 96 despeja las dos.
-     * Lo que hacía este `sticky` decorativo era la ALTURA de la columna, no el `top`:
-     * un elemento pegajoso más alto que la ventana no tiene recorrido. Con una
-     * herramienta abierta a la vez el peor caso pasa de la suma de cinco al mayor de
-     * cinco, y el `max-height` de abajo cierra el caso del panel más alto que la
-     * ventana (los dos simuladores lo son).
      *
-     * ⚠️ El `overflow` va en el **propio** elemento pegajoso, que es inocuo. En
-     * cualquier ANCESTRO (`.main-content`, `.app-container`, `.dashboard-grid`, el
-     * `body`) mataría el `sticky`: no subirlo ahí.
+     * Sin `max-height` ni `overflow-y`: la columna fluye con el scroll de la
+     * página, así que **no hay un segundo scroll** dentro de las herramientas.
+     * Con una herramienta abierta a la vez (acordeón) la altura queda acotada
+     * de forma natural.
      */
     .sidebar {
       position: sticky;
@@ -1427,10 +1423,6 @@ import { formatCompactCurrency } from "$lib/chart-format";
       display: flex;
       flex-direction: column;
       gap: 2.5rem;
-      max-height: calc(100dvh - 8rem);
-      overflow-y: auto;
-      overscroll-behavior: contain;
-      scrollbar-gutter: stable;
     }
 
     .sidebar.tab-hidden {
