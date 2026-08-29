@@ -24,7 +24,8 @@
 		valueAxis,
 		motionAllowed,
 		seguirTema,
-		chartAxisInk
+		chartAxisInk,
+		chartGrid
 	} from '$lib/chart-theme';
 	import { LL, locale } from '$lib/i18n/i18n-svelte';
 
@@ -119,6 +120,11 @@
 		 * relleno translúcido que se permite aquí, y se permite porque no es un
 		 * dato, es el fondo contra el que se lee el dato.
 		 */
+		// Los colores de la banda se leen del tema en cada `sync()`: así
+		// cambian al alternar claro/oscuro sin destruir el gráfico.
+		const bandBorder = chartAxisInk();
+		const bandFill = chartGrid();
+
 		chart.data.datasets = [
 			{
 				label: $LL.db.band_legend({ pp: bandPp }),
@@ -126,10 +132,10 @@
 				// El relleno da la zona y el borde punteado da el límite. Solo con
 				// relleno el canto de la banda no se lee, y el canto es justo lo que
 				// se está mirando cuando una línea se acerca.
-				borderColor: 'rgba(255, 255, 255, 0.22)',
+				borderColor: bandBorder,
 				borderDash: [3, 3],
 				borderWidth: 1,
-				backgroundColor: 'rgba(255, 255, 255, 0.07)',
+				backgroundColor: bandFill,
 				fill: { value: -bandPp },
 				pointRadius: 0,
 				order: 10
@@ -137,7 +143,7 @@
 			{
 				label: '',
 				data: drift.dates.map(() => -bandPp),
-				borderColor: 'rgba(255, 255, 255, 0.22)',
+				borderColor: bandBorder,
 				borderDash: [3, 3],
 				borderWidth: 1,
 				fill: false,
@@ -219,7 +225,7 @@
 							 * fiable que un dataset de ceros, que aparecería en el tooltip.
 							 */
 							color: (ctx: { tick: { value: number } }) =>
-								ctx.tick.value === 0 ? 'rgba(255,255,255,0.28)' : 'rgba(255,255,255,0.05)',
+								ctx.tick.value === 0 ? chartAxisInk() : chartGrid(),
 							drawTicks: false
 						},
 						ticks: {
@@ -349,7 +355,7 @@
 
 	.sw.band {
 		width: 14px;
-		background: rgba(255, 255, 255, 0.16);
+		background: var(--chart-grid);
 	}
 
 	.canvas-wrapper {
