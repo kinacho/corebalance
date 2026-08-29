@@ -16,3 +16,7 @@
 # checkout los convierte, tropiezan con la comprobación de CRLF antes de llegar a lo que
 # cada uno prueba, y dos tests pasan a fallar por un motivo que no es el suyo.
 scripts/__fixtures__/doc-drift/reglas/*.md text eol=lf
+
+# typesafe-i18n genera ficheros siempre con LF. Forzar LF evita que en Windows
+# aparezca como modificado por discrepancia CRLF/LF tras `npm run dev`.
+src/lib/i18n/i18n-*.ts text eol=lf
