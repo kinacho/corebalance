@@ -205,10 +205,18 @@ import { formatCompactCurrency } from "$lib/chart-format";
     };
   });
 
-  // `detailedChartData` y `coreActualChartData` vivían aquí y alimentaban los
-  // dos donuts de activos. Los sustituye `CompositionBars`, que se construye a
-  // partir del store con `buildComposition()` y no necesita que la página le
-  // premastique nada.
+  const coreActualChartData = $derived.by(() => {
+    const positions = portfolio.portfolioState.positions;
+    const total = portfolio.portfolioState.totalCapital;
+    const filtered = positions.filter((p: PortfolioPosition) => p.totalValue > 0);
+    return {
+      labels: filtered.map((p: PortfolioPosition) => p.asset.name),
+      values: filtered.map((p: PortfolioPosition) =>
+        total > 0 ? (p.totalValue / total) * 100 : 0,
+      ),
+      colors: filtered.map((p: PortfolioPosition) => p.asset.color),
+    };
+  });
 
   // --- Lifecycle ---
   onMount(() => {
@@ -450,19 +458,34 @@ import { formatCompactCurrency } from "$lib/chart-format";
               </p>
               <CompositionBars />
             </div>
-            <div class="chart-box">
-              <h4 class="chart-label">{$LL.db.chart_global_weight()}</h4>
-              <DonutChart
-                data={categoryChartData}
-                center={{
-                  label: $LL.dashboard.total_value_label(),
-                  // Compacto y no el importe exacto: el hueco tiene 119 px de
-                  // diámetro y `116.052,36 €` se sale por los dos lados. La cifra
-                  // al céntimo ya está en el hero, justo encima.
-                  value: formatCompactCurrency(portfolio.globalCapital, ui.baseCurrency),
-                  blur: true
-                }}
-              />
+            <div class="chart-box is-donuts">
+              <div class="donut-block">
+                <h4 class="chart-label">{$LL.db.chart_global_weight()}</h4>
+                <DonutChart
+                  data={categoryChartData}
+                  center={{
+                    label: $LL.dashboard.total_value_label(),
+                    // Compacto y no el importe exacto: el hueco tiene 119 px de
+                    // diámetro y `116.052,36 €` se sale por los dos lados. La cifra
+                    // al céntimo ya está en el hero, justo encima.
+                    value: formatCompactCurrency(portfolio.globalCapital, ui.baseCurrency),
+                    blur: true
+                  }}
+                />
+              </div>
+              {#if portfolio.portfolioState.totalCapital > 0 && coreActualChartData.labels.length > 0}
+                <div class="donut-block">
+                  <h4 class="chart-label">{`${$LL.db.reclassify_core()} (${portfolio.targetLabel})`}</h4>
+                  <DonutChart
+                    data={coreActualChartData}
+                    center={{
+                      label: $LL.db.chart_label_core(),
+                      value: formatCompactCurrency(portfolio.portfolioState.totalCapital, ui.baseCurrency),
+                      blur: true
+                    }}
+                  />
+                </div>
+              {/if}
             </div>
             <!--
               La deriva: cuánto tiempo llevas fuera de banda. El mapa de
@@ -977,6 +1000,19 @@ import { formatCompactCurrency } from "$lib/chart-format";
   .chart-box.is-composition .chart-label,
   .chart-box.is-composition .chart-sub {
     text-align: left;
+  }
+
+  .chart-box.is-donuts {
+    align-items: stretch;
+    gap: 2.25rem;
+  }
+
+  .donut-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: center;
+    width: 100%;
   }
 
   .charts-mobile-hint {
