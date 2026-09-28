@@ -59,7 +59,7 @@
 		"typescript": "^6.0.2",
 		"vite": "^8.0.7",
 		"vite-imagetools": "^10.0.0",
-		"vitest": "^4.1.6"
+		"vitest": "^4.1.11"
 	},
 	"dependencies": {
 		"@upstash/redis": "^1.38.0",
