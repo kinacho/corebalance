@@ -226,9 +226,28 @@ describe('calculateHistoricalMetrics', () => {
 		expect(Number.isFinite(r.mtd ?? 0)).toBe(true);
 	});
 
+	it('tampoco divide por cero cuando el único cierre es reciente y los dos cortes caen al primero', () => {
+		const soloUnCeroReciente = [{ date: '2026-08-03T00:00:00Z', close: 0 }];
+		const r = calculateHistoricalMetrics(soloUnCeroReciente, 120, undefined, AHORA);
+		expect(r).toEqual({ ytd: undefined, mtd: undefined, oneMonth: undefined });
+	});
+
 	it('el YTD de Yahoo se descarta si hay histórico para calcularlo mejor', () => {
 		const r = calculateHistoricalMetrics(SERIE, 120, 999, AHORA);
 		expect(r.ytd).toBeCloseTo(20, 6);
+	});
+
+	/**
+	 * Esta rama estaba cubierta solo de rebote, por `server.test.ts`, que corre contra
+	 * el reloj real con un cierre del 1-ago-2026: dentro de los 30 días hasta el 31 de
+	 * agosto y fuera desde el 1 de septiembre. Ese día la cobertura de este fichero
+	 * cayó del umbral sin que cambiase una línea, y todo PR quedó en rojo. Con fecha
+	 * fija se ejercita siempre.
+	 */
+	it('sin cierres de hace más de 30 días, mide el 1M contra el primero que hay', () => {
+		const soloRecientes = SERIE.filter((q) => q.date >= '2026-07-31');
+		const r = calculateHistoricalMetrics(soloRecientes, 126.5, undefined, AHORA);
+		expect(r.oneMonth).toBeCloseTo(10, 6); // contra 115, el primero disponible
 	});
 
 	it('una caída se expresa en negativo', () => {
